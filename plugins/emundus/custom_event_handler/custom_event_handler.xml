@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" version="2.5" method="upgrade" group="system">
+    <name>PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE</name>
+    <creationDate>18 August 2021</creationDate>
+    <version>1.22.1</version>
+    <author>James Dean</author>
+    <authorEmail>james@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <copyright>(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <description>PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC</description>
+    <files>
+        <filename plugin="custom_event_handler">custom_event_handler.php</filename>
+    </files>
+    <folder>language</folder>
+    <config>
+        <fields name="params">
+
+            <fieldset name="basic">
+
+                <field name="event_handlers"
+                       type="repeatable"
+                       icon="list"
+                       description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESC"
+                       label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_LABEL"
+                       >
+
+                    <fieldset hidden="true" name="list_event_handler_modal" repeat="true">
+                        <field name="event" type="sql"
+                               key_field="label" value_field="label"
+                               query="SELECT label FROM #__emundus_plugin_events where published"
+                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL" description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"/>
+                        <field name="code"
+                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_LABEL"
+                               description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_DESC"
+                               size="50"
+                               type="textarea"
+                                />
+                    </fieldset>
+                </field>
+            </fieldset>
+        </fields>
+
+    </config>
+</extension>

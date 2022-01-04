@@ -53,7 +53,7 @@
             <div class="input-can-translate">
   <!--              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="2000" style="margin: 0"></textarea>-->
                 <editor v-for="(language,index_group) in languages"
-                        v-if="language.sef === selectedLanguage && intro[language.sef]"
+                        v-if="language.sef === selectedLanguage && intro.hasOwnProperty(language.sef)"
                         :height="'30em'"
                         :text="intro[language.sef]"
                         :lang="actualLanguage"
@@ -151,18 +151,25 @@ export default {
     };
   },
   methods: {
-    UpdateParams() {
+    async UpdateParams() {
       this.changes = true;
-      this.axioschange(this.intro, this.tempEl.intro_raw);
-      this.axioschange(this.label, this.tempEl.show_title.titleraw);
-      this.updatefalang(this.label);
-      this.saveAsTemplate();
+
+      await this.axioschange(this.intro, this.tempEl.intro_raw);
+      await this.axioschange(this.label, this.tempEl.show_title.titleraw);
+      await this.updatefalang(this.label);
+
+      await this.saveAsTemplate();
+
       this.element = JSON.parse(JSON.stringify(this.tempEl));
       this.$emit("UpdateName", this.index, this.label[this.actualLanguage]);
       this.$emit("UpdateIntro", this.index, this.intro[this.actualLanguage]);
     },
+
+    /*
+      Events
+     */
     beforeClose(event) {
-      if (this.changes != false) {
+      if (this.changes !== false) {
         this.$emit(
                 "show",
                 "foo-velocity",
@@ -177,35 +184,72 @@ export default {
     beforeOpen(event) {
       this.initialisation();
     },
+
+    /*
+      Update methods
+     */
     axioschange(label, labelraw) {
-      axios({
-        method: "post",
-        url:
-          "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          labelTofind: labelraw,
-          NewSubLabel: label
-        })
-      }).catch(e => {
-        console.log(e);
-      });
+      return new Promise(resolve => {
+          axios({
+          method: "post",
+          url:
+            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            labelTofind: labelraw,
+            NewSubLabel: label
+          })
+        }).then((response) => {
+          resolve(response.data.status);
+        }).catch(e => {
+          console.log(e);
+        });
+    })
     },
     updatefalang(label){
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          label: label,
-          pid: this.element.id
-        })
-      }).then((result) => {});
+      return new Promise(resolve => {
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            label: label,
+            pid: this.element.id
+          })
+        }).then((result) => {
+
+          resolve(result.data.status);
+        });
+      })
     },
+    saveAsTemplate() {
+      return new Promise(resolve => {
+        axios({
+          method: "post",
+          url:
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=savemenuastemplate",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            menu: this.element,
+            template: this.template,
+          })
+        }).then((response) => {
+
+          resolve(response.data.scalar)
+        });
+      })
+    },
+    //
+
+    /*
+      Get translations
+     */
     async axiostrad(totrad) {
       return await axios({
         method: "get",
@@ -220,6 +264,8 @@ export default {
         return rep.data;
       });
     },
+    //
+
     deleteMenu() {
       Swal.fire({
         title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
@@ -249,25 +295,13 @@ export default {
         }
       });
     },
-    saveAsTemplate() {
-      return axios({
-        method: "post",
-        url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=savemenuastemplate",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          menu: this.element,
-          template: this.template,
-        })
-      });
-    },
+
     checkIfTemplate(){
       axios({
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getPagesModel"
       }).then(response => {
+
         var BreakException = {};
         try {
           Object.values(response.data).forEach((model, index) => {
@@ -281,6 +315,7 @@ export default {
         }
       });
     },
+
     initialisation() {
       this.tempEl = JSON.parse(JSON.stringify(this.element));
       this.axiostrad(this.tempEl.intro_raw)

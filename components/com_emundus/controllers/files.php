@@ -435,7 +435,7 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
-                $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
+                $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
                 if (empty($res)) {
                     $fnumErrorList[] = $fnum;
                 }
@@ -491,13 +491,22 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         unset($fnums);
 
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+
+        $dispatcher->trigger('callEventHandler', ['onBeforeTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
+
         $tagged = $m_files->getTaggedFile($tag);
         $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
 
         $validFnums = array_diff($validFnums, $tagged_fnums);
-        $m_files->tagFile($validFnums, $tag);
+        $res = $m_files->tagFile($validFnums, $tag);
 
-        echo json_encode((object)(array('status' => true, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
+        if ($res) {
+            $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
+        }
+
+        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
         exit;
     }
 
@@ -516,6 +525,11 @@ class EmundusControllerFiles extends JControllerLegacy
             $fnums = $m_files->getAllFnums();
         }
 
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+
+        $dispatcher->trigger('callEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
         foreach ($fnums as $fnum) {
             if ($fnum != 'em-check-all') {
                 foreach ($tags as $tag) {
@@ -530,6 +544,9 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
             }
         }
+
+        $dispatcher->trigger('callEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
+
         unset($fnums);
         unset($tags);
 
@@ -836,7 +853,9 @@ class EmundusControllerFiles extends JControllerLegacy
                     'user_id' => $this->_user->id,
                     'reason' => JText::_('STATUS'),
                     'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
-                    'fnum' => $fnum['fnum']
+                    'fnum' => $fnum['fnum'],
+                    'status_from' => $fnum['step'],
+                    'status_to' => $state
                 );
                 $m_application->addComment($row);
             }
@@ -845,7 +864,7 @@ class EmundusControllerFiles extends JControllerLegacy
             // Get triggered email
             include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
             $m_email = new EmundusModelEmails;
-            $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
+            $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
             $toAttach = [];
 
             if (count($trigger_emails) > 0) {
@@ -1412,6 +1431,22 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $result = array('status' => true, 'totalfile'=> $totalfile, 'ids'=> $ids);
         echo json_encode((object) $result);
+        exit();
+    }
+
+    public function getallfnums()
+    {
+        $m_files = $this->getModel('Files');
+        $fnums = $m_files->getAllFnums();
+
+        $validFnums = array();
+        foreach ($fnums as $fnum) {
+            if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum) && $fnum != 'em-check-all-all' && $fnum != 'em-check-all') {
+                $validFnums[] = $fnum;
+            }
+        }
+
+        echo json_encode($validFnums);
         exit();
     }
 
@@ -2110,7 +2145,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $dataresult = [
                 'start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachid,
                 'options' => $option, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'msg' => JText::_('FILE_NOT_FOUND')
+                'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('FILE_NOT_FOUND')
             ];
 
             $result = array('status' => false, 'json' => $dataresult);
@@ -2312,7 +2347,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $tmp_route = JPATH_BASE.DS."tmp".DS;
         $randomString = JUserHelper::genRandomPassword(20);
 
-        $letter_file = end(explode('/', $letter));
+        $array = explode('/', $letter);
+        $letter_file = end($array);
         $letter_file_random = explode('.xlsx', $letter_file)[0] .'_' . $randomString;
 
         $_newLetter = JPATH_BASE.DS."tmp".DS.$letter_file_random.'.xlsx';
@@ -2757,7 +2793,7 @@ class EmundusControllerFiles extends JControllerLegacy
             //header('Accept-Ranges: bytes');
 
             ob_clean();
-            flush();
+            ob_end_flush();
             readfile($file);
             exit;
         } else {
@@ -3590,7 +3626,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $files = $m_files->getAttachmentsById($idFiles);
 
-        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
+        // $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
+        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'.zip';
         $path = JPATH_BASE.DS.'tmp'.DS.$nom;
 
         if (extension_loaded('zip')) {
@@ -3642,7 +3679,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportonedoc() {
         //require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
-require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+        require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
             $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
@@ -3928,13 +3965,13 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
-    public function getletter() {
+    public function getexcelletter() {
         $h_files = new EmundusHelperFiles;
 
         $jinput = JFactory::getApplication()->input;
         $lid = $jinput->getVar('letter', null);
 
-        $letter = $h_files->getLetterById($lid);
+        $letter = $h_files->getExcelLetterById($lid);
 
         echo json_encode((object)(array('status' => true, 'letter' => $letter)));
         exit;
@@ -4222,6 +4259,8 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $dispatcher = JEventDispatcher::getInstance();
 
         $status = $dispatcher->trigger('onExportFiles', array($fnums, $type));
+        $dispatcher->trigger('callEventHandler', ['onExportFiles', ['fnums' => $fnums, 'type' => $type]]);
+
         if (is_array($status) && !in_array(false, $status)) {
             $msg = JText::_('FILES_EXPORTED_TO_EXTERNAL');
             $result = true;
@@ -4265,6 +4304,7 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         $fnums = $jinput->post->getRaw('fnums');
         $templates = $jinput->post->getRaw('ids_tmpl');
         $canSee = $jinput->post->getRaw('cansee', 0);
+
         $showMode = $jinput->post->getRaw('showMode', 0);
         $mergeMode = $jinput->post->getRaw('mergeMode', 0);
 
@@ -4277,8 +4317,39 @@ require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
         exit;
     }
 
+    // get fabrik value by id --> need to integrate to KIT project
+    public function getfabrikvaluebyid() {
+        $jinput = JFactory::getApplication()->input;
+
+        $fabrikIds = $jinput->post->getRaw('elements', null);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+
+        $m_emails = new EmundusonboardModelemail;
+        $m_files = $this->getModel('Files');
+
+        $tag_ids = [];
+
+        foreach($fabrikIds as $key => $tag) {
+            $tag_ids[] = reset($m_files->getVariables($tag));
+        }
+
+        $res = $m_emails->getEmailsFromFabrikIds($tag_ids);
+
+        if($res) {
+            echo json_encode((object)(array('status' => true, 'data' => $res)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'data' => null)));
+        }
+        exit;
+    }
+
+    public function getattachmentcategories()
+    {
+        $m_files = $this->getModel('Files');
+        $categories = $m_files->getAttachmentCategories();
+
+        echo json_encode((array('status' => true, 'categories' => $categories)));
+        exit;
+    }
 }
-
-
-
-

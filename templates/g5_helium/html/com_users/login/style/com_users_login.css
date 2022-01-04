@@ -360,7 +360,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 }
 
 .view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
-    background-image: url('/media/com_emundus/images/enter.svg');
+    background-image: url('../../../../../../media/com_emundus/images/enter.svg');
     background-size: contain;
     background-repeat: no-repeat;
     margin-bottom: 20px;

@@ -61,7 +61,7 @@
             <option value="5">{{Administrators}}</option>
             <option value="6">{{Evaluators}}</option>
             <option value="1000">{{Candidates}}</option>
-            <option value="0">{{DefinedUsers}}</option>
+<!--            <option value="0">{{DefinedUsers}}</option>-->
           </select>
           <p v-if="errors.target" class="error">
             <span class="error">{{TargetRequired}}</span>

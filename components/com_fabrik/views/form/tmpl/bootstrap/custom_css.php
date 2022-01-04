@@ -600,7 +600,7 @@ form#member-profile .form-horizontal .control-label {
     margin-right: auto;
 }
 .view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
-      background-image: url(/media/com_emundus/images/register.svg);
+      background-image: url(../../../../../../media/com_emundus/images/register.svg);
       background-size: contain;
       background-repeat: no-repeat;
 }
@@ -1021,6 +1021,10 @@ button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-c
   text-transform: none;
 }
 
+.view-form form .btn.goback-btn.button[name="Goback"] {
+    width:auto !important;
+}
+
 button.goback-btn:hover, button.goback-btn:active, button.goback-btn:focus,
 .btn-danger:hover, .btn-danger:active, .btn-danger:focus,
 .pull-right .btn:not(.dropdown-toggle):hover, .pull-right .btn:not(.dropdown-toggle):focus, .pull-right .btn:not(.dropdown-toggle):active,
@@ -1388,7 +1392,7 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 .view-form .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid, 
 .view-details .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid 
 .view-checklist .fabrikForm fieldset .fabrikSubGroupElements > .row-fluid {
-  padding: 2px 30px;
+  padding: 5px 30px;
 }
 
 .view-form.view-registration .fabrikForm fieldset > .row-fluid, .view-form.em-formRegistrationCenter .fabrikForm fieldset > .row-fluid {
@@ -1438,7 +1442,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
 }
 
 .view-form .row-fluid > .fabrikElementContainer, .view-details .row-fluid > .fabrikElementContainer, .view-checklist .row-fluid > .fabrikElementContainer{
-  display: flex;
   flex-direction: column;
 }
 

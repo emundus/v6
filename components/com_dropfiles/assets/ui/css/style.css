@@ -1678,6 +1678,42 @@ div#mybootstrap .nested .edit .icon-edit:before {
   background-repeat: no-repeat;
   color: #2291f0;
 }
+
+div#mybootstrap .nested .dd-content .icon-syncing {
+  background-image: none;
+}
+div#mybootstrap .nested .dd-content .icon-syncing:before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background-image: url(../images/admin_icon/icon-refresh.svg);
+  display: block;
+  margin: 0;
+  text-align: center;
+  vertical-align: middle;
+  background-position: center;
+  background-size: 16px;
+  background-repeat: no-repeat;
+  color: #2291f0;
+}
+
+div#mybootstrap .nested .sync .icon-sync {
+  background-image: none;
+}
+div#mybootstrap .nested .sync .icon-sync:before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  background-image: url(../images/admin_icon/sync_24px.svg);
+  display: block;
+  margin: 0;
+  text-align: center;
+  vertical-align: middle;
+  background-position: center;
+  background-size: 16px;
+  background-repeat: no-repeat;
+  color: #2291f0;
+}
 div#mybootstrap .nested .dd-collapse:before {
   content: "";
   display: block;
@@ -3646,6 +3682,7 @@ div#mycategories #newcategory ul.dropdown-menu.pull-right li a {
   color: #0071a1;
   max-width: 100%;
   box-sizing: border-box;
+  display: inline-block;
 }
 div#mycategories #newcategory ul.dropdown-menu.pull-right li a:hover {
   background: rgba(0, 0, 0, 0.05);
@@ -4490,13 +4527,23 @@ table.restable tbody tr.file td.type {
   position: absolute;
   right: 5px;
 }
+#mybootstrap .bs-docs-sidenav2 > li a.sync {
+  float: right;
+  display: none;
+  opacity: 0.5;
+  cursor: pointer;
+  position: absolute;
+  right: 42px;
+}
 #mybootstrap .bs-docs-sidenav2 > li .dd-content:hover a.edit,
+#mybootstrap .bs-docs-sidenav2 > li .dd-content:hover a.sync,
 #mybootstrap .bs-docs-sidenav2 > li .dd-content:hover a.trash {
   display: inherit;
   opacity: 1;
   color: #2291f0;
 }
 #mybootstrap .bs-docs-sidenav2 > li .dd-content a.edit:hover,
+#mybootstrap .bs-docs-sidenav2 > li .dd-content a.sync:hover,
 #mybootstrap .bs-docs-sidenav2 > li .dd-content a.trash:hover {
   opacity: 1;
   color: #2291f0;
@@ -4862,7 +4909,7 @@ table.restable tbody tr.file td.type {
   top: 7px;
 }
 .dd3-content:hover a.t {
-  max-width: 84%;
+  max-width: calc(95% - 50px);
 }
 .dd3-content a.editable {
   overflow: inherit !important;
@@ -4949,14 +4996,19 @@ table.restable tbody tr.file td.type {
   font-style: normal;
   font-weight: 700;
 }
-#toolbar .btn-wrapper button span {
+#toolbar .btn-wrapper button span,
+.subhead joomla-toolbar-button .btn.button-config-options > span,
+.subhead joomla-toolbar-button .btn.button-chart-options > span
+{
   background-color: transparent;
   background: transparent;
   border: none;
-  height: 20px;
-  line-height: 20px;
-  vertical-align: sub;
-  margin: 0 2px 0 0;
+  line-height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: auto 0;
+  width: auto;
+  height: 24px;
 }
 #toolbar .btn-wrapper button span.icon-save, #toolbar .btn-wrapper button span.icon-apply, #toolbar .btn-wrapper button span.icon-cancel {
   vertical-align: baseline;
@@ -4965,6 +5017,15 @@ table.restable tbody tr.file td.type {
   width: 20px !important;
   height: 20px !important;
   vertical-align: middle;
+}
+
+#toolbar button.ju-button span:not(.toolbar-title) {
+  margin: 0 1px 1px 0;
+  height: 20px;
+  width: 26px;
+}
+#toolbar .btn-wrapper button span.icon-chart-options {
+  margin-bottom: 3px;
 }
 #toolbar .btn-wrapper button:hover {
   box-shadow: 1px 1px 12px #ccc;
@@ -4977,6 +5038,9 @@ table.restable tbody tr.file td.type {
   background: #fff;
   background-color: #fff;
   border: 1px solid #ff8726;
+  color: #ff8726;
+}
+#toolbar-config-options.btn span {
   color: #ff8726;
 }
 
@@ -5969,7 +6033,7 @@ body.contentpane .modal.fade {
   -o-transition: opacity 0.3s linear, top 0.3s ease-out;
   transition: opacity 0.3s linear, top 0.3s ease-out;
 }
-body.contentpane .modal.fade.in {
+body.contentpane .modal.fade.in{
   top: 10%;
 }
 body.contentpane .modal-header {
@@ -6266,7 +6330,10 @@ body.view-manage.dropfilesfilemanagebody #mybootstrap div#rightcol {
   height: auto;
   max-height: calc(100vh - 70px);
 }
-
+body.view-manage.dropfilesfilemanagebody .bootbox.modal.fade{
+  top: 10% ;
+  opacity: 1;
+}
 .contentpane.modal {
   background: #f1f1f1;
 }
@@ -6284,6 +6351,9 @@ joomla-toolbar-button #toolbar-chart-options {
   border: 1px solid #ff8726;
   color: #fff;
 }
+joomla-toolbar-button #toolbar-chart-options span {
+  color: #fff;
+}
 
 .com_dropfiles.view-configuration .btn-toolbar.d-flex .ju-button {
   margin-right: 20px;
@@ -6293,4 +6363,24 @@ joomla-toolbar-button #toolbar-chart-options {
 }
 .com_dropfiles .joomla4 .modal {
   display: none;
+}
+
+/* Safari only */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    tr.selected td:first-child {
+      box-shadow:  -1px -1px 0px 0px #ff8726,
+      -1px 1px 0px 0px #ff8726;
+    }
+
+    tr.selected td {
+      box-shadow:  1px 1px 0px 0px #ff8726,
+      0px -1px 0px 0px #ff8726;
+    }
+
+    tr.selected td:last-child {
+      box-shadow:  1px 1px 0px 0px #ff8726,
+      0px -1px 0px 0px #ff8726;
+    }
+  }
 }

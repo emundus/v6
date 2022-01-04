@@ -78,6 +78,7 @@ body {
 
 .em-headerdompdf-title {
     margin-left:175px;
+    margin-bottom: 15px;
 }
 .right{
     text-align: right !important;
@@ -168,3 +169,4 @@ h3 {
 /* END - Your CSS styling ends here */
 
 EOT;
+

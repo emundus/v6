@@ -90,6 +90,10 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
                 $group_column = $column_number;
             } else if ($column[0] == 'profile') {
                 $profile_column = $column_number;
+            } else if ($column[0] == 'jos_emundus_comments') {
+                $comments_column = $column_number;
+            } else if ($column[0] == 'jos_emundus_tag_assoc') {
+                $tags_column = $column_number;
             }
 
             $bad_columns[] = $column_number;
@@ -248,6 +252,10 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
             $cas_row[$row] = $column;
         } elseif ($column_number === $group_column) {
             $group_row[$row] = $column;
+        } elseif ($column_number === $comments_column) {
+            $comments_row[$row] = $column;
+        } elseif ($column_number === $tags_column) {
+            $tags_row[$row] = $column;
         }
 
         if (in_array($column_number, $bad_columns)) {
@@ -335,6 +343,14 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
     if (!empty($group_row[$row_id]) && is_numeric($group_row[$row_id])) {
         $group = $group_row[$row_id];
+    }
+
+    if (!empty($comments_row[$row_id])) {
+        $comments = $comments_row[$row_id];
+    }
+
+    if (!empty($tags_row[$row_id])) {
+        $tags = $tags_row[$row_id];
     }
 
     if (!empty($profile_row[$row_id]) && is_numeric($profile_row[$row_id])) {
@@ -590,6 +606,41 @@ foreach ($parsed_data as $row_id => $insert_row) {
         }
     }
 
+    if(!empty($comments)){
+        $query->clear()
+            ->insert($db->quoteName('#__emundus_comments'))
+            ->columns($db->quoteName(['applicant_id', 'user_id','fnum','comment_body']))
+            ->values($user->id.', 62, '.$fnum.', '.$db->quote($comments));
+        $db->setQuery($query);
+        try {
+            $db->execute();
+            $totals['write']++;
+            JLog::add(' --- INSERTED COMMENTS :'.$comments.' FOR USER : '.$user->id, JLog::INFO, 'com_emundus.csvimport');
+        } catch (Exception $e) {
+            JLog::add('ERROR: Could not insert user into group at query : '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.csvimport');
+            // No continue, just a silent error with logging.
+        }
+    }
+
+    if(!empty($tags)){
+        $tags_ids = explode(',',$tags);
+        foreach ($tags_ids as $tag) {
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_tag_assoc'))
+                ->columns($db->quoteName(['fnum', 'id_tag']))
+                ->values($fnum . ', ' . $tag);
+            $db->setQuery($query);
+            try {
+                $db->execute();
+                $totals['write']++;
+                JLog::add(' --- INSERTED TAGS :' . $tags . ' FOR USER : ' . $user->id, JLog::INFO, 'com_emundus.csvimport');
+            } catch (Exception $e) {
+                JLog::add('ERROR: Could not insert user into group at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus.csvimport');
+                // No continue, just a silent error with logging.
+            }
+        }
+    }
+
     foreach ($insert_row as $table_name => $element) {
 
         $parent_ids = [];
@@ -616,7 +667,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
             if ($table_name === 'jos_emundus_users') {
 
-                if($element_name != 'user_id') {
+                if($element_name != 'user_id'){
                     $fields[] = $db->quoteName($element_name).' = '.$element_value;
                 }
 
@@ -630,7 +681,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
         if ($table_name === 'jos_emundus_users') {
 
-            $select = array('email');
+                $select = array('email');
 
             $query->clear()
                 ->select($db->quoteName($select))

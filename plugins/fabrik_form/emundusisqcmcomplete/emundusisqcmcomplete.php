@@ -100,29 +100,44 @@ class PlgFabrik_FormEmundusisqcmcomplete extends plgFabrik_Form {
 
             $fnum = $jinput->getString('rowid');
 
-            $query->select('sq.count')
+            $table = explode(',',$this->getParam('qcmcomplete_parenttable', 'jos_emundus_qcm'));
+            $repeat_table = explode(',',$this->getParam('qcmcomplete_repeattable', 'jos_emundus_qcm_880_repeat'));
+            $formid = explode(',',$this->getParam('qcmcomplete_formid', '287'));
+            $itemid = explode(',',$this->getParam('qcmcomplete_itemid', '3185'));
+
+            $query->select('distinct sq.id')
                 ->from($db->quoteName('#__emundus_setup_qcm','sq'))
                 ->leftJoin($db->quoteName('#__emundus_qcm_applicants','qc').' ON '.$db->quoteName('qc.qcmid').' = '.$db->quoteName('sq.id'))
                 ->where($db->quoteName('qc.fnum') . ' = ' . $db->quote($fnum));
             $db->setQuery($query);
-            $q_numbers = $db->loadResult();
+            $qcms = $db->loadColumn();
 
-            $table = $this->getParam('qcmcomplete_parenttable', 'jos_emundus_qcm');
-            $repeat_table = $this->getParam('qcmcomplete_repeattable', 'jos_emundus_qcm_880_repeat');
-            $formid = $this->getParam('qcmcomplete_formid', '287');
-            $itemid = $this->getParam('qcmcomplete_itemid', '3185');
+            if(sizeof($qcms) == sizeof($formid)) {
+                foreach ($qcms as $key => $qcm) {
+                    $query->clear()
+                        ->select('questions')
+                        ->from($db->quoteName('#__emundus_qcm_applicants'))
+                        ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                        ->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm));
+                    $db->setQuery($query);
+                    $q_numbers = sizeof(explode(',',$db->loadResult()));
 
-            $query->clear()
-                ->select('count(rt.id) as answers')
-                ->from($db->quoteName($repeat_table,'rt'))
-                ->leftJoin($db->quoteName($table,'t').' ON '.$db->quoteName('t.id').' = '.$db->quoteName('rt.parent_id'))
-                ->where($db->quoteName('t.fnum') . ' = ' . $db->quote($fnum));
-            $db->setQuery($query);
-            $answers_given = $db->loadResult();
+                    $query->clear()
+                        ->select('count(rt.id) as answers')
+                        ->from($db->quoteName($repeat_table[$key], 'rt'))
+                        ->leftJoin($db->quoteName($table[$key], 't') . ' ON ' . $db->quoteName('t.id') . ' = ' . $db->quoteName('rt.parent_id'))
+                        ->where($db->quoteName('t.fnum') . ' = ' . $db->quote($fnum));
+                    $db->setQuery($query);
+                    $answers_given = $db->loadResult();
 
-            if((int)$answers_given != (int)$q_numbers){
+                    if ((int)$answers_given != $q_numbers) {
+                        $mainframe->enqueueMessage(JText::sprintf('PLEASE_COMPLETE_QCM_BEFORE_SEND'));
+                        $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $formid[$key] . "&Itemid=" . $itemid[$key] . "&usekey=fnum&rowid=" . $fnum . "&r=1");
+                    }
+                }
+            } else {
                 $mainframe->enqueueMessage(JText::sprintf('PLEASE_COMPLETE_QCM_BEFORE_SEND'));
-                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$formid."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=1");
+                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=" . $formid[0] . "&Itemid=" . $itemid[0] . "&usekey=fnum&rowid=" . $fnum . "&r=1");
             }
         }
         return true;

@@ -1,0 +1,1 @@
+DELETE FROM jos_fabrik_formgroup WHERE form_id = 35 AND group_id != 48;

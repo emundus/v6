@@ -130,9 +130,18 @@ class PlgButtonDropfilesbtn extends JPlugin
         $button->set('text', JText::_('PLG_DROPFILES_BUTTON'));
         $button->set('name', 'dropfiles');
         $button->set('icon', 'document-properties');
-        $handler_str = "{handler: 'iframe', size: {x: (window.getSize().x*80/100), y: (window.getSize().y-50)}}";
-        $button->set('options', $handler_str);
-
+        
+        if (DropfilesBase::isJoomla30()) {
+            $btnOptions = "{handler: 'iframe', size: {x: (window.getSize().x*80/100), y: (window.getSize().y-50)}}";
+        } else {
+            $btnOptions = array(
+                'height'      => '600px',
+                'width'       => '800px',
+                'bodyHeight'  => '90',
+                'modalWidth'  => '90',
+            );
+        }
+        $button->set('options', $btnOptions);
         return $button;
     }
 }

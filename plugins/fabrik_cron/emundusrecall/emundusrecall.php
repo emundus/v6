@@ -61,6 +61,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
             $status_for_send = $eMConfig->get('status_for_send', 0);
         }
 
+        if(strlen($status_for_send) == 0){
+            return false;
+        }
+
         $this->log = '';
 
         // Get list of applicants to notify
@@ -92,8 +96,10 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
         // Generate emails from template and store it in message table
         if (!empty($applicants)) {
             include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/messages.php');
             $m_emails = new EmundusModelEmails;
-            $email = $m_emails->getEmailById($reminder_mail_id);
+            $m_messages = new EmundusModelMessages;
+            $email = $m_messages->getEmail($reminder_mail_id);
 
             foreach ($applicants as $applicant) {
                 $mailer = JFactory::getMailer();
@@ -115,7 +121,9 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                 $to = $applicant->email;
                 $to_id = $applicant->id;
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
-                $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
+                $body = $email->message;
+                $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $email->Template);
+                $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
                 $body = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
 
                 $config = JFactory::getConfig();

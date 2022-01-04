@@ -1,17 +1,17 @@
 <template>
   <div class="section-principale">
     <notifications
-            group="foo-velocity"
-            position="bottom left"
-            animation-type="velocity"
-            :speed="500"
-            :classes="'vue-notification-custom'"
+        group="foo-velocity"
+        position="bottom left"
+        animation-type="velocity"
+        :speed="500"
+        :classes="'vue-notification-custom'"
     />
     <div class="w-container general-information">
       <div class="section-sub-menu sub-form" v-if="campaign == ''">
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
-            <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+            <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
             <h1 class="tchooz-section-titles">{{translations.AddCampaign}}</h1>
           </div>
         </div>
@@ -19,14 +19,10 @@
       <form id="campaign-form" @submit.prevent="submit">
         <div class="sous-container">
           <p class="required mb-1">{{translations.RequiredFieldsIndicate}}</p>
-<!--          <div class="heading-form">
-            <div class="icon-title"></div>
-            <h2 class="heading">{{ Parameter }}</h2>
-          </div>-->
           <div class="form-group campaign-label">
-            <label for="campLabel">{{translations.CampName}} <span style="color: #E5283B">*</span></label>
+            <label for="campLabel">{{translations.CampName}} <span class="em-red-500-color">*</span></label>
             <div class="input-can-translate">
-                <input
+              <input
                   id="campLabel"
                   type="text"
                   v-focus
@@ -35,7 +31,7 @@
                   @keyup="enableTranslationTip"
                   required
                   :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
-                />
+              />
               <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
             </div>
             <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
@@ -46,34 +42,34 @@
           <div class="d-flex justify-content-between">
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="startDate">{{translations.StartDate}} <span style="color: #E5283B">*</span></label>
+                <label for="startDate">{{translations.StartDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
                     id="startDate"
-                  :placeholder="translations.StartDate"
-                  type="datetime"
-                  :input-id="'start_date'"
-                  v-model="form.start_date"
-                  :phrases="{ok: translations.OK, cancel: translations.Cancel}"
+                    :placeholder="translations.StartDate"
+                    type="datetime"
+                    :input-id="'start_date'"
+                    v-model="form.start_date"
+                    :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
             </div>
             <div class="w-col col-md-5">
               <div class="w-form">
-                <label for="endDate">{{translations.EndDate}} <span style="color: #E5283B">*</span></label>
+                <label for="endDate">{{translations.EndDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
                     id="endDate"
-                  :placeholder="translations.EndDate + ' *'"
-                  type="datetime"
-                  :input-id="'end_date'"
-                  :min-datetime="minDate"
-                  v-model="form.end_date"
-                  :phrases="{ok: translations.OK, cancel: translations.Cancel}"
+                    :placeholder="translations.EndDate + ' *'"
+                    type="datetime"
+                    :input-id="'end_date'"
+                    :min-datetime="minDate"
+                    v-model="form.end_date"
+                    :phrases="{ok: translations.OK, cancel: translations.Cancel}"
                 ></datetime>
               </div>
             </div>
           </div>
           <div class="form-group campaign-label">
-            <label for="year">{{translations.PickYear}} <span style="color: #E5283B">*</span></label>
+            <label for="year">{{translations.PickYear}} <span class="em-red-500-color">*</span></label>
             <autocomplete
                 :id="'year'"
                 @searched="onSearchYear"
@@ -115,7 +111,7 @@
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
               <div class="form-group campaign-label">
-                <label for="campLabel">{{translations.FilesNumberLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{translations.FilesNumberLimit}} <span class="em-red-500-color">*</span></label>
                 <input type="number"
                        class="form__input field-general w-input"
                        v-model="form.limit"
@@ -126,7 +122,7 @@
                 <span class="error">{{translations.FilesLimitRequired}}</span>
               </p>
               <div class="form-group campaign-label">
-                <label for="campLabel">{{translations.StatusLimit}} <span style="color: #E5283B">*</span></label>
+                <label for="campLabel">{{translations.StatusLimit}} <span class="em-red-500-color">*</span></label>
                 <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
                   <div v-for="(statu, index) in status" :key="index" class="user-item">
                     <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
@@ -150,39 +146,25 @@
             <h2 class="heading">{{ translations.Information }}</h2>
           </div>
           <div class="form-group campaign-label">
-            <label for="campResume" style="top: 5em">{{translations.Resume}} <span style="color: #E5283B"></span></label>
+            <label style="top: 5em">{{translations.Resume}} <span class="em-red-500-color">*</span></label>
             <textarea
-              type="textarea"
-              rows="2"
-              id="campResume"
-              maxlength="500"
-              class="form__input field-general w-input"
-              placeholder=" "
-              v-model="form.short_description"
-              @keyup="checkMaxlength('campResume')"
-              @focusout="removeBorderFocus('campResume')"
+                type="textarea"
+                rows="2"
+                id="campResume"
+                maxlength="500"
+                class="form__input field-general w-input"
+                placeholder=" "
+                v-model="form.short_description"
+                @keyup="checkMaxlength('campResume')"
+                @focusout="removeBorderFocus('campResume')"
             />
           </div>
           <p v-if="errors.short_description" class="error col-md-12 mb-2">
             <span class="error">{{translations.ResumeRequired}}</span>
           </p>
-          <div class="form-group controls">
-            <editor :height="'30em'" :text="form.description" v-model="form.description" :enable_variables="false" :placeholder="translations.Description"></editor>
+          <div class="form-group controls" v-if="form.description != null">
+            <editor :height="'30em'" :text="form.description" v-model="form.description" :enable_variables="false" :placeholder="translations.Description" :id="'campaign_description'" :key="editorKey"></editor>
           </div>
-          <!--<div class="form-group campaign-label">
-            <label for="campDescription" style="top: 12em">{{Description}}</label>
-            <textarea
-              type="textarea"
-              rows="4"
-              id="campDescription"
-              maxlength="400"
-              class="form__input field-general w-input"
-              placeholder=" "
-              v-model="form.description"
-              @keyup="checkMaxlength('campDescription')"
-              @focusout="removeBorderFocus('campDescription')"
-            />
-          </div>-->
         </div>
 
         <div class="divider"></div>
@@ -191,20 +173,21 @@
           <div class="heading-form">
             <h2 class="heading">{{ translations.Program }}</h2>
           </div>
-          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix">
+          <p>{{translations.ProgramDesc}}<span class="em-red-500-color">*</span></p>
+          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix mt-1">
             <select
-              class="dropdown-toggle w-select" style="margin-bottom: 0"
-              id="select_prog"
-              v-model="form.training"
-              v-on:change="setCategory"
-              :disabled="this.programs.length <= 0"
+                class="dropdown-toggle w-select" style="margin-bottom: 0"
+                id="select_prog"
+                v-model="form.training"
+                v-on:change="setCategory"
+                :disabled="this.programs.length <= 0"
             >
               <option value="">{{ translations.ChooseProg }}</option>
               <option
-                v-for="(item, index) in this.programs"
-                v-bind:value="item.code"
-                v-bind:data-category="item.programmes"
-                :key="index">
+                  v-for="(item, index) in this.programs"
+                  v-bind:value="item.code"
+                  v-bind:data-category="item.programmes"
+                  :key="index">
                 {{ item.label }}
               </option>
             </select>
@@ -212,31 +195,25 @@
               <em class="fas fa-plus"></em>
             </button>
           </div>
-          <div class="form-group controls">
-            <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" v-if="form.training" :placeholder="translations.ProgramResume" :id="'program_campaign_'" :key="editorKey"></editor>
-          </div>
 
           <transition name="slide-fade">
             <div class="program-addCampaign" v-if="isHiddenProgram">
               <div class="w-form">
                 <div class="form-group prog-label">
-                  <label for="prog_label" style="top: 5.7em">{{translations.ProgName}} <span style="color: #E5283B">*</span></label>
+                  <label for="prog_label" style="top: 5.7em">{{translations.ProgName}} <span class="em-red-500-color">*</span></label>
                   <input
-                    type="text"
-                    id="prog_label"
-                    class="form__input field-general w-input"
-                    placeholder=" "
-                    v-model="programForm.label"
-                    @keyup="updateCode"
-                    :class="{ 'is-invalid': errors.progLabel }"
+                      type="text"
+                      id="prog_label"
+                      class="form__input field-general w-input"
+                      placeholder=" "
+                      v-model="programForm.label"
+                      @keyup="updateCode"
+                      :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
                 <p v-if="errors.progLabel" class="error col-md-12 mb-2">
                   <span class="error">{{translations.ProgLabelRequired}}</span>
                 </p>
-                <div class="form-group controls">
-                  <editor :height="'30em'" :text="programForm.notes" v-model="programForm.notes" :enable_variables="false" :placeholder="translations.ProgramResume" :id="'new_program_campaign_'" :key="editorKey"></editor>
-                </div>
               </div>
             </div>
           </transition>
@@ -313,8 +290,10 @@ export default {
   data: () => ({
     isHiddenProgram: false,
 
+    // Date picker rules
     olderDate: "",
     minDate: "",
+    //
 
     programs: [],
     years: [],
@@ -331,7 +310,7 @@ export default {
       start_date: "",
       end_date: "",
       short_description: "",
-      description: "",
+      description: null,
       training: "",
       year: "",
       published: 1,
@@ -409,6 +388,7 @@ export default {
       StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
       FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
       AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+      ProgramDesc: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC"),
     },
 
     submitted: false
@@ -426,68 +406,70 @@ export default {
     if (this.campaign !== "") {
       axios.get(
           `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaign}`
-        ).then(response => {
-          let label = response.data.data.campaign.label;
+      ).then(response => {
+        let label = response.data.data.campaign.label;
 
-          this.form = response.data.data.campaign;
-          this.$emit('getInformations',this.form);
-          this.programForm = response.data.data.program;
+        this.form = response.data.data.campaign;
+        this.$emit('getInformations',this.form);
+        this.programForm = response.data.data.program;
 
-          // Check label translations
-          this.form.label = response.data.data.label
-          this.languages.forEach((language) => {
-            if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
-              this.form.label[language.sef] = label;
-            }
-          });
-          //
-
-          // Convert date
-          this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
-          this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
-          if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
-            this.form.end_date = "";
-          } else {
-            this.olderDate = this.form.end_date;
+        // Check label translations
+        this.form.label = response.data.data.label
+        this.languages.forEach((language) => {
+          if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
+            this.form.label[language.sef] = label;
           }
-          //
-
-          if(typeof response.data.data.campaign.status != 'undefined') {
-            Object.values(response.data.data.campaign.status).forEach((statu) => {
-              this.form.limit_status[parseInt(statu.limit_status)] = true;
-            });
-          } else {
-            this.form.limit_status = [];
-          }
-        }).catch(e => {
-          console.log(e);
         });
+        //
+
+        // Convert date
+        this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date);
+        this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date);
+        if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
+          this.form.end_date = "";
+        } else {
+          this.olderDate = this.form.end_date;
+        }
+        //
+
+        if(typeof response.data.data.campaign.status != 'undefined') {
+          this.form.limit_status = [];
+          this.form.is_limited = 1;
+          Object.values(response.data.data.campaign.status).forEach((statu) => {
+            this.form.limit_status[parseInt(statu.limit_status)] = true;
+          });
+        } else {
+          this.form.limit_status = [];
+        }
+      }).catch(e => {
+        console.log(e);
+      });
     }
     //
 
     // Get all programs
     axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
-      .then(response => {
-        this.programs = response.data.data;
-        if(Object.keys(this.programs).length !== 0) {
-          this.programs.sort((a, b) => a.id - b.id);
-        }
-      }).catch(e => {
-        console.log(e);
-      });
+        .then(response => {
+          this.programs = response.data.data;
+          if(Object.keys(this.programs).length !== 0) {
+            this.programs.sort((a, b) => a.id - b.id);
+          }
+        }).catch(e => {
+      console.log(e);
+    });
     //
 
     // Get years
     axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
-      .then(response => {
-        this.years = response.data.data;
+        .then(response => {
+          this.years = response.data.data;
 
-        for (var i = 0; i < this.years.length; i++) {
-          this.session.push(this.years[i].schoolyear);
-        }
-      }).catch(e => {
-        console.log(e);
-      });
+          for (let i = 0; i < this.years.length; i++) {
+            this.session.push(this.years[i].schoolyear);
+          }
+        }).catch(e => {
+      console.log(e);
+    });
     //
     this.getStatus();
   },
@@ -505,7 +487,6 @@ export default {
     setCategory(e) {
       this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
       this.programForm = this.programs.find(program => program.code == this.form.training);
-      this.editorKey++;
     },
     updateCode() {
       if(this.programForm.label !== ''){
@@ -538,13 +519,12 @@ export default {
 
     getStatus() {
       axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getstatus")
-              .then(response => {
-                this.status = response.data.data;
-              });
+          .then(response => {
+            this.status = response.data.data;
+          });
     },
 
     createCampaignWithExistingProgram(form_data){
-
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
@@ -561,8 +541,6 @@ export default {
     },
 
     createCampainWithNoExistingProgram(programForm){
-
-
       axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
@@ -571,9 +549,9 @@ export default {
         },
         data: qs.stringify({body: programForm})
       }).then(() => {
-          this.form.training = programForm.code;
-          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+        this.form.training = programForm.code;
+        this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+        this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
         axios({
           method: "post",
           url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
@@ -583,7 +561,7 @@ export default {
           data: qs.stringify({body: this.form})
         }).then(response => {
           this.campaign = response.data.data;
-         this.quitFunnelOrContinue(this.quit);
+          this.quitFunnelOrContinue(this.quit);
         }).catch(error => {
           console.log(error);
         });
@@ -602,9 +580,9 @@ export default {
         limit_status: false
       }
       if(this.form.label.fr == "" && this.form.label.en == ""){
-         window.scrollTo({ top: 0, behavior: 'smooth' });
-         this.errors.label = true;
-         return 0;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.errors.label = true;
+        return 0;
       }
 
       if (this.form.end_date == "") {
@@ -667,15 +645,11 @@ export default {
 
       this.submitted = true;
 
-      let newsession = false;
-
-
       if (this.campaign !== "") {
         let task = 'createprogram';
         let params = {body: this.programForm}
 
         if(this.form.training != ""){
-
           task = 'updateprogram';
           params = { body: this.programForm, id: this.form.progid };
         }
@@ -686,12 +660,11 @@ export default {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify(params)
-        }).then((response) => {
+        }).then(() => {
           this.form.training = this.programForm.code;
-
-
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+
           axios({
             method: "post",
             url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
@@ -699,7 +672,7 @@ export default {
               "Content-Type": "application/x-www-form-urlencoded"
             },
             data: qs.stringify({ body: this.form, cid: this.campaign })
-          }).then(response => {
+          }).then(() => {
             this.$emit('nextSection')
           }).catch(error => {
             console.log(error);
@@ -708,39 +681,18 @@ export default {
           console.log(error);
         });
       } else {
-
         // get program code if there is training value
-
         if(this.form.training !=="")  {
-
           this.programForm = this.programs.find(program => program.code == this.form.training);
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
           this.createCampaignWithExistingProgram(this.form);
         } else {
-            this.createCampainWithNoExistingProgram(this.programForm);
+          this.createCampainWithNoExistingProgram(this.programForm);
         }
       }
-
-      /*this.years.forEach((elt) => {
-        if(elt.schoolyear == this.year.schoolyear){
-          newsession = true;
-        }
-      });
-      if(newsession){
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createyear",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({ body: this.year })
-        }).then(response => {}).catch(error => {
-          console.log(error);
-        });
-      }*/
-  },
+    },
 
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
@@ -768,18 +720,6 @@ export default {
 
     onSearchYear(value) {
       this.form.year = value;
-    },
-    onSearchCategory(value) {
-      this.programForm.programmes = value;
-    },
-
-    changeEndDate() {
-      if (this.form.end_date == "") {
-        this.form.end_date = this.olderDate;
-      } else {
-        this.olderDate = this.form.end_date;
-        this.form.end_date = "";
-      }
     },
 
     displayProgram() {
@@ -830,11 +770,15 @@ export default {
      * ** Methods for notify
      */
     tip(){
-      this.show(
-              "foo-velocity",
-              Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
-              Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
-      );
+
+      if(this.manyLanguages !=0) {
+
+        this.show(
+            "foo-velocity",
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
+            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        );
+      }
     },
 
     show(group, text = "", title = "Information") {
@@ -862,25 +806,15 @@ export default {
 </script>
 
 <style scoped>
-.w-row{
-  margin-bottom: 1em;
-}
-.addCampProgEmail{
-  width: 32px;
-  height: 30px;
-  filter: invert(1);
+.w-container.general-information {
+  max-width: inherit !important;
 }
 
-  .w-container.general-information {
-    max-width: inherit !important;
-  }
+.w-container.btns-sauvegarder-et-continuer {
+  max-width: inherit !important;
+}
 
-   .w-container.btns-sauvegarder-et-continuer {
-     max-width: inherit !important;
-  }
-
-  .w-container.btns-sauvegarder-et-continuer .container-evaluation {
-    margin: 0;
-  }
-
+.w-container.btns-sauvegarder-et-continuer .container-evaluation {
+  margin: 0;
+}
 </style>

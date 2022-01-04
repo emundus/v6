@@ -816,7 +816,10 @@ class EmundusonboardModelformbuilder extends JModelList {
         unset($params['sub_options']);
 
         $params['join_conn_id'] = '1';
-        $params['database_join_where_sql'] = 'order by ' . $params['join_key_column'];
+        if($params['database_join_where_sql']==''){
+            $params['database_join_where_sql'] = 'order by ' . $params['join_key_column'];
+        }
+
         $params['database_join_where_access'] = '1';
         $params['database_join_where_when'] = '3';
         $params['databasejoin_where_ajax'] = '0';
@@ -1635,7 +1638,7 @@ class EmundusonboardModelformbuilder extends JModelList {
         $language = JModelLegacy::getInstance('Override', 'LanguagesModel');
 
         // Default parameters
-        $dbtype = 'VARCHAR(255)';
+        $dbtype = 'TEXT';
         $dbnull = 'NULL';
         $default = '';
         //
@@ -2035,7 +2038,7 @@ this.set(words.join(&quot; &quot;));
                     $dbtype = 'TEXT';
                     break;
                 default:
-                    $dbtype = 'VARCHAR(255)';
+                    $dbtype = 'TEXT';
             }
 
             if($db_element->plugin == 'display' && $element['plugin'] != 'display'){
@@ -2154,7 +2157,7 @@ this.set(words.join(&quot; &quot;));
                 $key = array_search("isemail", $element['params']['validations']['plugin']);
 
                 if ($element['params']['password'] != 6) {
-                    $dbtype = 'VARCHAR(' . $element['params']['maxlength'] . ')';
+                    $dbtype = 'TEXT';
                 } else {
                     $dbtype = 'INT(' . $element['params']['maxlength'] . ')';
                 }
@@ -2252,7 +2255,7 @@ this.set(words.join(&quot; &quot;));
         try {
             foreach ($elements as $element) {
                 if($element->element->id == $eid) {
-                    $dbtype = 'VARCHAR(255)';
+                    $dbtype = 'TEXT';
 
                     $newelement = $element->copyRow($element->element->id, 'Copy of %s', intval($group),'e_' . $form_id . '_tmp');
                     $newelementid = $newelement->id;
@@ -2658,7 +2661,7 @@ this.set(words.join(&quot; &quot;));
             $newformid = $db->insertid();
 
             // Set emundus plugin in params
-            if($formid == 258) {
+            /*if($formid == 258) {
                 $query->clear();
                 $query->select('params')
                     ->from($db->quoteName('#__fabrik_forms'))
@@ -2675,7 +2678,7 @@ this.set(words.join(&quot; &quot;));
                 $db->setQuery($query);
                 $params = json_decode($db->loadResult(), true);
                 $params = $this->prepareFormPlugin($params);
-            }
+            }*/
             //
 
             // Update translation files
@@ -2688,7 +2691,7 @@ this.set(words.join(&quot; &quot;));
 
             $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
             $query->set('intro = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
-            $query->set('params = ' . $db->quote(json_encode($params)));
+            //$query->set('params = ' . $db->quote(json_encode($params)));
             $query->where('id =' . $newformid);
             $db->setQuery($query);
             $db->execute();
@@ -3128,6 +3131,19 @@ this.set(words.join(&quot; &quot;));
             return false;
         }
     }
+    function getDatabasesJoinOrdonancementColumns($database_name) {
+
+        $db = $this->getDbo();
+        $query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'$database_name'";
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/formbuilder | Error at getting databases references columns : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 
     function enableRepeatGroup($gid){
         $db = $this->getDbo();
@@ -3304,7 +3320,7 @@ this.set(words.join(&quot; &quot;));
                 } elseif ($element->element->plugin === 'textarea') {
                     $dbtype = 'TEXT';
                 } else {
-                    $dbtype = 'VARCHAR(255)';
+                    $dbtype = 'TEXT';
                 }
 
                 $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";

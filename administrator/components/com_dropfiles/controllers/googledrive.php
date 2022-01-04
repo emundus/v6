@@ -380,20 +380,28 @@ class DropfilesControllerGoogledrive extends JControllerAdmin
             if (count($folders_diff) > 0) {
                 foreach ($folders_diff as $CloudId => $folderData) {
                     try {
-                        //create new cloud folder in dropfiles
-                        $newCatId = $thisModel->createOnCategories(
-                            $folderData['title'],
-                            $cloudCategory->id,
-                            (int)$cloudCategory->level + 1
-                        );
-                        if ($newCatId) {
-                            $thisModel->createOnDropfiles(
-                                $newCatId,
-                                'googledrive',
-                                $CloudId
+                        //check if this cloud folder is existed, it's maybe in under other category
+                        $objectCurrent = $thisModel->getOneCatByCloudId($CloudId);
+                        if ($objectCurrent) {
+                            // Update parent ID
+                            $this->order('first-child', $objectCurrent->id, $cloudCategory->id, false);
+                        } else {
+                            //create new cloud folder in dropfiles
+                            $newCatId = $thisModel->createOnCategories(
+                                $folderData['title'],
+                                $cloudCategory->id,
+                                (int)$cloudCategory->level + 1
                             );
+                            if ($newCatId) {
+                                $thisModel->createOnDropfiles(
+                                    $newCatId,
+                                    'googledrive',
+                                    $CloudId
+                                );
+                            }
                         }
                     } catch (Exception $e) {
+                        echo $e->getMessage();
                         $clsDropfilesHelper->setParams(array('dropfiles_google_last_sync_time' => time()));
                         break;
                     }

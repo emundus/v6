@@ -24,7 +24,7 @@ class plgEmundusSetup_category extends JPlugin {
     }
 
 
-    function onCampaignCreate($id) {
+    function onAfterCampaignCreate($id) {
         try {
             $app = JFactory::getApplication();
             $label = $app->input->getString("jos_emundus_setup_campaigns___label");

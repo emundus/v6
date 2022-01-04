@@ -16,7 +16,7 @@
                    v-on:click="selectItem(data.id)"
                    :class="{ active: isActive }"
                 ></a>-->
-                <h2 class="nom-campagne-block" :style="data.type != 2 ? 'margin-left: 35px' : ''">{{ data.subject }}</h2>
+                <h2 class="nom-campagne-block">{{ data.subject }}</h2>
               </div>
             </div>
 <!--            <p class="description-block"><span v-html="data.message"></span></p>-->
@@ -50,6 +50,7 @@
                           :selected="this.data.id"
                           :published="isPublished"
                           @validateFilters="validateFilters()"
+                          @updateLoading="updateLoading"
                       ></actions>
                     </template>
                   </v-popover>
@@ -101,6 +102,10 @@ export default {
   },
 
   methods: {
+    updateLoading(value){
+      this.$emit('updateLoading',value);
+    },
+
     validateFilters(){
       this.$emit('validateFilters');
     },

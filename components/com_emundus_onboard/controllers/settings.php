@@ -292,11 +292,15 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             if(isset($image)) {
                 $target_dir = "images/custom/";
-                unlink($target_dir . 'logo.png');
+                unlink($target_dir . 'logo_custom.png');
 
-                $target_file = $target_dir . basename('logo.png');
+                $target_file = $target_dir . basename('logo_custom.png');
+
+                $logo_module = JModuleHelper::getModuleById('90');
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
+                    $new_content = str_replace('logo.png','logo_custom.png',$logo_module->content);
+                    $this->model->updateLogo($new_content);
                     $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'));
                 } else {
                     $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'));
@@ -897,6 +901,33 @@ class EmundusonboardControllersettings extends JControllerLegacy {
                 JLog::add('Error set param '.$param, JLog::ERROR, 'com_emundus');
             }
             echo json_encode(array('status' => $status));
+        }
+        exit;
+    }
+
+    /// get all users
+    public function getallusers() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            echo json_encode(array('status' => $result, 'msg' => JText::_("ACCESS_DENIED")));
+        } else {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            try {
+                $query->clear()
+                    ->select('#__users.*')
+                    ->from($db->quoteName('#__users'));
+
+                $db->setQuery($query);
+                $users = $db->loadObjectList();
+                echo json_encode(array('status' => true, 'users' => $users));
+            } catch(Exception $e) {
+                JLog::add('Cannot get all users '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                echo json_encode(array('status' => false));
+            }
         }
         exit;
     }

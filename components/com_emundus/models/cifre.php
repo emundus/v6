@@ -366,10 +366,16 @@ class EmundusModelCifre extends JModelList {
 
 		$this->db->setQuery($query);
 		try {
+
 			$dispatcher->trigger('onBeforeNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
-			$this->db->execute();
+            $dispatcher->trigger('callEventHandler', ['onBeforeNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
+
+            $this->db->execute();
+
 			$dispatcher->trigger('onAfterNewContactRequest', [$user_to, $user_from, $fnum_to, $fnum_from]);
-			return true;
+            $dispatcher->trigger('callEventHandler', ['onAfterNewContactRequest', ['user_to' => $user_to, 'user_from' => $user_from, 'fnum_to' => $fnum_to, 'fnum_from' => $fnum_from]]);
+
+            return true;
 		} catch (Exception $e) {
 			JLog::add('Error adding cifre link in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
@@ -426,9 +432,14 @@ class EmundusModelCifre extends JModelList {
 		$this->db->setQuery($query);
 		try {
 			$dispatcher->trigger('onBeforeAcceptContactRequest', [$user1, $user2, $fnum]);
-			$this->db->execute();
+            $dispatcher->trigger('callEventHandler', ['onBeforeAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+
+            $this->db->execute();
+
 			$dispatcher->trigger('onAfterAcceptContactRequest', [$user1, $user2, $fnum]);
-			return true;
+            $dispatcher->trigger('callEventHandler', ['onAfterAcceptContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+
+            return true;
 		} catch (Exception $e) {
 			JLog::add('Error updating cifre link in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;
@@ -457,9 +468,13 @@ class EmundusModelCifre extends JModelList {
 
 		try {
 			$dispatcher->trigger('onBeforeDeleteContactRequest', [$user1, $user2, $fnum]);
-			$this->db->execute();
+            $dispatcher->trigger('callEventHandler', ['onBeforeDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+
+            $this->db->execute();
 			$dispatcher->trigger('onAfterDeleteContactRequest', [$user1, $user2, $fnum]);
-			return true;
+            $dispatcher->trigger('callEventHandler', ['onAfterDeleteContactRequest', ['user1' => $user1, 'user2' => $user2, 'fnum' => $fnum]]);
+
+            return true;
 		} catch (Exception $e) {
 			JLog::add('Error deleting cifre link in m/cifre at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
 			return false;

@@ -66,6 +66,7 @@ class DropfilesViewFrontsearch extends JViewLegacy
             $filters['catid'] = $catid;
         }
 
+        $filters['cattype'] = '';
         $cat_type = $app->input->getString('cattype', null);
         if (!empty($cat_type)) {
             $filters['cattype'] = $cat_type;
@@ -107,6 +108,7 @@ class DropfilesViewFrontsearch extends JViewLegacy
 
         $this->ordering = $app->input->getString('ordering', '');
         $this->dir = $app->input->getString('dir', 'asc');
+        $this->files = array();
         if (!empty($filters)) {
             $this->doSearch = true;
             $this->files = $model->searchfile($filters);

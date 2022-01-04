@@ -40,7 +40,7 @@
                  class="bouton-ajouter pointer add-button-div"
                  :title="AdvancedSettings">
                 <em class="fas fa-pen"></em>
-                <span>Editer</span>
+                <span>{{Modify}}</span>
               </a>
               <v-popover :popoverArrowClass="'custom-popover-arraow'">
                 <button class="tooltip-target b3 card-button"></button>
@@ -51,6 +51,7 @@
                       :selected="this.data.id"
                       :published="isPublished"
                       @validateFilters="validateFilters()"
+                      @updateLoading="updateLoading"
                   ></actions>
                 </template>
               </v-popover>
@@ -118,6 +119,10 @@ export default {
   },
 
   methods: {
+    updateLoading(value){
+      this.$emit('updateLoading',value);
+    },
+
     validateFilters(){
       this.$emit('validateFilters');
     },

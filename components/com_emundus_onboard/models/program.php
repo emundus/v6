@@ -71,7 +71,11 @@ class EmundusonboardModelprogram extends JModelList {
             ->order($sortDb.$sort);
 
         try {
-            $db->setQuery($query, $offset, $limit);
+            if(empty($lim)) {
+                $db->setQuery($query, $offset);
+            } else {
+                $db->setQuery($query, $offset, $limit);
+            }
             return $db->loadObjectList();
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/program | Error at getting list of programs : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -159,6 +163,7 @@ class EmundusonboardModelprogram extends JModelList {
 
     public function addProgram($data) {
 
+        $user = JFactory::getUser();
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -206,7 +211,7 @@ class EmundusonboardModelprogram extends JModelList {
                 // Affect coordinator to the group of the program
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_groups'))
-                    ->set($db->quoteName('user_id') . ' = ' . $db->quote(95))
+                    ->set($db->quoteName('user_id') . ' = ' . $db->quote($user->id))
                     ->set($db->quoteName('group_id') . ' = ' . $group_id);
                 $db->setQuery($query);
                 $db->execute();

@@ -55,7 +55,7 @@ class PlgDropfilesthemesGgd extends DropfilesPluginBase
         );
 
         $scripts = array(
-            JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.1.0.js',
+            JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.7.7.js',
             JURI::base('true') . '/components/com_dropfiles/assets/js/jaofoldertree.js',
             JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js',
             JURI::base('true') . '/plugins/dropfilesthemes/ggd/js/script.js'

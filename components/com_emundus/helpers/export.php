@@ -44,11 +44,17 @@ class EmundusHelperExport {
      * @return string
      */
     public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null, $elements = null): string {
-		$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';
+        $file_custom = JPATH_LIBRARIES.DS.'emundus'.DS.'custom'.DS.'pdf_'.$fnumInfos['training'].'.php';
 
-		if (!file_exists($file)) {
-			$file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
-		}
+        if (!file_exists($file) && !file_exists($file_custom)) {
+            $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+        else{
+            if (file_exists($file_custom)){
+                $file = $file_custom;
+            }
+        }
 
 		if (!file_exists(EMUNDUS_PATH_ABS.$sid)) {
 			mkdir(EMUNDUS_PATH_ABS.$sid);

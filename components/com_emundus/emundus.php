@@ -394,6 +394,7 @@ JText::script('CAMPAIGN_YEAR');
 JText::script('CANDIDATE_EMAIL');
 JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');
+JText::script('COM_EMUNDUS_UNAVAILABLE_FEATURES');
 
 // EXPORT EXCEL MODEL
 JText::script('COM_EMUNDUS_CHOOSE_LETTER');
@@ -402,11 +403,48 @@ JText::script('COM_EMUNDUS_MODEL_ERR');
 // UPLOADED IMAGE IS TOO SMALL
 JText::script('ERROR_IMAGE_TOO_SMALL');
 
+JText::script('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER');
+JText::script('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER');
+
+// VUE ATTACHMENT
+JText::script('SEARCH');
+JText::script('NAME');
+JText::script('DESCRIPTION');
+JText::script('STATUS');
+JText::script('COM_EMUNDUS_ATTACHMENTS_REPLACE');
+JText::script('EXPORT');
+JText::script('DELETE_SELECTED_ATTACHMENTS');
+JText::script('CONFIRM_DELETE_SELETED_ATTACHMENTS');
+JText::script('SELECT_CATEGORY');
+JText::script('APPLICATION_FORM');
+JText::script('UPLOAD_BY_APPLICANT');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SEND_DATE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_PREVIEW_INCOMPLETE_MSG');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DOCUMENT_TYPE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_MINI_DESCRIPTION');
+JText::script('COM_EMUNDUS_ATTACHMENTS_CAMPAIGN_ID');
+JText::script('COM_EMUNDUS_ATTACHMENTS_CATEGORY');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SAVE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_FILTER_ACTION');
+JText::script('COM_EMUNDUS_ATTACHMENTS_REPLACE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND');
+JText::script('COM_EMUNDUS_ATTACHMENTS_WAITING');
+JText::script('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_CLOSE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND');
+JText::script('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY');
+JText::script('COM_EMUNDUS_ATTACHMENTS_CHECK');
+JText::script('COM_EMUNDUS_ATTACHMENTS_WARNING');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
 JHTML::script('media/com_emundus_messenger/app_messenger.js');
 JHTML::script('media/com_emundus_messenger/chunk-vendors_messenger.js');
+JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
@@ -414,6 +452,7 @@ JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
 JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
+JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHtml::styleSheet('media/com_emundus/css/reset.css');
 JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
 JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
@@ -422,6 +461,9 @@ JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
 JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
+JHTML::styleSheet('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+
 
 $app = JFactory::getApplication();
 

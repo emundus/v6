@@ -30,7 +30,7 @@ class CrossReference
      *
      * @var int
      */
-    public static $trailerSearchLength = 5500;
+    public static $trailerSearchLength = 500000;
 
     /**
      * @var int

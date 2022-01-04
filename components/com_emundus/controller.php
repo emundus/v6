@@ -97,10 +97,15 @@ class EmundusController extends JControllerLegacy {
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
         }
 
-        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.@$campaign['training'].'.php';
-
-        if (!file_exists($file)) {
+        $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$campaign['training'].'.php';
+        $file_custom = JPATH_LIBRARIES.DS.'emundus'.DS.'custom'.DS.'pdf_'.$campaign['training'].'.php';
+        if (!file_exists($file) && !file_exists($file_custom)) {
             $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+        }
+        else{
+            if (file_exists($file_custom)){
+                $file = $file_custom;
+            }
         }
 
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
@@ -567,7 +572,8 @@ class EmundusController extends JControllerLegacy {
         include_once (JPATH_SITE.'/components/com_emundus/models/users.php');
 
         $jinput = JFactory::getApplication()->input;
-        $profile_fnum = $jinput->post->get('profnum', null);
+        $profile_fnum = $jinput->get('profnum', null);
+        $redirect = $jinput->get('redirect', null);
 
         $ids = explode('.', $profile_fnum);
         $profile = $ids[0];
@@ -651,6 +657,9 @@ class EmundusController extends JControllerLegacy {
         }
         $session->set('emundusUser', $aid);
 
+        if(!empty($redirect)){
+            JFactory::getApplication()->redirect($redirect);
+        }
         echo json_encode((object)(array('status' => true)));
         exit;
     }
@@ -1047,6 +1056,24 @@ class EmundusController extends JControllerLegacy {
             if(is_null($image_resolution->min_width) and is_null($image_resolution->max_width) and is_null($image_resolution->min_height) and is_null($image_resolution->max_height)) { }
             else {
                 if ($w_src * $h_src > (int)$image_resolution->max_width * (int)$image_resolution->max_height) {
+                    
+                    if($w_src > $h_src) {
+                        $ratio = $h_src / $w_src;
+                        
+                        $new_width = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                        $new_height = round($new_width * $ratio);
+
+                    } else if($w_src < $h_src) {
+                        $ratio = $w_src / $h_src;
+
+                        $new_height = max((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                        $new_width = round($new_height * $ratio);
+
+                    } else {
+                        $new_height = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                        $new_width = min((int)$image_resolution->max_width, (int)$image_resolution->max_height);
+                    }
+                    
                     switch ($type) {
                         case 1:   // gif
                             $original_img = imagecreatefromgif($file_src);
@@ -1062,8 +1089,8 @@ class EmundusController extends JControllerLegacy {
                             break;
                     }
 
-                    $new_width = (int)$image_resolution->max_width;
-                    $new_height = (int)$image_resolution->max_height;
+                    /* $new_width = (int)$image_resolution->max_width;
+                    $new_height = (int)$image_resolution->max_height; */
 
                     $resized_img = imagecreatetruecolor($new_width, $new_height);
 
@@ -1382,18 +1409,18 @@ class EmundusController extends JControllerLegacy {
 
             } else {
 	            header('Content-type: '.$mime_type);
-	            header('Content-Disposition: inline; filename='.basename($file));
-	            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-	            header('Cache-Control: no-store, no-cache, must-revalidate');
-	            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-	            header('Pragma: anytextexeptno-cache', true);
-	            header('Cache-control: private');
-	            header('Expires: 0');
+                header('Content-Disposition: inline; filename='.basename($file));
+                header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+                header('Cache-Control: no-store, no-cache, must-revalidate');
+                header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+                header('Pragma: anytextexeptno-cache', true);
+                header('Cache-control: private');
+                header('Expires: 0');
 
-	            ob_clean();
-	            flush();
-	            readfile($file);
-	            exit;
+                ob_clean();
+                ob_end_flush();
+                readfile($file);
+                exit;
             }
         } else {
             JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
@@ -1658,7 +1685,7 @@ class EmundusController extends JControllerLegacy {
             }
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
-            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'));
+            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'), 'path'=>JURI::base());
         } else {
             $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
         }
@@ -1666,7 +1693,7 @@ class EmundusController extends JControllerLegacy {
         echo json_encode((object) $result);
         exit();
     }
-    
+
     /**
      * unregisterevent
      *

@@ -30,14 +30,15 @@ class EmundusModelQcm extends JModelList {
         }
     }
 
-    public function getQcmApplicant($fnum){
+    public function getQcmApplicant($fnum,$qcm){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $query
             ->select('*')
             ->from($db->quoteName('#__emundus_qcm_applicants'))
-            ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+            ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+            ->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm));
 
         try {
             $db->setQuery($query);
@@ -265,7 +266,8 @@ class EmundusModelQcm extends JModelList {
             $query->clear()
                 ->select('step')
                 ->from($db->quoteName('#__emundus_qcm_applicants'))
-                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
 
             $db->setQuery($query);
             $last_step = (int)$db->loadResult();
@@ -274,7 +276,8 @@ class EmundusModelQcm extends JModelList {
             $query->clear()
                 ->update($db->quoteName('#__emundus_qcm_applicants'))
                 ->set($db->quoteName('step') . ' = ' . $db->quote($last_step))
-                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
 
             $db->setQuery($query);
             $db->execute();
@@ -336,17 +339,20 @@ class EmundusModelQcm extends JModelList {
         }
     }
 
-    public function updatePending($pending,$current_user){
+    public function updatePending($pending,$current_user,$formid){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $fnum = $current_user->fnum;
 
+        $qcm = $this->getQcm($formid);
+
         try {
             $query->clear()
                 ->update($db->quoteName('#__emundus_qcm_applicants'))
                 ->set($db->quoteName('pending') . ' = ' . $db->quote($pending))
-                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+                ->andWhere($db->quoteName('qcmid') . ' = ' . $db->quote($qcm->id));
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e){

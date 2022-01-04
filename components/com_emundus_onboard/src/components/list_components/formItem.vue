@@ -31,7 +31,7 @@
                 <a class="bouton-ajouter pointer add-button-div"
                    @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
                    :title="translations.Modify">
-                  <em class="fas fa-pen"></em> Éditer
+                  <em class="fas fa-pen"></em> {{translations.Modify}}
                 </a>
                 <v-popover :popoverArrowClass="'custom-popover-arrow'">
                   <button class="tooltip-target b3 card-button"></button>
@@ -42,6 +42,7 @@
                         :selected="this.data.id"
                         :published="isPublished"
                         @validateFilters="validateFilters()"
+                        @updateLoading="updateLoading"
                     ></actions>
                   </template>
                 </v-popover>
@@ -85,6 +86,10 @@ export default {
   },
 
   methods: {
+    updateLoading(value){
+      this.$emit('updateLoading',value);
+    },
+
     validateFilters(){
       this.$emit('validateFilters');
     },

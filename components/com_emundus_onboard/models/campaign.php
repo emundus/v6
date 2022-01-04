@@ -22,6 +22,7 @@ class EmundusonboardModelcampaign extends JModelList
     var $model_program = null;
     public function __construct($config = array()) {
         parent::__construct($config);
+        JPluginHelper::importPlugin('emundus');
         $this->model_program = JModelLegacy::getInstance('program', 'EmundusonboardModel');
     }
 
@@ -248,9 +249,9 @@ class EmundusonboardModelcampaign extends JModelList
 
         if (count($data) > 0) {
             try {
-                JPluginHelper::importPlugin('emundus', 'setup_category');
                 $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onCampaignDelete', $data);
+                $dispatcher->trigger('onBeforeCampaignDelete', $data);
+                $dispatcher->trigger('callEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
 
                 foreach (array_values($data) as $id) {
                     $falang->deleteFalang($id,'emundus_setup_campaigns','label');
@@ -275,8 +276,13 @@ class EmundusonboardModelcampaign extends JModelList
                     ->where($sc_conditions);
 
                 $db->setQuery($query);
-                return $db->execute();
+                $res = $db->execute();
 
+                if ($res) {
+                    $dispatcher->trigger('onAfterCampaignDelete', $data);
+                    $dispatcher->trigger('callEventHandler', ['onAfterCampaignDelete', ['campaign' => $data]]);
+                }
+                return $res;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/campaign | Error when delete campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
@@ -296,6 +302,10 @@ class EmundusonboardModelcampaign extends JModelList
                 $data[$key] = htmlspecialchars($data[$key]);
             }
 
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onBeforeCampaignUnpublish', $data);
+            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignUnpublish', ['campaign' => $data]]);
+
             try {
                 $fields = [
                 	$db->quoteName('published').' = 0'
@@ -309,7 +319,13 @@ class EmundusonboardModelcampaign extends JModelList
                     ->where($sc_conditions);
 
                 $db->setQuery($query);
-                return $db->execute();
+                $res = $db->execute();
+
+                if ($res) {
+                    $dispatcher->trigger('onAfterCampaignUnpublish', $data);
+                    $dispatcher->trigger('callEventHandler', ['onAfterCampaignUnpublish', ['campaign' => $data]]);
+                }
+                return $res;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/campaign | Error when unpublish campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
@@ -328,6 +344,9 @@ class EmundusonboardModelcampaign extends JModelList
                 $data[$key] = htmlspecialchars($data[$key]);
             }
 
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onBeforeCampaignPublish', $data);
+            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignPublish', ['campaign' => $data]]);
             try {
                 $fields = [$db->quoteName('published') . ' = 1'];
                 $sc_conditions = [$db->quoteName('id').' IN ('.implode(", ", array_values($data)).')'];
@@ -337,7 +356,13 @@ class EmundusonboardModelcampaign extends JModelList
                     ->where($sc_conditions);
 
                 $db->setQuery($query);
-                return $db->execute();
+                $res = $db->execute();
+
+                if ($res) {
+                    $dispatcher->trigger('onAfterCampaignPublish', $data);
+                    $dispatcher->trigger('callEventHandler', ['onAfterCampaignPublish', ['campaign' => $data]]);
+                }
+                return $res;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/campaign | Error when publish campaigns : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();
@@ -423,6 +448,11 @@ class EmundusonboardModelcampaign extends JModelList
         $limit_status = [];
 
         if (!empty($data)) {
+
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onBeforeCampaignCreate', $data);
+            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
+
             foreach ($data as $key => $val) {
                 if ($key == 'profileLabel') {
                     array_splice($data, $i, 1);
@@ -505,9 +535,8 @@ class EmundusonboardModelcampaign extends JModelList
                 $this->createYear($data);
                 //
 
-                JPluginHelper::importPlugin('emundus', 'setup_category');
-                $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onCampaignCreate', $campaign_id);
+                $dispatcher->trigger('onAfterCampaignCreate', $campaign_id);
+                $dispatcher->trigger('callEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
 
                 return $campaign_id;
             } catch (Exception $e) {
@@ -528,25 +557,25 @@ class EmundusonboardModelcampaign extends JModelList
         $lang = JFactory::getLanguage();
         $actualLanguage = substr($lang->getTag(), 0 , 2);
 
-        $label_fr = '';
-        $label_en = '';
         $limit_status = [];
 
         if (!empty($data)) {
             $fields = [];
             $labels = new stdClass;
 
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onBeforeCampaignUpdate', $data);
+            $dispatcher->trigger('callEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
+
             foreach ($data as $key => $val) {
                 if ($key == 'label') {
                     $labels = $data['label'];
-                    $label_fr = $data['label']['fr'];
-                    $label_en = $data['label']['en'];
                     $data['label'] = $data['label'][$actualLanguage];
                     $fields[] = $db->quoteName($key) . ' = ' . $db->quote($data['label']);
                 } else if ($key == 'limit_status') {
                     $limit_status = $data['limit_status'];
                 }
-                else if ($key !== 'profileLabel' && $key !== 'progid') {
+                else if ($key !== 'profileLabel' && $key !== 'progid' && $key !== 'status') {
                     $insert = $db->quoteName($key) . ' = ' . $db->quote($val);
                     $fields[] = $insert;
                 }
@@ -568,7 +597,7 @@ class EmundusonboardModelcampaign extends JModelList
                 $db->setQuery($query);
                 $db->execute();
 
-                if($data['is_limited'] == 1){
+                if ($data['is_limited'] == 1) {
                     foreach ($limit_status as $key => $limit_statu) {
                         if($limit_statu == 'true'){
                             $query->clear()
@@ -581,10 +610,13 @@ class EmundusonboardModelcampaign extends JModelList
                     }
                 }
 
+
                 // Create teaching unity
                 $this->createYear($data);
                 //
 
+                $dispatcher->trigger('onAfterCampaignUpdate', $data);
+                $dispatcher->trigger('callEventHandler', ['onAfterCampaignUpdate', ['campaign' => $cid]]);
                 return true;
             } catch (Exception $e) {
                 JLog::add('component/com_emundus_onboard/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -1023,14 +1055,14 @@ class EmundusonboardModelcampaign extends JModelList
             $query->select('id,params')
                 ->from($db->quoteName('#__categories'))
                 ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$cid.'"'))
-                ->andWhere($db->quoteName('extension') . ' LIKE ' . $db->quote('com_dropfiles'));
+                ->andWhere($db->quoteName('extension') . ' = ' . $db->quote('com_dropfiles'));
             $db->setQuery($query);
             $campaign_dropfile_cat = $db->loadResult();
 
             if(!$campaign_dropfile_cat){
                 JPluginHelper::importPlugin('emundus', 'setup_category');
                 $dispatcher = JEventDispatcher::getInstance();
-                $dispatcher->trigger('onCampaignCreate', $cid);
+                $dispatcher->trigger('onAfterCampaignCreate', $cid);
                 $this->getCampaignCategory($cid);
             }
             return $campaign_dropfile_cat;

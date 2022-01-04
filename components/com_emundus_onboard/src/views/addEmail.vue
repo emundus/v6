@@ -11,20 +11,20 @@
       <div class="section-sub-menu sub-form" v-if="email == ''">
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
-            <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
-            <h1 class="tchooz-section-titles">{{AddEmail}}</h1>
+            <img src="/images/emundus/menus/email.png" srcset="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
+            <h1 class="tchooz-section-titles">{{translations.AddEmail}}</h1>
           </div>
         </div>
       </div>
       <form id="program-form" @submit.prevent="submit">
         <div class="sous-container">
-          <p class="required mb-1">{{RequiredFieldsIndicate}}</p>
+          <p class="required mb-1">{{translations.RequiredFieldsIndicate}}</p>
           <div class="heading-form">
-            <h2 class="heading">{{ Informations }}</h2>
+            <h2 class="heading">{{ translations.Informations }}</h2>
           </div>
           <div class="w-form">
             <div class="form-group">
-              <label>{{emailName}} <span style="color: #E5283B">*</span></label>
+              <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
                       type="text"
                       class="form__input field-general w-input"
@@ -33,26 +33,33 @@
               />
             </div>
             <p v-if="errors.subject" class="error col-md-12 mb-2">
-              <span class="error">{{SubjectRequired}}</span>
+              <span class="error">{{translations.SubjectRequired}}</span>
             </p>
 
             <div class="form-group controls forms-emails-editor">
-              <label>{{emailBody}} <span style="color: #E5283B">*</span></label>
-              <editor :height="'30em'" :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
+              <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
+              <editor :height="'30em'" :text="form.message" v-if="dynamicComponent" :lang="actualLanguage" :enable_variables="true" v-model="form.message" :id="'email'" :placeholder="translations.EmailResume" :class="{ 'is-invalid': errors.message}"></editor>
             </div>
             <p v-if="errors.message" class="error col-md-12 mb-2">
-              <span class="error">{{BodyRequired}}</span>
+              <span class="error">{{translations.BodyRequired}}</span>
             </p>
           </div>
         </div>
 
         <div class="divider"></div>
         <div class="sous-container last-container">
-          <div class="heading-form">
-            <h2 class="heading">{{ Advanced }}</h2>
+          <div class="heading-form d-flex">
+            <h2 class="heading mb-0">{{ translations.Advanced }}</h2>
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="buttonAddDoc" v-show="!displayAdvancedParameters">
+              <em class="fas fa-plus"></em>
+            </button>
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="buttonAddDoc" v-show="displayAdvancedParameters">
+              <em class="fas fa-minus"></em>
+            </button>
           </div>
+          <div v-if="displayAdvancedParameters">
           <div class="form-group">
-            <label>{{receiverName}}</label>
+            <label>{{translations.receiverName}}</label>
             <input
                     type="text"
                     class="form__input field-general w-input"
@@ -61,7 +68,7 @@
           </div>
 
           <div class="form-group">
-            <label>{{emailAddress}}</label>
+            <label>{{translations.emailAddress}}</label>
             <input
                     type="text"
                     class="form__input field-general w-input"
@@ -70,7 +77,7 @@
           </div>
 
           <div class="form-group">
-            <label>{{ emailCategory }}</label>
+            <label>{{ translations.emailCategory }}</label>
             <autocomplete
                     @searched="onSearchCategory"
                     :items="this.categories"
@@ -78,31 +85,113 @@
             />
           </div>
 
-<!--          &lt;!&ndash; Email &#45;&#45; tags         &ndash;&gt;
-          <div class="form-group">
-            <label>{{ Tags }}</label>
-            <select v-model="selectedTags" class="dropdown-toggle w-select" multiple>
-              <option v-for="tag in tags" :value="tag.id">{{tag.label}}</option>
-            </select>
+          <div class="form-group" id="receivers_cc">
+            <label>{{ translations.ReceiversCC }}</label>
+            <multiselect
+                v-model="selectedReceiversCC"
+                label="email"
+                track-by="email"
+                :options="receivers_cc"
+                :multiple="true"
+                :searchable="true"
+                :taggable="true"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :placeholder="translations.ReceiversCCPlaceHolder"
+                @tag="addNewCC"
+                :close-on-select="false"
+                :clear-on-select="false"
+            ></multiselect>
           </div>
 
-          &lt;!&ndash; Email &#45;&#45; document type         &ndash;&gt;
-          <div class="form-group">
-            <label>{{ DocumentType }}</label>
-            <select v-model="selectedDocuments" class="dropdown-toggle w-select" multiple>
-              <option v-for="document in documents" :value="document.id">{{document.value}}</option>
-            </select>
-          </div>-->
+          <!-- Email -- BCC (in form of email adress or fabrik element -->
+          <div class="form-group" id="receivers_bcc">
+            <label>{{ translations.ReceiversBCC }}</label>
+            <multiselect
+                v-model="selectedReceiversBCC"
+                label="email"
+                track-by="email"
+                :options="receivers_bcc"
+                :multiple="true"
+                :searchable="true"
+                :taggable="true"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :placeholder="translations.ReceiversBCCPlaceHolder"
+                @tag="addNewBCC"
+                :close-on-select="false"
+                :clear-on-select="false">
+            </multiselect>
+          </div>
 
+          <!-- Email -- Associated letters (in form of email adress or fabrik element -->
+          <div class="form-group" id="attached_letters" v-if="attached_letters">
+            <label>{{ translations.Letters }}</label>
+            <multiselect
+                v-model="selectedLetterAttachments"
+                label="value"
+                track-by="id"
+                :options="attached_letters"
+                :multiple="true"
+                :taggable="true"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :placeholder="translations.LettersPlaceHolder"
+                :close-on-select="false"
+                :clear-on-select="false"
+            ></multiselect>
+          </div>
+
+          <!-- Email -- Action tags -->
+          <div class="form-group" v-if="tags">
+            <label>{{ translations.Tags }}</label>
+            <multiselect
+                v-model="selectedTags"
+                label="label"
+                track-by="id"
+                :options="action_tags"
+                :multiple="true"
+                :taggable="true"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :placeholder="translations.TagsPlaceHolder"
+                :close-on-select="false"
+                :clear-on-select="false"
+            ></multiselect>
+          </div>
+
+          <!-- Email -- Candidat attachments -->
+          <div class="form-group" id="">
+            <label>{{ translations.CandidateAttachments }}</label>
+            <multiselect
+                v-model="selectedCandidateAttachments"
+                label="value"
+                track-by="id"
+                :options="candidate_attachments"
+                :multiple="true"
+                :taggable="true"
+                select-label=""
+                selected-label=""
+                deselect-label=""
+                :placeholder="translations.CandidateAttachmentsPlaceholder"
+                :close-on-select="false"
+                :clear-on-select="false"
+            ></multiselect>
+          </div>
+          </div>
         </div>
         <div class="divider"></div>
         <div class="sous-container last-container" v-if="email == ''">
           <div class="heading-form">
-            <h2 class="heading">{{ Trigger }}</h2>
+            <h2 class="heading">{{ translations.Trigger }}</h2>
           </div>
 
           <div class="form-group">
-            <label>{{Program}}</label>
+            <label>{{translations.Program}}</label>
             <select v-model="trigger.program" class="dropdown-toggle w-select" @change="addTrigger">
               <option :value="null"></option>
               <option v-for="(program,index) in programs" :value="program.id">{{program.label}}</option>
@@ -111,40 +200,40 @@
 
           <div v-if="triggered">
             <div class="form-group">
-              <label>{{Actions}}<span style="color: #E5283B">*</span></label>
+              <label>{{translations.Actions}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.action_status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.action_status}">
-                <option value="to_current_user">{{TheCandidate}}</option>
-                <option value="to_applicant">{{Manual}}</option>
+                <option value="to_current_user">{{translations.TheCandidate}}</option>
+                <option value="to_applicant">{{translations.Manual}}</option>
               </select>
               <p v-if="errors.trigger.action_status" class="error">
-                <span class="error">{{StatusRequired}}</span>
+                <span class="error">{{translations.StatusRequired}}</span>
               </p>
             </div>
 
             <div class="form-group">
-              <label>{{Status}}<span style="color: #E5283B">*</span></label>
+              <label>{{translations.Status}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
                 <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{statu.value}}</option>
               </select>
               <p v-if="errors.trigger.status" class="error">
-                <span class="error">{{StatusRequired}}</span>
+                <span class="error">{{translations.StatusRequired}}</span>
               </p>
             </div>
 
             <div class="form-group">
-              <label>{{Target}}<span style="color: #E5283B">*</span></label>
+              <label>{{translations.Target}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">
-                <option value="5">{{Administrators}}</option>
-                <option value="6">{{Evaluators}}</option>
-                <option value="1000">{{Candidates}}</option>
-                <option value="0">{{DefinedUsers}}</option>
+                <option value="5">{{translations.Administrators}}</option>
+                <option value="6">{{translations.Evaluators}}</option>
+                <option value="1000">{{translations.Candidates}}</option>
+<!--                <option value="0">{{translations.DefinedUsers}}</option>-->
               </select>
               <p v-if="errors.trigger.target" class="error">
-                <span class="error">{{TargetRequired}}</span>
+                <span class="error">{{translations.TargetRequired}}</span>
               </p>
             </div>
             <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
-              <label>{{ChooseUsers}}<span style="color: #E5283B">*</span> :</label>
+              <label>{{translations.ChooseUsers}}<span style="color: #E5283B">*</span> :</label>
               <div class="wrap">
                 <div class="search">
                   <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
@@ -156,7 +245,7 @@
               <div class="select-all">
                 <input type="checkbox" class="form-check-input bigbox" @click="selectAllUsers" v-model="selectall">
                 <label>
-                  {{SelectAll}}
+                  {{translations.SelectAll}}
                 </label>
               </div>
               <div class="users-block" :class="{ 'is-invalid': errors.trigger.selectedUsers}">
@@ -169,7 +258,7 @@
                 </div>
               </div>
               <p v-if="errors.trigger.selectedUsers" class="error">
-                <span class="error">{{UsersRequired}}</span>
+                <span class="error">{{translations.UsersRequired}}</span>
               </p>
             </div>
           </div>
@@ -182,10 +271,10 @@
                   type="button"
                   class="bouton-sauvergarder-et-continuer w-retour"
                   onclick="history.go(-1)">
-                {{ retour }}
+                {{ translations.retour }}
               </button>
               <button type="submit" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
-                {{ continuer }}
+                {{ translations.continuer }}
               </button>
             </div>
           </div>
@@ -196,21 +285,23 @@
 </template>
 
 <script>
-  import Autocomplete from "../components/autocomplete";
-  import axios from "axios";
-  import Editor from "../components/editor";
-  import Tasks from "@/views/tasks";
+import Autocomplete from "../components/autocomplete";
+import axios from "axios";
+import Editor from "../components/editor";
+import Tasks from "@/views/tasks";
+import Multiselect from 'vue-multiselect';
 
   const qs = require("qs");
 
   export default {
     name: "addEmail",
 
-    components: {
-      Tasks,
-      Editor,
-      Autocomplete
-    },
+  components: {
+    Tasks,
+    Editor,
+    Autocomplete,
+    Multiselect
+  },
 
     props: {
       email: Number,
@@ -221,43 +312,69 @@
       langue: 0,
 
       dynamicComponent: false,
+      displayAdvancedParameters: false,
 
-      AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
-      Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
-      Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-      Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
-      emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
-      emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-      retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      emailName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
-      emailBody: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
-      receiverName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
-      emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
-      EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
-      RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-      EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
-      SubjectRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
-      BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
-      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      Model: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
-      ModelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
-      Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
-      StatusRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-      Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
-      TargetRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
-      Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
-      Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
-      Candidates: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
-      DefinedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
-      ChooseUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
-      UsersRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
-      Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
-      TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
-      Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
-      Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
-      Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
-      DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      translations:{
+        AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
+        Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
+        Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+        Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
+        emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
+        emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
+        retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        emailName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
+        emailBody: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
+        receiverName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
+        emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
+        EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
+        RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+        EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
+        SubjectRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
+        BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
+        Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+        Model: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
+        ModelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
+        Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
+        StatusRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+        Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
+        TargetRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
+        Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
+        Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
+        Candidates: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
+        DefinedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
+        ChooseUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
+        UsersRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
+        Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
+        TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
+        Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
+        Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
+        Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
+        DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+
+        /// Letters field
+        Letters: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+        LettersPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
+
+        /// Receiver CC field
+        ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
+        ReceiversCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
+
+        /// Receiver BCC field
+        ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
+        ReceiversBCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
+
+        /// Receiver Tooltips
+        CopiesTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
+
+        /// Selected Action Tags
+        TagsPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+
+        /// Candidat Attachments (title, placeholder)
+        CandidateAttachments: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS"),
+        CandidateAttachmentsPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS"),
+      },
+
 
       categories: [],
       programs: [],
@@ -272,7 +389,7 @@
       documents: [],    /// email -- document types
 
       selectedTags: [],
-      selectedDocuments: [],
+      selectedCandidateAttachments: [],
 
       form: {
         lbl: "",
@@ -303,272 +420,402 @@
           action_status: false
         }
       },
-      submitted: false
-    }),
+      submitted: false,
 
-    methods: {
-      getProgramsList() {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
-          params: {
-            filter: '',
-            sort: '',
-            recherche: '',
-            lim: 100,
-            page: 1,
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          this.programs = response.data.data;
-        });
-      },
-      getStatus() {
-        axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
-            .then(response => {
-              this.status = response.data.data;
-            });
-      },
-      getUsers() {
-        axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
-            .then(response => {
-              this.users = response.data.data;
-            });
-      },
-      searchUserByTerm() {
-        axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
-            .then(response => {
-              this.users = response.data.data;
-            });
-      },
+      selectedReceiversCC: [],
+      selectedReceiversBCC: [],
+      selectedLetterAttachments: [],
 
-      addTrigger() {
-        if(this.trigger.program != null) {
-          this.triggered = true;
+      receivers_cc: [],
+      receivers_bcc: [],
+      attached_letters: [],
+
+      action_tags: [],
+      candidate_attachments: [],
+  }),
+
+  methods: {
+    displayAdvanced() {
+      this.displayAdvancedParameters = !this.displayAdvancedParameters;
+    },
+
+    addNewCC (newCC) {
+      const tag = {
+        email: newCC,
+        id: newCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
+      }
+      this.receivers_cc.push(tag);
+      this.selectedReceiversCC.push(tag);
+    },
+
+    /// add new BCC
+    addNewBCC (newBCC) {
+      const tag = {
+        email: newBCC,
+        id: newBCC.substring(0, 2) + Math.floor((Math.random() * 10000000))
+      }
+      this.receivers_bcc.push(tag);
+      this.selectedReceiversBCC.push(tag);
+    },
+
+    /// get all users
+    getAllUsers: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=getallusers',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        this.receivers_cc = response.data.users;
+        this.receivers_bcc = response.data.users;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    getProgramsList() {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+        params: {
+          filter: '',
+          sort: '',
+          recherche: '',
+          lim: 100,
+          page: 1,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        this.programs = response.data.data;
+      });
+    },
+    getStatus() {
+      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
+          .then(response => {
+            this.status = response.data.data;
+          });
+    },
+    getUsers() {
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
+          .then(response => {
+            this.users = response.data.data;
+          });
+    },
+    searchUserByTerm() {
+      axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+          .then(response => {
+            this.users = response.data.data;
+          });
+    },
+
+    addTrigger() {
+      if(this.trigger.program != null) {
+        this.triggered = true;
+      } else {
+        this.triggered = false;
+      }
+    },
+    selectAllUsers() {
+      this.users.forEach(element => {
+        if(!this.selectall) {
+          this.selectedUsers[element.id] = true;
         } else {
-          this.triggered = false;
+          this.selectedUsers[element.id] = false;
         }
-      },
-      selectAllUsers() {
-        this.users.forEach(element => {
-          if(!this.selectall) {
-            this.selectedUsers[element.id] = true;
-          } else {
-            this.selectedUsers[element.id] = false;
+      });
+      this.$forceUpdate();
+    },
+
+    submit() {
+      this.errors = {
+        subject: false,
+        message: false,
+        trigger: {
+          model: false,
+          status: false,
+          target: false,
+          selectedUsers: false,
+        }
+      };
+
+      if(this.form.subject == ""){
+        this.errors.subject = true;
+        return 0;
+      }
+      if(this.form.message == ""){
+        this.errors.message = true;
+        return 0;
+      }
+      if(this.trigger.program != null){
+        if(this.trigger.action_status == null){
+          this.errors.trigger.action_status = true;
+          return 0;
+        }
+        if(this.trigger.status == null){
+          this.errors.trigger.status = true;
+          return 0;
+        }
+        if(this.trigger.target == null){
+          this.errors.trigger.target = true;
+          return 0;
+        } else if (this.trigger.target == 0) {
+          if(this.selectedUsers.length === 0) {
+            this.errors.trigger.selectedUsers = true;
+            return 0;
           }
+        }
+      }
+      this.submitted = true;
+
+      if (this.email !== "") {
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=email&task=updateemail",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({ body: this.form,
+                                      code: this.email,
+                                      selectedReceiversCC: this.selectedReceiversCC,
+                                      selectedReceiversBCC: this.selectedReceiversBCC,
+                                      selectedLetterAttachments:this.selectedLetterAttachments,
+                                      selectedCandidateAttachments: this.selectedCandidateAttachments,
+                                      selectedTags: this.selectedTags
+          })
+        }).then(response => {
+          // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
+          this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
+        }).catch(error => {
+          console.log(error);
         });
-        this.$forceUpdate();
-      },
-
-      submit() {
-        this.errors = {
-          subject: false,
-          message: false,
-          trigger: {
-            model: false,
-            status: false,
-            target: false,
-            selectedUsers: false,
-          }
-        };
-
-        if(this.form.subject == ""){
-          this.errors.subject = true;
-          return 0;
-        }
-        if(this.form.message == ""){
-          this.errors.message = true;
-          return 0;
-        }
-        if(this.trigger.program != null){
-          if(this.trigger.action_status == null){
-            this.errors.trigger.action_status = true;
-            return 0;
-          }
-          if(this.trigger.status == null){
-            this.errors.trigger.status = true;
-            return 0;
-          }
-          if(this.trigger.target == null){
-            this.errors.trigger.target = true;
-            return 0;
-          } else if (this.trigger.target == 0) {
-            if(this.selectedUsers.length === 0) {
-              this.errors.trigger.selectedUsers = true;
-              return 0;
-            }
-          }
-        }
-        this.submitted = true;
-
-        if (this.email !== "") {
+      } else {
+        axios({
+          method: "post",
+          url: "index.php?option=com_emundus_onboard&controller=email&task=createemail",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({ body: this.form,
+                                      selectedReceiversCC: this.selectedReceiversCC,
+                                      selectedReceiversBCC: this.selectedReceiversBCC,
+                                      selectedLetterAttachments:this.selectedLetterAttachments,
+                                      selectedCandidateAttachments: this.selectedCandidateAttachments,
+                                      selectedTags: this.selectedTags
+          })
+        }).then(response => {
+          this.trigger.model = response.data.data;
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=email&task=updateemail",
+            url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
-            data: qs.stringify({ body: this.form, code: this.email })
-          }).then(response => {
+            data: qs.stringify({
+              trigger: this.trigger,
+              users: this.selectedUsers
+            })
+          }).then((rep) => {
+            // this.redirectJRoute('index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.email);
             this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
-          }).catch(error => {
-            console.log(error);
           });
-        } else {
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=email&task=createemail",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({ body: this.form })
-          }).then(response => {
-            this.trigger.model = response.data.data;
-            axios({
-              method: "post",
-              url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              data: qs.stringify({
-                trigger: this.trigger,
-                users: this.selectedUsers
-              })
-            }).then((rep) => {
-              this.redirectJRoute('index.php?option=com_emundus_onboard&view=email');
-            });
-          }).catch(error => {
-            console.log(error);
-          });
-        }
-      },
-
-      onSearchCategory(value) {
-        this.form.category = value;
-      },
-
-      enableVariablesTip() {
-        if(!this.enableTip){
-          this.enableTip = true;
-          this.tip();
-        }
-      },
-
-      redirectJRoute(link) {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
-          params: {
-            link: link,
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          window.location.href = window.location.pathname + response.data.data;
-        });
-      },
-
-      /**
-       * ** Methods for notify
-       */
-      tip(){
-        this.show(
-            "foo-velocity",
-            Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
-            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
-        );
-      },
-
-      show(group, text = "", title = "Information") {
-        this.$notify({
-          group,
-          title: `${title}`,
-          text,
-          duration: 10000
-        });
-      },
-      clean(group) {
-        this.$notify({ group, clean: true });
-      },
-
-      /// get all tags
-      getAllTags: function() {
-        axios({
-          method: 'post',
-          url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-        }).then(response => {
-          let _tags = response.data.data;
-          this.tags = _tags;
         }).catch(error => {
           console.log(error);
-        })
-      },
-
-      getAllDocumentLetter: function() {
-        axios({
-          method: 'post',
-          url: 'index.php?option=com_emundus&controller=messages&task=getalldocumentsletters',
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-        }).then(response => {
-          console.log(response);
-          let _documents = response.data.documents;
-          this.documents = _documents;
-        }).catch(error => {
-          console.log(error);
-        })
+        });
       }
     },
 
-    created() {
-      this.getAllTags();
-      this.getAllDocumentLetter();
-      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
-              .then(rep => {
-                this.categories = rep.data.data;
-                if (this.email !== "") {
-                  axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
-                          .then(resp => {
-                            this.form.lbl = resp.data.data.lbl;
-                            this.form.subject = resp.data.data.subject;
-                            this.form.name = resp.data.data.name;
-                            this.form.emailfrom = resp.data.data.emailfrom;
-                            this.form.message = resp.data.data.message;
-                            this.form.type = resp.data.data.type;
-                            this.form.category = resp.data.data.category;
-                            this.form.published = resp.data.data.published;
-                            this.dynamicComponent = true;
-                          }).catch(e => {
-                            console.log(e);
-                          });
-                } else {
+    onSearchCategory(value) {
+      this.form.category = value;
+    },
+
+    enableVariablesTip() {
+      if(!this.enableTip){
+        this.enableTip = true;
+        this.tip();
+      }
+    },
+
+    redirectJRoute(link) {
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        params: {
+          link: link,
+        },
+        paramsSerializer: params => {
+          return qs.stringify(params);
+        }
+      }).then(response => {
+        window.location.href = window.location.pathname + response.data.data;
+      });
+    },
+
+    /**
+     * ** Methods for notify
+     */
+    tip(){
+      this.show(
+          "foo-velocity",
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
+          Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+      );
+    },
+
+    show(group, text = "", title = "Information") {
+      this.$notify({
+        group,
+        title: `${title}`,
+        text,
+        duration: 10000
+      });
+    },
+    clean(group) {
+      this.$notify({ group, clean: true });
+    },
+
+    /// get all tags
+    getAllTags: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        let _tags = response.data.data;
+        this.action_tags = _tags;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    getAllDocumentLetter: function() {
+      axios({
+        method: 'post',
+        url: 'index.php?option=com_emundus&controller=messages&task=getalldocumentsletters',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        this.attached_letters = response.data.documents;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+
+    getAllAttachments: function() {
+      axios({
+        method: 'get',
+        url: 'index.php?option=com_emundus&controller=messages&task=getallattachments',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then(response => {
+        this.candidate_attachments = response.data.attachments;
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+  },
+
+  created() {
+    this.getAllAttachments();
+    //this.getAllUsers();
+    this.getAllTags();
+    this.getAllDocumentLetter();
+
+    axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+        .then(rep => {
+          this.categories = rep.data.data;
+          if (this.email !== "") {
+            axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
+                .then(resp => {
+                  this.form.lbl = resp.data.data.email.lbl;
+                  this.form.subject = resp.data.data.email.subject;
+                  this.form.name = resp.data.data.email.name;
+                  this.form.emailfrom = resp.data.data.email.emailfrom;
+                  this.form.message = resp.data.data.email.message;
+                  this.form.type = resp.data.data.email.type;
+                  this.form.category = resp.data.data.email.category;
+                  this.form.published = resp.data.data.email.published;
                   this.dynamicComponent = true;
-                }
-              }).catch(e => {
-                console.log(e);
-              });
-      setTimeout(() => {
-        this.enableVariablesTip();
-      },2000);
-      this.getProgramsList();
-      this.getStatus();
-      this.getUsers();
-    },
 
-    mounted() {
-      if (this.actualLanguage == "en") {
-        this.langue = 1;
-      }
+                  // get attached letters
+                  if(resp.data.data.letter_attachment) {
+                    let _ldocuments = resp.data.data.letter_attachment;
+                    this.selectedLetterAttachments = _ldocuments;
+                  }
+
+                  // get attached candidate attachments
+                  if(resp.data.data.candidate_attachment) {
+                    let _cdocuments = resp.data.data.candidate_attachment;
+                    this.selectedCandidateAttachments = _cdocuments;
+                  }
+
+                  // get attached tags
+                  if(resp.data.data.tags) {
+                    let _tags = resp.data.data.tags;
+                    this.selectedTags = _tags;
+                  }
+
+                  /// get receivers (cc and bcc)
+                  if(resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
+                    let receiver_cc = [];
+                    let receiver_bcc = [];
+
+                    let receivers = resp.data.data.receivers;
+
+                    for (let index = 0; index < receivers.length; index++) {
+                      receiver_cc[index] = {};
+                      receiver_bcc[index] = {};
+
+                      if (receivers[index].type == 'receiver_cc_email' || receivers[index].type == 'receiver_cc_fabrik') {
+                        receiver_cc[index]['id'] = receivers[index].id;
+                        receiver_cc[index]['email'] = receivers[index].receivers;
+                      } else if (receivers[index].type == 'receiver_bcc_email' || receivers[index].type == 'receiver_bcc_fabrik') {
+                        receiver_bcc[index]['id'] = receivers[index].id;
+                        receiver_bcc[index]['email'] = receivers[index].receivers;
+                      }
+                    }
+
+                    const cc_filtered = receiver_cc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
+
+                    const bcc_filtered = receiver_bcc.filter(el => { return el['id'] !== null && el['id'] !== undefined; })
+
+                    this.selectedReceiversCC = cc_filtered;
+                    this.selectedReceiversBCC = bcc_filtered;
+                  }
+                }).catch(e => {
+              console.log(e);
+            });
+
+          } else {
+            this.dynamicComponent = true;
+          }
+        }).catch(e => {
+      console.log(e);
+    });
+    setTimeout(() => {
+      this.enableVariablesTip();
+    },2000);
+    this.getProgramsList();
+    this.getStatus();
+    this.getUsers();
+  },
+
+  mounted() {
+    if (this.actualLanguage == "en") {
+      this.langue = 1;
     }
-  };
+  }
+};
 </script>
 
-<style scoped>
+<!--<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>-->
+
+<style>
+
 </style>

@@ -671,6 +671,46 @@ class EmundusModelProfile extends JModelList {
         return $res;
     }
 
+    /**
+     * Gets the list of profiles from array of programmes
+     *
+     * @param array $campaign_id
+     *
+     * @return array The profile list for the campaigns
+     */
+    function getProfilesIDByCampaign(array $campaign_id) : array {
+
+        $res = [];
+
+        if (!empty($campaign_id)) {
+            if (in_array('%', $campaign_id)) {
+                $where = '';
+                $where_jecw = '';
+            } else {
+                $where = 'WHERE esc.id IN ('.implode(',', $campaign_id).')';
+                $where_jecw = 'WHERE jecw.campaign IN ('.implode(',', $campaign_id).')';
+            }
+
+            $query = 'SELECT DISTINCT (esc.profile_id)
+                        FROM  #__emundus_setup_campaigns AS esc '
+                . $where .
+                ' union 
+                        SELECT DISTINCT (jecw.profile)
+                        FROM  #__emundus_campaign_workflow AS jecw '
+                . $where_jecw;
+
+            try {
+                $this->_db->setQuery($query);
+                $res = $this->_db->loadColumn();
+            } catch(Exception $e) {
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
+                return [];
+            }
+        }
+
+        return $res;
+    }
+
     public function getProfileIDByCampaigns($campaigns, $codes) {
         $query = $this->_db->getQuery(true);
         if(!empty($campaigns)) {

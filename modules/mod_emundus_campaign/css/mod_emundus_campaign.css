@@ -207,7 +207,51 @@
 .single-campaign .below-content {
     text-align: left !important;
 }
-​
+
+/** DROPFILES **/
+.em-campaign-dropfiles {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    font-weight: 300;
+    font-style: normal;
+    line-height: normal;
+}
+
+.em-campaign-dropfiles ul {
+    margin-left:0;
+}
+
+.em-campaign-dropfiles li {
+    padding: 10px 1.5rem;
+}
+
+.em-campaign-dropfiles li {
+    align-self: center;
+    list-style: none;
+}
+
+.em-campaign-dropfiles ul a:focus {
+    color: green;
+}
+
+.em-campaign-dropfiles .g-title {
+    border:none !important;
+    position:relative;
+}
+
+.em-campaign-dropfiles .g-title::after {
+    content: '';
+    position: absolute;
+    margin-top: 35px;
+    left: 0;
+    width: 2.7rem;
+    height: 0.2rem;
+    background: #de6339;
+}
+
+/** **/
+
 @media all and (max-width: 767px) {
 
     .homepage .campaigns-list .below-content a.btn.btn-primary.btn-plein.btn-blue {

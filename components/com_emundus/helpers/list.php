@@ -874,7 +874,7 @@ class EmundusHelperList{
     */
     function getElementsDetailsByID($elements) {
         $db = JFactory::getDBO();
-        $query = 'SELECT concat_ws("_",tab.db_table_name,element.name) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.ordering, element.hidden, element.published, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
+        $query = 'SELECT concat_ws("___",tab.db_table_name,element.name) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.ordering, element.hidden, element.published, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin,
 				groupe.id AS group_id, groupe.label AS group_label, element.params AS params, element.params, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, tab.created_by_alias, tab.group_by AS tab_group_by
 				FROM #__fabrik_elements element
 				INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id

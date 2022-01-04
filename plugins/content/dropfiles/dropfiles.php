@@ -471,7 +471,7 @@ class PlgContentdropfiles extends JPlugin
         $result = $app->triggerEvent('onShowFrontCategory', $params_arr);
 
         if (!empty($result[0])) {
-            if (version_compare(JVERSION, '3.10.0', 'ge')) {
+            if (DropfilesBase::isJoomla40()) {
                 JHtml::_('behavior.core');
             } else {
                 JHtml::_('behavior.framework', true);

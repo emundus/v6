@@ -580,6 +580,10 @@ div#em-modal-form {
     height: auto !important;
 }
 
+#em-add-user .em-hidden-nonapli-fields .chosen-container .chosen-drop {
+    position: inherit;
+}
+
 #em-modal-actions .modal-dialog.modal-lg,
 #em-modal-form .modal-dialog.modal-lg,
 #em-modal-actions .modal-dialog,

@@ -22,10 +22,10 @@ $formid   = $jinput->get('formid');
 $fnum   = $jinput->get('rowid');
 
 $qcm = $model->getQcm($formid);
-$qcm_applicant = $model->getQcmApplicant($fnum);
+$qcm_applicant = $model->getQcmApplicant($fnum,$qcm->id);
 if(empty($qcm_applicant)) {
     $qcm_applicant_id = $model->initQcmApplicant($fnum,$qcm->id);
-    $qcm_applicant = $model->getQcmApplicant($fnum);
+    $qcm_applicant = $model->getQcmApplicant($fnum,$qcm->id);
 }
 
 require(JModuleHelper::getLayoutPath('mod_emundus_qcm', $params->get('mod_em_qcm_layout')));

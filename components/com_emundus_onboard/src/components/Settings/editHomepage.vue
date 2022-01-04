@@ -3,7 +3,7 @@
       <ModalUpdateImage
           @UpdateImage="updateView"
       />
-      <div class="form-group d-flex">
+      <!-- <div class="form-group d-flex">
         <div class="toggle">
           <input type="checkbox"
                  true-value="1"
@@ -41,10 +41,10 @@
               :class="{'mb-0': translate.label }"
           />
           <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
-<!--          <input type="color" class="title-color-picker" v-model="titleColor">-->
+&lt;!&ndash;          <input type="color" class="title-color-picker" v-model="titleColor">&ndash;&gt;
         </div>
         <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
-      </div>
+      </div>-->
       <div class="col-md-12 mt-2">
         <label class="mb-1">{{HomeContent}}</label>
         <ul class="menus-home-row" v-if="manyLanguages !== '0'">

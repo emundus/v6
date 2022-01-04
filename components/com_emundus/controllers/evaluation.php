@@ -1841,9 +1841,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getRaw('fnums', null);
 
-        $attachment_letters = $this->getModel('Evaluation')->getLettersByFnums($fnums,true);
+        $attachment_letters = $this->getModel('Evaluation')->getLettersByFnums($fnums, true);
 
-        if($attachment_letters) {
+        if (!empty($attachment_letters)) {
             $result = array('status' => true, 'attachment_letters' => $attachment_letters);
         } else {
             $result = array('status' => false, 'attachment_letters' => null);

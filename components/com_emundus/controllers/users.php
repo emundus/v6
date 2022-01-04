@@ -60,8 +60,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		// add to jos_emundus_users; jos_users; jos_emundus_groups; jos_users_profiles; jos_users_profiles_history
 		$current_user = JFactory::getUser();
-
-		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) {
+        if (!EmundusHelperAccess::asAccessAction(12, 'c')) {
 			echo json_encode((object)array('status' => false, 'uid' => $current_user->id, 'msg' => JText::_('ACCESS_DENIED')));
 			exit;
 		}
@@ -865,5 +864,42 @@ class EmundusControllerUsers extends JControllerLegacy {
 			return true;
 
 		}
+	}
+
+	public function getusers() 
+	{
+		$m_users = new EmundusModelUsers();
+		$users_list = $m_users->getUsers();
+
+		echo json_encode($users_list);
+		exit;
+	}
+
+	public function getuserbyid() 
+	{
+		$id = JFactory::getApplication()->input->getInt('id', null);
+		$m_users = new EmundusModelUsers();
+		$user = $m_users->getUserById($id);
+
+		echo json_encode(array('status' => true, 'user' => $user));
+		exit;
+	}
+
+	public function getattachmentaccessrights() 
+	{
+		$rights = [
+			'canDelete' => false,
+			'canExport' => false,
+			'canUpdate' => false,
+		];
+
+		$fnum = JFactory::getApplication()->input->getString('fnum', null);
+
+		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $fnum);
+		$rights['canUpdate'] = EmundusHelperAccess::asAccessAction(4, 'u', $this->_user->id, $fnum);
+		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum);
+
+		echo json_encode(array('status' => true, 'rights' => $rights));
+		exit;
 	}
 }

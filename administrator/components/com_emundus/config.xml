@@ -349,6 +349,12 @@
 		<field name="filename" type="text" default="" label="COM_EMUNDUS_FILENAME" description="COM_EMUNDUS_FILENAME_DESC" />
 		<field name="filtre_ip" type="text" default="" label="COM_EMUNDUS_FILTRE_IP" description="COM_EMUNDUS_FILTRE_IP_DESC" />
 		<field name="attachment_id" type="text" default="" label="COM_EMUNDUS_ATTACHMENT_ID" description="COM_EMUNDUS_ATTACHMENT_ID_DESC" />
+
+<!--		<field name="spacer7" type="spacer" hr="true"/>-->
+
+<!--		<field name="export_banner" type="note" label="Export Banner"/>-->
+
+<!--		<field name="banner_limit" type="text" default="10" label="COM_EMUNDUS_BANNER_LIMIT" description="COM_EMUNDUS_BANNER_LIMIT_DESC" />-->
 	</fieldset>
 	<fieldset
 			name="permissions"
