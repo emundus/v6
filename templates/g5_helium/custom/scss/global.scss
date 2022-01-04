@@ -4910,6 +4910,12 @@ input:focus + .em-slider {
   align-items: end;
 }
 
+.em-grid-50{
+  display: grid;
+  grid: auto-flow dense / 45% 50% 1fr;
+  grid-gap: 24px;
+}
+
 .em-pointer{
   cursor: pointer;
 }
@@ -5375,6 +5381,9 @@ input:focus + .em-slider {
   .em-modal-component{
     width: 100%;
     margin: 36px 20%;
+  }
+  textarea{
+    resize: none;
   }
 }
 /** **/

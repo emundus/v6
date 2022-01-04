@@ -72,9 +72,10 @@
       <div v-else class="em-neutral-100-box">
         <div v-for="(translation,index) in translations" class="em-mb-32">
           <p>{{ object.fields.IndexedFields[index].Lable.toUpperCase() }}</p>
-          <div class="em-flex-row justify-content-between em-mt-16">
-            <p class="col-md-5 em-neutral-700-color">{{ translation.default_lang }}</p>
-            <input class="col-md-5 mb-0" type="text" :value="translation.lang_to" />
+          <div class="justify-content-between em-mt-16 em-grid-50">
+            <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
+            <input v-if="object.fields.IndexedFields[index].Type == 'field'" class="mb-0" type="text" :value="translation.lang_to" />
+            <textarea v-if="object.fields.IndexedFields[index].Type == 'textarea'" class="mb-0" :value="translation.lang_to" />
           </div>
         </div>
       </div>

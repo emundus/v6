@@ -101,6 +101,17 @@ class EmundusModelTranslations extends JModelList
         return $objects;*/
     }
 
+    /**
+     * Get references datas
+     *
+     * @param $table
+     * @param $reference_id
+     * @param $label
+     * @param $filters
+     * @return array|false|mixed
+     *
+     * @since version 1.28.0
+     */
     public function getDatas($table,$reference_id,$label,$filters){
         $query = $this->_db->getQuery(true);
 
@@ -429,6 +440,15 @@ class EmundusModelTranslations extends JModelList
                     ->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
                 $this->_db->setQuery($query);
                 $labels->{$field}->default_lang = $this->_db->loadResult();
+
+                if(empty($labels->{$field}->default_lang)){
+                    $query->clear()
+                        ->select($field)
+                        ->from($this->_db->quoteName('#__' . $reference_table))
+                        ->where($this->_db->quoteName('id') . ' = ' . $reference_id);
+                    $this->_db->setQuery($query);
+                    $labels->{$field}->default_lang = $this->_db->loadResult();
+                }
 
                 $query->clear()
                     ->select('value')
