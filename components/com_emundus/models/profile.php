@@ -1225,7 +1225,7 @@ class EmundusModelProfile extends JModelList {
         }
     }
 
-    /* get secondary profiles */
+    /* get secondary profiles by status : onBeforeLoad and rule == STATUS__PROFILE */
     public function getSecondaryProfileByFnum($fnum) {
         require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'files.php');
         $mFile = new EmundusModelFiles();
@@ -1244,10 +1244,14 @@ class EmundusModelProfile extends JModelList {
             ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
             ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eswsrr.profile'))
             ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
-            ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum));
+            ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum))
+            ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 1')
+            ->order('eswsrr.ordering ASC');
 
         $db->setQuery($query);
         $raw = $db->loadAssocList();
+
+        /* TODO: check if $raw is empty : return [] */
 
         /* get fnum info */
         $fnum_raw = $mFile->getFnumsInfos([$fnum]);
@@ -1257,7 +1261,41 @@ class EmundusModelProfile extends JModelList {
             if($fnum_status !== $v['astatus']) { unset($raw[$k]); }
         }
 
-        return current($raw);
+        if(count($raw) >1) {
+            return end($raw);
+        } else {
+            return current($raw);
+        }
+    }
+
+
+    /* get profile by element (exist or not) -- onAfterProcess and rule == ELEMENT__PROFILE */
+    public function getProfileByElement($fnum) {
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS. 'models' . DS . 'emails.php');
+        $mEmail = new EmundusModelEmails();
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        /* on after process */
+        $query->clear()
+            ->select('eu.firstname, eu.lastname, eswsrr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, 
+                                cc.campaign_id as campaign_id, esws.id as step, eswsrr.status as astatus, eswsrr.element as element, eswsrr.form_id as form, eswsrr.value as elemvalue')
+            ->from($db->quoteName('#__emundus_setup_workflow_step_rules_repeat', 'eswsrr'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswsrr.parent_id') . ' = ' . $db->quoteName('esws.id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))
+            ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.workflow') . ' = ' . $db->quoteName('esw.id'))
+            ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('cc.campaign_id'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eswsrr.profile'))
+            ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
+            ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum))
+            ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 3')
+            ->order('eswsrr.ordering ASC');
+
+        $db->setQuery($query);
+        $raw = $db->loadAssocList();
+        
+        return $raw;
     }
 
     /* get last page (id) of selected form */

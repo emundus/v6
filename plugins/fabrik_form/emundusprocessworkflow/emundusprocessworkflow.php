@@ -438,8 +438,9 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 
         jimport('joomla.log.log');
@@ -473,6 +474,25 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         $view = $jinput->get('view');
 
         $_reload = $jinput->get('r');
+
+        /* check if ELEMENT__PROFILE exists */
+        $raw = $m_profile->getProfileByElement($user->fnum);
+
+        /* check if raw['formid'] satisfies with current formid */
+        foreach($raw as $k => $v) {
+            if($formid !== $v['form']) {
+                unset($raw[$k]);
+            }
+        }
+
+        if(count($raw) > 0) {
+            if (count($raw) > 1) {
+                $raw = end($raw);
+            }
+            $user->menutype = $raw['menutype'];
+            $link = $m_application->getFirstPage();
+            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload);
+        }
 
         /// get the next url --> formid, menutype
         $this->query = 'SELECT CONCAT(link,"&Itemid=",id) FROM #__menu WHERE published=1 AND menutype = "' . $user->menutype . '" AND access IN (' . implode(',', $levels) . ') AND parent_id != 1 AND lft = 2+(
@@ -826,8 +846,6 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             /// insert emundusconfirmpost (with some changes of worflow) here
             $app = JFactory::getApplication();
 
-//            echo '<pre>'; var_dump($itemid); echo '</pre>'; die;
-
 //            $app->redirect($last_page . '&Itemid=' . $itemid . '&usekey=fnum&rowid=' . $user->fnum);
 
             $offset = $app->get('offset', 'UTC');
@@ -839,8 +857,6 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             } catch (Exception $e) {
                 echo $e->getMessage() . '<br />';
             }
-
-
 
             $student = JFactory::getSession()->get('emundusUser');
 
