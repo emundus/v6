@@ -160,7 +160,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 //            else {
             if(!empty($fnum)) {
                 $is_dead_line_passed = ($now > $end_date || $now < $start_date) ? true : false;
-                $is_campaign_started = ($now > $end_date || $now < $start_date) ? true : false;
+                $is_campaign_started = ($now > $start_date || $now < $end_date) ? true : false;
             }
             else{
                 $is_dead_line_passed = ($now > $end_date || $now < $start_date) ? true : false;
@@ -484,6 +484,9 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         /* get phase id from url */
         $phase = $jinput->get('phase');
 
+        /* get fnum from url */
+        $fnum = $jinput->get->get('rowid', null);
+        
         /* check if ELEMENT__STATUS exists in order to update status (temporarily) */
         $raw_status = $m_profile->getStatusByElement($user->fnum);
         foreach($raw_status as $k => $v) {
@@ -520,7 +523,40 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             }
             $user->menutype = $raw_profile['menutype'];
             $link = $m_application->getFirstPage();
-            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload);
+            
+            /* call $m_profile->getStepByFnum to detect edit or read-only */
+            $raw = $m_profile->getStepByFnum($user->fnum);
+
+            $start_date = $raw->start_date;
+            $end_date = $raw->end_date;
+
+            /* get editable status // output status */
+            $editable_status = $raw->editable_status;
+            $output_status = $raw->output_status;
+
+            /* check status, time before deciding */
+            $can_edit_form = in_array($user->status, $editable_status);
+
+            /* get now moment */
+            $offset = $app->get('offset', 'UTC');
+            $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
+            $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
+            $now = $dateTime->format('Y-m-d H:i:s');
+
+            if(!empty($fnum)) {
+                $is_dead_line_passed = ($now > $end_date || $now < $start_date) ? true : false;
+                $is_campaign_started = ($now > $start_date || $now < $end_date) ? true : false;
+            }
+            else{
+                $is_dead_line_passed = ($now > $end_date || $now < $start_date) ? true : false;
+                $is_campaign_started = ($now >= $start_date) ? true : false;
+            }
+
+
+
+
+
+            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
         }
 
         /* need to set mode (edit/read) via $temp_status */
@@ -580,7 +616,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
 //        if($formid !== $_nextFormID)          --> keep this line
         if ($formid !== $last_form_id) {
-            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload);
+            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
 
             /// insert emundusredirect plugin here ---
             if ($copy_form === 1 && isset($user->fnum)) {
@@ -824,7 +860,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                         JLog::add($error, JLog::ERROR, 'com_emundus');
                     }
 
-                    $link = JRoute::_('index.php?option=com_fabrik&view=form&formid=' . $formid . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component');
+                    $link = JRoute::_('index.php?option=com_fabrik&view=form&formid=' . $formid . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component');       // add $phase
 
                     echo "<hr>";
                     echo '<h1><img src="' . JURI::base() . '/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> ' . JText::_("SAVED") . '</h1>';
