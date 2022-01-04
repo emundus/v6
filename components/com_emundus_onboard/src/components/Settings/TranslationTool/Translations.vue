@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h2>{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h2>
+    <h2 class="em-h4 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h2>
+    <p class="em-font-size-14 em-mb-24" v-if="!saving">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
     <div>
       <!-- Languages -->
       <div class="col-md-3">
@@ -74,8 +75,8 @@
           <p>{{ object.fields.IndexedFields[index].Lable.toUpperCase() }}</p>
           <div class="justify-content-between em-mt-16 em-grid-50">
             <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
-            <input v-if="object.fields.IndexedFields[index].Type == 'field'" class="mb-0" type="text" :value="translation.lang_to" />
-            <textarea v-if="object.fields.IndexedFields[index].Type == 'textarea'" class="mb-0" :value="translation.lang_to" />
+            <input v-if="object.fields.IndexedFields[index].Type == 'field'" class="mb-0" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+            <textarea v-if="object.fields.IndexedFields[index].Type == 'textarea'" class="mb-0" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
           </div>
         </div>
       </div>
@@ -102,7 +103,9 @@ export default {
       translations: [],
       lang: null,
       object: null,
-      data: null
+      data: null,
+
+      saving: false
     }
   },
 
@@ -136,6 +139,14 @@ export default {
         this.objects = response.data;
       });
     },
+
+    async saveTranslation(value,index){
+      console.log(value);
+      console.log(index);
+      console.log(this.object.table.name);
+      console.log(this.object.table.type);
+      console.log(this.data.id);
+    }
   },
 
   watch: {
