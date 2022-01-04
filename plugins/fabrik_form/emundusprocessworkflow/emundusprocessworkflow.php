@@ -129,6 +129,12 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $last_form_id = (explode('formid=', $last_page))[1];
 
             $res = $m_profile->getStepByFnum($user->fnum);
+            
+            if($res->step !== null) {
+                $phase = $res->step;
+            } else {
+                $phase = 'none';
+            }
 
             /* get start date // end date of each formulaire */
             $start_date = $res->start_date;
@@ -219,7 +225,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 if (in_array($user->id, $applicants)) {
 
                     if ($reload_url) {
-                        $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                        $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload . '&phase=' . $phase);
                     }
 
                 } else {
@@ -231,7 +237,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                             } else {
                                 $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
                             }
-                            $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                            $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload . '&phase=' . $phase);
                         }
 
                     } else {
@@ -239,16 +245,16 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                         if ($can_edit_form) {
                             if ($can_edit_until_deadline != 0 || $can_edit_after_deadline != 0) {
                                 if ($reload_url) {
-                                    $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                                    $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload . '&phase=' . $phase);
                                 }
                             } else {
                                 if ($reload_url) {
-                                    $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                                    $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload . '&phase=' . $phase);
                                 }
                             }
                         } else {
                             if ($reload_url) {
-                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                                $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload . '&phase=' . $phase);
                             }
                         }
 
@@ -263,7 +269,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                     if ($can_read == 1) {
                         if ($reload < 3) {
                             $reload++;
-                            $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload);
+                            $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$fnum."&r=".$reload .'&phase=' . $phase);
                         }
                     } else {
                         $mainframe->enqueueMessage(JText::_('ACCESS_DENIED'), 'error');
@@ -418,7 +424,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                                 }
                             }
                             $reload++;
-                            $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
+                            $mainframe->redirect("index.php?option=com_fabrik&view=form&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload.'&phase=' . $phase);
                         }
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
@@ -475,6 +481,9 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
         $_reload = $jinput->get('r');
 
+        /* get phase id from url */
+        $phase = $jinput->get('phase');
+
         /* check if ELEMENT__STATUS exists in order to update status (temporarily) */
         $raw_status = $m_profile->getStatusByElement($user->fnum);
         foreach($raw_status as $k => $v) {
@@ -513,6 +522,9 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $link = $m_application->getFirstPage();
             $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload);
         }
+
+        /* need to set mode (edit/read) via $temp_status */
+
 
         /// get the next url --> formid, menutype
         $this->query = 'SELECT CONCAT(link,"&Itemid=",id) FROM #__menu WHERE published=1 AND menutype = "' . $user->menutype . '" AND access IN (' . implode(',', $levels) . ') AND parent_id != 1 AND lft = 2+(
@@ -921,7 +933,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
 
             // get the output status
-            if (!is_null($res->output_status)) {
+            if (!empty($res->output_status)) {
                 $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . current($res->output_status) . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
             } else {
                 /// use the default status
