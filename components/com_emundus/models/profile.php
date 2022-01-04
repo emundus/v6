@@ -1563,7 +1563,7 @@ class EmundusModelProfile extends JModelList {
         /* on after process */
         $query->clear()
             ->select('eu.firstname, eu.lastname, eswsrr.profile AS profile, eu.university_id, esp.label, esp.menutype, esp.published, 
-                                cc.campaign_id as campaign_id, esws.id as step, eswsrr.status as astatus, eswsrr.element as element, eswsrr.form_id as form, eswsrr.value as elemvalue')
+                                cc.campaign_id as campaign_id, esws.id as step, eswsrr.status as estatus, eswsrr.element as element, eswsrr.form_id as form')
             ->from($db->quoteName('#__emundus_setup_workflow_step_rules_repeat', 'eswsrr'))
             ->leftJoin($db->quoteName('#__emundus_setup_workflow_step', 'esws') .  ' ON ' . $db->quoteName('eswsrr.parent_id') . ' = ' . $db->quoteName('esws.id'))
             ->leftJoin($db->quoteName('#__emundus_setup_workflow', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow'))

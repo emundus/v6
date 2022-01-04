@@ -475,21 +475,41 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
         $_reload = $jinput->get('r');
 
-        /* check if ELEMENT__PROFILE exists */
-        $raw = $m_profile->getProfileByElement($user->fnum);
-
-        /* check if raw['formid'] satisfies with current formid */
-        foreach($raw as $k => $v) {
+        /* check if ELEMENT__STATUS exists in order to update status (temporarily) */
+        $raw_status = $m_profile->getStatusByElement($user->fnum);
+        foreach($raw_status as $k => $v) {
             if($formid !== $v['form']) {
-                unset($raw[$k]);
+                unset($raw_status[$k]);
             }
         }
 
-        if(count($raw) > 0) {
-            if (count($raw) > 1) {
-                $raw = end($raw);
+        if(count($raw_status) > 0) {
+            if (count($raw_status) > 1) {
+                $raw_status = end($raw_status);
             }
-            $user->menutype = $raw['menutype'];
+            $temp_status = $raw_status['estatus'];
+
+            /* update status to $temp_status */
+            $this->query = 'UPDATE #__emundus_campaign_candidature SET status=' . $temp_status . ' WHERE applicant_id=' . $user->id . ' AND campaign_id=' . $user->campaign_id . ' AND fnum like ' . $this->db->Quote($user->fnum);
+            $this->db->setQuery($this->query);
+            $this->db->execute();
+        }
+
+        /* check if ELEMENT__PROFILE exists */
+        $raw_profile = $m_profile->getProfileByElement($user->fnum);
+
+        /* check if raw['formid'] satisfies with current formid */
+        foreach($raw_profile as $k => $v) {
+            if($formid !== $v['form']) {
+                unset($raw_profile[$k]);
+            }
+        }
+
+        if(count($raw_profile) > 0) {
+            if (count($raw_profile) > 1) {
+                $raw_profile = end($raw_profile);
+            }
+            $user->menutype = $raw_profile['menutype'];
             $link = $m_application->getFirstPage();
             $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload);
         }
