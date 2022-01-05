@@ -443,7 +443,7 @@ class EmundusModelEmails extends JModelList {
         foreach ($tags as $tag) {
             if (!empty($content)){
                 $tag_pattern = '[' . $tag['tag'] . ']';
-                if(!strpos($content, $tag_pattern)){
+                if(strpos($content, $tag_pattern) === false){
                     continue;
                 }
             }
