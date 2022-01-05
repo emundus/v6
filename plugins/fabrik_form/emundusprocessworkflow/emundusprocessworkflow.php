@@ -453,13 +453,18 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         JLog::addLogger(array('text_file' => 'com_emundus.processWorkflow.php'), JLog::ALL, array('com_emundus'));
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
+
         $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', 0);
+        $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
+
         $application_form_order = $eMConfig->get('application_form_order', null);
         $attachment_order = $eMConfig->get('attachment_order', null);
         $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
         $export_pdf = $eMConfig->get('export_application_pdf', 0);
         $export_path = $eMConfig->get('export_path', null);
+
         $id_applicants = explode(',', $eMConfig->get('id_applicants', '0'));
+        $applicants = explode(',',$id_applicants);
 
         $m_application = new EmundusModelApplication;
         $m_files = new EmundusModelFiles;
@@ -495,10 +500,15 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             }
         }
 
+
+        
         if(count($raw_status) > 0) {
             if (count($raw_status) > 1) {
                 $raw_status = end($raw_status);
+            } else {
+                $raw_status = current($raw_status);
             }
+
             $temp_status = $raw_status['estatus'];
 
             /* update status to $temp_status */
@@ -520,7 +530,10 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
         if(count($raw_profile) > 0) {
             if (count($raw_profile) > 1) {
                 $raw_profile = end($raw_profile);
+            } else {
+                $raw_profile = current($raw_profile);
             }
+
             $user->menutype = $raw_profile['menutype'];
             $link = $m_application->getFirstPage();
             
@@ -535,7 +548,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $output_status = $raw->output_status;
 
             /* check status, time before deciding */
-            $can_edit_form = in_array($user->status, $editable_status);
+            $can_edit_form = !in_array($user->status, $editable_status);
 
             /* get now moment */
             $offset = $app->get('offset', 'UTC');
@@ -552,14 +565,88 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
                 $is_campaign_started = ($now >= $start_date) ? true : false;
             }
 
+            // once access condition is not correct, redirect page
+            $reload_url = true;
 
+            $can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
+            $can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
+            $read_url = str_replace('view=form', 'view=details', $link);
 
+            
+            if (!empty($fnum)) {
+                // Check campaign limit, if the limit is obtained, then we set the deadline to true
+                $m_campaign = new EmundusModelCampaign;
 
-            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
+                $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
+
+                if ($fnum == @$user->fnum) {
+                    //try to access edit view
+                    if ($view == 'form') {
+                        if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || (!$can_edit_form && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
+                            $reload_url = false;
+                        }
+                    }
+                    //try to access detail view or other
+                    else {
+                        if(!$can_edit && !$can_edit_form){
+                            $app->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
+                        } elseif ($is_dead_line_passed){
+                            $app->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                        } elseif (!$is_campaign_started){
+                            $app->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
+                        }
+                        $reload_url = false;
+                    }
+                }
+                // FNUM sent not like user fnum (partner or bad FNUM)
+                else {
+                    $document = JFactory::getDocument();
+                    $document->addStyleSheet("media/com_fabrik/css/fabrik.css" );
+
+                    if ($view == 'form') {
+                        if ($can_edit) {
+                            $reload_url = false;
+                        }
+                    } else {
+                        //try to access detail view or other
+                        if ($can_read) {
+                            $reload_url = false;
+                        }
+                    }
+                }
+            }
+
+            if (isset($user->fnum) && !empty($user->fnum)) {
+
+                if (in_array($user->id, $applicants)) {
+                    $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
+                } else {
+                    if (($is_dead_line_passed && $can_edit_after_deadline == 0) || !$is_campaign_started || $isLimitObtained === true) {
+                        if ($isLimitObtained === true) {
+                            $app->enqueueMessage(JText::_('APPLICATION_LIMIT_OBTAINED'), 'error');
+                        } else {
+                            $app->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                        }
+
+                        $app->redirect($read_url . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
+                    } else {
+                        if ($can_edit_form) {
+                            if ($can_edit_until_deadline != 0 || $can_edit_after_deadline != 0) {
+                                $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
+                            } else {
+                                $app->redirect($read_url . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
+                            }
+                        } else {
+                            $app->redirect($link . '&usekey=fnum&rowid=' . $user->fnum . '&r=' . $_reload.'&phase=' . $phase);
+                        }
+
+                    }
+                }
+
+            }
         }
 
-        /* need to set mode (edit/read) via $temp_status */
 
 
         /// get the next url --> formid, menutype
