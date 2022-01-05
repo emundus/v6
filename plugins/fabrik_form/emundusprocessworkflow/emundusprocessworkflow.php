@@ -535,6 +535,7 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             }
 
             $user->menutype = $raw_profile['menutype'];
+            $user->profile = $raw_profile['profile'];
             $link = $m_application->getFirstPage();
             
             /* call $m_profile->getStepByFnum to detect edit or read-only */
@@ -582,21 +583,12 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
                 if ($fnum == @$user->fnum) {
                     //try to access edit view
-                    if ($view == 'form') {
-                        if ((!$is_dead_line_passed && $isLimitObtained !== true) || in_array($user->id, $applicants) || (!$can_edit_form && !$is_dead_line_passed && $can_edit_until_deadline && $isLimitObtained !== true) || ($is_dead_line_passed && $can_edit_after_deadline && $isLimitObtained !== true) || $can_edit) {
-                            $reload_url = false;
-                        }
-                    }
-                    //try to access detail view or other
-                    else {
-                        if(!$can_edit && !$can_edit_form){
-                            $app->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
-                        } elseif ($is_dead_line_passed){
-                            $app->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
-                        } elseif (!$is_campaign_started){
-                            $app->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
-                        }
-                        $reload_url = false;
+                    if(!$can_edit && !$can_edit_form){
+                        $app->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
+                    } elseif ($is_dead_line_passed){
+                        $app->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                    } elseif (!$is_campaign_started){
+                        $app->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
                     }
                 }
                 // FNUM sent not like user fnum (partner or bad FNUM)
