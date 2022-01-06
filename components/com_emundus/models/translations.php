@@ -73,32 +73,6 @@ class EmundusModelTranslations extends JModelList
         }
 
         return $objects;
-
-        /*$dir = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements';
-
-        $objects = array();
-
-        if (file_exists($dir) && is_dir($dir) ) {
-            $scan_arr = scandir($dir);
-            $files_arr = array_diff($scan_arr, array('.','..') );
-            foreach ($files_arr as $file) {
-                $string_datas = '';
-                $fp = fopen($dir . '/' . $file, "r");
-                while ( $ligneXML = fgets($fp, 1024)) {
-                    // Affichage "brut" de la ligne convertie en HTML
-                    $string_datas .= $ligneXML;
-                }
-                $data = simplexml_load_string($string_datas);
-                $object = new stdClass;
-                $object->name = JText::_($data->name->__toString());
-                $object->description = JText::_($data->description->__toString());
-                $object->table = $data->reference->table;
-                echo '<pre>'; var_dump($object); echo '</pre>'; die;
-                $objects[] = $object;
-            }
-        }
-
-        return $objects;*/
     }
 
     /**
@@ -128,6 +102,41 @@ class EmundusModelTranslations extends JModelList
             return $this->_db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('Problem when try to get datas from table ' . $table . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function getChildrens($table,$reference_id,$label){
+        $query = $this->_db->getQuery(true);
+
+        if($table == 'fabrik_forms') {
+            $forms = array();
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+            $h_menu = new EmundusHelperMenu;
+
+            $tableuser = $h_menu->buildMenuQuery($reference_id);
+            foreach ($tableuser as $menu){
+                $forms[] = $menu->form_id;
+            }
+        }
+
+        try {
+            $query->select('id,' . $this->_db->quoteName($label) . ' as label')
+                ->from($this->_db->quoteName('#__' . $table));
+
+            if(isset($forms)){
+                $query->where($this->_db->quoteName('id') . ' IN (' . implode(',',$forms) . ')');
+            }
+            $this->_db->setQuery($query);
+            $values = $this->_db->loadObjectList();
+
+            foreach ($values as $key => $value){
+                $values[$key]->label = JText::_($value->label);
+            }
+
+            return $values;
+        } catch (Exception $e) {
+            JLog::add('Problem when try to get childrens from table ' . $table . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
     }
@@ -463,7 +472,57 @@ class EmundusModelTranslations extends JModelList
 
             return $labels;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/falang | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/translations | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function updateFalangTranslation($value,$lang_to,$reference_table,$reference_id,$field){
+        $query = $this->_db->getQuery(true);
+
+        $user = JFactory::getUser()->id;
+
+        try {
+            $query->select('lang_id')
+                ->from($this->_db->quoteName('#__languages'))
+                ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_to));
+            $this->_db->setQuery($query);
+            $lang_to_id = $this->_db->loadResult();
+
+            $query->clear()
+                ->select('id')
+                ->from($this->_db->quoteName('#__falang_content'))
+                ->where($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
+                ->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
+                ->where($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
+                ->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
+            $this->_db->setQuery($query);
+            $falang_translation = $this->_db->loadResult();
+
+            if(!empty($falang_translation)) {
+                $query->update($this->_db->quoteName('#__falang_content'))
+                    ->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
+                    ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user))
+                    ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($falang_translation));
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            } else {
+                $query->insert($this->_db->quoteName('#__falang_content'))
+                    ->set($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
+                    ->set($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
+                    ->set($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
+                    ->set($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field))
+                    ->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
+                    ->set($this->_db->quoteName('original_text') . ' = ' . $this->_db->quote($value))
+                    ->set($this->_db->quoteName('modified') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
+                    ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user))
+                    ->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote(1));
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            }
+
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/translations | Error at updating the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
             return false;
         }
     }

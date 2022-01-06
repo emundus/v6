@@ -6,7 +6,7 @@
   <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_PROFILES_DESC</description>
   <reference>
   	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="emundus">
-  		<field type="children" name="fabrik_forms" translate="1">COM_EMUNDUS_CONTENTELEMENTS_SETUP_PROFILES_FABRIK_FORMS</field>
+  		<field type="children" name="label" translate="1">fabrik_forms</field>
   	</table>
   </reference>
 </falang>

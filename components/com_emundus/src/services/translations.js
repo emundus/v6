@@ -63,6 +63,23 @@ export default {
     }
   },
 
+  async getChildrens(table,reference_id,label){
+    try {
+      return await client().get(`index.php?option=com_emundus&controller=translations&task=getchildrens`, {
+        params: {
+          table,
+          reference_id,
+          label,
+        }
+      });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      }
+    }
+  },
+
   async getTranslations(type,default_lang,lang_to,reference_id,fields,reference_table = ''){
     switch(type){
       case 'falang':
@@ -76,6 +93,45 @@ export default {
               fields,
             }
           });
+        } catch (e) {
+          return {
+            status: false,
+            msg: e.message
+          }
+        }
+        break;
+      case 'emundus':
+        try {
+
+        } catch (e) {
+          return {
+            status: false,
+            msg: e.message
+          }
+        }
+      default:
+    }
+  },
+
+  async updateTranslations(value,type,lang_to,reference_id,field,reference_table){
+    switch(type){
+      case 'falang':
+        try {
+          const formData = new FormData();
+          formData.append('value', value);
+          formData.append('lang_to', lang_to);
+          formData.append('field', field);
+          formData.append('reference_table', reference_table);
+          formData.append('reference_id', reference_id);
+
+          return await client().post(`index.php?option=com_emundus&controller=translations&task=updatefalangtranslation`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              }
+          );
         } catch (e) {
           return {
             status: false,

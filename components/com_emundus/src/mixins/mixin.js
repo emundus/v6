@@ -4,8 +4,12 @@ import attachmentService from '../services/attachment.js';
 
 var mixin = {
 	methods: {
-		formattedDate: function (date) {
-			return moment(date).format('LLLL');
+		formattedDate: function (date = '',format = 'LLLL') {
+			if(date !== '') {
+				return moment(date).format(format);
+			} else {
+				return moment().format(format);
+			}
 		},
 		getUserNameById: function (id) {
 			let completeName = '';

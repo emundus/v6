@@ -1,10 +1,12 @@
 <template>
   <div>
     <h2 class="em-h4 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h2>
-    <p class="em-font-size-14 em-mb-24" v-if="!saving">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
-    <div>
+    <p class="em-font-size-14 em-mb-24" v-if="!saving && last_save == null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
+    <p class="em-font-size-14 em-mb-24" v-if="saving">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
+    <p class="em-font-size-14 em-mb-24" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
+    <div class="em-grid-4">
       <!-- Languages -->
-      <div class="col-md-3">
+      <div>
         <multiselect
             v-model="lang"
             label="title_native"
@@ -25,7 +27,7 @@
       </div>
 
       <!-- Objects availables -->
-      <div class="em-ml-24 col-md-3" v-if="lang">
+      <div v-if="lang">
         <multiselect
             v-model="object"
             label="name"
@@ -45,7 +47,7 @@
       </div>
 
       <!-- Datas by reference id -->
-      <div class="em-ml-24 col-md-3" v-if="object">
+      <div v-if="object">
         <multiselect
             v-model="data"
             label="label"
@@ -63,10 +65,32 @@
             :allow-empty="true"
         ></multiselect>
       </div>
+
+      <!-- Childrens -->
+      <div v-if="childrens.length > 0">
+        <multiselect
+            v-model="children"
+            label="label"
+            track-by="id"
+            :options="childrens"
+            :multiple="false"
+            :taggable="false"
+            select-label=""
+            selected-label=""
+            deselect-label=""
+            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT')"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :searchable="false"
+            :allow-empty="true"
+        ></multiselect>
+      </div>
     </div>
+
     <hr class="col-md-12" style="z-index: 0"/>
+
     <div class="col-md-12">
-      <div v-if="lang === '' || lang == null || object === '' || object == null" class="text-center em-mt-80">
+      <div v-if="lang === '' || lang == null || object === '' || object == null || translations.length === 0" class="text-center em-mt-80">
         <p class="em-h5 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</p>
         <p class="em-font-size-14 em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>
@@ -75,8 +99,8 @@
           <p>{{ object.fields.IndexedFields[index].Lable.toUpperCase() }}</p>
           <div class="justify-content-between em-mt-16 em-grid-50">
             <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
-            <input v-if="object.fields.IndexedFields[index].Type == 'field'" class="mb-0" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
-            <textarea v-if="object.fields.IndexedFields[index].Type == 'textarea'" class="mb-0" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+            <input v-if="object.fields.IndexedFields[index].Type == 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+            <textarea v-if="object.fields.IndexedFields[index].Type == 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
           </div>
         </div>
       </div>
@@ -87,6 +111,7 @@
 <script>
 import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
+import mixin from "com_emundus/src/mixins/mixin";
 import Multiselect from 'vue-multiselect';
 
 export default {
@@ -94,18 +119,26 @@ export default {
   components: {
     Multiselect
   },
+  mixins: [mixin],
   data() {
     return {
       defaultLang: null,
       availableLanguages: [],
+
+      // Lists
       objects: [],
       datas: [],
+      childrens: [],
       translations: [],
+
+      // Values
       lang: null,
       object: null,
       data: null,
+      children: null,
 
-      saving: false
+      saving: false,
+      last_save: null
     }
   },
 
@@ -135,22 +168,35 @@ export default {
     },
 
     async getObjects(){
+      this.translations = [];
+      this.childrens = [];
+      this.datas = [];
+      this.objects = [];
+      this.object = null;
+      this.data = null;
+      this.children = null;
+
       translationsService.getObjects().then((response) => {
         this.objects = response.data;
       });
     },
 
     async saveTranslation(value,index){
-      console.log(value);
-      console.log(index);
-      console.log(this.object.table.name);
-      console.log(this.object.table.type);
-      console.log(this.data.id);
+      this.saving = true;
+      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,this.data.id,index,this.object.table.name).then((response) => {
+        this.last_save = this.formattedDate('','LT');
+        this.saving = false;
+      });
     }
   },
 
   watch: {
     object: function(value){
+      this.translations = [];
+      this.childrens = [];
+      this.children = null;
+      this.data = null;
+
       if(value != null) {
         translationsService.getDatas(
             value.table.name,
@@ -166,19 +212,35 @@ export default {
     },
 
     data: function(value){
+      this.translations = [];
+      this.childrens = [];
+      this.children = null;
+      var children_existing = false;
+
       if(value != null) {
-        const fields = Object.keys(this.object.fields.IndexedFields).join(',');
-        translationsService.getTranslations(
-            this.object.table.type,
-            this.defaultLang.lang_code,
-            this.lang.lang_code,
-            value.id,
-            fields,
-            this.object.table.name
-        ).then((response) => {
-          this.translations = response.data;
-        })
-      } else {}
+        this.object.fields.Fields.forEach((field) => {
+          if (field.Type === 'children') {
+            children_existing = true;
+            translationsService.getChildrens(field.Lable,this.data.id,field.Name).then((response) => {
+              this.childrens = response.data;
+            });
+          }
+        });
+
+        if (!children_existing) {
+          const fields = Object.keys(this.object.fields.IndexedFields).join(',');
+          translationsService.getTranslations(
+              this.object.table.type,
+              this.defaultLang.lang_code,
+              this.lang.lang_code,
+              value.id,
+              fields,
+              this.object.table.name
+          ).then((response) => {
+            this.translations = response.data;
+          })
+        }
+      }
     }
   }
 }

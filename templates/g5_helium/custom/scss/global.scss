@@ -4272,6 +4272,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   font-size: 14px;
   color: $neutral-600 !important;
   padding: 0 4px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 fieldset[disabled] .multiselect {
@@ -4820,6 +4824,36 @@ fieldset[disabled] .multiselect {
   cursor: pointer;
 }
 
+/** INPUTS **/
+.em-input{
+  border: 1px solid #E3E3E3;
+  padding: 8px 12px;
+  border-radius: 4px;
+  -webkit-transition: border-color 200ms linear;
+  transition: border-color 200ms linear;
+  &:hover {
+    border-color: #E3E3E3;
+  }
+  &:focus {
+    border-color: $main-500 !important;
+    -webkit-box-shadow: 0 0 6px #e0f3f8 !important;
+    -moz-box-shadow: 0 0 6px #e0f3f8 !important;
+    box-shadow: 0 0 6px #e0f3f8 !important;
+  }
+  &::-webkit-input-placeholder {
+    color: dimgrey;
+  }
+  &:-ms-input-placeholder {
+    color: dimgrey;
+  }
+  &::-ms-input-placeholder {
+    color: dimgrey;
+  }
+  &::placeholder {
+    color: dimgrey;
+  }
+}
+
 
 // TOGGLE BUTTON //
 .em-switch {
@@ -4915,6 +4949,12 @@ input:focus + .em-slider {
   grid: auto-flow dense / 45% 50% 1fr;
   grid-gap: 24px;
   align-items: center;
+}
+
+.em-grid-4{
+  display: grid;
+  grid-gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .em-pointer{
@@ -5394,7 +5434,7 @@ input:focus + .em-slider {
   MEDIA QUERIES
 **/
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .em-logo{
     filter: unset;
   }
@@ -5454,6 +5494,12 @@ input:focus + .em-slider {
   .em-s-justify-content-center{
     justify-content: center !important;
   }
+
+  .em-grid-4{
+    display: grid;
+    grid-gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 700px) {
@@ -5463,6 +5509,12 @@ input:focus + .em-slider {
 
   .em-mt-xs-8{
     margin-top: 8px;
+  }
+
+  .em-grid-4{
+    display: grid;
+    grid-gap: 24px;
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 

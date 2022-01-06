@@ -318,20 +318,20 @@ h4{
 }
 input {
   display: block;
-  margin-bottom: 10px !important;
-  padding: 5px 30px !important;
-  border: 2px solid #cccccc !important;
-  border-radius: 4px !important;
-  -webkit-transition: border-color 200ms linear !important;
-  transition: border-color 200ms linear !important;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border: 2px solid #cccccc;
+  border-radius: 4px;
+  -webkit-transition: border-color 200ms linear;
+  transition: border-color 200ms linear;
   &:hover {
-    border-color: #cecece !important;
+    border-color: #cecece;
   }
   &:focus {
-    border-color: $dark-blue !important;
-    -webkit-box-shadow: 0 0 6px #e0f3f8 !important;
-    -moz-box-shadow: 0 0 6px #e0f3f8 !important;
-    box-shadow: 0 0 6px #e0f3f8 !important;
+    border-color: $dark-blue;
+    -webkit-box-shadow: 0 0 6px #e0f3f8;
+    -moz-box-shadow: 0 0 6px #e0f3f8;
+    box-shadow: 0 0 6px #e0f3f8;
   }
   &::-webkit-input-placeholder {
     color: dimgrey;
