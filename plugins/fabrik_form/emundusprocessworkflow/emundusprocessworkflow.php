@@ -1218,13 +1218,28 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
 
-            // get the output status
+            // get the output status (empty or not empty)
             if (!empty($res->output_status)) {
-                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . current($res->output_status) . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                //$this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . current($res->output_status) . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                $out = current($res->output_status);
             } else {
-                /// use the default status
-                $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . $this->getParam('emundusprocessworkflow_output_status', '') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+                /* use the default status */
+                // $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . $this->getParam('emundusprocessworkflow_output_status', '') . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
+
+                /* get the output status of phase */
+                $this->query = 'select jeswstr.status
+                                    from #__emundus_setup_workflow_step_status_repeat as jeswstr
+                                    left join #__emundus_setup_workflow_step as jesws on jeswstr.parent_id = jesws.id
+                                    where jeswstr.type = 0
+                                    and jesws.id = ' . $phase;
+
+                $this->db->setQuery($this->query);
+                $out = $this->db->loadResult();
             }
+
+            /* update output status */
+
+            $this->query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $this->db->quote($now) . ', status=' . $out . ' WHERE applicant_id=' . $student->id . ' AND campaign_id=' . $student->campaign_id . ' AND fnum like ' . $this->db->Quote($student->fnum);
             $this->db->setQuery($this->query);
 
             try {
@@ -1245,17 +1260,9 @@ class PlgFabrik_FormEmundusprocessworkflow extends plgFabrik_Form {
 
             $student->candidature_posted = 1;
 
-            // Send emails defined in trigger
-            if (!is_null($student->output_status)) {
-                $step = $res->output_status;
-            } else {
-                $step = $this->getParam('emundusprocessworkflow_output_status', '');
-            }
-
             $code = array($student->code);
             $to_applicant = '0,1';
-
-            //            $m_emails->sendEmailTrigger($step, $code, $to_applicant, $student, $student->campaign_id);                 // add campaign here from session
+            $m_emails->sendEmailTrigger($out, $code, $to_applicant, $student, $phase);                 // add campaign here from session
 
             // If pdf exporting is activated
             if ($export_pdf == 1) {

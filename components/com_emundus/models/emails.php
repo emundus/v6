@@ -71,9 +71,8 @@ class EmundusModelEmails extends JModelList {
      * @param   $to_applicant   int define if trigger concern selected fnum from list or not. Can be 0, 1
      * @return  array           Emails templates and recipient to trigger
      */
-    public function getEmailTrigger($step, $code, $to_applicant = 0) {
-
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template
+    public function getEmailTrigger($step, $code, $to_applicant = 0, $phase=null) {
+        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, eset.phase
                   FROM #__emundus_setup_emails_trigger as eset
                   LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
@@ -82,37 +81,70 @@ class EmundusModelEmails extends JModelList {
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
                   LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
-                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
+                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.')';
+        if($phase){
+            $query .= ' AND eset.phase = ' . $phase;
+        } else if ($code) {
+            $query .= 'AND esp.code IN ("'.implode('","', $code).'")';
+        }
+
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
 
         $emails_tmpl = array();
         if (count($triggers) > 0) {
             foreach ($triggers as $key => $trigger) {
-                // email tmpl
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
+                if($trigger->phase !== null) {
+                    // email tmpl
+                    $emails_tmpl[$trigger->id][$trigger->phase]['tmpl']['subject'] = $trigger->subject;
+                    $emails_tmpl[$trigger->id][$trigger->phase]['tmpl']['emailfrom'] = $trigger->emailfrom;
+                    $emails_tmpl[$trigger->id][$trigger->phase]['tmpl']['message'] = $trigger->message;
+                    $emails_tmpl[$trigger->id][$trigger->phase]['tmpl']['name'] = $trigger->name;
 
-                // This is the email template model, the HTML structure that makes the email look good.
-                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
+                    // This is the email template model, the HTML structure that makes the email look good.
+                    $emails_tmpl[$trigger->id][$trigger->phase]['tmpl']['template'] = $trigger->Template;
 
-                // default recipients
-                if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
-                	$emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+                    // default recipients
+                    if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
+                        $emails_tmpl[$trigger->id][$trigger->phase]['to']['profile'][] = $trigger->profile_id;
+                    }
+
+                    if (isset($trigger->group_id) && !empty($trigger->group_id)) {
+                        $emails_tmpl[$trigger->id][$trigger->phase]['to']['group'][] = $trigger->group_id;
+                    }
+
+                    if (isset($trigger->user_id) && !empty($trigger->user_id)) {
+                        $emails_tmpl[$trigger->id][$trigger->phase]['to']['user'][] = $trigger->user_id;
+                    }
+
+                    $emails_tmpl[$trigger->id][$trigger->phase]['to']['to_applicant'] = $trigger->to_applicant;
+                    $emails_tmpl[$trigger->id][$trigger->phase]['to']['to_current_user'] = $trigger->to_current_user;
+                } else {
+                    // email tmpl
+                    $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
+                    $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
+                    $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
+                    $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
+
+                    // This is the email template model, the HTML structure that makes the email look good.
+                    $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
+
+                    // default recipients
+                    if (isset($trigger->profile_id) && !empty($trigger->profile_id)) {
+                        $emails_tmpl[$trigger->id][$trigger->code]['to']['profile'][] = $trigger->profile_id;
+                    }
+
+                    if (isset($trigger->group_id) && !empty($trigger->group_id)) {
+                        $emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
+                    }
+
+                    if (isset($trigger->user_id) && !empty($trigger->user_id)) {
+                        $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
+                    }
+
+                    $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
+                    $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
                 }
-
-                if (isset($trigger->group_id) && !empty($trigger->group_id)) {
-                	$emails_tmpl[$trigger->id][$trigger->code]['to']['group'][] = $trigger->group_id;
-                }
-
-                if (isset($trigger->user_id) && !empty($trigger->user_id)) {
-	                $emails_tmpl[$trigger->id][$trigger->code]['to']['user'][] = $trigger->user_id;
-                }
-
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['to_applicant'] = $trigger->to_applicant;
-                $emails_tmpl[$trigger->id][$trigger->code]['to']['to_current_user'] = $trigger->to_current_user;
             }
 
             // generate list of default recipient email + name
@@ -168,7 +200,11 @@ class EmundusModelEmails extends JModelList {
                         $recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
                     }
 
-                    $emails_tmpl[$trigger_id][$code]['to']['recipients'] = $recipients;
+                    if($phase !== null) {
+                        $emails_tmpl[$trigger_id][$phase]['to']['recipients'] = $recipients;
+                    } else {
+                        $emails_tmpl[$trigger_id][$code]['to']['recipients'] = $recipients;
+                    }
                 }
 
             }
@@ -188,15 +224,15 @@ class EmundusModelEmails extends JModelList {
      * @return  bool           Emails templates and recipient to trigger
      * @throws Exception
      */
-    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null) {
+    public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $phase = null) {
         $app = JFactory::getApplication();
         $email_from_sys = $app->getCfg('mailfrom');
 
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.email.php'), JLog::ALL, array('com_emundus'));
 
-        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant);
-
+        $trigger_emails = $this->getEmailTrigger($step, $code, $to_applicant, $phase);
+        
         if (count($trigger_emails) > 0) {
             // get current applicant course
             include_once(JPATH_SITE.'/components/com_emundus/models/campaign.php');
@@ -218,60 +254,118 @@ class EmundusModelEmails extends JModelList {
             );
 
             foreach ($trigger_emails as $trigger_email) {
+                if($phase !== null) {
+                    foreach ($trigger_email[$phase]['to']['recipients'] as $recipient) {
+                        $mailer = JFactory::getMailer();
 
-                foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
-                    $mailer = JFactory::getMailer();
+                        $tags = $this->setTags($student->id, $post, $student->fnum);
 
-                    $tags = $this->setTags($student->id, $post, $student->fnum);
+                        $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$phase]['tmpl']['emailfrom']);
+                        $from_id = 62;
+                        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$phase]['tmpl']['name']);
+                        $to = $recipient['email'];
+                        $to_id = $recipient['id'];
+                        $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$phase]['tmpl']['subject']);
 
-                    $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
-                    $from_id = 62;
-                    $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
-                    $to = $recipient['email'];
-                    $to_id = $recipient['id'];
-                    $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
+                        $body = $trigger_email[$phase]['tmpl']['message'];
+                        
+                        if ($trigger_email[$phase]['tmpl']['template']) {
+                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$phase]['tmpl']['template']);
+                        }
+                        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+                        $body = $this->setTagsFabrik($body, array($student->fnum));
 
-                    $body = $trigger_email[$student->code]['tmpl']['message'];
-                    if ($trigger_email[$student->code]['tmpl']['template']) {
-                        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
+
+                        // If the email sender has the same domain as the system sender address.
+                        if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                            $mail_from_address = $from;
+                        } else {
+                            $mail_from_address = $email_from_sys;
+                        }
+
+                        // Set sender
+                        $sender = [
+                            $mail_from_address,
+                            $fromname
+                        ];
+
+                        $mailer->setSender($sender);
+                        $mailer->addReplyTo($from, $fromname);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+                        $send = $mailer->Send();
+
+                        if ($send !== true) {
+                            echo 'Error sending email: ' . $send->__toString();
+                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        } else {
+                            $message = array(
+                                'user_id_from' => $from_id,
+                                'user_id_to' => $to_id,
+                                'subject' => $subject,
+                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                            );
+                            $this->logEmail($message);
+                        }
                     }
-	                $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
-	                $body = $this->setTagsFabrik($body, array($student->fnum));
+                } else {
+                    foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
+                        $mailer = JFactory::getMailer();
+
+                        $tags = $this->setTags($student->id, $post, $student->fnum);
+
+                        $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
+                        $from_id = 62;
+                        $fromname = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['name']);
+                        $to = $recipient['email'];
+                        $to_id = $recipient['id'];
+                        $subject = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['subject']);
+
+                        $body = $trigger_email[$student->code]['tmpl']['message'];
+                        if ($trigger_email[$student->code]['tmpl']['template']) {
+                            $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $trigger_email[$student->code]['tmpl']['template']);
+                        }
+                        $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+                        $body = $this->setTagsFabrik($body, array($student->fnum));
 
 
-	                // If the email sender has the same domain as the system sender address.
-                    if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-                        $mail_from_address = $from;
-                    } else {
-                        $mail_from_address = $email_from_sys;
-                    }
+                        // If the email sender has the same domain as the system sender address.
+                        if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
+                            $mail_from_address = $from;
+                        } else {
+                            $mail_from_address = $email_from_sys;
+                        }
 
-                    // Set sender
-                    $sender = [
-                        $mail_from_address,
-                        $fromname
-                    ];
+                        // Set sender
+                        $sender = [
+                            $mail_from_address,
+                            $fromname
+                        ];
 
-                    $mailer->setSender($sender);
-                    $mailer->addReplyTo($from, $fromname);
-                    $mailer->addRecipient($to);
-                    $mailer->setSubject($subject);
-                    $mailer->isHTML(true);
-                    $mailer->Encoding = 'base64';
-                    $mailer->setBody($body);
-                    $send = $mailer->Send();
+                        $mailer->setSender($sender);
+                        $mailer->addReplyTo($from, $fromname);
+                        $mailer->addRecipient($to);
+                        $mailer->setSubject($subject);
+                        $mailer->isHTML(true);
+                        $mailer->Encoding = 'base64';
+                        $mailer->setBody($body);
+                        $send = $mailer->Send();
 
-                    if ($send !== true) {
-                        echo 'Error sending email: ' . $send->__toString();
-                        JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-                    } else {
-                        $message = array(
-                            'user_id_from' => $from_id,
-                            'user_id_to' => $to_id,
-                            'subject' => $subject,
-                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
-                        );
-                        $this->logEmail($message);
+                        if ($send !== true) {
+                            echo 'Error sending email: ' . $send->__toString();
+                            JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        } else {
+                            $message = array(
+                                'user_id_from' => $from_id,
+                                'user_id_to' => $to_id,
+                                'subject' => $subject,
+                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                            );
+                            $this->logEmail($message);
+                        }
                     }
                 }
             }

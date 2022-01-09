@@ -1246,6 +1246,7 @@ class EmundusModelProfile extends JModelList {
             ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
             ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum))
             ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 1')
+            ->andWhere($this->_db->quoteName('eswsrr.published') . ' = 1')
             ->order('eswsrr.ordering ASC');
 
         $db->setQuery($query);
@@ -1290,6 +1291,7 @@ class EmundusModelProfile extends JModelList {
             ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
             ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum))
             ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 2')
+            ->andWhere($this->_db->quoteName('eswsrr.published') . ' = 1')
             ->order('eswsrr.ordering ASC');
 
         $db->setQuery($query);
@@ -1573,6 +1575,7 @@ class EmundusModelProfile extends JModelList {
             ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
             ->where($this->_db->quoteName('cc.fnum') . ' LIKE ' . $db->quote($fnum))
             ->andWhere($this->_db->quoteName('eswsrr.rule') . ' = 3')
+            ->andWhere($this->_db->quoteName('eswsrr.published') . ' = 1')
             ->order('eswsrr.ordering ASC');
 
         $db->setQuery($query);

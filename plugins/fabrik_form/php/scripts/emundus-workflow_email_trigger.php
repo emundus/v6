@@ -42,12 +42,7 @@ $db->execute();
 
 /* and then, re-insert new records */
 foreach($stats as $key => $value) {
-    if(empty(current($dests[$key]))) {
-        $raw = array('parent_id' => $step, 'trigger' => current($trigger[$key]), 'email_tmpl' => current($email[$key]), 'status' => current($stats[$key]));
-    } else {
-        $raw = array('parent_id' => $step, 'destination' => current($dests[$key]), 'trigger' => current($trigger[$key]), 'email_tmpl' => current($email[$key]), 'status' => current($stats[$key]));
-    }
-
+    $raw = array('parent_id' => $step, 'destination' => current($dests[$key]), 'trigger' => current($trigger[$key]), 'email_tmpl' => current($email[$key]), 'status' => current($stats[$key]));
     $query->clear()
         ->insert($db->quoteName('#__emundus_setup_workflow_step_emails_repeat'))
         ->columns($db->quoteName(array_keys($raw)))
