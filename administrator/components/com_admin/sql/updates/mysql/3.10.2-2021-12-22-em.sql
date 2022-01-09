@@ -137,15 +137,6 @@ create table jos_emundus_setup_workflow_step_rules_repeat
     published int(1) default 1 null,
     constraint jos_emundus_setup_workflow_step_rules_repeat_ibfk2
         foreign key (parent_id) references jos_emundus_setup_workflow_step (id)
-            on update cascade on delete cascade,
-    constraint jos_emundus_setup_workflow_step_rules_repeat_ibfk3
-        foreign key (rule) references jos_emundus_setup_workflow_rules (id)
-            on update cascade on delete cascade,
-    constraint jos_emundus_setup_workflow_step_rules_repeat_ibfk4
-        foreign key (status) references jos_emundus_setup_status (step)
-            on update cascade on delete cascade
-    constraint jos_emundus_setup_workflow_step_rules_repeat_ibfk5
-        foreign key (profile) references jos_emundus_setup_profiles (id)
             on update cascade on delete cascade
 );
 
@@ -410,7 +401,7 @@ create table jos_emundus_setup_workflow_step_emails_repeat
 (
     id          int auto_increment primary key,
     parent_id   int              not null,
-    trigger     text             null,
+    `trigger`   text             null,
     status      int(2)           not null,
     destination int              null,
     email_tmpl  int(6)           not null,
