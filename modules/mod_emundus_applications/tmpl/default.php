@@ -30,7 +30,7 @@ defined('_JEXEC') or die;
         $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
         $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
         if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
-            <?php 
+            <?php
             if ($file_tags != '') {
 
                 $post = array(
@@ -136,10 +136,17 @@ defined('_JEXEC') or die;
                     <?php endif; ?>
                 </section>
                 <div class="main-page-file-progress-label">
-                    <strong><?= JText::_('STATUS'); ?> :</strong>
-                    <span class="label label-<?= $application->class; ?>">
-                        <?= $application->value; ?>
-                    </span>
+                    <?php if(empty($visible_status)) : ?>
+                        <strong><?= JText::_('STATUS'); ?> :</strong>
+                        <span class="label label-<?= $application->class; ?>">
+                            <?= $application->value; ?>
+                        </span>
+                    <?php elseif (in_array($application->status,$visible_status)) :?>
+                        <strong><?= JText::_('STATUS'); ?> :</strong>
+                        <span class="label label-<?= $application->class; ?>">
+                            <?= $application->value; ?>
+                        </span>
+                    <?php endif; ?>
                     <?php if(!empty($application->order_status)): ?>
                         <br>
                         <strong><?= JText::_('ORDER_STATUS'); ?> :</strong>

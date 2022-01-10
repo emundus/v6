@@ -64,6 +64,10 @@ $show_remove_files = $params->get('show_remove_files', 1);
 $show_archive_files = $params->get('show_archived_files', 1);
 $show_state_files = $params->get('show_state_files', 0);
 $show_payment_status = $params->get('show_payment_status', 0);
+$visible_status = $params->get('visible_status', '');
+if($visible_status != "") {
+    $visible_status = explode(',', $params->get('visible_status', ''));
+}
 
 $order_applications = $params->get('order_applications', 'esc.end_date');
 $applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
