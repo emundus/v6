@@ -3205,34 +3205,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           margin: 48px 0 48px 0;
           flex-direction: column;
 
-
-          /* YES/NO */
-
-          &.plg-yesno {
-            fieldset.radio {
-              label.btn-default.btn.active.btn-danger {
-                input {
-                  @include yes-no-active;
-                }
-
-                span {
-                  @include body-16-medium;
-                }
-              }
-
-              label.btn-default.btn:not(.active) {
-                input {
-                  @include yes-no;
-                }
-
-                span {
-                  @include body-16-medium;
-                }
-              }
-            }
-          }
-
-
           /* DISPLAY */
           &.plg-display .fabrikinput {
             height: auto !important;
@@ -3351,6 +3323,30 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
 
             .fabrikSubElementContainer {
+
+              /* YES/NO */
+              fieldset.btn-radio {
+                label.btn-default.btn.active.btn-danger {
+                  input {
+                    @include yes-no-active;
+                  }
+
+                  span {
+                    @include body-16-medium;
+                  }
+                }
+
+                label.btn-default.btn:not(.active) {
+                  input {
+                    @include yes-no;
+                  }
+
+                  span {
+                    @include body-16-medium;
+                  }
+                }
+              }
+
 
               /* DATE */
               .input-append {
