@@ -100,9 +100,20 @@ export default {
           }
         }
         break;
-      case 'emundus':
+      case 'override':
         try {
-
+          console.log(reference_id);
+          console.log(fields);
+          console.log(reference_table);
+          return await client().get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, {
+            params: {
+              default_lang,
+              lang_to,
+              reference_table,
+              reference_id,
+              fields,
+            }
+          });
         } catch (e) {
           return {
             status: false,

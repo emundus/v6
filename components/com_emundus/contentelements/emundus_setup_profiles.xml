@@ -5,8 +5,11 @@
   <version>1.0</version>
   <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_PROFILES_DESC</description>
   <reference>
-  	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="emundus">
-  		<field type="children" name="label" translate="1">fabrik_forms</field>
+  	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="override">
+  		<field type="children" name="label">fabrik_forms</field>
+        <field table="fabrik_groups" name="label" type="field">Titre</field>
+        <field table="fabrik_elements" name="label" type="field">Nom de l'élément</field>
+        <field table="fabrik_elements__params" name="placeholder" type="field">Texte d'exemple</field>
   	</table>
   </reference>
 </falang>

@@ -96,7 +96,7 @@
       </div>
       <div v-else class="em-neutral-100-box">
         <div v-for="(translation,index) in translations" class="em-mb-32">
-          <p>{{ object.fields.IndexedFields[index].Lable.toUpperCase() }}</p>
+          <p>{{ object.fields.IndexedFields[index].Label.toUpperCase() }}</p>
           <div class="justify-content-between em-mt-16 em-grid-50">
             <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
             <input v-if="object.fields.IndexedFields[index].Type == 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
@@ -135,6 +135,7 @@ export default {
       lang: null,
       object: null,
       data: null,
+      children_type: null,
       children: null,
 
       saving: false,
@@ -215,13 +216,15 @@ export default {
       this.translations = [];
       this.childrens = [];
       this.children = null;
+      this.children_type = null;
       var children_existing = false;
 
       if(value != null) {
         this.object.fields.Fields.forEach((field) => {
           if (field.Type === 'children') {
+            this.children_type = field.Label;
             children_existing = true;
-            translationsService.getChildrens(field.Lable,this.data.id,field.Name).then((response) => {
+            translationsService.getChildrens(field.Label,this.data.id,field.Name).then((response) => {
               this.childrens = response.data;
             });
           }
@@ -240,6 +243,24 @@ export default {
             this.translations = response.data;
           })
         }
+      }
+    },
+
+    children: function(value){
+      this.translations = [];
+
+      if(value != null) {
+        const fields = Object.keys(this.object.fields.IndexedFields).join(',');
+        translationsService.getTranslations(
+            this.object.table.type,
+            this.defaultLang.lang_code,
+            this.lang.lang_code,
+            value.id,
+            fields,
+            this.children_type
+        ).then((response) => {
+          this.translations = response.data;
+        })
       }
     }
   }

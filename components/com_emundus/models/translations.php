@@ -56,7 +56,6 @@ class EmundusModelTranslations extends JModelList
                     $xpath = new DOMXPath($xmlDoc);
                     $tableElement = $xpath->query('//reference/table')->item(0);
 
-                    $contentElement = new ContentElement( $xmlDoc );
                     $object->name = JText::_($xmlDoc->getElementsByTagName('name')->item(0)->textContent);
                     $object->description = JText::_($xmlDoc->getElementsByTagName('description')->item(0)->textContent);
                     $object->table = new stdClass;
@@ -65,7 +64,24 @@ class EmundusModelTranslations extends JModelList
                     $object->table->label = trim($tableElement->getAttribute( 'label' ));
                     $object->table->filters = trim($tableElement->getAttribute( 'filters' ));
                     $object->table->type = trim($tableElement->getAttribute( 'type' ));
-                    $object->fields = $contentElement->getTable();
+                    $tableFields = $tableElement->getElementsByTagName( 'field' );
+
+                    $fields = array();
+                    $indexedFields = array();
+                    foreach ($tableFields as $tableField){
+                        $field = new stdClass;
+                        $field->Type = trim( $tableField->getAttribute( 'type' ) );
+                        $field->Name = trim( $tableField->getAttribute( 'name' ) );
+                        $field->Label = trim( $tableField->textContent );
+                        $field->Table = trim( $tableField->getAttribute( 'table' ) );
+                        $field->Options = trim( $tableField->getAttribute( 'options' ) );
+
+                        $fields[] = $field;
+                        $indexedFields[$field->Name] = $field;
+                    }
+                    $object->fields = new stdClass;
+                    $object->fields->Fields = $fields;
+                    $object->fields->IndexedFields = $indexedFields;
 
                     $objects[] = $object;
                 }

@@ -126,6 +126,26 @@ class EmundusControllerTranslations extends JControllerLegacy {
         exit;
     }
 
+    public function gettranslations(){
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            die(JText::_("ACCESS_DENIED"));
+        }
+
+        $jinput = JFactory::getApplication()->input;
+        $default_lang = $jinput->get->getString('default_lang', null);
+        $lang_to = $jinput->get->getString('lang_to', null);
+        $reference_table = $jinput->get->getString('reference_table', null);
+        $reference_id = $jinput->get->getString('reference_id', null);
+        $fields = $jinput->get->getString('fields', null);
+
+        $result = $this->model->getTranslations('override',$lang_to,'','',$reference_table,$reference_id);
+
+        echo json_encode($result);
+        exit;
+    }
+
     public function getfalangtranslations(){
         $user = JFactory::getUser();
 
