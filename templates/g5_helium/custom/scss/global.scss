@@ -3202,14 +3202,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
         /* BLOC ELEMENT */
         .row-fluid .fabrikElementContainer.control-group {
-          margin: 48px 0px 48px 0px;
+          margin: 48px 0 48px 0;
           flex-direction: column;
 
           /* DISPLAY */
           &.plg-display .fabrikinput {
             height: auto !important;
             border: none !important;
-            padding: 0px !important;
+            padding: 0 !important;
           }
 
 
@@ -3217,7 +3217,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           .fabrikLabel {
             @include body-16-medium;
             color: $neutral-800;
-            margin-bottom: 0px;
+            margin-bottom: 0;
 
               /* ETOILE */
               .icon-star.small {
@@ -3233,7 +3233,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             margin-top: 12px;
 
             &:empty{
-              margin-top: 0px;
+              margin-top: 0;
             }
 
             .icon-question-sign {
@@ -3287,7 +3287,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
 
               &[type="file"] {
-                padding-left: 0px;
+                padding-left: 0;
                 &::-webkit-file-upload-button {
                   border: none;
                   margin-right: 20px;
@@ -3344,7 +3344,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   @include button-select-default;
 
                   i.icon-clock {
-                    margin: 0px;
+                    margin: 0;
                   }
 
                   &:hover {
@@ -3364,7 +3364,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             margin-top: 4px;
 
             &.help-inline {
-              padding: 0px;
+              padding: 0;
             }
 
             .icon-warning {
@@ -3391,14 +3391,20 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             .row-fluid .fabrikgrid_checkbox {
               margin-top: 12px;
 
-              label.checkbox input[type="checkbox"],
-              label.radio input[type="radio"]{
-                @include radio-checkbox;
+              label.checkbox input[type="checkbox"] {
+                @include checkbox;
+                padding: 0;
+              }
+
+              label.radio input[type="radio"] {
+                @include radio;
+                padding: 0;
               }
 
               span {
                 height: auto !important;
-                color: $neutral-800 ;
+                color: $neutral-800;
+                margin-top: 0 !important;
               }
             }
          }
@@ -3413,7 +3419,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
              background: $neutral-50;
              @include body-16-medium;
              color: $neutral-800;
-             margin-bottom: 0px;
+             margin-bottom: 0;
           }
 
           .fabrikGroupRepeater {
