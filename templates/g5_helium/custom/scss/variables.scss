@@ -327,15 +327,15 @@ $font:'Inter', sans-serif;
   height: 48px !important;
   background: $neutral-200;
   border-radius: 4px 4px 0px 0px !important;
-  height: 48px;
   color: $neutral-800;
 }
 
 @mixin radio-checkbox {
-  height: 48px !important;
+  height: 16px !important;
+  width: 16px !important;
   background: $neutral-200;
   border-radius: 4px 4px 0px 0px !important;
-  height: 48px;
   color: $neutral-800;
+  margin-right: 16px;
 }
 
