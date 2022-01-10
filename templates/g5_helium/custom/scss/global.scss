@@ -3390,6 +3390,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             .row-fluid .fabrikgrid_radio,
             .row-fluid .fabrikgrid_checkbox {
               margin-top: 12px;
+              min-height: auto;
 
               label.checkbox {
                 padding: 0;
@@ -3398,7 +3399,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
                 input[type="checkbox"] {
                   @include checkbox;
-                  padding: 0;
                  }
               }
 
@@ -3409,7 +3409,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
                 input[type="radio"] {
                   @include radio;
-                  padding: 0;
+
+                  &:checked {
+                    background-color: initial;
+                    appearance: auto;
+                  }
                 }
               }
 

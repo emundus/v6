@@ -338,16 +338,17 @@ $font:'Inter', sans-serif;
   margin-right: 16px;
   margin-top: 0;
   border: 1px solid $neutral-600;
+  padding: 0 !important;
 }
 
 @mixin radio {
-  height: 16px !important;
-  width: 16px !important;
+  height: 14px !important;
+  width: 14px !important;
   background: $neutral-50;
   border-radius: 9px !important;
   margin-right: 16px;
   margin-top: 0;
   border: 1px solid $neutral-600;
-  padding: 0px!important;
+  padding: 0!important;
 }
 
