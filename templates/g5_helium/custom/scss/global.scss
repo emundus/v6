@@ -3387,28 +3387,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             }
 
 
-            /* YES/NO */
-            fieldset.radio {
-                label.active {
-                  input {
-                    @include yes-no;
-                  }
-                  span {
-                    @include body-16-medium;
-                  }
-                }
-
-                label:not(.active) {
-                  input {
-                    @include yes-no;
-                  }
-                  span {
-                    @include body-16-medium;
-                  }
-                }
-            }
-
-
               /* CHECKBOX - RADIO */
             .row-fluid .fabrikgrid_radio,
             .row-fluid .fabrikgrid_checkbox {
@@ -3450,6 +3428,32 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               }
             }
          }
+      }
+
+      /* YES/NO */
+
+      .row-fluid .fabrikElementContainer .plg-yesno {
+        fieldset.radio {
+          label.active {
+            input {
+              @include yes-no;
+            }
+
+            span {
+              @include body-16-medium;
+            }
+          }
+
+          label:not(.active) {
+            input {
+              @include yes-no;
+            }
+
+            span {
+              @include body-16-medium;
+            }
+          }
+        }
       }
 
         .fabrikSubGroupElements,

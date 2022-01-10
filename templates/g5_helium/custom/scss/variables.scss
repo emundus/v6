@@ -359,3 +359,10 @@ $font:'Inter', sans-serif;
   border: 1px solid $neutral-400;
 }
 
+@mixin yes-no-active {
+  padding: 0px 12px;
+  background: $neutral-400;
+  margin-top: 12px;
+  border: 1px solid $neutral-400;
+}
+
