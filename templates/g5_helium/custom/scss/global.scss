@@ -3391,20 +3391,33 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             .row-fluid .fabrikgrid_checkbox {
               margin-top: 12px;
 
-              label.checkbox input[type="checkbox"] {
-                @include checkbox;
+              label.checkbox {
                 padding: 0;
+                margin: 0;
+                min-height: auto;
+
+                input[type="checkbox"] {
+                  @include checkbox;
+                  padding: 0;
+                 }
               }
 
-              label.radio input[type="radio"] {
-                @include radio;
+              label.radio  {
                 padding: 0;
+                margin: 0;
+                min-height: auto;
+
+                input[type="radio"] {
+                  @include radio;
+                  padding: 0;
+                }
               }
 
               span {
                 height: auto !important;
                 color: $neutral-800;
                 margin-top: 0 !important;
+                padding: 0 !important;
               }
             }
          }

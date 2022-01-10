@@ -335,7 +335,6 @@ $font:'Inter', sans-serif;
   width: 16px !important;
   background: $neutral-200;
   border-radius: 1px !important;
-  color: $neutral-800;
   margin-right: 16px;
   margin-top: 0;
   border: 1px solid $neutral-600;
@@ -344,9 +343,8 @@ $font:'Inter', sans-serif;
 @mixin radio {
   height: 16px !important;
   width: 16px !important;
-  background: $neutral-200;
+  background: $neutral-50;
   border-radius: 9px !important;
-  color: $neutral-800;
   margin-right: 16px;
   margin-top: 0;
   border: 1px solid $neutral-600;
