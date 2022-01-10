@@ -352,3 +352,10 @@ $font:'Inter', sans-serif;
   padding: 0!important;
 }
 
+@mixin yes-no {
+  padding: 0px 12px;
+  background: $neutral-200;
+  margin-top: 12px;
+  border: 1px solid $neutral-400;
+}
+

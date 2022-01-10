@@ -3386,7 +3386,30 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               margin-top: 12px;
             }
 
-            /* CHECKBOX - RADIO */
+
+            /* YES/NO */
+            fieldset.radio {
+                label.active {
+                  input {
+                    @include yes-no;
+                  }
+                  span {
+                    @include body-16-medium;
+                  }
+                }
+
+                label:not(.active) {
+                  input {
+                    @include yes-no;
+                  }
+                  span {
+                    @include body-16-medium;
+                  }
+                }
+            }
+
+
+              /* CHECKBOX - RADIO */
             .row-fluid .fabrikgrid_radio,
             .row-fluid .fabrikgrid_checkbox {
               margin-top: 12px;
@@ -3413,6 +3436,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   &:checked {
                     background-color: initial;
                     appearance: auto;
+                    height: 16px !important;
+                    width: 16px !important;
                   }
                 }
               }
