@@ -475,10 +475,21 @@ class EmundusHelperFiles
 
     public function getAttachmentsTypesByProfileID ($pid) {
         $db = JFactory::getDBO();
-        $query = 'SELECT *
-                FROM #__emundus_setup_attachments WHERE id IN (SELECT attachment_id FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$pid.')
-                ORDER BY ordering ASC';
-        $db->setQuery( $query );
+        $query = $db->getQuery(true);
+
+        $query->select('attachment_id')
+            ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+            ->where($db->quoteName('profile_id') . ' IN (' . implode(',', $pid) . ')');
+        $db->setQuery($query);
+        $attachments = $db->loadColumn();
+
+        $query->clear()
+            ->select('*')
+            ->from($db->quoteName('#__emundus_setup_attachments'))
+            ->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
+            ->order('ordering');
+
+        $db->setQuery($query);
         return $db->loadObjectList();
     }
 
