@@ -323,7 +323,18 @@ $font:'Inter', sans-serif;
   height: 48px !important;
 }
 
-@mixin button-select-default {
+@mixin multiple-select {
+  background-position-x: 86%;
+  background-position-y: 54%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow.svg);
+  background-size: 8px;
+  background-repeat: no-repeat;
+  height: 48px !important;
+  padding: 0 16px;
+}
+
+@mixin select-button-default {
   height: 48px !important;
   background: $neutral-200;
   border-radius: 4px 4px 0 0 !important;

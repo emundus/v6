@@ -3291,7 +3291,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 &::-webkit-file-upload-button {
                   border: none;
                   margin-right: 20px;
-                  @include button-select-default;
+                  @include select-button-default;
                 }
               }
             }
@@ -3333,6 +3333,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                    background: $main-500;
                     border-radius: 0 4px 4px 0 !important;
 
+                    &:hover {
+                      border: 1px solid $main-600;
+                      background: $main-600;
+                    }
+
                   span {
                     @include body-16-medium;
                     margin-top: 0;
@@ -3345,6 +3350,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   border: 1px solid $red-500;
                   background: $red-500;
                   border-radius: 4px 0 0 4px !important;
+
+                  &:hover {
+                    border: 1px solid $red-600;
+                    background: $red-600;
+                  }
 
                   span {
                     @include body-16-medium;
@@ -3359,6 +3369,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   background: $neutral-400;
                   border-radius: 0 4px 4px 0 !important;
 
+                  &:hover {
+                    margin-left: 0;
+                    border: 1px solid $neutral-500;
+                    background: $neutral-500;
+                  }
+
                   span {
                     @include body-16-medium;
                     margin-top: 0;
@@ -3372,6 +3388,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   background: $neutral-400;
                   border-radius: 4px 0 0 4px !important;
 
+                  &:hover {
+                    margin-right: 0;
+                    border: 1px solid $neutral-500;
+                    background: $neutral-500;
+                  }
 
                   span {
                     @include body-16-medium;
@@ -3379,6 +3400,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                     color: $neutral-900 ;
                   }
                 }
+              }
+
+              /* BIRTHDAY */
+              select.inputbox {
+                 @include multiple-select;
               }
 
 
@@ -3399,7 +3425,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   display: flex;
                   justify-content: center;
                   align-items: center;
-                  @include button-select-default;
+                  @include select-button-default ;
 
                   i.icon-clock {
                     margin: 0;
