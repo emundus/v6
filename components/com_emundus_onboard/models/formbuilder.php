@@ -1214,6 +1214,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             return array(
                 'id' => $formid,
+                'db_table_name' => 'jos_emundus_' . $prid . '_' . $increment,
                 'label' => $label[$actualLanguage],
                 'link' => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
                 'rgt' => array_values($rgts)[strval(sizeof($rgts) - 1)] + 2,
