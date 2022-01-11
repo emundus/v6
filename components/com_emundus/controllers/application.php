@@ -737,13 +737,14 @@ class EmundusControllerApplication extends JControllerLegacy
     public function getform() {
         $jinput = JFactory::getApplication()->input;
 
-        $profile = $jinput->getVar('profile', null);
-        $user = $jinput->getVar('user', null);
-        $fnum = $jinput->getVar('fnum', null);
+        $profile = $jinput->getInt('profile', null);
+        $user = $jinput->getInt('user', null);
+        $fnum = $jinput->getString('fnum', null);
 
-        $m_application = $this->getModel('Application');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'application.php');
+        $m_application = new EmundusModelApplication;
 
-        $form = $m_application->getForms(intval($user), $fnum, $profile);
+        $form = $m_application->getForms($user, $fnum, $profile);
         if(!empty($form)) {
             $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
         } else {

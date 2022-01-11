@@ -44,7 +44,7 @@ $user = $this->userid;
                     <label class="control-label em-filter-label"><?= JText::_('PROFILE_FORM'); ?></label>
                 </div>
 
-                <select class="chzn-select" style="width: 100%" id="select_profile">
+                <select class="chzn-select em-chosen-select" id="select_profile">
                     <option value="<?= $defaultpid->pid; ?>" selected style=""> <?= $defaultpid->label; ?></option>
                     <?php foreach($pids as $pid) : ?>
                         <optgroup class="step_group_profile" label ="<?= strtoupper($pid->lbl) ?>" style="">
@@ -107,7 +107,7 @@ $user = $this->userid;
             type: 'post',
             url: 'index.php?option=com_emundus&controller=application&task=getform',
             dataType: 'json',
-            data: { profile: profile, user: $('#user_hidden').attr('value'), $fnum: $('#fnum_hidden').attr('value') },
+            data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
             success: function(result) {
                 var form = result.data;
 

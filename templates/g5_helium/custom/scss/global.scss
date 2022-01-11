@@ -2686,8 +2686,48 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     color: #12DB42;
   }
 
-  .chosen-container .chosen-results li.highlighted {
-    background-color: $base-primary-color;
+  // CHOSEN css
+  .chosen-container{
+    width: auto !important;
+  }
+
+  .chosen-container {
+    .chosen-single {
+      background: transparent !important;
+      box-shadow: unset;
+      height: 40px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-color: $neutral-300;
+      div{
+        position: relative;
+      }
+    }
+
+    .chosen-search {
+      padding: 8px 12px;
+      input[type="text"] {
+        &:focus {
+          box-shadow: unset;
+          border: solid 1px $blue-400;
+        }
+      }
+    }
+
+    .chosen-results {
+      padding: 0;
+      margin: 0;
+      li {
+        padding: 8px 12px;
+      }
+    }
+
+    .chosen-results li.highlighted {
+      background-color: $neutral-300;
+      color: $neutral-900;
+    }
   }
 
   .navbar.navbar-inverse {
