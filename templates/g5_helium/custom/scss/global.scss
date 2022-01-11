@@ -3364,7 +3364,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   }
                 }
 
-                label.btn-default.btn:not(.active):not(.btn-danger)  {
+                label.btn-default.btn:not(.active)[href~="1"]  {
                   @include yes-no;
                   border: 1px solid $neutral-400;
                   background: $neutral-400;
@@ -3383,7 +3383,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   }
                 }
 
-                label.btn-default.btn:not(.active):not(.btn-success) {
+                label.btn-default.btn:not(.active)[href~="0"]  {
                   @include yes-no;
                   border: 1px solid $neutral-400;
                   background: $neutral-400;
@@ -3406,10 +3406,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               /* BIRTHDAY */
               select.inputbox {
                  @include multiple-select;
+                 @include body-16;
 
-                  option {
-                    @include body-16;
-                  }
               }
 
 
