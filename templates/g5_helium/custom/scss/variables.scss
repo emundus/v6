@@ -354,19 +354,7 @@ $font:'Inter', sans-serif;
 
 @mixin yes-no {
   padding: 12px;
-  background: $neutral-200;
   margin-top: 12px;
-  border: 1px solid $neutral-400;
-  border-radius: 4px 0px 0px 4px !important;
-  box-shadow: none;
-}
-
-@mixin yes-no-active {
-  padding: 12px;
-  background: $neutral-400;
-  margin-top: 12px;
-  border: 1px solid $neutral-400;
-  border-radius: 4px 0px 0px 4px !important;
   box-shadow: none;
 }
 

@@ -3326,23 +3326,57 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
               /* YES/NO */
               fieldset.btn-radio {
-                label.btn-default.btn.btn-danger.active,
+
                 label.btn-default.btn.btn-success.active {
-                    @include yes-no-active;
+                    @include yes-no;
+                    border: 1px solid $main-500;
+                   background: $main-500;
+                    border-radius: 0 4px 4px 0 !important;
 
                   span {
                     @include body-16-medium;
                     margin-top: 0;
+                    color: $neutral-50;
                   }
                 }
 
-                label.btn-default.btn:not(.active),
-                label.btn-default.btn.btn-success:not(.active)  {
+                label.btn-default.btn.btn-danger.active {
                   @include yes-no;
+                  border: 1px solid $red-500;
+                  background: $red-500;
+                  border-radius: 4px 0 0 4px !important;
 
                   span {
                     @include body-16-medium;
                     margin-top: 0;
+                    color: $neutral-50;
+                  }
+                }
+
+                label.btn-default.btn.btn-success:not(.active)  {
+                  @include yes-no;
+                  border: 1px solid $neutral-400;
+                  background: $neutral-400;
+                  border-radius: 0 4px 4px 0 !important;
+
+                  span {
+                    @include body-16-medium;
+                    margin-top: 0;
+                    color: $neutral-900 ;
+                  }
+                }
+
+                label.btn-default.btn:not(.active) {
+                  @include yes-no;
+                  border: 1px solid $neutral-400;
+                  background: $neutral-400;
+                  border-radius: 4px 0 0 4px !important;
+
+
+                  span {
+                    @include body-16-medium;
+                    margin-top: 0;
+                    color: $neutral-900 ;
                   }
                 }
               }
