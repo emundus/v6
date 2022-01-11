@@ -763,12 +763,15 @@ class EmundusonboardModelform extends JModelList {
 	}
 
 
-	public function createProfile($data, $userId, $userName) {
+	public function createProfile($data, $userId, $userName, $first_page = true) {
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);
 
-        $settings = JModelLegacy::getInstance('settings', 'EmundusonboardModel');
-        $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'formbuilder.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'settings.php');
+
+        $formbuilder = new EmundusonboardModelformbuilder;
+        $settings = new EmundusonboardModelsettings;
 
         $query->select('id')
             ->from($db->quoteName('#__emundus_setup_profiles'))
@@ -838,18 +841,20 @@ class EmundusonboardModelform extends JModelList {
 
                 $formbuilder->createHeadingMenu('menu-profile' . $newprofile,$data['label'],$newprofile);
 
-				// Create a first page
-                $label = array(
-                    //'fr' => $newprofile.' - Ma première page',
-                    //'en' => $newprofile.' - My first page'
-                    'fr' => 'Ma première page',
-                    'en' => 'My first page'
-                );
-                $intro = array(
-                    'fr' => 'Décrivez votre page de formulaire avec une introduction',
-                    'en' => 'Describe your form page with an introduction'
-                );
-                $formbuilder->createMenu($label, $intro, $newprofile, 'false');
+                if($first_page) {
+                    // Create a first page
+                    $label = array(
+                        //'fr' => $newprofile.' - Ma première page',
+                        //'en' => $newprofile.' - My first page'
+                        'fr' => 'Ma première page',
+                        'en' => 'My first page'
+                    );
+                    $intro = array(
+                        'fr' => 'Décrivez votre page de formulaire avec une introduction',
+                        'en' => 'Describe your form page with an introduction'
+                    );
+                    $formbuilder->createMenu($label, $intro, $newprofile, 'false');
+                }
 
                 // Create submittion page
                 $label = array(

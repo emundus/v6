@@ -238,11 +238,10 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $app = JFactory::getApplication();
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'falang.php');
 
-        $model = new MenusModelItem();
+        $falang = new EmundusonboardModelfalang;
 
-        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
         $modules = [93,102,103,104,168,170];
 
         try {
