@@ -3170,8 +3170,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
 
     /* INTRO FORMULAIRE */
-     p:first-of-type {
-      @include body-14;
+     p:first-of-type,
+     p.form-intro {
+      @include body-16;
       color: $neutral-600;
       margin-top: 8px;
     }
@@ -3363,7 +3364,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   }
                 }
 
-                label.btn-default.btn.btn-success:not(.active)  {
+                label.btn-default.btn:not(.active):not(.btn-danger)  {
                   @include yes-no;
                   border: 1px solid $neutral-400;
                   background: $neutral-400;
@@ -3382,7 +3383,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   }
                 }
 
-                label.btn-default.btn:not(.active) {
+                label.btn-default.btn:not(.active):not(.btn-success) {
                   @include yes-no;
                   border: 1px solid $neutral-400;
                   background: $neutral-400;
@@ -3405,6 +3406,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               /* BIRTHDAY */
               select.inputbox {
                  @include multiple-select;
+
+                  option {
+                    @include body-16;
+                  }
               }
 
 

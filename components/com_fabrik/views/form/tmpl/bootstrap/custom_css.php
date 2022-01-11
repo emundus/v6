@@ -1350,11 +1350,6 @@ label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.sma
   position: relative;
 }
 
-
-.fabrikForm .row-fluid .fabrikElement select.input-small {
-  width: 120px;
-}
-
 .fabrikForm .row-fluid .fabrikElement .fabrik_characters_left {
   margin-bottom: 20px;
 }
