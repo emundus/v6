@@ -4848,3 +4848,136 @@ input:focus + .em-slider {
   }
 }
 
+/**
+  LOGIN GUARD
+**/
+#loginguard-methods-list{
+  .clearfix{
+    display: none;
+  }
+  #loginguard-methods-reset-container{
+    border: unset;
+    .btn{
+      margin-bottom: 0;
+    }
+  }
+  #loginguard-methods-list-head{
+    opacity: 0;
+    margin: 0 16px;
+  }
+  #loginguard-methods-list-instructions{
+    margin: 0 clamp(10px, 1.5em, 50px) 1em;
+  }
+  #loginguard-methods-list-container{
+    margin: 0 clamp(10px, 1.5em, 50px) .5em;
+    padding: unset;
+    .loginguard-methods-list-method-name-backupcodes{
+      display: none;
+    }
+  }
+  .loginguard-methods-list-method{
+    border-radius: 4px;
+    padding: 1em;
+    .loginguard-methods-list-method-header {
+      align-items: center;
+      margin-bottom: 1em;
+      .loginguard-methods-list-method-image {
+        padding: unset;
+      }
+      .loginguard-methods-list-method-title {
+        display: flex;
+        align-items: center;
+
+        h4 {
+          margin-top: unset;
+          display: flex;
+          align-items: center;
+          #loginguard-methods-list-method-default-tag{
+            margin-left: 1em;
+          }
+        }
+      }
+      .loginguard-methods-list-method-info{
+        height: 100%;
+      }
+    }
+    .loginguard-methods-list-method-records-container{
+      .loginguard-methods-list-method-records{
+        .loginguard-methods-list-method-record {
+          align-items: center;
+          .loginguard-methods-list-method-record-title-container {
+            display: flex;
+            align-items: center;
+
+            #loginguard-methods-list-method-default-badge-small {
+              background: unset;
+              color: $base-secondary-color;
+            }
+          }
+          .loginguard-methods-list-method-record-lastused{
+            justify-content: start;
+            .loginguard-methods-list-method-record-createdon{
+              margin-right: 1em;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#loginguard-method-edit{
+  .float-end{
+    display: none;
+  }
+  input[type="checkbox"]{
+    margin: 0;
+  }
+  .control-group {
+    margin: 20px 0;
+  }
+  .buttons{
+    .controls{
+      display: flex;
+      justify-content: space-between;
+      .btn-primary{
+        background: $base-primary-color;
+        &:hover{
+          color: white;
+        }
+      }
+      .btn-danger{
+        background: transparent;
+        color: black;
+      }
+    }
+  }
+}
+
+.loginguard-captive{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10em;
+  #loginguard-captive-form-method-fields{
+    #loginguard-captive-form-remember-me{
+      margin-top: 10px;
+      .loginguard-toggle input:checked + label.green{
+        background: $main-500;
+        box-shadow: unset;
+      }
+      .loginguard-toggle input:checked + label.red{
+        background: $red-500;
+        box-shadow: unset;
+      }
+    }
+  }
+  #loginguard-captive-form-standard-buttons{
+    display: flex;
+    justify-content: space-between;
+  }
+  #loginguard-captive-form-choose-another{
+    margin-top: 1em;
+  }
+}
