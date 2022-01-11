@@ -103,85 +103,70 @@ class MakeUpdateServer extends JApplicationCli
 	 * @return false|string
 	 * @throws Exception
 	 */
-	public function makeXml($elem, $file, $dom)
+	public function makeXml($root, $elem, $file, $dom)
 	{
 		$comp = $elem['id'];
 		$name = preg_split("/[_]+/", $comp, 2);
 
-		if (!file_exists($xml_path = JPATH_ADMINISTRATOR . "/components/" . $comp . "/" . $name[1] . '.xml'))
-		{
+		if (!file_exists($xml_path = JPATH_ADMINISTRATOR . "/components/" . $comp . "/" . $name[1] . '.xml')) {
 			$xml_path = JPATH_SITE . "/components/" . $comp . "/" . $name[1] . '.xml';
 		}
-		if ($elem['type'] == 'module')
-		{
+		if ($elem['type'] == 'module') {
 			$xml_path = JPATH_BASE . "/" . $elem['type'] . "s/" . $comp . "/" . $comp . '.xml';
-		}
-		elseif ($elem['type'] == 'plugin')
-		{
+		} elseif ($elem['type'] == 'plugin') {
 			$xml_path = JPATH_BASE . "/" . $elem['type'] . "s/" . $elem['group'] . "/" . $comp . "/" . $comp . '.xml';
 		}
 
-		$update_filepath = $this->filepath . "/packages/" . $comp;
+		$update_filepath = $this->filepath . "packages/" . $comp;
 		mkdir($update_filepath);
+
 		$manifest = simplexml_load_file($xml_path);
-		switch ($file)
+
+        switch ($file)
 		{
 			case 'list':
-				$content_list = <<<XML
-                    <extensionset>
-                    </extensionset>
-                    XML;
-				$xml          = new SimpleXMLElement($content_list);
-				$xml->addAttribute('extension');
-				$extension = $xml->addChild('extension');
-				$extension->addChild('name', ucwords($name[1]));
-				$extension->addChild('element', $comp);
-				if ($manifest->attributes()['type'][1])
-				{
-					$extension->addChild('type', $manifest->attributes()['type'][1]);
-				}
-				if ($manifest->attributes()['client'][1])
-				{
-					$extension->addChild('client', $manifest->attributes()['client'][1]);
-				}
-				$extension->addChild('version', $this->version);
-				$extension->addChild('targeplatformversion', '3.[23456789]');
-				$extension->addChild('detailsurl', 'http://localhost:8080/emundus-updates/' . $comp . '/updates.xml');
-				$file = fopen($this->filepath . "/package_list.xml", "a") or die("Unable to open file!");
-				$xmlString = $xml->saveXML();
-				$dom->loadXML($xmlString);
-				$comp != 'com_emundus' ? $content = $dom->saveXML($dom->documentElement) : $content = $dom->saveXML();
-				break;
+                $extension = $dom->createElement('extension');
+                $extension->appendChild($dom->createElement('name', ucwords($name[1])));
+                $extension->appendChild($dom->createElement('element', $comp));
+                if ($manifest->attributes()['type'][1]) {
+                    $extension->appendChild($dom->createElement('type', $manifest->attributes()['type'][1]));
+                }
+                if ($manifest->attributes()['client'][1]) {
+                    $extension->appendChild($dom->createElement('client', $manifest->attributes()['client'][1]));
+                }
+                $extension->appendChild($dom->createElement('version', $this->version));
+                $extension->appendChild($dom->createElement('targeplatformversion', '3.[23456789]'));
+                $extension->appendChild($dom->createElement('detailsurl', 'http://localhost/emundus-updates/' . $comp . '/updates.xml'));
+
+                $root->appendChild($extension);
+                break;
 			case 'updates':
-				$content_update = <<<XML
-                    <updates>
-                    </updates>
-                    XML;
-				$xml            = new SimpleXMLElement($content_update);
-				$update         = $xml->addChild('update');
-				$update->addChild('name', ucwords($name[1]));
-				$update->addChild('element', $comp);
-				$update->addChild('type', $manifest->attributes()['type'][1]);
-				$update->addChild('version', $this->version);
-				$update->addChild('infourl', 'http://localhost:8080/emundus-updates/' . $comp . '/' . $comp . '-' . $this->version . '.html');
-				$update->addChild('downloads');
-				$downloadurl = $update->downloads->addChild('downloadurl', 'http://localhost:8080/emundus-updates/' . $comp . '/' . $comp . '-' . $this->version . '.zip');
-				$downloadurl->addAttribute('type', 'full');
-				$downloadurl->addAttribute('format', 'zip');
-				$tags = $update->addChild('tags');
-				$tags->addChild('tag', 'stable');
-				$targetplatform = $update->addChild('targeplatformversion');
-				$targetplatform->addAttribute('name', 'joomla');
-				$targetplatform->addAttribute('version', '3.[23456789]');
-				$update->addChild('php_minimum', '5.3');
-				$file = fopen($update_filepath . "/updates.xml", "w") or die("Unable to open file!");
-				$xmlString = $xml->saveXML();
-				$dom->loadXML($xmlString);
-				$content = $dom->saveXML();
-		}
-		fwrite($file, $content);
-		fclose($file);
-		$html = fopen($update_filepath . "/" . $comp . "-" . $this->version . ".html", "w") or die("Unable to open file!");
+                $update = $dom->createElement('update');
+                $update->appendChild($dom->createElement('name', ucwords($name[1])));
+                $update->appendChild($dom->createElement('element', $comp));
+                if ($manifest->attributes()['type'][1]) {
+                    $update->appendChild($dom->createElement('type', $manifest->attributes()['type'][1]));
+                }
+                $update->appendChild($dom->createElement('version', $this->version));
+                $update->appendChild($dom->createElement('infourl', 'http://localhost/emundus-updates/' . $comp . '/' . $comp . '-' . $this->version . '.html'));
+                $downloads = $dom->createElement('downloads');
+                $downloads->appendChild($dom->createElement('downloadurl', 'http://localhost/emundus-updates/' . $comp . '/' . $comp . '-' . $this->version . '.zip'));
+                $downloads->appendChild($dom->createElement('type', 'full'));
+                $downloads->appendChild($dom->createElement('format', "zip"));
+                $update->appendChild($downloads);
+                $tags = $dom->createElement('tags');
+                $tags->appendChild($dom->createElement('tag', 'stable'));
+                $update->appendChild($tags);
+                $targetplatform = $dom->createElement('targeplatformversion');
+                $targetplatform->appendChild($dom->createElement('name', 'joomla'));
+                $targetplatform->appendChild($dom->createElement('version', '3.[23456789]'));
+                $update->appendChild($targetplatform);
+                $update->appendChild($dom->createElement('php_minimum', '5.3'));
+
+                $root->appendChild($update);
+                break;
+        }
+		$html = fopen($update_filepath . "/" . $comp . "_" . $this->version . ".html", "w") or die("Unable to open file!");
 		fclose($html);
 	}
 
@@ -387,6 +372,7 @@ class MakeUpdateServer extends JApplicationCli
 				$file->isDir() ? rmdir($file) : unlink($file);
 			}
 		}
+        echo 'Tmp deletes';
 	}
 
 	public function doExecute()
@@ -394,20 +380,30 @@ class MakeUpdateServer extends JApplicationCli
 		$this->version  = "10.0.0";
 		$sep            = "</extension>";
 		$sep_admin      = 'folder="admin">';
-		$updateserver   = "\t<updateservers>\n\t\t<server type='collection' name='eMundus'>http://localhost:8080/emundus-updates/package_list.xml</server>\n\t</updateservers>\n";
+		$updateserver   = "\t<updateservers>\n\t\t<server type='collection' name='eMundus'>http://localhost/emundus-updates/package_list.xml</server>\n\t</updateservers>\n";
 		$update         = "\n\t<update>\n\t\t<schemas>\n\t\t\t<schemapath type='mysql'>sql/updates/mysql</schemapath>\n\t\t</schemas>\n\t</update>\n\n";
 		$folder_admin   = "\t\t<folder>sql</folder>";
 		$this->filepath = JPATH_BASE . '/emundus-updates/';
 		mkdir($this->filepath, 0777, true);
-		mkdir($this->filepath . '/packages');
-		touch($this->filepath . '/package_list.xml');
-		$list_dom                     = new DOMDocument;
-		$list_dom->preserveWhiteSpace = false;
-		$list_dom->formatOutput       = true;
+		mkdir($this->filepath . 'packages');
+		touch($this->filepath . 'package_list.xml');
 
 		$xml_path = JPATH_ADMINISTRATOR . "/components/com_emundus/pkg_emundus.xml";
 		$data     = simplexml_load_file($xml_path);
-		foreach ($data->files as $obj)
+
+        $list_dom = new DOMDocument('1.0');
+        $list_dom->preserveWhiteSpace = false;
+        $list_dom->formatOutput = true;
+        $extensionset = $list_dom->createElement('extensionset');
+        $list_dom->appendChild($extensionset);
+
+        $update_dom = new DOMDocument("1.0", );
+        $update_dom->preserveWhiteSpace = false;
+        $update_dom->formatOutput = true;
+        $updates = $update_dom->createElement('updates');
+        $update_dom->appendChild($updates);
+
+        foreach ($data->files as $obj)
 		{
 			foreach ($obj->file as $elem)
 			{
@@ -416,16 +412,15 @@ class MakeUpdateServer extends JApplicationCli
 				if (!JFolder::exists($dest))
 				{
 					echo $dest . " not exist";
-					if ($elem['type'] == 'component')
-					{
+					if ($elem['type'] == 'component') {
 						$this->updateServerXml($elem['id'], $sep, $sep_admin, $updateserver, $update, $folder_admin);
-						$update_dom                     = new DOMDocument("1.0");
-						$update_dom->preserveWhiteSpace = false;
-						$update_dom->formatOutput       = true;
-						$this->makeXml($elem, $file = 'updates', $update_dom);
-					}
+                        $this->makeXml($updates, $elem, $file = 'updates', $update_dom);
+                        $update_dom->save($this->filepath . '/packages/' . $elem['id'] . '/updates.xml');
+                    }
 
-					$this->makeXml($elem, $file = 'list', $list_dom);
+
+					$this->makeXml($extensionset, $elem, $file = 'list', $list_dom);
+                    $list_dom->save($this->filepath . "package_list.xml");
 
 					$this->package($elem);
 
@@ -446,9 +441,7 @@ class MakeUpdateServer extends JApplicationCli
 				}
 			}
 		}
-
 		$this->deleteTmp();
-
 	}
 }
 
