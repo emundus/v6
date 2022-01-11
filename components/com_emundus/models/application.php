@@ -4353,7 +4353,7 @@ class EmundusModelApplication extends JModelList
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                 $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . $filePath);
-                $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
+                $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\Html($phpSpreadsheet);
                 $htmlWriter->setGenerateSheetNavigationBlock(true);
                 $htmlWriter->setSheetIndex(null);
                 $preview['content'] = $htmlWriter->generateHtmlAll();
