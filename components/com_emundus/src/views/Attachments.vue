@@ -214,7 +214,10 @@
                 />
               </td>
               <td class="td-document" @click="openModal(attachment)">
-                {{ attachment.value }}
+                <span>{{ attachment.value }}</span>
+                <span v-if="!attachment.existsOnServer" class="material-icons warning file-not-found" :title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')">
+                warning
+                </span>
               </td>
               <td class="date">{{ formattedDate(attachment.timedate) }}</td>
               <td class="desc">{{ attachment.description }}</td>
@@ -368,7 +371,7 @@ export default {
       attachments: [],
       categories: {},
       fnums: [],
-      users: {},
+      users: [],
       displayedUser: {},
       displayedFnum: this.fnum,
       checkedAttachments: [],
@@ -383,31 +386,48 @@ export default {
       canDownload: true,
       modalLoading: false,
       slideTransition: "slide-fade",
+			changeFileEvent: null,
     };
+	},
+	created() {
+		this.changeFileEvent = new Event("changeFile");
   },
   mounted() {
     this.getFnums();
     this.getUsers();
     this.getAttachments();
     this.setAccessRights();
+    this.loading = false;
   },
   methods: {
     // Getters and setters
     async getFnums() {
-      this.fnums = await fileService.getFnums(this.user);
+      const fnumsOnPage = document.getElementsByClassName('em_file_open');
+      for (let fnum of fnumsOnPage) {
+        this.fnums.push(fnum.id);
+      }
     },
     async getUsers() {
-      this.users = await userService.getUsers();
-      this.$store.dispatch("user/setUsers", this.users);
-      this.$store.dispatch("user/setCurrentUser", this.user);
+      const response = await userService.getUsers();
 
+      if (response.status !== false) {
+        this.users = response.data;
+        this.$store.dispatch("user/setUsers", this.users);
+      }
+
+      this.$store.dispatch("user/setCurrentUser", this.user);
       this.setDisplayedUser();
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
-      const foundUser = this.users.find(
-        (user) => user.user_id == response.fnumInfos.applicant_id
-      );
+
+      // if empty object this.users, found User = false
+      let foundUser = false;
+      if (this.users.length > 0) {
+        foundUser = this.users.find(
+          (user) => user.user_id == response.fnumInfos.applicant_id
+        );
+      }
 
       if (!foundUser) {
         const resp = await userService.getUserById(
@@ -471,21 +491,30 @@ export default {
         this.loading = false;
       }
     },
-    async refreshAttachments() {
-      this.loading = true;
+    async refreshAttachments(addLoading = false) {
+      if (addLoading) {
+        this.loading = true;
+      }
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs["searchbar"].value = "";
-      this.attachments = await attachmentService.getAttachmentsByFnum(
+      const response = await attachmentService.getAttachmentsByFnum(
         this.displayedFnum
       );
-      this.$store.dispatch("attachment/setAttachmentsOfFnum", {
-        fnum: [this.displayedFnum],
-        attachments: this.attachments,
-      });
 
-      this.getCategories();
-      this.loading = false;
+      if (response !== false) {
+        this.attachments = response;
+        this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+          fnum: [this.displayedFnum],
+          attachments: this.attachments,
+        });
+
+        this.getCategories();
+      }
+
+      if (addLoading) {
+        this.loading = false;
+      }
     },
     updateAttachment() {
       this.resetOrder();
@@ -621,16 +650,50 @@ export default {
 
     // navigation functions
     changeFile(position) {
-      this.displayedFnum = this.fnums[position];
-      this.setDisplayedUser();
-      this.getAttachments();
+			this.loading = true;
+			const oldFnumPosition = this.fnumPosition;
+			this.displayedFnum = this.fnums[position];
+			this.attachments = [];
       this.setAccessRights();
       this.resetOrder();
       this.resetSearch();
       this.resetCategoryFilters();
-      this.attachments.forEach((attachment) => {
-        attachment.show = true;
-      });
+
+			fileService.getFnumInfos(this.displayedFnum).then((response) => {
+				if (response.status === true) {
+					this.changeFileEvent.detail = {
+						fnum: response.fnumInfos,
+						next: position > oldFnumPosition ? true : false,
+						previous: position < oldFnumPosition ? true : false,
+					};
+
+					document
+						.querySelector(".com_emundus_vue")
+						.dispatchEvent(this.changeFileEvent);
+				} else {
+					this.displayErrorMessage(response.msg);
+				}
+			});
+
+			this.setDisplayedUser()
+				.then(() => {
+					this.getAttachments()
+						.then(() => {
+							this.attachments.forEach((attachment) => {
+								attachment.show = true;
+							});
+
+              this.loading = false;
+            })
+						.catch((error) => {
+							this.displayErrorMessage(error);
+							this.loading = false;
+						});
+				})
+				.catch((error) => {
+					this.displayErrorMessage(error);
+					this.loading = false;
+				});
     },
     changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
@@ -800,7 +863,7 @@ export default {
     attachmentPath() {
       return (
         this.$store.state.attachment.attachmentPath +
-        this.displayedUser.id +
+        this.displayedUser.user_id +
         "/" +
         this.selectedAttachment.filename
       );
@@ -870,7 +933,7 @@ export default {
     //   }
     // }
 
-    /** 
+    /**
     * Old Header Style
     * todo: remove this later
     */
@@ -1166,6 +1229,11 @@ export default {
         text-overflow: ellipsis;
         white-space: nowrap;
         cursor: pointer;
+
+        .warning.file-not-found {
+          color: var(--error-color);
+          transform: translate(10px, 3px);
+        }
       }
     }
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -110,12 +110,26 @@ class checkoutController extends checkoutLegacyController {
 					$this->app->enqueueMessage($msg['msg'], $msg['type']);
 				}
 			}
-			$this->setRedirect($checkoutHelper->getRedirectUrl(), JText::_('CART_EMPTY'));
+			$override = false;
+			if($this->app->getUserState('com_hikashop.cart_empty_redirect')  > time()-1) {
+				$this->app->setUserState('com_hikashop.cart_empty_redirect', 0);
+				$override = true;
+			} else {
+				$this->app->setUserState('com_hikashop.cart_empty_redirect', time());
+			}
+			$this->setRedirect($checkoutHelper->getRedirectUrl($override), JText::_('CART_EMPTY'));
 			return true;
 		}
 		$cart_id_param = hikaInput::get()->getInt('cart_id', 0);
 		if(!empty($cart_id_param) && $cart_id_param != $checkoutHelper->getCartId()) {
-			$this->setRedirect($checkoutHelper->getRedirectUrl(), JText::_('CART_EMPTY'));
+			$override = false;
+			if($this->app->getUserState('com_hikashop.cart_empty_redirect') > time()-1) {
+				$this->app->setUserState('com_hikashop.cart_empty_redirect', 0);
+				$override = true;
+			} else {
+				$this->app->setUserState('com_hikashop.cart_empty_redirect', time());
+			}
+			$this->setRedirect($checkoutHelper->getRedirectUrl($override), JText::_('CART_EMPTY'));
 			return true;
 		}
 
@@ -191,6 +205,9 @@ class checkoutController extends checkoutLegacyController {
 		if($check !== true && $check !== false && $check > 0 && $check != $step) {
 			$this->app->redirect(hikashop_completeLink('checkout&task=show&cid=' . ((int)$check + 1).$url_cart_param.'&Itemid='.$checkout_itemid, false, true));
 		}
+
+		$this->app->setUserState('com_hikashop.cart_empty_redirect', 0);
+		$this->app->setUserState('com_hikashop.checkout_itemid', 0);
 
 		hikaInput::get()->set('layout', 'show');
 		return $this->display();
@@ -611,6 +628,7 @@ class checkoutController extends checkoutLegacyController {
 					$this->app->enqueueMessage($msg['msg'], $msg['type']);
 				}
 			}
+			$this->app->setUserState('com_hikashop.cart_empty_redirect', 1);
 			$this->setRedirect($checkoutHelper->getRedirectUrl(), JText::_('CART_EMPTY'));
 			return true;
 		}

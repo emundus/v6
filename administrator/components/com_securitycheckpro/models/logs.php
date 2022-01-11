@@ -228,51 +228,7 @@ class SecuritycheckprosModelLogs extends JModelList
 		}
     }
 
-    /* Función para chequear si una ip pertenece a una lista en la que podemos especificar rangos. Podemos tener una ip del tipo 192.168.*.* y una ip 192.168.1.1 entraría en ese rango */
-    function chequear_ip_en_lista($ip,$lista)
-    {
-        $aparece = false;
-        $array_ip_peticionaria = explode('.', $ip);
-        
-        if (strlen($lista) > 0) {
-            // Eliminamos los caracteres en blanco antes de introducir los valores en el array
-            $lista = str_replace(' ', '', $lista);
-            $array_ips = explode(',', $lista);
-            if (is_int(array_search($ip, $array_ips))) {    // La ip aparece tal cual en la lista
-                  $aparece = true;
-            } else 
-            {
-                foreach ($array_ips as &$indice)
-                {
-                    if (strrchr($indice, '*')) { // Chequeamos si existe el carácter '*' en el string; si no existe podemos ignorar esta ip
-                        $array_ip_lista = explode('.', $indice); // Formato array:  $array_ip_lista[0] = '192' , $array_ip_lista[1] = '168'
-                        $k = 0;
-                        $igual = true;
-                        while (($k <= 3) && ($igual))
-                        {
-                            if ($array_ip_lista[$k] == '*') {
-                                $k++;
-                            }else
-                                 {
-                                if ($array_ip_lista[$k] == $array_ip_peticionaria[$k]) {
-                                               $k++;
-                                } else 
-                                {
-                                    $igual = false;
-                                }
-                            }
-                        }
-                        if ($igual) { // $igual será true cuando hayamos recorrido el array y todas las partes del mismo coincidan con la ip que realiza la petición
-                              $aparece = true;
-                              return $aparece;
-                        }
-                    }
-                }
-            }
-        }
-        return $aparece;
-    }
-
+    
     /* Función que añade un conjunto de Ips a la lista negra */
     function add_to_blacklist()
     {
@@ -281,7 +237,7 @@ class SecuritycheckprosModelLogs extends JModelList
         $query = null;
         $array_size = 0;
         $added_elements = 0;
-        
+		        
         $db = JFactory::getDBO();
     
         // Obtenemos los valores de las IPs que serán introducidas en la lista negra
@@ -291,16 +247,6 @@ class SecuritycheckprosModelLogs extends JModelList
     
         // Número de elementos del array
         $array_size = count($uids);
-        
-        // Obtenemos los valores de las distintas opciones del Firewall Web
-        $db = $this->getDbo();
-        $query = $db->getQuery(true)
-            ->select(array($db->quoteName('storage_value')))
-            ->from($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params, true);
         
         foreach($uids as $uid)
         {
@@ -338,20 +284,30 @@ class SecuritycheckprosModelLogs extends JModelList
             if ($ip == $client_ip) {
                 JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_CANT_ADD_YOUR_OWN_IP'), 'warning');
                 $array_size--;
-                break;
+                return;
             }
-                
-            $aparece_lista_negra = $this->chequear_ip_en_lista($ip, $params['blacklist']);
-            if (!$aparece_lista_negra) {
-                if (!empty($params['blacklist'])) {
-                    $params['blacklist'] .= ',' .$ip;
-                } else 
-                {
-                    $params['blacklist'] = $ip;
-                }            
-                $added_elements++;
+			
+			// Cargamos las librerias necesarias para realizar comprobaciones
+            include_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
+            $model = new SecuritycheckproModel;
+			          
+			$aparece_lista_negra = $model->chequear_ip_en_lista($ip, "blacklist"); 
+			
+			if (!$aparece_lista_negra) {
+				$object = (object)array(
+					'ip'        => $ip
+				);
+				
+				try{
+					$db->insertObject("#__securitycheckpro_blacklist", $object);
+					$added_elements++;
+				} catch (Exception $e)
+				{  				
+					$applied = false;
+				}				
             }
         }
+		
         $not_added = $array_size - $added_elements;
     
         if ($added_elements > 0) {
@@ -360,29 +316,7 @@ class SecuritycheckprosModelLogs extends JModelList
         if ($not_added > 0) {
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED', $not_added), 'notice');
         }
-    
-        // Codificamos de nuevo los parámetros y los introducimos en la BBDD
-        $params = utf8_encode(json_encode($params));
         
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $db->execute();
-        
-        $object = (object)array(
-        'storage_key'        => 'pro_plugin',
-        'storage_value'        => $params
-        );
-        
-        try
-        {
-            $result = $db->insertObject('#__securitycheckpro_storage', $object);            
-        } catch (Exception $e)
-        {    
-            $applied = false;
-        }
-    
         // Marcamos los elementos como leidos
         $this->mark_read($uids);
         
@@ -468,33 +402,31 @@ class SecuritycheckprosModelLogs extends JModelList
         // Número de elementos del array
         $array_size = count($uids);
         
-        // Obtenemos los valores de las distintas opciones del Firewall Web
-        $db = $this->getDbo();
-        $query = $db->getQuery(true)
-            ->select(array($db->quoteName('storage_value')))
-            ->from($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params, true);
-        
         foreach($uids as $uid)
         {
             $sql = "SELECT ip FROM #__securitycheckpro_logs WHERE id='{$uid}'";
             $db->setQuery($sql);
             $db->execute();
             $ip = $db->loadResult();
+			
+			// Cargamos las librerias necesarias para realizar comprobaciones
+            include_once JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/library/model.php';
+            $model = new SecuritycheckproModel;
+			          
+			$aparece_lista_blanca = $model->chequear_ip_en_lista($ip, "whitelist");
         
-                
-            $aparece_lista_blanca = $this->chequear_ip_en_lista($ip, $params['whitelist']);
             if (!$aparece_lista_blanca) {
-                if (!empty($params['blacklist'])) {
-                    $params['whitelist'] .= ',' .$ip;
-                } else
-                {
-                    $params['whitelist'] = $ip;
-                }                        
-                $added_elements++;
+                $object = (object)array(
+					'ip'        => $ip
+				);
+				
+				try{
+					$db->insertObject("#__securitycheckpro_whitelist", $object);
+					$added_elements++;
+				} catch (Exception $e)
+				{    							
+					$applied = false;
+				}
             }
         }
         $not_added = $array_size - $added_elements;
@@ -506,27 +438,6 @@ class SecuritycheckprosModelLogs extends JModelList
             JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_IGNORED', $not_added), 'notice');
         }
     
-        // Codificamos de nuevo los parámetros y los introducimos en la BBDD
-        $params = utf8_encode(json_encode($params));
-        
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__securitycheckpro_storage'))
-            ->where($db->quoteName('storage_key').' = '.$db->quote('pro_plugin'));
-        $db->setQuery($query);
-        $db->execute();
-        
-        $object = (object)array(
-        'storage_key'        => 'pro_plugin',
-        'storage_value'        => $params
-        );
-        
-        try 
-        {
-            $result = $db->insertObject('#__securitycheckpro_storage', $object);            
-        } catch (Exception $e)
-        {    
-            $applied = false;
-        }
     
         // Marcamos los elementos como leidos
         $this->mark_read($uids);

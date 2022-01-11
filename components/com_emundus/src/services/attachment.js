@@ -23,14 +23,26 @@ export default {
         }
       });
 
+
+      if (typeof response.data === "string") {
+        response.data = JSON.parse(response.data);
+      }
+
+      if (typeof response.data === "object") {
+        // object to array containing only the attachments
+        response.data = Object.values(response.data);
+      }
+      
       // add show attribute to true to all attchments in response data
-      response.data.forEach(attachment => {
-        attachment.show = true;
-      });
+      if (response.data) {
+        response.data.forEach(attachment => {
+          attachment.show = true;
+        });
+      }
 
       return response.data;
     } catch (e) {
-      throw e;
+      return false;
     }
   },
 
