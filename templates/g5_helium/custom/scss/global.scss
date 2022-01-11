@@ -3326,20 +3326,23 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
               /* YES/NO */
               fieldset.btn-radio {
-                label.btn-default.btn.active.btn-danger {
+                label.btn-default.btn.btn-danger.active,
+                label.btn-default.btn.btn-success.active {
                     @include yes-no-active;
 
                   span {
                     @include body-16-medium;
+                    margin-top: 0;
                   }
                 }
 
-                label.btn-default.btn:not(.active) {
+                label.btn-default.btn:not(.active),
+                label.btn-default.btn.btn-success:not(.active)  {
                   @include yes-no;
 
                   span {
                     @include body-16-medium;
-                    margin-top: 0px;
+                    margin-top: 0;
                   }
                 }
               }
