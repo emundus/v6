@@ -769,18 +769,20 @@ class EmundusModelProfile extends JModelList {
 
                     $profileIds = array_unique(array_merge($firstProfile, $secondProfile));
 
-                    $query->clear()
-                        ->select('#__emundus_setup_profiles.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
-                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $profileIds) . ')');
+                    $profileLabels = [];
+                    $profileMenuType = [];
 
-                    $this->_db->setQuery($query);
+                    foreach($profileIds as $pid) {
+                        $query->clear()
+                            ->select('#__emundus_setup_profiles.*')
+                            ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                            ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . '=' . $pid);
 
-                    $_profilesLabels = $this->_db->loadObjectList();
+                        $this->_db->setQuery($query);
+                        $raw = $this->_db->loadObject();
 
-                    foreach ($_profilesLabels as $key => $value) {
-                        $profileLabels[] = $value->label;
-                        $profileMenuType[] = $value->menutype;
+                        $profileLabels[] = $raw->label;
+                        $profileMenuType[] = $raw->menutype;
                     }
 
                     return ['profile_id' => $profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
@@ -794,7 +796,8 @@ class EmundusModelProfile extends JModelList {
                     $query->clear()
                         ->select('#__emundus_campaign_workflow.*')
                         ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
-                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')');
+                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')')
+                        ->order('step');
 
                     $this->_db->setQuery($query);
 
@@ -818,20 +821,23 @@ class EmundusModelProfile extends JModelList {
 
                     $_profileIds = array_unique(array_merge($firstProfile,$secondProfile));
 
-                    $query->clear()
-                        ->select('#__emundus_setup_profiles.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
-                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $_profileIds) . ')');
+                    $profileLabels = [];
+                    $profileMenuType = [];
 
-                    $this->_db->setQuery($query);
+                    foreach($_profileIds as $pid) {
+                        $query->clear()
+                            ->select('#__emundus_setup_profiles.*')
+                            ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                            ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . '=' . $pid);
 
-                    $_profilesLabels = $this->_db->loadObjectList();
+                        $this->_db->setQuery($query);
+                        $raw = $this->_db->loadObject();
 
-                    foreach ($_profilesLabels as $key => $value) {
-                        $profileLabels[] = $value->label;
+                        $profileLabels[] = $raw->label;
+                        $profileMenuType[] = $raw->menutype;
                     }
 
-                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels];
+                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
 
                 } catch(Exception $e) {
                     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(). ' : '.$e->getMessage(), JLog::ERROR, 'com_emundus');

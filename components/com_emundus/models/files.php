@@ -884,6 +884,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($sql_code) || !empty($sql_fnum) ) {
             $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
+            $query['q'] .= ' AND esc.published > 0';
         } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($this->code)))) {
             $query['q'] .= ' AND 1=2 ';
         }
