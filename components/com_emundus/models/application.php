@@ -1286,6 +1286,7 @@ class EmundusModelApplication extends JModelList
                         $title= JText::_(trim($title[1]));
                     }
                     $forms .= '<h3>' . $title . '</h3>';
+                    $form_params = json_decode($itemt->params);
 
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
@@ -1634,6 +1635,30 @@ class EmundusModelApplication extends JModelList
                                                 continue;
                                             }
 
+                                            // Decrypt datas encoded
+                                            if($form_params->note == 'encrypted'){
+                                                $cipher = "aes-128-cbc";
+
+                                                $encryption_key = JFactory::getConfig()->get('secret');
+
+                                                if($element->plugin == 'checkbox'){
+                                                    $contents = json_decode($element->content);
+                                                    foreach ($contents as $key => $content){
+                                                        $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+                                                        if ($decrypted_data !== false) {
+                                                            $contents[$key] = $decrypted_data;
+                                                        }
+                                                    }
+                                                    $element->content = json_encode($contents);
+                                                } else {
+                                                    $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
+                                                    if ($decrypted_data !== false) {
+                                                        $element->content = $decrypted_data;
+                                                    }
+                                                }
+                                            }
+                                            //
+
                                             if ($element->plugin == 'date' && $element->content > 0) {
                                                 if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
                                                     $date_params = json_decode($element->params);
@@ -1821,7 +1846,7 @@ class EmundusModelApplication extends JModelList
             $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
             foreach ($tableuser as $key => $itemt) {
-
+                $form_params = json_decode($itemt->params);
                 $breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
@@ -2322,6 +2347,30 @@ class EmundusModelApplication extends JModelList
                                         $element->content = '';
                                         $element->content_id = -1;
                                     }
+
+                                    // Decrypt datas encoded
+                                    if($form_params->note == 'encrypted'){
+                                        $cipher = "aes-128-cbc";
+
+                                        $encryption_key = JFactory::getConfig()->get('secret');
+
+                                        if($element->plugin == 'checkbox'){
+                                            $contents = json_decode($element->content);
+                                            foreach ($contents as $key => $content){
+                                                $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+                                                if ($decrypted_data !== false) {
+                                                    $contents[$key] = $decrypted_data;
+                                                }
+                                            }
+                                            $element->content = json_encode($contents);
+                                        } else {
+                                            $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
+                                            if ($decrypted_data !== false) {
+                                                $element->content = $decrypted_data;
+                                            }
+                                        }
+                                    }
+                                    //
 
                                     if (!empty($element->content) || (isset($params->database_join_display_type) && ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist')) || $element->plugin == 'yesno') {
 
