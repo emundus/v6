@@ -141,10 +141,11 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             # invoke Apogee Custom
             $xmlCustomSchema_data = new ApogeeCustom($xmlDataRequest,$fnum);
             $xmlCustomSchema_data->buildCustomData();
+            $xmlCustomSchema_data->setCustomVoeux();
 
             # prune raw xml tree (remove unnecessary elements)
-            # $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);
-            # $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
+            $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);
+            $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
 
             # connect to SOAP
             # $soapConnectObj = new SoapConnect;
@@ -156,7 +157,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             # $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
-            # $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
+            $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
         }
     }
 }

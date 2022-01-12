@@ -227,52 +227,43 @@ class ApogeeCustom {
 
         $count = $db->loadResult();
 
-        if($count == 0) {
-            /* create 1 voeux which it is the default voeux of this candidat */
-            $_voeuxNode = $this->xmlTree->getElementsByTagName('voeux')->item(0);
-            $_voeuxNodeChilds = $_voeuxNode->childNodes;
+        if($count == "0") {
+            //get all voeux
+            $items = $this->xmlTree->getElementsByTagName('item');
+            $itemCount = $items->count();
 
-            /* while(count($_voeuxNodeChilds) > 1) { $_voeuxNode->removeChild($_voeuxNode->getElementsByTagName('item')->item(0)); } */
+            //get first voeux
+            $firstVoeux = $items->item(0);
 
-            /* we get first item: ==> hard code to codCge , codDecVeu = F, codDemDos = C, codDip, codEtp, codVrsVdi, codVrsVet, numCls = 1, ctrAdr = N*/
-            $_firstItem = $_voeuxNode->getElementsByTagName('item')->item(0);
-
-            /* get code gestion */
-            $_codCge = $_firstItem->getElementsByTagName('codCge')->item(0);
-
+            // get cge
             $_getCodCge = "select dra.code_centre from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
             $db->setQuery($_getCodCge);
-            $_codCge->nodeValue = $db->loadResult();
+            $firstVoeux->childNodes[1]->nodeValue = $db->loadResult();
 
-            /* get code diplome */
-            $_codDip = $_firstItem->getElementsByTagName('codDip')->item(0);
+            // get codDip
             $_getCodDip = "select dra.code_diplome from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
             $db->setQuery($_getCodDip);
-            $_codDip->nodeValue = $db->loadResult();
+            $firstVoeux->childNodes[7]->nodeValue = $db->loadResult();
 
-            /* get code etape */
-            $_codEtp = $_firstItem->getElementsByTagName('codEtp')->item(0);
+            // get codEtp
             $_getCodEtp = "select dra.code_etape from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
             $db->setQuery($_getCodEtp);
-            $_codEtp->nodeValue = $db->loadResult();
+            $firstVoeux->childNodes[8]->nodeValue = $db->loadResult();
 
-            /* get code version */
-            $_codVrsVdi = $_firstItem->getElementsByTagName('codVrsVdi')->item(0);
             $_getCodVrsVdi = "select dra.code_version from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
             $db->setQuery($_getCodVrsVdi);
-            $_codVrsVdi->nodeValue = $db->loadResult();
+            $firstVoeux->childNodes[14]->nodeValue = $db->loadResult();
 
-            /* get code version etape */
-            $_codVrsVet = $_firstItem->getElementsByTagName('codVrsVet')->item(0);
             $_getCodVrsVet = "select dra.code_version_etape from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
             $db->setQuery($_getCodVrsVet);
-            $_codVrsVet->nodeValue = $db->loadResult();
+            $firstVoeux->childNodes[15]->nodeValue = $db->loadResult();
 
-            /* set 1 to order */
-            $_numCls = $_firstItem->getElementsByTagName('numCls')->item(0);
-            $_numCls->nodeValue = 1;
+            for($index = 1; $index <= $itemCount; $index++) {
+                foreach($items[$index]->childNodes as $children) {
+                    $children->nodeValue = '';
+                }
+            }
         }
-
         return $this->xmlTree;
     }
 
@@ -401,7 +392,7 @@ class ApogeeCustom {
         /* $this->setConvocation();
         $this->setTitreAccessExterne(); /// expected results :: print */
 
-        $this->setCustomVoeux();
+        // $this->setCustomVoeux();
         return $this->xmlTree;
     }
 }
