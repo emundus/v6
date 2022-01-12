@@ -2688,18 +2688,18 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   // CHOSEN css
   .chosen-container{
-    width: auto !important;
+    width: auto;
   }
 
   .chosen-container {
     .chosen-single {
-      background: transparent !important;
+      background: #fff !important;
       box-shadow: unset;
       height: 40px;
       padding: 8px 12px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       border-color: $neutral-300;
       div{
         position: relative;
