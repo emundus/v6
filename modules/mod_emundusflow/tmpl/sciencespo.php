@@ -14,6 +14,10 @@ if(!empty($cart) && !$cartorder){
     $step_paiement = (@$paid == false) ? '' : 'completed';
 }
 
+$uri =& JFactory::getURI();
+$url = explode('&',$uri->toString());
+$details_view = array_search('view=details',$url);
+
 
 $btn_send = '';
 if ($forms>=100 && $attachments>=100 && $sent == 0) {
@@ -55,7 +59,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
             </div>
         </div>
     <?php endif ?>
-    <?php if ($application_fee == 1): ?>
+    <?php if ($application_fee == 1 && $details_view === false): ?>
 
         <div class="<?php echo ($option=="com_hikashop")?"active":""; ?> <?php echo $step_paiement; ?> step">
             <!-- ICON -->
