@@ -370,9 +370,8 @@ class EmundusViewApplication extends JViewLegacy {
                         $m_campaign = new EmundusModelCampaign;
 
                         /* detect user_id from fnum */
-                        $userRaw = $m_profiles->getFnumDetails($fnum);
-                        $userId = $userRaw['applicant_id'];
-                        $userProfile = $userRaw['profile_id'];
+                        $userId = $fnumInfos['applicant_id'];
+                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
                         $this->assignRef('userid', $userId);
 
@@ -385,16 +384,18 @@ class EmundusViewApplication extends JViewLegacy {
                         $noPhasePids = array();
                         $hasPhasePids = array();
 
-                        foreach($pidsRaw as $key => $pid) {
-                            if($pid->pid === $userProfile) { $dpid = $pid; }
+                        foreach($pidsRaw as $pidRaw) {
+                            if($pidRaw->pid === $pid) {
+                                $dpid = $pidRaw;
+                            }
 
-                            if($pid->phase === null) {
-                                if($pid->pid !== $userProfile) {
+                            if($pidRaw->phase === null) {
+                                if($pidRaw->pid !== $pid) {
                                     $noPhasePids['no_step']['lbl'] = JText::_('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
-                                    $noPhasePids['no_step']['data'][] = $pid;
+                                    $noPhasePids['no_step']['data'][] = $pidRaw;
                                 }
                             } else {
-                                $hasPhasePids[] = $pid;
+                                $hasPhasePids[] = $pidRaw;
                             }
                         }
 
@@ -412,12 +413,6 @@ class EmundusViewApplication extends JViewLegacy {
                         /* serialize $pids to json format */
                         $json = json_encode($pids);
                         $this->assignRef('pids', $json);
-
-                        if(empty($pid)){
-                            $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
-                        } else {
-                            $pid = $userProfile;
-                        }
 
                         $this->assignRef('defaultpid', $dpid);
                         
