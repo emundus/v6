@@ -258,6 +258,8 @@ class ApogeeCustom {
             $db->setQuery($_getCodVrsVet);
             $firstVoeux->childNodes[15]->nodeValue = $db->loadResult();
 
+            $firstVoeux->childNodes[17]->nodeValue = $db->loadResult();
+
             for($index = 1; $index <= $itemCount; $index++) {
                 foreach($items[$index]->childNodes as $children) {
                     $children->nodeValue = '';
