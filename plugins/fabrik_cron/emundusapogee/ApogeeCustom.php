@@ -200,15 +200,15 @@ class ApogeeCustom {
 
     public function setDepPay_LastYear() {
         $db = JFactory::getDbo();
-        $_codSisAnnPreOpiNode = $this->xmlTree->getElementsByTagName('codSisAnnPreOpi')->item(0);
+        $_codDepPayAnnPreOpiNode = $this->xmlTree->getElementsByTagName('codDepPayAnnPreOpi')->item(0);
         $_codTypDepPayAnnPreOpiNode =$this->xmlTree->getElementsByTagName('codTypDepPayAnnPreOpi')->item(0);
 
-        if($_codSisAnnPreOpiNode->nodeValue == '100') {         # france
+        if($_codDepPayAnnPreOpiNode->nodeValue == '100') {         # france
             // get France Dep
             $_getDepartmentSql = "select cod_dep from data_departement left join jos_emundus_1001_00 as je10 on je10.e_358_7943 = data_departement.id where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
 
-            $_codSisAnnPreOpiNode->nodeValue = $db->loadResult();
+            $_codDepPayAnnPreOpiNode->nodeValue = $db->loadResult();
 
             $_codTypDepPayAnnPreOpiNode->nodeValue = 'D';
         } else {
