@@ -148,13 +148,13 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
 
             # connect to SOAP
-            # $soapConnectObj = new SoapConnect;
+            $soapConnectObj = new SoapConnect;
 
             # set HTTP request header with last xml output string
-            # $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
+            $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
 
             # send request
-            # $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
+            $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
             $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
