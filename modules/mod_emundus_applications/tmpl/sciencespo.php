@@ -59,7 +59,7 @@ echo $description;
                     <div class="col-xs-12 col-md-6 main-page-file-info">
                         <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
 
-                        <?php if (((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) && $application->order_status == 'pending' || in_array($user->id, $applicants)) : ?>
+                        <?php if (((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) && $application->order_status == 'pending') : ?>
                             <a id='send' class="btn btn-xs btn-info" href="<?= JRoute::_($confirm_url); ?>" title="<?= JText::_('UPLOAD_BANKTRANSFER'); ?>"><i class="icon-envelope"></i> <?= JText::_('UPLOAD_BANKTRANSFER'); ?></a>
                         <?php else : ?>
                             <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">

@@ -884,6 +884,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($sql_code) || !empty($sql_fnum) ) {
             $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
+            $query['q'] .= ' AND esc.published > 0';
         } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($this->code)))) {
             $query['q'] .= ' AND 1=2 ';
         }
@@ -2148,7 +2149,7 @@ class EmundusModelFiles extends JModelLegacy
     public static function getFnumInfos($fnum) {
         try {
             $db = JFactory::getDBO();
-            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*
+            $query = 'select u.name, u.email, cc.fnum, cc.date_submitted, cc.applicant_id, cc.status, cc.published as state, ss.value, ss.class, c.*, cc.campaign_id
                         from #__emundus_campaign_candidature as cc
                         left join #__emundus_setup_campaigns as c on c.id = cc.campaign_id 
                         left join #__users as u on u.id = cc.applicant_id
