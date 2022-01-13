@@ -691,7 +691,7 @@ class EmundusModelProfile extends JModelList {
      *
      * @return array The profile list for the campaigns
      */
-    function getProfilesIDByCampaign(array $campaign_id) : array {
+    function getProfilesIDByCampaign(array $campaign_id, $return = 'column') : array {
 
         $res = [];
 
@@ -724,7 +724,11 @@ class EmundusModelProfile extends JModelList {
 
             try {
                 $this->_db->setQuery($query);
-                $res = $this->_db->loadObjectList();
+                if($return == 'column'){
+                    $res = $this->_db->loadColumn();
+                } else {
+                    $res = $this->_db->loadObjectList();
+                }
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
                 return [];

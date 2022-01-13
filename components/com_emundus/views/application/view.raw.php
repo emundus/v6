@@ -380,7 +380,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
 
                         /* get all profiles (order by step) by campaign */
-                        $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id]);
+                        $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id],'object');
 
                         $noPhasePids = array();
                         $hasPhasePids = array();
