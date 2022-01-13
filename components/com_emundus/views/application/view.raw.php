@@ -26,6 +26,7 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'admission.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
+require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
 
 class EmundusViewApplication extends JViewLegacy {
@@ -361,18 +362,60 @@ class EmundusViewApplication extends JViewLegacy {
                 case 'form':
                     if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 
-                        $step = $jinput->getString('step', 0);
+                        //$step = $jinput->getString('step', 0);
 
                         EmundusModelLogs::log($this->_user->id, (int)substr($fnum, -7), $fnum, 1, 'r', 'COM_EMUNDUS_LOGS_FORM_BACKOFFICE');
 
-                        if($step != 0){
-                            $pid = $m_profiles->getProfileByStep($fnum,$step);
+                        $m_user = new EmundusModelUsers;
+                        $m_campaign = new EmundusModelCampaign;
+
+                        /* detect user_id from fnum */
+                        $userId = $fnumInfos['applicant_id'];
+                        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+
+                        $this->assignRef('userid', $userId);
+
+                        /* get all campaigns by user */
+                        $campaignsRaw = $m_campaign->getCampaignByFnum($fnum);
+
+                        /* get all profiles (order by step) by campaign */
+                        $pidsRaw = $m_profiles->getProfilesIDByCampaign([$campaignsRaw->id],'object');
+
+                        $noPhasePids = array();
+                        $hasPhasePids = array();
+
+                        foreach($pidsRaw as $pidRaw) {
+                            if($pidRaw->pid === $pid) {
+                                $dpid = $pidRaw;
+                            }
+
+                            if($pidRaw->phase === null) {
+                                if($pidRaw->pid !== $pid) {
+                                    $noPhasePids['no_step']['lbl'] = JText::_('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
+                                    $noPhasePids['no_step']['data'][] = $pidRaw;
+                                }
+                            } else {
+                                $hasPhasePids[] = $pidRaw;
+                            }
                         }
 
-                        if(empty($pid)){
-                            $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+                        $profiles_by_phase = array();
+
+                        /* group profiles by phase */
+                        foreach($hasPhasePids as $ppid) {
+                            $profiles_by_phase['step_' . $ppid->phase]['lbl'] = $ppid->lbl;
+                            $profiles_by_phase['step_' . $ppid->phase]['data'][] = $ppid;
                         }
 
+                        $pids = array_merge($profiles_by_phase, $noPhasePids);
+
+
+                        /* serialize $pids to json format */
+                        $json = json_encode($pids);
+                        $this->assignRef('pids', $json);
+
+                        $this->assignRef('defaultpid', $dpid);
+                        
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);
 
