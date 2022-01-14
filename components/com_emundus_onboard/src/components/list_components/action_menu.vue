@@ -4,10 +4,10 @@
       <transition :name="'slide-down'" type="transition">
         <div>
             <nav aria-label="action" class="actions-dropdown">
-              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && !published">
+              <a v-on:click="publishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email'].includes(data.type) && !published">
                 {{ translations.ActionPublish }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && published">
+              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" v-if="!['formulaire','email'].includes(data.type) && published">
                 {{ translations.ActionUnpublish }}
               </a>
               <a v-on:click="publishSelected(checkItem)" class="action-submenu" style="border-right: 0" v-if="data.type === 'formulaire' && !published">

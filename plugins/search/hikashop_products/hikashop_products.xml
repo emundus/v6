@@ -2,8 +2,8 @@
 <extension version="2.5" type="plugin" group="search" method="upgrade">
 	<name>Search - Hikashop Products</name>
 	<author>Hikari Software</author>
-	<creationDate>10 août 2020</creationDate>
-	<version>4.3.0</version>
+	<creationDate>09 novembre 2020</creationDate>
+	<version>4.4.0</version>
 	<copyright>(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<authorEmail>enquiry@hikashop.com</authorEmail>

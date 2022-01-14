@@ -393,6 +393,10 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_order` (
 	`order_site_id` varchar(255) NULL DEFAULT '',
 	`order_lang` varchar(255) NULL DEFAULT '',
 	`order_token` varchar(255) NULL DEFAULT '',
+	`order_weight` decimal(12,3) unsigned NULL,
+	`order_weight_unit` varchar(255) NULL,
+	`order_volume` decimal(12,3) unsigned NULL,
+	`order_dimension_unit` varchar(255) NULL,
 	PRIMARY KEY (`order_id`),
 	KEY `order_user_id` (`order_user_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/;
@@ -432,6 +436,12 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_order_product` (
 	`order_product_shipping_tax` decimal(17,5) NOT NULL DEFAULT '0.00000',
 	`order_product_shipping_params` TEXT NULL,
 	`order_product_params` TEXT NULL,
+	`order_product_weight` decimal(12,3) unsigned NULL,
+	`order_product_weight_unit` varchar(255) NULL,
+	`order_product_width` decimal(12,3) unsigned NULL,
+	`order_product_length` decimal(12,3) unsigned NULL,
+	`order_product_height` decimal(12,3) unsigned NULL,
+	`order_product_dimension_unit` varchar(255) NULL,
 	PRIMARY KEY (`order_product_id`),
 	KEY `order_id` (`order_id`),
 	KEY `product_id` (`product_id`)

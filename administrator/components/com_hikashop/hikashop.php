@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -32,7 +32,10 @@ elseif(!empty($ctrl) && !$view) {
 
 $taskGroup = hikaInput::get()->getCmd('ctrl','dashboard');
 $config =& hikashop_config();
-JHTML::_('behavior.tooltip');
+if(HIKASHOP_J40)
+	JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'left'));
+else
+	JHTML::_('behavior.tooltip');
 $bar = JToolBar::getInstance('toolbar');
 $bar->addButtonPath(HIKASHOP_BUTTON);
 

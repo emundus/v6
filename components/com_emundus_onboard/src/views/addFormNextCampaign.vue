@@ -14,7 +14,7 @@
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">
             <div class="d-flex">
-              <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+              <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
               <h2 class="tchooz-section-titles" v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
               <h2 class="tchooz-section-titles" v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
             </div>
@@ -24,6 +24,7 @@
             <hr>
             <div class="d-flex">
               <p>
+                <!-- <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{translations.From}} <strong>{{form.start_date}}</strong>   {{translations.To}} <strong>{{form.end_date}}</strong> -->
                 <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{translations.From}} <strong>{{form.start_date}}</strong>   {{translations.To}} <strong>{{form.end_date}}</strong>
               </p>
             </div>

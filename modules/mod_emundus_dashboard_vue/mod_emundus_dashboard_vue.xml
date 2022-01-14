@@ -11,81 +11,31 @@
         <filename module="mod_emundus_dashboard_vue">mod_emundus_dashboard_vue.php</filename>
         <filename module="mod_emundus_dashboard_vue">index.html</filename>
         <folder>tmpl</folder>
+        <folder>elements</folder>
         <folder>language</folder>
     </files>
 
     <config>
         <fields name="params">
-            <fieldset name="basic">
-                <field name="profile" type="list" default="list" label="Profil" description="Profil du dashboard">
-                    <option value="2">Gestionnaire</option>
-                    <option value="6">Evaluateur</option>
+            <fieldset addfieldpath="/modules/mod_emundus_dashboard_vue/elements" name="basic">
+                <field name="profile"
+                       type="sql"
+                       multiple="true"
+                       query="SELECT id, label FROM #__emundus_setup_profiles WHERE published = 0"
+                       default=""
+                       label="Profil"
+                       description="Profils eMundus ayant accès à ce dashboard"
+                       key_field="id"
+                       value_field="label">
                 </field>
 
-                <field name="widget1" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
+                <field name="filter_programmes" type="radio" default="0" label="Filtrer par programme" description="Affiche un menu déroulant pour filtrer les graphiques par programmes" class="btn-group btn-group-yesno">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
                 </field>
-                <field name="widget2" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
-                </field>
-                <field name="widget3" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
-                </field>
-                <field name="widget4" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
-                </field>
-                <field name="widget5" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
-                </field>
-                <field name="widget6" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
-                </field>
-                <field name="widget7" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
-                </field>
-                <field name="widget8" type="list" default="list" label="Widget" description="Widget à afficher">
-                    <option value="">Pas de widgets</option>
-                    <option value="faq">FAQ - 2 cases</option>
-                    <option value="files_number_by_status">Nombre de dossiers par statuts - 5 cases</option>
-                    <option value="users_by_month">Nombre d'utilisateurs par mois - 5 cases</option>
-                    <option value="tips">Astuces - 5 cases</option>
-                    <option value="demo_counter">Compteur de démo - 2 cases</option>
-                </field>
+
+                <field name="widgets" type="multilist" default="" label="Widgets"/>
+                <field name="colors" type="textarea" default="#16AFE1, #78dc6e" label="Palette de couleurs" description="Palette de couleurs permettant de personnaliser les graphiques en fonction du client" hint="#de6339,#1b1f3c" rows="10" cols="5"/>
             </fieldset>
         </fields>
     </config>

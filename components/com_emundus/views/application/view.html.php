@@ -52,7 +52,7 @@ class EmundusViewApplication extends JViewLegacy{
         $document->addScript("media/com_emundus/lib/semantic/packaged/javascript/semantic.min.js" );
 
 
-       // $menu=JFactory::getApplication()->getMenu()->getActive();
+		// $menu=JFactory::getApplication()->getMenu()->getActive();
         $menu = JFactory::getApplication()->getMenu();
 		$current_menu  = $menu->getActive();
 		$access=!empty($current_menu)?$current_menu->access : 0;

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,8 +28,12 @@ if(!empty($this->options['display'])) {
 	$cart = $this->checkoutHelper->getCart();
 	$this->cart_addresses = $this->checkoutHelper->getAddresses();
 
-	if(empty($this->options['edit_address']))
-		$this->checkoutHelper->displayMessages('address');
+	$this->checkoutHelper->displayMessages('address');
+
+	$shippingAddress_override = $this->checkoutHelper->getShippingAddressOverride();
+	if(!empty($shippingAddress_override) && @$this->options['edit_address'] === true && !empty($this->options['show_shipping']) && @$this->options['new_address_type'] == 'shipping') {
+		$this->options['edit_address'] = false;
+	}
 	if(empty($this->options['edit_address']) && !empty($this->options['show_billing']) && !empty($this->options['show_shipping'])) {
 ?>
 	<div class="hk-container-fluid">
@@ -246,7 +250,6 @@ if(!empty($this->options['display'])) {
 	}
 
 	if(empty($this->options['edit_address']) && !empty($this->options['show_shipping'])) {
-		$shippingAddress_override = $this->checkoutHelper->getShippingAddressOverride();
 		if($shippingAddress_override !== '') {
 ?>
 

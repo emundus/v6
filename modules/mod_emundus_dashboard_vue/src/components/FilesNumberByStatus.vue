@@ -27,6 +27,11 @@ export default {
 
   components: {},
 
+  props: {
+    program: Number,
+    colors: String
+  },
+
   data: () => ({
     files: {},
     status: [],
@@ -51,7 +56,7 @@ export default {
         this.dataSource = {
           chart: {
             animation: 1,
-            paletteColors: "#16AFE1, #78dc6e",
+            paletteColors: this.colors,
             caption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS"),
             subcaption: "",
             xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_STATUS"),
