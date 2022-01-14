@@ -30,17 +30,21 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         /* get info of host from $_POST */
         $host = current($_POST['jos_emundus_jury___president']);
 
+
+        $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time"]));
+        $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time"]));
+
         $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
         $db->setQuery($hostQuery);
         $raw = $db->loadObject();
 
         $meetingData = json_encode(array(
             "topic" => $_POST['jos_emundus_jury___meeting_name'],
-            "type" => 2,        // type 2 = scheduling meeting
-            "start_time" => "2021-01-05T08:55:00Z",
-            "duration" => 375,
+            "type" => 2,                                                // type 2 = scheduling meeting
+            "start_time" => $startTime,
+            "duration" => intval(strtotime($endTime)-strtotime($startTime)),
             "schedule for" => $raw->email,
-            "timezone" => "GMT",
+            "timezone" => "Europe/Paris",
             "settings" => array(
                 "registration_type" => 2,
                 "host_video" => true,
@@ -48,7 +52,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 "join_before_host" => true,
                 "mute_upon_entry" => true,
                 "approval_type" => 0,
-                "alternative_hosts" => "",
                 "close_registration" => true,
                 "waiting_room" => false,
                 "registrants_email_notification" => true,
