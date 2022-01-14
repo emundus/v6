@@ -3,22 +3,14 @@
 class ZoomAPIWrapper {
     private $errors;
     private $apiKey;
-    private $apiSecret;
     private $baseUrl;
     private $timeout;
 
-    public function __construct( $apiKey, $apiSecret, $options=array() ) {
+    public function __construct( $apiKey) {
         $this->apiKey = $apiKey;
-
-        $this->apiSecret = $apiSecret;
 
         $this->baseUrl = 'https://api.zoom.us/v2';
         $this->timeout = 30;
-
-        // Store any options if they map to valid properties
-        foreach ($options as $key=>$value) {
-            if (property_exists($this, $key)) $this->$key = $value;
-        }
     }
 
     private function pathReplace( $path, $requestParams ){
@@ -35,8 +27,15 @@ class ZoomAPIWrapper {
         return $path;
     }
 
-    public function doRequest($method, $path, $queryParams=array(), $pathParams=array(), $body='') {
+    private function headers() {
+        return array(
+            'Authorization: Bearer ' . $this->apiKey,
+            'Content-Type: application/json',
+            'Accept: application/json',
+        );
+    }
 
+    public function doRequest($method, $path, $queryParams=array(), $pathParams=array(), $body='') {
         if (is_array($body)) {
             // Treat an empty array in the body data as if no body data was set
             if (!count($body)) $body = '';
@@ -60,6 +59,7 @@ class ZoomAPIWrapper {
 
         curl_setopt($ch,CURLOPT_URL,$url);
         curl_setopt($ch,CURLOPT_HTTPHEADER,$this->headers());
+        curl_setopt($ch, CURLOPT_ENCODING, "");
         curl_setopt($ch,CURLOPT_TIMEOUT,$this->timeout);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 

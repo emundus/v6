@@ -356,7 +356,7 @@
 		<field name="spacer7" type="spacer" hr="true"/>
 
 		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
-		<field name="zoom_jwt_label" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
+		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
 
 	</fieldset>
 	<fieldset
