@@ -12,6 +12,10 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		class_name = "warning";
 		title = cart ? p.err_title : p.err_wishlist_title;
 		text = cart ? p.err_text : p.err_wishlist_text;
+
+		if(!cart && params.resp.err_wishlist_guest && p.err_wishlist_guest) {
+			p.redirect_url = p.err_wishlist_guest;
+		}
 	}else if(params.product_id == 'list' && !params.resp.product_name){
 		title = cart ? p.list_title : p.list_wishlist_title;
 		text = cart ? p.list_text : p.list_wishlist_text;
@@ -38,6 +42,12 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 			vex_params = jQuery.extend(true, vex_params, p[params_key]);
 	}
 	vex.dialog.alert(vex_params);
+
+	if(p.redirect_url) {
+		if(!p.redirect_delay)
+			p.redirect_delay = 4000;
+		setTimeout(function(){ window.location = p.redirect_url; }, p.redirect_delay);
+	}
 	return true;
 });
 }

@@ -7,14 +7,18 @@
  */
 // no direct access
 defined('_JEXEC') or die;
-echo $description;
 ?>
-<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
-        <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
-    </a>
-    <hr>
-<?php endif; ?>
+<div class="add-application-actions">
+    <?php
+        echo $description;
+    ?>
+    <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
+        <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
+            <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
+        </a>
+        <hr>
+    <?php endif; ?>
+</div>
 <?php if (!empty($applications)) : ?>
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>

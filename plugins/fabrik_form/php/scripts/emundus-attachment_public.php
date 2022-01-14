@@ -21,9 +21,11 @@ $eMConfig = JComponentHelper::getParams('com_emundus');
 $alert_new_attachment = $eMConfig->get('alert_new_attachment');
 $mailer = JFactory::getMailer();
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
 $m_files = new EmundusModelFiles();
 $m_checklist = new EmundusModelChecklist;
+$m_emails   = new EmundusModelEmails();
 
 $files = JRequest::get('FILES');
 $key_id = $jinput->get->get('keyid');
@@ -122,25 +124,37 @@ try {
 	$db->setQuery($query);
 	$obj = $db->loadObject();
 
+    $post = [
+        'FNUM'           => $fnum,
+        'USER_NAME'      => $student->name,
+        'SITE_URL'       => JURI::base(),
+        'USER_EMAIL'     => $student->email,
+        'ID'             => $student->id,
+        'NAME'           => $student->name,
+    ];
+    $tags = $m_emails->setTags($student->id, $post, $fnum);
 
 	$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/');
 	$replacements = array ($student->id, $student->name, $student->email, '<br />');
+
+    $message = $m_emails->setTagsFabrik($obj->message, [$fnum]);
+    $subject = $m_emails->setTagsFabrik($obj->subject, [$fnum]);
 
  	// Mail au candidat
 	$fileURL = $baseurl.'/'.EMUNDUS_PATH_REL.$upload->user_id.'/'.$nom;
 	$from = $obj->emailfrom;
 	$fromname = $obj->name;
 	$recipient[] = $student->email;
-	$subject = preg_replace($patterns, $replacements, $obj->subject);
-	$body = $obj->message.'<br/>';
+	$subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+	$body = $message;
 	$mode = 1;
 	$replyto = $obj->emailfrom;
 	$replytoname = $obj->name;
 
 	if ($obj->Template) {
-        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/", "/\[SITE_NAME\]/"], [$subject, $body, JFactory::getConfig()->get('sitename')], $obj->Template);
+        $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
 	}
-	$body = preg_replace($patterns, $replacements, $body);
+	$body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
     // setup mail
     $app = JFactory::getApplication();

@@ -278,7 +278,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/firewallco
                                                     </div>
                                                     <div class="card-body">
                                                         <h4 class="card-title"><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_LABEL'); ?></h4>
-                                                        <div class="controls">
+                                                        <div class="controls">													
                 <?php echo booleanlist('dynamic_blacklist', array(), $this->dynamic_blacklist) ?>
                                                         </div>
                                                         <blockquote><p class="text-info"><small><?php echo JText::_('PLG_SECURITYCHECKPRO_DYNAMIC_BLACKLIST_DESCRIPTION') ?></small></p></blockquote>

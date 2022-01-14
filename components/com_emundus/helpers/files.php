@@ -475,10 +475,21 @@ class EmundusHelperFiles
 
     public function getAttachmentsTypesByProfileID ($pid) {
         $db = JFactory::getDBO();
-        $query = 'SELECT *
-                FROM #__emundus_setup_attachments WHERE id IN (SELECT attachment_id FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$pid.')
-                ORDER BY ordering ASC';
-        $db->setQuery( $query );
+        $query = $db->getQuery(true);
+
+        $query->select('attachment_id')
+            ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+            ->where($db->quoteName('profile_id') . ' IN (' . implode(',', $pid) . ')');
+        $db->setQuery($query);
+        $attachments = $db->loadColumn();
+
+        $query->clear()
+            ->select('*')
+            ->from($db->quoteName('#__emundus_setup_attachments'))
+            ->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
+            ->order('ordering');
+
+        $db->setQuery($query);
         return $db->loadObjectList();
     }
 
@@ -542,7 +553,7 @@ class EmundusHelperFiles
             }
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+            $plist = $m_profile->getProfilesIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
@@ -935,7 +946,7 @@ class EmundusHelperFiles
             } elseif ($element_name=='training_id') {
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.str_replace('{thistable}', $params->join_db_name, $params->join_db_name.'.date_start ');
             } else {
-                $params->database_join_where_sql = (strpos($params->database_join_where_sql, '{rowid}') === false) ? $params->database_join_where_sql : '';
+                $params->database_join_where_sql =  (strpos($params->database_join_where_sql, '{rowid}') === false && strpos($params->database_join_where_sql, 'raw') === false ) ? $params->database_join_where_sql : '';
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->database_join_where_sql));
             }
             $db->setQuery($query);

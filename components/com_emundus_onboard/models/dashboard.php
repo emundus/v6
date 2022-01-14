@@ -74,15 +74,8 @@ class EmundusonboardModeldashboard extends JModelList
 
             foreach ($modules as $module) {
                 $params = json_decode($module, true);
-                if (JFactory::getSession()->get('emundusUser')->profile == $params['profile']) {
-                    $widgets[] = $params['widget1'];
-                    $widgets[] = $params['widget2'];
-                    $widgets[] = $params['widget3'];
-                    $widgets[] = $params['widget4'];
-                    $widgets[] = $params['widget5'];
-                    $widgets[] = $params['widget6'];
-                    $widgets[] = $params['widget7'];
-                    $widgets[] = $params['widget8'];
+                if (in_array(JFactory::getSession()->get('emundusUser')->profile, $params['profile'])) {
+                    $widgets = $params['widgets'];
                 }
             }
 
@@ -176,6 +169,464 @@ class EmundusonboardModeldashboard extends JModelList
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('users' => '', 'days' => '', 'total' => 0);
+        }
+    }
+
+    public function getfilescountbystatusgroupbydate($program){
+        $query = $this->_db->getQuery(true);
+
+        $category = [];
+
+        try {
+            $query->select('value as seriesname,step')
+                ->from($this->_db->quoteName('#__emundus_setup_status'));
+            $this->_db->setQuery($query);
+            $status = $this->_db->loadObjectList();
+            foreach ($status as $key => $statu){
+                $status[$key]->data = [];
+            }
+            $dataset = $status;
+
+            $query->clear()
+                ->select('min(cc.date_time)')
+                ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'));
+            if(!empty($program)){
+                $query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'))
+                    ->where($this->_db->quoteName('sc.training').' LIKE '.$this->_db->quote($program));
+            }
+            $this->_db->setQuery($query);
+            $start_date = new DateTime($this->_db->loadResult());
+
+            $end_date = new DateTime();
+
+            $category[] = $start_date->format('d/m');
+
+            while($start_date < $end_date) {
+                $query->clear()
+                    ->select('count(cc.id) as value, cc.status as seriesname, cc.date_time as date')
+                    ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'));
+                if(!empty($program)){
+                    $query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'));
+                }
+                $query->where($this->_db->quoteName('cc.date_time') . ' < ' . $this->_db->quote($start_date->format('Y-m-d H:i:s')));
+                if(!empty($program)){
+                    $query->andWhere($this->_db->quoteName('sc.training').' LIKE '.$this->_db->quote($program));
+                }
+                $query->group('cc.status');
+                $this->_db->setQuery($query);
+                $files = $this->_db->loadObjectList();
+                if(!empty($files)) {
+                    foreach ($dataset as $key => $data) {
+                        foreach ($files as $index => $file) {
+                            if ($file->seriesname == $data->step) {
+                                $dataset[$key]->data[] = $file;
+                                break;
+                            }
+                        }
+                        $neededObject = array_filter(
+                            $files,
+                            function ($e) use (&$data) {
+                                return $e->seriesname == $data->step;
+                            }
+                        );
+                        if (empty($neededObject)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            $empty_file->date = $start_date->format('Y-m-d H:i:s');
+                            $dataset[$key]->data[] = $empty_file;
+                        }
+                    }
+                } else {
+                    foreach ($dataset as $key => $data) {
+                        if (empty($dataset[$key]->data)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            $dataset[$key]->data[] = $empty_file;
+                        }
+                    }
+                }
+
+                $start_date->modify('+1 week');
+                if($start_date < $end_date) {
+                    $category[] = $start_date->format('d/m');
+                }
+            }
+
+            foreach ($category as $key => $date){
+                $value = $date;
+                $category[$key] = new stdClass();
+                $category[$key]->label = $value;
+            }
+
+
+            return array('dataset' => $dataset, 'category' => $category);
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '', 'category' => '');
+        }
+    }
+
+    public function getfilescountbystatusandsession($program){
+        $query = $this->_db->getQuery(true);
+
+        $category = [];
+
+
+        try {
+            $query->select('value as seriesname,step')
+                ->from($this->_db->quoteName('#__emundus_setup_status'));
+            $this->_db->setQuery($query);
+            $status = $this->_db->loadObjectList();
+            foreach ($status as $key => $statu){
+                $status[$key]->data = [];
+            }
+            $dataset = $status;
+
+            $query->clear()
+                ->select('sc.id,sc.label,stu.id as year')
+                ->from($this->_db->quoteName('#__emundus_setup_campaigns','sc'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_teaching_unity','stu').' ON '.$this->_db->quoteName('stu.schoolyear').' LIKE '.$this->_db->quoteName('sc.year'))
+                ->order('stu.id');
+            if(!empty($program)){
+                $query->where($this->_db->quoteName('sc.training').' LIKE '.$this->_db->quote($program));;
+            }
+            $this->_db->setQuery($query);
+            $campaigns = $this->_db->loadObjectList();
+
+            foreach ($campaigns as $campaign){
+                if($campaign->year != 13 && $campaign->year != 16) {
+                    $category[] = $campaign->label;
+                }
+                $query->clear()
+                    ->select('count(cc.id) as value, cc.status as seriesname')
+                    ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'));
+                if(!empty($program)){
+                    $query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'));
+                }
+                $query->where($this->_db->quoteName('cc.campaign_id') . ' = ' . $this->_db->quote($campaign->id));
+                if(!empty($program)){
+                    $query->andWhere($this->_db->quoteName('sc.training').' LIKE '.$this->_db->quote($program));
+                }
+                $query->group('cc.status');
+                $this->_db->setQuery($query);
+                $files = $this->_db->loadObjectList();
+
+                if(!empty($files)) {
+                    foreach ($dataset as $key => $data) {
+                        foreach ($files as $index => $file) {
+                            if ($file->seriesname == $data->step) {
+                                if($campaign->year != 13 && $campaign->year != 16) {
+                                    $dataset[$key]->data[] = $file;
+                                } else {
+                                    $number_1 = (int)$dataset[$key]->data[0]->value + (int)$file->value;
+                                    $combine_file_1 = new stdClass;
+                                    $combine_file_1->value = (string)$number_1;
+                                    $combine_file_1->seriesname = $data->step;
+
+                                    $number_2 = (int)$dataset[$key]->data[0]->value + (int)$file->value;
+                                    $combine_file_2 = new stdClass;
+                                    $combine_file_2->value = (string)$number_2;
+                                    $combine_file_2->seriesname = $data->step;
+
+                                    $dataset[$key]->data[0] = $combine_file_1;
+                                    $dataset[$key]->data[1] = $combine_file_2;
+                                }
+                                break;
+                            }
+                        }
+                        $neededObject = array_filter(
+                            $files,
+                            function ($e) use (&$data) {
+                                return $e->seriesname == $data->step;
+                            }
+                        );
+                        if (empty($neededObject)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            if($campaign->year != 13 && $campaign->year != 16) {
+                                $dataset[$key]->data[] = $empty_file;
+                            }
+                        }
+                    }
+                } else {
+                    foreach ($dataset as $key => $data) {
+                        if (empty($dataset[$key]->data)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            if($campaign->year != 13 && $campaign->year != 16) {
+                                $dataset[$key]->data[] = $empty_file;
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach ($category as $key => $date){
+                $value = $date;
+                $category[$key] = new stdClass();
+                $category[$key]->label = explode('-',$value)[1];
+            }
+
+            return array('dataset' => $dataset, 'category' => $category);
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '', 'category' => '');
+        }
+    }
+
+    public function getfilescountbystatusandcourses($program,$session){
+        $query = $this->_db->getQuery(true);
+
+        $category = [];
+
+        try {
+            $query->select('value as seriesname,step')
+                ->from($this->_db->quoteName('#__emundus_setup_status'));
+            $this->_db->setQuery($query);
+            $status = $this->_db->loadObjectList();
+            foreach ($status as $key => $statu){
+                $status[$key]->data = [];
+            }
+            $dataset = $status;
+
+            $query->clear()
+                ->select('id,cours_fr')
+                ->from($this->_db->quoteName('data_cours_universitaire'))
+                ->where($this->_db->quoteName('session') . ' IN (' . $session . ')');
+            $this->_db->setQuery($query);
+            $courses = $this->_db->loadObjectList();
+
+            foreach ($courses as $course){
+                $category[] = $course->cours_fr;
+                $query->clear()
+                    ->select('count(cc.id) as value, cc.status as seriesname')
+                    ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'))
+                    ->leftJoin($this->_db->quoteName('jos_emundus_1002_00','cu').' ON '.$this->_db->quoteName('cu.fnum').' = '.$this->_db->quoteName('cc.fnum'));
+                if(in_array($session,[1,2])){
+                    $query->where($this->_db->quoteName('cu.e_369_7829') . ' = ' . $this->_db->quote($course->id))
+                        ->orWhere($this->_db->quoteName('cu.e_369_7832') . ' = ' . $this->_db->quote($course->id));
+                } elseif (in_array($session,[3])){
+                    $query->where($this->_db->quoteName('cu.e_369_8302') . ' = ' . $this->_db->quote($course->id));
+                }
+                $query->group('cc.status');
+                $this->_db->setQuery($query);
+                $files = $this->_db->loadObjectList();
+
+                if(!empty($files)) {
+                    foreach ($dataset as $key => $data) {
+                        foreach ($files as $index => $file) {
+                            if ($file->seriesname == $data->step) {
+                                $dataset[$key]->data[] = $file;
+                                break;
+                            }
+                        }
+                        $neededObject = array_filter(
+                            $files,
+                            function ($e) use (&$data) {
+                                return $e->seriesname == $data->step;
+                            }
+                        );
+                        if (empty($neededObject)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            $dataset[$key]->data[] = $empty_file;
+                        }
+                    }
+                } else {
+                    foreach ($dataset as $key => $data) {
+                        if (empty($dataset[$key]->data)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            $dataset[$key]->data[] = $empty_file;
+                        }
+                    }
+                }
+            }
+
+            foreach ($category as $key => $date){
+                $value = $date;
+                $category[$key] = new stdClass();
+                $category[$key]->label = $value;
+            }
+
+            return array('dataset' => $dataset, 'category' => $category);
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '', 'category' => '');
+        }
+    }
+
+    public function getfilescountbystatusandcoursesprecollege($session){
+        $query = $this->_db->getQuery(true);
+
+        $category = [];
+
+        try {
+            $query->select('value as seriesname,step')
+                ->from($this->_db->quoteName('#__emundus_setup_status'));
+            $this->_db->setQuery($query);
+            $status = $this->_db->loadObjectList();
+            foreach ($status as $key => $statu){
+                $status[$key]->data = [];
+            }
+            $dataset = $status;
+
+            $query->clear()
+                ->select('id,course_fr')
+                ->from($this->_db->quoteName('data_cours_electif_pre_universitaire_session_' . $session))
+                ->where($this->_db->quoteName('published') . ' = 1');
+            $this->_db->setQuery($query);
+            $courses = $this->_db->loadObjectList();
+
+            foreach ($courses as $course){
+                $category[] = $course->course_fr;
+                $query->clear()
+                    ->select('count(cc.id) as value, cc.status as seriesname')
+                    ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'))
+                    ->leftJoin($this->_db->quoteName('jos_emundus_1001_04','cu').' ON '.$this->_db->quoteName('cu.fnum').' = '.$this->_db->quoteName('cc.fnum'));
+                if($session == 1){
+                    $query->where($this->_db->quoteName('cu.e_366_7803') . ' = ' . $this->_db->quote($course->id))
+                        ->orWhere($this->_db->quoteName('cu.cours_voeu_2') . ' = ' . $this->_db->quote($course->id))
+                        ->orWhere($this->_db->quoteName('cu.e_366_7805') . ' = ' . $this->_db->quote($course->id))
+                        ->orWhere($this->_db->quoteName('cu.cours_voeu_1_1') . ' = ' . $this->_db->quote($course->id));
+                } elseif ($session == 2){
+                    $query->where($this->_db->quoteName('cu.e_366_7804') . ' = ' . $this->_db->quote($course->id))
+                        ->orWhere($this->_db->quoteName('cu.cours_voeu_2_2') . ' = ' . $this->_db->quote($course->id))
+                        ->orWhere($this->_db->quoteName('cu.e_366_7806') . ' = ' . $this->_db->quote($course->id))
+                        ->orWhere($this->_db->quoteName('cu.cours_voeu_1_2') . ' = ' . $this->_db->quote($course->id));
+                }
+                $query->group('cc.status');
+                $this->_db->setQuery($query);
+                $files = $this->_db->loadObjectList();
+
+                if(!empty($files)) {
+                    foreach ($dataset as $key => $data) {
+                        foreach ($files as $index => $file) {
+                            if ($file->seriesname == $data->step) {
+                                $dataset[$key]->data[] = $file;
+                                break;
+                            }
+                        }
+                        $neededObject = array_filter(
+                            $files,
+                            function ($e) use (&$data) {
+                                return $e->seriesname == $data->step;
+                            }
+                        );
+                        if (empty($neededObject)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            $dataset[$key]->data[] = $empty_file;
+                        }
+                    }
+                } else {
+                    foreach ($dataset as $key => $data) {
+                        if (empty($dataset[$key]->data)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            $dataset[$key]->data[] = $empty_file;
+                        }
+                    }
+                }
+            }
+
+            foreach ($category as $key => $date){
+                $value = $date;
+                $category[$key] = new stdClass();
+                $category[$key]->label = $value;
+            }
+
+            return array('dataset' => $dataset, 'category' => $category);
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '', 'category' => '');
+        }
+    }
+
+    public function getfilescountbynationalities($program){
+        $query = $this->_db->getQuery(true);
+
+        $category = [];
+
+        try {
+            $query->select('value as seriesname,step')
+                ->from($this->_db->quoteName('#__emundus_setup_status'));
+            $this->_db->setQuery($query);
+            $status = $this->_db->loadObjectList();
+            foreach ($status as $key => $statu){
+                $status[$key]->data = [];
+            }
+            $dataset = $status;
+
+            $query->clear()
+                ->select('id,label_fr as label')
+                ->from($this->_db->quoteName('data_nationality'));
+            $this->_db->setQuery($query);
+            $nationalities = $this->_db->loadObjectList();
+
+            foreach ($nationalities as $nationality){
+                $query->clear()
+                    ->select('count(cc.id) as value, cc.status as seriesname')
+                    ->from($this->_db->quoteName('#__emundus_campaign_candidature','cc'))
+                    ->leftJoin($this->_db->quoteName('jos_emundus_1001_00','n').' ON '.$this->_db->quoteName('n.fnum').' = '.$this->_db->quoteName('cc.fnum'));
+
+                if(!empty($program)){
+                    $query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'));
+                }
+
+                $query->where($this->_db->quoteName('n.e_360_7752').' = '.$this->_db->quote($nationality->id));
+
+                if(!empty($program)){
+                    $query->andWhere($this->_db->quoteName('sc.training').' LIKE '.$this->_db->quote($program));
+                }
+
+                $query->group('cc.status');
+                $this->_db->setQuery($query);
+                $files = $this->_db->loadObjectList();
+
+                if(!empty($files)) {
+                    foreach ($dataset as $key => $data) {
+                        foreach ($files as $index => $file) {
+                            if ($file->seriesname == $data->step) {
+                                $dataset[$key]->data[] = $file;
+                                break;
+                            }
+                        }
+                        $neededObject = array_filter(
+                            $files,
+                            function ($e) use (&$data) {
+                                return $e->seriesname == $data->step;
+                            }
+                        );
+                        if (empty($neededObject)) {
+                            $empty_file = new stdClass;
+                            $empty_file->value = "0";
+                            $empty_file->seriesname = $data->step;
+                            $dataset[$key]->data[] = $empty_file;
+                        }
+                    }
+                    $category[] = $nationality->label;
+                }
+            }
+
+            foreach ($category as $key => $date){
+                $value = $date;
+                $category[$key] = new stdClass();
+                $category[$key]->label = $value;
+            }
+
+            return array('dataset' => $dataset, 'category' => $category);
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '', 'category' => '');
         }
     }
 }

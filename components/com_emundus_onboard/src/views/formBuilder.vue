@@ -811,10 +811,15 @@
       },
       removeMenu(form_id) {
         this.formObjectArray.forEach((form, index) => {
-          if(form.object.id == form_id){
-            this.formObjectArray.splice(index,1);
+        if(form.object.id == form_id) {
+            this.formObjectArray.splice(index, 1);
           }
         });
+        this.formList.forEach((form, index) => {
+          if(form.id == form_id) {
+          this.formList.splice(index,1);
+          }
+      });
         this.builderKey += 1;
         this.indexHighlight -= 1;
       },

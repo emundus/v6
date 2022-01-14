@@ -11,7 +11,7 @@
       <div class="section-sub-menu sub-form" v-if="email == ''">
         <div class="container-2 w-container" style="max-width: unset">
           <div class="d-flex">
-            <img src="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
+            <img src="/images/emundus/menus/email.png" srcset="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
             <h1 class="tchooz-section-titles">{{translations.AddEmail}}</h1>
           </div>
         </div>

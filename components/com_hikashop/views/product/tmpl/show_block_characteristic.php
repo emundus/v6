@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -215,14 +215,15 @@ if($this->params->get('characteristic_display') != 'list') {
 			$html = $main_html;
 
 			if($characteristics_dynamic_display) {
-				$matches = $this->getAllValuesMatches($this->characteristics, $this->element->variants);
+				$matches = $this->getAllValuesMatches($this->characteristics, $this->element->variants, $this->element->main);
+				$js.="\r\n".'window.hikashop.availableValues = [';
 				if($matches) {
-					$js.="\r\n".'window.hikashop.availableValues = [';
 					foreach($matches as $value_id => $children) {
 						$js.="\r\n\t"."[".implode(',',$children)."],";
 					}
-					$js.="\r\n".'];';
+
 				}
+				$js.="\r\n".'];';
 			}
 
 			break;
@@ -257,7 +258,69 @@ function initVariants() {
 	var priceDivs = document.querySelectorAll('#hikashop_product_price_main > .hikashop_product_price_full');
 	priceDivs.forEach(function (sub) { sub.style.display = 'none'; });
 <?php } ?>
+
+	var firstEl = document.querySelector('[data-characteristic="1"]');
+	var firstRow = document.querySelector('[data-characrow="1"]');
+	var autoSelect = false;
+	if(firstEl.tagName.toLowerCase() == 'select') {
+		if(firstEl.options.length == 2) {
+			autoSelect = true;
+			firstEl.selectedIndex = firstEl.options.length - 1;
+			if(window.jQuery && typeof(jQuery().chosen) == "function") {
+				jQuery( "#hikashop_product_characteristics select" ).chosen('destroy').chosen({disable_search_threshold:10, search_contains: true});
+			}
+		}
+	} else {
+		var inputs = firstRow.querySelectorAll('input');
+		if(inputs.length == 1) {
+			autoSelect = true;
+			inputs[inputs.length-1].checked = true;
+		}
+	}
+
+	if(autoSelect) {
+		if(firstEl.tagName.toLowerCase() == 'select') {
+			hikashopVariantSelected(firstEl);
+		} else {
+			hikashopVariantSelected(inputs[inputs.length-1]);
+		}
+	}
 }
+
+function getValidVariants(pos) {
+	var allInputs = document.querySelectorAll('[data-characteristic]'), selectedElements = [], validVariants = [];
+
+	for (index = 0; index < allInputs.length; ++index) {
+		var input = allInputs[index];
+		if(input.tagName.toLowerCase() == 'select') {
+			if(input.selectedIndex && input.value)
+				selectedElements[selectedElements.length] = parseInt(input.options[input.selectedIndex].value);
+		} else {
+			if(input.checked)
+				selectedElements[selectedElements.length] = parseInt(input.value);
+		}
+		if(selectedElements.length == pos)
+			break;
+	}
+
+	if(!selectedElements.length)
+		return window.hikashop.availableValues;
+
+	for (index = 0; index < window.hikashop.availableValues.length; ++index) {
+		var valid = true;
+		for (index2 = 0; index2 < selectedElements.length; ++index2) {
+			if(selectedElements[index2] != window.hikashop.availableValues[index][index2]) {
+				valid = false;
+				break;
+			}
+		}
+		if(valid){
+			validVariants[validVariants.length] = window.hikashop.availableValues[index];
+		}
+	}
+	return validVariants;
+}
+
 function hikashopVariantSelected(obj) {
 <?php if($characteristics_dynamic_display && $count > 1) { ?>
 	if(typeof(obj) == "string")
@@ -265,35 +328,9 @@ function hikashopVariantSelected(obj) {
 	if(!obj)
 		return true;
 	var pos = obj.getAttribute('data-characteristic'), last = obj.getAttribute('data-last'), otherRow = null,
-	qtyArea = document.getElementById('hikashop_product_quantity_main'), altArea = document.getElementById('hikashop_product_quantity_alt'),
-	allInputs = document.querySelectorAll('[data-characteristic]');
+	qtyArea = document.getElementById('hikashop_product_quantity_main'), altArea = document.getElementById('hikashop_product_quantity_alt');
 	if(!last) {
-		var selectedElements = [];
-		for (index = 0; index < allInputs.length; ++index) {
-			var input = allInputs[index];
-			if(input.tagName.toLowerCase() == 'select') {
-				if(input.selectedIndex && input.value)
-					selectedElements[selectedElements.length] = parseInt(input.options[input.selectedIndex].value);
-			} else {
-				if(input.checked)
-					selectedElements[selectedElements.length] = parseInt(input.value);
-			}
-			if(selectedElements.length == pos)
-				break;
-		}
-		var validVariants = [];
-		for (index = 0; index < window.hikashop.availableValues.length; ++index) {
-			var valid = true;
-			for (index2 = 0; index2 < selectedElements.length; ++index2) {
-				if(selectedElements[index2] != window.hikashop.availableValues[index][index2]) {
-					valid = false;
-					break;
-				}
-			}
-			if(valid){
-				validVariants[validVariants.length] = window.hikashop.availableValues[index];
-			}
-		}
+		validVariants = getValidVariants(pos);
 
 		if(validVariants.length < 1 && obj.value != '') {
 			console.log('characteristic value with id ' + obj.value + ' missing in window.hikashop.availableValues');
