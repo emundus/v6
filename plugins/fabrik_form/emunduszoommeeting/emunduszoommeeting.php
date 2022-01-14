@@ -20,6 +20,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        /* get JFactory application */
+        $app = JFactory::getApplication();
+
         /* get api key */
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $apiSecret = $eMConfig->get('zoom_jwt', '');
@@ -30,9 +33,13 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         /* get info of host from $_POST */
         $host = current($_POST['jos_emundus_jury___president']);
 
-
+        $offset = $app->get('offset', 'UTC');
         $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time"]));
         $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time"]));
+
+        echo '<pre>'; var_dump($startTime); echo '</pre>';
+        echo '<pre>'; var_dump($endTime); echo '</pre>'; die;
+
 
         $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
         $db->setQuery($hostQuery);
@@ -44,7 +51,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             "start_time" => $startTime,
             "duration" => intval(strtotime($endTime)-strtotime($startTime)),
             "schedule for" => $raw->email,
-            "timezone" => "Europe/Paris",
+            "timezone" => $offset,
             "settings" => array(
                 "registration_type" => 2,
                 "host_video" => true,
