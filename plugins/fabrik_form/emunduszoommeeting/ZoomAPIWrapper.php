@@ -21,39 +21,6 @@ class ZoomAPIWrapper {
         }
     }
 
-    static function urlsafeB64Encode( $string ) {
-        return str_replace('=', '', strtr(base64_encode($string), '+/', '-_'));
-    }
-
-    private function generateJWT() {
-        $token = array(
-            'iss' => $this->apiKey,
-            'exp' => time() + 60,
-        );
-        $header = array(
-            'typ' => 'JWT',
-            'alg' => 'HS256',
-        );
-
-        $toSign =
-            self::urlsafeB64Encode(json_encode($header))
-            .'.'.
-            self::urlsafeB64Encode(json_encode($token))
-        ;
-
-        $signature = hash_hmac('SHA256', $toSign, $this->apiSecret, true);
-
-        return $toSign . '.' . self::urlsafeB64Encode($signature);
-    }
-
-    private function headers() {
-        return array(
-            'Authorization: Bearer ' . $this->generateJWT(),
-            'Content-Type: application/json',
-            'Accept: application/json',
-        );
-    }
-
     private function pathReplace( $path, $requestParams ){
         $errors = array();
         $path = preg_replace_callback( '/\\{(.*?)\\}/',function( $matches ) use( $requestParams,$errors ) {
