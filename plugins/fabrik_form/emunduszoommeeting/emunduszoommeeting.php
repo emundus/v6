@@ -4,6 +4,7 @@ defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
+require_once "ZoomAPIWrapper.php";
 
 /**
 * Create a Joomla user from the forms data
@@ -14,12 +15,53 @@ require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 */
 
 class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
-    public function onAfterProcess()
-    {
+    public function onAfterProcess() {
+        /* create new zoom meeting room */
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        $db = JFactory::getDBO();
-        $app = JFactory::getApplication();
+        /* get api key */
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $apiSecret = $eMConfig->get('zoom_jwt', '');
 
-        echo '<pre>'; var_dump('test'); echo '</pre>'; die;
+        /* call to api to create new zoom meeting */
+        $zoom = new ZoomAPIWrapper($apiSecret);
+
+        /* get info of host from $_POST */
+        $host = current($_POST['jos_emundus_jury___president']);
+
+        $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
+        $db->setQuery($hostQuery);
+        $raw = $db->loadObject();
+
+        $meetingData = json_encode(array(
+            "topic" => $_POST['jos_emundus_jury___meeting_name'],
+            "type" => 2,        // type 2 = scheduling meeting
+            "start_time" => "2021-01-05T08:55:00Z",
+            "duration" => 375,
+            "schedule for" => $raw->email,
+            "timezone" => "GMT",
+            "settings" => array(
+                "registration_type" => 2,
+                "host_video" => true,
+                "participant_video" => true,
+                "join_before_host" => true,
+                "mute_upon_entry" => true,
+                "approval_type" => 0,
+                "alternative_hosts" => "",
+                "close_registration" => true,
+                "waiting_room" => false,
+                "registrants_email_notification" => true,
+                "contact_name" => "Official name",
+                "contact_email"=> "official.email@example.com",
+                "show_share_button" => false,
+                "allow_multiple_devices" => true
+            ),
+            "encryption_type" => "enhanced_encryption"
+        ));
+
+        $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), $meetingData);
+        
+        echo '<pre>'; var_dump($response); echo '</pre>'; die;
     }
 }
