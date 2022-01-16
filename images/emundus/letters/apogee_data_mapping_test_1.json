@@ -173,7 +173,7 @@
         "sql": "select cod_etb from data_etbs left join jos_emundus_1001_00 as je10 on je10.etb_dernier = data_etbs.id where je10.fnum = "
       },
       "codTpeAntIaa": {
-        "sql": "select #__emundus_1001_00.type_dernier_etb from #__emundus_1001_00 where #__emundus_1001_00.fnum = "
+        "sql": "select cod_tpe from data_type_etb as dte left join jos_emundus_1001_00 as je10 on lpad(je10.type_dernier_etb,2,'0') = dte.cod_tpe where je10.fnum = "
       },
       "codTypDepPayAntIaaOpi": {
         "default": ""
@@ -222,7 +222,7 @@
         "default": ""
       },
       "codThbOpi": {
-        "default": ""
+        "default": "7"
       },
       "codThpOpi": {
         "default": ""
@@ -282,13 +282,13 @@
         "sql": "select cod_etb from data_etbs left join jos_emundus_1001_00 as je10 on je10.e_358_7932 = data_etbs.id where je10.fnum = "
       },
       "daaEnsSupOpi": {
-        "default": ""
+        "sql": "select #__emundus_1001_00.e_358_7930 from #__emundus_1001_00 where fnum = "
       },
       "daaEntEtbOpi": {
-        "default": ""
+        "sql": "select #__emundus_1001_00.e_358_7931 from #__emundus_1001_00 where fnum = "
       },
       "daaEtbOpi": {
-        "sql": "select #__emundus_1001_00.e_358_7931 from #__emundus_1001_00 where fnum = "
+        "default": ""
       },
       "daaEtrSup": {
         "default": ""
@@ -317,7 +317,6 @@
         "default": ""
       },
       "codTypDepPayAnnPreOpi": {
-        "sql": "select #__emundus_1001_00.e_358_7943 from #__emundus_1001_00 where #__emundus_1001_00.fnum = ",
         "default": ""
       }
     }
@@ -355,7 +354,6 @@
         "default": ""
       },
       "codMfo": {
-        "sql": "select #__emundus_final_grade.motif_refus from #__emundus_final_grade where #__emundus_final_grade.fnum = ",
         "default": ""
       },
       "codSpe1Opi": {
