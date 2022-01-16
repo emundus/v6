@@ -170,6 +170,7 @@ class ApogeeCustom {
             $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_1001_00 as je10 on je10.dep_etb_dernier = data_departements.departement_code where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayAntIaaOpiNode->nodeValue = $db->loadResult();
+            $_codTypDepPayAntIaaOpiNode = 'D';
         }
         else {
             $_codTypDepPayAntIaaOpiNode->nodeValue = 'P';
@@ -209,7 +210,6 @@ class ApogeeCustom {
             $db->setQuery($_getDepartmentSql);
 
             $_codDepPayAnnPreOpiNode->nodeValue = $db->loadResult();
-
             $_codTypDepPayAnnPreOpiNode->nodeValue = 'D';
         } else {
             $_codTypDepPayAnnPreOpiNode->nodeValue = 'P';
@@ -269,6 +269,27 @@ class ApogeeCustom {
         return $this->xmlTree;
     }
 
+    /* validate voeux => remove all empty voeux */
+    public function validateVoeux() {
+        /* get all items */
+
+        $items = $this->xmlTree->getElementsByTagName('item');
+        $itemCount = $items->count();
+
+        for($index = 0; $index <= $itemCount-1; $index++) {
+            /* find codCge */
+            if(empty($items[$index]->getElementsByTagName('codCge')->item(0)->nodeValue)) {
+                /* remove all children of $item[$index] */
+                $children = $items[$index]->childNodes;
+                foreach($children as $child) {
+                    $child->nodeValue = '';
+                }
+            };
+        }
+
+        return $this->xmlTree;
+    }
+
     /* set value to repeat group */
     public function setConvocation() {
         $db = JFactory::getDbo();
@@ -285,7 +306,7 @@ class ApogeeCustom {
 
         for($_index = 0; $_index <= $_convocationNodesCount - 1; $_index++) {
             $_childs = $_convocationNodes[$_index]->childNodes;
-            
+
             for($_count = 0; $_count <= count($_childs); $_count++) {
                 if(in_array($_childs[$_count]->tagName, array_keys($convocation_elems))) {
                     // if query exists
@@ -306,7 +327,7 @@ class ApogeeCustom {
                 }
             }
         }
-        
+
         foreach(array_keys($convocation_elems) as $attr) {
             $attr_node = $this->xmlTree->getElementsByTagName($attr);
 
