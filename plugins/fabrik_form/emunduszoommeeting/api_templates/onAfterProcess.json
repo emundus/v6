@@ -37,9 +37,23 @@
     "authentication_domains": "",
     "authentication_exception": [],
     "additional_data_center_regions": [],
+    "breakout_room": {
+      "enable": "",
+      "rooms": []
+    },
+    "language_interpretation": {
+      "enable" : "",
+      "interpreters": []
+    },
     "show_share_button": "",
     "allow_multiple_devices": "",
     "encryption_tyoe": "",
+    "approved_or_denied_countries_or_regions": {
+      "enable": "",
+      "method": "",
+      "approved_list": [],
+      "denied_list": []
+    },
     "alternative_hosts_email_notification": "",
     "focus_mode": "",
     "meeting_invitees": [],

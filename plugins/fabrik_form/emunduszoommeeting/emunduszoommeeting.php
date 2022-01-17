@@ -47,15 +47,28 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         /* get info of host from $_POST */
         $host = current($_POST['jos_emundus_jury___president']);
 
+        /* --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
         $offset = $app->get('offset', 'UTC');
-        $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time"]));
-        $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time"]));
+
+        $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
+        $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
+
+        // raw duration
+        $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
+
+        // CELSA duration (before 15 mins = 900)
+        $celsa_duration = floor(($duration - 900) / 60);
+
+
+        $_POST['jos_emundus_jury___timezone'] = $offset;
+        $_POST['jos_emundus_jury___start_time'] = $startTime;
+        $_POST['jos_emundus_jury___duration'] = $celsa_duration;
+
+        /* --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
 
         $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
         $db->setQuery($hostQuery);
         $raw = $db->loadObject();
-
-        /* handle start time, end time */
 
         foreach($_POST as $key => $post) {
             $suff = explode("jos_emundus_jury___", $key)[1];
