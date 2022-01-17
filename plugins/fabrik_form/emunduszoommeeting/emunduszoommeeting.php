@@ -44,59 +44,75 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         /* call to api to create new zoom meeting */
         $zoom = new ZoomAPIWrapper($apiSecret);
 
-        /* get info of host from $_POST */
-        $host = current($_POST['jos_emundus_jury___president']);
+        /* check if meeting room exists before or jos_emundus_jury.id exists before */
+        if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
 
-        /* --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
-        $offset = $app->get('offset', 'UTC');
+            /* get info of host from $_POST */
+            $host = current($_POST['jos_emundus_jury___president']);
 
-        $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
-        $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
+            /* --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
+            $offset = $app->get('offset', 'UTC');
 
-        // raw duration
-        $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
+            $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
+            $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
 
-        // CELSA duration (before 15 mins = 900)
-        $celsa_duration = floor(($duration - 900) / 60);
+            // raw duration
+            $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
+
+            // CELSA duration (before 15 mins = 900)
+            $celsa_duration = floor(($duration - 900) / 60);
 
 
-        $_POST['jos_emundus_jury___timezone'] = $offset;
-        $_POST['jos_emundus_jury___start_time'] = $startTime;
-        $_POST['jos_emundus_jury___duration'] = $celsa_duration;
+            $_POST['jos_emundus_jury___timezone'] = $offset;
+            $_POST['jos_emundus_jury___start_time'] = $startTime;
+            $_POST['jos_emundus_jury___duration'] = $celsa_duration;
 
-        /* --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
+            /* --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
 
-        $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
-        $db->setQuery($hostQuery);
-        $raw = $db->loadObject();
+            $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
+            $db->setQuery($hostQuery);
+            $raw = $db->loadObject();
 
-        foreach($_POST as $key => $post) {
-            $suff = explode("jos_emundus_jury___", $key)[1];
+            foreach($_POST as $key => $post) {
+                $suff = explode("jos_emundus_jury___", $key)[1];
 
-            if($suff === null or empty($suff)) {
-                unset($json[$suff]);
-            } else {
-                /* find key in JSON template */
-                if (array_key_exists($suff, $json)) {
-                    if (is_array($post) and sizeof($post) == 1)
-                        $post = current($post);
-                    $json[$suff] = $post;
+                if($suff === null or empty($suff)) {
+                    unset($json[$suff]);
                 } else {
-                    if ($this->searchSubArray($json, 'join_before_host')['status'] === true) {
-
-                        $parentKey = $this->searchSubArray($json, $suff)['parent'];
-
+                    /* find key in JSON template */
+                    if (array_key_exists($suff, $json)) {
                         if (is_array($post) and sizeof($post) == 1)
                             $post = current($post);
-                        $json[$parentKey][$suff] = $post;
+                        $json[$suff] = $post;
+                    } else {
+                        if ($this->searchSubArray($json, 'join_before_host')['status'] === true) {
 
+                            $parentKey = $this->searchSubArray($json, $suff)['parent'];
+
+                            if (is_array($post) and sizeof($post) == 1)
+                                $post = current($post);
+                            $json[$parentKey][$suff] = $post;
+
+                        }
                     }
                 }
             }
-        }
 
-        $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
-        
-        echo '<pre>'; var_dump($response); echo '</pre>'; die;
+            $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
+
+            /* get last insert id */
+            $getLastIdSql = "SELECT MAX(id) FROM jos_emundus_jury";
+            $db->setQuery($getLastIdSql);
+            $lid = $db->loadResult();
+
+            /* update to table "jos_emundus_jury" */
+            $updateSql = "UPDATE #__emundus_jury SET meeting_session = " . $db->quote($response['id']) . " , visio_link = " . $db->quote($response['start_url']) . " WHERE #__emundus_jury.id = " . $lid;
+            $db->setQuery($updateSql);
+            $db->execute();
+
+
+        } else {
+
+        }
     }
 }
