@@ -106,6 +106,7 @@ class MakeUpdateServer extends JApplicationCli
 	public function makeXml($root, $elem, $file, $dom)
 	{
 		$comp = $elem['id'];
+        $zip_name = $comp;
 		if ($elem['type'] == 'component') {
             $name = preg_split("/[_]+/", $comp, 2);
         }
@@ -115,8 +116,10 @@ class MakeUpdateServer extends JApplicationCli
 		}
 		if ($elem['type'] == 'module') {
 			$xml_path = JPATH_BASE . "/" . $elem['type'] . "s/" . $comp . "/" . $comp . '.xml';
+
 		} elseif ($elem['type'] == 'plugin') {
 			$xml_path = JPATH_BASE . "/" . $elem['type'] . "s/" . $elem['group'] . "/" . $comp . "/" . $comp . '.xml';
+            $zip_name = "plg_" . $comp;
 		}
 
 		$update_filepath = $this->filepath . "packages/" . $comp;
@@ -148,25 +151,26 @@ class MakeUpdateServer extends JApplicationCli
 			case 'updates':
                 $update = $dom->createElement('update');
                 $update->appendChild($dom->createElement('name', $name));
+                $update->appendChild($dom->createElement('description', $name));
                 $update->appendChild($dom->createElement('element', $comp));
                 if ($manifest->attributes()['type'][1]) {
                     $update->appendChild($dom->createElement('type', $manifest->attributes()['type'][1]));
                 }
                 $update->appendChild($dom->createElement('version', $this->version));
-                $update->appendChild($dom->createElement('infourl', 'http://localhost/emundus-updates/packages/' . $comp . '/' . $comp . '_' . $this->version . '.html'));
+                //$update->appendChild($dom->createElement('infourl', 'http://localhost/emundus-updates/packages/' . $comp . '/' . $comp . '_' . $this->version . '.html'));
                 $downloads = $dom->createElement('downloads');
-                $downloadurl = $downloads->appendChild($dom->createElement('downloadurl', 'http://localhost/emundus-updates/packages/' . $comp . '/' . $comp . '_' . $this->version . '.zip'));
+                $downloadurl = $downloads->appendChild($dom->createElement('downloadurl', 'http://localhost/emundus-updates/packages/' . $comp . '/' . $zip_name . '_' . $this->version . '.zip'));
                 $downloadurl->setAttribute('type', 'full');
-                $downloadurl->setAttribute('format', "zip");
+                $downloadurl->setAttribute('format', 'zip');
                 $update->appendChild($downloads);
-                $tags = $dom->createElement('tags');
-                $tags->appendChild($dom->createElement('tag', 'stable'));
-                $update->appendChild($tags);
-                $targetplatform = $dom->createElement('targeplatformversion');
+//                $tags = $dom->createElement('tags');
+//                $tags->appendChild($dom->createElement('tag', 'stable'));
+//                $update->appendChild($tags);
+                $targetplatform = $dom->createElement('targetplatform');
                 $targetplatform->setAttribute('name', 'joomla');
-                $targetplatform->setAttribute('version', '3.[23456789]');
+                $targetplatform->setAttribute('version', '3');
                 $update->appendChild($targetplatform);
-                $update->appendChild($dom->createElement('php_minimum', '5.3'));
+                //$update->appendChild($dom->createElement("php_minimum", "5.3"));
 
                 $root->appendChild($update);
                 break;
@@ -397,32 +401,35 @@ class MakeUpdateServer extends JApplicationCli
 		$data     = simplexml_load_file($xml_path);
 
         $list_dom = new DOMDocument('1.0');
+        $list_dom->encoding = 'utf-8';
         $list_dom->preserveWhiteSpace = false;
         $list_dom->formatOutput = true;
         $extensionset = $list_dom->createElement('extensionset');
         $list_dom->appendChild($extensionset);
-
-        $update_dom = new DOMDocument("1.0", );
-        $update_dom->preserveWhiteSpace = false;
-        $update_dom->formatOutput = true;
-        $updates = $update_dom->createElement('updates');
-        $update_dom->appendChild($updates);
-
         foreach ($data->files as $obj)
 		{
 			foreach ($obj->file as $elem)
 			{
-				$dest = JPATH_ROOT . '/tmp/' . $elem['id'];
+
+
+                $update_dom = new DOMDocument("1.0");
+                $update_dom->encoding = 'utf-8';
+                //$update_dom->preserveWhiteSpace = false;
+                //$update_dom->formatOutput = true;
+                $updates = $update_dom->createElement('updates');
+                $update_dom->appendChild($updates);
+
+
+                $dest = JPATH_ROOT . '/tmp/' . $elem['id'];
 				echo $dest . "\n";
-				if (!JFolder::exists($dest))
-				{
-					echo $dest . " not exist";
+				//if (!JFolder::exists($dest))
+				//{
 					if ($elem['type'] == 'component') {
 						$this->updateServerXml($elem['id'], $sep, $sep_admin, $updateserver, $update, $folder_admin);
-                        $this->makeXml($updates, $elem, $file = 'updates', $update_dom);
-                        $update_dom->save($this->filepath . '/packages/' . $elem['id'] . '/updates.xml');
                     }
-
+                $this->makeXml($updates, $elem, $file = 'updates', $update_dom);
+                $update_dom->recover=true;
+                $update_dom->save($this->filepath . '/packages/' . $elem['id'] . '/updates.xml');
 
 					$this->makeXml($extensionset, $elem, $file = 'list', $list_dom);
                     $list_dom->save($this->filepath . "package_list.xml");
@@ -443,7 +450,7 @@ class MakeUpdateServer extends JApplicationCli
 					{
 						echo $elem['id'] . " zip failed \n";
 					}
-				}
+				//}
 			}
 		}
 		$this->deleteTmp();
