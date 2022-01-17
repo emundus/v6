@@ -60,20 +60,24 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         foreach($_POST as $key => $post) {
             $suff = explode("jos_emundus_jury___", $key)[1];
 
-            /* find key in JSON template */
-            if(array_key_exists($suff, $json)) {
-                if(is_array($post) and sizeof($post) == 1)
-                    $post = current($post);
-                $json[$suff] = $post;
+            if($suff === null or empty($suff)) {
+                unset($json[$suff]);
             } else {
-                if($this->searchSubArray($json, 'join_before_host')['status'] === true) {
-
-                    $parentKey = $this->searchSubArray($json, $suff)['parent'];
-
-                    if(is_array($post) and sizeof($post) == 1)
+                /* find key in JSON template */
+                if (array_key_exists($suff, $json)) {
+                    if (is_array($post) and sizeof($post) == 1)
                         $post = current($post);
-                    $json[$parentKey][$suff] = $post;
+                    $json[$suff] = $post;
+                } else {
+                    if ($this->searchSubArray($json, 'join_before_host')['status'] === true) {
 
+                        $parentKey = $this->searchSubArray($json, $suff)['parent'];
+
+                        if (is_array($post) and sizeof($post) == 1)
+                            $post = current($post);
+                        $json[$parentKey][$suff] = $post;
+
+                    }
                 }
             }
         }
