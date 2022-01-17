@@ -15,7 +15,21 @@ require_once "ZoomAPIWrapper.php";
 */
 
 class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
+
+    public function searchSubArray(Array $array, $key) {
+        foreach ($array as $index => $subarray){
+            if (isset($subarray[$key])) {
+                return array('parent' => $index, 'status' => true);
+            }
+        }
+    }
+
     public function onAfterProcess() {
+        /* read json template file */
+        $route = JPATH_BASE.'/plugins/fabrik_form/emunduszoommeeting/api_templates' . DS;
+        $template = file_get_contents($route . __FUNCTION__ . '.json');
+        $json = json_decode($template, true);
+
         /* create new zoom meeting room */
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -37,40 +51,34 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time"]));
         $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time"]));
 
-        echo '<pre>'; var_dump($startTime); echo '</pre>';
-        echo '<pre>'; var_dump($endTime); echo '</pre>'; die;
-
-
         $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
         $db->setQuery($hostQuery);
         $raw = $db->loadObject();
 
-        $meetingData = json_encode(array(
-            "topic" => $_POST['jos_emundus_jury___meeting_name'],
-            "type" => 2,                                                // type 2 = scheduling meeting
-            "start_time" => $startTime,
-            "duration" => intval(strtotime($endTime)-strtotime($startTime)),
-            "schedule for" => $raw->email,
-            "timezone" => $offset,
-            "settings" => array(
-                "registration_type" => 2,
-                "host_video" => true,
-                "participant_video" => true,
-                "join_before_host" => true,
-                "mute_upon_entry" => true,
-                "approval_type" => 0,
-                "close_registration" => true,
-                "waiting_room" => false,
-                "registrants_email_notification" => true,
-                "contact_name" => "Official name",
-                "contact_email"=> "official.email@example.com",
-                "show_share_button" => false,
-                "allow_multiple_devices" => true
-            ),
-            "encryption_type" => "enhanced_encryption"
-        ));
+        /* handle start time, end time */
 
-        $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), $meetingData);
+        foreach($_POST as $key => $post) {
+            $suff = explode("jos_emundus_jury___", $key)[1];
+
+            /* find key in JSON template */
+            if(array_key_exists($suff, $json)) {
+                if(is_array($post) and sizeof($post) == 1)
+                    $post = current($post);
+                $json[$suff] = $post;
+            } else {
+                if($this->searchSubArray($json, 'join_before_host')['status'] === true) {
+
+                    $parentKey = $this->searchSubArray($json, $suff)['parent'];
+
+                    if(is_array($post) and sizeof($post) == 1)
+                        $post = current($post);
+                    $json[$parentKey][$suff] = $post;
+
+                }
+            }
+        }
+
+        $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
         
         echo '<pre>'; var_dump($response); echo '</pre>'; die;
     }
