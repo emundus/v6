@@ -170,7 +170,7 @@ class ApogeeCustom {
             $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_1001_00 as je10 on je10.dep_etb_dernier = data_departements.departement_code where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayAntIaaOpiNode->nodeValue = $db->loadResult();
-            $_codTypDepPayAntIaaOpiNode = 'D';
+            $_codTypDepPayAntIaaOpiNode->nodeValue = 'D';
         }
         else {
             $_codTypDepPayAntIaaOpiNode->nodeValue = 'P';

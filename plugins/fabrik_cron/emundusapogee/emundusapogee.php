@@ -142,6 +142,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             $xmlCustomSchema_data = new ApogeeCustom($xmlDataRequest,$fnum);
             $xmlCustomSchema_data->buildCustomData();
             $xmlCustomSchema_data->setCustomVoeux();
+            $xmlCustomSchema_data->validateVoeux();
 
             # prune raw xml tree (remove unnecessary elements)
             $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);
@@ -154,7 +155,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
 
             # send request
-            $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
+            # $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
             $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
