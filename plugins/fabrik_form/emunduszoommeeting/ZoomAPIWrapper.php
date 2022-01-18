@@ -86,6 +86,7 @@ class ZoomAPIWrapper {
 
     // Returns the errors responseCode returned from the last call to doRequest
     function requestErrors() {
+        JLog::add('Cannot invoke Zoom API, doRequest may have error : ' . JLog::ERROR, 'com_emundus');
         return $this->errors;
     }
 
