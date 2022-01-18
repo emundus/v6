@@ -112,6 +112,14 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         }
     }
 
+    /**
+     * This method is used to map $_POST data with request schema (declared in api_templates)
+     * Params:
+        * $input (e.g: $_POST)
+        * $separator (e.g: "jos_emundus_jury___")
+        * $output
+     * creator: eMundus
+     **/
     public function dataMapping($input, $separator, $output) {
         foreach($input as $key => $post) {
             $suff = explode($separator, $key)[1];
@@ -119,16 +127,13 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             if($suff === null or empty($suff)) {
                 unset($input[$suff]);
             } else {
-                /* find key in JSON template */
                 if (array_key_exists($suff, $output)) {
                     if (is_array($post) and sizeof($post) == 1)
                         $post = current($post);
                     $output[$suff] = $post;
                 } else {
                     if ($this->searchSubArray($output, $suff)['status'] === true) {
-
                         $parentKey = $this->searchSubArray($output, $suff)['parent'];
-
                         if (is_array($post) and sizeof($post) == 1)
                             $post = current($post);
                         $output[$parentKey][$suff] = $post;
