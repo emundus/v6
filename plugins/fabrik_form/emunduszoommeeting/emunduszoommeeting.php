@@ -24,6 +24,11 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         }
     }
 
+    /**
+        * onAfterProcess ==> create new Zoom meeting
+        * onAfterProcess ==> update an existing Zoom meeting
+        * creator: eMundus
+     */
     public function onAfterProcess() {
         /* read json template file */
         $route = JPATH_BASE.'/plugins/fabrik_form/emunduszoommeeting/api_templates' . DS;
@@ -41,62 +46,34 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $apiSecret = $eMConfig->get('zoom_jwt', '');
 
-        /* call to api to create new zoom meeting */
+        /* create ZoomAPIWrapper to use Zoom APIs */
         $zoom = new ZoomAPIWrapper($apiSecret);
 
-        /* check if meeting room exists before or jos_emundus_jury.id exists before */
+        /* get info of host from $_POST */
+        $host = current($_POST['jos_emundus_jury___president']);
+
+        /* get host api token */
+        $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
+        $db->setQuery($hostQuery);
+        $raw = $db->loadObject();
+
+        /* --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
+        $offset = $app->get('offset', 'UTC');
+        $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
+        $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
+        // raw duration
+        $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
+        // CELSA duration (before 15 mins = 900)
+        $celsa_duration = floor(($duration - 900) / 60);
+        $_POST['jos_emundus_jury___timezone'] = $offset;
+        $_POST['jos_emundus_jury___start_time'] = $startTime;
+        $_POST['jos_emundus_jury___duration'] = $celsa_duration;
+        /* --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
+
+        $json = $this->dataMapping($_POST, 'jos_emundus_jury___', $json);
+
+        /* if meeting id (in db, not in Zoom) and meeting session do not exist, create the new one */
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
-
-            /* get info of host from $_POST */
-            $host = current($_POST['jos_emundus_jury___president']);
-
-            /* --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
-            $offset = $app->get('offset', 'UTC');
-
-            $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
-            $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
-
-            // raw duration
-            $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
-
-            // CELSA duration (before 15 mins = 900)
-            $celsa_duration = floor(($duration - 900) / 60);
-
-
-            $_POST['jos_emundus_jury___timezone'] = $offset;
-            $_POST['jos_emundus_jury___start_time'] = $startTime;
-            $_POST['jos_emundus_jury___duration'] = $celsa_duration;
-
-            /* --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
-
-            $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
-            $db->setQuery($hostQuery);
-            $raw = $db->loadObject();
-
-            foreach($_POST as $key => $post) {
-                $suff = explode("jos_emundus_jury___", $key)[1];
-
-                if($suff === null or empty($suff)) {
-                    unset($json[$suff]);
-                } else {
-                    /* find key in JSON template */
-                    if (array_key_exists($suff, $json)) {
-                        if (is_array($post) and sizeof($post) == 1)
-                            $post = current($post);
-                        $json[$suff] = $post;
-                    } else {
-                        if ($this->searchSubArray($json, 'join_before_host')['status'] === true) {
-
-                            $parentKey = $this->searchSubArray($json, $suff)['parent'];
-
-                            if (is_array($post) and sizeof($post) == 1)
-                                $post = current($post);
-                            $json[$parentKey][$suff] = $post;
-
-                        }
-                    }
-                }
-            }
 
             $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
 
@@ -112,7 +89,41 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
 
         } else {
-
+            /* HTTP Status Code
+                * 204 : Meeting update
+                * 300 : Invalid enforce_login_domains, separate multiple domains by semicolon / A maximum of {rateLimitNumber} meetings can be created/updated for a single user in one day.
+                * 400 : User not found on this account: {accountId} (error 1010) / Cannot access meeting information (error 3000) / You are not the meeting host. (error 3003) / (error 3000)
+                * 404 : Meeting not found
+            */
+            $zoom->doRequest('PATCH', '/meetings/' . $_POST['jos_emundus_jury___meeting_session'], array(), array(), json_encode($json, JSON_PRETTY_PRINT));
         }
+    }
+
+    public function dataMapping($input, $separator, $output) {
+        foreach($input as $key => $post) {
+            $suff = explode($separator, $key)[1];
+
+            if($suff === null or empty($suff)) {
+                unset($input[$suff]);
+            } else {
+                /* find key in JSON template */
+                if (array_key_exists($suff, $output)) {
+                    if (is_array($post) and sizeof($post) == 1)
+                        $post = current($post);
+                    $output[$suff] = $post;
+                } else {
+                    if ($this->searchSubArray($output, $suff)['status'] === true) {
+
+                        $parentKey = $this->searchSubArray($output, $suff)['parent'];
+
+                        if (is_array($post) and sizeof($post) == 1)
+                            $post = current($post);
+                        $output[$parentKey][$suff] = $post;
+
+                    }
+                }
+            }
+        }
+        return $output;
     }
 }
