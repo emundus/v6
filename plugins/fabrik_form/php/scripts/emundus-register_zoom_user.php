@@ -32,9 +32,6 @@ if(empty($apiSecret)) {
     ));
 
 
-    $mainframe = JFactory::getApplication();
-    $mainframe->enqueueMessage(JText::_('ZOOM_ACCOUNT_CREATED_WAITING_ACTIVATE'), 'error');
-
     $response = $zoom->doRequest('POST','/users',array(),array(),$user);        /* array */
 
     /* update "data_referentiel_zoom_token" by adding zoom_id */

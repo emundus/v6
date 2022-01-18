@@ -34,11 +34,9 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
 
         /* iterate all users to verify the existing >> table "data_referentiel_zoom_token" */
         $getUsersSql = "select drzt.*, ju.email
-                    from jos_users as ju
-                        left join data_referentiel_zoom_token as drzt on ju.id = drzt.user
-                            where ju.id in (
-                                select user from data_referentiel_zoom_token
-                            )";
+                            from jos_users as ju
+                                left join data_referentiel_zoom_token as drzt on ju.id = drzt.user
+                                    where ju.id in (select user from data_referentiel_zoom_token)";
 
         $db->setQuery($getUsersSql);
         $res = $db->loadObjectList();
@@ -57,4 +55,26 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
             }
         }
     }
+
+    /* unavailable for Basic, Pro account ==> need to use Business, Enterprise account */
+    public function onDeleteRows() {
+        $db = JFactory::getDbo();
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $apiSecret = $eMConfig->get('zoom_jwt', '');
+
+        $zoom = new ZoomAPIWrapper($apiSecret);
+
+        $uzId = current($_POST['ids']);
+
+        /* find user id from $uzId */
+        $getUserSql = "select * from data_referentiel_zoom_token where data_referentiel_zoom_token.id = " . $uzId;
+        $db->setQuery($getUserSql);
+        $res = $db->loadObject();
+
+        /* delete zoom user */
+        $zoom->doRequest('DELETE', '/users/' . $res->zoom_id, array(), array(), '');
+    }
+
+
 }
