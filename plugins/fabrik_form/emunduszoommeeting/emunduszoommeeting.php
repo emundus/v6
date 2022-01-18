@@ -77,7 +77,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
             $httpCode = $zoom->responseCode();
 
-            if($httpCode === '201') {
+            if($httpCode == 201) {
                 /* get last insert id */
                 try {
                     $getLastIdSql = "SELECT MAX(id) FROM jos_emundus_jury";
@@ -110,7 +110,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             **/
             $zoom->doRequest('PATCH', '/meetings/' . $_POST['jos_emundus_jury___meeting_session'], array(), array(), json_encode($json, JSON_PRETTY_PRINT));
 
-            if($zoom->responseCode() !== '204') {
+            if($zoom->responseCode() != 204) {
                 $zoom->requestErrors();
             }
         }

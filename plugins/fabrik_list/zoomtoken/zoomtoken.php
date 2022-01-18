@@ -75,6 +75,4 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
         /* delete zoom user */
         $zoom->doRequest('DELETE', '/users/' . $res->zoom_id, array(), array(), '');
     }
-
-
 }
