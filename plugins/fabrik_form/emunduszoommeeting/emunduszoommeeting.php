@@ -84,8 +84,15 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     $db->setQuery($getLastIdSql);
                     $lid = $db->loadResult();
 
-                    /* update to table "jos_emundus_jury" */
-                    $updateSql = "UPDATE #__emundus_jury SET meeting_session = " . $db->quote($response['id']) . " , visio_link = " . $db->quote($response['start_url']) . " WHERE #__emundus_jury.id = " . $lid;
+                    /** update missing fields to table "jos_emundus_jury" **/
+                    $updateSql = "UPDATE #__emundus_jury 
+                                        SET meeting_session = "     . $db->quote($response['id']) .
+                                            " , visio_link = "      . $db->quote($response['start_url']) .
+                                                " , duration = "        . $db->quote($celsa_duration) .
+                                                    " , join_url = "        . $db->quote($response['join_url']) .
+                                                         " , registration_url = " . $db->quote($response['registration_url']) .
+                                                            " , password = "        . $db->quote($response['password']) .
+                                                                " WHERE #__emundus_jury.id = " . $lid;
                     $db->setQuery($updateSql);
                     $db->execute();
                 } catch(Exception $e) {
@@ -95,18 +102,15 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 $zoom->requestErrors();
             }
         } else {
-            /* HTTP Status Code
+            /** HTTP Status Code
                 * 204 : Meeting updated
                 * 300 : Invalid enforce_login_domains, separate multiple domains by semicolon / A maximum of {rateLimitNumber} meetings can be created/updated for a single user in one day.
                 * 400 : User not found on this account: {accountId} (error 1010) / Cannot access meeting information (error 3000) / You are not the meeting host. (error 3003) / (error 3000)
                 * 404 : Meeting not found
-            */
+            **/
             $zoom->doRequest('PATCH', '/meetings/' . $_POST['jos_emundus_jury___meeting_session'], array(), array(), json_encode($json, JSON_PRETTY_PRINT));
-            $httpCode = $zoom->responseCode();
 
-            if($httpCode === '204') {
-                /* update zoom meeting */
-            } else {
+            if($zoom->responseCode() !== '204') {
                 $zoom->requestErrors();
             }
         }
