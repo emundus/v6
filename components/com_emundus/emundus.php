@@ -443,6 +443,9 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED');
 JText::script('COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED');
 JText::script('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION');
 
+JText::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
+JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );

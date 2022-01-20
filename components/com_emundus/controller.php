@@ -74,6 +74,8 @@ class EmundusController extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $student_id = $jinput->get('user', null, 'string');
         $fnum = $jinput->get('fnum', null, 'string');
+        $profile = $jinput->get('profile', null, 'string');
+
         $fnum = !empty($fnum)?$fnum:$user->fnum;
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
@@ -86,7 +88,11 @@ class EmundusController extends JControllerLegacy {
         );
 
         $infos 		= $m_profile->getFnumDetails($fnum);
-        $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
+
+        if($profile == null) {
+            $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
+        }
+        
         $h_menu = new EmundusHelperMenu;
         $getformids = $h_menu->getUserApplicationMenu($profile);
 
@@ -118,13 +124,15 @@ class EmundusController extends JControllerLegacy {
         require_once($file);
 
         // Here we call the profile by fnum function, which will get the candidate's profile in the status table
-        $profile_id = $m_profile->getProfileByFnum($fnum);
+//        $profile_id = $m_profile->getProfileByFnum($fnum);
 
         if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
+            //application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile_id,null,null);
+            application_form_pdf(!empty($student_id)?$student_id:$user->id, $fnum, true, 1, null, $options, null, $profile,null,null);
             exit;
         } elseif (EmundusHelperAccess::isApplicant($user->id)) {
-            application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
+            //application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile_id,null,null);
+            application_form_pdf($user->id, $fnum, true, 1, $formid, $options, null, $profile,null,null);
             exit;
         } else {
             die(JText::_('ACCESS_DENIED'));
