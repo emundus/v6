@@ -345,7 +345,7 @@ if ($allowed_attachments !== true) {
 
         var $select_bcc = $(document.getElementById('bcc-mails'));
         var selectize_bcc = $select_bcc[0].selectize;
-        var fnums = document.getElementById('fnums').value;
+        const fnums = document.getElementById('fnums').value;
         selectize_bcc.clear();
 
         $('.cc-bcc-mails .plugin-remove_button').empty();
