@@ -18,19 +18,19 @@
       'filters-menu-campaign': type == 'campaign',
       'filters-menu': type !== 'campaign',
     }">
-      <select 
-        v-if="type == 'campaign'"
-        v-model="selectedProgram"
-        name="selectProgram"
-        id="pet-select"
-        class="selectProgram"
-        @change="validateFilters"
+      <select
+          v-if="type == 'campaign'"
+          v-model="selectedProgram"
+          name="selectProgram"
+          id="pet-select"
+          class="selectProgram"
+          @change="validateFilters"
       >
         <option value="all">{{translations.AllPrograms}} </option>
-        <option 
-          v-for="program in allPrograms" 
-          :value="program.code" 
-          :key="program.code"
+        <option
+            v-for="program in allPrograms"
+            :value="program.code"
+            :key="program.code"
         >
           {{program.label}}
         </option>
@@ -242,11 +242,11 @@
                 class="pagination-number"
                 :class="index == pages ? 'current-number' : ''"
             >{{
-              countPages > 10
-                  ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
-                      ? index
-                      : "..."
-                  : index
+                countPages > 10
+                    ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
+                        ? index
+                        : "..."
+                    : index
               }}</a
             >
           </li>
@@ -259,15 +259,15 @@
 
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{
-      this.type == "campaign"
-          ? noCampaign
-          : this.type == "program"
-              ? noProgram
-              : this.type == "email"
-                  ? noEmail
-                  : this.type == "formulaire"
-                      ? noForm
-                      : noFiles
+        this.type == "campaign"
+            ? noCampaign
+            : this.type == "program"
+                ? noProgram
+                : this.type == "email"
+                    ? noEmail
+                    : this.type == "formulaire"
+                        ? noForm
+                        : noFiles
       }}
     </div>
     <div class="loading-form" v-if="loading">
