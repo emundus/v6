@@ -40,6 +40,10 @@ export default {
         }
 
         response.data.attachments.forEach(attachment => {
+          if (attachment.is_validated === null) {
+            attachment.is_validated = -2;
+          }
+
           attachment.show = true;
         });
       }

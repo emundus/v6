@@ -331,7 +331,7 @@ export default {
       attachments: [],
       categories: {},
       fnums: [],
-      users: {},
+      users: [],
       displayedUser: {},
       displayedFnum: this.fnum,
       checkedAttachments: [],
@@ -363,29 +363,27 @@ export default {
   methods: {
     // Getters and setters
     async getFnums() {
-      const response = await fileService.getFnums(this.user);
-
-      if (response !== false) {
-        this.fnums = response;
-      } else {
-        this.loading = false;
-        this.displayErrorMessage("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_FNUMS");
+      const fnumsOnPage = document.getElementsByClassName('em_file_open');
+      for (let fnum of fnumsOnPage) {
+        this.fnums.push(fnum.id);
       }
     },
     async getUsers() {
-      this.users = await userService.getUsers();
-      this.$store.dispatch("user/setUsers", this.users);
-      this.$store.dispatch("user/setCurrentUser", this.user);
+      const response = await userService.getUsers();
 
+      if (response.status !== false) {
+        this.users = response.data;
+        this.$store.dispatch("user/setUsers", this.users);
+      }
+
+      this.$store.dispatch("user/setCurrentUser", this.user);
       this.setDisplayedUser();
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
 
       if (response && response.fnumInfos) {
-        const foundUser =
-            this.users && this.users.length
-                ? this.users.find(
+        const foundUser = this.users && this.users.length ? this.users.find(
                     (user) => user.user_id == response.fnumInfos.applicant_id
                 )
                 : false;

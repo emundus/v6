@@ -1286,6 +1286,7 @@ class EmundusModelApplication extends JModelList
                         $title= JText::_(trim($title[1]));
                     }
                     $forms .= '<h3>' . $title . '</h3>';
+                    $form_params = json_decode($itemt->params);
 
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
@@ -1605,7 +1606,7 @@ class EmundusModelApplication extends JModelList
                                     foreach ($elements as &$element) {
 
                                         if (!empty(trim($element->label))) {
-                                            $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE user=' . $aid . ' AND fnum like ' . $this->_db->Quote($fnum);
+                                            $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
                                             $this->_db->setQuery($query);
                                             $res = $this->_db->loadRow();
 
@@ -1633,6 +1634,30 @@ class EmundusModelApplication extends JModelList
                                             if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
                                                 continue;
                                             }
+
+                                            // Decrypt datas encoded
+                                            if($form_params->note == 'encrypted'){
+                                                $cipher = "aes-128-cbc";
+
+                                                $encryption_key = JFactory::getConfig()->get('secret');
+
+                                                if($element->plugin == 'checkbox'){
+                                                    $contents = json_decode($element->content);
+                                                    foreach ($contents as $key => $content){
+                                                        $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+                                                        if ($decrypted_data !== false) {
+                                                            $contents[$key] = $decrypted_data;
+                                                        }
+                                                    }
+                                                    $element->content = json_encode($contents);
+                                                } else {
+                                                    $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
+                                                    if ($decrypted_data !== false) {
+                                                        $element->content = $decrypted_data;
+                                                    }
+                                                }
+                                            }
+                                            //
 
                                             if ($element->plugin == 'date' && $element->content > 0) {
                                                 if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
@@ -1821,7 +1846,7 @@ class EmundusModelApplication extends JModelList
             $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
             foreach ($tableuser as $key => $itemt) {
-
+                $form_params = json_decode($itemt->params);
                 $breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
@@ -2302,7 +2327,7 @@ class EmundusModelApplication extends JModelList
                                         continue;
                                     }
 
-                                    $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE user=' . $aid . ' AND fnum like ' . $this->_db->Quote($fnum);
+                                    $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
                                     try {
                                         $this->_db->setQuery($query);
                                         $res = $this->_db->loadRow();
@@ -2322,6 +2347,30 @@ class EmundusModelApplication extends JModelList
                                         $element->content = '';
                                         $element->content_id = -1;
                                     }
+
+                                    // Decrypt datas encoded
+                                    if($form_params->note == 'encrypted'){
+                                        $cipher = "aes-128-cbc";
+
+                                        $encryption_key = JFactory::getConfig()->get('secret');
+
+                                        if($element->plugin == 'checkbox'){
+                                            $contents = json_decode($element->content);
+                                            foreach ($contents as $key => $content){
+                                                $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+                                                if ($decrypted_data !== false) {
+                                                    $contents[$key] = $decrypted_data;
+                                                }
+                                            }
+                                            $element->content = json_encode($contents);
+                                        } else {
+                                            $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
+                                            if ($decrypted_data !== false) {
+                                                $element->content = $decrypted_data;
+                                            }
+                                        }
+                                    }
+                                    //
 
                                     if (!empty($element->content) || (isset($params->database_join_display_type) && ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist')) || $element->plugin == 'yesno') {
 
@@ -4432,7 +4481,7 @@ class EmundusModelApplication extends JModelList
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                 $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . $filePath);
-                $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
+                $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\Html($phpSpreadsheet);
                 $htmlWriter->setGenerateSheetNavigationBlock(true);
                 $htmlWriter->setSheetIndex(null);
                 $preview['content'] = $htmlWriter->generateHtmlAll();

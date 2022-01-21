@@ -10,19 +10,19 @@
       'filters-menu-campaign': type == 'campaign',
       'filters-menu': type !== 'campaign',
     }">
-      <select 
-        v-if="type == 'campaign'"
-        v-model="selectedProgram"
-        name="selectProgram"
-        id="pet-select"
-        class="selectProgram"
-        @change="validateFilters"
+      <select
+          v-if="type == 'campaign'"
+          v-model="selectedProgram"
+          name="selectProgram"
+          id="pet-select"
+          class="selectProgram"
+          @change="validateFilters"
       >
         <option value="all">{{translations.AllPrograms}} </option>
-        <option 
-          v-for="program in allPrograms" 
-          :value="program.code" 
-          :key="program.code"
+        <option
+            v-for="program in allPrograms"
+            :value="program.code"
+            :key="program.code"
         >
           {{program.label}}
         </option>
