@@ -288,7 +288,8 @@ class EmundusonboardModelemail extends JModelList {
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
                 ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
+                ->leftJoin($db->quoteName('#__emundus_setup_letters') . ' ON ' . $db->quoteName('#__emundus_setup_letters.attachment_id') . ' = ' . $db->quoteName('#__emundus_setup_attachments.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_letters.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
                 ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);
@@ -340,10 +341,9 @@ class EmundusonboardModelemail extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
                 $newemail = $db->insertid();
-
                 $query->clear()
                     ->update($db->quoteName('#__emundus_setup_emails'))
-                    ->set($db->quoteName('lbl') . ' = ' . $db->quote('email_' . $newemail))
+                    ->set($db->quoteName('lbl') . ' = ' . $db->quote('custom_'.date('YmdhHis')))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($newemail));
                 $db->setQuery($query);
                 $db->execute();

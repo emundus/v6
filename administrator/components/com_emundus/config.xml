@@ -138,6 +138,7 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="scholarship_product" menu="hide" type="text" default="0" label="COM_EMUNDUS_SCHOLARSHIP_PRODUCT" description="COM_EMUNDUS_SCHOLARSHIP_PRODUCT_DESC" />
 		<field name="application_payment" menu="hide" type="list" default="user" label="COM_EMUNDUS_APPLICATION_PAYMENT" description="COM_EMUNDUS_APPLICATION_PAYMENT_DESC">
 			<option value="user">USER</option>
 			<option value="campaign">CAMPAIGN</option>
@@ -218,6 +219,8 @@
 		<field name="clientId" type="text" required="false" label="COM_EMUNDUS_CLIENTID_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
 		<field name="clientSecret" type="text" required="false" label="COM_EMUNDUS_CLIENTSECRET_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
 		<field name="refreshToken" type="text" required="false" label="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_LABEL" description="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
+		<field name="refreshToken_url" type="note" description="&lt;a href=&quot;/index.php?option=com_emundus&amp;controller=calendar&amp;task=authenticateclient&quot; target=&quot;_blank&quot;&gt;New Refresh Token	&lt;/a&gt;" />
+
 		<field name="parentCalId" type="text" required="false" label="COM_EMUNDUS_PARENTCAL_LABEL" description="COM_EMUNDUS_PARENTCAL_DESC" class="inputbox" default="" />
 		<field name="mailRecipients" type="text" required="false" label="COM_EMUNDUS_MAILRECIPIENTS_LABEL" description="COM_EMUNDUS_MAILRECIPIENTS_DESC" class="inputbox" default="5" />
 		<field name="bookedPrefix" type="text" required="false" label="COM_EMUNDUS_BOOKEDPREFIX_LABEL" description="COM_EMUNDUS_BOOKEDPREFIX_DESC" class="inputbox" default="BOOKED" />
@@ -351,6 +354,12 @@
 		<field name="filename" type="text" default="" label="COM_EMUNDUS_FILENAME" description="COM_EMUNDUS_FILENAME_DESC" />
 		<field name="filtre_ip" type="text" default="" label="COM_EMUNDUS_FILTRE_IP" description="COM_EMUNDUS_FILTRE_IP_DESC" />
 		<field name="attachment_id" type="text" default="" label="COM_EMUNDUS_ATTACHMENT_ID" description="COM_EMUNDUS_ATTACHMENT_ID_DESC" />
+
+<!--		<field name="spacer7" type="spacer" hr="true"/>-->
+
+<!--		<field name="export_banner" type="note" label="Export Banner"/>-->
+
+<!--		<field name="banner_limit" type="text" default="10" label="COM_EMUNDUS_BANNER_LIMIT" description="COM_EMUNDUS_BANNER_LIMIT_DESC" />-->
 	</fieldset>
 	<fieldset
 			name="permissions"

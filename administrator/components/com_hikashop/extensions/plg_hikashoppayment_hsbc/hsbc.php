@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -403,14 +403,14 @@ class plgHikashoppaymentHSBC extends hikashopPaymentPlugin
 		$tempresult = "";
 
 		if ($mode == 1) { //CBC mode
-			$cbcleft = (ord($iv{$m++}) << 24) | (ord($iv{$m++}) << 16) | (ord($iv{$m++}) << 8) | ord($iv{$m++});
-			$cbcright = (ord($iv{$m++}) << 24) | (ord($iv{$m++}) << 16) | (ord($iv{$m++}) << 8) | ord($iv{$m++});
+		$cbcleft = (ord($iv[$m++]) << 24) | (ord($iv[$m++]) << 16) | (ord($iv[$m++]) << 8) | ord($iv[$m++]);
+			$cbcright = (ord($iv[$m++]) << 24) | (ord($iv[$m++]) << 16) | (ord($iv[$m++]) << 8) | ord($iv[$m++]);
 			$m=0;
 		}
 
 		while ($m < $len) {
-			$left = (ord($message{$m++}) << 24) | (ord($message{$m++}) << 16) | (ord($message{$m++}) << 8) | ord($message{$m++});
-			$right = (ord($message{$m++}) << 24) | (ord($message{$m++}) << 16) | (ord($message{$m++}) << 8) | ord($message{$m++});
+			$left = (ord($message[$m++]) << 24) | (ord($message[$m++]) << 16) | (ord($message[$m++]) << 8) | ord($message[$m++]);
+			$right = (ord($message[$m++]) << 24) | (ord($message[$m++]) << 16) | (ord($message[$m++]) << 8) | ord($message[$m++]);
 
 			if ($mode == 1) {if ($encrypt) {$left ^= $cbcleft; $right ^= $cbcright;} else {$cbcleft2 = $cbcleft; $cbcright2 = $cbcright; $cbcleft = $left; $cbcright = $right;}}
 
@@ -482,8 +482,8 @@ class plgHikashoppaymentHSBC extends hikashopPaymentPlugin
 		$n=0;
 
 		for ($j=0; $j<$iterations; $j++) { //either 1 or 3 iterations
-			$left = (ord($key{$m++}) << 24) | (ord($key{$m++}) << 16) | (ord($key{$m++}) << 8) | ord($key{$m++});
-			$right = (ord($key{$m++}) << 24) | (ord($key{$m++}) << 16) | (ord($key{$m++}) << 8) | ord($key{$m++});
+			$left = (ord($key[$m++]) << 24) | (ord($key[$m++]) << 16) | (ord($key[$m++]) << 8) | ord($key[$m++]);
+			$right = (ord($key[$m++]) << 24) | (ord($key[$m++]) << 16) | (ord($key[$m++]) << 8) | ord($key[$m++]);
 
 			$temp = (($left >> 4 & $masks[4]) ^ $right) & 0x0f0f0f0f; $right ^= $temp; $left ^= ($temp << 4);
 			$temp = (($right >> 16 & $masks[16]) ^ $left) & 0x0000ffff; $left ^= $temp; $right ^= ($temp << 16);

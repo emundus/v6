@@ -395,10 +395,6 @@ form legend a, form legend a:hover, form legend a:focus {
 .customsend-application-file a {
     color: #ffffff !important;
 }
-/* Fabrik application WYSIWYG height */
-.view-form iframe {
-    height: 200px !important;
-}
 
 .view-form .mce-tinymce .mce-statusbar .mce-path > .mce-path-item {
     display: none !important;
@@ -1019,6 +1015,10 @@ button.goback-btn, .btn-danger, .pull-right .btn:not(.dropdown-toggle), .below-c
   color: white;
   text-shadow: none;
   text-transform: none;
+}
+
+.view-form form .btn.goback-btn.button[name="Goback"] {
+    width:auto !important;
 }
 
 button.goback-btn:hover, button.goback-btn:active, button.goback-btn:focus,

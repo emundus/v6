@@ -100,7 +100,7 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page) {
+    function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -125,7 +125,18 @@ class EmundusonboardModelcampaign extends JModelList
 
         // Get affected programs
         $user = JFactory::getUser();
-        $programs = $this->model_program->getUserPrograms($user->id);
+        $programs=$this->model_program->getUserPrograms($user->id);
+
+        if($program !="all"){
+            $programs=array_filter($programs,function($value) use ($program) {
+                //var_dump($program);die();
+                return $value == $program;
+            });
+            /*var_dump($programs);
+            die();*/
+        }
+
+
         //
 
         if ($filter == 'notTerminated') {
@@ -1055,7 +1066,7 @@ class EmundusonboardModelcampaign extends JModelList
             $query->select('id,params')
                 ->from($db->quoteName('#__categories'))
                 ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$cid.'"'))
-                ->andWhere($db->quoteName('extension') . ' LIKE ' . $db->quote('com_dropfiles'));
+                ->andWhere($db->quoteName('extension') . ' = ' . $db->quote('com_dropfiles'));
             $db->setQuery($query);
             $campaign_dropfile_cat = $db->loadResult();
 

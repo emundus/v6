@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,8 +58,7 @@ class hikashopCurrencyClass extends hikashopClass{
 		} else {
 			$this->taxRates = array();
 			$taxRate = (float)$this->getTax($zone_id, $tax_category_id);
-
-			if(empty($taxRate))
+			if(empty($this->taxRates))
 				return $this->round($price,$round);
 		}
 
@@ -75,6 +74,7 @@ class hikashopCurrencyClass extends hikashopClass{
 					if(empty($rate->tax_ratio))
 						$rate->tax_ratio = 1;
 					$this->taxRates[$k]->tax_amount = $this->round($float_price * $rate->tax_ratio * floatval($rate->tax_rate), $round);
+					$this->taxRates[$k]->amount = $this->round($float_price * $rate->tax_ratio, $round);
 					$tax += $this->taxRates[$k]->tax_amount;
 				}
 			}
@@ -87,6 +87,7 @@ class hikashopCurrencyClass extends hikashopClass{
 					if(empty($rate->tax_ratio))
 						$rate->tax_ratio = 1;
 					$this->taxRates[$k]->tax_amount = $this->round($float_price * $rate->tax_ratio * floatval($rate->tax_rate) / (1.00000 + floatval($rate->tax_rate)), $round);
+					$this->taxRates[$k]->amount = $this->round($float_price * $rate->tax_ratio, $round);
 					$tax += $this->taxRates[$k]->tax_amount;
 				}
 			}
@@ -112,6 +113,7 @@ class hikashopCurrencyClass extends hikashopClass{
 				if(empty($rate->tax_ratio))
 					$rate->tax_ratio = 1;
 				$this->taxRates[$k]->tax_amount = $this->round($float_price * $rate->tax_ratio * floatval($rate->tax_rate) / (1.00000 + floatval($rate->tax_rate)), $round);
+				$this->taxRates[$k]->amount = $this->round($float_price * $rate->tax_ratio - $this->taxRates[$k]->tax_amount, $round);
 				$tax += $this->taxRates[$k]->tax_amount;
 			}
 		}
@@ -407,7 +409,7 @@ class hikashopCurrencyClass extends hikashopClass{
 		$currency->currency_id = hikashop_getCID('currency_id');
 		$formData = hikaInput::get()->get('data', array(), 'array' );
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['currency'] as $column => $value){
 			hikashop_secureField($column);
 			if($column=='currency_locale'){
@@ -1043,6 +1045,7 @@ class hikashopCurrencyClass extends hikashopClass{
 							if(isset($prices[$k2]->taxes)){
 								foreach($prices[$k2]->taxes as $k => $tax){
 									$prices[$k2]->taxes[$k]->tax_amount+= @$prices[$k2]->taxes[$k]->tax_amount*floatval($srcCurrency->currency_percent_fee)/100.0;
+									$prices[$k2]->taxes[$k]->amount+= @$prices[$k2]->taxes[$k]->amount*floatval($srcCurrency->currency_percent_fee)/100.0;
 								}
 							}
 						}
@@ -1051,6 +1054,7 @@ class hikashopCurrencyClass extends hikashopClass{
 						if(isset($prices[$k2]->taxes)){
 							foreach($prices[$k2]->taxes as $k => $tax){
 								$prices[$k2]->taxes[$k]->tax_amount= @$prices[$k2]->taxes[$k]->tax_amount/floatval($srcCurrency->currency_rate);
+								$prices[$k2]->taxes[$k]->amount= @$prices[$k2]->taxes[$k]->amount/floatval($srcCurrency->currency_rate);
 							}
 						}
 
@@ -1061,6 +1065,7 @@ class hikashopCurrencyClass extends hikashopClass{
 						if(isset($prices[$k2]->taxes)){
 							foreach($prices[$k2]->taxes as $k => $tax){
 								$prices[$k2]->taxes[$k]->tax_amount= @$prices[$k2]->taxes[$k]->tax_amount*floatval($dstCurrency->currency_rate);
+								$prices[$k2]->taxes[$k]->amount= @$prices[$k2]->taxes[$k]->amount*floatval($dstCurrency->currency_rate);
 							}
 						}
 						if(bccomp($dstCurrency->currency_percent_fee,0,2)){
@@ -1069,6 +1074,7 @@ class hikashopCurrencyClass extends hikashopClass{
 							if(isset($prices[$k2]->taxes)){
 								foreach($prices[$k2]->taxes as $k => $tax){
 									$prices[$k2]->taxes[$k]->tax_amount+= @$prices[$k2]->taxes[$k]->tax_amount*floatval($dstCurrency->currency_percent_fee)/100.0;
+									$prices[$k2]->taxes[$k]->amount+= @$prices[$k2]->taxes[$k]->amount*floatval($dstCurrency->currency_percent_fee)/100.0;
 								}
 							}
 						}
@@ -1900,11 +1906,13 @@ class hikashopCurrencyClass extends hikashopClass{
 			foreach($price->taxes as $tax) {
 				if(isset($total->taxes[$tax->tax_namekey])) {
 					$total->taxes[$tax->tax_namekey]->tax_amount += $this->round($tax->tax_amount,$rounding);
+					$total->taxes[$tax->tax_namekey]->amount += $this->round($tax->amount,$rounding);
 				} else {
 					$total->taxes[$tax->tax_namekey] = new stdClass();
 					$total->taxes[$tax->tax_namekey]->tax_namekey = $tax->tax_namekey;
 					$total->taxes[$tax->tax_namekey]->tax_rate = $tax->tax_rate;
 					$total->taxes[$tax->tax_namekey]->tax_amount = $this->round($tax->tax_amount,$rounding);
+					$total->taxes[$tax->tax_namekey]->amount = $this->round($tax->amount,$rounding);
 				}
 			}
 		}
@@ -1953,16 +1961,19 @@ class hikashopCurrencyClass extends hikashopClass{
 					if(is_object($tax)){
 						$row->taxes[$tax->tax_namekey] = clone($tax);
 						$row->taxes[$tax->tax_namekey]->tax_amount = $row->price_value_with_tax - $row->price_value;
+						$row->taxes[$tax->tax_namekey]->amount = $row->price_value;
 					}
 				}
 				if(empty($row->taxes))
 					continue;
 
 				foreach($row->taxes as $tax) {
-					if(isset($additional_total->prices[$k]->taxes[$tax->tax_namekey]))
+					if(isset($additional_total->prices[$k]->taxes[$tax->tax_namekey])) {
 						$additional_total->prices[$k]->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
-					else
+						$additional_total->prices[$k]->taxes[$tax->tax_namekey]->amount += $tax->amount;
+					} else {
 						$additional_total->prices[$k]->taxes[$tax->tax_namekey] = clone($tax);
+					}
 				}
 			}
 		}
@@ -2093,6 +2104,7 @@ class hikashopCurrencyClass extends hikashopClass{
 			foreach($price->taxes as $k => $tax) {
 				$price->unit_price->taxes[$k] = clone($tax);
 				$price->taxes[$k]->tax_amount = $this->round(@$tax->tax_amount * $quantity,$rounding);
+				$price->taxes[$k]->amount = $this->round(@$tax->amount * $quantity,$rounding);
 			}
 		}
 
@@ -2101,6 +2113,8 @@ class hikashopCurrencyClass extends hikashopClass{
 			foreach($price->taxes_without_discount as $k => $tax) {
 				$price->unit_price->taxes_without_discount[$k] = clone($tax);
 				$price->taxes_without_discount[$k]->tax_amount = $this->round(@$tax->tax_amount * $quantity,$rounding);
+				$price->taxes_without_discount[$k]->amount = $this->round(@$tax->amount * $quantity,$rounding);
+
 			}
 		}
 	}
@@ -2146,6 +2160,7 @@ class hikashopCurrencyClass extends hikashopClass{
 								if(in_array($key, array('taxes_without_discount', 'taxes', 'taxes_orig'))) {
 									foreach($value as $taxKey => $tax) {
 										$element->variants[$k]->prices[$k2]->taxes[$taxKey]->tax_amount = @$tax->tax_amount * (float)$element->variants[$k]->product_price_percentage / 100;
+										$element->variants[$k]->prices[$k2]->taxes[$taxKey]->amount = @$tax->amount * (float)$element->variants[$k]->product_price_percentage / 100;
 									}
 								} elseif(is_numeric($value) && !in_array($key,array('price_currency_id','price_orig_currency_id','price_min_quantity','price_access', 'price_users'))) {
 									$element->variants[$k]->prices[$k2]->$key = $value * (float)$element->variants[$k]->product_price_percentage / 100;
@@ -2311,6 +2326,7 @@ class hikashopCurrencyClass extends hikashopClass{
 				}else{
 					$taxes[$key] = hikashop_copy($tax);
 					unset($taxes[$key]->tax_amount);
+					unset($taxes[$key]->amount);
 					$taxes[$key]->tax_ratio = $ratio;
 				}
 			}
@@ -2361,11 +2377,14 @@ class hikashopCurrencyClass extends hikashopClass{
 							foreach($price->taxes as $namekey => $tax) {
 								$discount->taxes[$namekey] = clone($tax);
 								$discount->taxes[$namekey]->tax_amount = $this->round($untaxed * $tax->tax_rate, $round);
+								$discount->taxes[$namekey]->amount = $this->round($untaxed, $round);
 								$price->taxes[$namekey]->tax_amount = $tax->tax_amount - $discount->taxes[$namekey]->tax_amount;
+								$price->taxes[$namekey]->amount = $tax->amount - $discount->taxes[$namekey]->amount;
 							}
 						}else{
 							foreach($discount->taxes as $tax){
 								$price->taxes[$tax->tax_namekey]->tax_amount -= $tax->tax_amount;
+								$price->taxes[$tax->tax_namekey]->amount -= $tax->amount;
 							}
 						}
 					}
@@ -2391,6 +2410,8 @@ class hikashopCurrencyClass extends hikashopClass{
 						$discount->taxes[$namekey] = clone($tax);
 						$discount->taxes[$namekey]->tax_amount = $this->round($discount->taxes[$namekey]->tax_amount * floatval($discount->discount_percent_amount) / 100.0, $round);
 						$price->taxes[$namekey]->tax_amount = $price->taxes[$namekey]->tax_amount - $discount->taxes[$namekey]->tax_amount;
+						$discount->taxes[$namekey]->amount = $this->round($discount->taxes[$namekey]->amount * floatval($discount->discount_percent_amount) / 100.0, $round);
+						$price->taxes[$namekey]->amount = $price->taxes[$namekey]->amount - $discount->taxes[$namekey]->amount;
 					}
 
 					$prices->prices[$k]->price_value_with_tax = $price->price_value_with_tax - $discount->discount_percent_amount_calculated;
@@ -2429,23 +2450,25 @@ class hikashopCurrencyClass extends hikashopClass{
 			foreach($total->prices as $k => $price) {
 				$total->prices[$k]->price_value_with_tax += floatval($shipping->shipping_price_with_tax);
 				$total->prices[$k]->price_value += $shipping->shipping_price;
-				if($shipping->shipping_price_with_tax != $shipping->shipping_price) {
-					if(!isset($shipping->taxes) && isset($total->prices[$k]->taxes) && is_array($total->prices[$k]->taxes)) {
-						$shipping->taxes = array();
-						$tax = reset($total->prices[$k]->taxes);
-						if(is_object($tax))
-							$shipping->taxes[$tax->tax_namekey] = clone($tax);
-						$shipping->taxes[$tax->tax_namekey]->tax_amount = $shipping->shipping_price_with_tax - $shipping->shipping_price;
-					}
-					if(!empty($shipping->taxes)) {
-						foreach($shipping->taxes as $tax){
-							if(isset($total->prices[$k]->taxes[$tax->tax_namekey]))
-								$total->prices[$k]->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
-							else
-								$total->prices[$k]->taxes[$tax->tax_namekey] = clone($tax);
-						}
+
+				if(!isset($shipping->taxes) && isset($total->prices[$k]->taxes) && is_array($total->prices[$k]->taxes)) {
+					$shipping->taxes = array();
+					$tax = reset($total->prices[$k]->taxes);
+					if(is_object($tax))
+						$shipping->taxes[$tax->tax_namekey] = clone($tax);
+					$shipping->taxes[$tax->tax_namekey]->tax_amount = $shipping->shipping_price_with_tax - $shipping->shipping_price;
+					$shipping->taxes[$tax->tax_namekey]->amount = $shipping->shipping_price;
+				}
+				if(!empty($shipping->taxes)) {
+					foreach($shipping->taxes as $tax){
+						if(isset($total->prices[$k]->taxes[$tax->tax_namekey])) {
+							$total->prices[$k]->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
+							$total->prices[$k]->taxes[$tax->tax_namekey]->amount += $tax->amount;
+						} else
+							$total->prices[$k]->taxes[$tax->tax_namekey] = clone($tax);
 					}
 				}
+
 			}
 		}
 		unset($shipping);
@@ -2480,12 +2503,14 @@ class hikashopCurrencyClass extends hikashopClass{
 					if(is_object($tax))
 						$payment->taxes[$tax->tax_namekey] = clone($tax);
 					$payment->taxes[$tax->namekey]->tax_amount = $payment->payment_price_with_tax - $payment->payment_price;
+					$payment->taxes[$tax->namekey]->amount = $payment->payment_price;
 				}
 				if(!empty($payment->taxes)) {
 					foreach($payment->taxes as $tax) {
-						if(isset($total->prices[$k]->taxes[$tax->tax_namekey]))
+						if(isset($total->prices[$k]->taxes[$tax->tax_namekey])) {
 							$total->prices[$k]->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
-						else
+							$total->prices[$k]->taxes[$tax->tax_namekey]->amount += $tax->amount;
+						} else
 							$total->prices[$k]->taxes[$tax->tax_namekey] = clone($tax);
 					}
 				}

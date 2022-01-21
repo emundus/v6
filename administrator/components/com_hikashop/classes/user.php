@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -178,10 +178,12 @@ class hikashopUserClass extends hikashopClass {
 				$userData = $this->get($element->user_id);
 				$element->user_cms_id = $userData->user_cms_id;
 			}
-			$user = JFactory::getUser($element->user_cms_id);
-			if(!empty($user) && $element->user_email!=$user->email){
-				$user->email = $element->user_email;
-				$user->save();
+			if(!empty($element->user_cms_id)) {
+				$user = JFactory::getUser($element->user_cms_id);
+				if(!empty($user) && $element->user_email!=$user->email){
+					$user->email = $element->user_email;
+					$user->save();
+				}
 			}
 		}
 		if(isset($element->user_currency_id)) {
@@ -710,11 +712,12 @@ class hikashopUserClass extends hikashopClass {
 			$ret['userActivation'] = $useractivation;
 
 			$this->get(false);
-			$newUser = $this->get($user->id, 'cms');
+			$newUser = $this->get($user->email, 'email');
 
-			if(!empty($newUser))
+			if(!empty($newUser)) {
 				$userData->user_id = $newUser->user_id;
-			else if(!empty($user->id))
+				$userData->user_cms_id = $user->id;
+			} else if(!empty($user->id))
 				$userData->user_cms_id = $user->id;
 			else
 				$userData->user_email = $registerData->email;

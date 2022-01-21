@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -128,8 +128,13 @@ class CartViewCart extends HikaShopView {
 
 		$type = 'cart';
 		if(empty($cart_id)){
-			if (is_object( $menu) && is_object( $menu->params ))
-				$type = $menu->params->get('cart_type');
+			if(is_object( $menu)) {
+				if(HIKASHOP_J30)
+					$menuParams = $menu->getParams();
+				else
+					$menuParams = @$menu->params;
+				$type = $menuParams->get('cart_type');
+			}
 			if(empty($type))
 				$type = hikaInput::get()->getString('cart_type','cart');
 			if(!in_array($type, array('cart','wishlist')))
@@ -156,7 +161,7 @@ class CartViewCart extends HikaShopView {
 				$show_page_heading = $com_menus->get('show_page_heading');
 		}
 		$title = ($type == 'wishlist') ? 'HIKASHOP_WISHLIST': 'HIKASHOP_CART';
-		if(!empty($menu) && method_exists($menu, 'getParams') && $menu->link == 'index.php?option=com_hikashop&view=cart&layout=listing') {
+		if(!empty($menu) && method_exists($menu, 'getParams') && in_array($menu->link, array('index.php?option=com_hikashop&view=cart&layout=show', 'index.php?option=com_hikashop&view=cart&layout=listing'))) {
 			if($show_page_heading)
 				$this->title = $params->get('page_heading');
 			$title = $params->get('page_title');

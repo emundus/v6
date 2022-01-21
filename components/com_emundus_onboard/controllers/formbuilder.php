@@ -1,4 +1,4 @@
-    <?php
+<?php
 /**
  * @package     Joomla
  * @subpackage  eMundus
@@ -37,18 +37,20 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
      * @throws Exception
      */
     public function updateOrder() {
+
         $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
         $elements = $jinput->getRaw('elements');
         $group_id = $jinput->getInt('group_id');
+        $moved_el= $jinput->getRaw('moved_el');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
             $update = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            $update = $m_form->updateOrder($elements, $group_id, $user->id);
+            $update = $m_form->updateOrder($elements, $group_id, $user->id, $moved_el);
         }
         echo json_encode((object)$update);
         exit;
@@ -103,8 +105,8 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $element = $jinput->getRaw('element');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $result = 0;
-	        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $changeresponse = $m_form->UpdateParams($element,  $user->id);
         }
@@ -137,9 +139,9 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
      *
      * @throws Exception
      */
-     public function formsTrad() {
+    public function formsTrad() {
 
-     	$user = JFactory::getUser();
+        $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
@@ -150,8 +152,8 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $newLabel = $jinput->getRaw('NewSubLabel');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $result = 0;
-	        $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $results = $m_form->formsTrad($labelTofind, $newLabel, $element, $group, $page);
             $changeresponse = array('status' => 1, 'msg' => 'Traductions effectués avec succès', 'data' => $results);
@@ -159,90 +161,90 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 
         echo json_encode((object)$changeresponse);
         exit;
-     }
+    }
 
-     public function updateelementlabelwithouttranslation() {
-         $user = JFactory::getUser();
-         $m_form = $this->model;
+    public function updateelementlabelwithouttranslation() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
 
-         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-             $result = 0;
-             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-         } else {
-             $jinput = JFactory::getApplication()->input;
-             $eid = $jinput->getInt('eid');
-             $label = $jinput->getString('label');
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $eid = $jinput->getInt('eid');
+            $label = $jinput->getString('label');
 
-             $changeresponse = $m_form->updateElementWithoutTranslation($eid,$label);
-         }
+            $changeresponse = $m_form->updateElementWithoutTranslation($eid,$label);
+        }
 
-         echo json_encode((object)$changeresponse);
-         exit;
-     }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
 
-     public function updategrouplabelwithouttranslation() {
-         $user = JFactory::getUser();
-         $m_form = $this->model;
+    public function updategrouplabelwithouttranslation() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
 
-         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-             $result = 0;
-             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-         } else {
-             $jinput = JFactory::getApplication()->input;
-             $gid = $jinput->getInt('gid');
-             $label = $jinput->getString('label');
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $gid = $jinput->getInt('gid');
+            $label = $jinput->getString('label');
 
-             $changeresponse = $m_form->updateGroupWithoutTranslation($gid,$label);
-         }
+            $changeresponse = $m_form->updateGroupWithoutTranslation($gid,$label);
+        }
 
-         echo json_encode((object)$changeresponse);
-         exit;
-     }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
 
-     public function updatepagelabelwithouttranslation() {
-         $user = JFactory::getUser();
-         $m_form = $this->model;
+    public function updatepagelabelwithouttranslation() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
 
-         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-             $result = 0;
-             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-         } else {
-             $jinput = JFactory::getApplication()->input;
-             $pid = $jinput->getInt('pid');
-             $label = $jinput->getString('label');
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $pid = $jinput->getInt('pid');
+            $label = $jinput->getString('label');
 
-             $changeresponse = $m_form->updatePageWithoutTranslation($pid,$label);
-         }
+            $changeresponse = $m_form->updatePageWithoutTranslation($pid,$label);
+        }
 
-         echo json_encode((object)$changeresponse);
-         exit;
-     }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
 
-     public function updatepageintrowithouttranslation() {
-         $user = JFactory::getUser();
-         $m_form = $this->model;
+    public function updatepageintrowithouttranslation() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
 
-         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-             $result = 0;
-             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-         } else {
-             $jinput = JFactory::getApplication()->input;
-             $pid = $jinput->getInt('pid');
-             $intro = $jinput->getString('label');
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $pid = $jinput->getInt('pid');
+            $intro = $jinput->getString('label');
 
-             $changeresponse = $m_form->updatePageIntroWithoutTranslation($pid,$intro);
-         }
+            $changeresponse = $m_form->updatePageIntroWithoutTranslation($pid,$intro);
+        }
 
-         echo json_encode((object)$changeresponse);
-         exit;
-     }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
 
     /**
      * Return translation in current language of an array
      *
      * @throws Exception
      */
-      public function getJTEXTA() {
+    public function getJTEXTA() {
         $user = JFactory::getUser();
         $m_form = $this->model;
 
@@ -250,14 +252,14 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $toJTEXT = $jinput->getString('toJTEXT');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $result = 0;
-	        $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $result = 0;
+            $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-             $getJtext = $m_form->getJTEXTA($toJTEXT);
+            $getJtext = $m_form->getJTEXTA($toJTEXT);
         }
         echo json_encode((object)$getJtext);
         exit;
-     }
+    }
 
 
     /**
@@ -265,23 +267,23 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
      *
      * @throws Exception
      */
-     public function getJTEXT() {
+    public function getJTEXT() {
 
-     	$user = JFactory::getUser();
+        $user = JFactory::getUser();
         $m_form = $this->model;
 
         $jinput = JFactory::getApplication()->input;
         $toJTEXT = $jinput->getString('toJTEXT');
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-	        $result = 0;
-	        $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $result = 0;
+            $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-             $getJtext = $m_form->getJTEXT($toJTEXT);
+            $getJtext = $m_form->getJTEXT($toJTEXT);
         }
         echo json_encode((string)$getJtext);
         exit;
-     }
+    }
 
     /**
      * Return translations of all elements present
@@ -321,30 +323,30 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
     }
 
 
-     public function createMenu() {
-         $user = JFactory::getUser();
-         $m_form = $this->model;
+    public function createMenu() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
 
-         $jinput = JFactory::getApplication()->input;
-         $label = $jinput->getRaw('label');
-         $intro = $jinput->getRaw('intro');
-         $prid = $jinput->getInt('prid');
-         $modelid = $jinput->getInt('modelid');
-         $template = $jinput->getString('template');
+        $jinput = JFactory::getApplication()->input;
+        $label = $jinput->getRaw('label');
+        $intro = $jinput->getRaw('intro');
+        $prid = $jinput->getInt('prid');
+        $modelid = $jinput->getInt('modelid');
+        $template = $jinput->getString('template');
 
-         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-             $result = 0;
-             $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-         } else {
-             if ($modelid != -1) {
-                 $changeresponse = $m_form->createMenuFromTemplate($label, $intro, $modelid, $prid);
-             } else {
-                 $changeresponse = $m_form->createMenu($label, $intro, $prid, $template);
-             }
-         }
-         echo json_encode((object)$changeresponse);
-         exit;
-     }
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            if ($modelid != -1) {
+                $changeresponse = $m_form->createMenuFromTemplate($label, $intro, $modelid, $prid);
+            } else {
+                $changeresponse = $m_form->createMenu($label, $intro, $prid, $template);
+            }
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
 
 
     public function deletemenu() {
@@ -468,7 +470,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         $plugin = $jinput->getString('plugin');
         if ($jinput->getString('attachementId')){
 
-        $attachementId = $jinput->getString('attachementId');
+            $attachementId = $jinput->getString('attachementId');
 
 
         }
@@ -628,7 +630,7 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-	        $m_form = $this->model;
+            $m_form = $this->model;
             $visibility = $m_form->checkConstraintGroup($cid);
 
             $tab = array('status' => 1, 'msg' => 'worked', 'data' => $visibility);
@@ -650,9 +652,9 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-	        $jinput = JFactory::getApplication()->input;
-	        $group = $jinput->getInt('group');
-	        $cid = $jinput->getInt('cid');
+            $jinput = JFactory::getApplication()->input;
+            $group = $jinput->getInt('group');
+            $cid = $jinput->getInt('cid');
             $visibility = $m_form->checkVisibility($group,$cid);
 
             $tab = array('status' => 1, 'msg' => 'worked', 'data' => $visibility);
@@ -672,6 +674,23 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
             $databases = $m_form->getDatabasesJoin();
 
             $tab = array('status' => 1, 'msg' => 'worked', 'data' => $databases);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+    public function getdatabasesjoinOrdonancementColomns() {
+        $user = JFactory::getUser();
+
+        $m_form = $this->model;
+        $jinput = JFactory::getApplication()->input;
+        $data_base_name = $jinput->getString('database_name');
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $database_name_columns = $m_form->getDatabasesJoinOrdonancementColumns($data_base_name);
+
+            $tab = array('status' => 1, 'msg' => 'worked', 'data' => $database_name_columns);
         }
         echo json_encode((object)$tab);
         exit;
@@ -805,4 +824,5 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
         exit;
     }
 }
+
 
