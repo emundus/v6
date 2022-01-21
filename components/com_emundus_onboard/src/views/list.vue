@@ -1,48 +1,72 @@
 <template>
   <div id="list">
     <list-header
-      v-if="type != 'files'"
-      :data="actions"
-      :selected="selecedItems"
-      :updateTotal="updateTotal"
-      :filter="filter"
-      :sort="sort"
-      :cherche="cherche"
-      :chercheGo="chercheGo"
-      :validateFilters="validateFilters"
-      :nbresults="nbresults"
+        v-if="type != 'files'"
+        :data="actions"
+        :selected="selecedItems"
+        :updateTotal="updateTotal"
+        :filter="filter"
+        :sort="sort"
+        :cherche="cherche"
+        :chercheGo="chercheGo"
+        :validateFilters="validateFilters"
+        :nbresults="nbresults"
+
     ></list-header>
 
-    <div class="filters-menu">
-      <div class="search">
-        <input class="searchTerm"
-               :placeholder="translations.Rechercher"
-               v-model="recherche"
-               @keyup="cherche(recherche) || debounce"
-               @keyup.enter="chercheGo(recherche)"/>
-      </div>
-      <v-popover :popoverArrowClass="'custom-popover-arrow'">
-        <button class="tooltip-target b3 card-button"></button>
+    <div :class="{
+      'filters-menu-campaign': type == 'campaign',
+      'filters-menu': type !== 'campaign',
+    }">
+      <select
+          v-if="type == 'campaign'"
+          v-model="selectedProgram"
+          name="selectProgram"
+          id="pet-select"
+          class="selectProgram"
+          @change="validateFilters"
+      >
+        <option value="all">{{translations.AllPrograms}} </option>
+        <option
+            v-for="program in allPrograms"
+            :value="program.code"
+            :key="program.code"
+        >
+          {{program.label}}
+        </option>
+      </select>
+      <div class="search-container">
+        <div class="search">
+          <input class="searchTerm"
+                 :placeholder="translations.Rechercher"
+                 v-model="recherche"
+                 @keyup="cherche(recherche) || debounce"
+                 @keyup.enter="chercheGo(recherche)"/>
+        </div>
+        <v-popover :popoverArrowClass="'custom-popover-arrow'">
+          <button class="tooltip-target b3 card-button"></button>
 
-        <template slot="popover">
-          <filters
-              v-if="type != 'files'"
-              :data="actions"
-              :selected="selecedItems"
-              :updateTotal="updateTotal"
-              :filter="filter"
-              :sort="sort"
-              :cherche="cherche"
-              :chercheGo="chercheGo"
-              :validateFilters="validateFilters"
-              :nbresults="nbresults"
-          ></filters>
-        </template>
-      </v-popover>
+          <template slot="popover">
+            <filters
+                v-if="type != 'files'"
+                :data="actions"
+                :selected="selecedItems"
+                :updateTotal="updateTotal"
+                :filter="filter"
+                :sort="sort"
+                :cherche="cherche"
+                :chercheGo="chercheGo"
+                :validateFilters="validateFilters"
+                :nbresults="nbresults"
+            ></filters>
+          </template>
+        </v-popover>
+      </div>
     </div>
 
-    <ul class="form-section email-sections" v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
-      <li>{{translations.Categories}} : </li>
+    <ul class="form-section email-sections"
+        v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
+      <li>{{translations.Categories}} :</li>
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{translations.All}}</a>
       </li>
@@ -57,10 +81,12 @@
       <!--<li>Types : </li>-->
 
       <li>
-        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''" @click="typeForAdd = 'form' ; type='formulaire'">{{translations.candidature}}</a>
+        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''"
+           @click="typeForAdd = 'form' ; type='formulaire'">Candidature</a>
       </li>
       <li>
-        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''" @click="typeForAdd = 'grilleEval' ; type='grilleEval'">{{translations.evaluations}}</a>
+        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''"
+           @click="typeForAdd = 'grilleEval' ; type='grilleEval'">Grilles d'évaluation</a>
       </li>
       <!--<li v-for="(cat, index) in email_categories" v-if="cat != ''">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
@@ -69,73 +95,127 @@
       <!--<li>
         <a :class="menuEmail === 1 ? 'form-section__current' : ''" @click="menuEmail = 1">{{System}}</a>
       </li>-->
+
+    </ul>
+    <!--<div class="row searchFilter" >
+      <div class="col-sm-12" >
+        <div class="input-group" >
+          <input id="table_filter" type="text" class="form-control" aria-label="Text input with segmented button dropdown" >
+          <div class="input-group-btn" >
+            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><span class="label-icon" >Category</span> <span class="caret" >&nbsp;</span></button>
+            <div class="dropdown-menu dropdown-menu-right" >
+              <ul class="category_filters" >
+                <li >
+                  <input class="cat_type category-input" data-label="All" id="all" value="" name="radios" type="radio" ><label for="all" >All</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Design" value="Design" ><label class="category-label" for="Design" >Design</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Marketing" value="Marketing" ><label class="category-label" for="Marketing" >Marketing</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Programming" value="Programming" ><label class="category-label" for="Programming" >Programming</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Sales" value="Sales" ><label class="category-label" for="Sales" >Sales</label>
+                </li>
+                <li >
+                  <input type="radio" name="radios" id="Support" value="Support" ><label class="category-label" for="Support" >Support</label>
+                </li>
+              </ul>
+            </div>
+            <button id="searchBtn" type="button" class="btn btn-secondary btn-search" ><span class="glyphicon glyphicon-search" >&nbsp;</span> <span class="label-icon" >Search</span></button>
+          </div>
+        </div>
+      </div>
+    </div>-->
+
+    <ul class="form-section email-sections" v-if="(type == 'campaign')  && !loading ">
+
+      <li>
+        <a class="" href="javascript:void(0);">{{ translations.programmesTrans }} : </a>
+      </li>
+      <li>
+        <a class="form-section__current">{{selectedProgramLabel}}</a>
+      </li>
+
     </ul>
 
-<!--    <transition :name="'slide-down'" type="transition">
-      <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
-    </transition>-->
+    <!--    <transition :name="'slide-down'" type="transition">
+          <h2 v-show="total > 0">{{ Total }} : {{ total }}</h2>
+        </transition>-->
 
     <transition :name="'slide-down'" type="transition">
-    <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
-      <ul class="pagination" v-if="total > 0">
-        <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
-          <em class="fas fa-chevron-left"></em>
-        </a>
-        <li v-show="countPages <= 10 ||
+      <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
+        <ul class="pagination" v-if="total > 0">
+          <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
+            <em class="fas fa-chevron-left"></em>
+          </a>
+          <li v-show="countPages <= 10 ||
             index < 4 ||
             index > countPages - 3 ||
             (index > pages - 3 && index < pages + 3) ||
             index == pages - 3 ||
             index == pages + 3"
-          v-for="index in countPages"
-          :key="index"
-          class="pagination-number">
-          <a @click="nbpages(index)"
-            class="pagination-number"
-            :class="index == pages ? 'current-number' : ''">
-            {{ countPages > 10 ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
-            ? index
-            : "..."
-            : index }}
+              v-for="index in countPages"
+              :key="index"
+              class="pagination-number">
+            <a @click="nbpages(index)"
+               class="pagination-number"
+               :class="index == pages ? 'current-number' : ''">
+              {{ countPages > 10 ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
+                    ? index
+                    : "..."
+                : index }}
+            </a>
+          </li>
+          <a @click="nbpages(pages + 1)" class="pagination-arrow arrow-right">
+            <em class="fas fa-chevron-right"></em>
           </a>
-        </li>
-        <a @click="nbpages(pages + 1)" class="pagination-arrow arrow-right">
-          <em class="fas fa-chevron-right"></em>
-        </a>
-      </ul>
-    </div>
+        </ul>
+      </div>
     </transition>
 
     <div v-show="total > 0 || type == 'files'">
-<!--      <transition :name="'slide-down'" type="transition">
-        <div v-show="total > 0" class="buttonSelectDeselect">
-          <button @click="!isEmpty ? selectAllItem() : deselectItem()"
-            class="btn-selectAll"
-            :title="Select"
-            :class="[isEmpty ? 'active' : '']">
-          </button>
-          <div v-show="!isEmpty" id="buttonLabelSelect">
-            {{ Select }} ({{ pages < countPages ? limit : total - limit * countPages + limit }})
-          </div>
-          <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
-        </div>
-      </transition>-->
+      <!--      <transition :name="'slide-down'" type="transition">
+              <div v-show="total > 0" class="buttonSelectDeselect">
+                <button @click="!isEmpty ? selectAllItem() : deselectItem()"
+                  class="btn-selectAll"
+                  :title="Select"
+                  :class="[isEmpty ? 'active' : '']">
+                </button>
+                <div v-show="!isEmpty" id="buttonLabelSelect">
+                  {{ Select }} ({{ pages < countPages ? limit : total - limit * countPages + limit }})
+                </div>
+                <div v-show="isEmpty" id="buttonLabelDeselect">{{ Deselect }}</div>
+              </div>
+            </transition>-->
 
       <transition-group :name="'slide-down'" type="transition" style="display: inline-block;margin: 16px 0;width: 100%">
-        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :actualLanguage="actualLanguage"/>
+        <div v-if="type != 'files' && type != 'email'" v-for="(data, index) in list" :key="index"
+             class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem"
+                     @validateFilters="validateFilters()" @updateLoading="updateLoading"
+                     :actualLanguage="actualLanguage" :programFilter="selectedProgram"/>
         </div>
 
-        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" :models="list" />
+        <div v-if="type == 'email' && menuEmail == 0" v-for="(data, index) in list" :key="index"
+             class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem"
+                     @validateFilters="validateFilters()" @updateLoading="updateLoading" :models="list"/>
         </div>
 
-        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
+        <div v-if="type == 'email' && menuEmail != 1 && menuEmail != 0 && menuEmail == data.category"
+             v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem"
+                     @validateFilters="validateFilters()" @updateLoading="updateLoading"/>
         </div>
 
-        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index" class="col-sm-12 col-lg-4 mb-2">
-          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem" @validateFilters="validateFilters()" @updateLoading="updateLoading" />
+        <div v-if="type == 'email' && menuEmail == 1 && data.type == 1" v-for="(data, index) in list" :key="index"
+             class="col-sm-12 col-lg-4 mb-2">
+          <component v-bind:is="type" :data="data" :actions="actions" :selectItem="selectItem"
+                     @validateFilters="validateFilters()" @updateLoading="updateLoading"/>
         </div>
       </transition-group>
 
@@ -145,7 +225,7 @@
             <em class="fas fa-chevron-left"></em>
           </a>
           <li
-            v-show="
+              v-show="
               countPages <= 10 ||
                 index < 4 ||
                 index > countPages - 3 ||
@@ -153,20 +233,20 @@
                 index == pages - 3 ||
                 index == pages + 3
             "
-            v-for="index in countPages"
-            :key="index"
-            class="pagination-number"
+              v-for="index in countPages"
+              :key="index"
+              class="pagination-number"
           >
             <a
-              @click="nbpages(index)"
-              class="pagination-number"
-              :class="index == pages ? 'current-number' : ''"
-              >{{
+                @click="nbpages(index)"
+                class="pagination-number"
+                :class="index == pages ? 'current-number' : ''"
+            >{{
                 countPages > 10
-                  ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
-                    ? index
-                    : "..."
-                  : index
+                    ? index < 4 || index > countPages - 3 || (index > pages - 3 && index < pages + 3)
+                        ? index
+                        : "..."
+                    : index
               }}</a
             >
           </li>
@@ -180,20 +260,20 @@
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{
         this.type == "campaign"
-          ? noCampaign
-          : this.type == "program"
-          ? noProgram
-          : this.type == "email"
-          ? noEmail
-          : this.type == "formulaire"
-          ? noForm
-          : noFiles
+            ? noCampaign
+            : this.type == "program"
+                ? noProgram
+                : this.type == "email"
+                    ? noEmail
+                    : this.type == "formulaire"
+                        ? noForm
+                        : noFiles
       }}
     </div>
     <div class="loading-form" v-if="loading">
-      <RingLoader :color="'#12DB42'" />
+      <RingLoader :color="'#12DB42'"/>
     </div>
-<!--    <tasks></tasks>-->
+    <!--    <tasks></tasks>-->
   </div>
 </template>
 
@@ -202,13 +282,13 @@ import axios from "axios";
 import program from "../components/list_components/programItem";
 import campaign from "../components/list_components/camapaignItem";
 import email from "../components/list_components/emailItem";
-import grilleEval from  "../components/list_components/evalgridItem"
+import grilleEval from "../components/list_components/evalgridItem"
 import formulaire from "../components/list_components/formItem";
 import files from "../components/list_components/files";
 import filters from "../components/list_components/filters_menu";
 import listHeader from "../components/list_components/list_header";
 import tasks from "./tasks"
-import { list } from "../store";
+import {list} from "../store";
 import Swal from "sweetalert2";
 
 import "../assets/css/normalize.css";
@@ -248,11 +328,14 @@ export default {
       add_url: ""
     },
     loading: false,
-    actualLanguage:'',
+    actualLanguage: '',
+    allPrograms: [],
+    selectedProgram: 'all',
+    actualProgramShowingCampaignName: 'Tous',
     recherche: "",
     timer: null,
 
-    translations:{
+    translations: {
       Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
       Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
       Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
@@ -262,11 +345,12 @@ export default {
       noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
       noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
       All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
+      AllPrograms:Joomla.JText._('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS'),
+      programmesTrans: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      ortherPrograms: Joomla.JText._("COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM"),
       System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
       Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
       Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
-      candidature: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
-      evaluations: Joomla.JText._("COM_EMUNDUS_ONBOARD_EVALUATION"),
     },
     total: 0,
     filtersCount: "",
@@ -292,11 +376,20 @@ export default {
 
   computed: {
     list() {
+
       return list.getters.list;
+
     },
 
     isEmpty: () => {
       return list.getters.isSomething;
+    },
+    selectedProgramLabel() {
+      if (this.selectedProgram === "all") {
+        return this.translations.All;
+      } else {
+        return this.allPrograms.find(p => p.code === this.selectedProgram).label;
+      }
     }
   },
 
@@ -308,33 +401,47 @@ export default {
 
     }).then(response => {
 
-      this.actualLanguage=response.data.msg;
+      this.actualLanguage = response.data.msg;
     });
+
+    axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
+        .then(response => {
+
+          this.allPrograms = response.data.data;
+          /*if(Object.keys(this.allPrograms).length !== 0) {
+            this.allPrograms.sort((a, b) => a.id - b.id);
+          }*/
+        }).catch(e => {
+      console.log(e);
+    });
+
+
     this.actions.type = this.type;
     this.typeForAdd = this.type;
     if (this.typeForAdd == "form") {
       this.type = "formulaire";
     }
     if (this.typeForAdd != "files") {
-      this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
+      this.actions.add_url = 'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
     }
+
     this.validateFilters();
   },
-  watch:{
-    type:function (val){
-
+  watch: {
+    type: function (val) {
       this.actions.type = val;
-      this.typeForAdd = val=='formulaire'? 'form': val;
+      this.typeForAdd = val == 'formulaire' ? 'form' : val;
 
       if (this.typeForAdd == "form") {
         this.type = "formulaire";
       }
       if (this.typeForAdd != "files") {
-        let view= this.typeForAdd =='grilleEval' ?'form':this.typeForAdd
-        this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + view  + '&layout=add'
+        let view = this.typeForAdd == 'grilleEval' ? 'form' : this.typeForAdd
+        this.actions.add_url = 'index.php?option=com_emundus_onboard&view=' + view + '&layout=add'
       }
+
       this.validateFilters();
-    }
+    },
 
   },
 
@@ -347,11 +454,13 @@ export default {
       this.loading = true;
       this.filtersCount = this.filtersCountFilter + this.filtersCountSearch;
       this.filters =
-        this.filtersFilter +
-        this.filtersSort +
-        this.filtersSearch +
-        this.filtersLim +
-        this.filtersPage;
+          this.filtersFilter +
+          this.filtersSort +
+          this.filtersSearch +
+          this.filtersLim +
+          this.filtersPage +
+          "&program=" + this.selectedProgram;
+
 
       this.allFilters(this.filtersCount, this.filters);
     },
@@ -402,50 +511,51 @@ export default {
     },
 
     allFilters(filtersCount, filters) {
-      let controller=this.typeForAdd=='grilleEval'?'form':this.typeForAdd
+      let controller = this.typeForAdd == 'grilleEval' ? 'form' : this.typeForAdd
       if (this.type != "files") {
         axios.get("index.php?option=com_emundus_onboard&controller=" +
+            controller +
+            "&task=get" +
+            this.typeForAdd +
+            "count" +
+            filtersCount
+        ).then(response => {
+
+
+          axios.get(
+              "index.php?option=com_emundus_onboard&controller=" +
               controller +
-              "&task=get" +
+              "&task=getall" +
               this.typeForAdd +
-              "count" +
-              filtersCount
-          ).then(response => {
-
-
-            axios.get(
-                "index.php?option=com_emundus_onboard&controller=" +
-                  controller +
-                  "&task=getall" +
-                  this.typeForAdd +
-                  filters
-              ).then(rep => {
-                this.total = response.data.data;
-                list.commit("listUpdate", rep.data.data);
-                this.countPages = Math.ceil(this.total / this.limit);
-                if(this.type == 'email'){
-                  axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
-                    .then(catrep => {
-                      this.email_categories = catrep.data.data;
+              filters
+          ).then(rep => {
+            this.total = response.data.data;
+            list.commit("listUpdate", rep.data.data);
+            this.countPages = Math.ceil(this.total / this.limit);
+            if (this.type == 'email') {
+              axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+                  .then(catrep => {
+                    this.email_categories = catrep.data.data;
                   });
-                }
-                this.loading = false;
-              }).catch(e => {
-                console.log(e);
-                this.loading = false;
-              });
+            }
+            this.loading = false;
           }).catch(e => {
             console.log(e);
             this.loading = false;
           });
+        }).catch(e => {
+          console.log(e);
+          this.loading = false;
+        });
       }
+
     },
 
     updateTotal(total) {
       this.total = total;
     },
     selectAllItem() {
-      return this.list.filter(function(element) {
+      return this.list.filter(function (element) {
         list.commit("selectItem", element.id);
       });
     },
@@ -461,11 +571,75 @@ export default {
 </script>
 
 <style scoped>
-  h2 {
-    color: #de6339 !important;
-  }
+h2 {
+  color: #de6339 !important;
+}
 
-  .loading-form{
-    top: unset;
-  }
+.loading-form {
+  top: unset;
+}
+
+.dropbtn {
+  background-color: #f9f9f9;
+  color: #0f0f0f;
+  /*padding: 16px;
+  font-size: 16px;*/
+  border: none;
+  cursor: pointer;
+  min-width: 160px;
+  /*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);*/
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 98;
+  max-height: 0;
+  min-width: 160px;
+  transition: max-height 0.15s ease-out;
+  overflow: hidden;
+}
+
+.dropdown-content a {
+  color: black;
+  background-color: #f9f9f9;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #e2e2e2;
+}
+
+.dropdown:hover .dropdown-content {
+  max-height: 500px;
+  min-width: 160px;
+  transition: max-height 0.25s ease-in;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+  transition: max-height 0.25s ease-in;
+}
+
+.selectProgram {
+  outline: none;
+  right: 0;
+  height: 43px;
+  margin-bottom: 0 !important;
+}
+.search-container{
+  display: flex;
+  align-items: center;
+}
+
+
 </style>
