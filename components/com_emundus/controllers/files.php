@@ -4114,7 +4114,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 $sessionCity = !empty($session['city']) ?' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))) : ' '.$session['location_title'];
-                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            }
+                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            
+            }
         }
         $sessions .= '</ul>';
 
@@ -4348,8 +4349,8 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
 
         $user = JFactory::getUser()->id;
-        $fnum = $jinput->post->getRaw('fnum');
-        $offset = $jinput->post->getRaw('offset');
+        $fnum = $jinput->post->getString('fnum');
+        $offset = $jinput->post->getInt('offset');
 
         $fnumErrorList = [];
         $m_logs = $this->getModel('Logs');
