@@ -1,4 +1,5 @@
 <?php
+
 namespace RocketTheme\Toolbox\File;
 
 /**
@@ -13,13 +14,15 @@ interface FileInterface
     /**
      * Get file instance.
      *
-     * @param  string  $filename
+     * @param string $filename
      * @return static
      */
     public static function instance($filename);
 
     /**
      * Free the file instance.
+     *
+     * @return void
      */
     public function free();
 
@@ -38,7 +41,7 @@ interface FileInterface
     public function modified();
 
     /**
-     * Lock file for writing. Lock gets automatically released during the save().
+     * Lock file for writing.
      *
      * @param bool $block  For non-blocking lock, set the parameter to false.
      * @return bool
@@ -84,15 +87,16 @@ interface FileInterface
     /**
      * Get/set parsed file contents.
      *
-     * @param string $var
-     * @return string
+     * @param string|array|null $var
+     * @return string|array
      */
     public function content($var = null);
 
     /**
      * Save file.
      *
-     * @param  string  $data  Optional data to be saved.
+     * @param string|array|null $data Optional data to be saved.
+     * @return void
      * @throws \RuntimeException
      */
     public function save($data = null);

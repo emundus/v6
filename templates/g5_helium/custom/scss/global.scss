@@ -670,7 +670,7 @@ footer#g-footer {
 }
 
 footer#g-footer img {
-  max-width: 50%;
+  max-width: 35%;
 }
 
 #g-page-surround {
@@ -813,7 +813,7 @@ body>.g-container {
   }
 
   #userDropdownIcon {
-    background-color: white;
+    background: transparent;
     font-size: 1.5em;
     width: 30px !important;
     height: 30px !important;
@@ -980,7 +980,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 }
 
-/* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
+/* MODULE APPLICATIONS */
+.list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
+  border-top: 2px solid $base-secondary-color !important;
+}
+
+/* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
   .platform-content .btn.btn-info {
     background: darken($base-secondary-color, 8%);
@@ -1296,7 +1301,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border-bottom-color: $dark-blue;
 }
 
-// remove 
+// remove
 .fabrikNav .pagination-list li {
   margin: 0;
 }
@@ -1491,6 +1496,32 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     border: 2px solid $base-secondary-color;
   }
 
+  .fabrik_element___emundus_file_upload_parent{
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    input[type=file] {
+      left: 0;
+      top: 0;
+      opacity: 0;
+      position: absolute;
+      font-size: 40px;
+      cursor: pointer;
+    }
+    .btn-upload{
+      color: #fff;
+      background: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+    .em-deleteFile{
+      margin-left: 10px;
+    }
+  }
+
   /* STATUS ET ETIQUETTES */
 
   .label-lightpurple {
@@ -1615,10 +1646,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #g-container-main {
       padding: 0 10px;
+      height: 100%;
+      margin: auto;
     }
   }
 
-  body.error-page p {
+  body.error-page .container-404 p {
     padding: 20px 0 !important;
   }
 
@@ -1852,7 +1885,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  .modal-header #can-val {
+  #em-modal-actions .modal-footer{
+    position: sticky;
+    bottom: 0;
+  }
+  .modal-footer table{
+    border: unset;
+  }
+  .modal-header #can-val, .modal-footer #can-val {
+    border: unset;
     button.btn.btn-danger {
       background: transparent;
       border: 2px solid grey;
@@ -2112,7 +2153,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     &:hover,
     &:focus &:active {
-      background-color: darken($base-primary-color, 10%);
+      background-color: darken($dark-blue, 20%);
       color: #fff;
       outline: none;
     }
@@ -2645,8 +2686,48 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     color: #12DB42;
   }
 
-  .chosen-container .chosen-results li.highlighted {
-    background-color: $base-primary-color;
+  // CHOSEN css
+  .chosen-container{
+    width: auto;
+  }
+
+  .chosen-container {
+    .chosen-single {
+      background: #fff !important;
+      box-shadow: unset;
+      height: 40px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-color: $neutral-300;
+      div{
+        position: relative;
+      }
+    }
+
+    .chosen-search {
+      padding: 8px 12px;
+      input[type="text"] {
+        &:focus {
+          box-shadow: unset;
+          border: solid 1px $blue-400;
+        }
+      }
+    }
+
+    .chosen-results {
+      padding: 0;
+      margin: 0;
+      li {
+        padding: 8px 12px;
+      }
+    }
+
+    .chosen-results li.highlighted {
+      background-color: $neutral-300;
+      color: $neutral-900;
+    }
   }
 
   .navbar.navbar-inverse {
@@ -2906,6 +2987,19 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           color: $red;
         }
       }
+
+      a.listplugin.btn-default {
+        background: $dark-blue;
+        border-color: $dark-blue;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: #fff;
+          border-color: $dark-blue;
+          color: $dark-blue;
+        }
+      }
     }
 
     tbody td.fabrik_actions .btn-group {
@@ -2977,9 +3071,22 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .view-list {
 
-    .fabrik___heading  a.fabrikorder, .fabrik___heading  a.fabrikorder-desc {
+    .fabrik___heading  a.fabrikorder,
+    .fabrik___heading  a.fabrikorder-desc,
+    .fabrik___heading a.fabrikorder-asc {
       color: $dark-blue;
     }
+
+    .fabrik_filter_submit.button {
+      background: $dark-blue;
+      border-color: $dark-blue;
+      &:hover, &:active, &:focus {
+        background: #fff;
+        border-color: $dark-blue;
+        color: $dark-blue;
+      }
+    }
+
     .filtertable {
       thead tr.fabrik___heading {
 
@@ -4781,3 +4888,136 @@ input:focus + .em-slider {
   }
 }
 
+/**
+  LOGIN GUARD
+**/
+#loginguard-methods-list{
+  .clearfix{
+    display: none;
+  }
+  #loginguard-methods-reset-container{
+    border: unset;
+    .btn{
+      margin-bottom: 0;
+    }
+  }
+  #loginguard-methods-list-head{
+    opacity: 0;
+    margin: 0 16px;
+  }
+  #loginguard-methods-list-instructions{
+    margin: 0 clamp(10px, 1.5em, 50px) 1em;
+  }
+  #loginguard-methods-list-container{
+    margin: 0 clamp(10px, 1.5em, 50px) .5em;
+    padding: unset;
+    .loginguard-methods-list-method-name-backupcodes{
+      display: none;
+    }
+  }
+  .loginguard-methods-list-method{
+    border-radius: 4px;
+    padding: 1em;
+    .loginguard-methods-list-method-header {
+      align-items: center;
+      margin-bottom: 1em;
+      .loginguard-methods-list-method-image {
+        padding: unset;
+      }
+      .loginguard-methods-list-method-title {
+        display: flex;
+        align-items: center;
+
+        h4 {
+          margin-top: unset;
+          display: flex;
+          align-items: center;
+          #loginguard-methods-list-method-default-tag{
+            margin-left: 1em;
+          }
+        }
+      }
+      .loginguard-methods-list-method-info{
+        height: 100%;
+      }
+    }
+    .loginguard-methods-list-method-records-container{
+      .loginguard-methods-list-method-records{
+        .loginguard-methods-list-method-record {
+          align-items: center;
+          .loginguard-methods-list-method-record-title-container {
+            display: flex;
+            align-items: center;
+
+            #loginguard-methods-list-method-default-badge-small {
+              background: unset;
+              color: $base-secondary-color;
+            }
+          }
+          .loginguard-methods-list-method-record-lastused{
+            justify-content: start;
+            .loginguard-methods-list-method-record-createdon{
+              margin-right: 1em;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#loginguard-method-edit{
+  .float-end{
+    display: none;
+  }
+  input[type="checkbox"]{
+    margin: 0;
+  }
+  .control-group {
+    margin: 20px 0;
+  }
+  .buttons{
+    .controls{
+      display: flex;
+      justify-content: space-between;
+      .btn-primary{
+        background: $base-primary-color;
+        &:hover{
+          color: white;
+        }
+      }
+      .btn-danger{
+        background: transparent;
+        color: black;
+      }
+    }
+  }
+}
+
+.loginguard-captive{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10em;
+  #loginguard-captive-form-method-fields{
+    #loginguard-captive-form-remember-me{
+      margin-top: 10px;
+      .loginguard-toggle input:checked + label.green{
+        background: $main-500;
+        box-shadow: unset;
+      }
+      .loginguard-toggle input:checked + label.red{
+        background: $red-500;
+        box-shadow: unset;
+      }
+    }
+  }
+  #loginguard-captive-form-standard-buttons{
+    display: flex;
+    justify-content: space-between;
+  }
+  #loginguard-captive-form-choose-another{
+    margin-top: 1em;
+  }
+}

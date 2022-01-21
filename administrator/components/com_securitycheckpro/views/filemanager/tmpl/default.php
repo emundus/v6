@@ -20,7 +20,10 @@ $status_array = array(JHtml::_('select.option', '0', JText::_('COM_SECURITYCHECK
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+}
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
@@ -419,7 +422,13 @@ if (strstr($server, "iis") ) { ?>
                                     </div>
             <?php } ?>
                             </div>
-        <?php } ?>
+        <?php } else {
+			if ($this->state->get('filter.malwarescan_status') == 2 ) {
+				if ($this->file_manager_include_exceptions_in_database == 0 ) { 
+					echo '<div class="alert alert-info">' . JText::_('COM_SECURITYCHECKPRO_EXCEPTIONS_NOT_INCLUDED_IN_DATABASE'). '</div>';                            
+				} 
+			}
+		}  ?>
                     </div>                
                 </div>
             </div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -41,13 +41,12 @@ class plgSystemCustom_price extends JPlugin {
 			$price->price_min_quantity = 1;
 			$product->prices = array($price);
 		}
+		if($taxes && $product->product_type == 'variant' && empty($product->product_tax_id)) {
+			$productClass = hikashop_get('class.product');
+			$main = $productClass->get($product->product_parent_id);
+			$product->product_tax_id = $main->product_tax_id;
+		}
 		foreach($product->prices as $k => $price) {
-			if($taxes && $product->product_type == 'variant' && empty($product->product_tax_id)) {
-				$productClass = hikashop_get('class.product');
-				$main = $productClass->get($product->product_parent_id);
-				$product->product_tax_id = $main->product_tax_id;
-			}
-
 			switch($taxes) {
 				case 2:
 					$product->prices[$k]->price_value = $this->currencyClass->getUntaxedPrice(hikashop_toFloat($product->$column),hikashop_getZone(),$product->product_tax_id);

@@ -446,7 +446,7 @@ class EmundusModelEmails extends JModelList {
         foreach ($tags as $tag) {
             if (!empty($content)){
                 $tag_pattern = '[' . $tag['tag'] . ']';
-                if(!strpos($content, $tag_pattern)){
+                if(strpos($content, $tag_pattern) === false){
                     continue;
                 }
             }
@@ -493,7 +493,13 @@ class EmundusModelEmails extends JModelList {
                 $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
             } else {
-                $replacements[] = "";
+                $request = explode('|', $value);
+                $result = eval("$request[1]");
+                if(!empty($result)){
+                    $replacements[] = $result;
+                } else {
+                    $replacements[] = "";
+                }
             }
 
         }
@@ -601,7 +607,11 @@ class EmundusModelEmails extends JModelList {
                     foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
                         $params = json_decode($elt['params']);
                         $elm = array();
-                        $index = array_intersect(json_decode($val["val"]), $params->sub_options->sub_values);
+                        if($elt['plugin'] == "checkbox"){
+                            $index = array_intersect(json_decode($val["val"]), $params->sub_options->sub_values);
+                        } else {
+                            $index = array_intersect((array)$val["val"], $params->sub_options->sub_values);
+                        }
                         foreach ($index as $value) {
                             $key = array_search($value,$params->sub_options->sub_values);
                             $elm[] = JText::_($params->sub_options->sub_labels[$key]);
@@ -823,13 +833,20 @@ class EmundusModelEmails extends JModelList {
                 // 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
                 $link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
                 $link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
+                $link_accept_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
+                $link_refuse_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
 
                 $post = array(
                     'EXPERT_ACCEPT_LINK'    => JURI::base().$link_accept,
                     'EXPERT_REFUSE_LINK'    => JURI::base().$link_refuse,
                     'EXPERT_ACCEPT_LINK_RELATIVE'    => $link_accept,
-                    'EXPERT_REFUSE_LINK_RELATIVE'    => $link_refuse
+                    'EXPERT_REFUSE_LINK_RELATIVE'    => $link_refuse,
+                    'EXPERT_ACCEPT_LINK_NOFORM'    => JURI::base().$link_accept_noform,
+                    'EXPERT_REFUSE_LINK_NOFORM'    => JURI::base().$link_refuse_noform,
+                    'EXPERT_ACCEPT_LINK_RELATIVE_NOFORM'    => $link_accept_noform,
+                    'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform
                 );
+
                 $tags = $this->setTags($student_id, $post, $fnum);
 
                 $body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
@@ -1057,13 +1074,20 @@ class EmundusModelEmails extends JModelList {
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
 			$link_accept = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->accepted.'&keyid='.$key1.'&cid='.$campaign_id;
 			$link_refuse = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid->refused.'&keyid='.$key1.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
+            $link_accept_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id;
+            $link_refuse_noform = 'index.php?option=com_fabrik&c=form&view=form&keyid='.$key1.'&sid='.$student_id.'&email='.$m_to.'&cid='.$campaign_id.'&usekey=keyid&rowid='.$key1;
 
-			$post = [
-				'EXPERT_ACCEPT_LINK' => JURI::base().$link_accept,
-				'EXPERT_REFUSE_LINK' => JURI::base().$link_refuse,
-				'EXPERT_ACCEPT_LINK_RELATIVE' => $link_accept,
-				'EXPERT_REFUSE_LINK_RELATIVE' => $link_refuse
-			];
+            $post = array(
+                'EXPERT_ACCEPT_LINK'    => JURI::base().$link_accept,
+                'EXPERT_REFUSE_LINK'    => JURI::base().$link_refuse,
+                'EXPERT_ACCEPT_LINK_RELATIVE'    => $link_accept,
+                'EXPERT_REFUSE_LINK_RELATIVE'    => $link_refuse,
+                'EXPERT_ACCEPT_LINK_NOFORM'    => JURI::base().$link_accept_noform,
+                'EXPERT_REFUSE_LINK_NOFORM'    => JURI::base().$link_refuse_noform,
+                'EXPERT_ACCEPT_LINK_RELATIVE_NOFORM'    => $link_accept_noform,
+                'EXPERT_REFUSE_LINK_RELATIVE_NOFORM'    => $link_refuse_noform
+            );
+
 			$tags = $this->setTags($example_user_id, $post, $example_fnum);
 
 			$body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);

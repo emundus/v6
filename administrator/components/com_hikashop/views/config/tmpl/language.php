@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
 					<div class="hikashop_tile_title">
 						<?php echo JText::_( 'HIKA_FILE').' : '.$this->file->name; ?>
 					</div>
-					<textarea style="width:98%;" rows="32" name="content" id="translation" ><?php echo @$this->file->content;?></textarea>
+					<textarea style="width:98%;" rows="32" name="content" id="translation" ><?php echo str_replace('</textarea>', '&lt;/textarea&gt;', @$this->file->content);?></textarea>
 				</div>
 			</div>
 			<div class="hkc-lg-6 hikashop_tile_block hikashop_language_edit_override">
@@ -31,7 +31,7 @@ defined('_JEXEC') or die('Restricted access');
 					<div class="hikashop_tile_title">
 						<?php echo JText::_( 'OVERRIDE').' : '; ?>
 					</div>
-					<textarea style="width:98%;" rows="32" name="content_override" id="translation_override" ><?php echo $this->override_content;?></textarea>
+					<textarea style="width:98%;" rows="32" name="content_override" id="translation_override" ><?php echo str_replace('</textarea>', '&lt;/textarea&gt;', $this->override_content);?></textarea>
 				</div>
 			</div>
 		</div>
