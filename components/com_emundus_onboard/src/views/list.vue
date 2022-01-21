@@ -114,37 +114,6 @@
         @validateFilters="validateFilters"
 		    @updateLoading="updateLoading"
       ></list-body>
-
-      <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
-        <ul class="pagination" v-if="total > 0" style="position: absolute;bottom: 0;width: 100%;">
-          <a @click="nbpages(pages - 1)" class="pagination-arrow arrow-left">
-            <em class="fas fa-chevron-left"></em>
-          </a>
-          <li
-            v-for="index in countPages"
-            v-show="
-              countPages <= 10 ||
-              index < 4 ||
-              index > countPages - 3 ||
-              (index > pages - 3 && index < pages + 3) ||
-              index == pages - 3 ||
-              index == pages + 3"
-            :key="index"
-            class="pagination-number"
-          >
-            <a
-              @click="nbpages(index)"
-              class="pagination-number"
-              :class="index == pages ? 'current-number' : ''"
-            >
-              {{ paginationNumber }}
-            </a>
-          </li>
-          <a @click="nbpages(pages + 1)" class="pagination-arrow arrow-right">
-            <em class="fas fa-chevron-right"></em>
-          </a>
-        </ul>
-      </div>
     </div>
 
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">

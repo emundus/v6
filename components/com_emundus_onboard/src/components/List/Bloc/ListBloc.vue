@@ -287,6 +287,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.not-displayed {
+	.list-bloc-item {
+		display: none;
+	}
+}
 .list-bloc-item {
   min-height: 199px;
 	display: flex;
