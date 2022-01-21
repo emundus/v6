@@ -4347,15 +4347,15 @@ class EmundusControllerFiles extends JControllerLegacy
     // Get actions on fnum with offset
     public function getactionsonfnum() {
         $jinput = JFactory::getApplication()->input;
-
         $user = JFactory::getUser()->id;
         $fnum = $jinput->post->getString('fnum');
         $offset = $jinput->post->getInt('offset');
-
         $fnumErrorList = [];
-        $m_logs = $this->getModel('Logs');
 
         if (EmundusHelperAccess::asAccessAction(37, 'r', $user, $fnum)) {
+            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $m_logs = new EmundusModelLogs;
+
             $res = $m_logs->getActionsOnFnum($fnum, null, null, null, $offset);
             $details = [];
 
@@ -4363,14 +4363,14 @@ class EmundusControllerFiles extends JControllerLegacy
                 $fnumErrorList[] = $fnum;
             } else {
                 foreach ($res as $log) {
-                    array_push($details, $m_logs->setActionDetails($log->action_id, $log->verb, $log->params));
+                    $details[] = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
                 }
             }
         } else {
             $fnumErrorList[] = $fnum;
         }
 
-        if(empty($fnumErrorList)) {
+        if (empty($fnumErrorList)) {
             echo json_encode((object)(array('status' => true, 'res' => $res, 'details' => $details)));
         } else {
             echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). implode(', ', $fnumErrorList))));
