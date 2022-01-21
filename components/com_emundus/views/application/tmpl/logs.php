@@ -36,13 +36,14 @@ JFactory::getSession()->set('application_layout', 'logs');
                 <?php
                 if (count($this->fileLogs) > 0) { ?>
                 <table class="table table-hover logs_table">
+                    <caption class="hidden"><?= JText::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
                     <thead>
                         <tr>
-                            <th><?= JText::_('DATE'); ?></th>
-                            <th><?= JText::_('USER'); ?></th>
-                            <th><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
-                            <th><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
-                            <th><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
+                            <th id="date"><?= JText::_('DATE'); ?></th>
+                            <th id="user"><?= JText::_('USER'); ?></th>
+                            <th id="action_category"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
+                            <th id="action_name"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
+                            <th id="action_details"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
                         </tr>       
                     </thead>
                     <tbody id="logs_list">
