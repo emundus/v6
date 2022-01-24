@@ -806,7 +806,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    height: 35px !important;
+    height: 40px !important;
     border-radius: 0;
     padding: 4px;
 }
@@ -2403,7 +2403,7 @@ table#groups-table a:hover {
 .navbar.navbar-inverse {
     border-radius: 0;
     padding: 5px;
-    height: 35px !important;
+    height: 40px !important;
     min-height: auto !important;
 }
 
