@@ -79,18 +79,19 @@ class ApogeeCustom {
         if($_aaCodPay->nodeValue == '100') {        /// # france
             /* set Bdi */
             $_getAaBdiSql = "SELECT lpad(#__emundus_personal_detail.etu_code_postal,5,'0') FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = " . $this->fnum;
+            $db->setQuery($_getAaBdiSql);
+            $_aaCodBdi->nodeValue = $db->loadResult();
         } else {                                    /// # not france
             /* set Bdi */
             $_getAaBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
-
+            $_aaCodBdi->nodeValue = "";
             /* set libAde --> concat(e_287_8117, '', e_287_8118) */
             $_getAaLibAdeSql = "select trim(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
             $db->setQuery($_getAaLibAdeSql);
             $_aaLibAde->nodeValue =  $db->loadResult();
         }
 
-        $db->setQuery($_getAaBdiSql);
-        $_aaCodBdi->nodeValue = $db->loadResult();
+
 
         ///////////////////////////////// ADRESSE FIXE /////////////////////////////////
         $_afRoot = $this->xmlTree->getElementsByTagName('adresseFixe')->item(0);
@@ -103,18 +104,18 @@ class ApogeeCustom {
         if($_afCodPay->nodeValue == '100') {        /// #france
             /* set Bdi */
             $_getAfBdiSql = "SELECT lpad(#__emundus_personal_detail.etu_code_postal,5,'0') FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = " . $this->fnum;
+            $db->setQuery($_getAfBdiSql);
+            $_afCodBdi->nodeValue = $db->loadResult();
         } else {                                    /// # not france
             /* set Bdi */
             $_getAfBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
-
+            $_afCodBdi->nodeValue = "";
             /* set libAde --> concat(e_287_8117, '', e_287_8118) */
             $_getAfLibAdeSql = "select trim(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
             $db->setQuery($_getAfLibAdeSql);
             $_afLibAde->nodeValue =  $db->loadResult();
         }
 
-        $db->setQuery($_getAfBdiSql);
-        $_afCodBdi->nodeValue = $db->loadResult();
 
         ///////////////////////////////////////////// Done /////////////////////////////////////////////
 
