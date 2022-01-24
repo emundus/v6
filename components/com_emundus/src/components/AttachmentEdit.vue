@@ -149,8 +149,6 @@ export default {
     this.attachmentCanBeDeleted = this.attachment.can_be_deleted;
     this.attachmentDescription = this.attachment.description;
     this.attachmentIsValidated = this.attachment.is_validated;
-
-    console.log(this.attachmentIsValidated);
   },
   methods: {
     async saveChanges() {
