@@ -238,12 +238,18 @@
     >
       <div class="modal-head">
         <div class="flex-start">
-					<span class="material-icons" @click="closeModal">
-						navigate_before
-					</span>
           <span>{{ selectedAttachment.filename }}</span>
         </div>
         <div class="flex-end">
+          <a
+            :href="attachmentPath"
+            class="download btn-icon-text"
+            download
+            v-if="canDownload"
+          >
+            <span class="material-icons"> file_download </span>
+            <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
+          </a>
           <div class="prev-next-attachments">
             <div
                 class="prev"
@@ -267,16 +273,9 @@
               <span class="material-icons"> navigate_next </span>
             </div>
           </div>
-          <a
-              :href="attachmentPath"
-              class="download btn-icon-text"
-              download
-              v-if="canDownload"
-          >
-            <span class="material-icons"> file_download </span>
-
-            <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
-          </a>
+          <span class="material-icons em-pointer" @click="closeModal">
+					  close
+					</span>
         </div>
       </div>
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
