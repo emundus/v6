@@ -279,15 +279,16 @@
         </div>
       </div>
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
-        <div class="modal-body" v-if="!modalLoading">
+        <div class="modal-body" v-if="!modalLoading && displayedUser.user_id && displayedFnum">
           <AttachmentPreview
-              @fileNotFound="canDownload = false"
-              @canDownload="canDownload = true"
+            @fileNotFound="canDownload = false"
+            @canDownload="canDownload = true"
+            :user="displayedUser.user_id"
           ></AttachmentPreview>
           <AttachmentEdit
-              @closeModal="closeModal"
-              @saveChanges="updateAttachment"
-              :fnum="displayedFnum"
+            @closeModal="closeModal"
+            @saveChanges="updateAttachment"
+            :fnum="displayedFnum"
           ></AttachmentEdit>
         </div>
       </transition>
@@ -354,10 +355,30 @@ export default {
   },
   mounted() {
     this.loading = true;
-    this.getFnums();
-    this.getUsers();
-    this.getAttachments();
-    this.setAccessRights();
+    this.getFnums()
+    .then(
+      () => {
+        this.getUsers().then(
+          () => {
+            this.getAttachments().then(
+              () => {
+                this.setAccessRights().then(
+                  () => {
+                    this.loading = false;
+                  }
+                );
+              }
+            ).catch((e) => {
+              this.displayErrorMessage(e);
+            });
+          },
+        ).catch((e) => {
+          this.displayErrorMessage(e);
+        });
+      }
+    ).catch((e) => {
+      this.displayErrorMessage(e);
+    });
   },
   methods: {
     // Getters and setters
@@ -369,7 +390,7 @@ export default {
     },
     async getUsers() {
       this.$store.dispatch("user/setCurrentUser", this.user);
-      this.setDisplayedUser();
+      await this.setDisplayedUser();
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
@@ -408,7 +429,7 @@ export default {
     },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
-        this.refreshAttachments(true);
+        await this.refreshAttachments();
       } else {
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
         this.categories = this.$store.state.attachment.categories;
@@ -795,9 +816,11 @@ export default {
 
     // Modal methods
     openModal(attachment) {
-      this.$modal.show("edit");
-      this.selectedAttachment = attachment;
-      this.$store.dispatch("attachment/setSelectedAttachment", attachment);
+      if (this.displayedUser.user_id && this.displayedFnum) {
+        this.$modal.show("edit");
+        this.selectedAttachment = attachment;
+        this.$store.dispatch("attachment/setSelectedAttachment", attachment);
+      }
     },
     closeModal() {
       this.$modal.hide("edit");
