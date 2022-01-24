@@ -691,7 +691,7 @@ class EmundusModelProfile extends JModelList {
      *
      * @return array The profile list for the campaigns
      */
-    function getProfilesIDByCampaign(array $campaign_id) : array {
+    function getProfilesIDByCampaign(array $campaign_id, $return = 'column') : array {
 
         $res = [];
 
@@ -701,20 +701,34 @@ class EmundusModelProfile extends JModelList {
                 $where_jecw = '';
             } else {
                 $where = 'WHERE esc.id IN ('.implode(',', $campaign_id).')';
-                $where_jecw = 'WHERE jecw.campaign IN ('.implode(',', $campaign_id).')';
+                $where_jecw = 'WHERE jecw.campaign IN ('.implode(',', $campaign_id).') ORDER BY step';
             }
 
-            $query = 'SELECT DISTINCT (esc.profile_id)
-                        FROM  #__emundus_setup_campaigns AS esc '
+            $query = 'SELECT DISTINCT (esc.profile_id) AS pid,
+                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step, null AS phase, null AS lbl
+
+                        FROM  #__emundus_setup_campaigns AS esc 
+                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = esc.profile_id
+                    '
                 . $where .
                 ' union 
-                        SELECT DISTINCT (jecw.profile)
-                        FROM  #__emundus_campaign_workflow AS jecw '
+                        SELECT DISTINCT (jecw.profile) AS pid, 
+                        jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, 
+                        jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, step AS step, null AS phase, null AS lbl
+                        
+                        FROM  #__emundus_campaign_workflow AS jecw 
+                        LEFT JOIN #__emundus_setup_profiles AS jesp ON jesp.id = jecw.profile
+                '
                 . $where_jecw;
 
             try {
                 $this->_db->setQuery($query);
-                $res = $this->_db->loadColumn();
+                if($return == 'column'){
+                    $res = $this->_db->loadColumn();
+                } else {
+                    $res = $this->_db->loadObjectList();
+                }
             } catch(Exception $e) {
                 JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query, JLog::ERROR, 'com_emundus');
                 return [];
@@ -759,18 +773,20 @@ class EmundusModelProfile extends JModelList {
 
                     $profileIds = array_unique(array_merge($firstProfile, $secondProfile));
 
-                    $query->clear()
-                        ->select('#__emundus_setup_profiles.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
-                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $profileIds) . ')');
+                    $profileLabels = [];
+                    $profileMenuType = [];
 
-                    $this->_db->setQuery($query);
+                    foreach($profileIds as $pid) {
+                        $query->clear()
+                            ->select('#__emundus_setup_profiles.*')
+                            ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                            ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . '=' . $pid);
 
-                    $_profilesLabels = $this->_db->loadObjectList();
+                        $this->_db->setQuery($query);
+                        $raw = $this->_db->loadObject();
 
-                    foreach ($_profilesLabels as $key => $value) {
-                        $profileLabels[] = $value->label;
-                        $profileMenuType[] = $value->menutype;
+                        $profileLabels[] = $raw->label;
+                        $profileMenuType[] = $raw->menutype;
                     }
 
                     return ['profile_id' => $profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
@@ -784,7 +800,8 @@ class EmundusModelProfile extends JModelList {
                     $query->clear()
                         ->select('#__emundus_campaign_workflow.*')
                         ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
-                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')');
+                        ->where($this->_db->quoteName('#__emundus_campaign_workflow.campaign') . 'IN (' . implode(',', $campaigns) . ')')
+                        ->order('step');
 
                     $this->_db->setQuery($query);
 
@@ -808,20 +825,23 @@ class EmundusModelProfile extends JModelList {
 
                     $_profileIds = array_unique(array_merge($firstProfile,$secondProfile));
 
-                    $query->clear()
-                        ->select('#__emundus_setup_profiles.*')
-                        ->from($this->_db->quoteName('#__emundus_setup_profiles'))
-                        ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . 'IN (' . implode(',', $_profileIds) . ')');
+                    $profileLabels = [];
+                    $profileMenuType = [];
 
-                    $this->_db->setQuery($query);
+                    foreach($_profileIds as $pid) {
+                        $query->clear()
+                            ->select('#__emundus_setup_profiles.*')
+                            ->from($this->_db->quoteName('#__emundus_setup_profiles'))
+                            ->where($this->_db->quoteName('#__emundus_setup_profiles.id') . '=' . $pid);
 
-                    $_profilesLabels = $this->_db->loadObjectList();
+                        $this->_db->setQuery($query);
+                        $raw = $this->_db->loadObject();
 
-                    foreach ($_profilesLabels as $key => $value) {
-                        $profileLabels[] = $value->label;
+                        $profileLabels[] = $raw->label;
+                        $profileMenuType[] = $raw->menutype;
                     }
 
-                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels];
+                    return ['profile_id' => $_profileIds, 'profile_label' => $profileLabels, 'profile_menu_type' => $profileMenuType];
 
                 } catch(Exception $e) {
                     JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$query->__toString(). ' : '.$e->getMessage(), JLog::ERROR, 'com_emundus');

@@ -1892,13 +1892,17 @@ class EmundusControllerFiles extends JControllerLegacy
         $camp = $jinput->getVar('camp', null);
         $code = explode(',', $code);
         $camp = explode(',', $camp);
+        $profiles = $jinput->getVar('profiles', null);
 
         $m_profile = new EmundusModelProfile();
         $m_campaign = new EmundusModelCampaign();
         $h_files = new EmundusHelperFiles();
 
-        $profile = $m_profile->getProfileIDByCourse($code, $camp);
-        $docs = $h_files->getAttachmentsTypesByProfileID((int)$profile[0]);
+        $profiles = !empty($profiles) ? $profiles : $m_profile->getProfileIDByCourse($code, $camp);
+        //$docs = $h_files->getAttachmentsTypesByProfileID((int)$profile[0]);
+
+
+        $docs = $h_files->getAttachmentsTypesByProfileID($profiles);
 
         // Sort the docs out that are not allowed to be exported by the user.
         $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);

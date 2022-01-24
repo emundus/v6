@@ -1390,7 +1390,8 @@ class EmundusModelMessages extends JModelList {
         try {
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
-                ->from($db->quoteName('#__emundus_setup_attachments'));
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('published') . " = 1");
 
             $db->setQuery($query);
             return $db->loadObjectList();

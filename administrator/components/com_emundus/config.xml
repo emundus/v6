@@ -224,6 +224,8 @@
 		<field name="clientId" type="text" required="false" label="COM_EMUNDUS_CLIENTID_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
 		<field name="clientSecret" type="text" required="false" label="COM_EMUNDUS_CLIENTSECRET_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
 		<field name="refreshToken" type="text" required="false" label="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_LABEL" description="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
+		<field name="refreshToken_url" type="note" description="&lt;a href=&quot;/index.php?option=com_emundus&amp;controller=calendar&amp;task=authenticateclient&quot; target=&quot;_blank&quot;&gt;New Refresh Token	&lt;/a&gt;" />
+
 		<field name="parentCalId" type="text" required="false" label="COM_EMUNDUS_PARENTCAL_LABEL" description="COM_EMUNDUS_PARENTCAL_DESC" class="inputbox" default="" />
 		<field name="mailRecipients" type="text" required="false" label="COM_EMUNDUS_MAILRECIPIENTS_LABEL" description="COM_EMUNDUS_MAILRECIPIENTS_DESC" class="inputbox" default="5" />
 		<field name="bookedPrefix" type="text" required="false" label="COM_EMUNDUS_BOOKEDPREFIX_LABEL" description="COM_EMUNDUS_BOOKEDPREFIX_DESC" class="inputbox" default="BOOKED" />

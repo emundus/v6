@@ -443,7 +443,7 @@ class EmundusModelEmails extends JModelList {
         foreach ($tags as $tag) {
             if (!empty($content)){
                 $tag_pattern = '[' . $tag['tag'] . ']';
-                if(!strpos($content, $tag_pattern)){
+                if(strpos($content, $tag_pattern) === false){
                     continue;
                 }
             }
@@ -490,7 +490,13 @@ class EmundusModelEmails extends JModelList {
                 $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
             } else {
-                $replacements[] = "";
+                $request = explode('|', $value);
+                $result = eval("$request[1]");
+                if(!empty($result)){
+                    $replacements[] = $result;
+                } else {
+                    $replacements[] = "";
+                }
             }
 
         }

@@ -3,8 +3,6 @@ import VModal from 'vue-js-modal';
 import store from "./store";
 import App from './App.vue';
 import translate from './mixins/translate.js';
-// import filterBuilderStore from './store/filterBuilder';
-// import FilterBuilder from './components/FilterBuilder/FilterBuilder.vue';
 
 let mountApp = false;
 let elementId = "";
@@ -13,7 +11,7 @@ let componentName = "";
 
 if (document.getElementById("em-application-attachment")) {
     const element = document.getElementById("em-application-attachment");
-    Array.prototype.slice.call(element.attributes).forEach(function(attr) {
+    Array.prototype.slice.call(element.attributes).forEach(function (attr) {
         data[attr.name] = attr.value;
     });
 
@@ -23,12 +21,38 @@ if (document.getElementById("em-application-attachment")) {
 }
 
 if (mountApp) {
+    const items = document.querySelectorAll('#em-appli-menu .list-group-item');
+
+    // add eventlistener on changeFile
+    function changeFile(e) {
+        document.querySelector('#em-assoc-files .panel-body').empty();
+        const checkedEm = document.querySelector('.em-check:checked');
+        // uncheck element
+        if (checkedEm) {
+            checkedEm.checked = false;
+        }
+
+        // check element that have id equals to e.detail.fnum.fnum + "_check"
+        const check = document.getElementById(e.detail.fnum.fnum + "_check");
+        if (check) {
+            check.checked = true;
+        }
+
+        // update href fnum param
+        items.forEach(function (item) {
+            item.setAttribute('href', item.getAttribute('href').replace(/fnum=\d+/, 'fnum=' + e.detail.fnum.fnum));
+        });
+
+
+        openFiles(e.detail.fnum, "attachment", true);
+    }
+
     Vue.config.productionTip = false;
     Vue.use(store);
     Vue.use(VModal);
     Vue.mixin(translate);
 
-    new Vue({
+    const vue = new Vue({
         el: elementId,
         store,
         render(h) {
@@ -38,20 +62,9 @@ if (mountApp) {
                         componentName: componentName,
                         data: data
                     },
-                }
-            );
+                });
         },
     });
-}
 
-// if (document.getElementById("em-vue-filter-builder")) {
-//     const filterbuilderApp = new Vue({
-//         el: '#em-vue-filter-builder',
-//         store: filterBuilderStore,
-//         render(h) {
-//             return h(
-//                 FilterBuilder
-//             );
-//         }
-//     });
-// }
+    document.querySelector(".com_emundus_vue").addEventListener('changeFile', changeFile);
+}
