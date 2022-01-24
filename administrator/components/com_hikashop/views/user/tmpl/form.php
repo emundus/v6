@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -59,6 +59,15 @@ defined('_JEXEC') or die('Restricted access');
 			if($this->user->geolocation_country != 'Reserved') {
 				echo ' ( '.$this->user->geolocation_city.' '.$this->user->geolocation_state.' '.$this->user->geolocation_country.' )';
 			}
+		?></dd>
+	</dl>
+<?php } elseif($this->config->get('user_ip', 1) && !empty($this->user->user_created_ip)) { ?>
+	<dl class="hika_options">
+		<dt><label><?php
+			echo JText::_('IP');
+		?></label></dt>
+		<dd><?php
+			echo $this->user->user_created_ip;
 		?></dd>
 	</dl>
 <?php } ?>

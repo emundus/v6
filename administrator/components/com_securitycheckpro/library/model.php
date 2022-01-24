@@ -147,19 +147,23 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         global $mainframe, $option;
         
         $mainframe = JFactory::getApplication();
-        $jinput = $mainframe->input;
- 
-        // Obtenemos las variables de paginación de la petición
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-    
-        $data = $jinput->get('post');
-        $limitstart = $jinput->get('limitstart', 0, 'int');
-    
-        // En el caso de que los límites hayan cambiado, los volvemos a ajustar
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-    
-        $this->setState('limit', $limit);
-        $this->setState('limitstart', $limitstart);        
+		
+		// This is needed to avoid errors getting the file from cli
+		if ( (!empty($mainframe)) && (method_exists($mainframe,"getUserStateFromRequest")) ) {
+			$jinput = $mainframe->input;
+	 
+			// Obtenemos las variables de paginación de la petición
+			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		
+			$data = $jinput->get('post');
+			$limitstart = $jinput->get('limitstart', 0, 'int');
+		
+			// En el caso de que los límites hayan cambiado, los volvemos a ajustar
+			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+		
+			$this->setState('limit', $limit);
+			$this->setState('limitstart', $limitstart);     
+		}
     }
 
     protected function populateState()
@@ -263,8 +267,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 		$query2 = $db->getQuery(true);
     
         $data = $this->config->toArray();
-		    
-        if ($key_name != 'inspector') {        
+		
+		if ($key_name != 'inspector') {        
             // Chequeamos si los valores de prioridad son nulos; si lo son, les asignamos un valor
             if ((array_key_exists("priority1", $data)) && (is_null($data['priority1'])) || (!array_key_exists("priority1", $data))) {
                 $data['priority1'] = 'Whitelist';
@@ -299,7 +303,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 			$db->setQuery($query2);
 			$db->execute();
 			$previous_data = $db->loadResult();
-						
+									
 			try {
 				//delete stored value
 				$query
@@ -307,7 +311,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 					->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
 				$db->setQuery($query);
 				$db->execute();
-				
+								
 				$object = (object)array(
 				'storage_key'        => $key_name,
 				'storage_value'        => $data
@@ -325,6 +329,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 				);
 					
 				$db->insertObject('#__securitycheckpro_storage', $object);
+				JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+				
 			} 
 		} else {
 			JFactory::getApplication()->enqueueMessage("Error", 'error');
@@ -349,7 +355,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         foreach($this->defaultConfig as $k => $v)
         {			
             $config[$k] = $params->getValue($k, $v, 'pro_plugin');
-        }
+        }		
         return $config;    
     }
 

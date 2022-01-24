@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -85,11 +85,11 @@ class hikashopFieldsType {
 			);
 			$this->allValues['ajaxfile'] = array(
 				'name' => JText::_('FIELD_AJAX_FILE'),
-				'options' => array('required','default','columnname','allowed_extensions')
+				'options' => array('required','default','columnname','allowed_extensions', 'multiple')
 			);
 			$this->allValues['ajaximage'] = array(
 				'name' => JText::_('FIELD_AJAX_IMAGE'),
-				'options' => array('required','default','columnname','imagesize','allowed_extensions')
+				'options' => array('required','default','columnname','imagesize','allowed_extensions', 'multiple')
 			);
 		}
 		$this->allValues['customtext'] = array(

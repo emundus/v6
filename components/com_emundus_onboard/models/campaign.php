@@ -1055,7 +1055,7 @@ class EmundusonboardModelcampaign extends JModelList
             $query->select('id,params')
                 ->from($db->quoteName('#__categories'))
                 ->where('json_extract(`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$cid.'"'))
-                ->andWhere($db->quoteName('extension') . ' LIKE ' . $db->quote('com_dropfiles'));
+                ->andWhere($db->quoteName('extension') . ' = ' . $db->quote('com_dropfiles'));
             $db->setQuery($query);
             $campaign_dropfile_cat = $db->loadResult();
 

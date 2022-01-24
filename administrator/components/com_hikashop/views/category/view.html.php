@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -51,7 +51,7 @@ class CategoryViewCategory extends hikashopView
 
 		$pageInfo->selectedType = $app->getUserStateFromRequest( $this->paramBase.".filter_type",'filter_type',0,'int');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		$pageInfo->filter->filter_id = $safeHtmlFilter->clean(strip_tags($app->getUserStateFromRequest( $this->paramBase.".filter_id",'filter_id',0,'string')));
 
 		$database = JFactory::getDBO();
@@ -278,7 +278,6 @@ class CategoryViewCategory extends hikashopView
 		$this->assignRef('categoryType',$categoryType);
 		$mainCategory = !empty($element->category_parent_id)?0:1;
 		$this->assignRef('mainCategory',$mainCategory);
-		JHTML::_('behavior.modal');
 		$config =& hikashop_config();
 		$translation = false;
 		$transHelper = hikashop_get('helper.translation');

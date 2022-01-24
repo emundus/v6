@@ -27,6 +27,11 @@ export default {
 
   components: {},
 
+  props: {
+    program: Number,
+    colors: String
+  },
+
   data: () => ({
     usersnumbers: {},
     days: {},
@@ -52,7 +57,7 @@ export default {
         this.dataSource = {
           chart: {
             animation: 1,
-            paletteColors: "#16AFE1, #78dc6e",
+            paletteColors: this.colors,
             caption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_BY_DAY"),
             subcaption: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_TOTAL") + this.total + Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS"),
             xaxisname: Joomla.JText._("COM_EMUNDUS_DASHBOARD_USERS_DAYS"),
