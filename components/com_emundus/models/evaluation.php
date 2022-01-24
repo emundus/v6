@@ -2730,7 +2730,11 @@ class EmundusModelEvaluation extends JModelList {
                                 if (is_numeric($tag)) {
                                     $idFabrik[] = $tag;
                                 } else {
-                                    $setupTags[] = $tag;
+                                    if(strpos($tag, 'IMG_') !== false) {
+                                        $setupTags[] = trim(explode(":", $tag)[0]);
+                                    } else {
+                                        $setupTags[] = $tag;
+                                    }
                                 }
                             }
 

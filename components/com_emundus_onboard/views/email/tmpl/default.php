@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla
  * @subpackage  com_emundus_onboard
@@ -13,7 +14,7 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
 $document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -144,9 +145,9 @@ JText::script('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS');
 
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0 , 2);
+$actualLanguage = substr($lang->getTag(), 0, 2);
 $languages = JLanguageHelper::getLanguages();
-if(count($languages) > 1){
+if (count($languages) > 1) {
     $many_languages = '1';
 } else {
     $many_languages = '0';
@@ -154,14 +155,11 @@ if(count($languages) > 1){
 
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0, 2);
 ?>
 
-<list id="em-component-vue"
-      component="list"
-      type="email"
-      coordinatorAccess="<?= $coordinator_access ?>"
-      actualLanguage="<?= $actualLanguage ?>"
-      manyLanguages="<?= $many_languages ?>">
+<list id="em-component-vue" component="list" type="email" coordinatorAccess="<?= $coordinator_access ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>">
 </list>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>
