@@ -369,14 +369,17 @@ export default {
                 );
               }
             ).catch((e) => {
+              this.loading = false;
               this.displayErrorMessage(e);
             });
           },
         ).catch((e) => {
+          this.loading = false;
           this.displayErrorMessage(e);
         });
       }
     ).catch((e) => {
+      this.loading = false;
       this.displayErrorMessage(e);
     });
   },
