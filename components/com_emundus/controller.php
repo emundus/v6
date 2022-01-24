@@ -1387,9 +1387,9 @@ class EmundusController extends JControllerLegacy {
             }
         }
         // If the user has the rights to open attachments.
-        elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r', $current_user->id, $fileInfo->fnum)) {
+        elseif (!empty($fileInfo) && !EmundusHelperAccess::asAccessAction(8,'c', $current_user->id, $fileInfo->fnum)) {
             die (JText::_('ACCESS_DENIED'));
-        } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(4,'r')) {
+        } elseif (empty($fileInfo) && !EmundusHelperAccess::asAccessAction(8,'c')) {
             die (JText::_('ACCESS_DENIED'));
         }
 
