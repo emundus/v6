@@ -4353,8 +4353,6 @@ class EmundusModelApplication extends JModelList
 
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
-
-
         if (isset($data['file'])) {
             // replace content of current attachment
             $content = file_get_contents($data['file']['tmp_name']);
@@ -4374,7 +4372,7 @@ class EmundusModelApplication extends JModelList
         }
 
         if (isset($data['is_validated'])) {
-            $query->set($db->quoteName('modified') . ' = ' . $db->quote($data['is_validated']));
+            $query->set($db->quoteName('is_validated') . ' = ' . $db->quote($data['is_validated']));
         }
 
         if (isset($data['can_be_viewed'])){
