@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-    <div class="wrapper" :class="{ loading: loading }">
+    <div class="wrapper" :class="{ loading: loading}">
       <div id="filters">
         <div class="searchbar-wrapper">
           <input
@@ -369,13 +369,6 @@ export default {
       }
     },
     async getUsers() {
-      const response = await userService.getUsers();
-
-      if (response.status !== false) {
-        this.users = response.data;
-        this.$store.dispatch("user/setUsers", this.users);
-      }
-
       this.$store.dispatch("user/setCurrentUser", this.user);
       this.setDisplayedUser();
     },
@@ -383,10 +376,7 @@ export default {
       const response = await fileService.getFnumInfos(this.displayedFnum);
 
       if (response && response.fnumInfos) {
-        const foundUser = this.users && this.users.length ? this.users.find(
-                    (user) => user.user_id == response.fnumInfos.applicant_id
-                )
-                : false;
+        const foundUser = this.users && this.users.length ? this.users.find((user) => user.user_id == response.fnumInfos.applicant_id) : false;
 
         if (!foundUser) {
           const resp = await userService.getUserById(
@@ -419,10 +409,9 @@ export default {
     },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
-        this.refreshAttachments();
+        this.refreshAttachments(true);
       } else {
-        this.attachments =
-            this.$store.state.attachment.attachments[this.displayedFnum];
+        this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
         this.categories = this.$store.state.attachment.categories;
       }
     },
@@ -434,9 +423,7 @@ export default {
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs["searchbar"].value = "";
-      const response = await attachmentService.getAttachmentsByFnum(
-          this.displayedFnum
-      );
+      const response = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
       if (response.status) {
         this.attachments = response.attachments;
@@ -551,7 +538,6 @@ export default {
       this.canUpdate = this.$store.state.user.rights[this.displayedFnum]
           ? this.$store.state.user.rights[this.displayedFnum].canUpdate
           : false;
-      this.loading = false;
     },
     async exportAttachments() {
       if (this.canExport) {
