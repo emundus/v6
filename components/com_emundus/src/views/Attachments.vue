@@ -945,7 +945,7 @@ export default {
     margin-top: 1px;
     padding: 10px;
     min-height: 50px;
-    background-color: var(--primary-color);
+    background-color: $night-blue;
 
     .displayed-user {
       display: flex;
