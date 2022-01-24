@@ -204,15 +204,17 @@ class ApogeeCustom {
         $_codDepPayAnnPreOpiNode = $this->xmlTree->getElementsByTagName('codDepPayAnnPreOpi')->item(0);
         $_codTypDepPayAnnPreOpiNode =$this->xmlTree->getElementsByTagName('codTypDepPayAnnPreOpi')->item(0);
 
-        if($_codDepPayAnnPreOpiNode->nodeValue == '100') {         # france
-            // get France Dep
-            $_getDepartmentSql = "select cod_dep from data_departement left join jos_emundus_1001_00 as je10 on je10.e_358_7943 = data_departement.id where je10.fnum = " . $this->fnum;
-            $db->setQuery($_getDepartmentSql);
+        if($_codDepPayAnnPreOpiNode->nodeValue !== null and !empty($_codDepPayAnnPreOpiNode->nodeValue)) {
+            if ($_codDepPayAnnPreOpiNode->nodeValue == '100') {         # france
+                // get France Dep
+                $_getDepartmentSql = "select cod_dep from data_departement left join jos_emundus_1001_00 as je10 on je10.e_358_7943 = data_departement.id where je10.fnum = " . $this->fnum;
+                $db->setQuery($_getDepartmentSql);
 
-            $_codDepPayAnnPreOpiNode->nodeValue = $db->loadResult();
-            $_codTypDepPayAnnPreOpiNode->nodeValue = 'D';
-        } else {
-            $_codTypDepPayAnnPreOpiNode->nodeValue = 'P';
+                $_codDepPayAnnPreOpiNode->nodeValue = $db->loadResult();
+                $_codTypDepPayAnnPreOpiNode->nodeValue = 'D';
+            } else {
+                $_codTypDepPayAnnPreOpiNode->nodeValue = 'P';
+            }
         }
 
         return $this->xmlTree;
