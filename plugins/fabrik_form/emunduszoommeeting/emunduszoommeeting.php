@@ -92,7 +92,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                     " , join_url = "        . $db->quote($response['join_url']) .
                                                          " , registration_url = " . $db->quote($response['registration_url']) .
                                                             " , password = "        . $db->quote($response['password']) .
-                                                                " WHERE #__emundus_jury.id = " . $lid;
+                                                                ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
+                                                                    " WHERE #__emundus_jury.id = " . $lid;
                     $db->setQuery($updateSql);
                     $db->execute();
                 } catch(Exception $e) {
@@ -102,6 +103,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 $zoom->requestErrors();
             }
         } else {
+            # echo '<pre>'; var_dump($_POST); echo '</pre>'; die;
             /** HTTP Status Code
                 * 204 : Meeting updated
                 * 300 : Invalid enforce_login_domains, separate multiple domains by semicolon / A maximum of {rateLimitNumber} meetings can be created/updated for a single user in one day.
@@ -112,6 +114,30 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
             if($zoom->responseCode() != 204) {
                 $zoom->requestErrors();
+            } else {
+                # be careful, each time the meeting room is updated, the start_url / join_url / registration / password / encrypted_password will be updated too. So, we need to get again the meeting by calling
+                $response = $zoom->doRequest('GET', '/meetings/' . $_POST['jos_emundus_jury___meeting_session'], array(), array(), "");
+
+                if($zoom->responseCode() != 200) {
+                    $zoom->requestErrors();
+                } else {
+                    try {
+                        # write update SQL query
+                        $updateSql = "UPDATE #__emundus_jury
+                                        SET visio_link = "          . $db->quote($response['start_url']) .
+                                            ", join_url = "             . $db->quote($response['join_url']) .
+                                                ", registration_url ="      . $db->quote($response['registration_url']) .
+                                                    ", password ="              . $db->quote($response['password']) .
+                                                        ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
+                                                            " WHERE #__emundus_jury.id = " . $_POST['jos_emundus_jury___id'] .
+                                                                " AND #__emundus_jury.meeting_session LIKE (" . $_POST['jos_emundus_jury___meeting_session'] . ")";
+
+                        $db->setQuery($updateSql);
+                        $db->execute();
+                    } catch(Exception $e) {
+                        JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
+                    }
+                }
             }
         }
     }
