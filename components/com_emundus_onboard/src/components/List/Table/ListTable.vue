@@ -11,6 +11,7 @@
 		<list-table-body
 			:type="type"
 			:actions="actions"
+			:params="params"
 			@validateFilters="validateFilters"
 			@updateLoading="updateLoading"
 			@showModalPreview="showModalPreview"
@@ -37,6 +38,10 @@ export default {
 			type: Object,
 			required: true
 		},
+		params: {
+			type: Object,
+			default: {}
+		}
 	},
 	data() {
 		return 		{

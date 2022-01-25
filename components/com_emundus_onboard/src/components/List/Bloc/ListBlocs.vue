@@ -36,6 +36,10 @@ export default {
 			type: Object,
 			required: true
 		},
+		params: {
+			type: Object,
+			default: {}
+		}
 	},
 	methods: {
 		validateFilters() {
@@ -50,6 +54,12 @@ export default {
 	},
 	computed: {
 		list() {
+			if (this.type === "email" && this.params) {
+				if (this.params.email_category) {
+					return list.getters.list.filter(item => item.category === this.params.email_category);
+				}
+			}
+
 			return list.getters.list;
 		}
 	}

@@ -111,6 +111,7 @@
       <list-body
         :type="type"
         :actions="actions"
+        :params="params"
         @validateFilters="validateFilters"
 		    @updateLoading="updateLoading"
       ></list-body>
@@ -143,6 +144,7 @@ export default {
   name: "List",
   data: () => ({
     datas: {},
+    params: {},
     type: "",
     selecedItems: [],
     actions: {
