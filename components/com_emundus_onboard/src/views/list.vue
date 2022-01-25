@@ -59,7 +59,7 @@
 
     <ul class="form-section email-sections"
         v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
-      <li>{{translations.Categories}} :</li>
+      <li>{{ translations.Categories }} :</li>
       <li>
         <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{translations.All}}</a>
       </li>
@@ -214,7 +214,10 @@ export default {
       } else {
         return this.translations.noFiles;
       }
-    }
+    },
+    notEmptyEmailCategories() {
+      return this.email_categories.filter(category => category !== "");
+    },
   },
   created() {
     this.datas = global.getters.datas;
@@ -272,7 +275,12 @@ export default {
 
       this.validateFilters();
     },
-
+    menuEmail: function (val) {
+      this.type = "email";
+      this.params = {
+        email_category: val,
+      };
+    },
   },
 
   methods: {
