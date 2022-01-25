@@ -1391,6 +1391,47 @@ class EmundusModelMessages extends JModelList {
         } else { return false; }
     }
 
+    /// get attachments by profiles id directly (jos_emundus_setup_attachment_profiles)
+    public function getAttachmentsByProfilesID($profiles=array()) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($profiles) and !is_null($profiles)) {
+            try {
+                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
+
+                $_mProfiles = new EmundusModelProfile;
+
+                $profiles = array_unique($profiles);
+
+                $attachments = new stdClass();
+
+                foreach($profiles as $_p) {
+                    $letters = array();
+                    $query->clear()
+                        ->select('#__emundus_setup_attachments.*, #__emundus_setup_profiles.id AS pr_id, #__emundus_setup_profiles.label as pr_label')
+                        ->from($db->quoteName('#__emundus_setup_attachments'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles') . ' ON ' . $db->quoteName('#__emundus_setup_attachment_profiles.attachment_id') . ' = ' . $db->quoteName('#__emundus_setup_attachments.id'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_profiles') . ' ON ' . $db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $db->quoteName('#__emundus_setup_profiles.id'))
+                        ->where($db->quoteName('#__emundus_setup_attachment_profiles.profile_id') . ' = ' . $_p);
+                    $db->setQuery($query);
+
+                    $res = $db->loadObjectList();
+
+                    foreach($res as $_r) { $letters[] = array('letter_id' => $_r->id, 'letter_label' => $_r->value); }
+
+                    $attachments->$_p->label = $_mProfiles->getProfileById($_p)['label'];
+                    $attachments->$_p->letters = $letters;
+                }
+
+                return (array)$attachments;
+            } catch(Exception $e) {
+                JLog::add('Cannot get attachments by profiles : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                return [];      /// return empty array
+            }
+        } else { return false; }
+    }
+
     /// get all attachments
     public function getAllAttachments() {
         $db = JFactory::getDbo();

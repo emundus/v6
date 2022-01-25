@@ -1706,8 +1706,17 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $fnums = explode(',', $jinput->post->getRaw('fnums'));
 
-        $_mMessages = $this->getModel('Messages');
-        $_results = $_mMessages->getAttachmentsByProfiles($fnums);
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+
+        $_mCampaign = new EmundusModelCampaign;
+        $_mProfile = new EmundusModelProfile;
+        $_mMessages = new EmundusModelMessages;
+
+        $_campaigns = $_mCampaign->getCampaignsByFnums($fnums);
+        $_profiles = $_mProfile->getProfilesIDByCampaign($_campaigns);
+        $_results = $_mMessages->getAttachmentsByProfilesID($_profiles);
 
         if($_results) {
             echo json_encode(['status' => true, 'attachments' => $_results]);

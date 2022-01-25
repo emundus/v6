@@ -349,6 +349,30 @@ class EmundusModelCampaign extends JModelList {
 	}
 
 	/**
+	 * @param $fnums
+	 *
+	 * @return mixed
+	 *
+	 * @since version
+	 */
+	function getCampaignsByFnums($fnums) {
+		foreach ($fnums as $fnum) {
+			$query = 'SELECT esc.*,ecc.fnum, esp.menutype, esp.label as profile_label
+					FROM #__emundus_campaign_candidature AS ecc
+					LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.id = ecc.campaign_id
+					LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = esc.profile_id
+					WHERE ecc.fnum like '.$this->_db->Quote($fnum).'
+					ORDER BY ecc.date_time DESC';
+			$this->_db->setQuery( $query );
+			$res = $this->_db->loadObject();
+
+			$campaigns[] = $res->id;
+		}
+		
+		return $campaigns;
+	}
+
+	/**
 	 * @param $aid
 	 *
 	 * @return mixed
