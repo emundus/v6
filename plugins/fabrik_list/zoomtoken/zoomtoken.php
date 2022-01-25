@@ -32,7 +32,7 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
 
         $zoom = new ZoomAPIWrapper($apiSecret);
 
-        /* iterate all users to verify the existing >> table "data_referentiel_zoom_token" */
+        # iterate all users to verify the existing
         $getUsersSql = "select drzt.*, ju.email
                             from jos_users as ju
                                 left join data_referentiel_zoom_token as drzt on ju.id = drzt.user
@@ -42,21 +42,21 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
         $res = $db->loadObjectList();
 
         foreach($res as $raw) {
-            // call zoom api
+            # call to endpoint
             if(!isset($raw->zoom_id) or is_null($raw->zoom_id) or empty($raw->zoom_id)) { $response = $zoom->doRequest('GET', '/users/' . $raw->email, array(), array(), ''); }
             else { $response = $zoom->doRequest('GET', '/users/' . $raw->zoom_id, array(), array(), ''); }
 
             if($zoom->responseCode() != 200) {
-                // delete record in data_referentiel_zoom_token
+                # if user has been deleted, let's delete it in table "data_referentiel_zoom_token"
                 $deleteUserSql = "delete from data_referentiel_zoom_token where data_referentiel_zoom_token.id = " . $raw->id;
 
                 $db->setQuery($deleteUserSql);
-                $res = $db->loadObjectList();
+                $db->execute();
             }
         }
     }
 
-    /* in order to delete a Zoom user, let's pass the action=delete in query params (e.g: https://api.zoom.us/v2/users/{user_id}?action=delete) */
+    # in order to delete a Zoom user, let's pass the action=delete in query params (e.g: https://api.zoom.us/v2/users/{user_id}?action=delete)
     public function onDeleteRows() {
         $db = JFactory::getDbo();
 
@@ -67,12 +67,17 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
 
         $uzId = current($_POST['ids']);
 
-        /* find user id from $uzId */
+        # find user id from $uzId
         $getUserSql = "select * from data_referentiel_zoom_token where data_referentiel_zoom_token.id = " . $uzId;
         $db->setQuery($getUserSql);
         $res = $db->loadObject();
 
-        /* delete zoom user */
+        # delete zoom user by calling endpoint
         $zoom->doRequest('DELETE', '/users/' . $res->zoom_id . '?action=delete', array(), array(), '');
+
+        # if HTTP status code is not 204, track the log
+        if($zoom->responseCode() != 204) {
+            $zoom->requestErrors();
+        }
     }
 }
