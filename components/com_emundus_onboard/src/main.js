@@ -43,7 +43,7 @@ if (document.getElementById('em-list-vue')) {
         props: {
           type: this.$el.attributes.type.value,
           coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
-          actualLanguage: this.$el.attributes.actualLanguage.value,
+          actualLanguage: this.$el.attributes.actualLanguage ? this.$el.attributes.actualLanguage.value : '',
         }
       });
     }
