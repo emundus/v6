@@ -1,13 +1,12 @@
 <?php
 require_once JPATH_BASE.'/plugins/fabrik_form/emunduszoommeeting/ZoomAPIWrapper.php';
-
 $db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 $apiSecret = $eMConfig->get('zoom_jwt', '');
 
-/* get user info */
+# get host
 $query->clear()
     ->select('jeu.firstname, jeu.lastname, ju.email')
     ->from($db->quoteName('#__users', 'ju'))
@@ -17,27 +16,33 @@ $query->clear()
 $db->setQuery($query);
 $raw = $db->loadObject();
 
-/* call to zoom api */
+# call endpoint
 if(empty($apiSecret)) {
-    return "Missing api key";
+    return false;
 } else {
-    $zoom = new ZoomAPIWrapper($apiSecret);
-    
-    /* create new zoom user */
+    # if host id does not exist before, generate the new one
+    if(empty($_POST['data_referentiel_zoom_token___zoom_id'])) {
+        $zoom = new ZoomAPIWrapper($apiSecret);
 
-    /* data prepare */
-    $user = json_encode(array(
-        "action" => "custCreate",
-        "user_info" => ["email" =>  $raw->email, 'type' => 1, "first_name" => $raw->firstname, "last_name" => $raw->lastname],
-    ));
+        # data prepare, using "action = custCreate" to bypass the email invitation, "create" to send invitation email, "autoCreate" is reserved to Enterprise customer with a managed domain, "ssoCreate" if you want to enable "Pre-provisioning SSO User"
+        # data prepare, using "type = 1" to add Basic user, "2" to add Licensed user, "3" to add On-prem user, "99" to add None (only available with ssoCreate)
+        $user = json_encode(array(
+            "action" => current($_POST['data_referentiel_zoom_token___send_invitation']),
+            "user_info" => ["email" => $raw->email, 'type' => current($_POST['data_referentiel_zoom_token___user_type']), "first_name" => $raw->firstname, "last_name" => $raw->lastname],
+        ));
 
+        # send request to endpoint
+        $response = $zoom->doRequest('POST', '/users', array(), array(), $user);        /* array */
 
-    $response = $zoom->doRequest('POST','/users',array(),array(),$user);        /* array */
-
-    /* update "data_referentiel_zoom_token" by adding zoom_id */
-    $updateSql = "update data_referentiel_zoom_token set zoom_id = " . $db->quote($response['id']) . ' where data_referentiel_zoom_token.user = ' . current($_POST['data_referentiel_zoom_token___user']);
-    $db->setQuery($updateSql);
-    $db->execute();
+        # if reponseCode is 201, update the table "data_referentiel_zoom_token"
+        if($zoom->responseCode() == 201) {
+            $updateSql = "update data_referentiel_zoom_token set zoom_id = " . $db->quote($response['id']) . ' where data_referentiel_zoom_token.user = ' . current($_POST['data_referentiel_zoom_token___user']);
+            $db->setQuery($updateSql);
+            $db->execute();
+        } else {
+            $zoom->requestErrors();
+        }
+    }
 }
     
 ?>

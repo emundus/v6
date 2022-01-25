@@ -30,61 +30,61 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         * creator: eMundus
      */
     public function onAfterProcess() {
-        /* read json template file */
+        # read and parse json template file
         $route = JPATH_BASE.'/plugins/fabrik_form/emunduszoommeeting/api_templates' . DS;
         $template = file_get_contents($route . __FUNCTION__ . '.json');
         $json = json_decode($template, true);
 
-        /* create new zoom meeting room */
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        /* get JFactory application */
         $app = JFactory::getApplication();
 
-        /* get api key */
+        # get api key from Back-Office
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $apiSecret = $eMConfig->get('zoom_jwt', '');
 
-        /* create ZoomAPIWrapper to use Zoom APIs */
         $zoom = new ZoomAPIWrapper($apiSecret);
 
-        /* get info of host from $_POST */
+        # get host (hosts -> users appear in table "data_referentiel_jury_token")
         $host = current($_POST['jos_emundus_jury___president']);
 
-        /* get host api token */
+        # get host zoom id
         $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
         $db->setQuery($hostQuery);
         $raw = $db->loadObject();
 
-        /* --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
+        # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
         $offset = $app->get('offset', 'UTC');
         $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
         $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
-        // raw duration
+
+        # calculate meeting duration (raw) by seconds
         $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
-        // CELSA duration (before 15 mins = 900)
+
+        # calculate CELSA duration (started before 15 min -> 900 seconds) by minutes
         $celsa_duration = floor(($duration - 900) / 60);
+
         $_POST['jos_emundus_jury___timezone'] = $offset;
         $_POST['jos_emundus_jury___start_time'] = $startTime;
         $_POST['jos_emundus_jury___duration'] = $celsa_duration;
-        /* --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- */
+        # --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
 
         $json = $this->dataMapping($_POST, 'jos_emundus_jury___', $json);
 
-        /* if meeting id (in db, not in Zoom) and meeting session do not exist, create the new one */
+        # if meeting id (in db, not in Zoom) and meeting session do not exist, call endpoint to generate the new one
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
             $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
             $httpCode = $zoom->responseCode();
 
             if($httpCode == 201) {
-                /* get last insert id */
+                # get last insert id
                 try {
                     $getLastIdSql = "SELECT MAX(id) FROM jos_emundus_jury";
                     $db->setQuery($getLastIdSql);
                     $lid = $db->loadResult();
 
-                    /** update missing fields to table "jos_emundus_jury" **/
+                    # update missing fields to table "jos_emundus_jury"
                     $updateSql = "UPDATE #__emundus_jury 
                                         SET meeting_session = "     . $db->quote($response['id']) .
                                             " , visio_link = "      . $db->quote($response['start_url']) .
