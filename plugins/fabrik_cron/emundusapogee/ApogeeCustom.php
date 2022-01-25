@@ -97,8 +97,8 @@ class ApogeeCustom {
 
         $_afCodPay = $_afRoot->getElementsByTagName('codPay')->item(0);
         $_afCodBdi = $_afRoot->getElementsByTagName('codBdi')->item(0);
-        $_afCodCom = $_aaRoot->getElementsByTagName('codCom')->item(0);
-        $_afLibAde = $_aaRoot->getElementsByTagName('libAde')->item(0);
+        $_afCodCom = $_afRoot->getElementsByTagName('codCom')->item(0);
+        $_afLibAde = $_afRoot->getElementsByTagName('libAde')->item(0);
 
         if($_afCodPay->nodeValue == '100') {        /// #france
             /* set Bdi */
