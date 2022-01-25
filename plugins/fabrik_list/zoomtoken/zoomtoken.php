@@ -56,7 +56,7 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
         }
     }
 
-    /* unavailable for Basic, Pro account ==> need to use Business, Enterprise account */
+    /* in order to delete a Zoom user, let's pass the action=delete in query params (e.g: https://api.zoom.us/v2/users/{user_id}?action=delete) */
     public function onDeleteRows() {
         $db = JFactory::getDbo();
 
@@ -73,6 +73,6 @@ class PlgFabrik_ListZoomtoken extends PlgFabrik_List {
         $res = $db->loadObject();
 
         /* delete zoom user */
-        $zoom->doRequest('DELETE', '/users/' . $res->zoom_id, array(), array(), '');
+        $zoom->doRequest('DELETE', '/users/' . $res->zoom_id . '?action=delete', array(), array(), '');
     }
 }
