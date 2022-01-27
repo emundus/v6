@@ -3847,6 +3847,7 @@ class EmundusModelFiles extends JModelLegacy
         $db->setQuery($query);
         return $db->loadAssocList();
     }
+
     public function getTagsAssocStatus($status){
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);

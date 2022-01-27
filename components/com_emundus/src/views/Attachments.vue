@@ -5,7 +5,9 @@
         <p class="name">
           {{ displayedUser.firstname }} {{ displayedUser.lastname }}
         </p>
-        <p class="email">{{ displayedUser.email }}</p>
+        <p class="email">{{ displayedUser.email }} </p>
+
+        <p class="attachment-progress" v-if="progress">  - {{ progress }}% {{ translate('COM_EMUNDUS_ATTACHMENTS_COMPLETED') }}</p>
       </div>
       <div class="prev-next-files">
         <div
@@ -336,6 +338,7 @@ export default {
       displayedFnum: this.fnum,
       checkedAttachments: [],
       selectedAttachment: {},
+      progress: "",
       sort: {
         last: "",
         order: "",
@@ -355,6 +358,7 @@ export default {
   },
   mounted() {
     this.loading = true;
+    this.getFormProgress();
     this.getFnums()
     .then(
       () => {
@@ -385,6 +389,13 @@ export default {
   },
   methods: {
     // Getters and setters
+    async getFormProgress() {
+        const response = await attachmentService.getAttachmentProgress(this.displayedFnum);
+
+        if (response.status) {
+          this.progress = response.progress[0].attachment_progress;
+        }
+    },
     async getFnums() {
       const fnumsOnPage = document.getElementsByClassName('em_file_open');
       for (let fnum of fnumsOnPage) {
@@ -651,6 +662,7 @@ export default {
 
       const oldFnumPosition = this.fnumPosition;
       this.displayedFnum = this.fnums[position];
+      this.getFormProgress();
       this.attachments = [];
       this.$store.dispatch("attachment/setCheckedAttachments", []);
       this.setAccessRights();
