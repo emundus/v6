@@ -51,7 +51,7 @@ export default {
 			if (this.type === "email" && typeof this.params !== "undefined") {
 				if (this.params.email_category) {
 					return list.getters.list.filter((item) => {
-						if (this.params.email_category === "all") {
+						if (this.params.email_category == 0) {
 							return true;
 						} else {
 							return item.category === this.params.email_category;

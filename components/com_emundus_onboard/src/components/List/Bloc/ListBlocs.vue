@@ -54,10 +54,14 @@ export default {
 	},
 	computed: {
 		list() {
-			if (this.type === "email" && this.params) {
-				if (this.params.email_category) {
-					return list.getters.list.filter(item => item.category === this.params.email_category);
-				}
+			if (this.params.email_category) {
+				return list.getters.list.filter((item) => {
+					if (this.params.email_category == 0) {
+						return true;
+					} else {
+						return item.category === this.params.email_category;
+					}
+				});
 			}
 
 			return list.getters.list;

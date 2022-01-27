@@ -6,10 +6,9 @@
     >
     </list-head>
 
-    <div :class="{
-      'filters-menu-campaign': type == 'campaign',
-      'filters-menu': type !== 'campaign',
-    }">
+    <div
+      class="filters-menu-space-between"
+    >
       <select
           v-if="type == 'campaign'"
           v-model="selectedProgram"
@@ -27,6 +26,15 @@
           {{program.label}}
         </option>
       </select>
+
+      <select
+        v-if="type == 'email'"
+        v-model="menuEmail"
+      >
+        <option value="0">{{ translations.All }}</option>
+        <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
+      </select>
+
       <div class="search-container">
         <div class="search">
           <input class="searchTerm"
@@ -57,7 +65,7 @@
       </div>
     </div>
 
-    <ul class="form-section email-sections"
+    <!-- <ul class="form-section email-sections"
         v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
       <li>{{ translations.Categories }} :</li>
       <li>
@@ -66,7 +74,7 @@
       <li v-for="(cat, index) in notEmptyEmailCategories" :key="'cat_' + index">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
       </li>
-    </ul>
+    </ul> -->
     <ul class="form-section email-sections" v-if="(type === 'formulaire'|| type === 'grilleEval')  && !loading ">
       <li>
         <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''"
