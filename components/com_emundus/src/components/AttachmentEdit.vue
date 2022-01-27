@@ -145,21 +145,25 @@ export default {
     this.attachment = this.$store.state.attachment.selectedAttachment;
     this.categories = this.$store.state.attachment.categories;
 
-    this.attachmentCanBeViewed = this.attachment.can_be_viewed;
-    this.attachmentCanBeDeleted = this.attachment.can_be_deleted;
+    this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
+    this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
     this.attachmentDescription = this.attachment.description;
     this.attachmentIsValidated = this.attachment.is_validated;
   },
   methods: {
     async saveChanges() {
       let formData = new FormData();
+
+      const canBeViewed = this.attachmentCanBeViewed ? "1" : "0";
+      const canBeDeleted = this.attachmentCanBeDeleted ? "1" : "0";
+
       formData.append("fnum", this.fnum);
       formData.append("user", this.$store.state.user.currentUser);
       formData.append("id", this.attachment.aid);
       formData.append("description", this.attachmentDescription);
       formData.append("is_validated", this.attachmentIsValidated);
-      formData.append("can_be_viewed", this.attachmentCanBeViewed);
-      formData.append("can_be_deleted", this.attachmentCanBeDeleted);
+      formData.append("can_be_viewed", canBeViewed);
+      formData.append("can_be_deleted", canBeDeleted);
 
       if (this.file) {
         formData.append("file", this.file);
