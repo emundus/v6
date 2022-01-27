@@ -1,12 +1,16 @@
 <template>
 	<div class="com_emundus_vue">
-		<Attachements :fnum="data.fnum" :user="data.user"></Attachements>
+		<Attachments
+			v-if="componentName === 'attachments'"
+			:fnum="data.fnum"
+			:user="data.user"
+		></Attachments>
 	</div>
 </template>
 
 <script>
 import moment from "moment";
-import Attachements from "./views/Attachments.vue";
+import Attachments from "./views/Attachments.vue";
 
 export default {
 	props: {
@@ -20,7 +24,7 @@ export default {
 		},
 	},
 	components: {
-		Attachements,
+		Attachments,
 	},
 	mounted() {
 		if (this.data.lang) {

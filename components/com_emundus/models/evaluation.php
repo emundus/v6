@@ -2730,7 +2730,11 @@ class EmundusModelEvaluation extends JModelList {
                                 if (is_numeric($tag)) {
                                     $idFabrik[] = $tag;
                                 } else {
-                                    $setupTags[] = $tag;
+                                    if(strpos($tag, 'IMG_') !== false) {
+                                        $setupTags[] = trim(explode(":", $tag)[0]);
+                                    } else {
+                                        $setupTags[] = $tag;
+                                    }
                                 }
                             }
 
@@ -2801,6 +2805,8 @@ class EmundusModelEvaluation extends JModelList {
 
                             $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
+                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                
                                 foreach ($setupTags as $tag) {
                                     $val = "";
                                     $lowerTag = strtolower($tag);
@@ -2823,7 +2829,7 @@ class EmundusModelEvaluation extends JModelList {
                                     } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
                                         $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
                                     } else {
-                                        $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                        //$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                         $i = 0;
                                         foreach ($tags['patterns'] as $value) {
                                             if ($value == $tag) {
@@ -2832,7 +2838,12 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                             $i++;
                                         }
-                                        $preprocess->setValue($tag, htmlspecialchars($val));
+                                        // replace tag by image if tag name start by IMG_
+                                       if(strpos($tag, 'IMG_') !== false) {
+                                            $preprocess->setImageValue($tag, $val);
+                                        } else {
+                                            $preprocess->setValue($tag, htmlspecialchars($val));
+                                       }
                                     }
                                 }
 

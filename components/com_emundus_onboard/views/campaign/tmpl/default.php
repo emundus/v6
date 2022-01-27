@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla
  * @subpackage  com_emundus_onboard
@@ -13,7 +14,7 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
 $document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -70,6 +71,9 @@ JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATED');
 JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS');
 JText::script('COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM');
 JText::script('COM_EMUNDUS_ONBOARD_DOSSIERS_COUNT');
+JTEXT::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
+JTEXT::script('COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM');
+JTEXT::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS');
 ## END #
 
 ## TUTORIAL ##
@@ -85,6 +89,6 @@ $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
 
-<list id="em-list-vue" type="campaign" coordinatorAccess="<?= $coordinator_access ?>"></list>
+<list id="em-list-vue" type="campaign" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>"></list>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>
