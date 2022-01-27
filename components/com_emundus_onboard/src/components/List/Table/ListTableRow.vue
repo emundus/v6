@@ -230,7 +230,7 @@ export default {
 		},
 		isActive() {
 			if (this.type == "form" || this.type == "formulaire" || this.type == "grilleEval") {
-				return this.data.published == 1;
+				return this.data.status == 1;
 			}
 
 			return null;

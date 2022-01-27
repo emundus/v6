@@ -10,11 +10,10 @@
       class="filters-menu-space-between"
     >
       <select
-          v-if="type == 'campaign'"
+          v-if="type === 'campaign'"
           v-model="selectedProgram"
           name="selectProgram"
-          id="pet-select"
-          class="selectProgram"
+          class="list-vue-select"
           @change="validateFilters"
       >
         <option value="all">{{translations.AllPrograms}} </option>
@@ -23,16 +22,26 @@
             :value="program.code"
             :key="program.code"
         >
-          {{program.label}}
+          {{ program.label }}
         </option>
       </select>
 
       <select
-        v-if="type == 'email'"
-        v-model="menuEmail"
+          class="list-vue-select"
+          v-if="type === 'email'"
+          v-model="menuEmail"
       >
         <option value="0">{{ translations.All }}</option>
         <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
+      </select>
+
+      <select
+          class="list-vue-select"
+          v-if="type === 'formulaire' || type === 'grilleEval'"
+          v-model="type"
+      >
+        <option value="formulaire">Candidature</option>
+        <option value="grilleEval">Grilles d'évaluation</option>
       </select>
 
       <div class="search-container">
@@ -64,27 +73,6 @@
         </v-popover>
       </div>
     </div>
-
-    <!-- <ul class="form-section email-sections"
-        v-if="type == 'email' && !loading && total != 0 && email_categories.length > 0">
-      <li>{{ translations.Categories }} :</li>
-      <li>
-        <a :class="menuEmail === 0 ? 'form-section__current' : ''" @click="menuEmail = 0">{{translations.All}}</a>
-      </li>
-      <li v-for="(cat, index) in notEmptyEmailCategories" :key="'cat_' + index">
-        <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
-      </li>
-    </ul> -->
-    <ul class="form-section email-sections" v-if="(type === 'formulaire'|| type === 'grilleEval')  && !loading ">
-      <li>
-        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''"
-           @click="typeForAdd = 'form' ; type='formulaire'">Candidature</a>
-      </li>
-      <li>
-        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''"
-           @click="typeForAdd = 'grilleEval' ; type='grilleEval'">Grilles d'évaluation</a>
-      </li>
-    </ul>
 
     <transition :name="'slide-down'" type="transition">
       <div :class="countPages == 1 ? 'noPagination' : 'pagination-pages'" v-show="!loading">
@@ -270,7 +258,7 @@ export default {
   },
 
   watch: {
-    type:function (val){
+    type: function (val) {
       this.actions.type = val;
       this.typeForAdd = val === 'formulaire' ? 'form' : val;
 
@@ -483,12 +471,12 @@ h2 {
   transition: max-height 0.25s ease-in;
 }
 
-.selectProgram {
-  outline: none;
-  right: 0;
+.list-vue-select
+{
   height: 43px;
-  margin-bottom: 0 !important;
 }
+
+
 .search-container{
   display: flex;
   align-items: center;
