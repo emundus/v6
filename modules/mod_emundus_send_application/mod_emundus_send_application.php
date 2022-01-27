@@ -66,6 +66,9 @@ if (!empty($user->fnum)) {
 
 	if (!empty($user->end_date)) {
 		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
+        if($admission){
+            $is_dead_line_passed = (strtotime(date($now)) > strtotime($user->admission_end_date))?true:false;
+        }
 	}
 	if (!empty($user->status)) {
 		$is_app_sent = ($user->status != 0)? true : false;

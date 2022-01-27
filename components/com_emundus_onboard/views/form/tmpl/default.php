@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla
  * @subpackage  com_emundus_onboard
@@ -13,7 +14,7 @@ $document = JFactory::getDocument();
 $document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
 $document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
-require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 
 ## GLOBAL ##
 JText::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -67,6 +68,8 @@ JText::script('COM_EMUNDUS_ONBOARD_FORMUNPUBLISHED');
 JText::script('COM_EMUNDUS_ONBOARD_FORMPUBLISHED');
 JText::script('COM_EMUNDUS_ONBOARD_FORMDUPLICATE');
 JText::script('COM_EMUNDUS_ONBOARD_FORMDUPLICATED');
+JText::script('COM_EMUNDUS_ONBOARD_CAMPAIGN');
+JText::script('COM_EMUNDUS_ONBOARD_EVALUATION');
 ## END ##
 
 ## TUTORIAL ##
@@ -81,6 +84,6 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<list id="em-list-vue" type="form" coordinatorAccess="<?= $coordinator_access ?>"/>
+<list id="em-list-vue" type="form" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>" />
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

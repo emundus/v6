@@ -76,8 +76,10 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
 
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0 , 2);
 ?>
 
-<list id="em-list-vue" type="email" coordinatorAccess="<?= $coordinator_access ?>"></list>
+<list id="em-list-vue" type="email" coordinatorAccess="<?= $coordinator_access ?>" actualLanguage="<?= $actualLanguage ?>"></list>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>
