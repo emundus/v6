@@ -799,7 +799,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau .panel-body {
     background-color: #f8f8f8;
-    padding: 20px;
+    padding: 16px 24px;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -809,7 +809,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
     height: 40px !important;
     border-radius: 0;
-    padding: 8px 12px;
+    padding: 8px 12px 8px 24px;
     border-bottom: unset;
     display: flex;
     justify-content: space-between;
