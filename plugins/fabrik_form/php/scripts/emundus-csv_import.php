@@ -259,6 +259,12 @@ if (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
 
 $parsed_data = [];
 
+if(empty($campaign_column) && empty($campaign)){
+    JLog::add('ERROR: Could not get campaign_id from Fabrik form or csv file [campaign] in row.', JLog::ERROR, 'com_emundus.csvimport');
+    $app->enqueueMessage('ERROR: Could not get campaign_id from Fabrik form or csv file [campaign] in row.', 'error');
+    return false;
+}
+
 while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
 
     //try to convert char
@@ -301,10 +307,6 @@ while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
             }
 
             continue;
-        } else {
-            JLog::add('ERROR: Could not get campaign_id from Fabrik form or csv file [campaign] in row.', JLog::ERROR, 'com_emundus.csvimport');
-            $app->enqueueMessage('ERROR: Could not get campaign_id from Fabrik form or csv file [campaign] in row.', 'error');
-            return false;
         }
         
         if ($column_number === $status_column) {
