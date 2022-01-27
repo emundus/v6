@@ -2260,7 +2260,7 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
     font-size: 19px !important;
     border-radius: 4px !important;
-    padding-top: 0px;
+    padding: unset !important;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
@@ -2313,15 +2313,6 @@ div#em-assoc-files .panel > .panel-heading {
 
 .g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading, .g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading {
     padding: 11px;
-}
-
-.g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading h3 span, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading h3 span, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading h3 span, .g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading h3 span  {
-    margin-top: 10px;
-}
-
-.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.admissions-page .main-panel .panel-heading .btn-group.pull-right {
-    position: relative;
-    top: -29px;
 }
 
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {

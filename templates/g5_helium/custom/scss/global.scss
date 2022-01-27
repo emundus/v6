@@ -2137,6 +2137,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: transparent;
     color: $red;
     border: none;
+    span{
+      color: $red-500;
+      font-size: 24px !important;
+    }
 
     &:hover,
     &:active,
@@ -2146,6 +2150,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
+  #em-delete-files{
+    span{
+      color: $red-500
+    }
+  }
 
   #em-delete-files.btn.btn-danger.btn-xs.pull-right {
     background-color: transparent;
@@ -2174,6 +2183,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     color: $dark-blue;
     border: none;
     font-size: 19px !important;
+    padding-right: 3px !important;
 
     &:hover,
     &:active,
@@ -2211,17 +2221,23 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #em-prev-file.btn.btn-info.btn-xxl,
     #em-next-file.btn.btn-info.btn-xxl {
-      background-color: $dark-blue;
+      background-color: transparent;
       color: #fff;
-      border-color: $dark-blue;
-      margin-top: -5px;
+      border-color: transparent;
+      display: flex !important;
+      align-items: center !important;
+      span{
+        color: white;
+        font-weight: bold;
+      }
 
       &:hover,
       &:active,
       &:focus {
-        background: #fff;
-        border: 1px solid $dark-blue;
-        color: $dark-blue;
+        background: transparent;
+        span{
+          color: $light-blue;
+        }
       }
     }
   }
@@ -2669,6 +2685,20 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background: #353544;
   }
 
+  .widget .panel-title {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    span {
+      color: white;
+      margin-right: 8px;
+    }
+  }
+  .widget .panel-body {
+    padding: 16px;
+  }
+
   #em-files-filters #em_filters fieldset input#save-filter {
     margin-top: 10px;
     background: $dark-blue;
@@ -2782,6 +2812,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background: transparent !important;
     color: $red !important;
     border: none;
+    margin: unset !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: unset !important;
 
     &:hover,
     &:active,
@@ -2802,17 +2836,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
   .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
     height: 36px;
-    background-color: $dark-blue;
-    border: 2px solid $dark-blue !important;
-    border-radius: 25px !important;
+    background-color: $night-blue;
+    border: 2px solid $night-blue !important;
+    border-radius: 5px !important;
     padding: 5px 30px !important;
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent !important;
-      color: $dark-blue;
-      border: 2px solid darken($dark-blue, 10%);
+      color: $night-blue;
+      border: 2px solid $night-blue;
     }
 
     i {
@@ -2836,29 +2870,44 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   div#em-appli-block {
     .panel-heading {
-      background: $dark-blue;
+      background: $night-blue;
       border-radius: 0;
       margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     button.btn.btn-default {
-      background-color: $dark-blue;
+      background-color: transparent;
       border: none;
+      display: flex !important;
+      align-items: center !important;
+      margin-left: 8px;
+      padding: unset;
+      span{
+        color: white;
+      }
 
       &:hover {
-        background-color: darken($dark-blue, 10%);
+        background-color: transparent;
+        span{
+          color: darken($light-blue,10%);
+        }
       }
     }
 
     #add-tags {
-      background: #fff;
-      border: 1px solid #fff;
-      color: $dark-blue;
+      background: $dark-blue;
+      border: 1px solid $dark-blue;
+      color: white;
+      padding: 8px 12px !important;
 
       &:hover, &:active, &:focus {
-        background: $dark-blue;
-        border: 1px solid #fff;
-        color: #fff;
+        background: transparent;
+        border: 1px solid $dark-blue;
+        border-radius: 5px;
+        color: $dark-blue;
       }
     }
 
@@ -2866,6 +2915,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background: #ffffff !important;
       text-shadow: none;
       color: $base-primary-color !important;
+      margin-left: 10px;
     }
   }
 
@@ -4434,6 +4484,10 @@ input:focus + .em-slider {
 
 .em-w-90{
   width: 90%;
+}
+
+.em-w-40-vw{
+  width: 40vw;
 }
 
 .em-w-380{
