@@ -220,15 +220,23 @@ table .btn-group > .btn {
 .suwala-doubleScroll-scroll-wrapper {
     width: 100% !important;
 }
-
+.pagination{
+    margin: 16px 12px !important;
+    height: 30px;
+}
 ul.pagination.pagination-sm a {
     color: #4E5B6D;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
 }
 
 ul.pagination.pagination-sm a:active,
 ul.pagination.pagination-sm a:focus,
 ul.pagination.pagination-sm a:hover {
     color: #404B5A;
+    text-decoration: unset;
 }
 
 #check {
@@ -435,12 +443,7 @@ div#em-appli-block button.btn.btn-default {
 }
 /* Panel droit dossier */
 .em-close-minimise {
-    align-self: flex-end;
-    display: block;
-    position: absolute;
-    right: 20px;
     margin: 0;
-    top: 0px;
 }
 button#em-close-file {
     color: #ffffff;
@@ -729,11 +732,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
-    margin-top: 5px;
 }
 
 #filters #quick .selectize-control  {
-    height: 28px;
     width: 85%;
 }
 
@@ -770,7 +771,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 #filters #quick .selectize-input input {
-    height: 30px !important;
+    height: 100% !important;
 }
 
 #filters #quick #input-tags-selectized {
@@ -804,9 +805,20 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    height: 35px !important;
+    height: 40px !important;
     border-radius: 0;
-    padding: 4px;
+    padding: 8px 12px;
+    border-bottom: unset;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.em-containerFilter-heading div:first-of-type{
+    display: flex;
+    align-items: center;
+}
+label[for='clear-search']{
+    margin-bottom: unset !important;
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
@@ -889,9 +901,10 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info {
     box-shadow: none;
     border-radius:0;
-   border-right: 2px solid #eee;
+    border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
+    border-top:none;
     margin-bottom: 0px !important;
 }
 
@@ -1140,7 +1153,7 @@ p {
 
 .navbar-brand{
     padding: 0;
-    height: 37px;
+    height: unset;
     font-size: 16px;
     font-weight: bold;
     /*margin-top: 5px;*/
@@ -1149,9 +1162,9 @@ p {
     overflow: hidden;
 }
 .container-nav{
-    margin-top: 5px;
-    height: 25px;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
 .em-container-assocFiles > .em-container-assocFiles-heading span.label{
     overflow: hidden;
@@ -2337,6 +2350,10 @@ button#em-close-file {
     margin-top: -3px;
     height: 34px;
 }
+#em-close-file span{
+    color: white;
+    font-weight: bold;
+}
 
 button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
     background: #404B5A;
@@ -2398,8 +2415,8 @@ table#groups-table a:hover {
 /* MENU ACTIONS */
 .navbar.navbar-inverse {
     border-radius: 0;
-    padding: 5px;
-    height: 35px !important;
+    padding: 8px 12px;
+    height: 40px !important;
     min-height: auto !important;
 }
 

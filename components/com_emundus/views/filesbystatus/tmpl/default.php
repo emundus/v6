@@ -21,7 +21,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 		<div class="col-md-3 side-panel">
 			<div class="panel panel-info em-containerFilter" id="em-files-filters">
 				<div class="panel-heading em-containerFilter-heading" style="height:55px">
-					<div style="float:left; position:absolute">
+					<div>
 						<h3 class="panel-title"><?php echo JText::_('FILTERS')?></h3> &ensp;&ensp;
 					</div>
 					<div class="buttons" style="float:right; margin-top:0px">
