@@ -809,7 +809,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
     height: 40px !important;
     border-radius: 0;
-    padding: 8px 12px 8px 24px;
+    padding: 8px 24px;
     border-bottom: unset;
     display: flex;
     justify-content: space-between;
