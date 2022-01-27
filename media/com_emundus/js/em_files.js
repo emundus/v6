@@ -2139,7 +2139,7 @@ $(document).ready(function() {
                                                                                 }
 
                                                                                 if ($("#em-export").find('#'+result.defaults[d].id).length == 0) {
-                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                 }
                                                                             }
                                                                             $('#em-export').append(item);
@@ -2166,7 +2166,7 @@ $(document).ready(function() {
                                                                                             for (var d in result.defaults) {
                                                                                                 if (isNaN(parseInt(d)))
                                                                                                     break;
-                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                                 $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                             }
                                                                                             $('#em-export').append(item);
@@ -2215,7 +2215,7 @@ $(document).ready(function() {
                                                                                                                                 for (var d in result.defaults) {
                                                                                                                                     if (isNaN(parseInt(d)))
                                                                                                                                         break;
-                                                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                                                                     $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                                 }
                                                                                                                                 $('#em-export').append(item);
@@ -2392,7 +2392,7 @@ $(document).ready(function() {
                                                                                         break;
 
                                                                                     if ($('#em-export #'+result.defaults[d].id+'-item').length == 0)
-                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                 }
                                                                                 $('#em-export').append(item);
                                                                             }
@@ -2422,7 +2422,7 @@ $(document).ready(function() {
                                                                                                 for (var d in result.defaults) {
                                                                                                     if (isNaN(parseInt(d)))
                                                                                                         break;
-                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                                     $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                 }
                                                                                                 $('#em-export').append(item);
@@ -2469,7 +2469,7 @@ $(document).ready(function() {
                                                                                                                                 for (var d in result.defaults) {
                                                                                                                                     if (isNaN(parseInt(d)))
                                                                                                                                         break;
-                                                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                                    item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                                                                     $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                                 }
                                                                                                                                 $('#em-export').append(item);
@@ -2630,7 +2630,7 @@ $(document).ready(function() {
                                                                             break;
 
                                                                         if ($('#em-export #'+result.defaults[d].id+'-item').length == 0)
-                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                            item += '<li class="em-export-item" id="' + result.defaults[d].id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                     }
                                                                     $('#em-export').append(item);
                                                                 }
@@ -2658,7 +2658,7 @@ $(document).ready(function() {
                                                                                     for (var d in result.defaults) {
                                                                                         if (isNaN(parseInt(d)))
                                                                                             break;
-                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                         $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                     }
                                                                                     $('#em-export').append(item);
@@ -2705,7 +2705,7 @@ $(document).ready(function() {
                                                                                                                     for (var d in result.defaults) {
                                                                                                                         if (isNaN(parseInt(d)))
                                                                                                                             break;
-                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
+                                                                                                                        item += '<li class="em-export-item" id="' + result.defaults[d].element_id + '-item"><button class="btn btn-danger btn-xs" id="' + result.defaults[d].element_id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + result.defaults[d].element_label + '</strong></span></li>';
                                                                                                                         $('#emundus_elm_'+ result.defaults[d].element_id).prop("checked", true);
                                                                                                                     }
                                                                                                                     $('#em-export').append(item);
@@ -2884,7 +2884,7 @@ $(document).ready(function() {
                                                                         let selectedElts = selectedElements.elements.selected_elements;
 
                                                                         selectedElts.forEach(elts => {
-                                                                            $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><button class="btn btn-danger btn-xs" id="' + elts.id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elts.label + '</strong></span></li>');
+                                                                            $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><button class="btn btn-danger btn-xs" id="' + elts.id + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + elts.label + '</strong></span></li>');
                                                                         });
                                                                         $('#em-export').trigger("chosen:updated");
                                                                     }
@@ -3069,7 +3069,7 @@ $(document).ready(function() {
                                                                                                     var checked = $('#emundus_elm_' + elements[d]).is(':checked');
                                                                                                     if (checked == true) {
                                                                                                         var text =  $("label[for='emundus_elm_" + elements[d] + "']").text();
-                                                                                                        //$('#em-export').append('<li class="em-export-item" id="' + elements[d] + '-item"><button class="btn btn-danger btn-xs" id="' + elements[d] + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                                                                                                        //$('#em-export').append('<li class="em-export-item" id="' + elements[d] + '-item"><button class="btn btn-danger btn-xs" id="' + elements[d] + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
                                                                                                     } else {
                                                                                                         //$('#' + elements[d] + '-item').remove();
                                                                                                     }
@@ -6823,7 +6823,7 @@ $(document).ready(function() {
             var id = $(this).val();
             var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
             $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
+            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="material-icons">delete_outline</span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
         }
     });
 
@@ -6833,7 +6833,7 @@ $(document).ready(function() {
             var id = $(this).val();
             var text = $('#em-admission-export-form option:selected').attr('data-value');
             $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
+            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="material-icons">delete_outline</span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
         }
     });
 
@@ -6843,7 +6843,7 @@ $(document).ready(function() {
             var id = $(this).val();
             var text = $('#em-decision-export-form option:selected').attr('data-value');
             $('#emundus_elm_'+id).prop("checked", true);
-            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
+            $('#em-export').append('<li class="em-export-item" id="'+id+'-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="material-icons">delete_outline</span></button><span class="em-excel_elts"><strong>'+text+'</strong></span></li>');
         }
     });
 
@@ -6854,7 +6854,7 @@ $(document).ready(function() {
             var id = $(this).val();
             if ($(this).is(':checked')) {
                 var text = $("label[for='" + $(this).attr('id') + "']").text();
-                $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button><span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
+                $('#em-export').append('<li class="em-export-item" id="' + id + '-item"><button class="btn btn-danger btn-xs" id="' + id + '-itembtn"><span class="material-icons">delete_outline</span></button><span class="em-excel_elts"><strong>' + text + '</strong></span></li>');
             } else {
                 $('#'+id+'-item').remove();
             }
@@ -7201,7 +7201,7 @@ $(document).on('click', '[id^=emundus_elm_]', function(e) {
     if($(this).is(":checked")) {
         if(eclass == 'emundusitem') {
             if($('#' + eid + '-item').length == 0) {
-                $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
             }
         }
     } else {
@@ -7229,7 +7229,7 @@ $(document).on('click', '[id^=emundus_checkall]', function() {
 
                         // check exist
                         if($('#' + eid + '-item').length == 0) {
-                            $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                            $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
                         }
                     }
                 })
@@ -7277,7 +7277,7 @@ $(document).on('click', '[id^=emundus_checkall_tbl_]', function() {
 
                 // check exist
                 if($('#' + eid + '-item').length == 0) {
-                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
                 }
             }
         })
@@ -7313,7 +7313,7 @@ $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
 
                 // check exist
                 if($('#' + eid + '-item').length == 0) {
-                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="glyphicon glyphicon-trash"></span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
+                    $('#em-export').append('<li class="em-export-item" id="' + eid + '-item"><button class="btn btn-danger btn-xs" id="' + eid + '-itembtn"><span class="material-icons">delete_outline</span></button> <span class="em-excel_elts"><strong>' + elabel + '</strong></span></li>');
                 }
             }
         })

@@ -1159,7 +1159,7 @@ class EmundusHelperFiles
         }
         $filters .= '</select>
 
-						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="fas fa-trash"></i></button></div>
+						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><span class="material-icons">delete_outline</span></button></div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                 <strong>'.JText::_('FILTER_SAVED').'</strong>
@@ -1976,7 +1976,7 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
-                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="fas fa-trash" ></span></button>';
+                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
@@ -2111,13 +2111,13 @@ class EmundusHelperFiles
 
             if (!array_key_exists($group['fnum'], $evaluators)) {
                 $title = $group['name'];
-                $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
+                $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
             } else {
                 if ((strcmp($group['fnum'], $groupEval[$k + 1]['fnum'])  == 0) && (strcmp($groupEval[$k + 1]['title'], $group['title']) == 0 )) {
                     $title .= ' '.$group['name'];
                 } else {
                     $title .= ' '.$group['name'];
-                    $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
+                    $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
                     $title = '';
                 }
             }
@@ -2125,9 +2125,9 @@ class EmundusHelperFiles
 
         foreach ($evaluatorsDB as $ev) {
             if (!array_key_exists($ev['fnum'], $evaluators)) {
-                $evaluators[$ev['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs">X</button></li></ul>';
+                $evaluators[$ev['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs">X</button></li></ul>';
             } else {
-                $evaluators[$ev['fnum']] = substr($evaluators[$ev['fnum']], 0, count($evaluators[$ev['fnum']]) - 6) . '<li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs" id="'.$ev['fnum'].'-'.$ev['id'].'">X</button></li></ul>';
+                $evaluators[$ev['fnum']] = substr($evaluators[$ev['fnum']], 0, count($evaluators[$ev['fnum']]) - 6) . '<li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs" id="'.$ev['fnum'].'-'.$ev['id'].'">X</button></li></ul>';
             }
         }
         return $evaluators;

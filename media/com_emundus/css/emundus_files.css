@@ -219,15 +219,23 @@ table .btn-group > .btn {
 .suwala-doubleScroll-scroll-wrapper {
     width: 100% !important;
 }
-
+.pagination{
+    margin: 16px 12px !important;
+    height: 30px;
+}
 ul.pagination.pagination-sm a {
     color: #4E5B6D;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
 }
 
 ul.pagination.pagination-sm a:active,
 ul.pagination.pagination-sm a:focus,
 ul.pagination.pagination-sm a:hover {
     color: #404B5A;
+    text-decoration: unset;
 }
 
 #check {
@@ -434,12 +442,7 @@ div#em-appli-block button.btn.btn-default {
 }
 /* Panel droit dossier */
 .em-close-minimise {
-    align-self: flex-end;
-    display: block;
-    position: absolute;
-    right: 3px;
     margin: 0;
-    top: 0px;
 }
 button#em-close-file {
     color: #ffffff;
@@ -730,11 +733,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
-    margin-left: 18px;
 }
 
 #filters #quick .selectize-control  {
-    height: 28px;
     width: 85%;
 }
 
@@ -771,7 +772,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 #filters #quick .selectize-input input {
-    height: 30px !important;
+    height: 100% !important;
 }
 
 #filters #quick #input-tags-selectized {
@@ -808,7 +809,18 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
     height: 40px !important;
     border-radius: 0;
-    padding: 4px;
+    padding: 8px 12px;
+    border-bottom: unset;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.em-containerFilter-heading div:first-of-type{
+    display: flex;
+    align-items: center;
+}
+label[for='clear-search']{
+    margin-bottom: unset !important;
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
@@ -888,9 +900,10 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info {
     box-shadow: none;
     border-radius:0;
-   border-right: 2px solid #eee;
+    border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
+    border-top:none;
     margin-bottom: 0px !important;
 }
 
@@ -1146,7 +1159,7 @@ p {
 
 .navbar-brand{
     padding: 0;
-    height: 37px;
+    height: unset;
     font-size: 16px;
     font-weight: bold;
     margin-left: 10px;
@@ -1156,9 +1169,9 @@ p {
     overflow: hidden;
 }
 .container-nav{
-    margin-top: 5px;
-    height: 25px;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
 .em-container-assocFiles > .em-container-assocFiles-heading span.label{
     overflow: hidden;
@@ -2254,8 +2267,7 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
     font-size: 19px !important;
     border-radius: 4px !important;
-    padding-top: 0px;
-    padding-right: 3px !important;
+    padding: unset !important;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
@@ -2310,11 +2322,6 @@ div#em-assoc-files .panel > .panel-heading {
     padding: 11px;
 }
 
-.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.admissions-page .main-panel .panel-heading .btn-group.pull-right {
-    position: relative;
-    top: -29px;
-}
-
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {
     position: relative;
     top: 0px;
@@ -2340,6 +2347,10 @@ button#em-close-file {
     background-image: none;
     margin-top: -3px;
     height: 34px;
+}
+#em-close-file span{
+    color: white;
+    font-weight: bold;
 }
 
 button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
@@ -2402,7 +2413,7 @@ table#groups-table a:hover {
 /* MENU ACTIONS */
 .navbar.navbar-inverse {
     border-radius: 0;
-    padding: 5px;
+    padding: 8px 12px;
     height: 40px !important;
     min-height: auto !important;
 }

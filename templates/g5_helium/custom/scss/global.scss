@@ -2143,6 +2143,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: transparent;
     color: $red;
     border: none;
+    span{
+      color: $red-500;
+      font-size: 24px !important;
+    }
 
     &:hover,
     &:active,
@@ -2152,6 +2156,11 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
+  #em-delete-files{
+    span{
+      color: $red-500
+    }
+  }
 
   #em-delete-files.btn.btn-danger.btn-xs.pull-right {
     background-color: transparent;
@@ -2220,30 +2229,24 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .panel-heading.em-container-form-heading, .panel-heading.em-container-evaluation-heading, .panel-heading.em-container-decision-heading, .panel-heading.em-container-comment-heading, .panel-heading.em-container-tags-heading, .panel-heading.em-container-share-heading, .panel-heading.em-container-mail-heading {
     padding: 6px !important;
 
-    .btn-group.pull-right {
-      position: absolute;
-      right: 0px;
+    #em-prev-file.btn.btn-info.btn-xxl,
+    #em-next-file.btn.btn-info.btn-xxl {
+      background-color: transparent;
+      color: #fff;
+      border-color: transparent;
+      display: flex !important;
+      align-items: center !important;
+      span{
+        color: white;
+        font-weight: bold;
+      }
 
-      #em-prev-file.btn.btn-info.btn-xxl,
-      #em-next-file.btn.btn-info.btn-xxl {
-        background-color: $dark-grey;
-        color: #fff;
-        border-color:  $dark-grey;
-        height: 35px;
-        margin-right: 3px;
-
-        i {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        &:hover,
-        &:active,
-        &:focus {
-          background: $grey;
-          border: 1px solid $grey;
-          color: $white;
+      &:hover,
+      &:active,
+      &:focus {
+        background: transparent;
+        span{
+          color: $light-blue;
         }
       }
     }
@@ -2684,26 +2687,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading {
     background: $night-blue;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
   }
-
-.g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading.em-containerFilter-heading {
-  background: $night-blue;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  label[for="clear-search"] {
-    margin-bottom: 0px !important;
-    margin-right: 15px;
-  }
-
-  div {
-    display: flex;
-  }
-}
 
   #em_filters fieldset.em_filters_filedset > p,
   #em-user-filters fieldset.em_filters_filedset > p {
@@ -2717,6 +2701,20 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .navbar.navbar-inverse {
     border: #353544;
     background: #353544;
+  }
+
+  .widget .panel-title {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    span {
+      color: white;
+      margin-right: 8px;
+    }
+  }
+  .widget .panel-body {
+    padding: 16px;
   }
 
   #em-files-filters #em_filters fieldset input#save-filter,
@@ -2836,6 +2834,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background: transparent !important;
     color: $red !important;
     border: none;
+    margin: unset !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: unset !important;
 
     &:hover,
     &:active,
@@ -2856,17 +2858,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
   .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
     height: 36px;
-    background-color: $dark-grey;
-    border: 2px solid $dark-grey;
-    border-radius: 25px;
-    padding: 5px 30px;
+    background-color: $night-blue;
+    border: 2px solid $night-blue !important;
+    border-radius: 5px !important;
+    padding: 5px 30px !important;
 
     &:hover,
     &:active,
     &:focus {
-      background-color: $grey !important;
-      color: $white;
-      border: 2px solid $grey;
+      background-color: transparent !important;
+      color: $night-blue;
+      border: 2px solid $night-blue;
     }
 
     i {
@@ -2893,31 +2895,41 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       background: $night-blue;
       border-radius: 0;
       margin-top: 2px;
-      height: 40px;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      gap: 10px;
+      justify-content: space-between;
     }
 
     button.btn.btn-default {
-      background-color: $dark-grey;
+      background-color: transparent;
       border: none;
+      display: flex !important;
+      align-items: center !important;
+      margin-left: 8px;
+      padding: unset;
+      span{
+        color: white;
+      }
 
       &:hover {
-        background-color: $grey;
+        background-color: transparent;
+        span{
+          color: darken($light-blue,10%);
+        }
       }
     }
 
     #add-tags {
-      color: $white;
-      background: $dark-grey;
-      border-color: $dark-grey;
+      background: $dark-blue;
+      border: 1px solid $dark-blue;
+      color: white;
+      padding: 8px 12px !important;
 
       &:hover, &:active, &:focus {
-        color: $white;
-        background: $grey;
-        border-color: $grey;
+        background: transparent;
+        border: 1px solid $dark-blue;
+        border-radius: 5px;
+        color: $dark-blue;
       }
     }
 
@@ -4494,6 +4506,10 @@ input:focus + .em-slider {
 
 .em-w-90{
   width: 90%;
+}
+
+.em-w-40-vw{
+  width: 40vw;
 }
 
 .em-w-380{
