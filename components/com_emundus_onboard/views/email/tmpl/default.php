@@ -151,7 +151,10 @@ JText::script('COM_EMUNDUS_ONBOARD_STATE');
 JText::script('COM_EMUNDUS_ONBOARD_NB_FILES');
 JText::script('COM_EMUNDUS_ONBOARD_SUBJECT');
 JText::script('COM_EMUNDUS_ONBOARD_TYPE');
+JText::script('COM_EMUNDUS_ONBOARD_CATEGORY');
 JText::script('COM_EMUNDUS_ONBOARD_STATUS');
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM');
+JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TYPE_MODEL');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);

@@ -59,9 +59,15 @@
 					</div>
 				</div>
 
-				<div v-if="type == 'email' && data.type">
+				<!-- <div v-if="type == 'email' && data.type">
 					<div :class="'type-color-' + data.type">
 						{{ translations.emailType[data.type] }}
+					</div>
+				</div> -->
+
+				<div v-if="type == 'email' && data.category.length > 0">
+					<div>
+						{{ data.category }}
 					</div>
 				</div>
 			</div>
@@ -132,8 +138,8 @@ export default {
 				files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
       	file: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE"),
 				emailType: {
-					1: "Système",
-					2: "Modèle",
+					1: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM"),
+					2: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_MODEL"),
 				},
 				campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
         campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED"),
