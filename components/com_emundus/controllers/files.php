@@ -496,17 +496,17 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $dispatcher->trigger('callEventHandler', ['onBeforeTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
 
-        $tagged = $m_files->getTaggedFile($tag);
+        /*$tagged = $m_files->getTaggedFile($tag);
         $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
 
-        $validFnums = array_diff($validFnums, $tagged_fnums);
+        $validFnums = array_diff($validFnums, $tagged_fnums);*/
         $res = $m_files->tagFile($validFnums, $tag);
 
         if ($res) {
             $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
         }
 
-        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
+        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $validFnums)));
         exit;
     }
 
@@ -4385,6 +4385,22 @@ class EmundusControllerFiles extends JControllerLegacy
         $categories = $m_files->getAttachmentCategories();
 
         echo json_encode((array('status' => true, 'categories' => $categories)));
+        exit;
+    }
+
+    public function getattachmentprogress()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->get->getString('fnum', '');
+
+        if (!empty($fnum)) {
+            $m_files = $this->getModel('Files');
+            $progress = $m_files->getAttachmentProgress(array($fnum));
+            echo json_encode((array('status' => true, 'progress' => $progress)));
+            exit;
+        }
+
+        echo json_encode((array('status' => false, 'msg' => 'missing fnum')));
         exit;
     }
 }

@@ -548,7 +548,7 @@ class EmundusModelFiles extends JModelLegacy
                                             } else {
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
                                             }
-                                            
+
                                             /*if (!isset($query[$table])) {
                                                 $query[$table] = true;
                                                 if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
@@ -1503,7 +1503,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getPageNavigation() : string {
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1549,7 +1549,7 @@ class EmundusModelFiles extends JModelLegacy
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -1853,33 +1853,44 @@ class EmundusModelFiles extends JModelLegacy
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
 
+            $query_associated_tags = $db->getQuery(true);
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+
             if (!empty($fnums) && !empty($tags)) {
                 $logsParams = array('created' => []);
                 foreach ($fnums as $fnum) {
+                    // Get tags already associated to this fnum by the current user
+                    $query_associated_tags->clear()
+                        ->select('id_tag')
+                        ->from($db->quoteName('#__emundus_tag_assoc'))
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+                        ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user));
+                    $db->setQuery($query_associated_tags);
+                    $tags_already_associated = $db->loadColumn();
+
+                    // Log the tag in the eMundus logging system.
+                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
+
+                    // Insert valid tags
                     foreach ($tags as $tag) {
-                        $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
-                        // Get the tags for logs
-                        $query1 = 'SELECT label
-                                FROM #__emundus_setup_action_tag
-                                WHERE id =' . $tag;
-                        $db->setQuery($query1);
-                        $log_tag = $db->loadResult();
-                        array_push($logsParams['created'], $log_tag);
+                        if(!in_array($tag,$tags_already_associated)) {
+                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                        }
                     }
                     // Log the tags in the eMundus logging system.
                     EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
+
+                $query = substr_replace($query, ";", -1);
+                $db->setQuery($query);
+                $db->execute();
             }
 
-            $query = substr_replace($query, ";", -1);
-            $db->setQuery($query);
-            return $db->execute();
+            return true;
         }
         catch (Exception $e)
         {
-            error_log($e->getMessage());
-            error_log($query);
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -3889,6 +3900,7 @@ class EmundusModelFiles extends JModelLegacy
         $db->setQuery($query);
         return $db->loadAssocList();
     }
+
     public function getTagsAssocStatus($status){
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);

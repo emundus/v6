@@ -116,7 +116,7 @@
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-6' : 'col-md-8'">
           <div class="d-flex form-title-block" v-show="!updateFormLabel">
             <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0">{{profileLabel}}</h2>
-            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
+            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="translations.Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
             </a>
           </div>
@@ -242,7 +242,7 @@
             </li>
           </div>
           <div class="d-flex">
-            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{translations.Validate}}</button>
+            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="translations.Validate">{{translations.Validate}}</button>
             <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
           </div>
         </ul>
@@ -279,13 +279,6 @@
 
   export default {
     name: "FormBuilder",
-    props: {
-      prid: String,
-      index: String,
-      cid: String,
-      actualLanguage: String,
-      manyLanguages: String
-    },
     components: {
       ModalAddDocuments,
       ModalTestingForm,
@@ -297,6 +290,12 @@
     },
     data() {
       return {
+        prid: "",
+        index: "",
+        cid: "",
+        manyLanguages: 0,
+        actualLanguage: "",
+
         // UX variables
         actions_menu: true,
         optionsModal: false,
@@ -1312,11 +1311,11 @@
     },
     created() {
       // Get datas that we need with store
-      this.$props.actualLanguage = global.getters.actualLanguage;
-      this.$props.manyLanguages = global.getters.manyLanguages;
-      this.$props.index = global.getters.datas.index.value;
-      this.$props.prid = global.getters.datas.prid.value;
-      this.$props.cid = global.getters.datas.cid.value;
+      this.actualLanguage = global.getters.actualLanguage;
+      this.manyLanguages = global.getters.manyLanguages;
+      this.index = global.getters.datas.index.value;
+      this.prid = global.getters.datas.prid.value;
+      this.cid = global.getters.datas.cid.value;
       //
 
       this.getForms();

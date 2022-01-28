@@ -48,4 +48,16 @@ export default {
 
 <style lang='scss'>
 @import url("./assets/css/main.scss");
+
+.com_emundus_vue {
+  @media (max-width: 1440px) {
+    .v--modal-box.v--modal {
+      width: 90vw !important;
+      height: 90vh !important;
+      top: 0 !important;
+      left: 0 !important;
+      margin: 5vh auto 5vh auto !important;
+    }
+  }
+}
 </style>
