@@ -355,7 +355,8 @@ try {
                 ->set($db->quoteName('count') . ' = 10')
                 ->set($db->quoteName('group_id') . ' = ' . $db->quote($group_id));
             $db->setQuery($query);
-            $qcm_id = $db->execute();
+            $db->execute();
+            $qcm_id = $db->insertid();
 
             $query->clear()
                 ->insert($db->quoteName('#__emundus_setup_qcm_repeat_sectionid'))
