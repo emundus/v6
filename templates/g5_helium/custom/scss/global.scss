@@ -4313,6 +4313,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
+  @media all and (max-width: 1024px) {
+    #g-container-main {
+      padding: 20px 20px 20px 75px;
+    }
+  }
+
 /**
   eMundus classes
 **/
@@ -4460,6 +4466,13 @@ input:focus + .em-slider {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.em-grid {
+  display: grid;
+	grid-column-gap: 24px;
+  grid-row-gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
 }
 
 .em-pointer{
