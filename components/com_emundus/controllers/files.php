@@ -849,15 +849,10 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
 
-                $row = array('applicant_id' => $fnum['applicant_id'],
-                    'user_id' => $this->_user->id,
-                    'reason' => JText::_('STATUS'),
-                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
-                    'fnum' => $fnum['fnum'],
-                    'status_from' => $fnum['step'],
-                    'status_to' => $state
-                );
-                $m_application->addComment($row);
+                // Log the update
+                $logsParams = array('updated' => []);
+                array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
+                EmundusModelLogs::log($this->_user->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             //*********************************************************************
@@ -4119,7 +4114,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 $sessionCity = !empty($session['city']) ?' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))) : ' '.$session['location_title'];
-                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            }
+                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            
+            }
         }
         $sessions .= '</ul>';
 
@@ -4347,6 +4343,41 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         exit;
     }
+
+    // Get actions on fnum with offset
+    public function getactionsonfnum() {
+        $jinput = JFactory::getApplication()->input;
+        $user = JFactory::getUser()->id;
+        $fnum = $jinput->post->getString('fnum');
+        $offset = $jinput->post->getInt('offset');
+        $fnumErrorList = [];
+
+        if (EmundusHelperAccess::asAccessAction(37, 'r', $user, $fnum)) {
+            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $m_logs = new EmundusModelLogs;
+
+            $res = $m_logs->getActionsOnFnum($fnum, null, null, null, $offset);
+            $details = [];
+
+            if (empty($res)) {
+                $fnumErrorList[] = $fnum;
+            } else {
+                foreach ($res as $log) {
+                    $details[] = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
+                }
+            }
+        } else {
+            $fnumErrorList[] = $fnum;
+        }
+
+        if (empty($fnumErrorList)) {
+            echo json_encode((object)(array('status' => true, 'res' => $res, 'details' => $details)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). implode(', ', $fnumErrorList))));
+        }
+        exit;
+    }
+
 
     public function getattachmentcategories()
     {

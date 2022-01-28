@@ -255,7 +255,12 @@ class EmundusModelApplication extends JModelList
     {
 
         try {
+            // Get the old comment content for the logging system
+            $query = 'SELECT reason, comment_body FROM #__emundus_comments WHERE id =' . $this->_db->quote($id);
+            $this->_db->setQuery($query);
+            $old_comment = $this->_db->loadObject();
 
+            // Update the comment content
             $query = 'UPDATE #__emundus_comments SET reason = ' . $this->_db->quote($title) . ', comment_body = ' . $this->_db->quote($text) . '  WHERE id = ' . $this->_db->quote($id);
             $this->_db->setQuery($query);
             $this->_db->execute();
@@ -275,7 +280,16 @@ class EmundusModelApplication extends JModelList
                 $fnum = $this->_db->loadResult();
 
                 // Log the comment in the eMundus logging system.
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_LOGS_UPDATE_COMMENT');
+                $logsParams = array('updated' => []);
+                if ($old_comment->reason !== $title) {
+                    array_push($logsParams['updated'], ['old' => $old_comment->reason, 'new' => $title]);
+                }
+                if ($old_comment->comment_body !== $text) {
+                    array_push($logsParams['updated'], ['old' => $old_comment->comment_body, 'new' => $text]);
+                }
+                if (!empty($logsParams['updated'])) {
+                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                }
             }
 
             return true;
@@ -305,6 +319,14 @@ class EmundusModelApplication extends JModelList
             }
         }
 
+        // Get the comment for logs
+        $query->select($this->_db->quoteName('reason') . ',' . $this->_db->quoteName('comment_body'))
+            ->from($this->_db->quoteName('#__emundus_comments'))
+            ->where($this->_db->quoteName('id') . ' = ' . $id); 
+        $this->_db->setQuery($query);
+        $deleted_comment = $this->_db->loadObject();
+
+        // Delete comment
         $query->clear()->delete($this->_db->quoteName('#__emundus_comments'))
             ->where($this->_db->quoteName('id') . ' = ' . $id);
         $this->_db->setQuery($query);
@@ -316,7 +338,15 @@ class EmundusModelApplication extends JModelList
         }
 
         if ($res && !empty($fnum)) {
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_LOGS_DELETE_COMMENT');
+            // Log the comment in the eMundus logging system
+            $logsParams = array('deleted' => []);
+            // Log only the body if the comment had no title
+            if (empty($deleted_comment->reason)) {
+                $logsParams['deleted'] = [$deleted_comment->comment_body];
+            } else {
+                $logsParams['deleted'] = [$deleted_comment->reason, $deleted_comment->comment_body];
+            }
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         return $res;
@@ -325,13 +355,22 @@ class EmundusModelApplication extends JModelList
 
     public function deleteTag($id_tag, $fnum)
     {
+        $query = $this->_db->getQuery(true);
+        // Get the tag for logs
+        $query->select($this->_db->quoteName('label'))
+            ->from($this->_db->quoteName('#__emundus_setup_action_tag'))
+            ->where($this->_db->quoteName('id') . ' = ' . $id_tag); 
+        $this->_db->setQuery($query);
+        $deleted_tag = $this->_db->loadResult();
+
         $query = 'DELETE FROM #__emundus_tag_assoc WHERE id_tag = ' . $id_tag . ' AND fnum like ' . $this->_db->Quote($fnum);
         $this->_db->setQuery($query);
         $res = $this->_db->execute();
 
         // Log the action in the eMundus logging system.
         if ($res) {
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_LOGS_DELETE_TAG');
+            $logsParams = array('deleted' => [$deleted_tag]);
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         return $res;
@@ -339,12 +378,18 @@ class EmundusModelApplication extends JModelList
 
     public function addComment($row)
     {
-
         // Log the comment in the eMundus logging system.
-        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_LOGS_ADD_COMMENT');
+        $logsParams = array('created' => []);
+        // Log only the body if there is no title
+        if (empty($row['reason'])) {
+            $logsParams['created'] = [$row['comment_body']];
+        } else {
+            $logsParams['created'] = [$row['reason'], $row['comment_body']];
+        }
+        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
-        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum, status_from, status_to)
-                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).','.$this->_db->Quote($row['status_from']).','.$this->_db->Quote($row['status_to']).')';
+        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
+                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
         $this->_db->setQuery($query);
 
         try {

@@ -1857,6 +1857,7 @@ class EmundusModelFiles extends JModelLegacy
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
 
             if (!empty($fnums) && !empty($tags)) {
+                $logsParams = array('created' => []);
                 foreach ($fnums as $fnum) {
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
@@ -1876,6 +1877,8 @@ class EmundusModelFiles extends JModelLegacy
                             $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
                         }
                     }
+                    // Log the tags in the eMundus logging system.
+                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
 
                 $query = substr_replace($query, ";", -1);
@@ -2034,9 +2037,45 @@ class EmundusModelFiles extends JModelLegacy
         $db = $this->getDbo();
         foreach ($fnums as $fnum) {
 
-            // Log the update.
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
+            // Log the update in the eMundus logging system.
+            // Get the old publish status
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName('published'))
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum').' = '.$fnum);
+                $db->setQuery($query);
+            $old_publish = $db->loadResult();
+            // Before logging, translate the publish id to corresponding label
+            // Old publish status
+            switch ($old_publish) {
+                case(1):
+                    $old_publish = JText::_('PUBLISHED');
+                break;
+                case(0):
+                    $old_publish = JText::_('ARCHIVED');
+                break;
+                case(-1):
+                    $old_publish = JText::_('TRASHED');
+                break;
+            }
+            // New publish status
+            switch ($publish) {
+                case(1):
+                    $new_publish = JText::_('PUBLISHED');
+                break;
+                case(0):
+                    $new_publish = JText::_('ARCHIVED');
+                break;
+                case(-1):
+                    $new_publish = JText::_('TRASHED');
+                break;
+            }
+            // Log the update
+            $logsParams = array('updated' => []);
+            array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
+            // Update publish
             $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
             $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
             $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
