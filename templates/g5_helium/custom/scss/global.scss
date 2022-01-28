@@ -2128,15 +2128,31 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
     background: $night-blue;
     border: none;
-    color: $white;
+
     width: 43px;
+    margin-right: -1px;
 
     &:hover,
-    &:focus &:active {
-      background-color: $grey;
-      color: $white;
+    &:focus,
+    &:active {
+      background-color: $night-blue;
       outline: none;
     }
+
+    span {
+      color: $white;
+      &:hover,
+      &:focus,
+      &:active {
+        color: $neutral-500;
+      }
+    }
+  }
+
+  label[for='clear-search'] img:hover,
+  label[for='clear-search'] img:hover:active,
+  label[for='clear-search'] img:hover:focus {
+    filter: invert(0.8) !important;
   }
 
   #em_select_filter #del-filter {
@@ -2146,6 +2162,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     span{
       color: $red-500;
       font-size: 24px !important;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: $red-300;
+      }
     }
 
     &:hover,
@@ -2164,20 +2186,34 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   #em-delete-files.btn.btn-danger.btn-xs.pull-right {
     background-color: transparent;
-    color: $red;
+    color: $red-500;
     border-color: transparent;
+
+    span {
+      color: $red-500;
+      &:hover,
+      &:active,
+      &:focus {
+        color: $red-300;
+      }
+    }
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent;
-      color: $red;
+      color: $red-300;
       border-color: transparent;
     }
   }
 
   #em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a, #em-user-filters .em_label label a {
     color: $dark-grey;
+    &:hover,
+    &:active,
+    &:focus {
+      color: $grey;
+    }
   }
 
   .files-board .panel.panel-default.em-data span.em_list_text {
@@ -2221,8 +2257,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     &:active,
     &:focus {
       background-color: transparent;
-      color: $dark-grey;
+      color: $grey;
       border-color: transparent;
+    }
+    span {
+      color: $dark-grey;
+      &:hover,
+      &:active,
+      &:focus {
+        color: $grey;
+      }
     }
   }
 
@@ -2246,7 +2290,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &:focus {
         background: transparent;
         span{
-          color: $light-blue;
+          color: $neutral-500;
         }
       }
     }
@@ -2711,11 +2755,29 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     span {
       color: white;
       margin-right: 8px;
+      &:focus,
+      &:hover,
+      &:active {
+       color: $neutral-500;
+      }
     }
   }
   .widget .panel-body {
     padding: 16px;
   }
+
+
+#em-attachments #filters .refresh:hover {
+  color: $neutral-500 !important;
+}
+
+#em-appli-block .com_emundus_vue #em-attachments .head {
+  padding-left: 18px;
+
+  .prev-next-files {
+    margin-right: 4px;
+  }
+}
 
   #em-files-filters #em_filters fieldset input#save-filter,
   #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter{
@@ -2832,18 +2894,27 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   /* SUPPRIMER EVAL */
   .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
     background: transparent !important;
-    color: $red !important;
+    color: $red-500 !important;
     border: none;
     margin: unset !important;
     display: flex !important;
     align-items: center !important;
     padding: unset !important;
 
+    span {
+      color: $red-500 !important;
+      &:hover,
+      &:active,
+      &:focus {
+        color: $red-300 !important;
+      }
+    }
+
     &:hover,
     &:active,
     &:focus {
       background: transparent !important;
-      color: $red !important;
+      color: $red-300 !important;
     }
   }
 
@@ -2898,7 +2969,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
+      padding-left: 18px !important;
+  }
 
     button.btn.btn-default {
       background-color: transparent;
@@ -2914,22 +2986,22 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &:hover {
         background-color: transparent;
         span{
-          color: darken($light-blue,10%);
+          color: $neutral-500;
         }
       }
     }
 
     #add-tags {
-      background: $dark-blue;
-      border: 1px solid $dark-blue;
-      color: white;
+      background: $night-blue;
+      border: 2px solid $neutral-100;
+      color: $neutral-100;
       padding: 8px 12px !important;
 
       &:hover, &:active, &:focus {
-        background: transparent;
-        border: 1px solid $dark-blue;
+        background: $neutral-100 !important;
+        border: 2px solid $neutral-100;
         border-radius: 5px;
-        color: $dark-blue;
+        color: $night-blue;
       }
     }
 

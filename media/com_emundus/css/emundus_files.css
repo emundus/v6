@@ -809,7 +809,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
     height: 40px !important;
     border-radius: 0;
-    padding: 8px 24px;
+    padding: 8px 22px;
     border-bottom: unset;
     display: flex;
     justify-content: space-between;
@@ -1105,7 +1105,7 @@ div#em-assoc-files .pull-right.btn-group {
 }
 
 div#em-synthesis .panel-body {
-    padding: 0 !important;
+    padding-left: 11px !important;
 }
 
 div#em-last-open .panel-body {
@@ -2217,6 +2217,8 @@ footer#g-footer {
 #em-last-open .list-group-item{
     background-color: #fafafa !important;
     border: 1px solid #fafafa;
+    padding-left: 11px;
+    justify-content: flex-start;
 }
 
 .list-group a.list-group-item.active, .list-group a.list-group-item.active:hover, .list-group a.list-group-item.active:focus {
@@ -2413,7 +2415,7 @@ table#groups-table a:hover {
 /* MENU ACTIONS */
 .navbar.navbar-inverse {
     border-radius: 0;
-    padding: 8px 12px;
+    padding: 8px 7px;
     height: 40px !important;
     min-height: auto !important;
 }
