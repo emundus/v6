@@ -427,10 +427,41 @@ class EmundusonboardModelsettings extends JModelList {
 
                 $footers->column1 = $params->mod_emundus_footer_texte_col_1;
                 $footers->column2 = $params->mod_emundus_footer_texte_col_2;
+                return $footers;
             } else {
-                $footers->column1 = '';
-                $footers->column2 = '';
+                return $this->getOldFooterArticles();
             }
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    /**
+     * Deprecated footer handling
+     * Get footer content from custom module in footer-a position
+     */
+    private function getOldFooterArticles() {
+
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $footers = new stdClass();
+        $query->select('id as id,content as content')
+            ->from($db->quoteName('#__modules'))
+            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+
+        try {
+            $db->setQuery($query);
+            $footers->column1 = $db->loadObject()->content;
+
+            $query->clear()
+                ->select('id as id,content as content')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
+
+            $db->setQuery($query);
+            $footers->column2 = $db->loadObject()->content;
 
             return $footers;
         } catch(Exception $e) {
@@ -563,6 +594,39 @@ class EmundusonboardModelsettings extends JModelList {
                 return false;
             }
         } else {
+            return $this->updateOldFooter($content);
+        }
+    }
+
+    /**
+     * Deprecated footer handling
+     * @param $content
+     * @return bool
+     */
+    private function updateOldFooter($content) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $results = [];
+
+        $query->update($db->quoteName('#__modules'))
+            ->set($db->quoteName('content') . ' = ' . $db->quote($content['col1']))
+            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+
+        try {
+            $db->setQuery($query);
+            $results[] = $db->execute();
+
+            $query->clear()
+                ->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('content') . ' = ' . $db->quote($content['col2']))
+                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
+            $db->setQuery($query);
+            $results[] = $db->execute();
+
+            return $results;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Error at updating CGV articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
