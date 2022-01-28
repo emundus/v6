@@ -1616,7 +1616,7 @@ class EmundusModelEvaluation extends JModelList {
     public function getPageNavigation() : string {
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1662,7 +1662,7 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -2281,7 +2281,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_letters = $this->getLettersByProgrammesStatusCampaigns($_programs,$_status, $_campaigns);
-            
+
             if (!empty($_letters)) {
                 if ($attachments == true) {
                     /// from $_letters --> get distinct attachment_id
@@ -3328,7 +3328,7 @@ class EmundusModelEvaluation extends JModelList {
                     mkdir($dir_Name_Path, 0755, true);
                     if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
                 }
-                
+
                 $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {

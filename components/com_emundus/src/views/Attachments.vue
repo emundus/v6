@@ -14,7 +14,7 @@
             :class="{ active: fnumPosition > 0 }"
             @click="changeFile(fnumPosition - 1)"
         >
-          <i class="small arrow left icon" aria-hidden="true"></i>
+          <span class="material-icons">arrow_back</span>
         </div>
         <div
             v-if="fnums.length > 1"
@@ -22,7 +22,7 @@
             :class="{ active: fnumPosition < fnums.length - 1 }"
             @click="changeFile(fnumPosition + 1)"
         >
-          <i class="small arrow right icon" aria-hidden="true"></i>
+          <span class="material-icons">arrow_forward</span>
         </div>
       </div>
     </div>
@@ -384,9 +384,9 @@ export default {
 
       if (response && response.fnumInfos) {
         const foundUser = this.users && this.users.length ? this.users.find(
-                    (user) => user.user_id == response.fnumInfos.applicant_id
-                )
-                : false;
+                (user) => user.user_id == response.fnumInfos.applicant_id
+            )
+            : false;
 
         if (!foundUser) {
           const resp = await userService.getUserById(
@@ -885,7 +885,7 @@ export default {
     margin-top: 1px;
     padding: 10px;
     min-height: 50px;
-    background-color: var(--primary-color);
+    background-color: var(--night-blue);
 
     .displayed-user {
       display: flex;
@@ -915,6 +915,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       margin-right: 12px;
+      width: 75px;
 
       > div {
         pointer-events: none;
@@ -925,25 +926,31 @@ export default {
         color: transparent;
         transition: all 0.3s;
 
-        i {
+        span {
           height: 30px;
           width: 30px;
           display: flex;
           justify-content: center;
           align-items: center;
           margin: 0;
+          opacity: 0;
         }
 
         &.active {
-          color: var(--text-light-color);
+          span {
+            color: var(--text-light-color);
+            opacity: 1;
+          }
           pointer-events: auto;
           cursor: pointer;
         }
 
         &:hover {
           border-radius: 4px;
-          background-color: var(--text-light-color);
-          color: var(--primary-color);
+          background-color: transparent;
+          span {
+            color: var(--primary-color);
+          }
         }
       }
     }
