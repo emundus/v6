@@ -4754,6 +4754,24 @@ input:focus + .em-slider {
 }
 
 
+/* Positions */
+.em-flex-start {
+  justify-content: flex-start;
+}
+
+.em-flex-end {
+  justify-content: flex-end;
+}
+
+.em-flex-space-between {
+  justify-content: space-between;
+}
+
+.em-flex-space-around {
+  justify-content: space-around;
+}
+
+
 /*
   BORDERS
 */

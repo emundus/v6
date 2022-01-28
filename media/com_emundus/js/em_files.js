@@ -226,11 +226,11 @@ function addElement() {
                 var num = ($('#nb-adv-filter').val() - 1) + 2;
                 $('#nb-adv-filter').val(num);
                 var newId = 'em-adv-father-' + num;
-                ni.append('<fieldset id="' + newId + '" class="em-nopadding">' +
+                ni.append('<fieldset id="' + newId + '" class="em-nopadding em-flex-row">' +
                     '<select class="chzn-select em-filt-select" name="elements" id="elements">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="fas fa-trash" ></span></button>'+
+                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start"><span class="material-icons em-red-500-color">delete_outline</span></button>'+
                     '</fieldset>');
 
                 var options = '';
