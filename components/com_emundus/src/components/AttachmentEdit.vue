@@ -351,6 +351,10 @@ export default {
 
     display: flex;
     flex-direction: column;
+
+    [type="checkbox"] {
+      width: fit-content;
+    }
   }
 
 	.valid-state {
