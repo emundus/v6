@@ -1853,27 +1853,41 @@ class EmundusModelFiles extends JModelLegacy
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
 
+            $query_associated_tags = $db->getQuery(true);
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+
             if (!empty($fnums) && !empty($tags)) {
                 foreach ($fnums as $fnum) {
+                    // Get tags already associated to this fnum by the current user
+                    $query_associated_tags->clear()
+                        ->select('id_tag')
+                        ->from($db->quoteName('#__emundus_tag_assoc'))
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+                        ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user));
+                    $db->setQuery($query_associated_tags);
+                    $tags_already_associated = $db->loadColumn();
 
                     // Log the tag in the eMundus logging system.
                     EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
 
+                    // Insert valid tags
                     foreach ($tags as $tag) {
-                        $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                        if(!in_array($tag,$tags_already_associated)) {
+                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                        }
                     }
                 }
+
+                $query = substr_replace($query, ";", -1);
+                $db->setQuery($query);
+                $db->execute();
             }
 
-            $query = substr_replace($query, ";", -1);
-            $db->setQuery($query);
-            return $db->execute();
+            return true;
         }
         catch (Exception $e)
         {
-            error_log($e->getMessage());
-            error_log($query);
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
