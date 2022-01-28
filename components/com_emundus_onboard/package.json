@@ -1,6 +1,6 @@
 {
   "name": "com_emundus_onboard",
-  "version": "0.1.0",
+  "version": "1.26.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -10,11 +10,6 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "devDependencies": {},
-  "eslintConfig": {
-    "extends": [],
-    "rules": {},
-    "parserOptions": {}
-  },
   "postcss": {
     "plugins": {
       "autoprefixer": {}
