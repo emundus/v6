@@ -146,7 +146,6 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-
 <list id="em-component-vue" component="list" type="campaign" coordinatorAccess="<?= $coordinator_access ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>">
 </list>
 
