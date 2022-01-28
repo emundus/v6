@@ -4,7 +4,7 @@
 		<thead class="list-table-head">
 			<tr>
 				<th v-for="th in rowsData" :key="th.value" :id="th.value"> 
-					{{ th.label }}
+					{{ translate(th.label) }}
 				</th>
 			</tr>
 		</thead>
@@ -52,6 +52,9 @@ export default {
 		this.rowsData = typeof rows[this.type] !== undefined ? rows[this.type] : [];
 	},
 	methods: {
+		translate(label) {
+			return label ? Joomla.JText._(label) : '';
+		},
 		validateFilters() {
       this.$emit('validateFilters');
     },

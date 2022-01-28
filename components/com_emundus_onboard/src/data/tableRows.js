@@ -1,24 +1,24 @@
 export default {
 	campaign: [
 		{
-			label: 'Nom',
+			label: "COM_EMUNDUS_ONBOARD_NAME",
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: 'Date de début',
+			label: "COM_EMUNDUS_ONBOARD_START_DATE",
 			value: 'start_date',
 		},
 		{
-			label: 'Date de fin',
+			label: "COM_EMUNDUS_ONBOARD_END_DATE",
 			value: 'end_date',
 		},
 		{
-			label: 'État',
+			label: "COM_EMUNDUS_ONBOARD_STATE",
 			value: 'status',
 		},
 		{
-			label: 'Nombre de dossiers',
+			label: "COM_EMUNDUS_ONBOARD_NB_FILES",
 			value: 'nb_files',
 		},
 		{
@@ -28,16 +28,16 @@ export default {
 	],
 	email: [
 		{
-			label: 'Objet',
+			label: "COM_EMUNDUS_ONBOARD_SUBJECT",
 			value: 'subject',
 			redirect: true
 		},
 		{
-			label: 'Type',
+			label: "COM_EMUNDUS_ONBOARD_TYPE",
 			value: 'type',
 		},
 		{
-			label: 'Statut',
+			label: "COM_EMUNDUS_ONBOARD_STATUS",
 			value: 'published',
 		},
 		{
@@ -47,12 +47,12 @@ export default {
 	],
 	form:  [
 		{
-			label: 'Nom',
+			label: "COM_EMUNDUS_ONBOARD_NAME",
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: 'Statut',
+			label: "COM_EMUNDUS_ONBOARD_STATUS",
 			value: 'published',
 		},
 		{
@@ -62,12 +62,12 @@ export default {
 	],
 	formulaire:  [
 		{
-			label: 'Nom',
+			label: "COM_EMUNDUS_ONBOARD_NAME",
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: 'Statut',
+			label: "COM_EMUNDUS_ONBOARD_STATUS",
 			value: 'published',
 		},
 		{
@@ -77,12 +77,12 @@ export default {
 	],
 	grilleEval:  [
 		{
-			label: 'Nom',
+			label: "COM_EMUNDUS_ONBOARD_NAME",
 			value: 'label',
 			redirect: true
 		},
 		{
-			label: 'Statut',
+			label: "COM_EMUNDUS_ONBOARD_STATUS",
 			value: 'published',
 		},
 		{

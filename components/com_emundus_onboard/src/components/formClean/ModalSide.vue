@@ -107,7 +107,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Translation from "@/components/translation"
 import Editor from "../editor";
-import List from "../../views/List";
+import List from "../../views/list";
 
 const qs = require("qs");
 

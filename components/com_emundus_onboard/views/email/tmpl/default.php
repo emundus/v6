@@ -144,6 +144,15 @@ JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS');
 JText::script('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS');
 
+JText::script('COM_EMUNDUS_ONBOARD_NAME');
+JText::script('COM_EMUNDUS_ONBOARD_START_DATE');
+JText::script('COM_EMUNDUS_ONBOARD_END_DATE');
+JText::script('COM_EMUNDUS_ONBOARD_STATE');
+JText::script('COM_EMUNDUS_ONBOARD_NB_FILES');
+JText::script('COM_EMUNDUS_ONBOARD_SUBJECT');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE');
+JText::script('COM_EMUNDUS_ONBOARD_STATUS');
+
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0, 2);
 $languages = JLanguageHelper::getLanguages();
