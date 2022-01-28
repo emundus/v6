@@ -4356,4 +4356,20 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((array('status' => true, 'categories' => $categories)));
         exit;
     }
+
+    public function getattachmentprogress()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->get->getString('fnum', '');
+
+        if (!empty($fnum)) {
+            $m_files = $this->getModel('Files');
+            $progress = $m_files->getAttachmentProgress(array($fnum));
+            echo json_encode((array('status' => true, 'progress' => $progress)));
+            exit;
+        }
+
+        echo json_encode((array('status' => false, 'msg' => 'missing fnum')));
+        exit;
+    }
 }
