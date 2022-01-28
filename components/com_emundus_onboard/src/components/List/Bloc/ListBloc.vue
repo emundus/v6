@@ -65,7 +65,7 @@
 					</div>
 				</div> -->
 
-				<div v-if="type == 'email' && data.category.length > 0">
+				<div v-if="type == 'email' && data.category && data.category.length > 0">
 					<div>
 						{{ data.category }}
 					</div>
