@@ -568,8 +568,7 @@ class EmundusonboardModelsettings extends JModelList {
 
         $query->select('params')
             ->from($db->quoteName('#__modules'))
-            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'))
-            ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
         
         $db->setQuery($query);
         $params = $db->loadResult();
@@ -583,8 +582,7 @@ class EmundusonboardModelsettings extends JModelList {
             $query->clear()
                 ->update($db->quoteName('#__modules'))
                 ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'))
-                ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
 
             try {
                 $db->setQuery($query);
