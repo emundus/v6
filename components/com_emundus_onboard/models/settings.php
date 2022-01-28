@@ -413,21 +413,25 @@ class EmundusonboardModelsettings extends JModelList {
 
         $footers = new stdClass();
 
-        $query->select('id as id,content as content')
+        $query->select('id as id, params as params')
             ->from($db->quoteName('#__modules'))
-            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'))
+            ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
 
         try {
             $db->setQuery($query);
-            $footers->column1 = $db->loadObject();
+            $params = $db->loadObject();
 
-            $query->clear()
-                ->select('id as id,content as content')
-                ->from($db->quoteName('#__modules'))
-                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
+            if (!empty($params)) {
+                $params = json_decode($params->params);
 
-            $db->setQuery($query);
-            $footers->column2 = $db->loadObject();
+                $footers->column1 = $params->mod_emundus_footer_texte_col_1;
+                $footers->column2 = $params->mod_emundus_footer_texte_col_2;
+            } else {
+                $footers->column1 = '';
+                $footers->column2 = '';
+            }
+
             return $footers;
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -531,26 +535,34 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $results = [];
+        $query->select('params')
+            ->from($db->quoteName('#__modules'))
+            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'))
+            ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
+        
+        $db->setQuery($query);
+        $params = $db->loadResult();
 
-        $query->update($db->quoteName('#__modules'))
-            ->set($db->quoteName('content') . ' = ' . $db->quote($content['col1']))
-            ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
+        if (!empty($params)) {
+            $params = json_decode($params);
 
-        try {
-            $db->setQuery($query);
-            $results[] = $db->execute();
+            $params->mod_emundus_footer_texte_col_1 = $content['col1'];
+            $params->mod_emundus_footer_texte_col_2 = $content['col2'];
 
             $query->clear()
                 ->update($db->quoteName('#__modules'))
-                ->set($db->quoteName('content') . ' = ' . $db->quote($content['col2']))
-                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
-            $db->setQuery($query);
-            $results[] = $db->execute();
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'))
+                ->andWhere($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
 
-            return $results;
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at updating CGV articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            try {
+                $db->setQuery($query);
+                return $db->execute();
+            } catch(Exception $e) {
+                JLog::add('component/com_emundus_onboard/models/settings | Error at updating CGV articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                return false;
+            }
+        } else {
             return false;
         }
     }
