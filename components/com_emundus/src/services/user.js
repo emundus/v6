@@ -26,7 +26,10 @@ export default {
 
             return response.data;
         } catch (e) {
-            throw new Error(e);
+            return {
+                status: false,
+                msg: e.message
+            }
         }
     },
     async getAccessRights(id, fnum) {
@@ -40,7 +43,10 @@ export default {
 
             return response.data;
         } catch (e) {
-            console.log(e);
+            return {
+                status: false,
+                msg: e.message
+            }
         }
     }
 }

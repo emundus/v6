@@ -31,7 +31,7 @@ include_once(JPATH_SITE.'/components/com_emundus_onboard/models/formbuilder.php'
  */
 class EmundusUnittestHelperSamples
 {
-    public function createSampleUser()
+    public function createSampleUser($profile = 9)
     {
         $m_users = new EmundusModelUsers;
 
@@ -47,14 +47,14 @@ class EmundusUnittestHelperSamples
 
         $other_param['firstname'] 		= 'Test';
         $other_param['lastname'] 		= 'USER';
-        $other_param['profile'] 		= '9';
+        $other_param['profile'] 		= $profile;
         $other_param['em_oprofiles'] 	= '';
         $other_param['univ_id'] 		= 0;
         $other_param['em_groups'] 		= '';
         $other_param['em_campaigns'] 	= '1';
         $other_param['news'] 			= '';
 
-        $acl_aro_groups = $m_users->getDefaultGroup(9);
+        $acl_aro_groups = $m_users->getDefaultGroup($profile);
         $user->groups = $acl_aro_groups;
 
         $usertype = $m_users->found_usertype($acl_aro_groups[0]);

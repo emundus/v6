@@ -11,20 +11,33 @@
               v-model="attachment.description"
               :disabled="!canUpdate"
           >
-          </textarea>
+					</textarea>
         </div>
 
-        <div class="input-group">
-          <label for="status">{{translate("COM_EMUNDUS_ATTACHMENTS_CHECK")}}</label>
+        <div 
+          class="input-group valid-state"
+          :class="{
+			    	success: attachment.is_validated == 1,
+			    	warning: attachment.is_validated == 2,
+			    	error: attachment.is_validated == 0,
+			    }"
+        >
+          <label for="status">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CHECK")
+            }}</label>
           <select
               name="status"
               v-model="attachment.is_validated"
               :disabled="!canUpdate"
           >
-            <option value="-2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
-            <option value="2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
             <option value="1">{{ translate("VALID") }}</option>
             <option value="0">{{ translate("INVALID") }}</option>
+            <option value="2">
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
+            </option>
+            <option value="-2">
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
+            </option>
           </select>
         </div>
         <div class="input-group" v-if="canUpdate">
@@ -36,6 +49,28 @@
               name="replace"
               @change="updateFile"
               :accept="allowedType"
+          />
+        </div>
+        <div class="input-group">
+          <label for="can_be_viewed">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")
+            }}</label>
+          <input
+              type="checkbox"
+              name="can_be_viewed"
+              v-model="attachmentCanBeViewed"
+              :disabled="!canUpdate"
+          />
+        </div>
+        <div class="input-group">
+          <label for="can_be_deleted">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")
+            }}</label>
+          <input
+              type="checkbox"
+              name="can_be_deleted"
+              v-model="attachmentCanBeDeleted"
+              :disabled="!canUpdate"
           />
         </div>
       </div>
@@ -50,23 +85,19 @@
         </div>
         <div v-if="attachment.category">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-          <span>{{ translate(attachment.category) }}</span>
+          <span>{{ this.categories[attachment.category] }}</span>
         </div>
         <div v-if="attachment.modified_by">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
           <span>{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
-          <span>{{
+					<span>{{
               translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
             }}</span>
           <span>{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
-        <!-- <div v-if="attachment.file_size">
-                    <span>{{ translate('FILE_SIZE') }}</span>
-                    <span> ... kb </span>
-                </div> -->
       </div>
     </div>
     <div class="actions">
@@ -75,7 +106,7 @@
       </button>
     </div>
 
-    <div v-if="error" class="error">{{ errorMessage }}</div>
+    <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
 </template>
 
@@ -95,6 +126,7 @@ export default {
   data() {
     return {
       attachment: {},
+      categories: {},
       file: null,
       canUpdate: false,
       error: false,
@@ -102,8 +134,11 @@ export default {
     };
   },
   mounted() {
-    this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
+    this.canUpdate = this.$store.state.user.rights[this.fnum]
+        ? this.$store.state.user.rights[this.fnum].canUpdate
+        : false;
     this.attachment = this.$store.state.attachment.selectedAttachment;
+    this.categories = this.$store.state.attachment.categories;
   },
   methods: {
     async saveChanges() {
@@ -113,6 +148,8 @@ export default {
       formData.append("id", this.attachment.aid);
       formData.append("description", this.attachment.description);
       formData.append("is_validated", this.attachment.is_validated);
+      formData.append("can_be_viewed", this.attachment.can_be_viewed);
+      formData.append("can_be_deleted", this.attachment.can_be_deleted);
 
       if (this.file) {
         formData.append("file", this.file);
@@ -170,11 +207,29 @@ export default {
 
       return allowed_type;
     },
+    attachmentCanBeViewed: {
+      get: function () {
+        return this.attachment.can_be_viewed == "1";
+      },
+      set: function (value) {
+        this.attachment.can_be_viewed = value ? "1" : "0";
+      },
+    },
+    attachmentCanBeDeleted: {
+      get: function () {
+        return this.attachment.can_be_deleted == "1";
+      },
+      set: function (value) {
+        this.attachment.can_be_deleted = value ? "1" : "0";
+      },
+    },
   },
   watch: {
     "$store.state.attachment.selectedAttachment": function () {
       // check if selected attchment is not an empty object
-      if (Object.keys(this.$store.state.attachment.selectedAttachment).length !== 0) {
+      const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
+
+      if (keys.length > 0) {
         this.attachment = this.$store.state.attachment.selectedAttachment;
       }
     },
@@ -191,7 +246,7 @@ export default {
   border-left: 1px solid var(--border-color);
   position: relative;
 
-  .error {
+  .error-msg {
     position: absolute;
     margin: 10px 10px;
     top: 0;
@@ -292,5 +347,41 @@ export default {
     display: flex;
     flex-direction: column;
   }
+
+	.valid-state {
+		select {
+			padding: 4px 8px;
+			border-radius: 4px;
+			background-color: var(--grey-bg-color);
+			color: var(--grey-color);
+			border: none;
+			width: max-content;
+		}
+
+		select::-ms-expand {
+			display: none !important;
+		}
+
+		&.warning {
+			select {
+				color: var(--warning-color);
+				background-color: var(--warning-bg-color);
+			}
+		}
+
+		&.success {
+			select {
+				color: var(--success-color);
+				background-color: var(--success-bg-color);
+			}
+		}
+
+		&.error {
+			select {
+				color: var(--error-color);
+				background-color: var(--error-bg-color);
+			}
+		}
+	}
 }
 </style>

@@ -51,12 +51,12 @@
 
 <script>
 import axios from "axios";
-import ModalUpdateLogo from "../../views/advancedModals/ModalUpdateLogo";
 import VSwatches from 'vue-swatches'
 import 'vue-swatches/dist/vue-swatches.css'
-import ModalUpdateIcon from "@/views/advancedModals/ModalUpdateIcon";
 import Swal from "sweetalert2";
-import ModalUpdateColors from "@/views/advancedModals/ModalUpdateColors";
+import ModalUpdateIcon from "@/components/AdvancedModals/ModalUpdateIcon";
+import ModalUpdateLogo from "@/components/AdvancedModals/ModalUpdateLogo";
+import ModalUpdateColors from "@/components/AdvancedModals/ModalUpdateColors";
 
 const qs = require("qs");
 

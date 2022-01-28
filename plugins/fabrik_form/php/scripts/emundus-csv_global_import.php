@@ -27,6 +27,7 @@ function convert( $str ) {
 $app = JFactory::getApplication();
 
 $csv = $formModel->data['jos_emundus_setup_csv_import___csv_file_raw'];
+$campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
 $create_new_fnum = $formModel->data['jos_emundus_setup_csv_import___create_new_fnum'];
 
 // Check if the file is a file on the server and in the right format.
@@ -298,7 +299,6 @@ if (empty($parsed_data)) {
     return false;
 }
 
-$campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
 $status = 0;
 $email_from_sys = $app->getCfg('mailfrom');
 
