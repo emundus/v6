@@ -60,6 +60,10 @@
 			"13":{"id":10, "c":0, "r":1, "u":0, "d":0},
 			"14":{"id":14, "c":1, "r":1, "u":1, "d":0}
 			}' label="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS" description="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS_DESC" />
+		<field name="hide_default_actions" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_HIDE_DEFAULT_ACTIONS">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="show_related_files" type="radio" default="0" label="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES" description="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
