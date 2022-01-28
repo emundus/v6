@@ -1076,11 +1076,10 @@ export default {
   .table-wrapper {
     width: 100%;
     overflow-x: scroll;
-    transform: rotateX(180deg);
   }
 
   table {
-    transform: rotateX(180deg);
+
     &.loading {
       visibility: hidden;
     }
