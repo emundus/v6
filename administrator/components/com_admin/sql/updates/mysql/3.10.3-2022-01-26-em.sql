@@ -2,27 +2,12 @@ INSERT INTO jos_emundus_setup_actions (name, label, c, r, u, d, ordering, status
 VALUES ('logs', 'COM_EMUNDUS_ACCESS_LOGS', 0, 1, 0, 0, 30, 1);
 SET @action_id = LAST_INSERT_ID();
 
---  ALTER TABLE jos_emundus_logs
---     ADD CONSTRAINT action_id_fk
---         FOREIGN KEY (action_id) REFERENCES jos_emundus_setup_actions (id)
---             ON UPDATE cascade ON DELETE cascade; 
-
 ALTER TABLE jos_emundus_logs
     ADD COLUMN params TEXT;
-
 
 INSERT INTO jos_emundus_acl (group_id, action_id, c, r, u, d)
 VALUES  (1, @action_id, 0, 1, 0, 0);
 
--- INSERT INTO jos_menu (menutype, title, alias, note, path, link, type, published, parent_id, level, component_id, checked_out, checked_out_time, browserNav, access, img, template_style_id, params, home, language, client_id)
--- VALUES  ('application', 'Logs', '2021-11-25-16-22-00', '37|r', '2021-11-25-16-22-00', 'index.php?option=com_emundus&view=application&format=raw&layout=logs', 'url', 1, 1, 1, 0, 0, '2099-12-12 00:00:00', 0, 6, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu-anchor_rel":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}', 0, '*', 0);
-
--- SET @parent_id = SELECT id from jos_menu WHERE alias = 'rapport-d-activite';
-
--- INSERT INTO jos_menu (menutype, title, alias, note, path, link, type, published, parent_id, level, component_id, checked_out, checked_out_time, browserNav, access, img, template_style_id, params, home, language, client_id)
--- VALUES  ('coordinatormenu', 'Logs', 'logs', '', 'rapport-d-activite/logs', 'index.php?option=com_fabrik&view=list&listid=374', 'component', 1, @parent_id, 2, 10041, 0, '2099-12-12 00:00:00', 0, 7, ' ', 24, '{"addurl":"","show-title":"1","calculations":"0","listlayout":"","fabriklayout":"","resetfilters":"0","list_elements":"null","prefilters":"null","rows_per_page":"10","popup_width":"340","popup_opts_width":"200","csv_import_extensions":"txt,csv,tsv","csv_import_sil_only":"0","csv_import_dropdata":"0","csv_import_overwrite":"0","list_extra_query_string":"","menu-anchor_title":"","menu-anchor_css":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1,"page_title":"Logs","show_page_heading":"0","page_heading":"","pageclass_sfx":"","menu-meta_description":"","menu-meta_keywords":"","robots":"","secure":0}', 0, '*', 0);
-
-/** Build farik **/
 INSERT INTO jos_fabrik_forms (label, record_in_database, error, intro, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, publish_up, publish_down, reset_button_label, submit_button_label, form_template, view_only_template, published, private, params)
 VALUES  ('SETUP_LOGS_DETAILS', 1, 'Certaines parties de votre formulaire n''ont pas été correctement remplies', '', '2021-11-25 00:00:00', 62, 'sysadmin', '2021-11-25 00:00:00', 0, 0, '2099-11-25 00:00:00', '2021-11-26 08:25:21', null, 'RESET', 'SAVE_CONTINUE', 'bootstrap', 'bootstrap', 1, 0, '{"outro":"","copy_button":"0","copy_button_label":"Enregistrer comme copie","copy_button_class":"","copy_icon":"","copy_icon_location":"before","reset_button":"0","reset_button_label":"R\\u00e9initialiser","reset_button_class":"btn-warning","reset_icon":"","reset_icon_location":"before","apply_button":"0","apply_button_label":"Appliquer","apply_button_class":"","apply_icon":"","apply_icon_location":"before","goback_button":"0","goback_button_label":"Retour","goback_button_class":"","goback_icon":"","goback_icon_location":"before","submit_button":"1","submit_button_label":"Sauvegarder","save_button_class":"btn-primary","save_icon":"","save_icon_location":"before","submit_on_enter":"0","delete_button":"0","delete_button_label":"Effacer","delete_button_class":"btn-danger","delete_icon":"","delete_icon_location":"before","ajax_validations":"0","ajax_validations_toggle_submit":"0","submit-success-msg":"","suppress_msgs":"0","show_loader_on_submit":"0","spoof_check":"1","multipage_save":"0","note":"","labels_above":"0","labels_above_details":"0","pdf_template":"","pdf_orientation":"portrait","pdf_size":"letter","pdf_include_bootstrap":"1","admin_form_template":"","admin_details_template":"","show-title":"1","print":"","email":"","pdf":"","show-referring-table-releated-data":"0","tiplocation":"tip","process-jplugins":"2","plugins":[],"plugin_locations":[],"plugin_events":[],"plugin_description":[]}');
 
