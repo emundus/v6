@@ -59,15 +59,22 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
         $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
 
+        # in case of CELSA, the meeting session will start 15 min before
+        $startTimeCELSA = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']) - (15 * 60));
+
+        ######################################################################################################################
+
         # calculate meeting duration (raw) by seconds
         $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
 
-        # calculate CELSA duration (started before 15 min -> 900 seconds) by minutes
-        $celsa_duration = floor(($duration - 900) / 60);
+        # duration CELSA
+        $durationCELSA = intval(strtotime($endTime)) - intval(strtotime($startTimeCELSA));
 
+        # setup timezone, start_time, duration
         $_POST['jos_emundus_jury___timezone'] = $offset;
         $_POST['jos_emundus_jury___start_time'] = $startTime;
-        $_POST['jos_emundus_jury___duration'] = $celsa_duration;
+        $_POST['jos_emundus_jury___duration'] = $durationCELSA;
+
         # --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
 
         $json = $this->dataMapping($_POST, 'jos_emundus_jury___', $json);
