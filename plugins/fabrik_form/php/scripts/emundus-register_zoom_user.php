@@ -16,27 +16,30 @@ $query->clear()
 $db->setQuery($query);
 $raw = $db->loadObject();
 
+$zoom = new ZoomAPIWrapper($apiSecret);
+
 # call endpoint
 if(empty($apiSecret)) {
     return false;
 } else {
     # if host id does not exist before, generate the new one
-    if(empty($_POST['data_referentiel_zoom_token___zoom_id'])) {
-        $zoom = new ZoomAPIWrapper($apiSecret);
-
-        # data prepare, using "action = custCreate" to bypass the email invitation, "create" to send invitation email, "autoCreate" is reserved to Enterprise customer with a managed domain, "ssoCreate" if you want to enable "Pre-provisioning SSO User"
-        # data prepare, using "type = 1" to add Basic user, "2" to add Licensed user, "3" to add On-prem user, "99" to add None (only available with ssoCreate)
+    if(empty($_POST['data_referentiel_zoom_token___zoom_id']) or empty($_POST['data_referentiel_zoom_token___id'])) {
         $user = json_encode(array(
             "action" => current($_POST['data_referentiel_zoom_token___send_invitation']),
-            "user_info" => ["email" => $raw->email, 'type' => current($_POST['data_referentiel_zoom_token___user_type']), "first_name" => $raw->firstname, "last_name" => $raw->lastname],
+                "user_info" => [
+                    "email" => $raw->email, 
+                        'type' => current($_POST['data_referentiel_zoom_token___user_type']), 
+                            "first_name" => $raw->firstname, 
+                                "last_name" => $raw->lastname],
         ));
 
-        # send request to endpoint
+        # send request to create endpoint
         $response = $zoom->doRequest('POST', '/users', array(), array(), $user);        /* array */
 
         # if reponseCode is 201, update the table "data_referentiel_zoom_token"
         if($zoom->responseCode() == 201) {
-            $updateSql = "update data_referentiel_zoom_token set zoom_id = " . $db->quote($response['id']) . ' where data_referentiel_zoom_token.user = ' . current($_POST['data_referentiel_zoom_token___user']);
+            $updateSql = "update data_referentiel_zoom_token set zoom_id = " . $db->quote($response['id']) . ', is_created = 1' .
+                            ' where data_referentiel_zoom_token.user = ' . current($_POST['data_referentiel_zoom_token___user']);
             $db->setQuery($updateSql);
             $db->execute();
         } else {
