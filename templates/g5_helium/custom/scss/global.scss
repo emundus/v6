@@ -4618,19 +4618,18 @@ fieldset[disabled] .multiselect {
   line-height: 20px !important;
   border: none !important;
   border-radius: 5px !important;
-  background: #fff;
   background-color: rgb(255, 255, 255);
-  padding: 0 0 0 5px;
   -webkit-transition: border .1s ease;
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
   box-sizing: border-box !important;
   margin-bottom: 8px !important;
   vertical-align: top !important;
-  padding: 0px !important;
-  left: 0px !important;
+  padding: 0 !important;
+  left: 0 !important;
   height: auto !important;
   white-space: nowrap;
+  width: 100%;
 }
 
 .multiselect__input::placeholder {
@@ -5173,6 +5172,13 @@ input:focus + .em-slider {
   display: flex;
   flex-direction: row;
   align-items: end;
+}
+
+.em-flex-row-start{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
 }
 
 .em-grid-50{

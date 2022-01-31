@@ -76,7 +76,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -97,7 +97,7 @@ export default {
           return {
             status: false,
             msg: e.message
-          }
+          };
         }
         break;
       case 'override':
@@ -118,8 +118,9 @@ export default {
           return {
             status: false,
             msg: e.message
-          }
-        }
+          };
+        };
+        break;
       default:
     }
   },

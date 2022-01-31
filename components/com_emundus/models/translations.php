@@ -65,23 +65,49 @@ class EmundusModelTranslations extends JModelList
                     $object->table->filters = trim($tableElement->getAttribute( 'filters' ));
                     $object->table->type = trim($tableElement->getAttribute( 'type' ));
                     $tableFields = $tableElement->getElementsByTagName( 'field' );
+                    $tableSections = $tableElement->getElementsByTagName( 'section' );
 
                     $fields = array();
-                    $indexedFields = array();
-                    foreach ($tableFields as $tableField){
-                        $field = new stdClass;
-                        $field->Type = trim( $tableField->getAttribute( 'type' ) );
-                        $field->Name = trim( $tableField->getAttribute( 'name' ) );
-                        $field->Label = trim( $tableField->textContent );
-                        $field->Table = trim( $tableField->getAttribute( 'table' ) );
-                        $field->Options = trim( $tableField->getAttribute( 'options' ) );
+                    $indexedSections = array();
 
-                        $fields[] = $field;
-                        $indexedFields[$field->Name] = $field;
+                    foreach ($tableFields as $tableField){
+                        if(trim($tableField->getAttribute( 'type' )) == 'children'){
+                            $field = new stdClass;
+                            $field->Type = trim($tableField->getAttribute( 'type' ));
+                            $field->Name = trim($tableField->getAttribute( 'name' ));
+                            $field->Label = trim($tableField->textContent);
+                            $field->Table = trim($tableField->getAttribute( 'table' ));
+                            $field->Options = trim($tableField->getAttribute( 'options' ));
+
+                            $fields[] = $field;
+                        }
+                    }
+
+                    foreach ($tableSections as $tableSection){
+                        $section = new stdClass;
+                        $section->Label = trim( $tableSection->getAttribute( 'label' ));
+                        $section->Name = trim( $tableSection->getAttribute( 'name' ));
+                        $section->indexedFields = array();
+
+                        foreach ($tableFields as $tableField){
+                            if(trim($tableField->getAttribute( 'section' )) == $section->Name){
+                                $field = new stdClass;
+                                $field->Type = trim($tableField->getAttribute( 'type' ));
+                                $field->Name = trim($tableField->getAttribute( 'name' ));
+                                $field->Label = trim($tableField->textContent);
+                                $field->Table = trim($tableField->getAttribute( 'table' ));
+                                $field->Options = trim($tableField->getAttribute( 'options' ));
+
+                                $fields[] = $field;
+                                $section->indexedFields[$field->Name] = $field;
+                            }
+                        }
+                        $indexedSections[] = $section;
+
                     }
                     $object->fields = new stdClass;
                     $object->fields->Fields = $fields;
-                    $object->fields->IndexedFields = $indexedFields;
+                    $object->fields->Sections = $indexedSections;
 
                     $objects[] = $object;
                 }
@@ -122,6 +148,17 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Get childrens to filter our translations
+     *
+     * @param $table
+     * @param $reference_id
+     * @param $label
+     *
+     * @return array|false|mixed
+     *
+     * @since version 1.28.0
+     */
     public function getChildrens($table,$reference_id,$label){
         $query = $this->_db->getQuery(true);
 
@@ -173,34 +210,40 @@ class EmundusModelTranslations extends JModelList
      * @since version 1.28.0
      */
     public function getTranslations($type = 'override',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0,$tag = ''){
-        $query = $this->_db->getQuery(true);
 
-        $query->select('*')
-            ->from($this->_db->quoteName('#__emundus_setup_languages'))
-            ->where($this->_db->quoteName('type') . ' LIKE ' . $this->_db->quote('%' . $type . '%'));
+        try {
+            $query = $this->_db->getQuery(true);
+
+            $query->select('*')
+                ->from($this->_db->quoteName('#__emundus_setup_languages'))
+                ->where($this->_db->quoteName('type') . ' LIKE ' . $this->_db->quote('%' . $type . '%'));
 
 
-        if($lang_code !== '*' && !empty($lang_code)){
-            $query->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
-        }
-        if(!empty($search)){
-            $query->where($this->_db->quoteName('override') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
-        }
-        if(!empty($location)){
-            $query->where($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
-        }
-        if(!empty($reference_table)){
-            $query->where($this->_db->quoteName('reference_table') . ' LIKE ' . $this->_db->quote($reference_table));
-        }
-        if(!empty($reference_id)){
-            $query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
-        }
-        if(!empty($tag)){
-            $query->where($this->_db->quoteName('tag') . ' LIKE ' . $this->_db->quote($tag));
-        }
+            if ($lang_code !== '*' && !empty($lang_code)) {
+                $query->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
+            }
+            if (!empty($search)) {
+                $query->where($this->_db->quoteName('override') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
+            }
+            if (!empty($location)) {
+                $query->where($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
+            }
+            if (!empty($reference_table)) {
+                $query->where($this->_db->quoteName('reference_table') . ' LIKE ' . $this->_db->quote($reference_table));
+            }
+            if (!empty($reference_id)) {
+                $query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
+            }
+            if (!empty($tag)) {
+                $query->where($this->_db->quoteName('tag') . ' LIKE ' . $this->_db->quote($tag));
+            }
 
-        $this->_db->setQuery($query);
-        return $this->_db->loadObjectList();
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        } catch(Exception $e){
+            JLog::add('Problem when try to get translations with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return [];
+        }
     }
 
     /**
@@ -363,6 +406,13 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Get default language of the platform
+     *
+     * @return false|mixed|null
+     *
+     * @since version 1.28.0
+     */
     public function getDefaultLanguage(){
         $query = $this->_db->getQuery(true);
 
@@ -389,6 +439,13 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Get all languages available on our platform
+     *
+     * @return array|false|mixed
+     *
+     * @since version 1.28.0
+     */
     public function getAllLanguages(){
         $query = $this->_db->getQuery(true);
 
@@ -403,6 +460,17 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Update default language or/and secondary languages
+     *
+     * @param $lang_code
+     * @param $published
+     * @param $default
+     *
+     * @return false|mixed
+     *
+     * @since version 1.28.0
+     */
     public function updateLanguage($lang_code,$published,$default){
         $query = $this->_db->getQuery(true);
 
@@ -432,6 +500,20 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Get translations with Falang system (campaigns, emails, programs, status)
+     *
+     * @param $default_lang
+     * @param $lang_to
+     * @param $reference_id
+     * @param $fields
+     * @param $reference_table
+     * @param $reference_field
+     *
+     * @return false|stdClass
+     *
+     * @since version 1.28.0
+     */
     public function getTranslationsFalang($default_lang,$lang_to,$reference_id,$fields,$reference_table,$reference_field = ''){
         $labels = new stdClass();
         $fields = explode(',',$fields);
@@ -455,6 +537,8 @@ class EmundusModelTranslations extends JModelList
 
             foreach ($fields as $field){
                 $labels->{$field} = new stdClass;
+                $labels->{$field}->reference_field = $field;
+                $labels->{$field}->reference_table = $reference_table;
 
                 $query->clear()
                     ->select('value')
@@ -493,6 +577,19 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Update a translation with Falang system
+     *
+     * @param $value
+     * @param $lang_to
+     * @param $reference_table
+     * @param $reference_id
+     * @param $field
+     *
+     * @return false|mixed
+     *
+     * @since version
+     */
     public function updateFalangTranslation($value,$lang_to,$reference_table,$reference_id,$field){
         $query = $this->_db->getQuery(true);
 

@@ -89,7 +89,11 @@ class LanguageFileToBase extends JApplicationCli {
             $db->quoteName('override_md5'),
             $db->quoteName('location'),
             $db->quoteName('type'),
-            $db->quoteName('created_by')];
+            $db->quoteName('created_by'),
+            $db->quoteName('reference_id'),
+            $db->quoteName('reference_table'),
+            $db->quoteName('reference_field'),
+            ];
         $db_values = [];
 
         foreach ($files as $file) {
@@ -112,9 +116,53 @@ class LanguageFileToBase extends JApplicationCli {
 
                 if($db->loadResult() == 0) {
                     if(strpos($file_name,'override') !== false) {
-                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name),$db->quote('override'), 62];
+                        // Search if value is use in fabrik
+                        $reference_table = null;
+                        $reference_id = null;
+                        $reference_field = null;
+
+                        $query->clear()
+                            ->select('id')
+                            ->from($db->quoteName('#__fabrik_forms'))
+                            ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
+                        $db->setQuery($query);
+                        $find = $db->loadResult();
+
+                        if(!empty($find)){
+                            $reference_table = 'fabrik_forms';
+                            $reference_id = $find;
+                            $reference_field = 'label';
+                        } else {
+                            $query->clear()
+                                ->select('id')
+                                ->from($db->quoteName('#__fabrik_groups'))
+                                ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
+                            $db->setQuery($query);
+                            $find = $db->loadResult();
+
+                            if(!empty($find)) {
+                                $reference_table = 'fabrik_groups';
+                                $reference_id = $find;
+                                $reference_field = 'label';
+                            } else {
+                                $query->clear()
+                                    ->select('id')
+                                    ->from($db->quoteName('#__fabrik_elements'))
+                                    ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
+                                $db->setQuery($query);
+                                $find = $db->loadResult();
+
+                                if(!empty($find)) {
+                                    $reference_table = 'fabrik_elements';
+                                    $reference_id = $find;
+                                    $reference_field = 'label';
+                                }
+                            }
+                        }
+                        //
+                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name),$db->quote('override'), 62, $db->quote($reference_id), $db->quote($reference_table), $db->quote($reference_field)];
                     } else {
-                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name),$db->quote(null), 62];
+                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name),$db->quote(null), 62, $db->quote(null), $db->quote(null), $db->quote(null)];
                     }
                     $db_values[] = implode(',', $row);
                 }

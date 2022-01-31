@@ -94,16 +94,39 @@
         <p class="em-h5 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</p>
         <p class="em-font-size-14 em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>
-      <div v-else class="em-neutral-100-box">
-        <div v-for="(translation,index) in translations" class="em-mb-32">
-          <p>{{ object.fields.IndexedFields[index].Label.toUpperCase() }}</p>
-          <div class="justify-content-between em-mt-16 em-grid-50">
-            <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
-            <input v-if="object.fields.IndexedFields[index].Type == 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
-            <textarea v-if="object.fields.IndexedFields[index].Type == 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+
+      <div v-else-if="object.table.type === 'falang'">
+        <div v-for="section in object.fields.Sections" class="em-mb-32">
+          <h4>{{section.Label}}</h4>
+          <div v-for="(translation,index) in translations">
+            <div v-if="Object.keys(section.indexedFields).includes(translation.reference_field)" class="em-mb-32 em-neutral-100-box">
+              <p>{{ section.indexedFields[translation.reference_field].Label.toUpperCase() }}</p>
+              <div class="justify-content-between em-mt-16 em-grid-50">
+                <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
+                <input v-if="section.indexedFields[translation.reference_field].Type === 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+                <textarea v-if="section.indexedFields[translation.reference_field].Type === 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <div v-else-if="object.table.type === 'override'">
+        <div v-for="section in object.fields.Sections" class="em-mb-32">
+          <h4>{{section.Label}}</h4>
+          <div v-for="(translation,index) in translations" class="em-mb-32 em-neutral-100-box">
+            <div v-if="Object.keys(section.indexedFields).includes(translation.reference_field) && section.Name === translation.reference_table">
+              <p>{{ section.indexedFields[translation.reference_field].Label.toUpperCase() }}</p>
+              <div class="justify-content-between em-mt-16 em-grid-50">
+                <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
+                <input v-if="section.indexedFields[translation.reference_field].Type === 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+                <textarea v-if="section.indexedFields[translation.reference_field].Type === 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -231,7 +254,12 @@ export default {
         });
 
         if (!children_existing) {
-          const fields = Object.keys(this.object.fields.IndexedFields).join(',');
+          let fields = [];
+          this.object.fields.Fields.forEach((field) => {
+            fields.push(field.Name);
+          })
+          fields = fields.join(',');
+
           translationsService.getTranslations(
               this.object.table.type,
               this.defaultLang.lang_code,
@@ -250,7 +278,17 @@ export default {
       this.translations = [];
 
       if(value != null) {
-        const fields = Object.keys(this.object.fields.IndexedFields).join(',');
+        let fields = [];
+        let tables = [];
+        this.object.fields.Fields.forEach((field) => {
+          if(field.Type !== 'children') {
+            fields.push(field.Name);
+            tables.push(field.Table);
+          }
+        })
+        fields = fields.join(',');
+        tables = tables.join(',');
+
         translationsService.getTranslations(
             this.object.table.type,
             this.defaultLang.lang_code,

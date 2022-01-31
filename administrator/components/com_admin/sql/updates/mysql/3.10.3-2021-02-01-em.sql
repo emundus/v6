@@ -12,6 +12,7 @@ create table jos_emundus_setup_languages
     type            varchar(50)                           null,
     reference_id    int(10)                               null,
     reference_table varchar(50)                           null,
+    reference_field varchar(50)                           null,
     published       int(1) default 1                      null,
     created_by      int(10)                               null,
     created_date    timestamp default current_timestamp() null,

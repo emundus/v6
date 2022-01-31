@@ -140,9 +140,30 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $reference_id = $jinput->get->getString('reference_id', null);
         $fields = $jinput->get->getString('fields', null);
 
-        $result = $this->model->getTranslations('override',$lang_to,'','',$reference_table,$reference_id);
+        $translations = array();
 
-        echo json_encode($result);
+        $results = $this->model->getTranslations('override', '*', '', '', $reference_table, $reference_id, '');
+
+        foreach ($results as $result) {
+            if (in_array($result->tag, array_keys($translations))) {
+                if ($result->lang_code == $default_lang) {
+                    $translations[$result->tag]->default_lang = $result->override;
+                } elseif ($result->lang_code == $lang_to) {
+                    $translations[$result->tag]->lang_to = $result->override;
+                }
+            } else {
+                $translation = $result;
+                if ($result->lang_code == $default_lang) {
+                    $translation->default_lang = $result->override;
+                } elseif ($result->lang_code == $lang_to) {
+                    $translation->lang_to = $result->override;
+                }
+
+                $translations[$result->tag] = $translation;
+            }
+        }
+
+        echo json_encode($translations);
         exit;
     }
 
