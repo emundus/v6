@@ -130,9 +130,11 @@ describe('Attachments.vue', () => {
    */
   wrapper.vm.categories = {
     "1": "category1",
-    "2": "category2"
+    "2": "category2",
+    "3": "category3",
+    "4": "category4"
   }
-  it('Expect category select to be displayed if more than one category', () => {
+  it('Expect category select to be displayed if there are category option available', () => {
     const categorySelect = wrapper.find('.category-select');
     expect(categorySelect.exists()).toBe(true);
   });
@@ -154,6 +156,34 @@ describe('Attachments.vue', () => {
     wrapper.vm.attachments.forEach(element => {
       expect(element.show).toBe(element.category === "2");
     });
+  });
+
+  it('Expect filterByCategory to show all attachments if category value is all', () => {
+    // call  filterByCategory with e
+    wrapper.vm.filterByCategory({
+      target: {
+        value: "all"
+      }
+    });
+
+    // check that all attachments are displayed
+    wrapper.vm.attachments.forEach(element => {
+      expect(element.show).toBe(true);
+    });
+  });
+
+  it('Expect .category-select to display only category options that are in attachments', () => {
+    // Get different categories from attachments
+    let uniqCategories = [];
+    wrapper.vm.attachments.forEach(element => {
+      if (!uniqCategories.includes(element.category)) {
+        uniqCategories.push(element.category);
+      }
+    });
+
+    const categorySelect = wrapper.find('.category-select');
+    const options = categorySelect.findAll('option');
+    expect(options.length).toBe(uniqCategories.length + 1);
   });
 
   /**
