@@ -134,7 +134,7 @@ describe('Attachments.vue', () => {
     "3": "category3",
     "4": "category4"
   }
-  it('Expect category select to be displayed if more than one category', () => {
+  it('Expect category select to be displayed if there are category option available', () => {
     const categorySelect = wrapper.find('.category-select');
     expect(categorySelect.exists()).toBe(true);
   });
