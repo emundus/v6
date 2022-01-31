@@ -43,7 +43,7 @@
         </div>
         <div class="actions">
           <select
-              v-if="Object.entries(categories).length > 1"
+              v-if="Object.entries(thisAttachmentCategories).length > 1"
               name="category"
               class="category-select"
               ref="categoryFilter"
