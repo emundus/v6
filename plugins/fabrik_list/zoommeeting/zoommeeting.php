@@ -40,20 +40,27 @@ class PlgFabrik_ListZoommeeting extends PlgFabrik_List {
         foreach($raw as $meeting) {
             $response = $zoom->doRequest('GET', '/meetings/' . $meeting->meeting_session, array(), array(), '');
             
-            if($zoom->responseCode() != 200) {
-                // remove this meeting room from eMundus database
+            if($zoom->responseCode() == 200) {
+                # if this meeting is retrieved, so we get the meeting meta-data (update the url + password)
+                $updateSql = "UPDATE #__emundus_jury 
+                                    SET visio_link = " . $db->quote($response['start_url']) .
+                                            ", join_url = " . $db->quote($response['join_url']) .
+                                                ", registration_url = " . $db->quote($response['registration_url']) .
+                                                    ", password = " . $db->quote($response['password']) .
+                                                        ", encrypted_password = " . $db->quote($response['encrypted_password']);
+                $db->setQuery($updateSql);
+                $db->execute();
+            } else {
+                // remove this meeting room from eMundus database if this meeting has been deleted
                 $mId = $meeting->id;
 
                 $deleteSql = "DELETE FROM #__emundus_jury WHERE #__emundus_jury.id = " . $mId;
                 $db->setQuery($deleteSql);
                 $db->execute();
-            } else {
-                $zoom->requestErrors();
             }
         }
     }
 
-    /* unavailable for Basic, Pro account ==> need to use Business, Enterprise account */
     public function onDeleteRows() {
         $db = JFactory::getDbo();
 
