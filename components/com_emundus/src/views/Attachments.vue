@@ -51,7 +51,7 @@
           >
             <option value="all">{{ translate("SELECT_CATEGORY") }}</option>
             <option
-                v-for="(category, key) in categories"
+                v-for="(category, key) in thisAttachmentCategories"
                 :key="key"
                 :value="key"
             >
@@ -890,6 +890,22 @@ export default {
           "/" +
           this.selectedAttachment.filename
       );
+    },
+    thisAttachmentCategories() {
+      let displayedCategories = {};
+      if (Object.entries(this.categories).length > 0) {
+        for (let category in this.categories) {
+          for (let attachment in this.attachments) {
+            // if the attachment category is the same as the category
+            if (this.attachments[attachment].category == category) {
+              // add the category to the displayedCategories object
+              displayedCategories[category] = this.categories[category];
+            }
+          }
+        }
+      }
+
+      return displayedCategories;
     },
   },
 };
