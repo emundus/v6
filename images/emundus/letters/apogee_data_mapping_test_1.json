@@ -187,7 +187,7 @@
         "sql": "select #__emundus_personal_detail.birth_place from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "codPayNat": {
-        "sql": "select data_pays.cod_pay from data_pays left join #__emundus_personal_detail on #__emundus_personal_detail.nationality = data_pays.lib_nat where #__emundus_personal_detail.fnum = "
+        "sql": "select distinct(data_pays.cod_pay_sis_nat) from data_pays left join #__emundus_personal_detail on #__emundus_personal_detail.nationality = data_pays.lib_nat where #__emundus_personal_detail.fnum = "
       },
       "codTypDepPayNai": {
         "default": ""
