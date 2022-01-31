@@ -13,8 +13,10 @@ var mixin = {
 		},
 		getUserNameById: function (id) {
 			let completeName = '';
+			// id to int 
+			id = parseInt(id);
 
-			if (id && id.length > 0) {
+			if (id > 0) {
 				const user = this.$store.state.user.users[id];
 				if (user) {
 					completeName = user.firstname + ' ' + user.lastname;

@@ -10,13 +10,13 @@ JFactory::getSession()->set('application_layout', 'mail');
             <div class="panel-heading em-container-mail-heading">
 
                 <h3 class="panel-title">
-                	<span class="glyphicon glyphicon-comment"></span>
+                    <span class="material-icons">mode_comment</span>
                 	<?= JText::_('COM_EMUNDUS_EMAILS_MESSAGES'); ?>
                 	<span class="label label-info"><?= count($this->messages); ?></span>
                 </h3>
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
                 </div>
 
             </div>

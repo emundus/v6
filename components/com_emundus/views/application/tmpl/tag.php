@@ -9,12 +9,11 @@ JFactory::getSession()->set('application_layout', 'tag');
     <div class="row">
         <div class="panel panel-default widget em-container-tags">
             <div class="panel-heading em-container-tags-heading">
-                <h3 class="panel-title" style="display:inline-block">
+                <h3 class="panel-title">
                     <span class="glyphicon glyphicon-tags"></span>
                     <?php echo JText::_('COM_EMUNDUS_TAGS'); ?>
                     <span class="label label-info" style="float:unset"><?php echo count($this->tags); ?></span>
-                </h3>&ensp;&ensp;
-
+                    <div class="em-flex-row em-w-40-vw">
 	            <?php if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $this->fnum)) :?>
                     <select class="chzn-select" multiple id="mytags">
                         <?php foreach($this->groupedTags as $category => $value) :?>
@@ -28,11 +27,15 @@ JFactory::getSession()->set('application_layout', 'tag');
                     </select>&ensp;&ensp;
                     <button class="btn btn-success btn-xs" id="add-tags">
                         <?php echo JText::_('COM_EMUNDUS_ADD'); ?>
-                    </button>
-	            <?php endif;?>
+                            </button>
+                        <?php endif;?>
+                    </div>
+                </h3>&ensp;&ensp;
+
+
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
                 </div>
             </div>
             <div class="panel-body em-container-tags-body">
@@ -54,7 +57,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                                             <h2><span class="label <?php echo $tag['class']; ?>" style="float:unset"><?php echo $tag['label']; ?></span>
                                                 <?php if($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)):?>
                                                         <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE');?>">
-                                                            <span class="glyphicon glyphicon-trash"></span>
+                                                            <span class="material-icons">delete_outline</span>
                                                         </button>
                                                 <?php endif; ?>
                                             </h2>

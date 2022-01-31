@@ -829,7 +829,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                 ];
                 $m_emails->logEmail($log);
                 // Log the email in the eMundus logging system.
-                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+                $logsParams = array('created' => [$subject]);
+                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
@@ -978,7 +979,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
-				EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+                $logsParams = array('created' => [$subject]);
+				EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 
 		}
@@ -1187,7 +1189,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    $m_emails->logEmail($log);
 
 		    // Log the email in the eMundus logging system.
-		    EmundusModelLogs::log($user->id, $fnum['applicant_id'], $fnum['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+            $logsParams = array('created' => [$subject]);
+		    EmundusModelLogs::log($user->id, $fnum['applicant_id'], $fnum['fnum'], 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
 		    return true;
 	    }

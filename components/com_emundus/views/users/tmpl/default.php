@@ -17,13 +17,13 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 <div class="row">
 <div class="col-md-3 side-panel">
 	<div class="panel panel-info em-containerFilter" id="em-user-filters">
-		<div class="panel-heading em-containerFilter-heading" style="height:55px">
-			<div style="float:left; position:absolute">
+		<div class="panel-heading em-containerFilter-heading">
+			<div>
 				<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS')?></h3> &ensp;&ensp;
 			</div>
             <div class="buttons" style="float:right; margin-top:0px">
                 <label for="clear-search">
-                    <img src="<?php echo JURI::base()?>/media/com_emundus/images/icones/clear-filters.png" style="width: 30px;filter: invert(1);"/>
+                    <img src="<?php echo JURI::base()?>/media/com_emundus/images/icones/clear-filters.png" style="width: 25px;filter: invert(1);"/>
                 </label>
 
                 <input type="button" style="display: none" id="clear-search" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN');?>"/>
@@ -36,7 +36,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 
 	<div class="panel panel-info em-hide" id="em-appli-menu">
 		<div class="panel-heading em-hide-heading">
-			<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_APPLICATION_ACTIONS')?></h3>
+			<h3 class="panel-title"><?php echo JText::_('APPLICATIONS_ACTIONS')?></h3>
 		</div>
 		<div class="panel-body em-hide-body">
 			<div class="list-group">
@@ -68,7 +68,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 </div>
 
 <div class="col-md-9 main-panel">
-	<div id="em-hide-filters" class="em-close-filter">
+	<div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top" title=<?php echo JText::_('HIDE_FILTERS'); ?>">
 		<span class="glyphicon glyphicon-chevron-left"></span>
 	</div>
 	<div class="navbar navbar-inverse em-menuaction">
@@ -167,5 +167,11 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
           });
       });
 	reloadActions('files');
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>

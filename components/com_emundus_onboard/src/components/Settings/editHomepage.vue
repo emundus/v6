@@ -25,8 +25,8 @@
 
 <script>
     import axios from "axios";
-    import Editor from "../../components/editor";
-    import ModalUpdateImage from "@/views/advancedModals/ModalUpdateImage";
+    import Editor from "@/components/editor";
+    import ModalUpdateImage from "@/components/AdvancedModals/ModalUpdateImage";
     import Translation from "@/components/translation";
 
     const qs = require("qs");

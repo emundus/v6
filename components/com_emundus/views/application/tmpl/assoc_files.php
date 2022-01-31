@@ -11,12 +11,12 @@ if (!empty((array)$this->assoc_files)) : ?>
 						<div class="pull-right btn-group">
 							<?php if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $camp->fnum)): ?>
 								<button id="em-delete-files" class = "btn btn-danger btn-xs pull-right" title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_APPLICATION_FILE')?>">
-									<span class="glyphicon glyphicon-trash"></span>
+									<span class="material-icons">delete_outline</span>
 								</button>
 							<?php endif; ?>
 							<?php if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $camp->fnum)): ?>
 								<button id="em-see-files" class = "btn btn-info btn-xs pull-right" title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_OPEN_APPLICATION_FILE')?>">
-									<span class="glyphicon glyphicon-eye-open"></span>
+									<span class="material-icons">visibility</span>
 								</button>
 							<?php endif; ?>
 						</div>

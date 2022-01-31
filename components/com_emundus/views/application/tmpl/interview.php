@@ -37,11 +37,11 @@ JFactory::getSession()->set('application_layout', 'interview');
             <?php
                 if (EmundusHelperAccess::asAccessAction(34, 'd', $this->_user->id, $this->fnum)) :?>
                     <div style="display:inline-block"><button class="btn btn-danger btn-xs btn-attach" title="<?= JText::_('COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS'); ?>" id="em_delete_evals" name="em_delete_evals" link="index.php?option=com_emundus&controller=evaluation&task=delevaluation&applicant=<?= $this->student->id; ?>&fnum=<?= $this->fnum; ?>">
-                    <span class="glyphicon glyphicon-trash"></span></button></div>
+                    <span class="material-icons">delete_outline</span></button></div>
             <?php endif; ?>
             <div class="btn-group pull-right">
-                <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
+                <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
             </div>
         </div>
         <div class="panel-body em-container-evaluation-body">

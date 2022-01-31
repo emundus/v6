@@ -26,13 +26,15 @@ JFactory::getSession()->set('application_layout', 'admission');
                             <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"><span class="glyphicon glyphicon-save"></span></button>
                         </a>
                     <?php endif;?>
+                    <div class="em-flex-row">
+                        <?php if (!empty($this->url_form)):?>
+                            <a href="<?php echo $this->url_form; ?>" target="_blank" class="em-flex-row" title="<?php echo JText::_('COM_EMUNDUS_ADMISSION_OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="material-icons">open_in_new</span></a>
+                        <?php endif;?>
+                    </div>
                 </h3>
-                <?php if (!empty($this->url_form)):?>
-                    <a href="<?php echo $this->url_form; ?>" target="_blank" title="<?php echo JText::_('COM_EMUNDUS_ADMISSION_OPEN_ADMISSION_FORM_IN_NEW_TAB_DESC'); ?>"><span class="glyphicon glyphicon-pencil"></span> <?php echo JText::_('COM_EMUNDUS_ADMISSION_OPEN_ADMISSION_FORM_IN_NEW_TAB'); ?></a>
-                <?php endif;?>
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
                 </div>
             </div>
             <div class="panel-body em-container-admission-body">

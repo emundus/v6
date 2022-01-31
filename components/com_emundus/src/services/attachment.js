@@ -1,6 +1,22 @@
 import client from './axiosClient';
 
 export default {
+  async getAttachmentProgress(fnum) {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=files&task=getattachmentprogress', {
+        params: {
+          fnum: fnum,
+        }
+      });
+
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
   async getAttachmentsByUser(user) {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=getuserattachments', {
@@ -14,7 +30,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -40,6 +56,10 @@ export default {
         }
 
         response.data.attachments.forEach(attachment => {
+          if (attachment.is_validated === null) {
+            attachment.is_validated = -2;
+          }
+
           attachment.show = true;
         });
       }
@@ -49,7 +69,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -62,7 +82,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -72,18 +92,18 @@ export default {
       formData.append('ids', JSON.stringify(attachment_ids));
 
       return await client().post(`index.php?option=com_emundus&controller=application&task=deleteattachement&fnum=${fnum}&student_id=${student_id}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
           }
-        }
       );
     } catch (e) {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -100,7 +120,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -118,7 +138,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
   exportAttachments(student, fnum, attachment_ids) {

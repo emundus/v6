@@ -182,6 +182,11 @@ $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<div id="em-globalSettings-vue" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>" manyLanguages="<?= $many_languages ?>"></div>
+<div id="em-component-vue"
+     component="settings"
+     actualLanguage="<?= $actualLanguage ?>"
+     coordinatorAccess="<?= $coordinator_access ?>"
+     manyLanguages="<?= $many_languages ?>"
+></div>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

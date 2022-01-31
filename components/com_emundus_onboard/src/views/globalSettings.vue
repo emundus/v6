@@ -118,7 +118,6 @@ import editTags from "../components/Settings/editTags";
 import editHomepage from "../components/Settings/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
-import editUsers from "../components/Settings/editUsers";
 import editCGV from "../components/Settings/editCGV";
 import editFooter from "../components/Settings/editFooter";
 import Tasks from "@/views/tasks";
@@ -134,8 +133,6 @@ export default {
   components: {
     TranslationTool,
     EditApplicants,
-    HelpSettings,
-    Tasks,
     editStatus,
     editTags,
     editCGV,
@@ -143,7 +140,6 @@ export default {
     editHomepage,
     editStyle,
     editDatas,
-    editUsers
   },
 
   props: {
@@ -372,11 +368,6 @@ export default {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
-    /*this.$nextTick(function () {
-      window.setInterval(() => {
-        this.saveCurrentPage();
-      },20000);
-    })*/
   },
 
   watch: {

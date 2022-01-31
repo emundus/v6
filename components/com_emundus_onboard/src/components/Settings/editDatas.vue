@@ -57,8 +57,8 @@
 
 <script>
     import axios from "axios";
-    import ModalAddDatas from "../../views/advancedModals/ModalAddDatas";
-    import ModalImportDatas from "../../views/advancedModals/ModalImportDatas";
+    import ModalAddDatas from "@/components/AdvancedModals/ModalAddDatas";
+    import ModalImportDatas from "@/components/AdvancedModals/ModalImportDatas";
 
     const qs = require("qs");
 

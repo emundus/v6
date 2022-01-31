@@ -686,7 +686,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 					$res = false;
 				} else {
 					$u->delete();
-					EmundusModelLogs::log($this->_user->id, $user, null, 20, 'd', 'COM_EMUNDUS_LOGS_DELETE_USER');
+					EmundusModelLogs::log($this->_user->id, $user, null, 20, 'd', 'COM_EMUNDUS_ADD_USER_DELETE');
 				}
 			}
 		}

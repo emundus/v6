@@ -20,8 +20,8 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 	<div class="row">
 		<div class="col-md-3 side-panel">
 			<div class="panel panel-info em-containerFilter" id="em-files-filters">
-				<div class="panel-heading em-containerFilter-heading" style="height:55px">
-					<div style="float:left; position:absolute">
+				<div class="panel-heading em-containerFilter-heading">
+					<div>
 						<h3 class="panel-title"><?php echo JText::_('COM_EMUNDUS_FILTERS')?></h3> &ensp;&ensp;
 					</div>
 					<div class="buttons" style="float:right; margin-top:0px">
@@ -77,7 +77,7 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
 		</div>
 
 		<div class="col-md-9 main-panel">
-			<div id="em-hide-filters" class="em-close-filter">
+			<div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top" title=<?php echo JText::_('HIDE_FILTERS'); ?>">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
 			<div class="navbar navbar-inverse em-menuaction">
@@ -152,4 +152,8 @@ JHTML::stylesheet('media/com_emundus/css/emundus_panel.css' );
        // search();
         reloadActions();
 	})
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 </script>

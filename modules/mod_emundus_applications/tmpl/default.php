@@ -136,10 +136,17 @@ defined('_JEXEC') or die;
                     <?php endif; ?>
                 </section>
                 <div class="main-page-file-progress-label">
-                    <strong><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</strong>
-                    <span class="label label-<?= $application->class; ?>">
-                        <?= $application->value; ?>
-                    </span>
+                    <?php if(empty($visible_status)) : ?>
+                        <strong><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</strong>
+                        <span class="label label-<?= $application->class; ?>">
+                            <?= $application->value; ?>
+                        </span>
+                    <?php elseif (in_array($application->status,$visible_status)) :?>
+                        <strong><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</strong>
+                        <span class="label label-<?= $application->class; ?>">
+                            <?= $application->value; ?>
+                        </span>
+                    <?php endif; ?>
                     <?php if(!empty($application->order_status)): ?>
                         <br>
                         <strong><?= JText::_('ORDER_STATUS'); ?> :</strong>

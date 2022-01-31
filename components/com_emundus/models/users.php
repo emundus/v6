@@ -1283,7 +1283,7 @@ class EmundusModelUsers extends JModelList {
                 }
 
                 $res = $db->execute();
-	            EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_LOGS_UPDATE_USER_BLOCK');
+	            EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_ADD_USER_UPDATE');
             }
 
             return $res;

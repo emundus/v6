@@ -66,12 +66,14 @@
 				class="material-icons visibility-permission"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
+				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')"
 				>visibility</span
 			>
 			<span
 				class="material-icons delete-permission"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"
+				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')"
 				>delete_outlined</span
 			>
 		</td>

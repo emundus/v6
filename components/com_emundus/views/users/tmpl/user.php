@@ -162,7 +162,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
         </select>
         <div class="em-container-pagination-selectPage">
             <ul class="pagination pagination-sm">
-                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'}?>"><<</a></li>
+                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'}?>"><span class='material-icons'>navigate_before</span></a></li>
                 <?php if ($this->pagination->{'pagesTotal'} > 15) :?>
 
                     <?php for ($i = 1; $i <= 5; $i++ ) :?>
@@ -189,7 +189,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                         <li <?php if ($this->pagination->{'pagesCurrent'} == $i){echo 'class="active"';}?>><a id="<?php echo $i; ?>" href="#em-data"><?php echo $i; ?></a></li>
                     <?php endfor; ?>
                 <?php endif; ?>
-                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesTotal'}?>">>></a></li>
+                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesTotal'}?>"><span class='material-icons'>navigate_next</span></a></li>
             </ul>
         </div>
     </div>
