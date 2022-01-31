@@ -548,7 +548,7 @@ class EmundusModelFiles extends JModelLegacy
                                             } else {
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
                                             }
-                                            
+
                                             /*if (!isset($query[$table])) {
                                                 $query[$table] = true;
                                                 if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
@@ -1503,7 +1503,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getPageNavigation() : string {
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1549,7 +1549,7 @@ class EmundusModelFiles extends JModelLegacy
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -1853,27 +1853,44 @@ class EmundusModelFiles extends JModelLegacy
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
 
+            $query_associated_tags = $db->getQuery(true);
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+
             if (!empty($fnums) && !empty($tags)) {
+                $logsParams = array('created' => []);
                 foreach ($fnums as $fnum) {
+                    // Get tags already associated to this fnum by the current user
+                    $query_associated_tags->clear()
+                        ->select('id_tag')
+                        ->from($db->quoteName('#__emundus_tag_assoc'))
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+                        ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user));
+                    $db->setQuery($query_associated_tags);
+                    $tags_already_associated = $db->loadColumn();
 
                     // Log the tag in the eMundus logging system.
                     EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
 
+                    // Insert valid tags
                     foreach ($tags as $tag) {
-                        $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                        if(!in_array($tag,$tags_already_associated)) {
+                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                        }
                     }
+                    // Log the tags in the eMundus logging system.
+                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
+
+                $query = substr_replace($query, ";", -1);
+                $db->setQuery($query);
+                $db->execute();
             }
 
-            $query = substr_replace($query, ";", -1);
-            $db->setQuery($query);
-            return $db->execute();
+            return true;
         }
         catch (Exception $e)
         {
-            error_log($e->getMessage());
-            error_log($query);
+            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -2020,9 +2037,45 @@ class EmundusModelFiles extends JModelLegacy
         $db = $this->getDbo();
         foreach ($fnums as $fnum) {
 
-            // Log the update.
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_LOGS_UPDATE_PUBLISH');
+            // Log the update in the eMundus logging system.
+            // Get the old publish status
+            $query = $db->getQuery(true);
+            $query->select($db->quoteName('published'))
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('fnum').' = '.$fnum);
+                $db->setQuery($query);
+            $old_publish = $db->loadResult();
+            // Before logging, translate the publish id to corresponding label
+            // Old publish status
+            switch ($old_publish) {
+                case(1):
+                    $old_publish = JText::_('PUBLISHED');
+                break;
+                case(0):
+                    $old_publish = JText::_('ARCHIVED');
+                break;
+                case(-1):
+                    $old_publish = JText::_('TRASHED');
+                break;
+            }
+            // New publish status
+            switch ($publish) {
+                case(1):
+                    $new_publish = JText::_('PUBLISHED');
+                break;
+                case(0):
+                    $new_publish = JText::_('ARCHIVED');
+                break;
+                case(-1):
+                    $new_publish = JText::_('TRASHED');
+                break;
+            }
+            // Log the update
+            $logsParams = array('updated' => []);
+            array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
+            // Update publish
             $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
             $dispatcher->trigger('callEventHandler', ['onBeforePublishChange', ['fnum' => $fnum, 'publish' => $publish]]);
             $query = 'update #__emundus_campaign_candidature set published = '.$publish.' WHERE fnum like '.$db->Quote($fnum) ;
@@ -3847,6 +3900,7 @@ class EmundusModelFiles extends JModelLegacy
         $db->setQuery($query);
         return $db->loadAssocList();
     }
+
     public function getTagsAssocStatus($status){
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
