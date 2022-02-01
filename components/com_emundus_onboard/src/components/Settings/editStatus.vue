@@ -1,29 +1,17 @@
 <template>
     <div class="em-settings-menu">
-      <a @click="pushStatus" class="bouton-ajouter-green bouton-ajouter pointer mb-1" style="width: max-content">
-        <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
-          {{ addStatus }}
-        </div>
-      </a>
-        <div v-for="(statu, index) in status" class="status-item" :id="'step_' + statu.step">
+      <div class="em-flex-col-start em-w-80">
+        <button @click="pushStatus" class="em-primary-button em-mb-24" style="width: max-content">
+          <div class="add-button-div">
+            <em class="fas fa-plus mr-1"></em>
+            {{ translate('COM_EMUNDUS_ONBOARD_ADD_STATUS') }}
+          </div>
+        </button>
+        <div v-for="(statu, index) in status" class="status-item em-mb-24" :id="'step_' + statu.step">
             <div class="status-field">
                 <div style="width: 100%">
                     <input type="text" v-model="statu.label[actualLanguage]">
-                    <translation :label="statu.label" :actualLanguage="actualLanguage" v-if="statu.translate"></translation>
-                    <!--<transition :name="'slide-down'" type="transition">
-                        <div class="translate-block" v-if="statu.translate">
-                            <label class="translate-label">
-                                {{TranslateEnglish}}
-                            </label>
-                            <em class="fas fa-sort-down"></em>
-                        </div>
-                    </transition>
-                    <transition :name="'slide-down'" type="transition">
-                        <input type="text" v-model="statu.value.en" v-if="statu.translate">
-                    </transition>-->
                 </div>
-                <button class="translate-icon" v-if="manyLanguages !== '0'" v-bind:class="{'translate-icon-selected': statu.translate}" type="button" @click="statu.translate = !statu.translate; $forceUpdate()"></button>
                 <input type="hidden" :class="'label-' + statu.class">
             </div>
             <v-swatches
@@ -35,13 +23,15 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
-          <button type="button" :title="Delete" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-times"></i></button>
+          <button type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" @click="removeStatus(statu,index)" class="remove-tag"><i class="fas fa-times"></i></button>
         </div>
+      </div>
     </div>
 </template>
 
 <script>
     import axios from "axios";
+    import {global} from "../../store/global";
     import VSwatches from 'vue-swatches'
     import 'vue-swatches/dist/vue-swatches.css'
     import Translation from "@/components/translation";
@@ -56,23 +46,18 @@
           Translation
         },
 
-        props: {
-          actualLanguage: String,
-          manyLanguages: Number,
-        },
+        props: {},
 
         data() {
             return {
                 status: [],
                 show: false,
+                actualLanguage : '',
                 swatches: [
                     '#DCC6E0', '#947CB0', '#663399', '#6BB9F0', '#19B5FE', '#013243', '#7BEFB2', '#3FC380', '#1E824C', '#FFFD7E',
                     '#FFFD54', '#F7CA18', '#FABE58', '#E87E04', '#D35400', '#EC644B', '#CF000F', '#E5283B', '#E08283', '#D2527F',
                     '#DB0A5B', '#999999'
                 ],
-                TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-                addStatus: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_STATUS"),
-                Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_STATUS"),
             };
         },
 
@@ -139,30 +124,9 @@
 
         created() {
             this.getStatus();
+            this.actualLanguage = global.getters.actualLanguage;
         }
     };
 </script>
 <style scoped>
-    .translate-block{
-        display: flex;
-        margin: 10px;
-        color: white
-    }
-    .translate-icon-selected{
-      margin-top: 10px;
-      height: max-content;
-    }
-    .bouton-sauvergarder-et-continuer{
-      justify-content: center;
-        right: 10%;
-        margin-bottom: 14px;
-    }
-    .create-tag{
-      width: max-content;
-      margin-bottom: 20px;
-    }
-    .loading-form-save{
-      right: 21%;
-    }
-
 </style>

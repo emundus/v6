@@ -5194,6 +5194,14 @@ input:focus + .em-slider {
   height: 100%;
 }
 
+.em-flex-col-start{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  height: 100%;
+}
+
 .em-errors-alert .alert{
   margin: unset;
 }

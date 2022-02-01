@@ -3,7 +3,7 @@
       <div class="w-100">
 
         <!-- HEADER -->
-        <div class="em-flex-row em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9" style="margin-left: 10%" @click="menuHighlight = 0">
+        <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9" style="margin-left: 10%" @click="menuHighlight = 0">
           <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
         <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>

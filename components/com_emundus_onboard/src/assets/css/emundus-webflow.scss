@@ -1380,8 +1380,7 @@ textarea {
 
 .remove-tag{
   background: transparent;
-  color: $red;
-  position: absolute;
+  color: $main-500;
   right: 0;
 }
 .vue-swatches__wrapper {
@@ -1392,9 +1391,8 @@ textarea {
   background: #cecece;
   border-radius: 5px;
   justify-content: center;
-  margin-top: -10em;
+  margin-top: -9em;
   z-index: 999;
-  right: 4em;
   &::after {
     width: 0;
     height: 0;
@@ -1404,7 +1402,7 @@ textarea {
     content: "";
     position: absolute;
     bottom: -10px;
-    right: 10px;
+    left: 10px;
   }
 }
 .vue-swatches__trigger {
@@ -1418,6 +1416,11 @@ textarea {
   &:hover {
     transform: scale(1.2);
   }
+}
+.vue-swatches__container{
+  background: transparent !important;
+  margin-bottom: unset !important;
+  padding: unset !important;
 }
 .label-lightpurple {
   background-color: #DCC6E0 !important;
@@ -2334,7 +2337,6 @@ textarea {
 }
 
 .status-field{
-  padding: 5px;
   border-radius: 5px;
   width: 100%;
   margin-right: 1em;
@@ -2345,8 +2347,8 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1em;
   max-width: 95%;
+  width: 100%;
 }
 
 .vertical-divider{

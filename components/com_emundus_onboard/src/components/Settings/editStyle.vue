@@ -25,7 +25,7 @@
           <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
         </div>
         <div class="w-100 em-ml-24">
-          <div class="em-flex-row justify-content-between">
+          <div class="em-flex-row em-flex-space-between">
             <h2 style="margin: 0">Logo</h2>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateLogo')">
               {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
@@ -40,11 +40,8 @@
           <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
         </div>
         <div class="w-100 em-ml-24">
-          <div class="em-flex-row justify-content-between">
+          <div class="em-flex-row em-flex-space-between">
             <h2 style="margin: 0">{{Icon}}</h2>
-<!--          <a class="settings-edit-icon cta-block pointer" style="top: 20px" @click="removeIcon">
-            <em class="fas fa-times" data-toggle="tooltip" data-placement="top"></em>
-          </a>-->
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateIcon')">
               {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
             </a>
@@ -59,7 +56,7 @@
           </div>
         </div>
         <div class="w-100 em-ml-24">
-          <div class="em-flex-row justify-content-between">
+          <div class="em-flex-row em-flex-space-between">
             <h2 style="margin: 0">{{Colors}}</h2>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateColors')">
               {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}

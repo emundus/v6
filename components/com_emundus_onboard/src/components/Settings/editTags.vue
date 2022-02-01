@@ -1,14 +1,17 @@
 <template>
     <div class="em-settings-menu">
-      <a @click="pushTag" class="bouton-ajouter-green bouton-ajouter pointer mb-1" style="width: max-content">
-        <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
-          {{ addTag }}
-        </div>
-      </a>
-        <div v-for="(tag, index) in tags" class="status-item tags-item" :id="'tag_' + tag.id">
+      <div class="em-flex-col-start em-w-80">
+        <button @click="pushTag" class="em-primary-button em-mb-24" style="width: max-content">
+          <div class="add-button-div">
+            <em class="fas fa-plus mr-1"></em>
+            {{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG') }}
+          </div>
+        </button>
+        <div v-for="(tag, index) in tags" class="status-item tags-item em-mb-24" :id="'tag_' + tag.id">
             <div class="status-field">
+              <div style="width: 100%">
                 <input type="text" v-model="tag.label">
+              </div>
                 <input type="hidden" :class="tag.class">
             </div>
             <v-swatches
@@ -20,8 +23,9 @@
                     popover-x="left"
                     popover-y="top"
             ></v-swatches>
-            <button type="button" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-times"></i></button>
+            <button type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="remove-tag"><i class="fas fa-times"></i></button>
         </div>
+      </div>
     </div>
 </template>
 
@@ -50,7 +54,6 @@
                     '#FFFD54', '#F7CA18', '#FABE58', '#E87E04', '#D35400', '#EC644B', '#CF000F', '#E5283B', '#E08283', '#D2527F',
                     '#DB0A5B', '#999999'
                 ],
-                addTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_ADDTAG"),
             };
         },
 
