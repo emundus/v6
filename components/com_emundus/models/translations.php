@@ -288,7 +288,7 @@ class EmundusModelTranslations extends JModelList
                 $this->_db->quote(md5($override)),
                 $this->_db->quote($location),
                 $this->_db->quote($type),
-                $reference_id,
+                $this->_db->quote($reference_id),
                 $this->_db->quote($reference_table),
                 1,
                 $user->id,
@@ -331,7 +331,7 @@ class EmundusModelTranslations extends JModelList
      *
      * @since version
      */
-    public function updateTranslation($tag,$override,$lang_code,$type = 'override'){
+    public function updateTranslation($tag,$override,$lang_code,$type = 'override',$reference_table = '',$reference_id = 0){
         $query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
 
@@ -344,7 +344,14 @@ class EmundusModelTranslations extends JModelList
                     ->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
                     ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
                     ->set($this->_db->quoteName('modified_date') . ' = ' . time())
-                    ->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag))
+                    ->set($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
+                if(!empty($reference_table)){
+                    $query->set($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table));
+                }
+                if(!empty($reference_id)){
+                    $query->set($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id));
+                }
+                $query->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag))
                     ->andWhere($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code))
                     ->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type));
                 $this->_db->setQuery($query);
@@ -547,6 +554,7 @@ class EmundusModelTranslations extends JModelList
                 $labels->{$field} = new stdClass;
                 $labels->{$field}->reference_field = $field;
                 $labels->{$field}->reference_table = $reference_table;
+                $labels->{$field}->reference_id = $reference_id;
 
                 $query->clear()
                     ->select('value')

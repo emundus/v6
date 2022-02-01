@@ -153,6 +153,30 @@ export default {
           }
         }
         break;
+      case 'override':
+        try {
+          const formData = new FormData();
+          formData.append('value', value);
+          formData.append('lang_to', lang_to);
+          formData.append('tag', field);
+          formData.append('reference_table', reference_table);
+          formData.append('reference_id', reference_id);
+
+          return await client().post(`index.php?option=com_emundus&controller=translations&task=updatetranslation`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              }
+          );
+        } catch (e) {
+          return {
+            status: false,
+            msg: e.message
+          }
+        }
+        break;
       default:
     }
   }

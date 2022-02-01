@@ -1,9 +1,12 @@
 <template>
   <div>
     <h2 class="em-h4 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h2>
-    <p class="em-font-size-14 em-mb-24" v-if="!saving && last_save == null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
-    <p class="em-font-size-14 em-mb-24" v-if="saving">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
-    <p class="em-font-size-14 em-mb-24" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
+    <p class="em-font-size-14 em-mb-24 em-h-25" v-if="!saving && last_save == null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
+    <div v-if="saving" class="em-mb-24 em-flex-row em-flex-start">
+      <div class="em-loader em-mr-8"></div>
+      <p class="em-font-size-14 em-flex-row">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
+    </div>
+    <p class="em-font-size-14 em-mb-24 em-h-25" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
     <div class="em-grid-4">
       <!-- Languages -->
       <div>
@@ -103,8 +106,8 @@
               <p>{{ section.indexedFields[translation.reference_field].Label.toUpperCase() }}</p>
               <div class="justify-content-between em-mt-16 em-grid-50">
                 <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
-                <input v-if="section.indexedFields[translation.reference_field].Type === 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
-                <textarea v-if="section.indexedFields[translation.reference_field].Type === 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index)" />
+                <input v-if="section.indexedFields[translation.reference_field].Type === 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
+                <textarea v-if="section.indexedFields[translation.reference_field].Type === 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
               </div>
             </div>
           </div>
@@ -189,9 +192,10 @@ export default {
       });
     },
 
-    async saveTranslation(value,index){
+    async saveTranslation(value,index,translation){
       this.saving = true;
-      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,this.data.id,index,this.object.table.name).then((response) => {
+      this.translations[index].lang_to = value;
+      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,index,translation.reference_table).then((response) => {
         this.last_save = this.formattedDate('','LT');
         this.saving = false;
       });
