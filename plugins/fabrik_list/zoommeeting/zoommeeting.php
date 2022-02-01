@@ -36,10 +36,10 @@ class PlgFabrik_ListZoommeeting extends PlgFabrik_List {
         $fetchSql = "select * from jos_emundus_jury";
         $db->setQuery($fetchSql);
         $raw = $db->loadObjectList();
-        
+
         foreach($raw as $meeting) {
             $response = $zoom->doRequest('GET', '/meetings/' . $meeting->meeting_session, array(), array(), '');
-            
+
             if($zoom->responseCode() == 200) {
                 # if this meeting is retrieved, so we get the meeting meta-data (update the url + password)
                 $updateSql = "UPDATE #__emundus_jury 
@@ -47,7 +47,8 @@ class PlgFabrik_ListZoommeeting extends PlgFabrik_List {
                                             ", join_url = " . $db->quote($response['join_url']) .
                                                 ", registration_url = " . $db->quote($response['registration_url']) .
                                                     ", password = " . $db->quote($response['password']) .
-                                                        ", encrypted_password = " . $db->quote($response['encrypted_password']);
+                                                        ", encrypted_password = " . $db->quote($response['encrypted_password']) .
+                                                            " WHERE #__emundus_jury.id = " . $db->quote($meeting->id);
                 $db->setQuery($updateSql);
                 $db->execute();
             } else {
