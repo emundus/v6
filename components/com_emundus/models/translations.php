@@ -87,6 +87,10 @@ class EmundusModelTranslations extends JModelList
                         $section = new stdClass;
                         $section->Label = trim( $tableSection->getAttribute( 'label' ));
                         $section->Name = trim( $tableSection->getAttribute( 'name' ));
+                        $section->Table = trim( $tableSection->getAttribute( 'table' ));
+                        $section->TableJoin = trim( $tableSection->getAttribute( 'join_table' ));
+                        $section->TableJoinColumn = trim( $tableSection->getAttribute( 'join_column' ));
+                        $section->ReferenceColumn = trim( $tableSection->getAttribute( 'reference_column' ));
                         $section->indexedFields = array();
 
                         foreach ($tableFields as $tableField){
@@ -232,7 +236,11 @@ class EmundusModelTranslations extends JModelList
                 $query->where($this->_db->quoteName('reference_table') . ' LIKE ' . $this->_db->quote($reference_table));
             }
             if (!empty($reference_id)) {
-                $query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
+                if(is_array($reference_id)){
+                    $query->where($this->_db->quoteName('reference_id') . ' IN (' . implode(',',$this->_db->quote($reference_id)) . ')');
+                } else {
+                    $query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
+                }
             }
             if (!empty($tag)) {
                 $query->where($this->_db->quoteName('tag') . ' LIKE ' . $this->_db->quote($tag));
@@ -636,6 +644,28 @@ class EmundusModelTranslations extends JModelList
 
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/translations | Error at updating the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function getJoinReferenceId($reference_table,$reference_column,$join_table,$join_column,$reference_id){
+        $query = $this->_db->getQuery(true);
+
+
+        try {
+            $query->select('rt.id')
+                ->from($this->_db->quoteName('#__' . $reference_table,'rt'))
+                ->leftJoin($this->_db->quoteName('#__' . $join_table,'jt').' ON '.$this->_db->quoteName('rt.id').' = '.$this->_db->quoteName('jt.' . $reference_column));
+            if(is_array($reference_id)){
+                $query->where($this->_db->quoteName('jt.' . $join_column) . ' IN (' . implode(',',$this->_db->quote($reference_id)) . ')');
+            } else {
+                $query->where($this->_db->quoteName('jt.' . $join_column) . ' = ' . $this->_db->quote($reference_id));
+            }
+
+            $this->_db->setQuery($query);
+            return $this->_db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/translations | Error at getting the reference id by join with id ' . $reference_id . ' references to table ' . $join_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
             return false;
         }
     }

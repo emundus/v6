@@ -136,30 +136,35 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $default_lang = $jinput->get->getString('default_lang', null);
         $lang_to = $jinput->get->getString('lang_to', null);
-        $reference_table = $jinput->get->getString('reference_table', null);
+        $references_table = $jinput->get->get('reference_table', null);
         $reference_id = $jinput->get->getString('reference_id', null);
         $fields = $jinput->get->getString('fields', null);
 
         $translations = array();
 
-        $results = $this->model->getTranslations('override', '*', '', '', $reference_table, $reference_id, '');
+        foreach ($references_table as $reference_table) {
+            if(!empty($reference_table['join_table']) && !empty($reference_table['join_column']) && !empty($reference_table['reference_column'])){
+                $reference_id = $this->model->getJoinReferenceId($reference_table['table'],$reference_table['reference_column'],$reference_table['join_table'],$reference_table['join_column'],$reference_id);
+            }
+            $results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, '');
 
-        foreach ($results as $result) {
-            if (in_array($result->tag, array_keys($translations))) {
-                if ($result->lang_code == $default_lang) {
-                    $translations[$result->tag]->default_lang = $result->override;
-                } elseif ($result->lang_code == $lang_to) {
-                    $translations[$result->tag]->lang_to = $result->override;
-                }
-            } else {
-                $translation = $result;
-                if ($result->lang_code == $default_lang) {
-                    $translation->default_lang = $result->override;
-                } elseif ($result->lang_code == $lang_to) {
-                    $translation->lang_to = $result->override;
-                }
+            foreach ($results as $result) {
+                if (in_array($result->tag, array_keys($translations))) {
+                    if ($result->lang_code == $default_lang) {
+                        $translations[$result->tag]->default_lang = $result->override;
+                    } elseif ($result->lang_code == $lang_to) {
+                        $translations[$result->tag]->lang_to = $result->override;
+                    }
+                } else {
+                    $translation = $result;
+                    if ($result->lang_code == $default_lang) {
+                        $translation->default_lang = $result->override;
+                    } elseif ($result->lang_code == $lang_to) {
+                        $translation->lang_to = $result->override;
+                    }
 
-                $translations[$result->tag] = $translation;
+                    $translations[$result->tag] = $translation;
+                }
             }
         }
 

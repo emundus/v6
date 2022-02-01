@@ -7,14 +7,14 @@
   <reference>
   	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="override">
   		<field type="children" name="label">fabrik_forms</field>
-        <section label="Formulaire" name="fabrik_forms">
+        <section label="Formulaire" name="fabrik_forms" table="fabrik_forms">
             <field name="label" type="field" section="fabrik_forms" table="fabrik_forms">Titre</field>
         </section>
-        <section label="Groupes" name="fabrik_groups" table="fabrik_groups" join_table="fabrik_formgroup" join_column="form_id">
+        <section label="Groupes" name="fabrik_groups" table="fabrik_groups" reference_column="group_id" join_table="fabrik_formgroup" join_column="form_id">
             <field name="label" type="field" section="fabrik_groups">Titre</field>
             <field name="intro" type="textarea" section="fabrik_groups">Titre</field>
         </section>
-        <section label="Éléments" name="fabrik_elements" table="fabrik_elements" join_table="fabrik_elements" join_column="group_id">
+        <section label="Éléments" name="fabrik_elements" table="fabrik_elements" reference_column="id" join_table="fabrik_elements" join_column="group_id">
             <field name="label" type="field" section="fabrik_elements">Titre</field>
         </section>
   	</table>

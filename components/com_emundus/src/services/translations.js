@@ -1,4 +1,6 @@
 import client from './axiosClient';
+import axios from 'axios';
+import qs from 'qs';
 
 export default {
   async getDefaultLanguage() {
@@ -80,7 +82,7 @@ export default {
     }
   },
 
-  async getTranslations(type,default_lang,lang_to,reference_id,fields,reference_table = ''){
+  async getTranslations(type,default_lang,lang_to,reference_id,fields = '',reference_table = ''){
     switch(type){
       case 'falang':
         try {
@@ -101,25 +103,25 @@ export default {
         }
         break;
       case 'override':
+        let params = {
+          default_lang : default_lang,
+          lang_to : lang_to,
+          reference_table : reference_table,
+          reference_id : reference_id,
+          fields : fields
+        };
+
+        let myAxios = axios.create({
+          paramsSerializer: params => qs.stringify(params)
+        });
         try {
-          console.log(reference_id);
-          console.log(fields);
-          console.log(reference_table);
-          return await client().get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, {
-            params: {
-              default_lang,
-              lang_to,
-              reference_table,
-              reference_id,
-              fields,
-            }
-          });
+          return await myAxios.get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, {params});
         } catch (e) {
           return {
             status: false,
             msg: e.message
           };
-        };
+        }
         break;
       default:
     }
