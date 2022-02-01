@@ -3271,9 +3271,8 @@ $(document).ready(function() {
                                     async: false,
                                     success: function(result) {
                                         if (result.status) {
-
-                                            $('#form-exists').show();
-
+                                            if (result.form == 1)
+                                                $('#form-exists').show();
                                             if (result.att == 1)
                                                 $('#att-exists').show();
                                             if (result.eval == 1)
@@ -3371,8 +3370,8 @@ $(document).ready(function() {
 
                             success: function(result) {
                                 if (result.status) {
-
-                                    $('#form-exists').show();
+                                    if (result.form == 1)
+                                        $('#form-exists').show();
                                     if (result.att == 1)
                                         $('#att-exists').show();
                                     if (result.eval == 1)
@@ -3469,7 +3468,8 @@ $(document).ready(function() {
                         dataType:'json',
                         success: function(result) {
                             if (result.status) {
-                                $('#form-exists').show();
+                                if (result.form == 1)
+                                    $('#form-exists').show();
                                 if (result.att == 1)
                                     $('#att-exists').show();
                                 if (result.eval == 1)
@@ -3815,8 +3815,9 @@ $(document).ready(function() {
 
                                     success: function(result) {
                                         if (result.status) {
-                                            $('#form-exists').show();
-
+                                            let access = result;
+                                            if (result.form == 1)
+                                                $('#form-exists').show();
                                             if (result.att == 1)
                                                 $('#att-exists').show();
                                             if (result.eval == 1)
@@ -3851,11 +3852,13 @@ $(document).ready(function() {
                                                         $('#em-export-camp').trigger("chosen:updated");
                                                         $('#em-export-camp').trigger("change");
 
-                                                        checkElement('[id^=felts]').then((selector)=>{
-                                                            // let allFelts = selector;    /// array type
-                                                            $('#emundus_checkall').trigger('click');
-                                                            $('#em-ex-forms').trigger('click');
-                                                        })
+                                                        if (access.form == 1) {
+                                                            checkElement('[id^=felts]').then((selector) => {
+                                                                // let allFelts = selector;    /// array type
+                                                                $('#emundus_checkall').trigger('click');
+                                                                $('#em-ex-forms').trigger('click');
+                                                            })
+                                                        }
                                                     }
                                                 },
                                                 error: function (jqXHR) {
@@ -4051,7 +4054,9 @@ $(document).ready(function() {
 
                             success: function(result) {
                                 if (result.status) {
-                                    $('#form-exists').show();
+                                    let access = result;
+                                    if (result.form == 1)
+                                        $('#form-exists').show();
                                     if (result.att == 1)
                                         $('#att-exists').show();
                                     if (result.eval == 1)
@@ -4087,10 +4092,12 @@ $(document).ready(function() {
                                                 $('#em-export-camp').trigger("chosen:updated");
                                                 $('#em-export-camp').trigger("change");
 
-                                                checkElement('[id^=felts]').then((selector)=>{
-                                                    $('#emundus_checkall').trigger('click');
-                                                    $('#em-ex-forms').trigger('click');
-                                                })
+                                                if (access.form == 1) {
+                                                    checkElement('[id^=felts]').then((selector) => {
+                                                        $('#emundus_checkall').trigger('click');
+                                                        $('#em-ex-forms').trigger('click');
+                                                    })
+                                                }
                                             }
                                         },
                                         error: function (jqXHR) {
@@ -4186,8 +4193,8 @@ $(document).ready(function() {
                                     async: false,
                                     success: function(result) {
                                         if (result.status) {
-                                            $('#form-exists').show();
-
+                                            if (result.form == 1)
+                                                $('#form-exists').show();
                                             if (result.att == 1)
                                                 $('#att-exists').show();
                                             if (result.eval == 1)
