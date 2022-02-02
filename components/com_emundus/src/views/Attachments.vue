@@ -393,11 +393,34 @@ export default {
 		this.changeFileEvent = new Event("changeFile");
   },
   mounted() {
-    this.getFnums();
-    this.getUsers();
-    this.getAttachments();
-    this.setAccessRights();
-    this.loading = false;
+    this.loading = true;
+    this.getFnums()
+    .then(
+      () => {
+        this.getUsers().then(
+          () => {
+            this.getAttachments().then(
+              () => {
+                this.setAccessRights().then(
+                  () => {
+                    this.loading = false;
+                  }
+                );
+              }
+            ).catch((e) => {
+              this.loading = false;
+              this.displayErrorMessage(e);
+            });
+          },
+        ).catch((e) => {
+          this.loading = false;
+          this.displayErrorMessage(e);
+        });
+      }
+    ).catch((e) => {
+      this.loading = false;
+      this.displayErrorMessage(e);
+    });
   },
   methods: {
     // Getters and setters
@@ -416,7 +439,7 @@ export default {
       }
 
       this.$store.dispatch("user/setCurrentUser", this.user);
-      this.setDisplayedUser();
+      await this.setDisplayedUser();
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
@@ -482,13 +505,11 @@ export default {
     },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
-        this.refreshAttachments();
+        await this.refreshAttachments();
       } else {
-        this.loading = true;
         this.attachments =
           this.$store.state.attachment.attachments[this.displayedFnum];
         this.categories = this.$store.state.attachment.categories;
-        this.loading = false;
       }
     },
     async refreshAttachments(addLoading = false) {
