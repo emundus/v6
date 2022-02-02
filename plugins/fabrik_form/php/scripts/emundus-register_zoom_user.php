@@ -38,8 +38,7 @@ if(empty($apiSecret)) {
 
         # if reponseCode is 201, update the table "data_referentiel_zoom_token"
         if($zoom->responseCode() == 201) {
-            $updateSql = "update data_referentiel_zoom_token set zoom_id = " . $db->quote($response['id']) . ', is_created = 1' .
-                            ' where data_referentiel_zoom_token.user = ' . current($_POST['data_referentiel_zoom_token___user']);
+            $updateSql = "update data_referentiel_zoom_token set zoom_id = " . $db->quote($response['id']) . ' where data_referentiel_zoom_token.user = ' . current($_POST['data_referentiel_zoom_token___user']);
             $db->setQuery($updateSql);
             $db->execute();
         } else {
