@@ -1,19 +1,5 @@
 <template>
     <div class="w-row">
-      <!--<div class="tchooz-sidebar-menu">
-        <transition name="slide-right">
-          <div class="col-md-12 tchooz-sidebar-menus">
-            <div class="container-menu-funnel">
-              <div v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
-                <a @click="menuHighlight = index"
-                   class="menu-item"
-                   :class="menuHighlight == index ? 'w--current' : ''"
-                >{{ settingsCat }}</a>
-              </div>
-            </div>
-          </div>
-        </transition>
-      </div>-->
 
       <div class="col-md-12 p-1" style="padding-left: 2em !important;">
         <!--- start Menu --->
@@ -105,29 +91,9 @@
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
           ></editDatas>
-
-<!--          <help-settings
-              v-if="menuHighlight == 8"
-              ref="help"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></help-settings>-->
         </transition>
       </div>
     </div>
-
-    <!--<div
-            class="section-sauvegarder-et-continuer-funnel"
-    >
-      <div class="w-container">
-        <div class="container-evaluation w-clearfix">
-          <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
-            {{Retour}}
-          </a>
-        </div>
-      </div>
-    </div>-->
 </template>
 
 <script>
@@ -137,12 +103,8 @@ import editTags from "../components/Settings/editTags";
 import editHomepage from "../components/Settings/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
-import editUsers from "../components/Settings/editUsers";
 import editCGV from "../components/Settings/editCGV";
 import editFooter from "../components/Settings/editFooter";
-import helpSettings from "@/components/Settings/helpSettings";
-import Tasks from "@/views/tasks";
-import HelpSettings from "@/components/Settings/helpSettings";
 import EditApplicants from "@/components/Settings/editApplicants";
 
 const qs = require("qs");
@@ -152,8 +114,6 @@ export default {
 
   components: {
     EditApplicants,
-    HelpSettings,
-    Tasks,
     editStatus,
     editTags,
     editCGV,
@@ -161,7 +121,6 @@ export default {
     editHomepage,
     editStyle,
     editDatas,
-    editUsers
   },
 
   props: {
@@ -332,11 +291,6 @@ export default {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
-    /*this.$nextTick(function () {
-      window.setInterval(() => {
-        this.saveCurrentPage();
-      },20000);
-    })*/
   },
 };
 </script>

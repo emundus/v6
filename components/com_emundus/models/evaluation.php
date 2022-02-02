@@ -1616,7 +1616,7 @@ class EmundusModelEvaluation extends JModelList {
     public function getPageNavigation() : string {
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1662,7 +1662,7 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -2281,7 +2281,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_letters = $this->getLettersByProgrammesStatusCampaigns($_programs,$_status, $_campaigns);
-            
+
             if (!empty($_letters)) {
                 if ($attachments == true) {
                     /// from $_letters --> get distinct attachment_id
@@ -2730,7 +2730,11 @@ class EmundusModelEvaluation extends JModelList {
                                 if (is_numeric($tag)) {
                                     $idFabrik[] = $tag;
                                 } else {
-                                    $setupTags[] = $tag;
+                                    if(strpos($tag, 'IMG_') !== false) {
+                                        $setupTags[] = trim(explode(":", $tag)[0]);
+                                    } else {
+                                        $setupTags[] = $tag;
+                                    }
                                 }
                             }
 
@@ -2801,6 +2805,8 @@ class EmundusModelEvaluation extends JModelList {
 
                             $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
+                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                
                                 foreach ($setupTags as $tag) {
                                     $val = "";
                                     $lowerTag = strtolower($tag);
@@ -2823,7 +2829,7 @@ class EmundusModelEvaluation extends JModelList {
                                     } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
                                         $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
                                     } else {
-                                        $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                        //$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                         $i = 0;
                                         foreach ($tags['patterns'] as $value) {
                                             if ($value == $tag) {
@@ -2832,7 +2838,12 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                             $i++;
                                         }
-                                        $preprocess->setValue($tag, htmlspecialchars($val));
+                                        // replace tag by image if tag name start by IMG_
+                                       if(strpos($tag, 'IMG_') !== false) {
+                                            $preprocess->setImageValue($tag, $val);
+                                        } else {
+                                            $preprocess->setValue($tag, htmlspecialchars($val));
+                                       }
                                     }
                                 }
 
@@ -3317,7 +3328,7 @@ class EmundusModelEvaluation extends JModelList {
                     mkdir($dir_Name_Path, 0755, true);
                     if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
                 }
-                
+
                 $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {

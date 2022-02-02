@@ -15,6 +15,12 @@
 import attachmentService from "../services/attachment";
 
 export default {
+	props: {
+		user: {
+			type: Number,
+			required: true,
+		},
+	},
 	data() {
 		return {
 			attachment: this.$store.state.attachment.selectedAttachment,
@@ -35,15 +41,17 @@ export default {
 			let data;
 			if (!this.$store.state.attachment.previews[this.attachment.aid]) {
 				data = await attachmentService.getPreview(
-					this.$store.state.user.displayedUser,
+					this.user,
 					this.attachment.filename
 				);
 
 				// store preview data
-				this.$store.commit("attachment/setPreview", {
-					preview: data,
-					id: this.attachment.aid,
-				});
+				if (data.status) {
+					this.$store.commit("attachment/setPreview", {
+						preview: data,
+						id: this.attachment.aid,
+					});
+				}
 			} else {
 				data = this.$store.state.attachment.previews[this.attachment.aid];
 			}
