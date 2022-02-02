@@ -5151,6 +5151,20 @@ input:focus + .em-slider {
   animation: spin 2s linear infinite;
   text-align: center;
 }
+.em-page-loader{
+  border: 5px solid #f3f3f4;
+  border-top: 5px solid $main-500;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 9999px #cecece85;
+  background: #cecece85;
+  position: absolute;
+  width: 50px;
+  height: 50px;
+}
 
 @-moz-keyframes spin {
   0% {
@@ -5319,6 +5333,9 @@ input:focus + .em-slider {
 }
 .em-blue-color{
   color: $em-blue;
+}
+.em-blue-500-color{
+  color: $blue-500;
 }
 .em-gray-color{
   color: $em-grey;
@@ -5599,6 +5616,10 @@ input:focus + .em-slider {
   line-height: 15px;
 }
 
+.em-font-size-12{
+  font-size: 12px;
+}
+
 .em-font-size-14{
   font-size: 14px;
 }
@@ -5686,6 +5707,13 @@ input:focus + .em-slider {
   border-radius: 4px;
 }
 
+.em-notifications-yellow{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $yellow-500;
+}
+
 /** Vue Modal - Translation tool **/
 #translationTool {
   .v--modal-overlay {
@@ -5726,7 +5754,7 @@ input:focus + .em-slider {
     position: fixed;
     left: 0;
     top: 50px;
-    p:not(.em-modal-menu__current):hover{
+    .translation-menu-item:not(.em-modal-menu__current):hover{
       background-color: $neutral-300;
     }
   }

@@ -113,8 +113,9 @@
           </div>
         </div>
       </div>
-
     </div>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -148,15 +149,18 @@ export default {
       children_type: null,
       children: null,
 
+      loading: false,
       saving: false,
       last_save: null
     }
   },
 
   created() {
+    this.loading = true;
     translationsService.getDefaultLanguage().then((response) => {
       this.defaultLang = response;
       this.getAllLanguages();
+      this.loading = false;
     });
   },
 
@@ -164,7 +168,6 @@ export default {
     async getAllLanguages() {
       try {
         const response = await client().get('index.php?option=com_emundus&controller=translations&task=getlanguages');
-
         this.allLanguages = response.data;
         this.allLanguages.forEach((lang) => {
           if(lang.lang_code !== this.defaultLang.lang_code) {
@@ -179,6 +182,7 @@ export default {
     },
 
     async getObjects(){
+      this.loading = true;
       this.translations = [];
       this.childrens = [];
       this.datas = [];
@@ -189,6 +193,7 @@ export default {
 
       translationsService.getObjects().then((response) => {
         this.objects = response.data;
+        this.loading = false;
       });
     },
 
@@ -204,6 +209,7 @@ export default {
 
   watch: {
     object: function(value){
+      this.loading = true;
       this.translations = [];
       this.childrens = [];
       this.children = null;
@@ -217,13 +223,16 @@ export default {
             value.table.filters
         ).then((response) => {
           this.datas = response.data;
+          this.loading = false;
         });
       } else {
         this.datas = [];
+        this.loading = false;
       }
     },
 
     data: function(value){
+      this.loading = true;
       this.translations = [];
       this.childrens = [];
       this.children = null;
@@ -237,6 +246,7 @@ export default {
             children_existing = true;
             translationsService.getChildrens(field.Label,this.data.id,field.Name).then((response) => {
               this.childrens = response.data;
+              this.loading = false;
             });
           }
         });
@@ -257,12 +267,14 @@ export default {
               this.object.table.name
           ).then((response) => {
             this.translations = response.data;
+            this.loading = false;
           })
         }
       }
     },
 
     children: function(value){
+      this.loading = true;
       this.translations = [];
 
       if(value != null) {
@@ -287,7 +299,10 @@ export default {
             tables
         ).then((response) => {
           this.translations = response.data;
+          this.loading = false;
         })
+      } else {
+        this.loading = false;
       }
     }
   }

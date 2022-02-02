@@ -172,6 +172,27 @@ class EmundusControllerTranslations extends JControllerLegacy {
         exit;
     }
 
+    public function inserttranslation(){
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            die(JText::_("ACCESS_DENIED"));
+        }
+
+        $jinput = JFactory::getApplication()->input;
+
+        $override = $jinput->getString('value', null);
+        $lang_to = $jinput->getString('lang_to', null);
+        $reference_table = $jinput->getString('reference_table', null);
+        $reference_id = $jinput->getInt('reference_id', 0);
+        $tag = $jinput->getString('tag', null);
+
+        $result = $this->model->insertTranslation($tag,$override,$lang_to,'','override',$reference_table,$reference_id);
+
+        echo json_encode($result);
+        exit;
+    }
+
     public function updatetranslation(){
         $user = JFactory::getUser();
 
@@ -229,6 +250,24 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $field = $jinput->getString('field', null);
 
         $result = $this->model->updateFalangTranslation($value,$lang_to,$reference_table,$reference_id,$field);
+
+        echo json_encode($result);
+        exit;
+    }
+
+    public function getorphelins(){
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            die(JText::_("ACCESS_DENIED"));
+        }
+
+        $jinput = JFactory::getApplication()->input;
+
+        $default_lang = $jinput->getString('default_lang', null);
+        $lang_to = $jinput->getString('lang_to', null);
+
+        $result = $this->model->getOrphelins($default_lang,$lang_to);
 
         echo json_encode($result);
         exit;

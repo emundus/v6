@@ -35,7 +35,7 @@
               id="searchbar"
               type="text"
               ref="searchbar"
-              :placeholder="translate('SEARCH')"
+              :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
               @input="searchInFiles"
           />
           <span class="material-icons search">search</span>
@@ -49,7 +49,7 @@
               ref="categoryFilter"
               @change="filterByCategory"
           >
-            <option value="all">{{ translate("SELECT_CATEGORY") }}</option>
+            <option value="all">{{ translate("COM_EMUNDUS_EMAILS_SELECT_CATEGORY") }}</option>
             <option
                 v-for="(category, key) in thisAttachmentCategories"
                 :key="key"
@@ -65,7 +65,7 @@
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
             <span class="material-icons export">file_upload</span>
-            <span>{{ translate("EXPORT") }}</span>
+            <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <span
               class="material-icons refresh"

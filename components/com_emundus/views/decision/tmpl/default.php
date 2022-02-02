@@ -80,7 +80,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
 		</div>
 
 		<div class="col-md-9 main-panel">
-			<div  id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top" title=<?php echo JText::_('HIDE_FILTERS'); ?>">
+			<div  id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top" title=<?php echo JText::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
 				<span class="glyphicon glyphicon-chevron-left"></span>
 			</div>
 			<div class="navbar navbar-inverse em-menuaction">

@@ -179,5 +179,51 @@ export default {
         break;
       default:
     }
-  }
+  },
+
+  async insertTranslation(value,type,lang_to,reference_id,field,reference_table){
+    switch(type){
+      case 'override':
+        try {
+          const formData = new FormData();
+          formData.append('value', value);
+          formData.append('lang_to', lang_to);
+          formData.append('tag', field);
+          formData.append('reference_table', reference_table);
+          formData.append('reference_id', reference_id);
+
+          return await client().post(`index.php?option=com_emundus&controller=translations&task=inserttranslation`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              }
+          );
+        } catch (e) {
+          return {
+            status: false,
+            msg: e.message
+          }
+        }
+        break;
+      default:
+    }
+  },
+
+  async getOrphelins(default_lang,lang_to){
+    try {
+      return await client().get(`index.php?option=com_emundus&controller=translations&task=getorphelins`, {
+        params: {
+          default_lang,
+          lang_to
+        }
+      });
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
 };

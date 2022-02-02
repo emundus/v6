@@ -17,14 +17,16 @@
 
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
-          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index">
-            <p class="em-font-size-16 em-mb-8 em-p-16 pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">{{translate(menu.title)}}</p>
+          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
+            <p class="em-font-size-16">{{translate(menu.title)}}</p>
+            <div v-if="menu.index === 3 && orphelins_count > 0" class="em-notifications-yellow"></div>
           </div>
         </div>
 
         <transition name="fade">
-          <Global v-if="currentMenu === 1" class="em-modal-component"></Global>
+          <Global v-if="currentMenu === 1" class="em-modal-component" @updateOrphelinsCount="updateOrphelinsCount"></Global>
           <Translations v-if="currentMenu === 2" class="em-modal-component"></Translations>
+          <Orphelins v-if="currentMenu === 3" class="em-modal-component"></Orphelins>
         </transition>
       </div>
     </modal>
@@ -34,13 +36,15 @@
 <script>
 import Global from "./Global";
 import Translations from "./Translations";
+import Orphelins from "./Orphelins";
 
 export default {
   name: "translationTool",
   props: { },
-  components: {Translations, Global},
+  components: {Orphelins, Translations, Global},
   data() {
     return {
+      orphelins_count: 0,
       currentMenu: 1,
       menus: [
         {
@@ -62,6 +66,10 @@ export default {
     beforeClose(event) {
       this.$emit('resetMenuIndex');
     },
+
+    updateOrphelinsCount(count) {
+      this.orphelins_count = count;
+    }
   }
 }
 </script>

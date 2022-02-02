@@ -50,6 +50,8 @@
         ></multiselect>
       </div>
     </div>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -71,13 +73,19 @@ export default {
       secondaryLanguages: [],
       allLanguages: [],
       otherLanguages: [],
+
+      orphelins_count: 0,
+
+      loading: false
     }
   },
 
   created() {
+    this.loading = true;
     translationsService.getDefaultLanguage().then((response) => {
       this.defaultLang = response;
       this.getAllLanguages();
+      this.loading = false;
     });
   },
 
@@ -94,6 +102,12 @@ export default {
             }
             this.otherLanguages.push(lang);
           }
+        })
+        this.secondaryLanguages.forEach((sec_lang) => {
+          translationsService.getOrphelins(this.defaultLang.lang_code,sec_lang.lang_code).then((orphelins) => {
+            this.orphelins_count = orphelins.data.length;
+            this.$emit('updateOrphelinsCount',this.orphelins_count);
+          })
         })
       } catch (e) {
         return false;

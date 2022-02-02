@@ -656,6 +656,19 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
+    /**
+     * Get reference id by filters
+     *
+     * @param $reference_table
+     * @param $reference_column
+     * @param $join_table
+     * @param $join_column
+     * @param $reference_id
+     *
+     * @return array|false|mixed
+     *
+     * @since version 1.28.0
+     */
     public function getJoinReferenceId($reference_table,$reference_column,$join_table,$join_column,$reference_id){
         $query = $this->_db->getQuery(true);
 
@@ -674,6 +687,29 @@ class EmundusModelTranslations extends JModelList
             return $this->_db->loadColumn();
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/translations | Error at getting the reference id by join with id ' . $reference_id . ' references to table ' . $join_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function getOrphelins($default_lang,$lang_code,$type = 'override'){
+        $query = $this->_db->getQuery(true);
+        $sub_query = $this->_db->getQuery(true);
+
+        try {
+            $sub_query->select('tag')
+                ->from($this->_db->quoteName('#__emundus_setup_languages'))
+                ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code))
+                ->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type));
+
+            $query->select('*')
+                ->from($this->_db->quoteName('#__emundus_setup_languages'))
+                ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($default_lang))
+                ->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type))
+                ->andWhere($this->_db->quoteName('tag') . ' NOT IN (' . $sub_query->__toString() . ')');
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/translations | Error at getting orphelins : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
             return false;
         }
     }
