@@ -146,7 +146,46 @@ VALUES ('description', @group_1, 'field', 'description', 0, '2022-02-02 20:31:23
 
 -- END OF PART 1 ---
 -- Step 5 : Create table "jos_emundus_jury"
-
+create table jos_emundus_jury
+(
+    id                             int auto_increment primary key,
+    meeting_session                varchar(255) null,
+    visio_link                     mediumtext   null,
+    start_time_                    datetime     null,
+    end_time_                      datetime     null,
+    president                      int          not null,
+    topic                          varchar(255) not null,
+    type                           text         null,
+    host_video                     text         null,
+    participant_video              text         null,
+    join_before_host               text         null,
+    mute_participant               text         null,
+    watermark                      text         null,
+    approval_type                  text         null,
+    registration_type              int          null,
+    audio_option                   text         null,
+    auto_recording                 text         null,
+    close_registration             text         null,
+    waiting_room                   text         null,
+    contact_name                   text         null,
+    contact_email_registration     text         null,
+    registrants_email_notification text         null,
+    registrants_confirmation_email text         null,
+    meeting_authentication         text         null,
+    show_share_button              text         null,
+    allow_multiple_devices         text         null,
+    contact_email                  text         null,
+    duration                       varchar(255) null,
+    join_url                       mediumtext   null,
+    registration_url               mediumtext   null,
+    password                       varchar(255) null,
+    encrypted_password             varchar(255) null,
+    encrytion_type                 varchar(255) null,
+    zoom_link                      mediumtext   null,
+    date_time                      datetime     null
+    -- constraint jos_emundus_jury_id_uindex
+        -- unique (id)
+);
 
 -- Step 6 : Create form "COM_EMUNDUS_ZOOM_JURY_CORDINATOR" (set @form_2) --
 INSERT INTO jos_fabrik_forms (label, record_in_database, error, intro, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, publish_up, publish_down, reset_button_label, submit_button_label, form_template, view_only_template, published, private, params) 
