@@ -33,7 +33,7 @@ VALUES ('COM_EMUNDUS_JURY_TOKEN', '', 'COM_EMUNDUS_JURY_TOKEN', 1, '2022-01-03 1
 SET @jury_token_group := LAST_INSERT_ID();
 
 -- Link @jury_token_form with @jury_token_group --
-INSERT INTO celsa.jos_fabrik_formgroup (form_id, group_id, ordering) VALUES (@jury_token_form, @jury_token_group, 1);
+INSERT INTO jos_fabrik_formgroup (form_id, group_id, ordering) VALUES (@jury_token_form, @jury_token_group, 1);
 
 -- Step 5 : Elements belongin to Group "COM_EMUNDUS_JURY_TOKEN" --
 INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
