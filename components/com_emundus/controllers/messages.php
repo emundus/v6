@@ -1234,12 +1234,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mail_from_name = $mail_from_sys_name;
 		}
 
-		// Set sender
-		$sender = [
-			$mail_from_address,
-			$mail_from_name
-		];
-
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
 		} else {
@@ -1257,6 +1251,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         if($user_id != null) {
             $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
             $post = $m_email->setTags($user_id, $post, null, $password);
+
+            $mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
+		    $mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
         } else {
             // Handle [] in post keys.
             $keys = [];
@@ -1264,7 +1261,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                 $keys[] = '/\['.$key.'\]/';
             }
         }
-
 
 		// Tags are replaced with their corresponding values using the PHP preg_replace function.
         if($user_id != null) {
@@ -1287,6 +1283,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         if($fnum != null) {
             $body = $m_email->setTagsFabrik($body, array($fnum));
         }
+
+        // Set sender
+		$sender = [
+			$mail_from_address,
+			$mail_from_name
+		];
 
 		// Configure email sender
 		$mailer = JFactory::getMailer();
