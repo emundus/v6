@@ -130,10 +130,26 @@ VALUES ('zoom_id', @group_1, 'field', 'zoom_id', 0, '2022-02-02 19:47:41', '2022
 SET @element_3 := LAST_INSERT_ID();
 
 -- update table "jos_fabrik_jsactions" --
-INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
-VALUES (@element_3, 'load',
-'this.element.style.background = &quot;#eeeeee&quot;;',
-'{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group973","js_e_condition":"","js_e_value":"","js_published":"1"}');
+INSERT INTO jos_fabrik_jsactions (element_id, action, code, params) 
+VALUES (@element_3, 'load', 'var zoom = this.element;
+
+if(zoom.value !== &quot;&quot;) {
+  zoom.hide();
+  
+  var _parent = zoom.parentElement;
+  var _child = document.createElement(&quot;p&quot;);
+  
+  _child.setAttribute(&quot;id&quot;, &quot;zoom-msg&quot;);
+  _child.innerHTML = zoom.value;
+  _child.style.background = &quot;#EEEEEE &quot;;
+  _child.style.color = &quot;#16afe1 &quot;;
+  _child.style.fontWeight = &quot;bold&quot;;
+  
+  _parent.append(_child);
+} else {
+  this.show();
+}', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group973","js_e_condition":"","js_e_value":"","js_published":"1"}');
+
 
 INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
 VALUES ('send_invitation', @group_1, 'dropdown', 'send_invitation', 0, '2022-02-02 20:05:04', '2022-02-02 20:05:04', 62, 'sysadmin', '2022-02-02 20:36:25', 62, 0, 0, '', 0, 0, 6, 0, '', 1, 1, 0, 0, 0, 1, 0, 0, '{"sub_options":{"sub_values":["create","autoCreate","custCreate","ssoCreate"],"sub_labels":["SIMPLE_CREATE","AUTO_CREATE","CUST_CREATE","SSO_CREATE"],"sub_initial_selection":["custCreate"]},"multiple":"0","dropdown_multisize":"3","allow_frontend_addtodropdown":"0","dd-allowadd-onlylabel":"0","dd-savenewadditions":"0","options_split_str":"","dropdown_populate":"","advanced_behavior":"1","bootstrap_class":"input-xlarge","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}');
