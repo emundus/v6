@@ -389,6 +389,9 @@ create table jos_emundus_jury_repeat_jury
     email     int null,
     constraint jos_emundus_jury_repeat_jury___fk1
         foreign key (user) references jos_users (id)
+            on update cascade on delete cascade,
+    constraint jos_emundus_jury_repeat_jury___fk2
+        foreign key (parent_id) references jos_emundus_jury (id)
             on update cascade on delete cascade
 );
 
