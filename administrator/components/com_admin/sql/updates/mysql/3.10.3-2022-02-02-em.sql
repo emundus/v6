@@ -358,7 +358,7 @@ create table jos_emundus_jury_repeat_jury
     id        int auto_increment primary key,
     parent_id int not null,
     user      int not null,
-    email     varchar(100) null,
+    email     int not null,
     constraint jos_emundus_jury_repeat_jury___fk1
         foreign key (user) references jos_users (id)
             on update cascade on delete cascade
@@ -405,8 +405,8 @@ VALUES ('email', @group_3, 'databasejoin', 'email', 62, '2022-02-03 17:25:09', '
 SET @element_7 := LAST_INSERT_ID();
 
 -- Update table "jos_fabrik_joins" --
-INSERT INTO jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params) 
-VALUES (0, @element_7, '', 'jos_users', 'email', 'email', 'left', @group_3, '{"join-label":"","type":"element","pk":"`jos_users`.`id`"}');
+INSERT INTO c62_i1003_db.jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params)
+VALUES (0, @element_7, '', 'jos_users', 'email', 'id', 'left', @group_3, '{"join-label":"email","type":"element","pk":"`jos_users`.`id`"}');
 -- --
 
 
