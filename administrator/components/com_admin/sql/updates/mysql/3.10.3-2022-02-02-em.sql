@@ -357,8 +357,8 @@ create table jos_emundus_jury_repeat_jury
 (
     id        int auto_increment primary key,
     parent_id int not null,
-    user      int not null,
-    email     int not null,
+    user      int null,
+    email     int null,
     constraint jos_emundus_jury_repeat_jury___fk1
         foreign key (user) references jos_users (id)
             on update cascade on delete cascade
