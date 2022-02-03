@@ -3,6 +3,22 @@ import axios from 'axios';
 import qs from 'qs';
 
 export default {
+  async checkSetup() {
+    try {
+      return await client().get('index.php?option=com_emundus&controller=translations&task=checksetup');
+    } catch (e) {
+      return false;
+    }
+  },
+
+  async configureSetup() {
+    try {
+      return await client().get('index.php?option=com_emundus&controller=translations&task=configuresetup');
+    } catch (e) {
+      return false;
+    }
+  },
+
   async getDefaultLanguage() {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=translations&task=getdefaultlanguage');

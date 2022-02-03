@@ -31,6 +31,234 @@ class EmundusModelTranslations extends JModelList
     }
 
     /**
+     * Check if translation tool is ready to use
+     *
+     * @return false|mixed|null
+     *
+     * @since version 1.28.0
+     */
+    public function checkSetup(){
+        try {
+            $query = $this->_db->getQuery(true);
+
+            $query->select('count(id)')
+                ->from($this->_db->quoteName('#__emundus_setup_languages'));
+            $this->_db->setQuery($query);
+            return $this->_db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Problem when try to get setup translation tool with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    /**
+     * Configure setup at first launch of the translation tool
+     *
+     * @return false|mixed|void
+     *
+     * @since version 1.28.0
+     */
+    public function configureSetup(){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query
+                ->select('DISTINCT(element), CONCAT(type, "s") AS type')
+                ->from($this->_db->quoteName('#__extensions'))
+                ->where($this->_db->quoteName('element') . ' LIKE ' . $this->_db->quote('%emundus%'));
+
+            $this->_db->setQuery($query);
+
+            $extensions = $this->_db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('Error getting extensions with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+
+        // Components, modules, extensions files
+        $files = [];
+        foreach ($this->getPlatformLanguages() as $language) {
+            foreach ($extensions as $extension) {
+                $file = JPATH_BASE . '/' . $extension->type . '/' . $extension->element . '/language/' . $language . '/' . $language.'.'.$extension->element. '.ini';
+                if (file_exists($file)) {
+                    $files[] = $file;
+                }
+            }
+            // Overrides
+            $override_file = JPATH_BASE . '/language/overrides/' . $language.'.override.ini';
+            if (file_exists($override_file)) {
+                $files[] = $override_file;
+            }
+            //
+        }
+        //
+
+        $db_columns = [
+            $this->_db->quoteName('tag'),
+            $this->_db->quoteName('lang_code'),
+            $this->_db->quoteName('override'),
+            $this->_db->quoteName('original_text'),
+            $this->_db->quoteName('original_md5'),
+            $this->_db->quoteName('override_md5'),
+            $this->_db->quoteName('location'),
+            $this->_db->quoteName('type'),
+            $this->_db->quoteName('created_by'),
+            $this->_db->quoteName('reference_id'),
+            $this->_db->quoteName('reference_table'),
+            $this->_db->quoteName('reference_field'),
+        ];
+        $db_values = [];
+
+        foreach ($files as $file) {
+            $parsed_file = JLanguageHelper::parseIniFile($file);
+
+            $file = explode('/', $file);
+            $file_name = end($file);
+            $language = strtok($file_name, '.');
+
+            foreach ($parsed_file as $key => $val) {
+                $query->clear()
+                    ->select('count(id)')
+                    ->from($this->_db->quoteName('jos_emundus_setup_languages'))
+                    ->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($key))
+                    ->andWhere($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($language))
+                    ->andWhere($this->_db->quoteName('location') . ' = ' . $this->_db->quote($file_name));
+                $this->_db->setQuery($query);
+
+                if($this->_db->loadResult() == 0) {
+                    if(strpos($file_name,'override') !== false) {
+                        // Search if value is use in fabrik
+                        $reference_table = null;
+                        $reference_id = null;
+                        $reference_field = null;
+
+                        $query->clear()
+                            ->select('id')
+                            ->from($this->_db->quoteName('#__fabrik_forms'))
+                            ->where($this->_db->quoteName('label') . ' LIKE ' . $this->_db->quote($key));
+                        $this->_db->setQuery($query);
+                        $find = $this->_db->loadResult();
+
+                        if(!empty($find)){
+                            $reference_table = 'fabrik_forms';
+                            $reference_id = $find;
+                            $reference_field = 'label';
+                        } else {
+                            $query->clear()
+                                ->select('id,intro')
+                                ->from($this->_db->quoteName('#__fabrik_forms'));
+                            $this->_db->setQuery($query);
+                            $forms_intro = $this->_db->loadObjectList();
+
+                            foreach ($forms_intro as $intro){
+                                if(strip_tags($intro->intro) == $key){
+                                    $find = $intro->id;
+                                    break;
+                                }
+                            }
+
+                            if(!empty($find)){
+                                $reference_table = 'fabrik_forms';
+                                $reference_id = $find;
+                                $reference_field = 'intro';
+                            } else {
+                                $query->clear()
+                                    ->select('id')
+                                    ->from($this->_db->quoteName('#__fabrik_groups'))
+                                    ->where($this->_db->quoteName('label') . ' LIKE ' . $this->_db->quote($key));
+                                $this->_db->setQuery($query);
+                                $find = $this->_db->loadResult();
+
+                                if (!empty($find)) {
+                                    $reference_table = 'fabrik_groups';
+                                    $reference_id = $find;
+                                    $reference_field = 'label';
+                                } else {
+                                    $query->clear()
+                                        ->select('id,params')
+                                        ->from($this->_db->quoteName('#__fabrik_groups'));
+                                    $this->_db->setQuery($query);
+                                    $groups_params = $this->_db->loadObjectList();
+
+                                    foreach ($groups_params as $group_params){
+                                        $params = json_decode($group_params->params);
+                                        if(strip_tags($params->intro) == $key){
+                                            $find = $group_params->id;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!empty($find)) {
+                                        $reference_table = 'fabrik_groups';
+                                        $reference_id = $find;
+                                        $reference_field = 'intro';
+                                    } else {
+                                        $query->clear()
+                                            ->select('id')
+                                            ->from($this->_db->quoteName('#__fabrik_elements'))
+                                            ->where($this->_db->quoteName('label') . ' LIKE ' . $this->_db->quote($key));
+                                        $this->_db->setQuery($query);
+                                        $find = $this->_db->loadResult();
+
+                                        if (!empty($find)) {
+                                            $reference_table = 'fabrik_elements';
+                                            $reference_id = $find;
+                                            $reference_field = 'label';
+                                        } else {
+                                            $query->clear()
+                                                ->select('id,params')
+                                                ->from($this->_db->quoteName('#__fabrik_elements'))
+                                                ->where($this->_db->quoteName('plugin') . ' = ' . $this->_db->quote('dropdown'));
+                                            $this->_db->setQuery($query);
+                                            $elements_params = $this->_db->loadObjectList();
+
+                                            foreach ($elements_params as $element_params){
+                                                $params = json_decode($element_params->params);
+                                                $sub_options = $params->sub_options;
+                                                if(in_array($key,array_values($sub_options->sub_labels))){
+                                                    $find = $element_params->id;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (!empty($find)) {
+                                                $reference_table = 'fabrik_elements';
+                                                $reference_id = $find;
+                                                $reference_field = 'sub_labels';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        //
+                        $row = [$this->_db->quote($key), $this->_db->quote($language), $this->_db->quote($val), $this->_db->quote($val), $this->_db->quote(md5($val)), $this->_db->quote(md5($val)), $this->_db->quote($file_name),$this->_db->quote('override'), 62, $this->_db->quote($reference_id), $this->_db->quote($reference_table), $this->_db->quote($reference_field)];
+                    } else {
+                        $row = [$this->_db->quote($key), $this->_db->quote($language), $this->_db->quote($val), $this->_db->quote($val), $this->_db->quote(md5($val)), $this->_db->quote(md5($val)), $this->_db->quote($file_name),$this->_db->quote(null), 62, $this->_db->quote(null), $this->_db->quote(null), $this->_db->quote(null)];
+                    }
+                    $db_values[] = implode(',', $row);
+                }
+            }
+        }
+
+        if(!empty($db_values)) {
+            try {
+                $query
+                    ->clear()
+                    ->insert($this->_db->quoteName('jos_emundus_setup_languages'))
+                    ->columns($db_columns)
+                    ->values($db_values);
+
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            } catch (Exception $e) {
+                JLog::add('Problem when insert translations at first launch with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+                return false;
+            }
+        }
+    }
+
+    /**
      * Get our translations definitions
      *
      * @return array
@@ -213,7 +441,7 @@ class EmundusModelTranslations extends JModelList
      *
      * @since version 1.28.0
      */
-    public function getTranslations($type = 'override',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0,$tag = ''){
+    public function getTranslations($type = 'override',$lang_code = '*',$search = '',$location = '',$reference_table = '',$reference_id = 0,$reference_fields = '',$tag = ''){
 
         try {
             $query = $this->_db->getQuery(true);
@@ -235,6 +463,13 @@ class EmundusModelTranslations extends JModelList
             if (!empty($reference_table)) {
                 $query->where($this->_db->quoteName('reference_table') . ' LIKE ' . $this->_db->quote($reference_table));
             }
+            if (!empty($reference_fields)) {
+                if(is_array($reference_fields)){
+                    $query->where($this->_db->quoteName('reference_field') . ' IN (' . implode(',',$this->_db->quote($reference_fields)) . ')');
+                } else {
+                    $query->where($this->_db->quoteName('reference_field') . ' LIKE ' . $this->_db->quote($reference_fields));
+                }
+            }
             if (!empty($reference_id)) {
                 if(is_array($reference_id)){
                     $query->where($this->_db->quoteName('reference_id') . ' IN (' . implode(',',$this->_db->quote($reference_id)) . ')');
@@ -245,7 +480,6 @@ class EmundusModelTranslations extends JModelList
             if (!empty($tag)) {
                 $query->where($this->_db->quoteName('tag') . ' LIKE ' . $this->_db->quote($tag));
             }
-
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch(Exception $e){
@@ -451,6 +685,25 @@ class EmundusModelTranslations extends JModelList
         } catch (Exception $e) {
             JLog::add('Problem when try to fet default language with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
+        }
+    }
+
+    private function getPlatformLanguages() : array {
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query
+            ->select($db->quoteName('lang_code'))
+            ->from($db->quoteName('#__languages'))
+            ->where($db->quoteName('published') . ' = 1 ');
+
+        $db->setQuery($query);
+
+        try {
+            return $db->loadColumn();
+        } catch (Exception $e) {
+            return [];
         }
     }
 

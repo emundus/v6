@@ -7,6 +7,7 @@
         :delay="100"
         :adaptive="true"
         :clickToClose="false"
+        @opened="checkSetup"
         @closed="beforeClose"
     >
       <div class="em-modal-header">
@@ -29,6 +30,12 @@
           <Orphelins v-if="currentMenu === 3" class="em-modal-component"></Orphelins>
         </transition>
       </div>
+
+      <div v-if="loading">
+        <div class="em-page-loader" v-if="!setup_success"></div>
+        <p class="em-page-loader-text" v-if="!setup_success">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SETUP_PROGRESSING') }}</p>
+        <p class="em-page-loader-text em-fade-loader" v-if="setup_success">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SETUP_SUCCESS') }}</p>
+      </div>
     </modal>
   </span>
 </template>
@@ -38,6 +45,8 @@ import Global from "./Global";
 import Translations from "./Translations";
 import Orphelins from "./Orphelins";
 
+import translationsService from "com_emundus/src/services/translations";
+
 export default {
   name: "translationTool",
   props: { },
@@ -45,7 +54,7 @@ export default {
   data() {
     return {
       orphelins_count: 0,
-      currentMenu: 1,
+      currentMenu: 0,
       menus: [
         {
           title: "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL",
@@ -59,7 +68,10 @@ export default {
           title: "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS",
           index: 3
         },
-      ]
+      ],
+
+      loading: false,
+      setup_success: false,
     }
   },
   methods:{
@@ -69,7 +81,26 @@ export default {
 
     updateOrphelinsCount(count) {
       this.orphelins_count = count;
-    }
+    },
+
+    checkSetup(){
+      translationsService.checkSetup().then((response) => {
+        if(response.data === 0){
+          this.loading = true;
+          translationsService.configureSetup().then((result) => {
+            if(result.data === 1){
+              this.setup_success = true;
+              setTimeout(() => {
+                this.loading = false;
+                this.currentMenu = 1;
+              },1500)
+            }
+          });
+        } else {
+          this.currentMenu = 1;
+        }
+      })
+    },
   }
 }
 </script>

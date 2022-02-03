@@ -10,7 +10,7 @@ import { TableComponent, TableColumn } from 'vue-table-component';
 import Notifications from 'vue-notification';
 import velocity from 'velocity-animate';
 import translate from './mixins/translate.js';
-import VWave from 'v-wave'
+import VWave from 'v-wave';
 
 /** Import Mixins **/
 import mixin_errors from '../../../media/com_emundus/js/mixins/errors.js';

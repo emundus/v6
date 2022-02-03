@@ -46,7 +46,6 @@
     "weekstart": "^1.0.1"
   },
   "devDependencies": {
-    "@vue/eslint-config-airbnb": "^5.3.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-unit-jest": "~4.5.0",

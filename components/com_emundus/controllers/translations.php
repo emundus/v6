@@ -32,6 +32,32 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $this->model = new EmundusModelTranslations;
     }
 
+    public function checksetup() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            die(JText::_("ACCESS_DENIED"));
+        }
+
+        $result = $this->model->checkSetup();
+
+        echo $result;
+        exit;
+    }
+
+    public function configuresetup() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            die(JText::_("ACCESS_DENIED"));
+        }
+
+        $result = $this->model->configureSetup();
+
+        echo $result;
+        exit;
+    }
+
     public function getdefaultlanguage(){
         $user = JFactory::getUser();
 
@@ -146,7 +172,7 @@ class EmundusControllerTranslations extends JControllerLegacy {
             if(!empty($reference_table['join_table']) && !empty($reference_table['join_column']) && !empty($reference_table['reference_column'])){
                 $reference_id = $this->model->getJoinReferenceId($reference_table['table'],$reference_table['reference_column'],$reference_table['join_table'],$reference_table['join_column'],$reference_id);
             }
-            $results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, '');
+            $results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, $reference_table['fields']);
 
             foreach ($results as $result) {
                 if (in_array($result->tag, array_keys($translations))) {

@@ -101,13 +101,17 @@
       <div v-else>
         <div v-for="section in object.fields.Sections" class="em-mb-32">
           <h4>{{section.Label}}</h4>
-          <div v-for="(translation,index) in translations">
-            <div v-if="(object.table.type === 'falang' && Object.keys(section.indexedFields).includes(translation.reference_field)) || (object.table.type === 'override' && (Object.keys(section.indexedFields).includes(translation.reference_field) && section.Name === translation.reference_table))" class="em-mb-32 em-neutral-100-box">
-              <p>{{ section.indexedFields[translation.reference_field].Label.toUpperCase() }}</p>
-              <div class="justify-content-between em-mt-16 em-grid-50">
-                <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
-                <input v-if="section.indexedFields[translation.reference_field].Type === 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
-                <textarea v-if="section.indexedFields[translation.reference_field].Type === 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
+          <div class="em-neutral-100-box">
+            <div v-for="field in section.indexedFields">
+              <div v-for="(translation,index) in translations">
+                <div v-if="(object.table.type === 'falang' && field.Name === translation.reference_field) || (object.table.type === 'override' && (field.Name === translation.reference_field && section.Name === translation.reference_table))" class="em-mb-32">
+                  <p>{{ field.Label.toUpperCase() }}</p>
+                  <div class="justify-content-between em-mt-16 em-grid-50">
+                    <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
+                    <input v-if="field.Type === 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
+                    <textarea v-if="field.Type === 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -270,6 +274,8 @@ export default {
             this.loading = false;
           })
         }
+      } else {
+        this.loading = false;
       }
     },
 
@@ -285,7 +291,7 @@ export default {
             join_table: section.TableJoin,
             join_column: section.TableJoinColumn,
             reference_column: section.ReferenceColumn,
-            fields: Object.keys(section.indexedFields).join(',')
+            fields: Object.keys(section.indexedFields)
           }
           tables.push(table);
         });
