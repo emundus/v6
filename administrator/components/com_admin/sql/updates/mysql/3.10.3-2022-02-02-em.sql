@@ -398,7 +398,6 @@ create table jos_emundus_jury_repeat_jury
 create index fb_parent_fk_parent_id_INDEX
     on jos_emundus_jury_repeat_jury (parent_id);
 
-
 -- Step 10 : Create new repeat group "COM_EMUNDUS_ZOOM_JURY_REPEAT_JURY_COORDINATOR" from "COM_EMUNDUS_ZOOM_JURY_COORDINATOR" (set @group_3) --
 INSERT INTO jos_fabrik_groups (name, css, label, published, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, is_join, private, params) 
 VALUES ('COM_EMUNDUS_ZOOM_JURY_REPEAT_JURY_COORDINATOR', '', 'COM_EMUNDUS_ZOOM_JURY_REPEAT_JURY_COORDINATOR', 1, '2022-02-03 10:54:00', 62, 'sysadmin', '2022-02-02 11:47:35', 0, 0, '2022-02-02 11:47:35', 1, 0, '{"split_page":"0","list_view_and_query":"1","access":"1","intro":"","outro":"","repeat_group_button":"1","repeat_template":"repeatgroup","repeat_max":"","repeat_min":"","repeat_num_element":"","repeat_sortable":"0","repeat_order_element":"","repeat_error_message":"","repeat_no_data_message":"","repeat_intro":"","repeat_add_access":"1","repeat_delete_access":"1","repeat_delete_access_user":"","repeat_copy_element_values":"0","group_columns":"1","group_column_widths":"","repeat_group_show_first":"1","random":"0","labels_above":"-1","labels_above_details":"-1"}');
@@ -519,6 +518,3 @@ INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
 VALUES (@element_10, 'load', 'this.element.style.color = &quot;#E16C16&quot;;
 this.element.style.background = &quot;#eeeeee&quot;;
 this.element.style.fontSize = &quot;medium&quot;;', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group975","js_e_condition":"","js_e_value":"","js_published":"1"}');
-
-
-
