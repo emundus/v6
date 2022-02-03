@@ -417,9 +417,6 @@ export default {
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
     this.getLanguages();
     this.getCampaignById();
-    this.getAllPrograms();
-    this.getYears();
-    this.getStatus();
   },
 
   methods: {
@@ -467,6 +464,7 @@ export default {
           console.log(e);
         });
       }
+      this.getAllPrograms();
     },
     getAllPrograms() {
       axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
@@ -478,6 +476,8 @@ export default {
           }).catch(e => {
         console.log(e);
       });
+
+      this.getYears();
     },
     getYears() {
       axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
@@ -491,6 +491,8 @@ export default {
         }).catch(e => {
           console.log(e);
         });
+
+      this.getStatus();
     },
     getLanguages() {
       axios({
@@ -662,11 +664,11 @@ export default {
 
       this.submitted = true;
 
-      if (this.campaignId !== "") {
+      if (typeof this.campaignId !== 'undefined' && this.campaignId !== null && this.campaignId !== "") {
         let task = 'createprogram';
         let params = {body: this.programForm}
 
-        if(this.form.training != ""){
+        if (this.form.training != "") {
           task = 'updateprogram';
           params = { body: this.programForm, id: this.form.progid };
         }
@@ -690,7 +692,7 @@ export default {
             },
             data: qs.stringify({ body: this.form, cid: this.campaignId })
           }).then(() => {
-            this.$emit('nextSection')
+            this.$emit('nextSection');
           }).catch(error => {
             console.log(error);
           });
@@ -699,7 +701,7 @@ export default {
         });
       } else {
         // get program code if there is training value
-        if(this.form.training !=="")  {
+        if (this.form.training !== "")  {
           this.programForm = this.programs.find(program => program.code == this.form.training);
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
