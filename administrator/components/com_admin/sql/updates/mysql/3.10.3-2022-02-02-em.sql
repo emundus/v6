@@ -128,25 +128,24 @@ VALUES ('zoom_id', @group_1, 'field', 'zoom_id', 0, '2022-02-02 19:47:41', '2022
 SET @element_3 := LAST_INSERT_ID();
 
 -- update table "jos_fabrik_jsactions" --
-INSERT INTO jos_fabrik_jsactions (element_id, action, code, params) 
+INSERT INTO vanilla.jos_fabrik_jsactions (element_id, action, code, params) 
 VALUES (@element_3, 'load', 'var zoom = this.element;
+zoom.hide();
+var _parent = zoom.parentElement;
+var _child = document.createElement(&quot;p&quot;);
+_child.setAttribute(&quot;id&quot;, &quot;zoom-msg&quot;);
 
 if(zoom.value !== &quot;&quot;) {
-  zoom.hide();
-  
-  var _parent = zoom.parentElement;
-  var _child = document.createElement(&quot;p&quot;);
-  
-  _child.setAttribute(&quot;id&quot;, &quot;zoom-msg&quot;);
   _child.innerHTML = zoom.value;
-  _child.style.background = &quot;#EEEEEE &quot;;
   _child.style.color = &quot;#16afe1 &quot;;
-  _child.style.fontWeight = &quot;bold&quot;;
-  
-  _parent.append(_child);
 } else {
-  this.show();
-}', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group973","js_e_condition":"","js_e_value":"","js_published":"1"}');
+  _child.innerHTML = &quot;Crédential du président de jury va être généré quand ce formulaire est rempli&quot;;
+  _child.style.color = &quot;red &quot;;
+}
+
+_child.style.background = &quot;#EEEEEE &quot;;
+_child.style.fontWeight = &quot;bold&quot;;
+_parent.append(_child);', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group973","js_e_condition":"","js_e_value":"","js_published":"1"}');
 
 
 INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
@@ -244,14 +243,13 @@ _child.setAttribute(&quot;id&quot;, &quot;zoom-msg&quot;);
 
 if(zoom.value !== &quot;&quot;) {
   _child.innerHTML = zoom.value;
-  _child.style.background = &quot;#eeeeee&quot;;
   _child.style.color = &quot;#16afe1&quot;;
 } else {
   _child.innerHTML = &quot;Session va être générée quand ce formulaire est rempli&quot;;
-  _child.style.background = &quot;#eeeeee&quot;;
   _child.style.color = &quot;red&quot;;
 }
 
+_child.style.background = &quot;#eeeeee&quot;;
 _child.style.fontWeight = &quot;bold&quot;;
 _parent.append(_child);', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group974","js_e_condition":"","js_e_value":"","js_published":"1"}');
 
