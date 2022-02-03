@@ -650,7 +650,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-        foreach($attachments as $attachment)
+        foreach($attachments as $key => $attachment)
         {
             // check if file is in server
             if (!file_exists(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename)) {
@@ -658,6 +658,17 @@ class EmundusControllerApplication extends JControllerLegacy
             } else {
                 $attachment->existsOnServer = true;
             }
+
+            // do not display files that are printed by applicant 
+            if ($attachment->lbl === '_application_form') {
+                unset($attachments[$key]);
+            }
+        }
+
+        // if array is associative, json encode will return an object
+        // it is supposed to recieve an array (response is checking type anyway)
+        if ($attachments !== array_values($attachments)) {
+            $attachments = array_values($attachments);
         }
 
         echo json_encode($attachments);
