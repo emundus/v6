@@ -405,7 +405,7 @@ VALUES ('email', @group_3, 'databasejoin', 'email', 0, '2022-02-03 18:14:44', '2
 SET @element_7 := LAST_INSERT_ID();
 
 -- Update table "jos_fabrik_joins" --
-INSERT INTO c62_i1003_db.jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params)
+INSERT INTO jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params)
 VALUES (0, @element_7, '', 'jos_users', 'email', 'id', 'left', @group_3, '{"join-label":"email","type":"element","pk":"`jos_users`.`id`"}');
 -- --
 
