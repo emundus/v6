@@ -446,7 +446,7 @@ VALUES ('COM_EMUNDUS_ZOOM_CANDIDAT_COORDINATOR', '<p>COM_EMUNDUS_ZOOM_CANDIDAT_C
 SET @list_3 := LAST_INSERT_ID();
 
 -- Step 14 : Create new group "COM_EMUNDUS_ZOOM_CANDIDAT_COORDINATOR" (set @group_4) --
-INSERT INTO jos_fabrik_groups (id, name, css, label, published, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, is_join, private, params) 
+INSERT INTO jos_fabrik_groups (name, css, label, published, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, is_join, private, params) 
 VALUES ('COM_EMUNDUS_ZOOM_CANDIDAT_COORDINATOR', '', 'COM_EMUNDUS_ZOOM_CANDIDAT_COORDINATOR', 1, '2022-02-03 10:49:38', 62, 'sysadmin', '2022-02-02 11:47:35', 0, 0, '2022-02-02 11:47:35', 0, 0, '{"repeat_group_button":0,"repeat_group_show_first":1}');
 SET @group_4 := LAST_INSERT_ID();
 
