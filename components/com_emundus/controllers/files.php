@@ -656,6 +656,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 // We're getting the first link in the user's menu that's from com_emundus, which is PROBABLY a files/evaluation view, but this does not guarantee it.
+                /* this methode does not word at all, it get a random link from invited evaluator
                 $index = 0;
                 foreach ($items as $k => $item) {
                     if ($item->component === 'com_emundus') {
@@ -669,10 +670,11 @@ class EmundusControllerFiles extends JControllerLegacy
                 } else {
                     $userLink = $items[$index]->link.'&Itemid='.$items[0]->id;
                 }
-
+                */
                 $fnumList = '<ul>';
                 foreach ($fnums as $fnum) {
-                    $fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    //$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    $fnumList .= '<li><a href="'.JURI::base().'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
                 }
                 $fnumList .= '</ul>';
 
