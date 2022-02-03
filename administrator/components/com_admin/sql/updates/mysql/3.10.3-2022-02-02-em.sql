@@ -63,7 +63,6 @@ VALUES (@element_1, 'load',
     host_val = this.get(&#039;value&#039;);
 
     if(host_val !== &quot;&quot;) {
-        console.log(this);
         host_name = host.options[host.selectedIndex].text;
 
         this.form.elements.get(&#039;data_referentiel_zoom_token___user&#039;).element.hide();
@@ -279,7 +278,6 @@ VALUES (@element_5, 'load', 'host = this.element;
 host_val = this.get(&#039;value&#039;);
 
 if(host_val !== &quot;&quot;) {
-  console.log(this);
   host_name = host.options[host.selectedIndex].text;
 
   this.form.elements.get(&#039;jos_emundus_jury___president&#039;).element.hide();
