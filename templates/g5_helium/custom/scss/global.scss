@@ -5172,6 +5172,12 @@ input:focus + .em-slider {
   left: 50%;
   transform: translate(-45%,50%);
 }
+.em-success-animation{
+  width: 150px;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+}
 
 .em-fade-loader{
   box-shadow: 0 0 0 9999px #cecece85;

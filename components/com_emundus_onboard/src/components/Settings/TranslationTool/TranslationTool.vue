@@ -29,6 +29,8 @@
           <Translations v-if="currentMenu === 2" class="em-modal-component"></Translations>
           <Orphelins v-if="currentMenu === 3" class="em-modal-component"></Orphelins>
         </transition>
+
+        <img v-if="setup_success" alt="checked-animation" class="em-success-animation" :src="'/images/emundus/animations/checked.gif'" />
       </div>
 
       <div v-if="loading">
@@ -72,6 +74,27 @@ export default {
 
       loading: false,
       setup_success: false,
+
+      options: {
+        minimizable: false,
+        playerSize: "standard",
+        backgroundColor: '#fff',
+        backgroundStyle: 'color',
+        theme: {
+          controlsView: "standard",
+          active: "light",
+          light: {
+            color: '#3D4852',
+            backgroundColor: '#fff',
+            opacity: '0.7',
+          },
+          dark: {
+            color: '#fff',
+            backgroundColor: '#202020',
+            opacity: '0.7',
+          }
+        }
+      }
     }
   },
   methods:{
@@ -89,11 +112,12 @@ export default {
           this.loading = true;
           translationsService.configureSetup().then((result) => {
             if(result.data === 1){
+              this.loading = false;
               this.setup_success = true;
               setTimeout(() => {
-                this.loading = false;
+                this.setup_success = false;
                 this.currentMenu = 1;
-              },1500)
+              },2700)
             }
           });
         } else {
