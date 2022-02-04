@@ -530,8 +530,10 @@ SET @element_10 := LAST_INSERT_ID();
 
 -- Update table "jos_fabrik_jsactions" --
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
-VALUES (@element_10, 'load',
-'var fnum = this.element;
+VALUES (@element_10, 'load', 'var _session = this.form.elements;
+_session.get(&#039;jos_emundus_candidat_meeting___zoom_target&#039;).element.parentNode.parentNode.parentNode.parentNode.remove();
+
+var fnum = this.element;
 fnum.hide();
 
 var _parent = fnum.parentElement;
