@@ -195,7 +195,7 @@ create table jos_emundus_jury
     encrypted_password             varchar(255) null,
     encrytion_type                 varchar(255) null,
     zoom_link                      mediumtext   null,
-    date_time                      datetime     null
+    date_time                      datetime     null,
     constraint jos_emundus_jury___fk1
         foreign key (president) references jos_users (id)
             on update cascade on delete cascade
