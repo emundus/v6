@@ -3659,54 +3659,51 @@ class EmundusModelApplication extends JModelList
             // sync documents uploaded
             // 1. get list of uploaded documents for previous file defined as duplicated
             if ($copy_attachment) {
-                foreach ($pids as $profile) {
-                    $query = 'SELECT eu.*, esa.nbmax
-											FROM #__emundus_uploads as eu
-											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
-											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id=' . $profile . '
-											WHERE eu.user_id=' . $fnumInfos['applicant_id'] . '
-											AND eu.fnum like ' . $db->Quote($fnum_from) . '
-											AND esap.duplicate=1';
-                    $db->setQuery($query);
-                    $stored = $db->loadAssocList();
+                $query = $db->getQuery(true);
 
-                    if (count($stored) > 0) {
-                        // 2. copy DB définition and duplicate files in applicant directory
-                        foreach ($stored as $key => $row) {
-                            $src = $row['filename'];
-                            $ext = explode('.', $src);
-                            $ext = $ext[count($ext) - 1];
-                            $cpt = 0 - (int)(strlen($ext) + 1);
-                            $dest = substr($row['filename'], 0, $cpt) . '-' . $row['id'] . '.' . $ext;
-                            $nbmax = $row['nbmax'];
-                            $row['filename'] = $dest;
-                            unset($row['id']);
-                            unset($row['fnum']);
-                            unset($row['nbmax']);
+                $query->select('jeu.*, jsa.lbl')
+                ->from('jos_emundus_uploads AS jeu')
+                ->leftJoin('jos_emundus_setup_attachments AS jsa ON jsa.id=jeu.attachment_id')
+                ->where('jeu.fnum LIKE '. $db->quote($fnum_from));
 
-                            try {
-                                $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id=' . $fnumInfos['applicant_id'] . ' AND attachment_id=' . $row['attachment_id'] . ' AND fnum like ' . $db->Quote($fnum_to);
-                                $db->setQuery($query);
-                                $cpt = $db->loadResult();
+                $db->setQuery($query);
 
-                                if ($cpt < $nbmax) {
-                                    $query = 'INSERT INTO #__emundus_uploads (`fnum`, `' . implode('`,`', array_keys($row)) . '`) VALUES(' . $db->Quote($fnum_to) . ', ' . implode(',', $db->Quote($row)) . ')';
-                                    $db->setQuery($query);
-                                    $db->execute();
-                                    $id = $db->insertid();
-                                    $path = EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'] . DS;
+                $documents = [];
+                try {
+                    $documents = $db->loadAssocList();
+                } catch(Exception $e) {
+                    JLog::add('Error getting documents for fnum '.$fnum_from.' in emundus model application at query '.$query, JLog::ERROR, 'com_emundus');
+                }
 
-                                    if (!copy($path . $src, $path . $dest)) {
-                                        $query = 'UPDATE #__emundus_uploads SET filename=' . $src . ' WHERE id=' . $id;
-                                        $db->setQuery($query);
-                                        $db->execute();
-                                    }
-                                }
+                if (!empty($documents)) {
+                    foreach ($documents as $document) {
+                        $file_ext = pathinfo($document['filename'], PATHINFO_EXTENSION);
+			            $new_file = $fnumInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
 
-                            } catch (Exception $e) {
-                                $error = JUri::getInstance() . ' :: USER ID : ' . $fnumInfos['applicant_id'] . ' -> ' . $e->getMessage();
-                                JLog::add($error, JLog::ERROR, 'com_emundus');
-                            }
+                        // try to copy file with new name
+                        $copied = copy(JPATH_BASE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_BASE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $new_file);
+                        if (!$copied) {
+                            JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
+                        }
+
+                        $document['filename'] = $new_file;
+                        $document['fnum'] = $fnum_to;
+                        $document['is_validated'] = empty($document['is_validated']) ? '-2' : $document['is_validated'];
+                        $document['modified_by'] = empty($document['modified_by']) ? $document['user_id'] : $document['modified_by'];
+                        unset($document['id']);
+                        unset($document['lbl']);
+
+                        try {
+                            $query->clear();
+                            $query->insert('jos_emundus_uploads')
+                                ->columns(array_keys($document))
+                                ->values(implode(", ", $db->quote($document)));
+
+                            $db->setQuery($query);
+                            $db->execute();
+
+                        } catch(Exception $e) {
+                            JLog::add('Error inserting document in jos_emundus_uploads table for fnum '.$fnum_to.' : '.$e, JLog::ERROR, 'com_emundus');
                         }
                     }
                 }
