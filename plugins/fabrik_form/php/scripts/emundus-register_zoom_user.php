@@ -44,6 +44,29 @@ if(empty($apiSecret)) {
         } else {
             $zoom->requestErrors();
         }
+    } else {
+        # we just allow to update the user type (1,2,3,99). If the coordinator want to upgrade the user type, use this case
+        $uType = $_POST['data_referentiel_zoom_token___user_type'];
+
+        # prepare data to send
+        $updateJson = json_encode(array("type" => $uType));
+
+        # send request to update endpoint
+        $response = $zoom->doRequest('PATCH', '/users/' . $_POST['data_referentiel_zoom_token___zoom_id'], array(), array(), $updateJson);
+
+        # get the HTTP status code
+        $code = $zoom->responseCode();
+
+        # if http status is 400 (bad request error), rollback the last user type
+        if($code !== 204) {
+            # again, get the last user type
+            $request = $zoom->doRequest('GET', '/users/' . $_POST['data_referentiel_zoom_token___zoom_id'], array(), array(), '');
+
+            # rollback to the database
+            $rollbackSql = "update data_referentiel_zoom_token set user_type = " . $db->quote($request['type']) . ' where data_referentiel_zoom_token.user = ' . current($_POST['data_referentiel_zoom_token___user']);
+            $db->setQuery($rollbackSql);
+            $db->execute();
+        }
     }
 }
     
