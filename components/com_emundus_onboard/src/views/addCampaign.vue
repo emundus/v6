@@ -407,7 +407,6 @@ export default {
     this.actualLanguage = global.getters.actualLanguage;
     this.manyLanguages = global.getters.manyLanguages;
     this.coordinatorAccess = global.getters.coordinatorAccess;
-    //
 
     // Configure datetime
     Settings.defaultLocale = this.actualLanguage;
@@ -433,7 +432,7 @@ export default {
           this.programForm = response.data.data.program;
 
           // Check label translations
-          this.form.label = response.data.data.label
+          this.form.label = response.data.data.label;
           this.languages.forEach((language) => {
             if(this.form.label[language.sef] === '' || this.form.label[language.sef] == null) {
               this.form.label[language.sef] = label;
@@ -658,7 +657,7 @@ export default {
       this.year.profile_id = this.form.profile_id;
       //
 
-      if(this.form.label.en == ""){
+      if (this.form.label.en == "" || this.form.label.en == null || typeof this.form.label.en == "undefined") {
         this.form.label.en = this.form.label.fr;
       }
 
