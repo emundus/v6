@@ -75,12 +75,7 @@
 
 		<hr>
 
-		<div class="actions"
-			:class="{
-				'not-published': isPublished === false || isActive === false,
-				'finished': isFinished
-			}"
-		>
+		<div class="actions">
 			<a 
 				@click="redirectToEditItem" 
 				class="em-primary-button em-font-size-14"
