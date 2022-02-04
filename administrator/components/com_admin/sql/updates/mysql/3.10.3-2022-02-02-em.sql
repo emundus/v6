@@ -462,6 +462,7 @@ create table jos_emundus_candidat_meeting
     duration     time         null,
     date_time    datetime     null,
     applicant    int          not null,
+    zoom_target  mediumtext   null,
     constraint jos_emundus_candidat_meeting___fk1
         foreign key (session) references jos_emundus_jury (id)
             on update cascade on delete cascade,
