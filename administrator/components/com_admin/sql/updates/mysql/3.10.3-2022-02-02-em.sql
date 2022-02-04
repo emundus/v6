@@ -128,7 +128,7 @@ VALUES ('zoom_id', @group_1, 'field', 'zoom_id', 0, '2022-02-02 19:47:41', '2022
 SET @element_3 := LAST_INSERT_ID();
 
 -- update table "jos_fabrik_jsactions" --
-INSERT INTO vanilla.jos_fabrik_jsactions (element_id, action, code, params)
+INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
 VALUES (@element_3, 'load', 'var zoom = this.element;
 zoom.hide();
 var _parent = zoom.parentElement;
