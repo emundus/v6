@@ -450,11 +450,15 @@ create table jos_emundus_candidat_meeting
     start_time   datetime     null,
     duration     time         null,
     date_time    datetime     null,
+    applicant    int          not null,
     constraint jos_emundus_candidat_meeting___fk1
         foreign key (session) references jos_emundus_jury (id)
             on update cascade on delete cascade,
     constraint jos_emundus_candidat_meeting___fk2
         foreign key (lien_session) references jos_emundus_jury (id)
+            on update cascade on delete cascade,
+    constraint jos_emundus_candidat_meeting___fk3
+        foreign key (applicant) references jos_users (id)
             on update cascade on delete cascade
 );
 
