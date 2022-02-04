@@ -783,7 +783,7 @@ class EmundusModelTranslations extends JModelList
      * @since version 1.28.0
      */
     public function getTranslationsFalang($default_lang,$lang_to,$reference_id,$fields,$reference_table,$reference_field = ''){
-        $labels = new stdClass();
+        $translations = new stdClass();
         $fields = explode(',',$fields);
 
         $query = $this->_db->getQuery(true);
@@ -803,11 +803,14 @@ class EmundusModelTranslations extends JModelList
             $this->_db->setQuery($query);
             $lang_to_id = $this->_db->loadResult();
 
+            $translations->{$reference_id} = new stdClass;
+
             foreach ($fields as $field){
-                $labels->{$field} = new stdClass;
-                $labels->{$field}->reference_field = $field;
-                $labels->{$field}->reference_table = $reference_table;
-                $labels->{$field}->reference_id = $reference_id;
+                $labels = new stdClass();
+                $labels = new stdClass;
+                $labels->reference_field = $field;
+                $labels->reference_table = $reference_table;
+                $labels->reference_id = $reference_id;
 
                 $query->clear()
                     ->select('value')
@@ -817,15 +820,15 @@ class EmundusModelTranslations extends JModelList
                     ->where($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($default_lang_id))
                     ->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
                 $this->_db->setQuery($query);
-                $labels->{$field}->default_lang = $this->_db->loadResult();
+                $labels->default_lang = $this->_db->loadResult();
 
-                if(empty($labels->{$field}->default_lang)){
+                if(empty($labels->default_lang)){
                     $query->clear()
                         ->select($field)
                         ->from($this->_db->quoteName('#__' . $reference_table))
                         ->where($this->_db->quoteName('id') . ' = ' . $reference_id);
                     $this->_db->setQuery($query);
-                    $labels->{$field}->default_lang = $this->_db->loadResult();
+                    $labels->default_lang = $this->_db->loadResult();
                 }
 
                 $query->clear()
@@ -836,10 +839,11 @@ class EmundusModelTranslations extends JModelList
                     ->where($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
                     ->where($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($field));
                 $this->_db->setQuery($query);
-                $labels->{$field}->lang_to = $this->_db->loadResult();
+                $labels->lang_to = $this->_db->loadResult();
+                $translations->{$reference_id}->{$field} = $labels;
             }
 
-            return $labels;
+            return $translations;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/translations | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
             return false;

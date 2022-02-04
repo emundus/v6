@@ -25,9 +25,9 @@
         </div>
 
         <transition name="fade">
-          <Global v-if="currentMenu === 1" class="em-modal-component" @updateOrphelinsCount="updateOrphelinsCount"></Global>
-          <Translations v-if="currentMenu === 2" class="em-modal-component"></Translations>
-          <Orphelins v-if="currentMenu === 3" class="em-modal-component"></Orphelins>
+          <Global v-if="currentMenu === 1" v-show="!setup_success" class="em-modal-component" @updateOrphelinsCount="updateOrphelinsCount"></Global>
+          <Translations v-if="currentMenu === 2" v-show="!setup_success" class="em-modal-component"></Translations>
+          <Orphelins v-if="currentMenu === 3" v-show="!setup_success" class="em-modal-component"></Orphelins>
         </transition>
 
         <img v-if="setup_success" alt="checked-animation" class="em-success-animation" :src="'/images/emundus/animations/checked.gif'" />
@@ -74,27 +74,6 @@ export default {
 
       loading: false,
       setup_success: false,
-
-      options: {
-        minimizable: false,
-        playerSize: "standard",
-        backgroundColor: '#fff',
-        backgroundStyle: 'color',
-        theme: {
-          controlsView: "standard",
-          active: "light",
-          light: {
-            color: '#3D4852',
-            backgroundColor: '#fff',
-            opacity: '0.7',
-          },
-          dark: {
-            color: '#fff',
-            backgroundColor: '#202020',
-            opacity: '0.7',
-          }
-        }
-      }
     }
   },
   methods:{
@@ -114,9 +93,9 @@ export default {
             if(result.data === 1){
               this.loading = false;
               this.setup_success = true;
+              this.currentMenu = 1;
               setTimeout(() => {
                 this.setup_success = false;
-                this.currentMenu = 1;
               },2700)
             }
           });

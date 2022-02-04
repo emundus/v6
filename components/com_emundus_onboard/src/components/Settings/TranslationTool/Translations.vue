@@ -101,21 +101,26 @@
       <div v-else>
         <div v-for="section in object.fields.Sections" class="em-mb-32">
           <h4>{{section.Label}}</h4>
-          <div class="em-neutral-100-box">
-            <div v-for="field in section.indexedFields">
-              <div v-for="(translation,index) in translations">
-                <div v-if="(object.table.type === 'falang' && field.Name === translation.reference_field) || (object.table.type === 'override' && (field.Name === translation.reference_field && section.Name === translation.reference_table))" class="em-mb-32">
-                  <p>{{ field.Label.toUpperCase() }}</p>
-                  <div class="justify-content-between em-mt-16 em-grid-50">
-                    <p class="em-neutral-700-color">{{ translation.default_lang }}</p>
-                    <input v-if="field.Type === 'field'" class="mb-0 em-input" type="text" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
-                    <textarea v-if="field.Type === 'textarea'" class="mb-0 em-input" :value="translation.lang_to" @focusout="saveTranslation($event.target.value,index,translation)" />
+          <TranslationRow :section="section" :translations="translations"/>
+<!--          <div>
+            <div v-for="(translation,index) in translations" class="em-neutral-100-box">
+              <div v-for="field in section.indexedFields">
+                <div v-for="(tag,index) in translation">
+                  <div v-if="(object.table.type === 'falang' && field.Name === translation.reference_field)
+                      ||
+                      (object.table.type === 'override' && (field.Name === tag.reference_field && section.Name === tag.reference_table))"
+                      class="em-p-24">
+                    <p>{{ field.Label.toUpperCase() }}</p>
+                    <div class="justify-content-between em-mt-16 em-grid-50">
+                      <p class="em-neutral-700-color">{{ tag.default_lang }}</p>
+                      <input v-if="field.Type === 'field'" class="mb-0 em-input" type="text" :value="tag.lang_to" @focusout="saveTranslation($event.target.value,index,tag)" />
+                      <textarea v-if="field.Type === 'textarea'" class="mb-0 em-input" :value="tag.lang_to" @focusout="saveTranslation($event.target.value,index,tag)" />
+                    </div>
                   </div>
-                </div>
               </div>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
     </div>
 
@@ -128,10 +133,12 @@ import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
 import mixin from "com_emundus/src/mixins/mixin";
 import Multiselect from 'vue-multiselect';
+import TranslationRow from "./TranslationRow";
 
 export default {
   name: "Translations",
   components: {
+    TranslationRow,
     Multiselect
   },
   mixins: [mixin],

@@ -6,9 +6,9 @@
   <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_ATTACHMENTS_DESC</description>
   <reference>
   	<table name="emundus_setup_attachments" reference="id" label="value" filters="" type="falang">
-        <section label="" name="general">
-            <field name="value" type="field" section="general">Nom du document</field>
-            <field name="description" section="general" type="textarea">Description</field>
+        <section label="" name="emundus_setup_attachments">
+            <field name="value" type="field" section="emundus_setup_attachments">Nom du document</field>
+            <field name="description" section="emundus_setup_attachments" type="textarea">Description</field>
         </section>
   	</table>
   </reference>

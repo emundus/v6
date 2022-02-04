@@ -6,12 +6,10 @@
   <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_CAMPAIGNS_DESC</description>
   <reference>
   	<table name="emundus_setup_campaigns" reference="id" label="label" filters="" type="falang">
-        <section label="Informations générales" name="general">
-            <field name="label" type="field" section="general">Nom de la campagne</field>
-        </section>
-        <section label="Informations" name="informations">
-            <field name="description" section="informations" type="textarea">Description</field>
-            <field name="short_description" section="informations" type="textarea">Résumé de la campagne</field>
+        <section label="Informations générales" name="emundus_setup_campaigns">
+            <field name="label" type="field" section="emundus_setup_campaigns">Nom de la campagne</field>
+            <field name="description" section="emundus_setup_campaigns" type="textarea">Description</field>
+            <field name="short_description" section="emundus_setup_campaigns" type="textarea">Résumé de la campagne</field>
         </section>
   	</table>
   </reference>

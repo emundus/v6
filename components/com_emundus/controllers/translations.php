@@ -164,7 +164,6 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $lang_to = $jinput->get->getString('lang_to', null);
         $references_table = $jinput->get->get('reference_table', null);
         $reference_id = $jinput->get->getString('reference_id', null);
-        $fields = $jinput->get->getString('fields', null);
 
         $translations = array();
 
@@ -175,11 +174,11 @@ class EmundusControllerTranslations extends JControllerLegacy {
             $results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, $reference_table['fields']);
 
             foreach ($results as $result) {
-                if (in_array($result->tag, array_keys($translations))) {
+                if (in_array($result->tag, array_keys($translations[$result->reference_id]))) {
                     if ($result->lang_code == $default_lang) {
-                        $translations[$result->tag]->default_lang = $result->override;
+                        $translations[$result->reference_id][$result->tag]->default_lang = $result->override;
                     } elseif ($result->lang_code == $lang_to) {
-                        $translations[$result->tag]->lang_to = $result->override;
+                        $translations[$result->reference_id][$result->tag]->lang_to = $result->override;
                     }
                 } else {
                     $translation = $result;
@@ -188,8 +187,7 @@ class EmundusControllerTranslations extends JControllerLegacy {
                     } elseif ($result->lang_code == $lang_to) {
                         $translation->lang_to = $result->override;
                     }
-
-                    $translations[$result->tag] = $translation;
+                    $translations[$result->reference_id][$result->tag] = $translation;
                 }
             }
         }

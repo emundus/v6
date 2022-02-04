@@ -6,8 +6,8 @@
   <description></description>
   <reference>
   	<table name="emundus_setup_status" reference="id" label="value" filters="" type="falang">
-        <section label="" name="general">
-            <field name="value" type="field" section="general">Nom du statut</field>
+        <section label="" name="emundus_setup_status">
+            <field name="value" type="field" section="emundus_setup_status">Nom du statut</field>
         </section>
   	</table>
   </reference>
