@@ -196,8 +196,9 @@ create table jos_emundus_jury
     encrytion_type                 varchar(255) null,
     zoom_link                      mediumtext   null,
     date_time                      datetime     null
-    -- constraint jos_emundus_jury_id_uindex
-        -- unique (id)
+    constraint jos_emundus_jury___fk1
+        foreign key (president) references jos_users (id)
+            on update cascade on delete cascade
 );
 
 -- Step 6 : Create form "COM_EMUNDUS_ZOOM_JURY_CORDINATOR" (set @form_2) --
@@ -392,6 +393,9 @@ create table jos_emundus_jury_repeat_jury
             on update cascade on delete cascade,
     constraint jos_emundus_jury_repeat_jury___fk2
         foreign key (parent_id) references jos_emundus_jury (id)
+            on update cascade on delete cascade,
+    constraint jos_emundus_jury_repeat_jury___fk3
+        foreign key (email) references jos_users (id)
             on update cascade on delete cascade
 );
 
