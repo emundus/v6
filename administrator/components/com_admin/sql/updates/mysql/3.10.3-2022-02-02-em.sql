@@ -559,7 +559,8 @@ SET @element_12 := LAST_INSERT_ID();
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
 VALUES (@element_12, 'load',
 'target = this.element;
-target.parentElement.parentElement.parentElement.hide();', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group976","js_e_condition":"","js_e_value":"","js_published":"1"}');
+target.parentElement.parentElement.parentElement.hide();
+document.getElementsByClassName(&#039;fb_el_jos_emundus_candidat_meeting___zoom_target_ro&#039;)[0].show();', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group976","js_e_condition":"","js_e_value":"","js_published":"1"}');
 
 -- Step 16 P Add some Zoom tags to table "jos_emundus_setup_tags" --
 INSERT INTO c62_i1003_db.jos_emundus_setup_tags (date_time, tag, request, description, published)
