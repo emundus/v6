@@ -3917,6 +3917,22 @@ class EmundusModelApplication extends JModelList
             return false;
         }
 
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JDispatcher::getInstance();
+		$dispatcher->trigger('callEventHandler', array(
+            'onAfterCopyApplication', 
+            array(
+                'fnum_from' => $fnum_from, 
+                'fnum_to' => $fnum_to, 
+                'pid' => $pid, 
+                'copy_attachment' => $copy_attachment, 
+                'campaign_id' => $campaign_id, 
+                'copy_tag' => $copy_tag, 
+                'move_hikashop_command' => $move_hikashop_command, 
+                'delete_from_file' => $delete_from_file)
+            )
+        );
+
         return true;
     }
 
