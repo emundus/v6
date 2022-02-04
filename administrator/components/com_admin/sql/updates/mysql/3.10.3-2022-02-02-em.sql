@@ -590,7 +590,7 @@ VALUES (@element_12, 'load',
 );
 
 -- Step 16 P Add some Zoom tags to table "jos_emundus_setup_tags" --
-INSERT INTO c62_i1003_db.jos_emundus_setup_tags (date_time, tag, request, description, published)
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-01-25 09:54:59', 'ZOMM_MEETING_START_TIME', 'php|
 $fnum = ''[FNUM]'';
 $db = JFactory::getDbo();
@@ -600,7 +600,7 @@ $raw = $db->loadResult();
 $html = ''<strong>'' . $raw . ''</strong>'';
 return $html;', 'Zoom meeting start time', 1);
 
-INSERT INTO c62_i1003_db.jos_emundus_setup_tags (date_time, tag, request, description, published)
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-01-25 09:59:38', 'ZOOM_MEETING_DURATION', 'php|
 $fnum = ''[FNUM]'';
 $db = JFactory::getDbo();
@@ -610,7 +610,7 @@ $raw = $db->loadResult();
 $html = ''<strong>'' . $raw . ''</strong>'';
 return $html;', 'Zoom meeting duration (in minutes)', 1);
 
-INSERT INTO c62_i1003_db.jos_emundus_setup_tags (date_time, tag, request, description, published)
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-01-25 09:59:39', 'ZOOM_MEETING_SESSION_LINK', 'php|
 $fnum = ''[FNUM]'';
 $db = JFactory::getDbo();
