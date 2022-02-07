@@ -39,7 +39,7 @@
 
       <div v-else>
         <div v-for="(translation,index) in translations">
-          <div class="em-mb-32 em-neutral-100-box">
+          <div class="em-mb-32 em-neutral-100-box em-p-24">
             <div class="justify-content-between em-mt-16 em-grid-50">
               <p class="em-neutral-700-color">{{ translation.override }}</p>
               <div>

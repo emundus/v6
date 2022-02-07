@@ -11,7 +11,7 @@
         @closed="beforeClose"
     >
       <div class="em-modal-header">
-        <div class="em-flex-row-start em-pointer" @click.prevent="$modal.hide('translationTool')">
+        <div class="em-flex-row-start em-pointer em-w-max-content" @click.prevent="$modal.hide('translationTool')">
           <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
       </div>

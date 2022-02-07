@@ -48,7 +48,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -98,7 +98,7 @@ export default {
     }
   },
 
-  async getTranslations(type,default_lang,lang_to,reference_id,fields = '',reference_table = ''){
+  async getTranslations(type,default_lang,lang_to,reference_id = '',fields = '',reference_table = ''){
     switch(type){
       case 'falang':
         try {
@@ -242,4 +242,26 @@ export default {
       };
     }
   },
+
+  async sendMailToInstallLanguage(language,comment = ''){
+    try {
+      const formData = new FormData();
+      formData.append('suggest_language', language);
+      formData.append('comment', comment);
+
+      return await client().post(`index.php?option=com_emundus&controller=translations&task=sendpurposenewlanguage`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+      );
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  }
 };

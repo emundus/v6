@@ -97,6 +97,18 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $default = $jinput->getInt('default_lang', 0);
 
         $result = $this->model->updateLanguage($lang_code,$published,$default);
+        $default_language = $this->model->getDefaultLanguage();
+        $secondary_languages = $this->model->getPlatformLanguages();
+        foreach ($secondary_languages as $key => $language){
+            if($default_language->lang_code == $language){
+                unset($secondary_languages[$key]);
+            }
+        }
+        if(empty($secondary_languages)){
+            $this->model->updateFalangModule(0);
+        } else {
+            $this->model->updateFalangModule(1);
+        }
 
         echo json_encode($result);
         exit;
@@ -292,6 +304,24 @@ class EmundusControllerTranslations extends JControllerLegacy {
         $lang_to = $jinput->getString('lang_to', null);
 
         $result = $this->model->getOrphelins($default_lang,$lang_to);
+
+        echo json_encode($result);
+        exit;
+    }
+
+    public function sendpurposenewlanguage(){
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            die(JText::_("ACCESS_DENIED"));
+        }
+
+        $jinput = JFactory::getApplication()->input;
+
+        $language = $jinput->getString('suggest_language', null);
+        $comment = $jinput->getString('comment', null);
+
+        $result = $this->model->sendPurposeNewLanguage($language,$comment);
 
         echo json_encode($result);
         exit;

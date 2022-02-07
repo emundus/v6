@@ -21,3 +21,7 @@ create table jos_emundus_setup_languages
     constraint jos_emundus_setup_languages_uindex
         unique (tag, lang_code, location)
 );
+
+INSERT INTO jos_emundus_setup_emails (lbl, subject, emailfrom, message, name, type, published, email_tmpl, letter_attachment, candidate_attachment, category, cci, tags)
+VALUES ('installation_new_language', 'Suggestion/Installation d''une langue', '', '<p>La plateforme <a href="[SITE_URL]">[SITE_URL]</a> souhaiterait installer la langue suivante : [LANGUAGE_FIELD].</p>', '', 2, 0, 1, null, null, '', null, null);
+

@@ -48,7 +48,7 @@
             @remove="unpublishLanguage"
             @select="publishLanguage"
         ></multiselect>
-        <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
+        <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="purposeLanguage">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE') }}</a>
       </div>
     </div>
 
@@ -61,6 +61,8 @@
 import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
 import Multiselect from 'vue-multiselect';
+import Swal from "sweetalert2";
+import axios from "axios";
 
 export default {
   name: "global",
@@ -128,6 +130,42 @@ export default {
         }
         this.getAllLanguages();
       })
+    },
+    async purposeLanguage(){
+      const { value: formValues } = await Swal.fire({
+        title: this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE'),
+        html:
+            '<p class="em-body-16-semibold em-mb-8 em-text-align-left">' + this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_FIELD') + '</p>' +
+            '<input id="language_purpose" class="em-input">',
+        showCancelButton: true,
+        cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+        confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_SEND'),
+        showLoaderOnConfirm: true,
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
+        preConfirm: () => {
+          const language = document.getElementById('language_purpose').value;
+          return translationsService.sendMailToInstallLanguage(language);
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      })
+
+      if (formValues) {
+        await Swal.fire({
+          title: this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_SENDED'),
+          text: this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SUGGEST_LANGUAGE_SENDED_TEXT'),
+          showCancelButton: false,
+          showConfirmButton: false,
+          timer: 3000,
+          customClass: {
+            title: 'em-swal-title',
+          },
+        });
+      }
     }
   }
 }

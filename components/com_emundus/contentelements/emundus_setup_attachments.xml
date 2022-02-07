@@ -5,7 +5,7 @@
   <version>1.0</version>
   <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_ATTACHMENTS_DESC</description>
   <reference>
-  	<table name="emundus_setup_attachments" reference="id" label="value" filters="" type="falang">
+  	<table name="emundus_setup_attachments" reference="id" label="value" filters="" type="falang" load_all="true">
         <section label="" name="emundus_setup_attachments">
             <field name="value" type="field" section="emundus_setup_attachments">Nom du document</field>
             <field name="description" section="emundus_setup_attachments" type="textarea">Description</field>

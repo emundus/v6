@@ -291,6 +291,7 @@ class EmundusModelTranslations extends JModelList
                     $object->table->reference = trim($tableElement->getAttribute( 'reference' ));
                     $object->table->label = trim($tableElement->getAttribute( 'label' ));
                     $object->table->filters = trim($tableElement->getAttribute( 'filters' ));
+                    $object->table->load_all = trim($tableElement->getAttribute( 'load_all' ));
                     $object->table->type = trim($tableElement->getAttribute( 'type' ));
                     $tableFields = $tableElement->getElementsByTagName( 'field' );
                     $tableSections = $tableElement->getElementsByTagName( 'section' );
@@ -688,7 +689,7 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
-    private function getPlatformLanguages() : array {
+    public function getPlatformLanguages() : array {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -764,6 +765,21 @@ class EmundusModelTranslations extends JModelList
             }
         } catch (Exception $e) {
             JLog::add('Problem when try to update language ' . $lang_code .' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function updateFalangModule($published){
+        try {
+            $query = $this->_db->getQuery(true);
+
+            $query->update('#__modules')
+                ->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))
+                ->where($this->_db->quoteName('module') . ' = ' . $this->_db->quote('mod_falang'));
+            $this->_db->setQuery($query);
+            return $this->_db->execute();
+        } catch (Exception $e) {
+            JLog::add('Problem when try to unpublish falang module with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
     }
@@ -967,6 +983,48 @@ class EmundusModelTranslations extends JModelList
             return $this->_db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/translations | Error at getting orphelins : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+    }
+
+    public function sendPurposeNewLanguage($language,$comment){
+        try {
+            include_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+            $c_messages = new EmundusControllerMessages();
+
+            $template   = JFactory::getApplication()->getTemplate(true);
+            $params     = $template->params;
+            $config = JFactory::getConfig();
+            // Get LOGO
+            if (!empty($params->get('logo')->custom->image)) {
+                $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+                $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+
+            } else {
+                $logo_module = JModuleHelper::getModuleById('90');
+                preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+                $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+                if ((bool) preg_match($pattern, $tab[1])) {
+                    $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+                }
+
+                $logo = JURI::base().$tab[1];
+            }
+
+            $post = [
+                'SITE_NAME'      => $config->get('sitename'),
+                'SITE_URL'      => JURI::base(),
+                'LANGUAGE_FIELD' => $language,
+                'LOGO' => $logo
+            ];
+
+            return $c_messages->sendEmailNoFnum('support@emundus.fr','installation_new_language',$post);
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/translations | Error at sending email to purpose a new language : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
             return false;
         }
     }

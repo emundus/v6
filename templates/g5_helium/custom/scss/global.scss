@@ -5350,6 +5350,10 @@ input:focus + .em-slider {
   width: 380px;
 }
 
+.em-w-max-content{
+  width: max-content;
+}
+
 .em-green-color{
   color: $em-green;
 }
@@ -5543,6 +5547,9 @@ input:focus + .em-slider {
 
 .em-flex-space-around {
   justify-content: space-around;
+}
+.em-text-align-left{
+  text-align: start;
 }
 
 
@@ -5742,6 +5749,37 @@ input:focus + .em-slider {
   background-color: $yellow-500;
 }
 
+/** SWAL CUSTOM CLASSES **/
+.em-swal-title{
+  margin: 8px 8px 32px 8px !important;
+}
+button.em-swal-confirm-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: auto;
+  padding: 0 $p-16;
+  border-radius: 4px !important;
+  border: unset;
+  height: 40px;
+  color: white;
+  background-color: $main-500 !important;
+}
+.swal2-actions.swal2-loading .swal2-styled.swal2-confirm.em-swal-confirm-button{
+  border-radius: 25px !important;
+}
+button.em-swal-cancel-button{
+  background: unset !important;
+  color: $blue-500 !important;
+  &:focus{
+    box-shadow: unset !important;
+  }
+  &:hover{
+    text-decoration: underline;
+  }
+}
+
 /** Vue Modal - Translation tool **/
 #translationTool {
   .v--modal-overlay {
@@ -5771,6 +5809,7 @@ input:focus + .em-slider {
     background-color: white;
     position: sticky;
     top: 0;
+    z-index: 1;
   }
   .em-modal-content{
     display: flex;

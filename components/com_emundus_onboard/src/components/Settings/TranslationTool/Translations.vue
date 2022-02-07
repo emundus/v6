@@ -93,7 +93,7 @@
     <hr class="col-md-12" style="z-index: 0"/>
 
     <div class="col-md-12">
-      <div v-if="lang === '' || lang == null || object === '' || object == null || translations.length === 0" class="text-center em-mt-80">
+      <div v-if="lang === '' || lang == null || object === '' || object == null || init_translations === false" class="text-center em-mt-80">
         <p class="em-h5 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</p>
         <p class="em-font-size-14 em-text-neutral-600">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}</p>
       </div>
@@ -101,26 +101,8 @@
       <div v-else>
         <div v-for="section in object.fields.Sections" class="em-mb-32">
           <h4>{{section.Label}}</h4>
-          <TranslationRow :section="section" :translations="translations"/>
-<!--          <div>
-            <div v-for="(translation,index) in translations" class="em-neutral-100-box">
-              <div v-for="field in section.indexedFields">
-                <div v-for="(tag,index) in translation">
-                  <div v-if="(object.table.type === 'falang' && field.Name === translation.reference_field)
-                      ||
-                      (object.table.type === 'override' && (field.Name === tag.reference_field && section.Name === tag.reference_table))"
-                      class="em-p-24">
-                    <p>{{ field.Label.toUpperCase() }}</p>
-                    <div class="justify-content-between em-mt-16 em-grid-50">
-                      <p class="em-neutral-700-color">{{ tag.default_lang }}</p>
-                      <input v-if="field.Type === 'field'" class="mb-0 em-input" type="text" :value="tag.lang_to" @focusout="saveTranslation($event.target.value,index,tag)" />
-                      <textarea v-if="field.Type === 'textarea'" class="mb-0 em-input" :value="tag.lang_to" @focusout="saveTranslation($event.target.value,index,tag)" />
-                    </div>
-                  </div>
-              </div>
-            </div>
-          </div>
-        </div>-->
+          <TranslationRow :section="section" :translations="translations" @saveTranslation="saveTranslation"/>
+        </div>
       </div>
     </div>
 
@@ -151,7 +133,7 @@ export default {
       objects: [],
       datas: [],
       childrens: [],
-      translations: [],
+      translations: {},
 
       // Values
       lang: null,
@@ -162,7 +144,8 @@ export default {
 
       loading: false,
       saving: false,
-      last_save: null
+      last_save: null,
+      init_translations: false
     }
   },
 
@@ -208,10 +191,76 @@ export default {
       });
     },
 
-    async saveTranslation(value,index,translation){
+    async getDatas(value){
+      this.loading = true;
+
+      translationsService.getDatas(
+          value.table.name,
+          value.table.reference,
+          value.table.label,
+          value.table.filters
+      ).then(async (response) => {
+        this.datas = response.data;
+
+        if(value.table.load_all === 'true') {
+          let fields = [];
+          await this.asyncForEach(this.object.fields.Fields, async (field) => {
+            fields.push(field.Name);
+          })
+          fields = fields.join(',');
+          const build = async () => {
+            for (const data of this.datas) {
+              await translationsService.getTranslations(
+                  this.object.table.type,
+                  this.defaultLang.lang_code,
+                  this.lang.lang_code,
+                  data.id,
+                  fields,
+                  this.object.table.name
+              ).then(async (rep) => {
+                for (const translation of Object.values(rep.data)) {
+                  this.translations[data.id] = {};
+                  this.object.fields.Fields.forEach((field) => {
+                    this.translations[data.id][field.Name] = translation[field.Name];
+                  })
+                }
+              })
+            }
+            this.init_translations = true;
+            this.loading = false;
+          }
+          await build();
+        } else {
+          this.loading = false;
+        }
+      });
+    },
+
+    async getTranslations(value){
+      let fields = [];
+      this.object.fields.Fields.forEach((field) => {
+        fields.push(field.Name);
+      })
+      fields = fields.join(',');
+
+      translationsService.getTranslations(
+          this.object.table.type,
+          this.defaultLang.lang_code,
+          this.lang.lang_code,
+          value.id,
+          fields,
+          this.object.table.name
+      ).then((response) => {
+        this.translations = response.data;
+        this.init_translations = true;
+        this.loading = false;
+      })
+    },
+
+    async saveTranslation({value,translation}){
       this.saving = true;
-      this.translations[index].lang_to = value;
-      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,index,translation.reference_table).then((response) => {
+      //this.translations[index].lang_to = value;
+      translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,translation.tag,translation.reference_table).then((response) => {
         this.last_save = this.formattedDate('','LT');
         this.saving = false;
       });
@@ -220,34 +269,26 @@ export default {
 
   watch: {
     object: function(value){
-      this.loading = true;
-      this.translations = [];
+      this.init_translations = false;
+      this.translations = {};
       this.childrens = [];
       this.children = null;
+      this.datas = [];
       this.data = null;
 
       if(value != null) {
-        translationsService.getDatas(
-            value.table.name,
-            value.table.reference,
-            value.table.label,
-            value.table.filters
-        ).then((response) => {
-          this.datas = response.data;
-          this.loading = false;
-        });
-      } else {
-        this.datas = [];
-        this.loading = false;
+        this.getDatas(value);
       }
     },
 
     data: function(value){
       this.loading = true;
-      this.translations = [];
+      this.init_translations = false;
+      this.translations = {};
       this.childrens = [];
       this.children = null;
       this.children_type = null;
+
       var children_existing = false;
 
       if(value != null) {
@@ -263,32 +304,17 @@ export default {
         });
 
         if (!children_existing) {
-          let fields = [];
-          this.object.fields.Fields.forEach((field) => {
-            fields.push(field.Name);
-          })
-          fields = fields.join(',');
-
-          translationsService.getTranslations(
-              this.object.table.type,
-              this.defaultLang.lang_code,
-              this.lang.lang_code,
-              value.id,
-              fields,
-              this.object.table.name
-          ).then((response) => {
-            this.translations = response.data;
-            this.loading = false;
-          })
+          this.getTranslations(value);
         }
       } else {
-        this.loading = false;
+        this.getDatas(this.object);
       }
     },
 
     children: function(value){
       this.loading = true;
-      this.translations = [];
+      this.init_translations = false;
+      this.translations = {};
 
       if(value != null) {
         let tables = [];
@@ -312,6 +338,7 @@ export default {
             tables
         ).then((response) => {
           this.translations = response.data;
+          this.init_translations = true;
           this.loading = false;
         })
       } else {

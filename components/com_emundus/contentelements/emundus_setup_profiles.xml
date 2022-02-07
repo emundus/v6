@@ -5,7 +5,7 @@
   <version>1.0</version>
   <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_PROFILES_DESC</description>
   <reference>
-  	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="override">
+  	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="override" load_all="false">
   		<field type="children" name="label">fabrik_forms</field>
         <section label="Formulaire" name="fabrik_forms" table="fabrik_forms">
             <field name="label" type="field" section="fabrik_forms" table="fabrik_forms">Titre</field>
@@ -16,8 +16,8 @@
             <field name="intro" type="textarea" section="fabrik_groups">Introduction</field>
         </section>
         <section label="Éléments" name="fabrik_elements" table="fabrik_elements" reference_column="id" join_table="fabrik_elements" join_column="group_id">
-            <field name="label" type="field" section="fabrik_elements">Titre</field>
-            <field name="sub_labels" type="field" section="fabrik_elements">Option</field>
+            <field name="label" type="field" section="fabrik_elements" order="1">Titre</field>
+            <field name="sub_labels" type="field" section="fabrik_elements" order="2">Option</field>
         </section>
   	</table>
   </reference>
