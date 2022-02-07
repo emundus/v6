@@ -548,7 +548,7 @@ class EmundusModelFiles extends JModelLegacy
                                             } else {
                                                 $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
                                             }
-                                            
+
                                             /*if (!isset($query[$table])) {
                                                 $query[$table] = true;
                                                 if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
@@ -884,6 +884,7 @@ class EmundusModelFiles extends JModelLegacy
 
         if (!empty($sql_code) || !empty($sql_fnum) ) {
             $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
+            $query['q'] .= ' AND esc.published > 0';
         } else if (!empty($params['programme']) && ($params['programme'][0] == "%" || empty($params['programme'][0])) || empty(array_intersect($params['programme'], array_filter($this->code)))) {
             $query['q'] .= ' AND 1=2 ';
         }
@@ -1502,7 +1503,7 @@ class EmundusModelFiles extends JModelLegacy
     public function getPageNavigation() : string {
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1548,7 +1549,7 @@ class EmundusModelFiles extends JModelLegacy
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,7 +20,7 @@ class hikashopDiscountClass extends hikashopClass {
 
 		$app = JFactory::getApplication();
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 
 		$nameboxes = array('discount_product_id','discount_category_id','discount_zone_id','discount_user_id');
 
@@ -645,9 +645,11 @@ class hikashopDiscountClass extends hikashopClass {
 			if(!empty($shipping->taxes)) {
 				foreach($shipping->taxes as $tax){
 					$tax->tax_amount = $currencyClass->round($cart->coupon->discount_shipping_percent * $tax->tax_amount / 100, $round);
-					if(isset($taxes[$tax->tax_namekey]))
+					$tax->amount = $currencyClass->round($cart->coupon->discount_shipping_percent * $tax->amount / 100, $round);
+					if(isset($taxes[$tax->tax_namekey])) {
 						$taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
-					else
+						$taxes[$tax->tax_namekey]->amount += $tax->amount;
+					} else
 						$taxes[$tax->tax_namekey] = clone($tax);
 				}
 			}
@@ -661,9 +663,10 @@ class hikashopDiscountClass extends hikashopClass {
 		if(!isset($cart->coupon->taxes))
 			$cart->coupon->taxes = array();
 		foreach($taxes as $tax) {
-			if(isset($cart->coupon->taxes[$tax->tax_namekey]))
+			if(isset($cart->coupon->taxes[$tax->tax_namekey])) {
 				$cart->coupon->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
-			else
+				$cart->coupon->taxes[$tax->tax_namekey]->amount += $tax->amount;
+			} else
 				$cart->coupon->taxes[$tax->tax_namekey] = clone($tax);
 		}
 
@@ -671,16 +674,18 @@ class hikashopDiscountClass extends hikashopClass {
 		$cart->full_total->prices[0]->price_value_with_tax -= $shipping_price_with_tax;
 		foreach($taxes as $tax) {
 			$tax->tax_amount = -$tax->tax_amount;
-			if(isset($cart->full_total->prices[0]->taxes[$tax->tax_namekey]))
+			$tax->amount = -$tax->amount;
+			if(isset($cart->full_total->prices[0]->taxes[$tax->tax_namekey])) {
 				$cart->full_total->prices[0]->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
-			else
+				$cart->full_total->prices[0]->taxes[$tax->tax_namekey]->amount += $tax->amount;
+			} else
 				$cart->full_total->prices[0]->taxes[$tax->tax_namekey]->tax_amount = clone($tax);
 		}
 	}
 
 	function copyStandardPrices($prices) {
 		$copiedPrices = array();
-		for ($i=0; $i<count($prices); $i++) $copiedPrices[$i] = clone($prices{$i});
+		for ($i=0; $i<count($prices); $i++) $copiedPrices[$i] = clone($prices[$i]);
 		return $copiedPrices;
 	}
 

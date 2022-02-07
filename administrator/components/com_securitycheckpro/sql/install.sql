@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS `#__securitycheckpro`;
 CREATE TABLE `#__securitycheckpro` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -530,7 +529,8 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('com_publisher','component','3.0.19','==','3.0.0','>=','Publisher Component','Xss vulnerability','Apr 21 2021','Version 3.0.19','update','3.0.20'),
 ('com_yoorecipe','component','1.0.0','>=','3.0.0','>=','Yoorecipe Component','Sql Injection vulnerability','Apr 21 2021','All versions','none','No details'),
 ('Joomla!','core','3.9.26','<=','3.0.0','>=','Joomla! core','Three low vulnerabilities','May 25 2020','Joomla 3.0.0 through 3.9.26','update','3.9.27'),
-('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2020','Joomla 2.5.0 through 3.9.27','update','3.9.28');
+('Joomla!','core','3.9.27','<=','3.0.0','>=','Joomla! core','Five low vulnerabilities','Jul 07 2020','Joomla 2.5.0 through 3.9.27','update','3.9.28'),
+('Joomla!','core','4.0.0','<=','4.0.0','>=','Joomla! core','One vulnerability','Aug 24 2021','Joomla 4.0.0','update','4.0.1');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -652,7 +652,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.3');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.4');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

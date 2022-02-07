@@ -306,10 +306,6 @@ class plgUserEmundus extends JPlugin
                 }
 
                 $this->onUserLogin($user);
-
-               /* if (!$app->isAdmin()) {
-                    $app->redirect('index.php?option=com_users&view=profile&user_id='.$user['id']);
-                }*/
             }
         }
     }
@@ -334,6 +330,19 @@ class plgUserEmundus extends JPlugin
         $app = JFactory::getApplication();
         $jinput = JFactory::getApplication()->input;
         $redirect = $jinput->get->getBase64('redirect');
+
+        $instance = $this->_getUser($user, $options);
+
+        // If _getUser returned an error, then pass it back.
+        if ($instance instanceof Exception)
+        {
+            return false;
+        }
+
+        if ($instance->block == 1)
+        {
+            return false;
+        }
 
         if (empty($redirect)) {
             parse_str($jinput->server->getVar('HTTP_REFERER'), $return_url);
@@ -517,10 +526,6 @@ class plgUserEmundus extends JPlugin
         $app        = JFactory::getApplication();
 
         include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-
-        $m_profile = new EmundusModelProfile;
-
-        $campaign = $m_profile->getCurrentCampaignInfoByApplicant($user['id']);
 
         // Get by position instead of id and type (2 mod_emundus_user_dropdown are present)
         $modules = JModuleHelper::getModules('header-c');

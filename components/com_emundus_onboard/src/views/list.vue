@@ -57,10 +57,10 @@
       <!--<li>Types : </li>-->
 
       <li>
-        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''" @click="typeForAdd = 'form' ; type='formulaire'">Candidature</a>
+        <a :class="typeForAdd === 'form'||type === 'formulaire' ? 'form-section__current' : ''" @click="typeForAdd = 'form' ; type='formulaire'">{{translations.candidature}}</a>
       </li>
       <li>
-        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''" @click="typeForAdd = 'grilleEval' ; type='grilleEval'">Grilles d'évaluation</a>
+        <a :class="typeForAdd === 'grilleEval' ? 'form-section__current' : ''" @click="typeForAdd = 'grilleEval' ; type='grilleEval'">{{translations.evaluations}}</a>
       </li>
       <!--<li v-for="(cat, index) in email_categories" v-if="cat != ''">
         <a :class="menuEmail === cat ? 'form-section__current' : ''" @click="menuEmail = cat">{{cat}}</a>
@@ -265,6 +265,8 @@ export default {
       System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
       Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
       Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
+      candidature: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
+      evaluations: Joomla.JText._("COM_EMUNDUS_ONBOARD_EVALUATION"),
     },
     total: 0,
     filtersCount: "",

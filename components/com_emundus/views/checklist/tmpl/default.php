@@ -140,7 +140,7 @@ if (!empty($this->custom_title)) :?>
                     }
                     $div .= '&nbsp;-&nbsp;' ;
                     if ($item->can_be_deleted == 1 && !$block_upload) {
-                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> '.JText::_('DELETE').'</a>';
+                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons">delete_outline</span> '.JText::_('DELETE').'</a>';
                     } else {
                         $div .= JText::_('CANT_DELETE');
                     }

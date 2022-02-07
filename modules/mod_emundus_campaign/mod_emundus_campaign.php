@@ -45,6 +45,7 @@ $showcampaign=$params->get('mod_em_campaign_param_showcampaign');
 $showprogramme=$params->get('mod_em_campaign_param_showprogramme');
 $redirect_url=$params->get('mod_em_campaign_link', 'registration');
 $program_code=$params->get('mod_em_program_code');
+$ignored_program_code=$params->get('mod_em_ignored_program_code');
 $modules_tabs = $params->get('mod_em_campaign_modules_tab');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
@@ -78,6 +79,7 @@ if ($params->get('mod_em_campaign_layout') == "institut_fr") {
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
     $m_progs = new EmundusModelProgramme;
     $program_array['IN'] = array_map('trim', explode(',', $program_code));
+    $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
     $programs = $m_progs->getProgrammes(1, $program_array);
 }
 
@@ -87,6 +89,10 @@ if (isset($searchword) && !empty($searchword)) {
 
 if (!empty($program_code)) {
     $condition .= " AND pr.code IN(" . implode ( "','", array_map('trim', explode(',', $db->Quote($program_code)))) . ") ";
+}
+
+if (!empty($ignored_program_code)) {
+    $condition .= " AND pr.code NOT IN(" . implode ( "','", array_map('trim', explode(',', $db->Quote($ignored_program_code)))) . ") ";
 }
 
 // Get single campaign

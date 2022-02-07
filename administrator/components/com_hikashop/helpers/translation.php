@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -332,7 +332,7 @@ class hikashopTranslationHelper {
 
 				$data = '';
 				foreach($overrides as $k => $v) {
-					$data .= $k.'="'.str_replace('"','\"',$v).'"'."\r\n";
+					$data .= $k.'="'.str_replace(array('"',"\r\n","\r","\n"),array('\"','','',''),$v).'"'."\r\n";
 				}
 				file_put_contents($override_file_path, $data);
 			}
@@ -379,7 +379,7 @@ class hikashopTranslationHelper {
 
 						$data = '';
 						foreach($overrides as $k => $v) {
-							$data .= $k.'="'.str_replace('"','\"',$v).'"'."\r\n";
+							$data .= $k.'="'.str_replace(array('"',"\r\n","\r","\n"),array('\"','','',''),$v).'"'."\r\n";
 						}
 						file_put_contents($override_file_path, $data);
 					}
@@ -425,7 +425,7 @@ class hikashopTranslationHelper {
 					}
 					$data = '';
 					foreach($overrides as $k => $v) {
-						$data .= $k.'="'.str_replace('"','\"',$v).'"'."\r\n";
+						$data .= $k.'="'.str_replace(array('"',"\r\n","\r","\n"),array('\"','','',''),$v).'"'."\r\n";
 					}
 					file_put_contents($override_file_path, $data);
 				}

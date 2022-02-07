@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -146,6 +146,21 @@ window.orderMgr.setAdditionals = function(el) {
 		</tr>
 <?php
 		}
+	}
+
+	if(bccomp((float)$this->order->order_weight, 0, 3)) {
+?>		<tr class="hikashop_order_weight">
+			<td class="key"><label><?php echo JText::_('PRODUCT_WEIGHT'); ?></label></td>
+			<td><?php echo rtrim(rtrim($this->order->order_weight,'0'),',.').' '.JText::_($this->order->order_weight_unit); ?></td>
+		</tr>
+<?php
+	}
+	if(bccomp((float)$this->order->order_volume, 0, 3)) {
+?>		<tr class="hikashop_order_volume">
+			<td class="key"><label><?php echo JText::_('PRODUCT_VOLUME'); ?></label></td>
+			<td><?php echo rtrim(rtrim($this->order->order_volume,'0'),',.').' '.JText::_($this->order->order_dimension_unit); ?></td>
+		</tr>
+<?php
 	}
 
 	if(!empty($this->fields['order'])) {
