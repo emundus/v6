@@ -1,10 +1,7 @@
 <?php
 
-
 use Joomla\Utilities\ArrayHelper;
-
 const _JEXEC = 1;
-
 error_reporting(E_ALL | E_NOTICE);
 ini_set('display_errors', 1);
 define('JPATH_BASE', dirname(__DIR__));
@@ -47,6 +44,7 @@ class MakeUpdateServer extends JApplicationCli
 		}
 	}
 
+
 	/**
 	 * Make update server for the component
 	 *
@@ -59,7 +57,7 @@ class MakeUpdateServer extends JApplicationCli
 	 *
 	 * @return void
 	 */
-	public function updateServerXml($component, $sep, $sep_admin, $updateserver, $update, $folder_admin)
+	public function addUpdateServer($component, $sep, $sep_admin, $updateserver, $update, $folder_admin)
 	{
 		$name = preg_split("/[_]+/", $component, 2);
 
@@ -92,6 +90,7 @@ class MakeUpdateServer extends JApplicationCli
 			}
 		}
 	}
+
 
 	/**
 	 * Create xml files for each component of the update server
@@ -179,6 +178,7 @@ class MakeUpdateServer extends JApplicationCli
 		fclose($html);
 	}
 
+
 	public function package($elem)
 	{
 		$dest    = JPATH_ROOT . '/tmp/' . $elem['id'];
@@ -221,6 +221,7 @@ class MakeUpdateServer extends JApplicationCli
 		}
 	}
 
+
 	/**
 	 * Copy all files (in tmp folder & on update server) needed for install and update
 	 * @return void
@@ -231,9 +232,15 @@ class MakeUpdateServer extends JApplicationCli
 		$name       = preg_split("/[_]+/", $component, 2);
 		$admin_path = JPATH_ADMINISTRATOR . "/components/" . $component . "/";
 		$site_path  = JPATH_BASE . "/components/" . $component . "/";
-		$fr_path    = $admin_path . 'language/fr-FR/fr-FR.' . $component . '.ini';
-		$en_path    = $admin_path . 'language/en-GB/en-GB.' . $component . '.ini';
-		$media_path = JPATH_BASE . "/media/" . $component;
+        if (is_dir($admin_path . 'language')) {
+            $fr_path    = $admin_path . 'language/fr-FR/fr-FR.' . $component . '.ini';
+            $en_path    = $admin_path . 'language/en-GB/en-GB.' . $component . '.ini';
+        } else {
+            $fr_path = JPATH_BASE . '/language/fr-FR/fr-FR.' . $component . '.ini';
+            $en_path = JPATH_BASE . '/language/en-GB/en-GB.' . $component . '.ini';
+        }
+
+        $media_path = JPATH_BASE . "/media/" . $component;
 		$xml_path   = $admin_path . $name[1] . '.xml';
 		// Set destination path
 		$dest = JPATH_ROOT . '/tmp/' . $component;
@@ -251,28 +258,28 @@ class MakeUpdateServer extends JApplicationCli
 		{
 			if (!$row)
 			{
-				echo "Custom copy failed";
+				echo "-> Custom copy failed";
 				exit();
 			}
 		}
-		echo "\nCustom copy success\n";
 		mkdir($dest . '/language');
 		mkdir($dest . '/language/fr-FR/');
 		mkdir($dest . '/language/en-GB/');
 		if ((!copy($fr_path, $dest . '/language/fr-FR/fr-FR.' . $component . '.ini')) || (!copy($en_path, $dest . '/language/en-GB/en-GB.' . $component . '.ini')))
 		{
-			echo "Language copy failed\n";
+			echo "-> Language copy failed\n";
 		}
 		if (!copy($xml_path, $dest . '/' . $name[1] . '.xml'))
 		{
 			$xml_path = $site_path . $name[1] . '.xml';
 			if (!copy($xml_path, $dest . '/' . $name[1] . '.xml'))
 			{
-				echo 'Xml copy failed';
+				echo '-> Xml copy failed';
 				exit();
 			}
 		}
 	}
+
 
 	/**
 	 * Copy directory for component packaging
@@ -284,7 +291,6 @@ class MakeUpdateServer extends JApplicationCli
 	 */
 	public function custom_copy($src, $dst)
 	{
-
 		// open the source directory
 		$dir        = opendir($src);
 		$copy_count = 0;
@@ -292,31 +298,25 @@ class MakeUpdateServer extends JApplicationCli
 		@mkdir($dst, 0777, true);
 
 		// Loop through the files in source directory
-		while ($file = readdir($dir))
-		{
-
-			if (($file != '.') && ($file != '..'))
-			{
-				if (is_dir($src . '/' . $file))
-				{
+		while ($file = readdir($dir)) {
+			if (($file != '.') && ($file != '..')) {
+				if (is_dir($src . '/' . $file)) {
 
 					// Recursively calling custom copy function
 					// for sub directory
 					$this->custom_copy($src . '/' . $file, $dst . '/' . $file);
 
 				}
-				else
-				{
+				else {
 					copy($src . '/' . $file, $dst . '/' . $file);
 				}
 			}
 			$copy_count++;
 		}
 		closedir($dir);
-
 		return $copy_count != null;
-
 	}
+
 
 	/**
 	 * Create archive file for install and update the component
@@ -365,6 +365,7 @@ class MakeUpdateServer extends JApplicationCli
 		$zip->close();
 	}
 
+
 	/**
 	 * Delete all files in tmp folder
 	 * @return void
@@ -384,73 +385,78 @@ class MakeUpdateServer extends JApplicationCli
         echo 'Tmp deletes';
 	}
 
+
+    public function initXml($element) {
+    }
+
+
 	public function doExecute()
 	{
-		$this->version  = "8.1.0";
-		$sep            = "</extension>";
-		$sep_admin      = 'folder="admin">';
-		$updateserver   = "\t<updateservers>\n\t\t<server type='collection' name='eMundus'>http://localhost/emundus-updates/package_list.xml</server>\n\t</updateservers>\n";
-		$update         = "\n\t<update>\n\t\t<schemas>\n\t\t\t<schemapath type='mysql'>sql/updates/mysql</schemapath>\n\t\t</schemas>\n\t</update>\n\n";
-		$folder_admin   = "\t\t<folder>sql</folder>";
+		$this->version  = "8.2.0";
 		$this->filepath = JPATH_BASE . '/emundus-updates/';
+
+        # Prepare update server repository (used for local instance)
 		mkdir($this->filepath, 0777, true);
 		mkdir($this->filepath . 'packages');
 		touch($this->filepath . 'package_list.xml');
 
+        # Load package xml
 		$xml_path = JPATH_ADMINISTRATOR . "/components/com_emundus/pkg_emundus.xml";
 		$data     = simplexml_load_file($xml_path);
 
+        # Init list xml document
         $list_dom = new DOMDocument('1.0');
         $list_dom->encoding = 'utf-8';
         $list_dom->preserveWhiteSpace = false;
         $list_dom->formatOutput = true;
         $extensionset = $list_dom->createElement('extensionset');
         $list_dom->appendChild($extensionset);
+
+        # For each line in package_list.xml, create update xml and add it to the update server
         foreach ($data->files as $obj)
 		{
 			foreach ($obj->file as $elem)
 			{
-
-
+                # Init updates xml document
                 $update_dom = new DOMDocument("1.0");
                 $update_dom->encoding = 'utf-8';
-                //$update_dom->preserveWhiteSpace = false;
-                //$update_dom->formatOutput = true;
                 $updates = $update_dom->createElement('updates');
                 $update_dom->appendChild($updates);
 
+				echo $elem['type'] . ": " . $elem['id'] . "\n";
 
-                $dest = JPATH_ROOT . '/tmp/' . $elem['id'];
-				echo $dest . "\n";
-				//if (!JFolder::exists($dest))
-				//{
-					if ($elem['type'] == 'component') {
-						$this->updateServerXml($elem['id'], $sep, $sep_admin, $updateserver, $update, $folder_admin);
-                    }
+                if ($elem['type'] == 'component') {
+                    $sep            = "</extension>";
+                    $sep_admin      = 'folder="admin">';
+                    $updateserver   = "\t<updateservers>\n\t\t<server type='collection' name='eMundus'>http://localhost/emundus-updates/package_list.xml</server>\n\t</updateservers>\n";
+                    $update         = "\n\t<update>\n\t\t<schemas>\n\t\t\t<schemapath type='mysql'>sql/updates/mysql</schemapath>\n\t\t</schemas>\n\t</update>\n\n";
+                    $folder_admin   = "\t\t<folder>sql</folder>";
+                    $this->addUpdateServer($elem['id'], $sep, $sep_admin, $updateserver, $update, $folder_admin);
+                }
+
+                # Fill updates xml
                 $this->makeXml($updates, $elem, $file = 'updates', $update_dom);
                 $update_dom->recover=true;
                 $update_dom->save($this->filepath . '/packages/' . $elem['id'] . '/updates.xml');
 
-					$this->makeXml($extensionset, $elem, $file = 'list', $list_dom);
-                    $list_dom->save($this->filepath . "package_list.xml");
+                # Fill list xml
+                $this->makeXml($extensionset, $elem, $file = 'list', $list_dom);
+                $list_dom->save($this->filepath . "package_list.xml");
 
-					$this->package($elem);
+                # Copy and zip element
+                $this->package($elem);
+                $zipname = (string) $elem['id'] . "_" . $this->version . ".zip";
+                $zipdir = JPATH_ROOT . '/emundus-updates/packages/' . $elem['id'] . '/';
 
-					$zipname = (string) $elem['id'] . "_" . $this->version . ".zip";
-					if ($elem['type'] == 'plugin')
-					{
-						$zipname = (string) "plg_" . $elem['id'] . "_" . $this->version . ".zip";
-					}
-					$zipdir = JPATH_ROOT . '/emundus-updates/packages/' . $elem['id'] . '/';
-					try
-					{
-						$this->zipComponent($zipname, $zipdir, (string) $elem['id']);
-					}
-					catch (Exception $e)
-					{
-						echo $elem['id'] . " zip failed \n";
-					}
-				//}
+                if ($elem['type'] == 'plugin') {
+                    $zipname = (string) "plg_" . $elem['id'] . "_" . $this->version . ".zip";
+                }
+
+                try {
+                    $this->zipComponent($zipname, $zipdir, (string) $elem['id']);
+                } catch (Exception $e) {
+                    echo "-> " .$elem['id'] . " zip failed \n";
+                }
 			}
 		}
 		$this->deleteTmp();
