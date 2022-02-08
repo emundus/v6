@@ -244,10 +244,10 @@
         </div>
         <div class="flex-end">
           <a
-            :href="attachmentPath"
-            class="download btn-icon-text"
-            download
-            v-if="canDownload"
+              :href="attachmentPath"
+              class="download btn-icon-text"
+              download
+              v-if="canDownload"
           >
             <span class="material-icons"> file_download </span>
             <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
@@ -283,14 +283,14 @@
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
         <div class="modal-body" v-if="!modalLoading && displayedUser.user_id && displayedFnum">
           <AttachmentPreview
-            @fileNotFound="canDownload = false"
-            @canDownload="canDownload = true"
-            :user="displayedUser.user_id"
+              @fileNotFound="canDownload = false"
+              @canDownload="canDownload = true"
+              :user="displayedUser.user_id"
           ></AttachmentPreview>
           <AttachmentEdit
-            @closeModal="closeModal"
-            @saveChanges="updateAttachment"
-            :fnum="displayedFnum"
+              @closeModal="closeModal"
+              @saveChanges="updateAttachment"
+              :fnum="displayedFnum"
           ></AttachmentEdit>
         </div>
       </transition>
@@ -360,29 +360,29 @@ export default {
     this.loading = true;
     this.getFormProgress();
     this.getFnums()
-    .then(
-      () => {
-        this.getUsers().then(
-          () => {
-            this.getAttachments().then(
-              () => {
-                this.setAccessRights().then(
+        .then(
+            () => {
+              this.getUsers().then(
                   () => {
-                    this.loading = false;
-                  }
-                );
-              }
-            ).catch((e) => {
-              this.loading = false;
-              this.displayErrorMessage(e);
-            });
-          },
+                    this.getAttachments().then(
+                        () => {
+                          this.setAccessRights().then(
+                              () => {
+                                this.loading = false;
+                              }
+                          );
+                        }
+                    ).catch((e) => {
+                      this.loading = false;
+                      this.displayErrorMessage(e);
+                    });
+                  },
+              ).catch((e) => {
+                this.loading = false;
+                this.displayErrorMessage(e);
+              });
+            }
         ).catch((e) => {
-          this.loading = false;
-          this.displayErrorMessage(e);
-        });
-      }
-    ).catch((e) => {
       this.loading = false;
       this.displayErrorMessage(e);
     });
@@ -390,11 +390,11 @@ export default {
   methods: {
     // Getters and setters
     async getFormProgress() {
-        const response = await attachmentService.getAttachmentProgress(this.displayedFnum);
+      const response = await attachmentService.getAttachmentProgress(this.displayedFnum);
 
-        if (response.status) {
-          this.progress = response.progress[0].attachment_progress;
-        }
+      if (response.status) {
+        this.progress = response.progress[0].attachment_progress;
+      }
     },
     async getFnums() {
       const fnumsOnPage = document.getElementsByClassName('em_file_open');
