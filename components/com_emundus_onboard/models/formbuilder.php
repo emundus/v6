@@ -19,9 +19,14 @@ class EmundusonboardModelformbuilder extends JModelList {
     var $model_language = null;
     var $model_language_overrides = null;
     var $model_menus = null;
+    var $m_translations = null;
 
     public function __construct($config = array()) {
         parent::__construct($config);
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
+        $this->m_translations = new EmundusModelTranslations;
+
         JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_languages/models');
         JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_menus/models');
         $this->model_language = JModelLegacy::getInstance('Override', 'LanguagesModel');
@@ -40,71 +45,24 @@ class EmundusonboardModelformbuilder extends JModelList {
     }
 
     /** TRANSLATION SYSTEM */
-    public function translate($key,$values){
-        $this->updateTranslation($key,$values);
-    }
-
-    public function updateTranslation($key,$values){
-        // Prepare languages
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-
+    public function translate($key,$values,$reference_table = '',$id = '',$reference_field = ''){
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
+            $this->m_translations->insertTranslation($key,$values[$language->sef],$language->lang_code,'','override',$reference_table,$id,$reference_field);
         }
+        return $key;
+    }
 
-        if(!empty(trim($key))) {
-            $key = strtoupper(preg_replace('/\s+/', '_', $this->replaceAccents($key)));
-            foreach ($languages as $language) {
-                try {
-                    $fileName = constant('JPATH_BASE') . '/language/overrides/' . $language->lang_code . '.override.ini';
-                    if (file_exists($fileName)) {
-                        $strings  = JLanguageHelper::parseIniFile($fileName);
-
-                        if(isset($strings[$key])){
-                            $strings[$key] = $values[$language->sef];
-                        } else {
-                            $strings = array($key => $values[$language->sef]) + $strings;
-                        }
-
-                        $results[] = JLanguageHelper::saveToIniFile($fileName, $strings);
-                        $this->copyFileToAdministration($language->lang_code);
-                    }
-                } catch (Exception $e) {
-                    JLog::add('component/com_emundus_onboard/models/formbuilder | Cannot find '.$language->sef.'language override file : ', JLog::ERROR, 'com_emundus');
-                    continue;
-                }
-
-            }
-            return $key;
-        } else {
-            JLog::add('component/com_emundus_onboard/models/formbuilder | Error when update the translation of key : ' . $key, JLog::ERROR, 'com_emundus');
-            return false;
+    public function updateTranslation($key,$values,$reference_table = '',$reference_id = 0){
+        $languages = JLanguageHelper::getLanguages();
+        foreach ($languages as $language) {
+            $this->m_translations->updateTranslation($key,$values[$language->sef],$language->lang_code,'override',$reference_table,$reference_id);
         }
+        return $key;
     }
 
     function deleteTranslation($text) {
-        $app = JFactory::getApplication();
-        $languages = JLanguageHelper::getLanguages();
-        $results = array();
-        if(!empty(trim($text))) {
-            foreach ($languages as $language) {
-                $app->setUserState('com_languages.overrides.language_client', $language->lang_code . '0');
-                $this->model_language_overrides->populateState();
-                $cids = [$text];
-                if(!empty($cids)) {
-                    $results[] = $this->model_language_overrides->delete($cids);
-                    $this->copyFileToAdministration($language->lang_code);
-                }
-            }
-            return $results;
-        } else {
-            JLog::add('component/com_emundus_onboard/models/formbuilder | Error when delete the translation of key : ' . $text, JLog::ERROR, 'com_emundus');
-            return false;
-        }
+        $this->m_translations->deleteTranslation($text);
     }
 
     /**
@@ -191,20 +149,22 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
 
-            $new_key = $this->updateTranslation($labelTofind,$NewSubLabel);
-            if($element != null && $new_key != false){
+            if($element != null){
+                $new_key = $this->updateTranslation($labelTofind,$NewSubLabel,'fabrik_elements',$element);
                 $query->update($db->quoteName('#__fabrik_elements'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($element));
                 $db->setQuery($query);
                 $db->execute();
-            } elseif ($group != null && $new_key != false){
+            } elseif ($group != null){
+                $new_key = $this->updateTranslation($labelTofind,$NewSubLabel,'fabrik_groups',$group);
                 $query->update($db->quoteName('#__fabrik_groups'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($group));
                 $db->setQuery($query);
                 $db->execute();
-            } elseif ($page != null && $new_key != false){
+            } elseif ($page != null){
+                $new_key = $this->updateTranslation($labelTofind,$NewSubLabel,'fabrik_forms',$page);
                 $query->update($db->quoteName('#__fabrik_forms'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($page));
@@ -1043,8 +1003,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
 
             // Add translation to translation files
-            $this->translate('FORM_' . $prid . '_' . $formid,$label);
-            $this->translate('FORM_' . $prid . '_INTRO_' . $formid,$intro);
+            $this->translate('FORM_' . $prid . '_' . $formid,$label,'fabrik_forms',$formid,'label');
+            $this->translate('FORM_' . $prid . '_INTRO_' . $formid,$intro,'fabrik_forms',$formid,'intro');
             //
 
             // CREATE TABLE
@@ -1276,8 +1236,8 @@ class EmundusonboardModelformbuilder extends JModelList {
             $db->execute();
 
             // Add translation to translation files
-            $this->translate('FORM_' . $prid . '_' . $formid,$label);
-            $this->translate('FORM_' . $prid . '_INTRO_' . $formid,$intro);
+            $this->translate('FORM_' . $prid . '_' . $formid,$label,'fabrik_forms',$formid,'label');
+            $this->translate('FORM_' . $prid . '_INTRO_' . $formid,$intro,'fabrik_forms',$formid,'intro');
             //
 
             // INSERT FABRIK LIST
@@ -1532,7 +1492,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             $tag = 'GROUP_' . $fid . '_' . $groupid;
 
-            $this->translate($tag,$label);
+            $this->translate($tag,$label,'fabrik_groups',$groupid,'label');
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_groups'))
@@ -1743,7 +1703,7 @@ class EmundusonboardModelformbuilder extends JModelList {
             }
 
 
-            $this->translate('ELEMENT_' . $gid . '_' . $elementId, $label);
+            $this->translate('ELEMENT_' . $gid . '_' . $elementId, $label,'fabrik_elements',$elementId,'label');
 
             $query->clear()
                 ->update($db->quoteName('#__fabrik_elements'))
@@ -1838,7 +1798,7 @@ class EmundusonboardModelformbuilder extends JModelList {
                     'en' => 'Option 1'
                 );
 
-                $this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'),$labels);
+                $this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'),$labels,'fabrik_elements',$elementId,'sub_labels');
 
                 $params['sub_options'] = array(
                     'sub_values' => $sub_values,
@@ -2242,7 +2202,7 @@ this.set(words.join(&quot; &quot;));
                                     'fr' => $sub_value,
                                     'en' => $sub_value,
                                 );
-                                $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels);
+                                $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels,'fabrik_elements',$element['id'],'sub_labels');
                                 $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
                                 $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
                             }
@@ -2251,7 +2211,7 @@ this.set(words.join(&quot; &quot;));
                                 'fr' => $sub_value,
                                 'en' => $sub_value,
                             );
-                            $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels);
+                            $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels,'fabrik_elements',$element['id'],'sub_labels');
 
                             $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
                             $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
@@ -2396,7 +2356,7 @@ this.set(words.join(&quot; &quot;));
                                     'en' => $sub_label
                                 );
                             }
-                            $this->translate('SUBLABEL_' . $group . '_' . $newelementid . '_' . $index,$labels_to_duplicate);
+                            $this->translate('SUBLABEL_' . $group . '_' . $newelementid . '_' . $index,$labels_to_duplicate,'fabrik_elements',$newelementid,'sub_labels');
                             $sub_labels[] = 'SUBLABEL_' . $group . '_' . $newelementid . '_' . $index;
                         }
                         $el_params->sub_options->sub_labels = $sub_labels;
@@ -2414,7 +2374,7 @@ this.set(words.join(&quot; &quot;));
                             'en' => $element->element->label
                         );
                     }
-                    $this->translate('ELEMENT_' . $group . '_' . $newelementid,$labels_to_duplicate);
+                    $this->translate('ELEMENT_' . $group . '_' . $newelementid,$labels_to_duplicate,'fabrik_elements',$newelementid,'label');
                     //
 
                     $query->set('label = ' . $db->quote('ELEMENT_' . $group . '_' . $newelementid));
@@ -2806,8 +2766,8 @@ this.set(words.join(&quot; &quot;));
             $query->clear();
             $query->update($db->quoteName('#__fabrik_forms'));
 
-            $this->translate('FORM_' . $prid. '_' . $newformid,$label);
-            $this->translate('FORM_' . $prid . '_INTRO_' . $newformid,$intro);
+            $this->translate('FORM_' . $prid. '_' . $newformid,$label,'fabrik_forms',$newformid,'label');
+            $this->translate('FORM_' . $prid . '_INTRO_' . $newformid,$intro,'fabrik_forms',$newformid,'intro');
             //
 
             $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
@@ -2976,7 +2936,7 @@ this.set(words.join(&quot; &quot;));
                         'fr' => "Confirmation d'envoi de dossier",
                         'en' => 'Confirmation of file sending',
                     );
-                    $this->translate('GROUP_' . $newformid . '_' . $newgroupid,$labels);
+                    $this->translate('GROUP_' . $newformid . '_' . $newgroupid,$labels,'fabrik_groups',$newgroupid,'label');
                 } else {
                     $labels_to_duplicate = array();
                     foreach ($languages as $language) {
@@ -2985,7 +2945,7 @@ this.set(words.join(&quot; &quot;));
                             $label[$language->sef] = $group_model->label;
                         }
                     }
-                    $this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels_to_duplicate);
+                    $this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels_to_duplicate,'fabrik_groups',$newgroupid,'label');
                 }
                 //
 
@@ -3021,7 +2981,7 @@ this.set(words.join(&quot; &quot;));
                                         $label[$language->sef] = $sub_label;
                                     }
                                 }
-                                $this->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate);
+                                $this->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate,'fabrik_elements',$newelementid,'sub_labels');
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
                             }
                             $el_params->sub_options->sub_labels = $sub_labels;
@@ -3036,7 +2996,7 @@ this.set(words.join(&quot; &quot;));
                                 $label[$language->sef] = $element->element->label;
                             }
                         }
-                        $this->translate('ELEMENT_' . $newgroupid. '_' . $newelementid,$labels_to_duplicate);
+                        $this->translate('ELEMENT_' . $newgroupid. '_' . $newelementid,$labels_to_duplicate,'fabrik_elements',$newelementid,'label');
                         //
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));

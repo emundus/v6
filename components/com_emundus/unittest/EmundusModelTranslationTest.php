@@ -112,9 +112,6 @@ class EmundusModelTranslationTest extends TestCase
     public function testDeleteTranslations() {
         // TEST 1 - Delete translation that we manage in other tests
         $this->assertSame(true,$this->m_translations->deleteTranslation('ELEMENT_TEST'));
-
-        // TEST 2 - Try to delete all translation related to fabrik_elements
-        $this->assertSame(true,$this->m_translations->deleteTranslation('','*','fabrik_elements'));
     }
 
     public function testgetTranslationsObject(){

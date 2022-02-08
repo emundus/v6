@@ -504,7 +504,7 @@ class EmundusModelTranslations extends JModelList
      *
      * @since version
      */
-    public function insertTranslation($tag,$override,$lang_code,$location = '',$type='override',$reference_table = '',$reference_id = 0){
+    public function insertTranslation($tag,$override,$lang_code,$location = '',$type='override',$reference_table = '',$reference_id = 0,$reference_field = ''){
         $query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
 
@@ -513,7 +513,7 @@ class EmundusModelTranslations extends JModelList
                 $location = $lang_code . '.override.ini';
             }
 
-            $columns = ['tag','lang_code','override','original_text','original_md5','override_md5','location','type','reference_id','reference_table','published','created_by','created_date','modified_by','modified_date'];
+            $columns = ['tag','lang_code','override','original_text','original_md5','override_md5','location','type','reference_id','reference_table','reference_field','published','created_by','created_date','modified_by','modified_date'];
             $values = [
                 $this->_db->quote($tag),
                 $this->_db->quote($lang_code),
@@ -525,6 +525,7 @@ class EmundusModelTranslations extends JModelList
                 $this->_db->quote($type),
                 $this->_db->quote($reference_id),
                 $this->_db->quote($reference_table),
+                $this->_db->quote($reference_field),
                 1,
                 $user->id,
                 time(),
@@ -649,7 +650,30 @@ class EmundusModelTranslations extends JModelList
                 $query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
             }
             $this->_db->setQuery($query);
-            return $this->_db->execute();
+            $this->_db->execute();
+
+            if($lang_code == '*') {
+                $languages = JLanguageHelper::getLanguages();
+
+                foreach ($languages as $language) {
+                    $location = $language->lang_code . '.override.ini';
+                    $override_file = JPATH_BASE . '/language/overrides/' . $location;
+                    if (file_exists($override_file)) {
+                        $parsed_file = JLanguageHelper::parseIniFile($override_file);
+                        unset($parsed_file[$tag]);
+                        JLanguageHelper::saveToIniFile($override_file, $parsed_file);
+                    }
+                }
+            } else {
+                $location = $lang_code . '.override.ini';
+                $override_file = JPATH_BASE . '/language/overrides/' . $location;
+                if (file_exists($override_file)) {
+                    $parsed_file = JLanguageHelper::parseIniFile($override_file);
+                    unset($parsed_file[$tag]);
+                    JLanguageHelper::saveToIniFile($override_file, $parsed_file);
+                }
+            }
+            return true;
         } catch (Exception $e) {
             JLog::add('Problem when try to delete translation ' . $tag . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
