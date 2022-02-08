@@ -78,12 +78,12 @@ class EmundusModelTranslations extends JModelList
         // Components, modules, extensions files
         $files = [];
         foreach ($this->getPlatformLanguages() as $language) {
-            foreach ($extensions as $extension) {
+            /*foreach ($extensions as $extension) {
                 $file = JPATH_BASE . '/' . $extension->type . '/' . $extension->element . '/language/' . $language . '/' . $language.'.'.$extension->element. '.ini';
                 if (file_exists($file)) {
                     $files[] = $file;
                 }
-            }
+            }*/
             // Overrides
             $override_file = JPATH_BASE . '/language/overrides/' . $language.'.override.ini';
             if (file_exists($override_file)) {

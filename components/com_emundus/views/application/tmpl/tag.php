@@ -122,7 +122,7 @@ JFactory::getSession()->set('application_layout', 'tag');
     });
     $(document).ready(function()
 	{
-        $('.chzn-select').chosen({placeholder_text_multiple: Joomla.JText._('PLEASE_SELECT_TAG'),
+        $('.chzn-select').chosen({placeholder_text_multiple: Joomla.JText._('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'),
             width:'50%'});
         $('.chzn-select').trigger("chosen:updated");
     })

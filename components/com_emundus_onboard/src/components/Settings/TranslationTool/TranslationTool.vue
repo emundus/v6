@@ -11,8 +11,16 @@
         @closed="beforeClose"
     >
       <div class="em-modal-header">
-        <div class="em-flex-row-start em-pointer em-w-max-content" @click.prevent="$modal.hide('translationTool')">
-          <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('translationTool')">
+          <div class="em-w-max-content em-flex-row">
+            <span class="material-icons-outlined">arrow_back</span>
+            <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
+          </div>
+          <div v-if="saving" class="em-flex-row em-flex-start">
+            <div class="em-loader em-mr-8"></div>
+            <p class="em-font-size-14 em-flex-row">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
+          </div>
+          <p class="em-font-size-14" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
         </div>
       </div>
 
@@ -26,7 +34,7 @@
 
         <transition name="fade">
           <Global v-if="currentMenu === 1" v-show="!setup_success" class="em-modal-component" @updateOrphelinsCount="updateOrphelinsCount"></Global>
-          <Translations v-if="currentMenu === 2" v-show="!setup_success" class="em-modal-component"></Translations>
+          <Translations v-if="currentMenu === 2" v-show="!setup_success" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></Translations>
           <Orphelins v-if="currentMenu === 3" v-show="!setup_success" class="em-modal-component"></Orphelins>
         </transition>
 
@@ -74,6 +82,8 @@ export default {
 
       loading: false,
       setup_success: false,
+      saving: false,
+      last_save: null,
     }
   },
   methods:{
@@ -104,6 +114,14 @@ export default {
         }
       })
     },
+
+    updateSaving(saving){
+      this.saving = saving;
+    },
+
+    updateLastSaving(last_save){
+      this.last_save = last_save;
+    }
   }
 }
 </script>

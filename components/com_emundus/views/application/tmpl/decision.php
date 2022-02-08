@@ -25,7 +25,7 @@ JFactory::getSession()->set('application_layout', 'decision');
                 <?php echo JText::_('COM_EMUNDUS_DECISION'); ?>
                 <?php if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $this->fnum)):?>
                 <a class="  clean" target="_blank" href="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=evaluation&task=pdf_decision&user=<?php echo $this->student->id; ?>&fnum=<?php echo $this->fnum; ?>">
-                    <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('DOWNLOAD_PDF'); ?>"><span class="material-icons">file_download</span></button>
+                    <button class="btn btn-default" data-title="<?php echo JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>" data-toggle="tooltip" data-placement="bottom" title="<?= JText::_('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF'); ?>"><span class="material-icons">file_download</span></button>
                 </a>
                 <?php endif; ?>
                 <div class="em-flex-row">

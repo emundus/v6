@@ -1,12 +1,7 @@
 <template>
   <div>
     <h2 class="em-h4 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h2>
-    <p class="em-font-size-14 em-mb-24 em-h-25" v-if="!saving && last_save == null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
-    <div v-if="saving" class="em-mb-24 em-flex-row em-flex-start">
-      <div class="em-loader em-mr-8"></div>
-      <p class="em-font-size-14 em-flex-row">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}</p>
-    </div>
-    <p class="em-font-size-14 em-mb-24 em-h-25" v-if="!saving && last_save != null">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_LAST') + last_save}}</p>
+    <p class="em-font-size-14 em-mb-24 em-h-25">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
     <div class="em-grid-4">
       <!-- Languages -->
       <div>
@@ -143,8 +138,6 @@ export default {
       children: null,
 
       loading: false,
-      saving: false,
-      last_save: null,
       init_translations: false
     }
   },
@@ -258,11 +251,10 @@ export default {
     },
 
     async saveTranslation({value,translation}){
-      this.saving = true;
-      //this.translations[index].lang_to = value;
+      this.$emit('updateSaving',true);
       translationsService.updateTranslations(value,this.object.table.type,this.lang.lang_code,translation.reference_id,translation.tag,translation.reference_table).then((response) => {
-        this.last_save = this.formattedDate('','LT');
-        this.saving = false;
+        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving',false);
       });
     }
   },
