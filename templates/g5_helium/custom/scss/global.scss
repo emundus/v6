@@ -5726,7 +5726,7 @@ input:focus + .em-slider {
 .em-settings-menu{
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: start;
 }
 
 .em-logo-box{
@@ -5781,7 +5781,7 @@ button.em-swal-cancel-button{
 }
 
 /** Vue Modal - Translation tool **/
-#translationTool {
+#translationTool,#contentTool {
   .v--modal-overlay {
     background: #0000002e !important;
     overflow-y: auto !important;

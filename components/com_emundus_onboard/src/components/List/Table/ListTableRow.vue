@@ -1,7 +1,7 @@
 <template>
 	<tr class="list-row">
 		<td v-for="td in tds" :key="td.value">
-			<span v-if="td.value == 'actions'"> 
+			<span v-if="td.value == 'actions'">
 				<list-action-menu
 					id="list-row action-menu"
 					:type="type"
@@ -13,7 +13,7 @@
 					@showModalPreview="showModalPreview"
 				></list-action-menu>
 			</span>
-			<span 
+			<span
 				v-else-if="td.value == 'message'"
 				:class="classFromTd(td)"
 				v-html="formattedDataFromTd(td)"
@@ -21,7 +21,7 @@
 			</span>
 			<span
 				@click="redirectToEditItem(td)"
-				:class="classFromTd(td)" 
+				:class="classFromTd(td)"
 			>
 				{{ formattedDataFromTd(td) }}
 			</span>
@@ -54,11 +54,11 @@ export default {
 			tds: [],
 			lang: 'fr',
 			translations: {
-				finished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-				published: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-				unpublished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-				active: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
-				inactive: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
+				finished: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
+				published: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+				unpublished: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+				active: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
+				inactive: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
 				emailType: {
 					1: "Système",
 					2: "Modèle",
@@ -98,7 +98,7 @@ export default {
 					return moment(this.data[td.value]).format('DD/MM/YYYY');
 				case 'actions':
 					return '';
-				default: 
+				default:
 					return this.data[td.value] ? this.data[td.value] : '-';
 			}
 		},
@@ -106,14 +106,14 @@ export default {
 			switch(td.value) {
 				case 'type':
 					return this.translations.emailType[this.data[td.value]];
-				case 'published': 
+				case 'published':
 					if (this.isPublished) {
 						return this.translations.published;
 					} else {
 						return this.translations.unpublished;
-					}			
+					}
 				case 'actions':
-					return '';	
+					return '';
 				default:
 					return this.data[td.value] ? this.data[td.value] : '-';
 			}
@@ -140,7 +140,7 @@ export default {
 		classFromTd(td) {
 			let classes;
 			switch(td.value) {
-				case 'status': 
+				case 'status':
 				case 'published':
 					if (this.isFinished) {
 						classes = "tag finished";
@@ -151,7 +151,7 @@ export default {
 					}
 				break;
 
-				case 'type': 
+				case 'type':
 					classes = "tag " + this.data[td.value];
 				break;
 				case 'actions':
@@ -196,7 +196,7 @@ export default {
 			switch(this.type) {
 				case 'campaign':
 					url = 'index.php?option=com_emundus_onboard&view=campaign&layout=addnextcampaign&cid=' + this.data.id + '&index=0';
-				break; 
+				break;
 				case 'form':
 				case 'formulaire':
 					url = 'index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.data.id + '&index=0&cid=';
@@ -297,7 +297,7 @@ tr.list-row td {
 			&.finished {
 				color: #FFFFFF;
 				background: #080C12;
-			}	
+			}
 		}
 
 		&.list-td-label,

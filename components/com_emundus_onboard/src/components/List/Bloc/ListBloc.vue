@@ -12,13 +12,13 @@
 				{{ data.short_description }}
 			</p>
 
-			<div 
+			<div
 				v-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length > 0"
 				class="associated-campaigns"
 				:title="translations.associatedCampaigns">
-				<div 
-					v-for="campaign in campaign.associatedCampaigns" 
-					:key="campaign.id" 
+				<div
+					v-for="campaign in campaign.associatedCampaigns"
+					:key="campaign.id"
 					class="tag campaign-item"
 				>
 					{{ campaign.label }}
@@ -27,8 +27,8 @@
 			</div>
 
 			<div class="tags">
-				<div 
-					v-if="!isFinished && isPublished !== null" 
+				<div
+					v-if="!isFinished && isPublished !== null"
 					:class="{
 						published: isPublished,
 						unpublished: !isPublished
@@ -37,7 +37,7 @@
 					{{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
 				</div>
 
-				<div 
+				<div
 					v-if="isActive !== null"
 					:class="{
 						published: isActive,
@@ -46,7 +46,7 @@
 				>
 					{{ isActive ? translations.active : translations.inactive }}
 				</div>
-				
+
 				<div v-if="isFinished" class="finished">
 					{{ translations.isFinished }}
 				</div>
@@ -81,15 +81,15 @@
 				'finished': isFinished
 			}"
 		>
-			<a 
-				@click="redirectToEditItem" 
+			<a
+				@click="redirectToEditItem"
 				class="em-primary-button em-font-size-14"
-			> 
+			>
 					{{ translations.edit }}
 			</a>
-			<list-action-menu 
-				:type="type" 
-				:itemId="data.id" 
+			<list-action-menu
+				:type="type"
+				:itemId="data.id"
 				:isPublished="actionMenuIsPublished"
 				:showTootlip="hasActionMenu"
 				@validateFilters="validateFilters"
@@ -129,13 +129,13 @@ export default {
 			title: "",
 			lang: 'fr',
 			translations: {
-				publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-				unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-				active: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
-				inactive: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
-				isFinished: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-				edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-				files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
+				publishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+				unpublishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+				active: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
+				inactive: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
+				isFinished: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
+				edit: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
+				files: this.translate("COM_EMUNDUS_ONBOARD_FILES"),
       	file: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE"),
 				emailType: {
 					1: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM"),
@@ -191,7 +191,7 @@ export default {
 			switch(this.type) {
 				case 'campaign':
 					url = 'index.php?option=com_emundus_onboard&view=campaign&layout=addnextcampaign&cid=' + this.data.id + '&index=0';
-				break; 
+				break;
 				case 'form':
 				case 'formulaire':
 					url = 'index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.data.id + '&index=0&cid=';
@@ -393,7 +393,7 @@ export default {
 			&.finished {
 				color: #FFFFFF;
 				background: #080C12;
-			}	
+			}
 		}
 	}
 

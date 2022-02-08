@@ -3,15 +3,15 @@
       <div class="w-100">
 
         <!-- HEADER -->
-        <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9" style="margin-left: 10%" @click="menuHighlight = 0">
+        <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2" style="margin-left: 10%" @click="menuHighlight = 0">
           <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
-        <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
-        <h5 class="em-h5 em-m-24" v-else style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
+        <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0 && !modal_ready" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
+        <h5 class="em-h5 em-m-24" v-else-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
 
         <!--- MENU --->
         <transition name="slide-right">
-          <div class="em-settings-menu" v-if="menuHighlight === 0">
+          <div class="em-settings-menu" style="margin-left: 10%" v-if="menuHighlight === 0">
             <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3" v-wave @click="menuHighlight = menu.index;currentTitle = menu.title">
               <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
               <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
@@ -19,22 +19,6 @@
             </div>
           </div>
         </transition>
-
-<!--        <div class="d-flex justify-content-between" style="margin-bottom: 10px">
-          <div class="d-flex" style="width: 100%;justify-content: end;margin-bottom: -90px;" v-if="menuHighlight != 0 && menuHighlight != 7  && menuHighlight != 8">
-            <transition name="slide-right">
-              <div class="loading-form-save" v-if="saving">
-                <Ring-Loader :color="'#12DB42'" />
-              </div>
-            </transition>
-            <transition name="slide-right">
-              <div class="loading-form-save d-flex" v-if="endSaving">
-                <i class="fas fa-check"></i><span class="mr-1">{{Saved}}</span>
-              </div>
-            </transition>
-            <button type="button" v-if="menuHighlight != 0 && menuHighlight != 7" @click="saveCurrentPage()" class="bouton-sauvergarder-et-continuer" :style="'right: 10%'">{{ Save }}</button>
-          </div>
-        </div>-->
 
         <!-- COMPONENTS -->
         <transition name="fade">
@@ -45,12 +29,19 @@
               ref="styling"
           ></editStyle>
 
-          <editHomepage
+          <ContentTool
               v-if="menuHighlight === 2"
-              ref="homepage"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></editHomepage>
+              v-show="modal_ready"
+              @resetMenuIndex="menuHighlight = 0"
+              ref="content"
+          />
+
+          <TranslationTool
+              v-if="menuHighlight === 9"
+              v-show="modal_ready"
+              @resetMenuIndex="menuHighlight = 0"
+              ref="translations"
+          />
 
           <editCGV
               v-if="menuHighlight === 3"
@@ -89,16 +80,14 @@
               ref="applicants"
           ></edit-applicants>
 
-          <editDatas
+<!--          <editDatas
                   v-if="menuHighlight == 8 && coordinatorAccess != 0"
                   ref="datas"
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
-          ></editDatas>
+          ></editDatas>-->
 
-          <TranslationTool
-            @resetMenuIndex="menuHighlight = 0"
-          />
+
 
 <!--          <help-settings
               v-if="menuHighlight == 8"
@@ -122,6 +111,7 @@ import editCGV from "../components/Settings/editCGV";
 import editFooter from "../components/Settings/editFooter";
 import EditApplicants from "@/components/Settings/editApplicants";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
+import ContentTool from "../components/Settings/Content/ContentTool";
 
 const qs = require("qs");
 
@@ -129,6 +119,7 @@ export default {
   name: "globalSettings",
 
   components: {
+    ContentTool,
     TranslationTool,
     EditApplicants,
     editStatus,
@@ -161,22 +152,10 @@ export default {
         index: 1
       },
       {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_HOMEPAGE",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_HOMEPAGE_DESC",
-        icon: 'home',
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT_DESC",
+        icon: 'notes',
         index: 2
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TERMS",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TERMS_DESC",
-        icon: 'tune',
-        index: 3
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_FOOTER",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_FOOTER_DESC",
-        icon: 'info',
-        index: 4
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STATUS",
@@ -197,47 +176,13 @@ export default {
         index: 7
       },
       {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DATAS",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DATAS_DESC",
-        icon: 'list',
-        index: 8
-      },
-      {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS_DESC",
         icon: 'language',
         index: 9
       },
     ],
-
-    settingsCategories: [
-      [
-        "Style",
-        "Page d'accueil",
-        "Conditions générales",
-        "Pied de page",
-        "Statuts",
-        "Etiquettes",
-        "Candidats",
-        "Référentiels de données",
-      ],
-      [
-        "Styling",
-        "Home page",
-        "General Terms and Conditions",
-        "Footer",
-        "Status",
-        "Tags",
-        "Applicants",
-        "Data repository",
-      ]
-    ],
-
-    Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-    Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-    Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
-    Saved: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVED"),
-    Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
+    modal_ready: false
   }),
 
   methods: {
@@ -328,9 +273,9 @@ export default {
         case 1:
           this.updateHomepage(this.$refs.homepage.$data.form.content,this.$refs.homepage.$data.form.label,this.$refs.homepage.$data.form.titleColor);
           break;
-        case 2:
+        /*case 2:
           this.updateCgv(this.$refs.cgv.$data.form.content);
-          break;
+          break;*/
         case 3:
           this.updateFooter(this.$refs.footer.$data.form.content);
           break;
@@ -370,38 +315,21 @@ export default {
 
   watch: {
     menuHighlight: function(value){
-      if(value === 9){
-        this.$modal.show('translationTool');
-      }
+      this.modal_ready = false;
+      setTimeout(() => {
+        if(value === 9){
+          this.$modal.show('translationTool');
+          this.modal_ready = true;
+        }
+        if(value === 2){
+          this.$modal.show('contentTool');
+          this.modal_ready = true;
+        }
+      },500)
     }
   }
 };
 </script>
 
 <style scoped>
-.fa-check{
-  width: 40px;
-  font-size: 25px;
-  color: #12DB42;
-}
-.bouton-sauvergarder-et-continuer,.loading-form-save{
-  position: absolute;
-  z-index: 10;
-  width: auto;
-  margin-top: -33px;
-  margin-right: 20px;
-}
-
-.topnav  {
-  /*background-color: #333;*/
-  overflow: hidden;
-  margin: 0 auto;
-  border-bottom: 1px solid #ddd
-}
-.w--current{
-  border: 1px solid #ddd;
-  background-color: white;
-  border-bottom-left-radius: unset;
-  border-bottom-right-radius: unset;
-}
 </style>

@@ -80,11 +80,11 @@ export default {
       updateAccess: false,
       campaigns: [],
       translations:{
-        publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
-        unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
-        Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-        campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
-        campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
+        publishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
+        unpublishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
+        Modify: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
+        campaignAssociated: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
+        campaignsAssociated: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED")
       },
     };
   },

@@ -1,19 +1,12 @@
 <template>
     <div class="em-settings-menu">
-      <div class="section-sub-menu sub-form">
-        <div class="container-2 w-container" style="max-width: unset">
-          <div class="d-flex">
-            <img src="images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
-            <h1 class="tchooz-section-titles">{{ Applicants }}</h1>
-          </div>
-          <p class="mt-1">{{Desc}}</p>
+      <div class="em-flex-col-start em-w-80">
+        <div class="form-group" v-for="(param, index) in params">
+          <label :for="'param_' + index">{{param.label}}</label>
+          <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+            <option v-for="(option, index) in param.options" :value="option.value">{{option.label}}</option>
+          </select>
         </div>
-      </div>
-      <div class="form-group" v-for="(param, index) in params">
-        <label :for="'param_' + index">{{param.label}}</label>
-        <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
-          <option v-for="(option, index) in param.options" :value="option.value">{{option.label}}</option>
-        </select>
       </div>
     </div>
 </template>
@@ -38,68 +31,68 @@
             return {
                 params: {
                   applicant_can_renew: {
-                    label: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_RENEW"),
+                    label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_RENEW"),
                     param: 'applicant_can_renew',
                     options: [
                       {
-                        label: Joomla.JText._("JNO"),
+                        label: this.translate("JNO"),
                         value: 0,
                       },
                       {
-                        label: Joomla.JText._("JYES"),
+                        label: this.translate("JYES"),
                         value: 1,
                       },
                       {
-                        label: Joomla.JText._("COM_EMUNDUS_APPLICANT_CAN_RENEW_CAMPAIGN"),
+                        label: this.translate("COM_EMUNDUS_APPLICANT_CAN_RENEW_CAMPAIGN"),
                         value: 2,
                       },
                       {
-                        label: Joomla.JText._("COM_EMUNDUS_APPLICANT_CAN_RENEW_YEAR"),
+                        label: this.translate("COM_EMUNDUS_APPLICANT_CAN_RENEW_YEAR"),
                         value: 3,
                       },
                     ],
                     value: 0,
                   },
                   can_edit_until_deadline: {
-                    label: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_EDIT_UNTIL_DEADLINE"),
+                    label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_EDIT_UNTIL_DEADLINE"),
                     param: 'can_edit_until_deadline',
                     options: [
                       {
-                        label: Joomla.JText._("JNO"),
+                        label: this.translate("JNO"),
                         value: 0,
                       },
                       {
-                        label: Joomla.JText._("JYES"),
+                        label: this.translate("JYES"),
                         value: 1,
                       },
                     ],
                     value: 0,
                   },
                   copy_application_form: {
-                    label: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_COPY_APPLICATION_FORM"),
+                    label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_COPY_APPLICATION_FORM"),
                     param: 'copy_application_form',
                     options: [
                       {
-                        label: Joomla.JText._("JNO"),
+                        label: this.translate("JNO"),
                         value: 0,
                       },
                       {
-                        label: Joomla.JText._("JYES"),
+                        label: this.translate("JYES"),
                         value: 1,
                       },
                     ],
                     value: 0,
                   },
                   can_submit_encrypted: {
-                    label: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED"),
+                    label: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANT_CAN_SUBMIT_ENCRYPTED"),
                     param: 'can_submit_encrypted',
                     options: [
                       {
-                        label: Joomla.JText._("JNO"),
+                        label: this.translate("JNO"),
                         value: 0,
                       },
                       {
-                        label: Joomla.JText._("JYES"),
+                        label: this.translate("JYES"),
                         value: 1,
                       },
                     ],
@@ -107,8 +100,8 @@
                   }
                 },
                 config: {},
-                Desc: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS_DESC"),
-                Applicants: Joomla.JText._("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS"),
+                Desc: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS_DESC"),
+                Applicants: this.translate("COM_EMUNDUS_ONBOARD_SETTINGS_APPLICANTS"),
             };
         },
 
