@@ -2924,6 +2924,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-primary-color;
   }
 
+
+  /* RECHERCHE */
+.gantry.files-page .selectize-control.multi .selectize-input [data-value],
+.gantry.files-board .selectize-control.multi .selectize-input [data-value]{
+  margin-top: 2.4px !important;
+}
+
+
   /* EDITER ET AJOUTER */
 
   .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
@@ -2991,15 +2999,42 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       }
     }
 
+    /* ETIQUETTE */
+
+    .gantry .edit-comment-container button.delete-comment,
+    .gantry .em-container-tags-body button.btn-danger[title="Supprimer"] {
+      background: $neutral-100;
+      border: 1px solid $neutral-100;
+      border-radius: 4px !important;
+
+      span {
+        color: $red-500;
+
+        &:hover {
+          color: $red-300;
+        }
+      }
+    }
+
+    .gantry.files-board .chosen-container .chosen-results li.group-option,
+    .gantry.files-board .chosen-container .chosen-results li.group-result{
+      color: $neutral-900;
+
+      &.highlighted {
+        color: $neutral-100;
+        background: $night-blue;
+      }
+    }
+
     #add-tags {
       background: $night-blue;
-      border: 2px solid $neutral-100;
+      border: 1.5px solid $neutral-100;
       color: $neutral-100;
       padding: 8px 12px !important;
 
       &:hover, &:active, &:focus {
         background: $neutral-100 !important;
-        border: 2px solid $neutral-100;
+        border: 1.5px solid $neutral-100;
         border-radius: 5px;
         color: $night-blue;
       }
