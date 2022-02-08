@@ -287,6 +287,9 @@ class ApogeeCustom {
                 foreach($children as $child) {
                     $child->nodeValue = '';
                 }
+
+                /* get the "parent" of "item" */
+                $items[$index]->nodeValue = '';
             };
         }
 
@@ -305,6 +308,42 @@ class ApogeeCustom {
         if(empty($codBac->nodeValue)) {
             $codBac->nodeValue = '0031';
         }
+        return $this->xmlTree;
+    }
+
+    /* handle "premiereInscription" : set empty string for DAA_ENS_SUP_OPI and DAA_ENT_ETB_OPI if the candidat come from foreign country */
+    public function setCustomFirstYear() {
+        $db = JFactory::getDbo();
+
+        /* find the xml node "premiereInscription" */
+        $premiereInscription = $this->xmlTree->getElementsByTagName('premiereInscription')->item(0);
+
+        /* find the node "daaEnsSupOpi" from "premiereInscription" */
+        $daaEnsSupOpi = $premiereInscription->getElementsByTagName('daaEnsSupOpi')->item(0);
+
+        /* first, set daaEnsSupOpi country */
+        $countryEnsSupOpiQuery = "SELECT jos_emundus_1001_00.pays_enseignement_sup FROM jos_emundus_1001_00 WHERE fnum like ('%" . $this->fnum . "%')";
+        $db->setQuery($countryEnsSupOpiQuery);
+        $countryEnsSupOpi = $db->loadResult();
+
+        /* if $countryEnsSupOpi is not "100" */
+        if(empty($countryEnsSupOpi) or $countryEnsSupOpi !== '100') {
+            $daaEnsSupOpi->nodeValue = "";
+        }
+
+        /* */
+        /* find the xml node "daaEntEtbOpi" from "premiereInscription" */
+        $daaEntEtbOpi = $premiereInscription->getElementsByTagName('daaEntEtbOpi')->item(0);
+
+        /* get daaEntEtbOpi country */
+        $countryEntEtbOpiQuery = "SELECT jos_emundus_1001_00.country_univ FROM jos_emundus_1001_00 WHERE fnum like ('%" . $this->fnum . "%')";
+        $db->setQuery($countryEntEtbOpiQuery);
+        $countryEntSupOpi = $db->loadResult();
+
+        if(empty($countryEntSupOpi) or $countryEntSupOpi !== '100') {
+            $daaEntEtbOpi->nodeValue = "";
+        }
+
         return $this->xmlTree;
     }
 
@@ -430,6 +469,7 @@ class ApogeeCustom {
         $this->setDepPay_Civility();
         $this->setDepPay_LastYear();
         $this->setCodBac();
+        $this->setCustomFirstYear();
 
         /* $this->setConvocation();
         $this->setTitreAccessExterne(); /// expected results :: print */
