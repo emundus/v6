@@ -213,10 +213,10 @@
         "default": ""
       },
       "codPcs": {
-        "sql" : "select lpad(id,2,0) from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7877 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
+        "sql" : "select lpad(data_cat_soc_pfl.id,2,0) from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7877 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
       },
       "codPcsAp": {
-        "sql": "select lpad(id,2,0) from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7878 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
+        "sql": "select lpad(data_cat_soc_pfl.id,2,0) from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7878 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
       },
       "codSim": {
         "default": ""
