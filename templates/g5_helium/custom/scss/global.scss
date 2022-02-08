@@ -1632,18 +1632,55 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   /* BOUTONS */
 
-  .modal-dialog .modal-body a.btn.btn-link[title*="Télécharger"], .modal-dialog .modal-body a.btn.btn-link[title*="Download"]  {
+  .modal-dialog .modal-body #chargement a.btn.btn-link {
+    background-color: $night-blue;
+    border: 2px solid $night-blue !important;
+    border-radius: 5px !important;
+    padding: 5px 30px !important;
+    height: 36px;
+    color: $neutral-100;
+
     span {
-      color: #fff !important
+      color: $neutral-100;
     }
     &:hover, &:focus, &:active {
+      background-color: $grey;
+      border: 2px solid $grey !important;
+      border-radius: 5px !important;
+      padding: 5px 30px !important;
+      height: 36px;
+      color: $neutral-100 !important;
       text-decoration: none;
-      color: $base-primary-color !important;
       span {
-        color: $base-primary-color !important;
+        color: $neutral-100 !important;
       }
     }
   }
+
+.modal-dialog .modal-body #chargement button.btn-default#back,
+ .modal-dialog .modal-body button#delfilter,
+.modal-dialog .modal-body button#delPDFfilter {
+  background-color: $grey !important;
+  border: 2px solid $grey !important;
+  border-radius: 5px !important;
+  padding: 5px 30px !important;
+  height: 36px;
+  color: $neutral-100 !important;
+  span {
+    color: $neutral-100;
+  }
+  &:hover, &:focus, &:active {
+    background-color: $light-grey !important;
+    border: 2px solid $light-grey !important;
+    border-radius: 5px !important;
+    padding: 5px 30px !important;
+    height: 36px;
+    color: $grey !important;
+    span {
+      color: $grey !important;
+    }
+  }
+}
 
   .view-form p.select-program a {
     border: 1px solid $base-secondary-color !important;
@@ -2216,7 +2253,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  .files-board .panel.panel-default.em-data span.em_list_text {
+  .gantry .panel.panel-default.em-data span.em_list_text {
     color: $night-blue;
   }
 
@@ -2353,7 +2390,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   #em-appli-menu .panel-body .list-group-item:hover,
   #em-appli-menu .panel-body .list-group-item:active,
   #em-appli-menu .panel-body .list-group-item:focus {
-    color: $base-primary-color;
+    color: $night-blue;
   }
 
   .em-actions {
@@ -2656,18 +2693,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background: $grey !important;
   }
 
-  .edit-comment-container button.edit-comment {
-    color: white;
-    background: $base-primary-color;
-    border: 1px solid $base-primary-color;
-
-    &:hover, &:active, &:focus {
-      color: $base-primary-color;
-      background: transparent;
-      border: 1px solid $base-primary-color;
-    }
-  }
-
   .import-csv-page .fabrikActions.form-actions button.importation {
     padding: 5px 30px;
     border: 2px solid $dark-blue;
@@ -2694,18 +2719,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  .edit-comment-container button.delete-comment {
-    color: white;
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
-    border-radius: 4px !important;
-
-    &:hover, &:active, &:focus {
-      color: $base-secondary-color;
-      background: transparent;
-      border: 1px solid $base-secondary-color;
-    }
-  }
 
   /* SIDEBAR FILTRES */
 
@@ -2924,6 +2937,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-primary-color;
   }
 
+
+  /* RECHERCHE */
+.gantry.files-page .selectize-control.multi .selectize-input [data-value],
+.gantry.files-board .selectize-control.multi .selectize-input [data-value]{
+  margin-top: 2.4px !important;
+}
+
+
   /* EDITER ET AJOUTER */
 
   .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
@@ -2991,15 +3012,97 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       }
     }
 
+    /* ETIQUETTE / COMMENTAIRES */
+
+    .em-container-comment-body {
+      .actions-edit-comment .cancel-edit-comment.btn-danger  {
+        background: transparent;
+        border: 1px solid $red-500;
+        color: $red-500;
+        &:hover, &:focus, &:active {
+          background: $red-500;
+          border: 1px solid $red-500;
+          color: $neutral-100;
+        }
+      }
+
+      .actions-edit-comment .confirm-edit-comment.btn-success  {
+        background: transparent;
+        border: 1px solid $night-blue;
+        color: $night-blue;
+        &:hover, &:focus, &:active {
+          background: $night-blue;
+          border: 1px solid $night-blue;
+          color: $neutral-100;
+        }
+      }
+
+      .comment-name, .comment-date a {
+        color: $neutral-900;
+      }
+
+      .em-list-status-date a {
+        color: $night-blue;
+      }
+
+      .edit-comment-container button.edit-comment {
+        background: $neutral-100;
+        border: 1px solid $neutral-100;
+        border-radius: 4px !important;
+
+        span {
+          color: $night-blue;
+
+          &:hover {
+            color: $grey;
+          }
+        }
+      }
+    }
+
+    .em-container-tags-body .em-tags-date a   {
+      color: $night-blue;
+    }
+
+    .edit-comment-container button.delete-comment,
+    .em-container-tags-body button.btn-danger[title="Supprimer"]{
+      background: $neutral-100;
+      border: 1px solid $neutral-100;
+      border-radius: 4px !important;
+
+      span {
+        color: $red-500;
+
+        &:hover {
+          color: $red-300;
+        }
+      }
+    }
+
+    .chosen-container .chosen-results li.group-option,
+    .chosen-container .chosen-results li.group-result {
+      color: $neutral-900;
+    }
+
+    .chosen-container .chosen-results li.group-option.highlighted,
+    .chosen-container .chosen-results li.group-result.highlighted{
+      color: $neutral-100;
+      background: $night-blue;
+    }
+
+    .chosen-container-multi .chosen-choices li.search-choice span {
+      color: $neutral-900;
+    }
+
     #add-tags {
       background: $night-blue;
-      border: 2px solid $neutral-100;
+      border: 1.5px solid $neutral-100;
       color: $neutral-100;
       padding: 8px 12px !important;
 
       &:hover, &:active, &:focus {
         background: $neutral-100 !important;
-        border: 2px solid $neutral-100;
+        border: 1.5px solid $neutral-100;
         border-radius: 5px;
         color: $night-blue;
       }
