@@ -293,6 +293,21 @@ class ApogeeCustom {
         return $this->xmlTree;
     }
 
+    /* set Baccalaureat code for foreign students */
+    public function setCodBac() {
+        /* firstly, get xml node naming 'bac' */
+        $bac = $this->xmlTree->getElementsByTagName('bac')->item(0);
+
+        /* secondly, get xml node naming 'codBac' */
+        $codBac = $bac->getElementsByTagName('codBac')->item(0);
+
+        /* if $codBac is empty string, so set it to '0031' */
+        if(empty($codBac->nodeValue)) {
+            $codBac->nodeValue = '0031';
+        }
+        return $this->xmlTree;
+    }
+
     /* set value to repeat group */
     public function setConvocation() {
         $db = JFactory::getDbo();
@@ -414,6 +429,7 @@ class ApogeeCustom {
         $this->setDepPayAnt_LastFrequentEtb();
         $this->setDepPay_Civility();
         $this->setDepPay_LastYear();
+        $this->setCodBac();
 
         /* $this->setConvocation();
         $this->setTitreAccessExterne(); /// expected results :: print */
