@@ -58,8 +58,8 @@ VALUES (0, @element_1, '', 'jos_emundus_users', 'user', 'user_id', 'left', @grou
 
 -- update table "jos_fabrik_jsactions" --
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
-VALUES (@element_1, 'load',
-'   host = this.element;
+VALUES (@element_1, 'load', 'if(document.getElementById(&#039;data_referentiel_zoom_token___zoom_id&#039;).value !== &quot;&quot;) {
+    host = this.element;
     host_val = this.get(&#039;value&#039;);
 
     if(host_val !== &quot;&quot;) {
@@ -83,7 +83,7 @@ VALUES (@element_1, 'load',
     } else {
         this.element.parentNode.parentElement.parentElement.show();
     }
-
+}
 ', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group973","js_e_condition":"","js_e_value":"","js_published":"1"}');
 
 INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params)
