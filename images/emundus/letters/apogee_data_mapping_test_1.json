@@ -251,13 +251,13 @@
         "sql": "select #__emundus_personal_detail.gender from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libNomPatIndOpi": {
-        "sql": "select trim(#__emundus_users.firstname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+        "sql": "select trim(#__emundus_users.lastname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
       },
       "libNomUsuIndOpi": {
         "sql": "select trim(#__emundus_personal_detail.etu_nom_marital) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libPr1IndOpi": {
-        "sql": "select trim(#__emundus_users.lastname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+        "sql": "select trim(#__emundus_users.firstname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
       },
       "libPr2IndOpi": {
         "sql": "select trim(#__emundus_personal_detail.etu_prenom2) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
