@@ -28,7 +28,7 @@ const mutations = {
     setUser(state, users) {
         if (users && users.length > 0) {
             users.forEach(user => {
-                state.users[user.id] = user;
+                state.users[user.user_id] = user;
             });
         }
     },

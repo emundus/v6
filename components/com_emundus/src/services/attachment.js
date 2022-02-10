@@ -1,6 +1,22 @@
 import client from './axiosClient';
 
 export default {
+  async getAttachmentProgress(fnum) {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=files&task=getattachmentprogress', {
+        params: {
+          fnum: fnum,
+        }
+      });
+
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
   async getAttachmentsByUser(user) {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=application&task=getuserattachments', {
@@ -14,7 +30,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -53,7 +69,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -66,7 +82,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -87,7 +103,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -104,7 +120,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
 
@@ -122,7 +138,7 @@ export default {
       return {
         status: false,
         msg: e.message
-      }
+      };
     }
   },
   exportAttachments(student, fnum, attachment_ids) {

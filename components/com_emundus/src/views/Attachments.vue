@@ -5,7 +5,9 @@
         <p class="name">
           {{ displayedUser.firstname }} {{ displayedUser.lastname }}
         </p>
-        <p class="email">{{ displayedUser.email }}</p>
+        <p class="email">{{ displayedUser.email }} </p>
+
+        <p class="attachment-progress" v-if="progress">  - {{ progress }}% {{ translate('COM_EMUNDUS_ATTACHMENTS_COMPLETED') }}</p>
       </div>
       <div class="prev-next-files">
         <div
@@ -14,7 +16,7 @@
             :class="{ active: fnumPosition > 0 }"
             @click="changeFile(fnumPosition - 1)"
         >
-          <i class="small arrow left icon" aria-hidden="true"></i>
+          <span class="material-icons">arrow_back</span>
         </div>
         <div
             v-if="fnums.length > 1"
@@ -22,11 +24,11 @@
             :class="{ active: fnumPosition < fnums.length - 1 }"
             @click="changeFile(fnumPosition + 1)"
         >
-          <i class="small arrow right icon" aria-hidden="true"></i>
+          <span class="material-icons">arrow_forward</span>
         </div>
       </div>
     </div>
-    <div class="wrapper" :class="{ loading: loading }">
+    <div class="wrapper" :class="{ loading: loading}">
       <div id="filters">
         <div class="searchbar-wrapper">
           <input
@@ -46,7 +48,7 @@
 						@applyFilters="filterAttachmentSelection"
 					></FilterBuilder>
           <select
-              v-if="Object.entries(categories).length > 1"
+              v-if="Object.entries(thisAttachmentCategories).length > 0"
               name="category"
               class="category-select"
               ref="categoryFilter"
@@ -54,7 +56,7 @@
           >
             <option value="all">{{ translate("SELECT_CATEGORY") }}</option>
             <option
-                v-for="(category, key) in categories"
+                v-for="(category, key) in thisAttachmentCategories"
                 :key="key"
                 :value="key"
             >
@@ -243,12 +245,18 @@
     >
       <div class="modal-head">
         <div class="flex-start">
-					<span class="material-icons" @click="closeModal">
-						navigate_before
-					</span>
           <span>{{ selectedAttachment.filename }}</span>
         </div>
         <div class="flex-end">
+          <a
+            :href="attachmentPath"
+            class="download btn-icon-text"
+            download
+            v-if="canDownload"
+          >
+            <span class="material-icons"> file_download </span>
+            <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
+          </a>
           <div class="prev-next-attachments">
             <div
                 class="prev"
@@ -272,28 +280,22 @@
               <span class="material-icons"> navigate_next </span>
             </div>
           </div>
-          <a
-              :href="attachmentPath"
-              class="download btn-icon-text"
-              download
-              v-if="canDownload"
-          >
-            <span class="material-icons"> file_download </span>
-
-            <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
-          </a>
+          <span class="material-icons em-pointer" @click="closeModal">
+					  close
+					</span>
         </div>
       </div>
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
-        <div class="modal-body" v-if="!modalLoading">
+        <div class="modal-body" v-if="!modalLoading && displayedUser.user_id && displayedFnum">
           <AttachmentPreview
-              @fileNotFound="canDownload = false"
-              @canDownload="canDownload = true"
+            @fileNotFound="canDownload = false"
+            @canDownload="canDownload = true"
+            :user="displayedUser.user_id"
           ></AttachmentPreview>
           <AttachmentEdit
-              @closeModal="closeModal"
-              @saveChanges="updateAttachment"
-              :fnum="displayedFnum"
+            @closeModal="closeModal"
+            @saveChanges="updateAttachment"
+            :fnum="displayedFnum"
           ></AttachmentEdit>
         </div>
       </transition>
@@ -343,6 +345,7 @@ export default {
       displayedFnum: this.fnum,
       checkedAttachments: [],
       selectedAttachment: {},
+      progress: "",
       sort: {
         last: "",
         order: "",
@@ -362,13 +365,44 @@ export default {
   },
   mounted() {
     this.loading = true;
-    this.getFnums();
-    this.getUsers();
-    this.getAttachments();
-    this.setAccessRights();
+    this.getFormProgress();
+    this.getFnums()
+    .then(
+      () => {
+        this.getUsers().then(
+          () => {
+            this.getAttachments().then(
+              () => {
+                this.setAccessRights().then(
+                  () => {
+                    this.loading = false;
+                  }
+                );
+              }
+            ).catch((e) => {
+              this.loading = false;
+              this.displayErrorMessage(e);
+            });
+          },
+        ).catch((e) => {
+          this.loading = false;
+          this.displayErrorMessage(e);
+        });
+      }
+    ).catch((e) => {
+      this.loading = false;
+      this.displayErrorMessage(e);
+    });
   },
   methods: {
     // Getters and setters
+    async getFormProgress() {
+        const response = await attachmentService.getAttachmentProgress(this.displayedFnum);
+
+        if (response.status) {
+          this.progress = response.progress[0].attachment_progress;
+        }
+    },
     async getFnums() {
       const fnumsOnPage = document.getElementsByClassName('em_file_open');
       for (let fnum of fnumsOnPage) {
@@ -376,24 +410,14 @@ export default {
       }
     },
     async getUsers() {
-      const response = await userService.getUsers();
-
-      if (response.status !== false) {
-        this.users = response.data;
-        this.$store.dispatch("user/setUsers", this.users);
-      }
-
       this.$store.dispatch("user/setCurrentUser", this.user);
-      this.setDisplayedUser();
+      await this.setDisplayedUser();
     },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
 
       if (response && response.fnumInfos) {
-        const foundUser = this.users && this.users.length ? this.users.find(
-                    (user) => user.user_id == response.fnumInfos.applicant_id
-                )
-                : false;
+        const foundUser = this.users && this.users.length ? this.users.find((user) => user.user_id == response.fnumInfos.applicant_id) : false;
 
         if (!foundUser) {
           const resp = await userService.getUserById(
@@ -426,10 +450,9 @@ export default {
     },
     async getAttachments() {
       if (!this.$store.state.attachment.attachments[this.displayedFnum]) {
-        this.refreshAttachments();
+        await this.refreshAttachments();
       } else {
-        this.attachments =
-            this.$store.state.attachment.attachments[this.displayedFnum];
+        this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
         this.categories = this.$store.state.attachment.categories;
       }
     },
@@ -441,9 +464,7 @@ export default {
       this.resetOrder();
       this.checkedAttachments = [];
       this.$refs["searchbar"].value = "";
-      const response = await attachmentService.getAttachmentsByFnum(
-          this.displayedFnum
-      );
+      const response = await attachmentService.getAttachmentsByFnum(this.displayedFnum);
 
       if (response.status) {
         this.attachments = response.attachments;
@@ -558,7 +579,6 @@ export default {
       this.canUpdate = this.$store.state.user.rights[this.displayedFnum]
           ? this.$store.state.user.rights[this.displayedFnum].canUpdate
           : false;
-      this.loading = false;
     },
     async exportAttachments() {
       if (this.canExport) {
@@ -649,6 +669,7 @@ export default {
 
       const oldFnumPosition = this.fnumPosition;
       this.displayedFnum = this.fnums[position];
+      this.getFormProgress();
       this.attachments = [];
       this.$store.dispatch("attachment/setCheckedAttachments", []);
       this.setAccessRights();
@@ -842,9 +863,11 @@ export default {
 
     // Modal methods
     openModal(attachment) {
-      this.$modal.show("edit");
-      this.selectedAttachment = attachment;
-      this.$store.dispatch("attachment/setSelectedAttachment", attachment);
+      if (this.displayedUser.user_id && this.displayedFnum) {
+        this.$modal.show("edit");
+        this.selectedAttachment = attachment;
+        this.$store.dispatch("attachment/setSelectedAttachment", attachment);
+      }
     },
     closeModal() {
       this.$modal.hide("edit");
@@ -900,6 +923,22 @@ export default {
           this.selectedAttachment.filename
       );
     },
+    thisAttachmentCategories() {
+      let displayedCategories = {};
+      if (Object.entries(this.categories).length > 0) {
+        for (let category in this.categories) {
+          for (let attachment in this.attachments) {
+            // if the attachment category is the same as the category
+            if (this.attachments[attachment].category == category) {
+              // add the category to the displayedCategories object
+              displayedCategories[category] = this.categories[category];
+            }
+          }
+        }
+      }
+
+      return displayedCategories;
+    },
   },
 };
 </script>
@@ -917,7 +956,7 @@ export default {
     margin-top: 1px;
     padding: 10px;
     min-height: 50px;
-    background-color: var(--primary-color);
+    background-color: var(--night-blue);
 
     .displayed-user {
       display: flex;
@@ -947,6 +986,7 @@ export default {
       justify-content: space-between;
       align-items: center;
       margin-right: 12px;
+      width: 75px;
 
       > div {
         pointer-events: none;
@@ -957,25 +997,31 @@ export default {
         color: transparent;
         transition: all 0.3s;
 
-        i {
+        span {
           height: 30px;
           width: 30px;
           display: flex;
           justify-content: center;
           align-items: center;
           margin: 0;
+          opacity: 0;
         }
 
         &.active {
-          color: var(--text-light-color);
+          span {
+            color: var(--text-light-color);
+            opacity: 1;
+          }
           pointer-events: auto;
           cursor: pointer;
         }
 
         &:hover {
           border-radius: 4px;
-          background-color: var(--text-light-color);
-          color: var(--primary-color);
+          background-color: transparent;
+          span {
+            color: var(--primary-color);
+          }
         }
       }
     }
@@ -1086,11 +1132,10 @@ export default {
   .table-wrapper {
     width: 100%;
     overflow-x: scroll;
-    transform: rotateX(180deg);
   }
 
   table {
-    transform: rotateX(180deg);
+
     &.loading {
       visibility: hidden;
     }

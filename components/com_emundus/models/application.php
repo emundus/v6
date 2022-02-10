@@ -256,7 +256,12 @@ class EmundusModelApplication extends JModelList
     {
 
         try {
+            // Get the old comment content for the logging system
+            $query = 'SELECT reason, comment_body FROM #__emundus_comments WHERE id =' . $this->_db->quote($id);
+            $this->_db->setQuery($query);
+            $old_comment = $this->_db->loadObject();
 
+            // Update the comment content
             $query = 'UPDATE #__emundus_comments SET reason = ' . $this->_db->quote($title) . ', comment_body = ' . $this->_db->quote($text) . '  WHERE id = ' . $this->_db->quote($id);
             $this->_db->setQuery($query);
             $this->_db->execute();
@@ -276,7 +281,16 @@ class EmundusModelApplication extends JModelList
                 $fnum = $this->_db->loadResult();
 
                 // Log the comment in the eMundus logging system.
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_LOGS_UPDATE_COMMENT');
+                $logsParams = array('updated' => []);
+                if ($old_comment->reason !== $title) {
+                    array_push($logsParams['updated'], ['old' => $old_comment->reason, 'new' => $title]);
+                }
+                if ($old_comment->comment_body !== $text) {
+                    array_push($logsParams['updated'], ['old' => $old_comment->comment_body, 'new' => $text]);
+                }
+                if (!empty($logsParams['updated'])) {
+                    EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                }
             }
 
             return true;
@@ -304,6 +318,14 @@ class EmundusModelApplication extends JModelList
             }
         }
 
+        // Get the comment for logs
+        $query->select($this->_db->quoteName('reason') . ',' . $this->_db->quoteName('comment_body'))
+            ->from($this->_db->quoteName('#__emundus_comments'))
+            ->where($this->_db->quoteName('id') . ' = ' . $id); 
+        $this->_db->setQuery($query);
+        $deleted_comment = $this->_db->loadObject();
+
+        // Delete comment
         $query->clear()->delete($this->_db->quoteName('#__emundus_comments'))
             ->where($this->_db->quoteName('id') . ' = ' . $id);
         $this->_db->setQuery($query);
@@ -315,7 +337,15 @@ class EmundusModelApplication extends JModelList
         }
 
         if ($res && !empty($fnum)) {
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_LOGS_DELETE_COMMENT');
+            // Log the comment in the eMundus logging system
+            $logsParams = array('deleted' => []);
+            // Log only the body if the comment had no title
+            if (empty($deleted_comment->reason)) {
+                $logsParams['deleted'] = [$deleted_comment->comment_body];
+            } else {
+                $logsParams['deleted'] = [$deleted_comment->reason, $deleted_comment->comment_body];
+            }
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         return $res;
@@ -323,13 +353,22 @@ class EmundusModelApplication extends JModelList
 
     public function deleteTag($id_tag, $fnum)
     {
+        $query = $this->_db->getQuery(true);
+        // Get the tag for logs
+        $query->select($this->_db->quoteName('label'))
+            ->from($this->_db->quoteName('#__emundus_setup_action_tag'))
+            ->where($this->_db->quoteName('id') . ' = ' . $id_tag); 
+        $this->_db->setQuery($query);
+        $deleted_tag = $this->_db->loadResult();
+
         $query = 'DELETE FROM #__emundus_tag_assoc WHERE id_tag = ' . $id_tag . ' AND fnum like ' . $this->_db->Quote($fnum);
         $this->_db->setQuery($query);
         $res = $this->_db->execute();
 
         // Log the action in the eMundus logging system.
         if ($res) {
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_LOGS_DELETE_TAG');
+            $logsParams = array('deleted' => [$deleted_tag]);
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
         return $res;
@@ -337,12 +376,18 @@ class EmundusModelApplication extends JModelList
 
     public function addComment($row)
     {
-
         // Log the comment in the eMundus logging system.
-        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_LOGS_ADD_COMMENT');
+        $logsParams = array('created' => []);
+        // Log only the body if there is no title
+        if (empty($row['reason'])) {
+            $logsParams['created'] = [$row['comment_body']];
+        } else {
+            $logsParams['created'] = [$row['reason'], $row['comment_body']];
+        }
+        EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
-        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum, status_from, status_to)
-                VALUES(' . $row['applicant_id'] . ',' . $row['user_id'] . ',' . $this->_db->Quote($row['reason']) . ',"' . date("Y.m.d H:i:s") . '",' . $this->_db->Quote($row['comment_body']) . ',' . $this->_db->Quote(@$row['fnum']) . ',' . $this->_db->Quote($row['status_from']) . ',' . $this->_db->Quote($row['status_to']) . ')';
+        $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
+                VALUES('.$row['applicant_id'].','.$row['user_id'].','.$this->_db->Quote($row['reason']).',"'.date("Y.m.d H:i:s").'",'.$this->_db->Quote($row['comment_body']).','.$this->_db->Quote(@$row['fnum']).')';
         $this->_db->setQuery($query);
 
         try {
@@ -822,15 +867,15 @@ class EmundusModelApplication extends JModelList
                 if ($cpt > 0) {
 
                     if ($allowEmbed) {
-                        $form .= '<button type="button" id="' . $table[$i]->form_id . '" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component" alt="' . JText::_('EDIT') . '"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('EDIT') . '</i></button>';
+                        $form .= '<button type="button" id="' . $table[$i]->form_id . '" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component" alt="' . JText::_('EDIT') . '"><i> ' . JText::_('EDIT') . '</i></button>';
                     } else {
-                        $form .= ' <a id="' . $table[$i]->form_id . '" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" href="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&usekey=fnum&rowid=' . $fnum . '" alt="' . JText::_('EDIT') . '" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('EDIT') . '</i></a>';
+                        $form .= ' <a id="' . $table[$i]->form_id . '" class="btn btn btn-info btn-sm em-actions-form marginRightbutton" href="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&usekey=fnum&rowid=' . $fnum . '" alt="' . JText::_('EDIT') . '" target="_blank"><i> ' . JText::_('EDIT') . '</i></a>';
                     }
                 } else {
                     if ($allowEmbed) {
-                        $form .= '<button type="button" id="' . $table[$i]->form_id . '" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&' . $table[$i]->db_table_name . '___fnum=' . $fnum . '&' . $table[$i]->db_table_name . '___user_raw=' . $aid . '&' . $table[$i]->db_table_name . '___user=' . $aid . '&sid=' . $aid . '&tmpl=component" alt="' . JText::_('EDIT') . '"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('ADD') . '</i></button>';
+                        $form .= '<button type="button" id="' . $table[$i]->form_id . '" class="btn btn-default btn-sm em-actions-form marginRightbutton" url="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&' . $table[$i]->db_table_name . '___fnum=' . $fnum . '&' . $table[$i]->db_table_name . '___user_raw=' . $aid . '&' . $table[$i]->db_table_name . '___user=' . $aid . '&sid=' . $aid . '&tmpl=component" alt="' . JText::_('EDIT') . '"><i> ' . JText::_('ADD') . '</i></button>';
                     } else {
-                        $form .= ' <a type="button" id="' . $table[$i]->form_id . '" class="btn btn-default btn-sm em-actions-form marginRightbutton" href="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&' . $table[$i]->db_table_name . '___fnum=' . $fnum . '&' . $table[$i]->db_table_name . '___user_raw=' . $aid . '&' . $table[$i]->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" alt="' . JText::_('EDIT') . '" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('ADD') . '</i></a>';
+                        $form .= ' <a type="button" id="' . $table[$i]->form_id . '" class="btn btn-default btn-sm em-actions-form marginRightbutton" href="index.php?option=com_fabrik&view=form&formid=' . $table[$i]->form_id . '&' . $table[$i]->db_table_name . '___fnum=' . $fnum . '&' . $table[$i]->db_table_name . '___user_raw=' . $aid . '&' . $table[$i]->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" alt="' . JText::_('EDIT') . '" target="_blank"><i> ' . JText::_('ADD') . '</i></a>';
                     }
                 }
             }
@@ -1258,6 +1303,7 @@ class EmundusModelApplication extends JModelList
                         $title = JText::_(trim($title[1]));
                     }
                     $forms .= '<h3>' . $title . '</h3>';
+                    $form_params = json_decode($itemt->params);
 
                     if ($h_access->asAccessAction(1, 'u', $this->_user->id, $fnum) && $itemt->db_table_name != "#__emundus_training") {
 
@@ -1268,16 +1314,16 @@ class EmundusModelApplication extends JModelList
                         if ($cpt > 0) {
 
                             if ($allowEmbed) {
-                                $forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component" alt="' . JText::_('EDIT') . '" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('EDIT') . '</i></button>';
+                                $forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '&tmpl=component" alt="' . JText::_('EDIT') . '" target="_blank"><i> ' . JText::_('EDIT') . '</i></button>';
                             } else {
-                                $forms .= ' <a id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '" alt="' . JText::_('EDIT') . '" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('EDIT') . '</i></a>';
+                                $forms .= ' <a id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&usekey=fnum&rowid=' . $fnum . '" alt="' . JText::_('EDIT') . '" target="_blank"><i> ' . JText::_('EDIT') . '</i></a>';
                             }
                         } else {
 
                             if ($allowEmbed) {
-                                $forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '&tmpl=component" alt="' . JText::_('EDIT') . '"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('ADD') . '</i></button>';
+                                $forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '&tmpl=component" alt="' . JText::_('EDIT') . '"><i> ' . JText::_('ADD') . '</i></button>';
                             } else {
-                                $forms .= ' <a type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" alt="' . JText::_('EDIT') . '" target="_blank"><span class="glyphicon glyphicon-edit"></span><i> ' . JText::_('ADD') . '</i></a>';
+                                $forms .= ' <a type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm" href="index.php?option=com_fabrik&view=form&formid=' . $itemt->form_id . '&' . $itemt->db_table_name . '___fnum=' . $fnum . '&' . $itemt->db_table_name . '___user_raw=' . $aid . '&' . $itemt->db_table_name . '___user=' . $aid . '&sid=' . $aid . '" alt="' . JText::_('EDIT') . '" target="_blank"><i> ' . JText::_('ADD') . '</i></a>';
                             }
                         }
                     }
@@ -1569,7 +1615,7 @@ class EmundusModelApplication extends JModelList
                                     foreach ($elements as &$element) {
 
                                         if (!empty(trim($element->label))) {
-                                            $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE user=' . $aid . ' AND fnum like ' . $this->_db->Quote($fnum);
+                                            $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
                                             $this->_db->setQuery($query);
                                             $res = $this->_db->loadRow();
 
@@ -1597,6 +1643,30 @@ class EmundusModelApplication extends JModelList
                                             if ($show_empty_fields == 0 && (trim($element->content) == '' || trim($element->content_id) == -1)) {
                                                 continue;
                                             }
+
+                                            // Decrypt datas encoded
+                                            if($form_params->note == 'encrypted'){
+                                                $cipher = "aes-128-cbc";
+
+                                                $encryption_key = JFactory::getConfig()->get('secret');
+
+                                                if($element->plugin == 'checkbox'){
+                                                    $contents = json_decode($element->content);
+                                                    foreach ($contents as $key => $content){
+                                                        $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+                                                        if ($decrypted_data !== false) {
+                                                            $contents[$key] = $decrypted_data;
+                                                        }
+                                                    }
+                                                    $element->content = json_encode($contents);
+                                                } else {
+                                                    $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
+                                                    if ($decrypted_data !== false) {
+                                                        $element->content = $decrypted_data;
+                                                    }
+                                                }
+                                            }
+                                            //
 
                                             if ($element->plugin == 'date' && $element->content > 0) {
                                                 if (!empty($element->content) && $element->content != '0000-00-00 00:00:00') {
@@ -1785,7 +1855,7 @@ class EmundusModelApplication extends JModelList
             $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 
             foreach ($tableuser as $key => $itemt) {
-
+                $form_params = json_decode($itemt->params);
                 $breaker = ($em_breaker) ? ($key === 0) ? '' : 'class="breaker"' : '';
                 // liste des groupes pour le formulaire d'une table
                 $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
@@ -2261,7 +2331,7 @@ class EmundusModelApplication extends JModelList
                                         continue;
                                     }
 
-                                    $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE user=' . $aid . ' AND fnum like ' . $this->_db->Quote($fnum);
+                                    $query = 'SELECT `id`, `' . $element->name . '` FROM `' . $itemt->db_table_name . '` WHERE fnum like ' . $this->_db->Quote($fnum);
                                     try {
                                         $this->_db->setQuery($query);
                                         $res = $this->_db->loadRow();
@@ -2281,6 +2351,30 @@ class EmundusModelApplication extends JModelList
                                         $element->content = '';
                                         $element->content_id = -1;
                                     }
+
+                                    // Decrypt datas encoded
+                                    if($form_params->note == 'encrypted'){
+                                        $cipher = "aes-128-cbc";
+
+                                        $encryption_key = JFactory::getConfig()->get('secret');
+
+                                        if($element->plugin == 'checkbox'){
+                                            $contents = json_decode($element->content);
+                                            foreach ($contents as $key => $content){
+                                                $decrypted_data = openssl_decrypt($content, $cipher, $encryption_key, 0);
+                                                if ($decrypted_data !== false) {
+                                                    $contents[$key] = $decrypted_data;
+                                                }
+                                            }
+                                            $element->content = json_encode($contents);
+                                        } else {
+                                            $decrypted_data = openssl_decrypt($element->content, $cipher, $encryption_key, 0);
+                                            if ($decrypted_data !== false) {
+                                                $element->content = $decrypted_data;
+                                            }
+                                        }
+                                    }
+                                    //
 
                                     if (!empty($element->content) || (isset($params->database_join_display_type) && ($params->database_join_display_type == 'checkbox' || $params->database_join_display_type == 'multilist')) || $element->plugin == 'yesno') {
 
@@ -4212,8 +4306,6 @@ class EmundusModelApplication extends JModelList
 
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
-
-
         if (isset($data['file'])) {
             // replace content of current attachment
             $content = file_get_contents($data['file']['tmp_name']);
@@ -4233,7 +4325,7 @@ class EmundusModelApplication extends JModelList
         }
 
         if (isset($data['is_validated'])) {
-            $query->set($db->quoteName('modified') . ' = ' . $db->quote($data['is_validated']));
+            $query->set($db->quoteName('is_validated') . ' = ' . $db->quote($data['is_validated']));
         }
 
         if (isset($data['can_be_viewed'])) {
@@ -4340,7 +4432,7 @@ class EmundusModelApplication extends JModelList
                 require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
                 $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . $filePath);
-                $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\HTML($phpSpreadsheet);
+                $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\Html($phpSpreadsheet);
                 $htmlWriter->setGenerateSheetNavigationBlock(true);
                 $htmlWriter->setSheetIndex(null);
                 $preview['content'] = $htmlWriter->generateHtmlAll();
