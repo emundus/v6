@@ -4797,6 +4797,10 @@ class EmundusModelApplication extends JModelList
         // get table from fabrik list id
         $table = $this->getTableFromFabrikList($listId);
 
+        if (empty($table)) {
+            return '';
+        }
+
         $select = "SELECT `$table`.`id` ";
         $from = "FROM `$table` ";
         $joins = [];
@@ -4808,8 +4812,10 @@ class EmundusModelApplication extends JModelList
                 foreach ($group['filters'] as $fkey => $filter) {
                     $element = $this->getFabrikElementById($filter['id']);
 
-                    $element['list'] = $listId;
-                    $this->mountQueryForElement($table, $element, $filter, $joins, $where);
+                    if (!empty($element)) {
+                        $element['list'] = $listId;
+                        $this->mountQueryForElement($table, $element, $filter, $joins, $where);
+                    }
                 }
             } else {
                 // child group
@@ -4817,9 +4823,10 @@ class EmundusModelApplication extends JModelList
 
                 foreach ($group['filters'] as $fkey => $filter) {
                     $element = $this->getFabrikElementById($filter['id']);
-
-                    $element['list'] = $listId;
-                    $this->mountQueryForElement($table, $element, $filter, $joins, $subWhere);
+                    if(!empty($element)) {
+                        $element['list'] = $listId;
+                        $this->mountQueryForElement($table, $element, $filter, $joins, $subWhere);
+                    }
                 }
 
                 if (!empty($subWhere)) {
@@ -4842,6 +4849,8 @@ class EmundusModelApplication extends JModelList
      */
     private function getTableFromFabrikList($listId)
     {
+        $table = '';
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -4851,7 +4860,14 @@ class EmundusModelApplication extends JModelList
 
         $db->setQuery($query);
 
-        return $db->loadResult();
+        try {
+            $table = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            $table = '';
+        }
+
+        return $table;
     }
 
     /**
@@ -4865,13 +4881,22 @@ class EmundusModelApplication extends JModelList
         $query = $db->getQuery(true);
 
         if (!empty($id)) {
+            $array = [];
+
             $query
                 ->select('*')
                 ->from($db->quoteName('#__fabrik_elements'))
                 ->where($db->quoteName('id') . '=' . (int)$id);
 
             $db->setQuery($query);
-            return $db->loadAssoc();
+            try {
+                $array = $db->loadAssoc();
+            } catch (Exception $e) {
+                JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+                $array = [];
+            }
+
+            return $array;
         } else {
             return false;
         }
@@ -4899,18 +4924,22 @@ class EmundusModelApplication extends JModelList
                 break;
             case "databasejoin":
                 $params = json_decode($element['params'], true);
-                $tableJoin = $this->getTableJoinKeyFromElement($element);
+                $tableJoin = !empty($element['id']) ? $this->getTableJoinKeyFromElement($element) : null;
 
-                $query = $db->getQuery(true);
-                $query->select(array('el.id', 'el.name'))
-                    ->from($db->quoteName('#__users', 'el'));
+                if (!empty($tableJoin)) {
+                    $query = $db->getQuery(true);
+                    $query->select(array('el.id', 'el.name'))
+                        ->from($db->quoteName('#__users', 'el'));
 
-                $tmpJoin = "LEFT JOIN " . $db->quoteName($params['join_db_name']) . " ON " . $db->quoteName($table) . ".`" . $tableJoin . "` = " . $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']);
-                if (!in_array($tmpJoin, $joins)) {
-                    $joins[] = $tmpJoin;
+                    $tmpJoin = "LEFT JOIN " . $db->quoteName($params['join_db_name']) . " ON " . $db->quoteName($table) . ".`" . $tableJoin . "` = " . $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']);
+                    if (!in_array($tmpJoin, $joins)) {
+                        $joins[] = $tmpJoin;
+                    }
+
+                    $where[] = $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']) . " " . " " . $this->formatFilterAction($filter['action'], $filter['value']);
+                } else {
+                    JLog::add("Error in mountQueryForElement case databasejoin : tableJoin is empty", JLog::ERROR, 'com_emundus');
                 }
-
-                $where[] = $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']) . " " . " " . $this->formatFilterAction($filter['action'], $filter['value']);
 
                 break;
                 break;
@@ -4923,25 +4952,27 @@ class EmundusModelApplication extends JModelList
             case "field":
                 $tableAssociatedToElement = $this->getTableAssociatedToElement($element['id']);
 
-                if ($table == $tableAssociatedToElement) {
-                    if (!empty($element['default']) && preg_match("/\{(jos\_.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
-                        if ($matches[1] == $table) {
-                            $where[] = $db->quoteName($matches[1]) . "." . $db->quoteName($matches[2]) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
+                if (!empty($tableAssociatedToElement)) {
+                    if ($table == $tableAssociatedToElement) {
+                        if (!empty($element['default']) && preg_match("/\{(jos\_.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
+                            if ($matches[1] == $table) {
+                                $where[] = $db->quoteName($matches[1]) . "." . $db->quoteName($matches[2]) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
+                            }
+                        } else {
+                            $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
                         }
                     } else {
-                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
-                    }
-                } else {
-                    // add left join on tableAssociatedToElement
-                    $column = $this->findReferenceInsideTable($table, $tableAssociatedToElement, "id");
-                    if (!empty($column)) {
-                        $tmpJoin = "LEFT JOIN " . $db->quoteName($tableAssociatedToElement) . " ON " . $db->quoteName($table) . "." . $db->quoteName($column) . " = " . $db->quoteName($tableAssociatedToElement) . ".`id`";
-                        if (!in_array($tmpJoin, $joins)) {
-                            $joins[] = $tmpJoin;
-                        }
+                        // add left join on tableAssociatedToElement
+                        $column = $this->findReferenceInsideTable($table, $tableAssociatedToElement, "id");
+                        if (!empty($column)) {
+                            $tmpJoin = "LEFT JOIN " . $db->quoteName($tableAssociatedToElement) . " ON " . $db->quoteName($table) . "." . $db->quoteName($column) . " = " . $db->quoteName($tableAssociatedToElement) . ".`id`";
+                            if (!in_array($tmpJoin, $joins)) {
+                                $joins[] = $tmpJoin;
+                            }
 
-                        // add where condition
-                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
+                            // add where condition
+                            $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
+                        }
                     }
                 }
                 break;
@@ -5006,6 +5037,8 @@ class EmundusModelApplication extends JModelList
 
     private function getTableAssociatedToElement($id)
     {
+        $associated_table = ""; 
+
         $db = JFactory::getDbo();
         $db->setQuery("SELECT db_table_name
             FROM jos_fabrik_lists
@@ -5013,7 +5046,18 @@ class EmundusModelApplication extends JModelList
             LEFT JOIN jos_fabrik_elements ON jos_fabrik_elements.group_id = jos_fabrik_formgroup.group_id
             WHERE jos_fabrik_elements.id = $id");
 
-        return $db->loadResult();
+        try {
+            $result = $db->loadResult();
+
+            if (!empty($result)) {
+                $associated_table = $result;
+            }
+        } catch(Exception $e) {
+            JLog::add('Could not get table associated to element ' . $id . ' - ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            return "";
+        }
+
+        return $associated_table;
     }
 
     private function getTableJoinKeyFromElement($element)
@@ -5027,9 +5071,13 @@ class EmundusModelApplication extends JModelList
 
         $db->setQuery($query);
 
-        $result = $db->loadAssoc();
-
-        return $result['table_key'];
+        try {
+            $result = $db->loadAssoc();
+            return  !empty($result['table_key']) ? $result['table_key'] : "";
+        } catch(Exception $e) {
+            JLog::add('Could not get table join key from element ' . $element['id'] . ' - ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            return "";
+        }
     }
 
     private function findReferenceInsideTable($table, $tableToJoin, $columnToJoin)
