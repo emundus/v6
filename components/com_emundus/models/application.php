@@ -4968,7 +4968,11 @@ class EmundusModelApplication extends JModelList
                 $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
                 break;
             case "textarea":
-                $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                if ($filter['action'] == 'contains') {
+                     $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
+                } else {
+                    $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                }                
                 break;
             case "user":
                 break;
@@ -5018,9 +5022,9 @@ class EmundusModelApplication extends JModelList
             "SELECT `column_name`
             FROM `information_schema`.`KEY_COLUMN_USAGE`
             WHERE `constraint_schema` = SCHEMA()
-            AND `table_name` = 'jos_emundus_uploads'
-            AND `referenced_table_name` = 'jos_emundus_setup_attachments'
-            AND `referenced_column_name` = 'id'"
+            AND `table_name` = $table
+            AND `referenced_table_name` = $tableToJoin
+            AND `referenced_column_name` = $columnToJoin"
         );
 
         return $db->loadResult();

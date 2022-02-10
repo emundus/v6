@@ -47,7 +47,7 @@
 						otherIds="36"
 						@applyFilters="filterAttachmentSelection"
 					></FilterBuilder>
-          <select
+          <!-- <select
               v-if="Object.entries(thisAttachmentCategories).length > 0"
               name="category"
               class="category-select"
@@ -62,7 +62,7 @@
             >
               {{ category }}
             </option>
-          </select>
+          </select> -->
           <div
             v-if="canExport"
             class="btn-icon-text"
