@@ -4888,9 +4888,6 @@ class EmundusModelApplication extends JModelList
     private function mountQueryForElement($table, $element, $filter, &$joins, &$where)
     {
         $db = JFactory::getDbo();
-
-        $filter['action'] = $filter['action'] == 'inferior' ? "<" : ($filter['action'] == "infOrEq" ? "<=" : $filter['action']);
-
         switch ($element['plugin']) {
             case "birthday":
                 break;
@@ -4913,7 +4910,7 @@ class EmundusModelApplication extends JModelList
                     $joins[] = $tmpJoin;
                 }
 
-                $where[] = $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                $where[] = $db->quoteName($params['join_db_name']) . "." . $db->quoteName($params['join_key_column']) . " " . " " . $this->formatFilterAction($filter['action'], $filter['value']);
 
                 break;
                 break;
@@ -4929,18 +4926,10 @@ class EmundusModelApplication extends JModelList
                 if ($table == $tableAssociatedToElement) {
                     if (!empty($element['default']) && preg_match("/\{(jos\_.+)\_\_\_(.*)\}$/", $element['default'], $matches)) {
                         if ($matches[1] == $table) {
-                            if ($filter['action'] == 'contains') {
-                                $where[] = $db->quoteName($matches[1]) . "." . $db->quoteName($matches[2]) . " LIKE '%" . $filter['value'] . "%'";
-                            } else {
-                                $where[] = $db->quoteName($matches[1]) . "." . $db->quoteName($matches[2]) . " " . $filter['action'] . " " . $filter['value'];
-                            }
+                            $where[] = $db->quoteName($matches[1]) . "." . $db->quoteName($matches[2]) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
                         }
                     } else {
-                        if ($filter['action'] == 'contains') {
-                            $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
-                        } else {
-                            $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
-                        }
+                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
                     }
                 } else {
                     // add left join on tableAssociatedToElement
@@ -4952,11 +4941,7 @@ class EmundusModelApplication extends JModelList
                         }
 
                         // add where condition
-                        if ($filter['action'] == 'contains') {
-                            $where[] = $db->quoteName($tableAssociatedToElement) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
-                        } else {
-                            $where[] = $db->quoteName($tableAssociatedToElement) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
-                        }
+                        $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
                     }
                 }
                 break;
@@ -4965,14 +4950,10 @@ class EmundusModelApplication extends JModelList
             case "jdate":
                 break;
             case "radiobutton":
-                $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
+                $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
                 break;
             case "textarea":
-                if ($filter['action'] == 'contains') {
-                     $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " LIKE '%" . $filter['value'] . "%'";
-                } else {
-                    $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $filter['action'] . " " . $db->quote($filter['value']);
-                }                
+                $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
                 break;
             case "user":
                 break;
@@ -4983,8 +4964,44 @@ class EmundusModelApplication extends JModelList
             case "yesno":
                 break;
             default:
+                $where[] = $db->quoteName($table) . "." . $db->quoteName($element['name']) . " " . $this->formatFilterAction($filter['action'], $filter['value']);
                 break;
         }
+    }
+
+    private function formatFilterAction($filter_action, $filter_value) 
+    {
+        $return = "";
+
+        $filter_action = strtolower($filter_action);
+        switch ($filter_action) {
+            case "contains":
+                $return = " LIKE %" . $filter_value . "%";
+                break;
+            case "equals":
+                $return = " = " . $filter_value;
+                break;
+            case "inferior":
+                $return = " < " . $filter_value;
+                break;
+            case "infOrEq":
+                $return = " <= " . $filter_value;
+                break;
+            case "superior":
+                $return = " > " . $filter_value;
+                break;
+            case "supOrEq":
+                $return = " >= " . $filter_value;
+                break;
+            case "notEqual":
+                $return = " != " . $filter_value;
+                break;
+            default:
+                $return  = $filter_action . " " . $filter_value;
+                break;
+        }
+
+        return $return;
     }
 
     private function getTableAssociatedToElement($id)
