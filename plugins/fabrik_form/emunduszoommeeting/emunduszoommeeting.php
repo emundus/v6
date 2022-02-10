@@ -57,7 +57,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
         $offset = $app->get('offset', 'UTC');
         $startTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']));
-        $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
+        # $endTime = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___end_time_"]['date']));
 
         # in case of CELSA, the meeting session will start 15 min before
         $startTimeCELSA = date('Y-m-d\TH:i:s\Z', strtotime($_POST["jos_emundus_jury___start_time_"]['date']) - (15 * 60));
@@ -65,15 +65,15 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         ######################################################################################################################
 
         # calculate meeting duration (raw) by seconds
-        $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
+        # $duration = intval(strtotime($endTime)) - intval(strtotime($startTime));
 
         # duration CELSA
-        $durationCELSA = intval(strtotime($endTime)) - intval(strtotime($startTimeCELSA));
+        #$durationCELSA = intval(strtotime($endTime)) - intval(strtotime($startTimeCELSA));
 
         # setup timezone, start_time, duration
         $_POST['jos_emundus_jury___timezone'] = $offset;
-        $_POST['jos_emundus_jury___start_time'] = $startTime;
-        $_POST['jos_emundus_jury___duration'] = $durationCELSA;
+        $_POST['jos_emundus_jury___start_time'] = $startTimeCELSA;
+        # $_POST['jos_emundus_jury___duration'] = $durationCELSA;
 
         # --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
 
@@ -95,7 +95,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     $updateSql = "UPDATE #__emundus_jury 
                                         SET meeting_session = "     . $db->quote($response['id']) .
                                             " , visio_link = "      . $db->quote($response['start_url']) .
-                                                " , duration = "        . $db->quote($celsa_duration) .
+                                                " , duration = "        . $db->quote($response['duration']) .
                                                     " , join_url = "        . $db->quote($response['join_url']) .
                                                          " , registration_url = " . $db->quote($response['registration_url']) .
                                                             " , password = "        . $db->quote($response['password']) .
