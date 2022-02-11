@@ -210,7 +210,7 @@
                 :class="'draggables-list'"
                 @end="reorderingDocuments"
             >
-              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()" v-if="doc.displayed==1">
+              <li v-for="(doc, index) in displayedDocuments" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()">
                   <span class="icon-handle" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
                     <em class="fas fa-grip-vertical handle"></em>
                   </span>
@@ -1087,44 +1087,43 @@
       },
 
       sendForm() {
-        if(this.formList.length>0){
-        if(this.cid != 0){
-          axios({
-            method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
-            params: {
-              link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
-            },
-            paramsSerializer: params => {
-              return qs.stringify(params);
-            }
-          }).then(response => {
-            window.location.href = window.location.pathname + response.data.data;
-          });
+        if (this.formList.length > 0){
+          if (this.cid != 0) {
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+              params: {
+                link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
+              },
+              paramsSerializer: params => {
+                return qs.stringify(params);
+              }
+            }).then(response => {
+              window.location.href = window.location.pathname + response.data.data;
+            });
+          } else {
+            axios({
+              method: "get",
+              url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+              params: {
+                pid: this.prid
+              },
+              paramsSerializer: params => {
+                return qs.stringify(params);
+              }
+            }).then(response => {
+              if(response.data.data.length > 0){
+                history.go(-1);
+              } else {
+                this.$modal.show('modalAffectCampaign');
+              }
+            }).catch(e => {
+              console.log(e);
+            });
+          }
         } else {
-          axios({
-            method: "get",
-            url:
-                    "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
-            params: {
-              pid: this.prid
-            },
-            paramsSerializer: params => {
-              return qs.stringify(params);
-            }
-          }).then(response => {
-            if(response.data.data.length > 0){
-              history.go(-1);
-            } else {
-              this.$modal.show('modalAffectCampaign');
-            }
-          }).catch(e => {
-            console.log(e);
-          });
+          this.showModal();
         }
-      } else {
-        this.showModal();
-      }
       },
 
       testForm() {
@@ -1337,6 +1336,11 @@
           disabled: false,
           ghostClass: "ghost"
         };
+      },
+      displayedDocuments() {
+        return this.documentsList.filter(doc => {
+          return doc.displayed === 1;
+        });
       }
     }
   };
