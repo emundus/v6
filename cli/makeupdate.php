@@ -263,9 +263,9 @@ class MakeUpdateServer extends JApplicationCli
 			}
 		}
 		mkdir($dest . '/language');
-		mkdir($dest . '/language/fr-FR/');
-		mkdir($dest . '/language/en-GB/');
-		if ((!copy($fr_path, $dest . '/language/fr-FR/fr-FR.' . $component . '.ini')) || (!copy($en_path, $dest . '/language/en-GB/en-GB.' . $component . '.ini')))
+		#mkdir($dest . '/language/fr-FR/');
+		#mkdir($dest . '/language/en-GB/');
+		if ((!copy($fr_path, $dest . '/language/fr-FR.' . $component . '.ini')) || (!copy($en_path, $dest . '/language/en-GB.' . $component . '.ini')))
 		{
 			echo "-> Language copy failed\n";
 		}
