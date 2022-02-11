@@ -295,7 +295,7 @@
         </div>
       </transition>
     </modal>
-    <div class="vue-em-loader" v-if="loading"></div>
+    <div class="vue-em-loader em-loader" v-if="loading"></div>
   </div>
 </template>
 
