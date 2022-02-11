@@ -185,15 +185,15 @@ export default {
       unattachments: [],
       unid: [],
 
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Mandatory: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
-      deleteDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_DOCUMENT"),
-      removeDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_DOCUMENT"),
-      addDoc: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_DOCUMENT"),
-      documentAssigned: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_ASSIGNED_TO_FORM"),
-      documentNoAssigned: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENT_NO_ASSIGNED_TO_FORM")
+      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Mandatory: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+      Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      createDocument: this.translate("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
+      deleteDoc: this.translate("COM_EMUNDUS_ONBOARD_DELETE_DOCUMENT"),
+      removeDoc: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_DOCUMENT"),
+      addDoc: this.translate("COM_EMUNDUS_ONBOARD_ADD_DOCUMENT"),
+      documentAssigned: this.translate("COM_EMUNDUS_ONBOARD_DOCUMENT_ASSIGNED_TO_FORM"),
+      documentNoAssigned: this.translate("COM_EMUNDUS_ONBOARD_DOCUMENT_NO_ASSIGNED_TO_FORM")
     };
   },
 
@@ -310,13 +310,13 @@ export default {
 
     deleteDocument(id,index) {
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE_MESSAGE"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEDOCUMENTTYPE_MESSAGE"),
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#de6339',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if(result.value){

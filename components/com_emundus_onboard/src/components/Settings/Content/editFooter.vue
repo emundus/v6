@@ -23,7 +23,7 @@
 
 <script>
     import axios from "axios";
-    import Editor from "../../components/editor";
+    import Editor from "../../editor";
 
     const qs = require("qs");
 
@@ -49,10 +49,10 @@
                     }
                 },
                 columns: [
-                  Joomla.JText._("COM_EMUNDUS_ONBOARD_COLUMN") + ' 1',
-                  Joomla.JText._("COM_EMUNDUS_ONBOARD_COLUMN") + ' 2',
+                  this.translate("COM_EMUNDUS_ONBOARD_COLUMN") + ' 1',
+                  this.translate("COM_EMUNDUS_ONBOARD_COLUMN") + ' 2',
                 ],
-                TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+                TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
             };
         },
 

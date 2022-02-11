@@ -43,7 +43,7 @@
     data() {
       return {
         email: null,
-        ModelPreview: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL"),
+        ModelPreview: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL"),
       };
     },
     methods: {

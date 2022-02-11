@@ -42,7 +42,7 @@ export default {
 					email: this.translate("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
 					formulaire: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
 					grilleEval: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-					form: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
+					form: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
 				}
 			}
 		}

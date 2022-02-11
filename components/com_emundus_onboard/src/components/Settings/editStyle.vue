@@ -106,12 +106,12 @@ export default {
         '#DB0A5B', '#999999'
       ],
       changes: false,
-      PrimaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR"),
-      SecondaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR"),
-      Colors: Joomla.JText._("COM_EMUNDUS_ONBOARD_COLORS"),
-      Icon: Joomla.JText._("COM_EMUNDUS_ONBOARD_ICON"),
-      InsertLogo: Joomla.JText._("COM_EMUNDUS_ONBOARD_INSERT_LOGO"),
-      InsertIcon: Joomla.JText._("COM_EMUNDUS_ONBOARD_INSERT_ICON"),
+      PrimaryColor: this.translate("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR"),
+      SecondaryColor: this.translate("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR"),
+      Colors: this.translate("COM_EMUNDUS_ONBOARD_COLORS"),
+      Icon: this.translate("COM_EMUNDUS_ONBOARD_ICON"),
+      InsertLogo: this.translate("COM_EMUNDUS_ONBOARD_INSERT_LOGO"),
+      InsertIcon: this.translate("COM_EMUNDUS_ONBOARD_INSERT_ICON"),
     };
   },
 
@@ -130,13 +130,13 @@ export default {
     },
     removeIcon() {
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_ICON"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_ICON_TEXT"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON_TEXT"),
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#12db42',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if (result.value) {
@@ -185,8 +185,8 @@ export default {
     tip(){
       this.show(
           "foo-velocity",
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
+          this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+          this.translate("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
       );
     },
     show(group, text = "", title = "Information") {

@@ -31,7 +31,7 @@
         </div>
 
         <transition name="fade">
-          <EditHomepage v-if="currentMenu === 1" class="em-modal-component"></EditHomepage>
+          <EditHomepage v-if="currentMenu === 1" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditHomepage>
           <EditCGV v-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditCGV>
           <EditFooter v-if="currentMenu === 3" class="em-modal-component"></EditFooter>
         </transition>
@@ -44,10 +44,11 @@
 </template>
 
 <script>
+/* COMPONENTS */
+import EditHomepage from "./editHomepage";
+import EditCGV from "./editCGV";
+import EditFooter from "./editFooter";
 
-import EditHomepage from "../editHomepage";
-import EditCGV from "../editCGV";
-import EditFooter from "../editFooter";
 export default {
   name: "contentTool",
   props: { },

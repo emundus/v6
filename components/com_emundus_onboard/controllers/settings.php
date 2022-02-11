@@ -174,8 +174,11 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
+            $jinput = JFactory::getApplication()->input;
+            $lang = $jinput->getString('lang');
+
 	        $m_settings = $this->model;
-            $content = $m_settings->getHomepageArticle();
+            $content = $m_settings->getHomepageArticle($lang);
             if (!empty($content)) {
                 $tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $content);
             } else {
@@ -197,10 +200,9 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         	$m_settings = $this->model;
 	        $jinput = JFactory::getApplication()->input;
 	        $content = $jinput->getRaw('content');
-	        $label = $jinput->getString('label');
-	        $color = $jinput->getString('color');
+            $lang = $jinput->getString('lang');
 
-            $changeresponse = $m_settings->updateHomepage($content,$label,$color);
+            $changeresponse = $m_settings->updateHomepage($content,$lang);
         }
         echo json_encode((object)$changeresponse);
         exit;

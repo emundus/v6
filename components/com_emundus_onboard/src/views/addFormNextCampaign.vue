@@ -147,7 +147,7 @@ export default {
     addEmail,
   },
 
-  props: {    
+  props: {
     index: Number,
   },
 
@@ -253,11 +253,11 @@ export default {
     },
 
     translations:{
-      DATE_FORMAT: Joomla.JText._("DATE_FORMAT_JS_LC2"),
-      From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
-      To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
-      chooseProfileWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
-      ProgramWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
+      DATE_FORMAT: this.translate("DATE_FORMAT_JS_LC2"),
+      From: this.translate("COM_EMUNDUS_ONBOARD_FROM"),
+      To: this.translate("COM_EMUNDUS_ONBOARD_TO"),
+      chooseProfileWarning: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
+      ProgramWarning: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
     },
   }),
 

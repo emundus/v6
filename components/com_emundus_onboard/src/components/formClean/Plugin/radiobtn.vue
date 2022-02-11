@@ -43,9 +43,9 @@ export default {
   data() {
     return {
       arraySubValues: [],
-      helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
-      suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
-      AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
+      helptext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
+      suboptions: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
+      AddOption: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
     };
   },
   methods: {

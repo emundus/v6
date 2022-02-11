@@ -356,41 +356,41 @@ export default {
     },
 
     translations: {
-      Parameter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
-      CampName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
-      StartDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
-      EndDate: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
-      Information: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-      Resume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
-      Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      AddProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
-      ChooseProg: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
-      PickYear: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Quitter: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      DepotDeDossier: Joomla.JText._("COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER"),
-      ProgName: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGNAME"),
-      ProgCode: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGCODE"),
-      ChooseCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-      NameCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_NAMECATEGORY"),
-      LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-      RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-      ProgramResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
-      ProgLabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
-      ResumeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
-      OK: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-      Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
-      TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-      FilesLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
-      FilesNumberLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
-      StatusLimit: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
-      StatusLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-      FilesLimitRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
-      AddCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
-      ProgramDesc: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC"),
+      Parameter: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
+      CampName: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
+      StartDate: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
+      EndDate: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
+      Information: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+      Resume: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
+      Description: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
+      Program: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      AddProgram: this.translate("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
+      ChooseProg: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
+      PickYear: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
+      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Quitter: this.translate("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
+      Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      Publish: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+      DepotDeDossier: this.translate("COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER"),
+      ProgName: this.translate("COM_EMUNDUS_ONBOARD_PROGNAME"),
+      ProgCode: this.translate("COM_EMUNDUS_ONBOARD_PROGCODE"),
+      ChooseCategory: this.translate("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
+      NameCategory: this.translate("COM_EMUNDUS_ONBOARD_NAMECATEGORY"),
+      LabelRequired: this.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
+      RequiredFieldsIndicate: this.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+      ProgramResume: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
+      ProgLabelRequired: this.translate("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
+      ResumeRequired: this.translate("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
+      OK: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+      Cancel: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+      TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+      FilesLimit: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
+      FilesNumberLimit: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
+      StatusLimit: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
+      StatusLimitRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+      FilesLimitRequired: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
+      AddCampaign: this.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+      ProgramDesc: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC"),
     },
 
     submitted: false
@@ -402,7 +402,7 @@ export default {
       this.campaignId = global.getters.datas.campaign.value;
     } else {
       this.campaignId = this.$props.campaign;
-    } 
+    }
 
     this.actualLanguage = global.getters.actualLanguage;
     this.manyLanguages = global.getters.manyLanguages;
@@ -792,8 +792,8 @@ export default {
 
         this.show(
             "foo-velocity",
-            Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
-            Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+            this.translate("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
+            this.translate("COM_EMUNDUS_ONBOARD_TIP"),
         );
       }
     },

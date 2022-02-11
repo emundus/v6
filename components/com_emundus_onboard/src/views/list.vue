@@ -156,21 +156,21 @@ export default {
     timer: null,
 
     translations: {
-      Select: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT"),
-      Deselect: Joomla.JText._("COM_EMUNDUS_ONBOARD_DESELECT"),
-      Total: Joomla.JText._("COM_EMUNDUS_ONBOARD_TOTAL"),
-      noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
-      noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
-      noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
-      noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
-      noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
-      All: Joomla.JText._("COM_EMUNDUS_ONBOARD_ALL"),
-      AllPrograms:Joomla.JText._('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS'),
-      programs: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      ortherPrograms: Joomla.JText._("COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM"),
-      System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
-      Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
-      Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
+      Select: this.translate("COM_EMUNDUS_ONBOARD_SELECT"),
+      Deselect: this.translate("COM_EMUNDUS_ONBOARD_DESELECT"),
+      Total: this.translate("COM_EMUNDUS_ONBOARD_TOTAL"),
+      noCampaign: this.translate("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
+      noProgram: this.translate("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
+      noEmail: this.translate("COM_EMUNDUS_ONBOARD_NOEMAIL"),
+      noForm: this.translate("COM_EMUNDUS_ONBOARD_NOFORM"),
+      noFiles: this.translate("COM_EMUNDUS_ONBOARD_NOFILES"),
+      All: this.translate("COM_EMUNDUS_ONBOARD_ALL"),
+      AllPrograms:this.translate('COM_EMUNDUS_ONBOARD_ALL_PROGRAMS'),
+      programs: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      ortherPrograms: this.translate("COM_EMUNDUS_ONBOARD_OTHERCAMP_PROGRAM"),
+      System: this.translate("COM_EMUNDUS_ONBOARD_SYSTEM"),
+      Categories: this.translate("COM_EMUNDUS_ONBOARD_CATEGORIES"),
+      Rechercher: this.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
     },
     total: 0,
     filtersCount: "",
@@ -347,8 +347,8 @@ export default {
     paginationNumber(index) {
       if (this.countPages > 10) {
         return index < 4 || index > this.countPages - 3 || (index > pages - 3 && index < pages + 3) ? index : "...";
-      } 
-      
+      }
+
       return index;
     },
     allFilters() {

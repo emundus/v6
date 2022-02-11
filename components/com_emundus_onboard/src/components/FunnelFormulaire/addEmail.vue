@@ -25,17 +25,17 @@
     </div>
     <p>{{ TheCandidateDescription }}</p>
     <transition-group :name="'slide-down'" type="transition">
-      <div 
-        v-for="trigger in candidateTriggers" 
-        :key="trigger.trigger_id" 
+      <div
+        v-for="trigger in candidateTriggers"
+        :key="trigger.trigger_id"
         class="trigger-item"
       >
         <div style="max-width: 80%">
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span 
-              v-for="(user, index) in triggerUsersWithProfile(trigger)" 
+            <span
+              v-for="(user, index) in triggerUsersWithProfile(trigger)"
               :key="'user_' + index"
             >
               {{user.firstname}} {{user.lastname}}
@@ -71,8 +71,8 @@
           <p>{{trigger.subject}}</p>
           <p>
             <span style="font-weight: bold">{{Target}} : </span>
-            <span 
-              v-for="(user, index) in triggerUsersNoProfile(trigger)" 
+            <span
+              v-for="(user, index) in triggerUsersNoProfile(trigger)"
               :key="'user_manual_' + index"
             >
               {{user.firstname}} {{user.lastname}}
@@ -115,20 +115,20 @@ export default {
       triggerSelected: null,
       manual_trigger: 0,
       candidate_trigger: 0,
-      addTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
-      removeTrig: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_REMOVETRIGGER"),
-      affectTriggers: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
-      ChooseEmailTrigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
-      Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
-      Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
-      Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
-      Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
-      TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
-      Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
-      TheCandidateDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION"),
-      ManualDescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION"),
-      CandidateAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION"),
-      ManagerAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANAGER_ACTION"),
+      addTrigger: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER"),
+      removeTrig: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_REMOVETRIGGER"),
+      affectTriggers: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_AFFECTTRIGGERS"),
+      ChooseEmailTrigger: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_EMAIL_TRIGGER"),
+      Target: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
+      Status: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
+      Administrators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
+      Evaluators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
+      TheCandidate: this.translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
+      Manual: this.translate("COM_EMUNDUS_ONBOARD_MANUAL"),
+      TheCandidateDescription: this.translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION"),
+      ManualDescription: this.translate("COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION"),
+      CandidateAction: this.translate("COM_EMUNDUS_ONBOARD_CANDIDATE_ACTION"),
+      ManagerAction: this.translate("COM_EMUNDUS_ONBOARD_MANAGER_ACTION"),
     };
   },
   methods: {

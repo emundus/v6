@@ -134,19 +134,19 @@ export default {
       changes: false,
       selectedLanguage: this.actualLanguage,
       translations: {
-        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-        dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
-        informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
-        orderingMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_MENUORDERING"),
-        editMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDITMENU"),
-        Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
-        Intro: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
-        Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
-        TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-        SaveAsTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE"),
-        TranslateIn: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_IN"),
+        Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        dataSaved: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
+        informations: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
+        orderingMenu: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_MENUORDERING"),
+        editMenu: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDITMENU"),
+        Name: this.translate("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
+        Intro: this.translate("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
+        Delete: this.translate("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
+        TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        LabelRequired: this.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
+        SaveAsTemplate: this.translate("COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE"),
+        TranslateIn: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_IN"),
       }
     };
   },
@@ -268,13 +268,13 @@ export default {
 
     deleteMenu() {
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#de6339',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if (result.value) {

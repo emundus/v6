@@ -205,7 +205,7 @@
                     list.commit("resetSelectedItemsList");
                   });
                   Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILDELETED"),
+                    title: this.translate("COM_EMUNDUS_ONBOARD_EMAILDELETED"),
                     type: "success",
                     showConfirmButton: false,
                     timer: 2000
@@ -227,13 +227,13 @@
 
           case "formulaire":
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDELETE"),
-              text: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_FORMDELETE"),
+              text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: '#de6339',
-              confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
               reverseButtons: true
             }).then(result => {
               if (result.value) {
@@ -248,7 +248,7 @@
                     list.commit("resetSelectedItemsList");
                   });
                   Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDELETED"),
+                    title: this.translate("COM_EMUNDUS_ONBOARD_FORMDELETED"),
                     type: "success",
                     showConfirmButton: false,
                     timer: 2000
@@ -274,12 +274,12 @@
         switch (this.data.type) {
           case "program":
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGUNPUBLISH"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_PROGUNPUBLISH"),
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: '#de6339',
-              confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
               reverseButtons: true
             }).then(result => {
               if (result.value) {
@@ -293,7 +293,7 @@
                   this.$emit("updateLoading",false);
                   list.commit("unpublish", id);
                   Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGUNPUBLISHED"),
+                    title: this.translate("COM_EMUNDUS_ONBOARD_PROGUNPUBLISHED"),
                     type: "success",
                     showConfirmButton: false,
                     timer: 2000
@@ -308,12 +308,12 @@
 
           case "campaign":
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISH"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISH"),
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: '#de6339',
-              confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
               reverseButtons: true
             }).then(result => {
               if (result.value) {
@@ -326,7 +326,7 @@
                   this.$emit("updateLoading",false);
                   list.commit("unpublish", id);
                   Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISHED"),
+                    title: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISHED"),
                     type: "success",
                     showConfirmButton: false,
                     timer: 2000
@@ -347,7 +347,7 @@
             }).then(response => {
               list.commit("unpublish", id);
               Swal.fire({
-                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILUNPUBLISHED"),
+                title: this.translate("COM_EMUNDUS_ONBOARD_EMAILUNPUBLISHED"),
                 type: "success",
                 showConfirmButton: false,
                 timer: 2000
@@ -360,12 +360,12 @@
 
           case "formulaire":
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMUNPUBLISH"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_FORMUNPUBLISH"),
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: '#de6339',
-              confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
               reverseButtons: true
             }).then(result => {
               if (result.value) {
@@ -378,7 +378,7 @@
                   this.$emit("updateLoading",false);
                   list.commit("unpublish", id);
                   Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMUNPUBLISHED"),
+                    title: this.translate("COM_EMUNDUS_ONBOARD_FORMUNPUBLISHED"),
                     type: "success",
                     showConfirmButton: false,
                     timer: 2000
@@ -403,7 +403,7 @@
             }).then(response => {
               list.commit("publish", id);
               Swal.fire({
-                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGPUBLISHED"),
+                title: this.translate("COM_EMUNDUS_ONBOARD_PROGPUBLISHED"),
                 type: "success",
                 showConfirmButton: false,
                 timer: 2000
@@ -422,7 +422,7 @@
             }).then(response => {
               list.commit("publish", id);
               Swal.fire({
-                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNPUBLISHED"),
+                title: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNPUBLISHED"),
                 type: "success",
                 showConfirmButton: false,
                 timer: 2000
@@ -441,7 +441,7 @@
             }).then(response => {
               list.commit("publish", id);
               Swal.fire({
-                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILPUBLISHED"),
+                title: this.translate("COM_EMUNDUS_ONBOARD_EMAILPUBLISHED"),
                 type: "success",
                 showConfirmButton: false,
                 timer: 2000
@@ -460,7 +460,7 @@
             }).then(response => {
               list.commit("publish", id);
               Swal.fire({
-                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMPUBLISHED"),
+                title: this.translate("COM_EMUNDUS_ONBOARD_FORMPUBLISHED"),
                 type: "success",
                 showConfirmButton: false,
                 timer: 2000
@@ -477,12 +477,12 @@
         switch (this.data.type) {
           case "campaign":
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATE"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATE"),
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: '#de6339',
-              confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
               reverseButtons: true
             }).then(result => {
               if (result.value) {
@@ -500,12 +500,12 @@
 
           case "formulaire":
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDUPLICATE"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_FORMDUPLICATE"),
               type: "warning",
               showCancelButton: true,
               confirmButtonColor: '#de6339',
-              confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
               reverseButtons: true
             }).then(result => {
               if (result.value) {

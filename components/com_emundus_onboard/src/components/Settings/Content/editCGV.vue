@@ -22,7 +22,7 @@
 
 <script>
     import axios from "axios";
-    import Editor from "../../components/editor";
+    import Editor from "../../editor";
 
     const qs = require("qs");
 
@@ -52,7 +52,7 @@
                     "Français",
                     "Anglais"
                 ],
-                TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+                TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
             };
         },
 

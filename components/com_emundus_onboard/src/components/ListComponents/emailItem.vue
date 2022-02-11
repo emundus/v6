@@ -85,11 +85,11 @@ export default {
       email_to_preview: -1,
 
       selectedData: [],
-      publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-      passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-      Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
+      publishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+      unpublishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+      passeeTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
+      Modify: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
+      Visualize: this.translate("COM_EMUNDUS_ONBOARD_VISUALIZE"),
 
       type: [
         ['Système', 'Modèle'],

@@ -33,7 +33,6 @@
               v-if="menuHighlight === 2"
               v-show="modal_ready"
               @resetMenuIndex="menuHighlight = 0"
-              ref="content"
           />
 
           <TranslationTool
@@ -104,11 +103,11 @@
 import axios from "axios";
 import editStatus from "../components/Settings/editStatus";
 import editTags from "../components/Settings/editTags";
-import editHomepage from "../components/Settings/editHomepage";
+import editHomepage from "../components/Settings/Content/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
-import editCGV from "../components/Settings/editCGV";
-import editFooter from "../components/Settings/editFooter";
+import editCGV from "../components/Settings/Content/editCGV";
+import editFooter from "../components/Settings/Content/editFooter";
 import EditApplicants from "@/components/Settings/editApplicants";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 import ContentTool from "../components/Settings/Content/ContentTool";
@@ -234,24 +233,6 @@ export default {
       });
     },
 
-    updateHomepage(content,label,color) {
-      this.updateLoading(true);
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatehomepage',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          content: content,
-          label: label,
-          color: color
-        })
-      }).then(() => {
-        this.updateLoading(false);
-      });
-    },
-
     updateCgv(content) {
       this.updateLoading(true);
       axios({
@@ -270,12 +251,6 @@ export default {
 
     saveCurrentPage() {
       switch (this.menuHighlight) {
-        case 1:
-          this.updateHomepage(this.$refs.homepage.$data.form.content,this.$refs.homepage.$data.form.label,this.$refs.homepage.$data.form.titleColor);
-          break;
-        /*case 2:
-          this.updateCgv(this.$refs.cgv.$data.form.content);
-          break;*/
         case 3:
           this.updateFooter(this.$refs.footer.$data.form.content);
           break;

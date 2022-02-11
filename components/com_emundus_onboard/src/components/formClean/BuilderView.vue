@@ -301,30 +301,30 @@ export default {
 
       // TRANSLATIONS
       translations: {
-        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
-        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
-        orderSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ORDERSUCESS"),
-        orderFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ORDERFAILED"),
-        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
-        sidemenuhelp: Joomla.JText._("COM_EMUNDUS_ONBOARD_SIDEMENUHELP"),
-        TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        Unpublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
-        Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
-        Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
-        Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_SETTINGS"),
-        Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
-        Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-        Cancel: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
-        Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        RepeatGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
-        RepeatedGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
-        Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
-        NoElementsTips: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS"),
-        EditName: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_NAME"),
-        EditIntro: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_INTRO"),
-        DisplayHide: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
-        HiddenGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HIDDEN_GROUP"),
+        update: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+        updating: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+        updateSuccess: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+        orderSuccess: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ORDERSUCESS"),
+        orderFailed: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ORDERFAILED"),
+        updateFailed: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
+        sidemenuhelp: this.translate("COM_EMUNDUS_ONBOARD_SIDEMENUHELP"),
+        TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        Unpublish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
+        Publish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
+        Required: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+        Settings: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS_SETTINGS"),
+        Delete: this.translate("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
+        Edit: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
+        Cancel: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+        Validate: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        RepeatGroup: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
+        RepeatedGroup: this.translate("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
+        Duplicate: this.translate("COM_EMUNDUS_ONBOARD_DUPLICATE"),
+        NoElementsTips: this.translate("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS"),
+        EditName: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_NAME"),
+        EditIntro: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_INTRO"),
+        DisplayHide: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
+        HiddenGroup: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HIDDEN_GROUP"),
       }
     };
   },
@@ -480,13 +480,13 @@ export default {
         this.updateLabelElement(element);
       }
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEELEMENT"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEELEMENT"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#de6339',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if (result.value) {
@@ -506,7 +506,7 @@ export default {
             })
           }).then(() => {
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ELEMENTDELETED"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ELEMENTDELETED"),
               type: "success",
               showConfirmButton: false,
               timer: 2000
@@ -801,13 +801,13 @@ export default {
 
     deleteAGroup(group,index){
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUP"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUPWARNING"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUP"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUPWARNING"),
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#de6339',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if (result.value) {
@@ -823,7 +823,7 @@ export default {
             })
           }).then(() => {
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_GROUPDELETED"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_GROUPDELETED"),
               type: "success",
               showConfirmButton: false,
               timer: 2000
@@ -878,13 +878,13 @@ export default {
     enableRepatedGroup(group){
       if(!group.repeat_group) {
         Swal.fire({
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
-          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
+          text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
           type: "info",
           showCancelButton: true,
           confirmButtonColor: '#de6339',
-          confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-          cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
           reverseButtons: true
         }).then(result => {
           if(result.value) {
@@ -916,13 +916,13 @@ export default {
         });
       } else {
         Swal.fire({
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_DISABLE"),
-          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_DISABLE"),
+          text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE"),
           type: "info",
           showCancelButton: true,
           confirmButtonColor: '#de6339',
-          confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-          cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
           reverseButtons: true
         }).then(result => {
           if(result.value) {
@@ -959,13 +959,13 @@ export default {
     // Display/Hide group
     displayHideGroup(group){
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE"),
         type: "info",
         showCancelButton: true,
         confirmButtonColor: '#12db42',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if(result.value) {

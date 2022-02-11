@@ -33,7 +33,7 @@ export default {
     return {
       currentLangTranslation: 'en',
       languages: [],
-      TranslateIn: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_IN")
+      TranslateIn: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_IN")
     };
   },
 

@@ -136,15 +136,15 @@ export default {
 				isFinished: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
 				edit: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
 				files: this.translate("COM_EMUNDUS_ONBOARD_FILES"),
-      	file: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE"),
+      	file: this.translate("COM_EMUNDUS_ONBOARD_FILE"),
 				emailType: {
-					1: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM"),
-					2: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_MODEL"),
+					1: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM"),
+					2: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_MODEL"),
 				},
-				campaignAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
-        campaignsAssociated: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED"),
-				from: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
-				to: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
+				campaignAssociated: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
+        campaignsAssociated: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED"),
+				from: this.translate("COM_EMUNDUS_ONBOARD_FROM"),
+				to: this.translate("COM_EMUNDUS_ONBOARD_TO"),
 			},
 			campaign: {
 				associatedCampaigns: null

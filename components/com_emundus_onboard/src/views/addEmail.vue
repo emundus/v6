@@ -38,16 +38,16 @@
 
             <div class="form-group controls forms-emails-editor">
               <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
-              <editor 
-                v-if="dynamicComponent" 
-                v-model="form.message" 
-                :id="'email'" 
+              <editor
+                v-if="dynamicComponent"
+                v-model="form.message"
+                :id="'email'"
                 :class="{ 'is-invalid': errors.message}"
-                :height="'30em'" 
-                :text="form.message" 
-                :lang="actualLanguage" 
-                :enable_variables="true" 
-                :placeholder="translations.EmailResume" 
+                :height="'30em'"
+                :text="form.message"
+                :lang="actualLanguage"
+                :enable_variables="true"
+                :placeholder="translations.EmailResume"
               >
               </editor>
             </div>
@@ -322,64 +322,64 @@ export default {
     displayAdvancedParameters: false,
 
     translations:{
-      AddEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
-      Advanced: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
-      Informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-      Trigger: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
-      emailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
-      emailCategory: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-      retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      emailName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
-      emailBody: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
-      receiverName: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
-      emailAddress: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
-      EmailResume: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
-      RequiredFieldsIndicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-      EmailType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
-      SubjectRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
-      BodyRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
-      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      Model: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
-      ModelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
-      Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
-      StatusRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-      Target: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
-      TargetRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
-      Administrators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
-      Evaluators: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
-      Candidates: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
-      DefinedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
-      ChooseUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
-      UsersRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
-      Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
-      TheCandidate: Joomla.JText._("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
-      Manual: Joomla.JText._("COM_EMUNDUS_ONBOARD_MANUAL"),
-      Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
-      Tags: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
-      DocumentType: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      AddEmail: this.translate("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
+      Advanced: this.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
+      Informations: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
+      Trigger: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
+      emailType: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
+      emailCategory: this.translate("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
+      retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      emailName: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
+      emailBody: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
+      receiverName: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
+      emailAddress: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
+      EmailResume: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
+      RequiredFieldsIndicate: this.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
+      EmailType: this.translate("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
+      SubjectRequired: this.translate("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
+      BodyRequired: this.translate("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
+      Program: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      Model: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
+      ModelRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
+      Status: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
+      StatusRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
+      Target: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
+      TargetRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
+      Administrators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
+      Evaluators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
+      Candidates: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
+      DefinedUsers: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
+      ChooseUsers: this.translate("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
+      UsersRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
+      Search: this.translate("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
+      TheCandidate: this.translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
+      Manual: this.translate("COM_EMUNDUS_ONBOARD_MANUAL"),
+      Actions: this.translate("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
+      Tags: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
+      DocumentType: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
 
       /// Letters field
-      Letters: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
-      LettersPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
+      Letters: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      LettersPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
 
       /// Receiver CC field
-      ReceiversCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
-      ReceiversCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
+      ReceiversCC: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
+      ReceiversCCPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
 
       /// Receiver BCC field
-      ReceiversBCC: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
-      ReceiversBCCPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
+      ReceiversBCC: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
+      ReceiversBCCPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
 
       /// Receiver Tooltips
-      CopiesTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
+      CopiesTooltips: this.translate("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
 
       /// Selected Action Tags
-      TagsPlaceHolder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+      TagsPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
 
       /// Candidat Attachments (title, placeholder)
-      CandidateAttachments: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS"),
-      CandidateAttachmentsPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS"),
+      CandidateAttachments: this.translate("COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS"),
+      CandidateAttachmentsPlaceholder: this.translate("COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS"),
     },
 
     categories: [],
@@ -744,8 +744,8 @@ export default {
     tip: function () {
       this.show(
         "foo-velocity",
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        this.translate("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
+        this.translate("COM_EMUNDUS_ONBOARD_TIP"),
       );
     },
 

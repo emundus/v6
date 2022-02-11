@@ -127,62 +127,62 @@
         plugins: {
           field: {
             value: 'field',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
           },
           birthday: {
             value: 'birthday',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
           },
           checkbox: {
             value: 'checkbox',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
           },
           dropdown: {
             value: 'dropdown',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
           },
           radiobutton: {
             value: 'radiobutton',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
           },
           textarea: {
             value: 'textarea',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
           display: {
             value: 'display',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
           fileupload: {
             value: 'emundus_fileupload',
-            name:  Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+            name:  this.translate("COM_EMUNDUS_ONBOARD_TYPE_FILE")
           },
           yesno: {
             value: 'yesno',
             name:  'yesno'
-            /*Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")*/
+            /*this.translate("COM_EMUNDUS_ONBOARD_TYPE_YESNO")*/
           }
         },
         databases: [],
         // Translations
-        Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
-        Require: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_REQUIRED"),
-        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
-        dataSaved: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
-        informations: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
-        fieldType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIELD_TYPE"),
-        Delete: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
-        LabelRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-        TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        ElementOptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ELEMENT_OPTIONS"),
-        Unpublish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
-        Publish: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
-        Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
-        update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-        updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
-        updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
-        updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
+        Name: this.translate("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
+        Require: this.translate("COM_EMUNDUS_ONBOARD_FIELD_REQUIRED"),
+        Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Continuer: this.translate("COM_EMUNDUS_ONBOARD_SAVE"),
+        dataSaved: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
+        informations: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
+        fieldType: this.translate("COM_EMUNDUS_ONBOARD_FIELD_TYPE"),
+        Delete: this.translate("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
+        LabelRequired: this.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
+        TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        ElementOptions: this.translate("COM_EMUNDUS_ONBOARD_ELEMENT_OPTIONS"),
+        Unpublish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
+        Publish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
+        Required: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
+        update: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+        updating: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+        updateSuccess: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+        updateFailed: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
         //
       };
     },

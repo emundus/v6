@@ -53,9 +53,9 @@ export default {
       viewer: 0,
       grid: null,
       translations:{
-        addGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID"),
-        editGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDITGRID"),
-        deleteGrid: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID"),
+        addGrid: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID"),
+        editGrid: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDITGRID"),
+        deleteGrid: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID"),
       },
     };
   },
@@ -85,8 +85,8 @@ export default {
 
     deleteGrid() {
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID_QUESTION"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID_QUESTION"),
         type: "warning",
         showCancelButton: true
       }).then(result => {
@@ -104,7 +104,7 @@ export default {
             })
           }).then(() => {
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_GRIDDELETED"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_GRIDDELETED"),
               type: "success",
               showConfirmButton: false,
               timer: 2000

@@ -63,8 +63,8 @@
 import axios from "axios";
 import editStatus from "./editStatus";
 import editTags from "./editTags";
-import editHomepage from "./editHomepage";
-import editFooter from "./editFooter";
+import editHomepage from "./Content/editHomepage";
+import editFooter from "./Content/editFooter";
 import editStyle from "./editStyle";
 import editDatas from "./editDatas";
 import editUsers from "./editUsers";
@@ -115,8 +115,8 @@ export default {
       ]
     ],
 
-    Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-    Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+    Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+    Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
   }),
 
   methods: {

@@ -46,19 +46,19 @@ export default {
       size: this.element.params.size/1048576,
       types: [
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS"),
           value: 'pdf'
         },
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
           value: 'jpg;png;gif'
         },
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
           value: 'doc;docx;odt'
         },
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         }],
       labels_name:{
@@ -91,13 +91,13 @@ export default {
       },
       selectedTypes: [],
       path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
-      heightext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HEIGHT"),
-      helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
-      MaxRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
-      TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
-      placeholderHelp: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP"),
-      MaxPerUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER"),
-      FileType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED"),
+      heightext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HEIGHT"),
+      helptext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
+      MaxRequired: this.translate("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
+      TypeRequired: this.translate("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
+      placeholderHelp: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER_HELP"),
+      MaxPerUser: this.translate("COM_EMUNDUS_ONBOARD_MAXPERUSER"),
+      FileType: this.translate("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED"),
     }
   },
   methods: {

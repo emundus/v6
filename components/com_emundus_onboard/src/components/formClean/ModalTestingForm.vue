@@ -68,11 +68,11 @@ export default {
     return {
       cid: -1,
       filesExist: false,
-      ContinueFile: Joomla.JText._("COM_EMUNDUS_ONBOARD_CONTINUE_FILE"),
-      CreateFile: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_FILE"),
-      ChooseCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN"),
-      FileExistsBeforeTesting: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE_EXIST_BEFORE_TESTING"),
-      testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
+      ContinueFile: this.translate("COM_EMUNDUS_ONBOARD_CONTINUE_FILE"),
+      CreateFile: this.translate("COM_EMUNDUS_ONBOARD_CREATE_FILE"),
+      ChooseCampaign: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN"),
+      FileExistsBeforeTesting: this.translate("COM_EMUNDUS_ONBOARD_FILE_EXIST_BEFORE_TESTING"),
+      testingForm: this.translate("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
     };
   },
   methods: {

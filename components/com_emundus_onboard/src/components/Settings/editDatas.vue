@@ -84,9 +84,9 @@
                 },
                 indexOpen: -1,
                 loading: false,
-                CreateDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DATAS"),
-                ImportDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMPORT_DATAS"),
-                UpdateDatas: Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATE_DATAS"),
+                CreateDatas: this.translate("COM_EMUNDUS_ONBOARD_CREATE_DATAS"),
+                ImportDatas: this.translate("COM_EMUNDUS_ONBOARD_IMPORT_DATAS"),
+                UpdateDatas: this.translate("COM_EMUNDUS_ONBOARD_UPDATE_DATAS"),
             };
         },
 
@@ -131,8 +131,8 @@
             tip(){
                 this.show(
                     "foo-velocity",
-                    Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-                    Joomla.JText._("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
+                    this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+                    this.translate("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
                 );
             },
             show(group, text = "", title = "Information") {

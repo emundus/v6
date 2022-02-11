@@ -64,10 +64,10 @@ export default {
       arraySubValues: [],
       databasejoin: "0",
       databasejoin_data: 0,
-      helptext: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
-      suboptions: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
-      AddOption: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
-      DataTables: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
+      helptext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
+      suboptions: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
+      AddOption: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
+      DataTables: this.translate("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
     };
   },
   methods: {
@@ -131,14 +131,14 @@ export default {
       }).then(response => {
         if(response.data.status) {
           Swal.fire({
-            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
-            text: Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT"),
+            title: this.translate("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN"),
+            text: this.translate("COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT"),
             type: "info",
             showCancelButton: false,
             showCloseButton: true,
             allowOutsideClick: false,
             confirmButtonColor: '#de6339',
-            confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+            confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           }).then(result => {
             if (result.value) {
               axios({

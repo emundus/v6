@@ -301,59 +301,6 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function getHomepageArticle() {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('*')
-            ->from($db->quoteName('#__content'))
-            ->where($db->quoteName('id') . ' = 52');
-
-        try {
-            $db->setQuery($query);
-            $homepage = $db->loadObject();
-
-            $homepage->title_en = '';
-            $homepage->introtext_en = '';
-
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = 52',
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('title'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $en_title = $db->loadResult();
-
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = 52',
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $en_introtext = $db->loadResult();
-
-            if ($en_title != null) {
-                $homepage->title_en = $en_title;
-            }
-            if ($en_introtext != null) {
-                $homepage->introtext_en = $en_introtext;
-            }
-
-            return $homepage;
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot get homepage article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
     function getCGVArticle() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -470,63 +417,98 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function updateHomepage($content,$label,$color) {
+    function getHomepageArticle($lang_code) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $results = [];
-
-        // Update label
-        $query->select('id,content')
-            ->from($db->quoteName('#__modules'))
-            ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_custom'))
-            ->andWhere($db->quoteName('title') . ' LIKE ' . $db->quote('Homepage background'));
-
+        $query->select('lang_id')
+            ->from($db->quoteName('#__languages'))
+            ->where($db->quoteName('lang_code') . ' = ' . $db->quote($lang_code));
         $db->setQuery($query);
-        $module = $db->loadObject();
-        $old_content = $module->content;
-        $id_module = $module->id;
-
-        $title_to_complete = explode('<h1 class="welcome-message">',$old_content);
-        $new_content = $title_to_complete[0] . '<h1 class="welcome-message">' . $label[0] . '</h1></div>';
+        $lang_id = $db->loadResult();
 
         $query->clear()
-            ->update($db->quoteName('#__modules'))
-            ->set($db->quoteName('content') . ' = ' . $db->quote($new_content))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($id_module));
-
-        $db->setQuery($query);
-        $results[] = $db->execute();
-        //
-
-        // Update content
-        $query->clear()
-            ->update($db->quoteName('#__content'))
-            ->set($db->quoteName('introtext') . ' = ' . $db->quote($content['fr']))
-            ->where($db->quoteName('id') . ' = ' . 52);
+            ->select('*')
+            ->from($db->quoteName('#__content'))
+            ->where($db->quoteName('id') . ' = 52');
 
         try {
             $db->setQuery($query);
-            $results[] = $db->execute();
+            $homepage = $db->loadObject();
 
             $query->clear()
-                ->update('#__falang_content')
-                ->set($db->quoteName('value') . ' = ' . $db->quote($content['en']))
+                ->select('value')
+                ->from($db->quoteName('#__falang_content'))
                 ->where(array(
                     $db->quoteName('reference_id') . ' = 52',
                     $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
                     $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
-                    $db->quoteName('language_id') . ' = 1'
+                    $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
+                    $db->quoteName('published') . ' = ' . $db->quote(1)
                 ));
             $db->setQuery($query);
-            $results[] = $db->execute();
+            $result = $db->loadResult();
+
+            if(!empty($result)){
+                $homepage->introtext = $result;
+            }
+
+            return $homepage;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Cannot get homepage article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function updateHomepage($content,$lang_code) {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try{
+            $query->select('lang_id')
+                ->from($db->quoteName('#__languages'))
+                ->where($db->quoteName('lang_code') . ' = ' . $db->quote($lang_code));
+            $db->setQuery($query);
+            $lang_id = $db->loadResult();
+
+            // Update content
+            $query->clear()
+                ->select('value')
+                ->from($db->quoteName('#__falang_content'))
+                ->where(array(
+                    $db->quoteName('reference_id') . ' = 52',
+                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
+                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
+                    $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
+                    $db->quoteName('published') . ' = ' . $db->quote(1)
+                ));
+            $db->setQuery($query);
+            $falang_result = $db->loadResult();
+
+            if(empty($falang_result)) {
+                $query->clear()
+                    ->update($db->quoteName('#__content'))
+                    ->set($db->quoteName('introtext') . ' = ' . $db->quote($content))
+                    ->where($db->quoteName('id') . ' = ' . 52);
+                $db->setQuery($query);
+                return $db->execute();
+            } else {
+                $query->clear()
+                    ->update('#__falang_content')
+                    ->set($db->quoteName('value') . ' = ' . $db->quote($content))
+                    ->where(array(
+                        $db->quoteName('reference_id') . ' = 52',
+                        $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
+                        $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
+                        $db->quoteName('language_id') . ' = ' . $db->quote($lang_id)
+                    ));
+                $db->setQuery($query);
+                return $db->execute();
+            }
         } catch(Exception $e) {
             JLog::add('component/com_emundus_onboard/models/settings | Error at updating homepage article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
-        //
-
-        return $results;
     }
 
     function updateCGV($content) {
@@ -569,7 +551,7 @@ class EmundusonboardModelsettings extends JModelList {
         $query->select('params')
             ->from($db->quoteName('#__modules'))
             ->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_footer'));
-        
+
         $db->setQuery($query);
         $params = $db->loadResult();
 
