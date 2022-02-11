@@ -54,6 +54,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $layout = $params->get('layout', 'default');
     $offset = JFactory::getConfig()->get('offset');
     $home_link = $params->get('home_link', 'index.php');
+	$add_to_cart_icon = $params->get('add_to_cart_icon', 'large add to cart icon');
+	$scholarship_icon = $params->get('scholarship_icon', 'large student icon');
 
     // eMundus params
     $params_emundus = JComponentHelper::getParams('com_emundus');

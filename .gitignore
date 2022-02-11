@@ -99,3 +99,7 @@ images/com_eventbooking/
 media/com_eventbooking/assets/css/custom.css
 media/com_eventbooking/assets/css/true
 media/com_eventbooking/images/thumbs/*
+
+## unit test ##
+/components/com_emundus_onboard/unittest/logs/
+/.phpunit.*

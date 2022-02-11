@@ -63,7 +63,7 @@
 
 <script>
     import axios from "axios";
-    import ModalAddUser from "../../views/advancedModals/ModalAddUser";
+    import ModalAddUser from "@/components/AdvancedModals/ModalAddUser";
     import Swal from "sweetalert2";
 
     const qs = require("qs");
