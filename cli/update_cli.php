@@ -11,6 +11,7 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/');
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_joomlaupdate/models/default.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
+require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/install.php';
 
 class UpdateCli extends JApplicationCli
 {
@@ -190,6 +191,29 @@ class UpdateCli extends JApplicationCli
         }
     }
 
+    public function installExtension($app, $name) {
+        $this->out('INSTALL ' . $name);
+        $app = JFactory::getApplication();
+
+        $app->input->set('installtype', 'url');
+        $app->input->set('install_directory', JPATH_BASE . '/tmp');
+        $app->input->set('max_upload_size', '10485760');
+        $version = '1.0.0';
+        $app->input->set('install_url', 'http://localhost/emundus-updates/packages/'. $name .'/' . $name . $version .'.zip');
+
+
+//        return = "655955cdcf37f31d742a05d0fa20ff70"
+//        task = "install.install"
+//        655955cdcf37f31d742a05d0fa20ff70 = "1"
+
+        $installer = JModelLegacy::getInstance('InstallerModelInstall');
+        $result = $installer->install();
+        if (!$result) {
+            $this->out('Install failed');
+        }
+    }
+
+
     public function doExecute()
     {
         $app = JFactory::getApplication('site');
@@ -200,6 +224,9 @@ class UpdateCli extends JApplicationCli
         $this->db = JFactory::getDbo();
 
         echo "Emundus SQL Update Tool \n\n";
+        if ($name = $this->input->get('i', $this->input->get('install'))) {
+            $this->installExtension($app, $name);
+        }
         if ($this->input->get('c', $this->input->get('core'))) {
             $this->updateJoomla();
         }
@@ -209,7 +236,7 @@ class UpdateCli extends JApplicationCli
         if ($this->input->get('h', $this->input->get('help'))) {
             $this->doEchoHelp();
         }
-        if ($id = $this->input->get('i', $this->input->get('id'))) {
+        if ($id = $this->input->get('id', $this->input->get('id'))) {
             $this->updateExtensions($uid = $id);
         }
         if ($this->input->get('e', $this->input->get('extensions'))) {
