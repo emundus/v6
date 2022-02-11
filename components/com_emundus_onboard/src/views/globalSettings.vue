@@ -106,6 +106,7 @@ import editDatas from "../components/Settings/editDatas";
 import editCGV from "../components/Settings/editCGV";
 import editFooter from "../components/Settings/editFooter";
 import EditApplicants from "@/components/Settings/editApplicants";
+import { global } from "../store/global";
 
 const qs = require("qs");
 
@@ -123,18 +124,14 @@ export default {
     editDatas,
   },
 
-  props: {
-    actualLanguage: String,
-    coordinatorAccess: Number,
-    manyLanguages: Number
-  },
-
   data: () => ({
     menuHighlight: 0,
     langue: 0,
     saving: false,
     endSaving: false,
-
+    actualLanguage: "",
+    coordinatorAccess: 0,
+    manyLanguages: 0,
     settingsCategories: [
       [
         "Style",
@@ -157,14 +154,17 @@ export default {
         "Data repository",
       ]
     ],
-
     Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
     Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
     Saved: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVED"),
     Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
   }),
-
+  created() {
+    this.actualLanguage = global.getters.actualLanguage;
+    this.manyLanguages = Number(global.getters.manyLanguages);
+    this.coordinatorAccess = global.getters.coordinatorAccess;
+  },
   methods: {
     updateStatus(status) {
       this.updateLoading(true);
@@ -284,12 +284,6 @@ export default {
       setTimeout(() => {
         this.endSaving = false;
       },3000);
-    }
-  },
-
-  created() {
-    if (this.actualLanguage == "en") {
-      this.langue = 1;
     }
   },
 };

@@ -218,7 +218,11 @@ export default {
 				},
 			})
 				.then((response) => {
-					this.widgets = response.data.data;
+					if (response.data.data) {
+						this.widgets = response.data.data;
+					} else {
+						this.widgets = [];
+					}
 				})
 				.catch((error) => {
 					// TODO: handle error

@@ -132,7 +132,15 @@ class EmundusonboardModeldashboard extends JModelList
                 ->andWhere($this->_db->quoteName('ew.type') . ' = ' . $this->_db->quote('chart'))
                 ->andWhere($this->_db->quoteName('ew.published') . ' = 1');
             $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
+            $widgets = $this->_db->loadObjectList();
+
+            if (!empty($widgets)) {
+                foreach ($widgets as $key => $widget) {
+                    $widgets[$key]->label = JText::_($widget->label);
+                }
+            }
+
+            return $widgets;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get all widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
@@ -178,6 +186,13 @@ class EmundusonboardModeldashboard extends JModelList
                 $this->_db->setQuery($query);
                 $widgets = $this->_db->loadObjectList();
             }
+
+            if (!empty($widgets)) {
+                foreach ($widgets as $key => $widget) {
+                    $widgets[$key]->label = JText::_($widget->label);
+                }
+            }
+
             return $widgets;
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
