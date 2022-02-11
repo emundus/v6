@@ -1,5 +1,5 @@
 <template>
-    <div class="em-settings-menu">
+    <div class="em-settings-menu em-flex-center">
         <ModalAddUser
                 :group="this.group"
                 :coordinatorAccess="1"

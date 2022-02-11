@@ -1,5 +1,5 @@
 <template>
-    <div class="em-settings-menu">
+    <div class="em-settings-menu em-flex-center">
       <div class="em-flex-col-start em-w-80">
         <button @click="pushStatus" class="em-primary-button em-mb-24" style="width: max-content">
           <div class="add-button-div">

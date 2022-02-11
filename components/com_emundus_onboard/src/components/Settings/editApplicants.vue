@@ -1,12 +1,12 @@
 <template>
-    <div class="em-settings-menu">
+    <div class="em-settings-menu em-flex-center">
       <div class="em-flex-col-start em-w-80">
-        <div class="form-group" v-for="(param, index) in params">
-          <label :for="'param_' + index">{{param.label}}</label>
-          <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
-            <option v-for="(option, index) in param.options" :value="option.value">{{option.label}}</option>
-          </select>
-        </div>
+          <div class="form-group em-flex-center em-w-100" v-for="(param, index) in params">
+            <label :for="'param_' + index">{{param.label}}</label>
+            <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
+              <option v-for="(option, index) in param.options" :value="option.value">{{option.label}}</option>
+            </select>
+          </div>
       </div>
     </div>
 </template>
