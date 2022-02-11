@@ -198,8 +198,8 @@ class UpdateCli extends JApplicationCli
         $app->input->set('installtype', 'url');
         $app->input->set('install_directory', JPATH_BASE . '/tmp');
         $app->input->set('max_upload_size', '10485760');
-        $version = '1.0.0';
-        $app->input->set('install_url', 'http://localhost/emundus-updates/packages/'. $name .'/' . $name . $version .'.zip');
+        $version = '8.2.0';
+        $app->input->set('install_url', 'http://localhost/emundus-updates/packages/'. $name .'/' . $name . '_' . $version .'.zip');
 
 
 //        return = "655955cdcf37f31d742a05d0fa20ff70"
@@ -216,6 +216,9 @@ class UpdateCli extends JApplicationCli
 
     public function doExecute()
     {
+
+        JLog::addLogger(array('text_file' => 'update_cli.log.php'), JLog::ALL, array('jerror'));
+
         $app = JFactory::getApplication('site');
         $app->initialise();
         // Set direct download mode
