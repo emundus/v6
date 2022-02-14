@@ -134,24 +134,24 @@ export default {
     manyLanguages: 0,
     settingsCategories: {
       "fr": [
-        "Styles",
+        "Style",
         "Page d'accueil",
-        "Conditions générales de vente",
+        "Conditions générales",
         "Pied de page",
         "Statuts",
-        "Tags",
+        "Étiquettes",
         "Candidats",
-        "Données",
+        "Référentiels de données",
       ],
       "en": [
-        "Styles",
+        "Styling",
         "Homepage",
-        "Terms and conditions",
+        "General Terms and Conditions",
         "Footer",
-        "Statuts",
+        "Status",
         "Tags",
         "Applicants",
-        "Datas",
+        "Data repository",
       ],
       
     },
@@ -163,7 +163,6 @@ export default {
   }),
   created() {
     this.actualLanguage = global.getters.actualLanguage;
-    console.log(this.actualLanguage);
     this.manyLanguages = Number(global.getters.manyLanguages);
     this.coordinatorAccess = global.getters.coordinatorAccess;
   },
