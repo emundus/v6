@@ -72,13 +72,24 @@
 /** END **/
 
 /** FAQ **/
-.faq-widget{
-  width: fit-content !important;
+.custom-faq-widget{
+  max-width: 330px !important;
+  margin: 0 30px 30px 0 !important;
   height: 100%;
 }
 
+/* brother element of faq-widget */
+.custom-faq-widget + div {
+  width: calc(100% - 360px) !important;
+}
+
+
 .faq-widget .faq-intro {
    max-width: 250px; 
+}
+
+.faq-widget {
+  height: 100%;
 }
 
 .faq-widget > div {
@@ -90,7 +101,6 @@
 }
 
 .faq-widget .bouton-faq{
-  /* position: absolute; */
   padding: 5px 30px;
   height: 29px;
   border-radius: 25px;
@@ -118,11 +128,6 @@
   font-size: 24px;
 }
 
-@media (max-width: 1440px) {
-  .faq-widget .faq-intro{
-    display: none;
-  }
-}
 /** END **/
 
 /** Files by status - number **/
