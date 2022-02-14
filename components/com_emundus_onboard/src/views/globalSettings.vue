@@ -6,7 +6,7 @@
         <div class="d-flex" >
           <ul class="nav nav-tabs topnav">
 
-            <li v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
+            <li v-for="(settingsCat, index) in settingsCategories[actualLanguage]" :key="index">
               <a @click="menuHighlight = index"
                  class="menu-item"
                  :class="menuHighlight == index ? 'w--current' : ''"
@@ -132,28 +132,29 @@ export default {
     actualLanguage: "",
     coordinatorAccess: 0,
     manyLanguages: 0,
-    settingsCategories: [
-      [
+    settingsCategories: {
+      "fr": [
         "Style",
         "Page d'accueil",
         "Conditions générales",
         "Pied de page",
         "Statuts",
-        "Etiquettes",
+        "Étiquettes",
         "Candidats",
         "Référentiels de données",
       ],
-      [
+      "en": [
         "Styling",
-        "Home page",
+        "Homepage",
         "General Terms and Conditions",
         "Footer",
         "Status",
         "Tags",
         "Applicants",
         "Data repository",
-      ]
-    ],
+      ],
+      
+    },
     Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
     Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
