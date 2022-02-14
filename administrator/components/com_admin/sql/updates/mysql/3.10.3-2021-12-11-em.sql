@@ -321,8 +321,8 @@ try {
 SET @widget_5 = LAST_INSERT_ID();
 
 INSERT INTO jos_content (asset_id, title, alias, introtext, `fulltext`, state, catid, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, publish_up, publish_down, images, urls, attribs, version, ordering, metakey, metadesc, access, hits, metadata, featured, language, xreference, note)
-VALUES (392, 'Widget FAQ', 'widget-faq', '<h3>Une question ?</h3>
-<p class="faq-intro">Contactez nos équipes depuis notre centre d''assistance en ligne et accédez à des articles d''aides.</p>
+VALUES (392, 'Widget FAQ', 'widget-faq', '<div><h3>Une question ?</h3>
+<p class="faq-intro">Contactez nos équipes depuis notre centre d''assistance en ligne et accédez à des articles d''aides.</p></div>
 <p><a href="https://emundus.atlassian.net/wiki/spaces/HD/overview" target="_blank" rel="noopener noreferrer"><button class="bouton-faq">Accéder au centre d''aide</button></a></p>', '', 1, 21, '2021-12-10 10:09:27', 62, '', '2021-12-10 10:36:20', 62, 0, '2021-12-10 10:36:20', '2021-12-10 10:09:27', '2099-12-10 10:36:20', '{}', '{}', '{"article_layout":"","show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","alternative_readmore":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 3, 0, '', '', 1, 0, '{}', 0, '*', '', '');
 SET @article_id = LAST_INSERT_ID();
 
