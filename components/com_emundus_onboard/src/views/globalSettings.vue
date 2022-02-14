@@ -6,7 +6,7 @@
         <div class="d-flex" >
           <ul class="nav nav-tabs topnav">
 
-            <li v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
+            <li v-for="(settingsCat, index) in settingsCategories[actualLanguage]" :key="index">
               <a @click="menuHighlight = index"
                  class="menu-item"
                  :class="menuHighlight == index ? 'w--current' : ''"
@@ -132,28 +132,29 @@ export default {
     actualLanguage: "",
     coordinatorAccess: 0,
     manyLanguages: 0,
-    settingsCategories: [
-      [
-        "Style",
+    settingsCategories: {
+      "fr": [
+        "Styles",
         "Page d'accueil",
-        "Conditions générales",
+        "Conditions générales de vente",
         "Pied de page",
         "Statuts",
-        "Etiquettes",
+        "Tags",
         "Candidats",
-        "Référentiels de données",
+        "Données",
       ],
-      [
-        "Styling",
-        "Home page",
-        "General Terms and Conditions",
+      "en": [
+        "Styles",
+        "Homepage",
+        "Terms and conditions",
         "Footer",
-        "Status",
+        "Statuts",
         "Tags",
         "Applicants",
-        "Data repository",
-      ]
-    ],
+        "Datas",
+      ],
+      
+    },
     Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
     Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
@@ -162,6 +163,7 @@ export default {
   }),
   created() {
     this.actualLanguage = global.getters.actualLanguage;
+    console.log(this.actualLanguage);
     this.manyLanguages = Number(global.getters.manyLanguages);
     this.coordinatorAccess = global.getters.coordinatorAccess;
   },
