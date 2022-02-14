@@ -2,9 +2,7 @@
 	<div
 		class="tchooz-widget"
 		:class="[
-			'col-md-' + selectedWidget.size,
-			'col-sm-' + selectedWidget.size_small,
-			selectedWidget.class,
+			selectedWidget.class
 		]"
 	>
 		<div
