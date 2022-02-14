@@ -13,25 +13,37 @@
              class="form__input field-general w-input"
              v-model="label[currentLangTranslation]"
              :id="'label_' + currentLangTranslation"
+             v-if="inputType=='text'"
       />
+      <editor :height="'20em'" :text="label[currentLangTranslation]" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="label[currentLangTranslation]" v-if="inputType=='wysiwygs'"></editor>
     </transition>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import Editor from "./editor";
 
 export default {
   name: "translation",
 
   props: {
     label: Object,
-    actualLanguage: String
+    actualLanguage: String,
+    inputType:{
+      type: String,
+      default: "text"
+    }
+  },
+  components: {
+
+    Editor,
   },
 
   data() {
     return {
       currentLangTranslation: 'en',
+      dynamicComponent:0,
       languages: [],
       TranslateIn: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_IN")
     };

@@ -67,13 +67,14 @@
         <div class="form-group">
           <label for="description">{{ translations.Description }} :</label>
           <div class="input-can-translate">
-            <textarea type="text" class="form__input field-general w-input mb-0" v-model="form.description[langue]"
-                      id="description"/>
+
+            <editor :height="'20em'" :text="form.description[langue]" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.description[langue]"></editor>
             <button class="translate-icon" :class="{'translate-icon-selected': translate.description}"
                     v-if="manyLanguages !== '0'" type="button"
                     @click="translate.description = !translate.description"></button>
           </div>
-          <translation :label="form.description" :actualLanguage="langue" v-if="translate.description"></translation>
+
+          <translation :label="form.description" :actualLanguage="langue" v-if="translate.description" :inputType="'wysiwygs'"></translation>
         </div>
         <div class="form-group">
           <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
@@ -152,6 +153,7 @@ import axios from "axios";
 const qs = require("qs");
 import Translation from "../translation";
 import Swal from "sweetalert2";
+import Editor from "../../components/editor";
 
 export default {
   name: "modalAddDocuments",
@@ -163,11 +165,13 @@ export default {
     langue: String,
   },
   components: {
-    Translation
+    Translation,
+    Editor,
   },
   data() {
     return {
       show: false,
+      dynamicComponent: 0,
       errorWidth: {
         error: false,
         message: ""
@@ -223,8 +227,9 @@ export default {
         selectedTypes: {
           pdf: false,
           'jpeg;jpg;png;gif': false,
-          'doc;docx;odt': false,
+          'doc;docx;odt;ppt;pptx': false,
           'xls;xlsx;odf': false,
+
         },
         mandatory: 0,
         //min resolution by default
@@ -259,12 +264,13 @@ export default {
         },
         {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
-          value: 'doc;docx;odt'
+          value: 'doc;docx;odt;ppt;pptx'
         },
         {
           title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
+
 
       ],
 
@@ -322,8 +328,9 @@ export default {
         selectedTypes: {
           pdf: false,
           'jpeg;jpg;png;gif': false,
-          'doc;docx;odt': false,
+          'doc;docx;odt;ppt;pptx': false,
           'xls;xlsx;odf': false,
+
         },
         minResolution: {
           width: null,
@@ -795,7 +802,7 @@ export default {
           selectedTypes: {
             pdf: false,
             'jpeg;jpg;png;gif': false,
-            'doc;docx;odt': false,
+            'doc;docx;odt;ppt;pptx': false,
             'xls;xlsx;odf': false,
           },
         };
