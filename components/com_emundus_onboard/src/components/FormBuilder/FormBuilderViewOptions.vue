@@ -1,9 +1,14 @@
 <template>
-	<div id="form-builder-options em-white-bg ">
+	<div id="form-builder-options">
+
 		<div class='em-border-bottom-neutral-700 em-p-16 em-w-380 em-mb-16'>
+
 			<h5>Éléments</h5>
+
 		</div>
+
 		<FormBuilderViewOptionElement :element="element" v-for="(element,index) in elements" :key="'element_' + index"/>
+
 	</div>
 	
 </template>
@@ -31,7 +36,7 @@ export default {
 		getElements() {
 
 			this.elements=FormBuilderElements;
-			console.log(typeof(this.elements[0]))
+			
 			
 		}
 	},
