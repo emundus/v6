@@ -28,7 +28,8 @@ import list from "./views/list";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
 import addformnextcampaign from "./views/addFormNextCampaign"
-import formbuilder from "./views/formBuilder"
+// import formbuilder from "./views/formBuilder"
+import formbuilder from "./views/FormBuilder2"
 import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 //

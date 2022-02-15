@@ -255,6 +255,15 @@ $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationb
 ?>
 
 <div id="em-component-vue"
+    component="<?= $component ?>"
+    profile_id="<?= JFactory::getApplication()->input->get('prid') ?>"
+    campaign_id="<?= JFactory::getApplication()->input->get('cid') ?>"
+    actualLanguage="<?= $actualLanguage ?>"
+    manyLanguages="<?= $many_languages ?>"
+    coordinatorAccess="<?= $coordinator_access ?>"
+></div>
+
+<!-- <div id="em-component-vue"
      component="<?= $component ?>"
      prid="<?= JFactory::getApplication()->input->get('prid') ?>"
      index="<?= JFactory::getApplication()->input->get('index') ?>"
@@ -263,6 +272,6 @@ $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationb
      actualLanguage="<?= $actualLanguage ?>"
      manyLanguages="<?= $many_languages ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
-></div>
+></div> -->
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>
