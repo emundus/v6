@@ -4977,9 +4977,13 @@ input:focus + .em-slider {
 .em-border-bottom-neutral-300{
   border-bottom: solid 1px $neutral-300;
 }
+.em-border-bottom-neutral-700{
+  border-bottom: solid 2px $neutral-700;
+}
 .em-border-top-neutral-300{
   border-top: solid 1px $neutral-300;
 }
+
 .em-border-blue-400{
   border: solid 1px $blue-400;
   box-sizing: border-box;

@@ -5,8 +5,16 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-			formulaire: {}
+		formulaire: {}
     },
+	getters: {
+		getPage(index) {
+
+		},
+		getDocuments() {
+			
+		}
+	},
     mutations: {
 			addForm(state, data) {
 				// create default formulaire object
