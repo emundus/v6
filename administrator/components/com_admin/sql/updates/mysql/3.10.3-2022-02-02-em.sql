@@ -632,7 +632,7 @@ VALUES (@element_12, 'load',
 
 -- Step 16 P Add some Zoom tags to table "jos_emundus_setup_tags" --
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
-VALUES ('2022-01-25 09:54:59', 'ZOMM_MEETING_START_TIME', 'php|
+VALUES ('2022-01-25 09:54:59', 'ZOOM_MEETING_START_TIME', 'php|
 $fnum = ''[FNUM]'';
 $db = JFactory::getDbo();
 $query = "select start_time from jos_emundus_candidat_meeting as jecm where jecm.fnum like (" . $fnum . ")";
