@@ -32,7 +32,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
     public function onAfterProcess() {
         # read and parse json template file
         $route = JPATH_BASE.'/plugins/fabrik_form/emunduszoommeeting/api_templates' . DS;
-        $template = file_get_contents($route . __FUNCTION__ . '.json');
+        $template = file_get_contents($route . __FUNCTION__ . '_meeting.json');
         $json = json_decode($template, true);
 
         $db = JFactory::getDbo();
@@ -49,10 +49,76 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # get host (hosts -> users appear in table "data_referentiel_jury_token")
         $host = current($_POST['jos_emundus_jury___president']);
 
-        # get host zoom id
-        $hostQuery = "select * from data_referentiel_zoom_token as drzt where drzt.user = " . $host;
-        $db->setQuery($hostQuery);
+        # create meeting room host
+        # get firstname, lastname, email of #host
+        $query->clear()->select('jeu.firstname, jeu.lastname, ju.email')
+            ->from($db->quoteName('#__users', 'ju'))
+            ->leftJoin($db->quoteName('#__emundus_users', 'jeu') . ' ON ' . $db->quoteName('ju.id') . ' = ' . $db->quoteName('jeu.user_id'))
+            ->where($db->quoteName('ju.id') . ' = ' . $db->quote($host));
+
+        $db->setQuery($query);
         $raw = $db->loadObject();
+
+        # prepare the user data
+        $user = json_encode(array(
+            "action" => current($_POST['jos_emundus_jury___send_invitation']),
+            "user_info" => [
+                "email" => $raw->email,
+                'type' => current($_POST['jos_emundus_jury___user_type']),
+                "first_name" => $raw->firstname,
+                "last_name" => $raw->lastname],
+        ));
+
+        # call to Zoom API endpoint
+        $response = $zoom->doRequest('POST', '/users', array(), array(), $user);        /* array */
+
+        # HTTP status = 201 :: User created
+        if($zoom->responseCode() == 201) {
+            $host_id = $response['id'];
+            # create new zoom host
+            $insertSql = "INSERT INTO data_referentiel_zoom_token (user,email,zoom_id) VALUES (" . $db->quote($host) . ', ' . $db->quote($host) . ', ' . $db->quote($response['id']) . ')';
+            $db->setQuery($insertSql);
+            $db->execute();
+        } else {
+            # delete this host, and regen the new if he/she already exists
+            $uzId = $host;
+            
+            if($response['code'] == 1005) {
+                # find user id from $uzId
+                $getUserSql = "select * from data_referentiel_zoom_token where data_referentiel_zoom_token.user = " . $uzId;
+                $db->setQuery($getUserSql);
+                $res = $db->loadObject();
+
+                # delete zoom user by calling endpoint
+                $zoom->doRequest('DELETE', '/users/' . $res->zoom_id . '?action=delete', array(), array(), '');
+
+                # if HTTP status code is not 204, track the log
+                if ($zoom->responseCode() === 204) {
+                    # delete this host in database
+                    $deleteUserSql = "delete from data_referentiel_zoom_token where data_referentiel_zoom_token.id = " . $res->id;
+
+                    $db->setQuery($deleteUserSql);
+                    $db->execute();
+
+                    # regen this host again
+                    $response = $zoom->doRequest('POST', '/users', array(), array(), $user);        /* array */
+
+                    # reinsert this host to table "data_referentiel_zoom_token"
+                    $insertSql = "INSERT INTO data_referentiel_zoom_token (user,email,zoom_id) VALUES (" . $db->quote($host) . ', ' . $db->quote($host) . ', ' . $db->quote($response['id']) . ')';
+                    $db->setQuery($insertSql);
+                    $db->execute();
+
+                    $host_id = $response['id'];
+                } else {
+                    $zoom->requestErrors();
+                }
+            } else {
+                $zoom->requestErrors();
+            }
+        }
+
+        
+        #right now, we have $host_id
 
         # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
         $offset = $app->get('offset', 'UTC');
@@ -79,9 +145,11 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         $json = $this->dataMapping($_POST, 'jos_emundus_jury___', $json);
 
+//        echo '<pre>'; var_dump($json); echo '</pre>'; die;
+
         # if meeting id (in db, not in Zoom) and meeting session do not exist, call endpoint to generate the new one
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
-            $response = $zoom->doRequest('POST', '/users/'. $raw->zoom_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
+            $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
             $httpCode = $zoom->responseCode();
 
             if($httpCode == 201) {
@@ -110,7 +178,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 $zoom->requestErrors();
             }
         } else {
-            # echo '<pre>'; var_dump($_POST); echo '</pre>'; die;
             /** HTTP Status Code
                 * 204 : Meeting updated
                 * 300 : Invalid enforce_login_domains, separate multiple domains by semicolon / A maximum of {rateLimitNumber} meetings can be created/updated for a single user in one day.
