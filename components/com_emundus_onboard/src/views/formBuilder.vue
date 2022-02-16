@@ -275,6 +275,8 @@
   import Swal from "sweetalert2";
   import {global} from "../store/global";
 
+  import formBuilderService from '../services/formBuilder.service';
+
   const qs = require("qs");
 
   export default {
@@ -487,7 +489,7 @@
         this.$modal.hide('my-first-modal');
       },
 
-      createElement(gid,plugin,order) {
+      async createElement(gid,plugin,order) {
         let list = this.formObjectArray;
         if(this.menuHighlight === 1){
           list = this.submittionPages;
@@ -514,54 +516,25 @@
               this.createElementEMundusFileUpload(params,gid,plugin,order);
           } else {
 
-            axios({
-              method: "post",
-              url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-              },
-              data: qs.stringify({
-                gid: gid,
-                plugin: plugin
-              })
-            }).then((result) => {
-
-              axios({
-                method: "get",
-                url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-                params: {
-                  element: result.data.scalar,
-                  gid: gid
-                },
-                paramsSerializer: params => {
-                  return qs.stringify(params);
-                }
-              }).then(response => {
-
-
-                if (plugin=="email") {
-                  response.data.params.password = 3;
+               const createSimpleElement = await formBuilderService.createElement(parseInt(gid),plugin);
+               
+               if (createSimpleElement != false) {
+                
+                 const getCreatedElement = await formBuilderService.getElement(gid,createSimpleElement.scalar);
+                 
+                if (plugin == "email") {
+                    getCreatedElement.data.params.password = 3;
                 } else {
-                  response.data.params.password=0;
+                    getCreatedElement.data.params.password = 0;
                 }
-                axios({
-                  method: "post",
-                  url:
-                      "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
-                  headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                  },
-                  data: qs.stringify({
-                    element: response.data,
-                  })
-                })
 
-                this.menuHighlightCustumisation(response,gid,order);
+                const updateElementParams = await formBuilderService.updateElementParams(getCreatedElement.data);
+
+                 this.menuHighlightCustumisation(getCreatedElement,gid,order);
 
                 this.loading = false;
-              });
-            });
+
+               }
 
           }
 
