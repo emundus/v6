@@ -5,37 +5,67 @@ use Joomla\CMS\Date\Date;
 jimport( 'joomla.access.access' );
 
 class modEmundusCampaignDropfilesHelper {
-    public function getFiles() {
+
+    public function getFiles($column = null) {
+
+        $config = new JConfig();
+        $db_name = $config->db;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $jinput = JFactory::getApplication()->input;
-        $id = $jinput->get('id') ? $jinput->getInt('id',null) : $jinput->getInt('cid',null);
+        $id = JFactory::getApplication()->input->getInt('id', null);
         $groupUser = JFactory::getUser()->getAuthorisedGroups();
         $dateTime = new Date('now', 'UTC');
         $now = $dateTime->toSQL();
 
+        // If empty id module is probably on a form
         if (empty($id)) {
-            return -1;
-        }
+            $current_profile = JFactory::getSession()->get('emundusUser')->profile;
 
-        $query
-            ->select([$db->quoteName('df.id', 'id'), $db->quoteName('df.catid', 'catid'), $db->quoteName('df.title', 'title_file'), $db->quoteName('df.ext', 'ext'), $db->quoteName('cat.path', 'title_category')])
-            ->from($db->quoteName('jos_dropfiles_files', 'df'))
-            ->leftJoin($db->quoteName('jos_categories','cat').' ON '.$db->quoteName('cat.id').' = '.$db->quoteName('df.catid'))
-            ->where($db->quoteName('df.publish') . ' <= ' . $db->quote($now))
-            ->andWhere([$db->quoteName('df.publish_down') . ' >= ' . $db->quote($now), $db->quoteName('df.publish_down') . ' = ' .$query->quote('0000-00-00 00:00:00')])
-            ->andWhere($db->quoteName('df.state') . ' = 1')
-            ->andWhere($db->quoteName('cat.extension') . ' = ' . $db->quote('com_dropfiles'))
-            ->andWhere('json_extract(`cat`.`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$id.'"'))
-            ->andWhere($db->quoteName('cat.access') . ' IN (' . implode(' , ', $groupUser) . ')')
-            ->group('df.ordering');
-
-        try {
+            $query->select('COUNT(*)')
+                ->from($db->quoteName('information_schema.tables'))
+                ->where($db->quoteName('table_schema') . ' = ' . $db->quote($db_name))
+                ->andWhere($db->quoteName('table_name') . ' = ' . $db->quote('jos_emundus_campaign_workflow'));
             $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch(Exception $e) {
-            return false;
+            $exist = $db->loadResult();
+
+            if($exist && !empty($column)){
+                try {
+                    $query->clear()
+                        ->select([$db->quoteName('df.id', 'id'), $db->quoteName('df.catid', 'catid'), $db->quoteName('df.title', 'title_file'), $db->quoteName('df.ext', 'ext'), $db->quoteName('cat.path', 'title_category')])
+                        ->from($db->quoteName('#__emundus_campaign_workflow_repeat_' . $column,'cdf'))
+                        ->leftJoin($db->quoteName('jos_emundus_campaign_workflow','cw').' ON '.$db->quoteName('cw.id').' = '.$db->quoteName('cdf.parent_id'))
+                        ->leftJoin($db->quoteName('jos_dropfiles_files','df').' ON '.$db->quoteName('df.id').' = '.$db->quoteName('cdf.' . $column))
+                        ->leftJoin($db->quoteName('jos_categories','cat').' ON '.$db->quoteName('cat.id').' = '.$db->quoteName('df.catid'))
+                        ->where($db->quoteName('cw.profile') . ' = ' . $db->quote($current_profile));
+                    $db->setQuery($query);
+                    return $db->loadObjectList();
+                } catch(Exception $e) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            $query
+                ->clear()
+                ->select([$db->quoteName('df.id', 'id'), $db->quoteName('df.catid', 'catid'), $db->quoteName('df.title', 'title_file'), $db->quoteName('df.ext', 'ext'), $db->quoteName('cat.path', 'title_category')])
+                ->from($db->quoteName('jos_dropfiles_files', 'df'))
+                ->leftJoin($db->quoteName('jos_categories','cat').' ON '.$db->quoteName('cat.id').' = '.$db->quoteName('df.catid'))
+                ->where($db->quoteName('df.publish') . ' <= ' . $db->quote($now))
+                ->andWhere([$db->quoteName('df.publish_down') . ' >= ' . $db->quote($now), $db->quoteName('df.publish_down') . ' = ' .$query->quote('0000-00-00 00:00:00')])
+                ->andWhere($db->quoteName('df.state') . ' = 1')
+                ->andWhere($db->quoteName('cat.extension') . ' = ' . $db->quote('com_dropfiles'))
+                ->andWhere('json_extract(`cat`.`params`, "$.idCampaign") LIKE ' . $db->quote('"'.$id.'"'))
+                ->andWhere($db->quoteName('cat.access') . ' IN (' . implode(' , ', $groupUser) . ')')
+                ->group('df.ordering');
+
+            try {
+                $db->setQuery($query);
+                return $db->loadObjectList();
+            } catch(Exception $e) {
+                return false;
+            }
         }
     }
 }
