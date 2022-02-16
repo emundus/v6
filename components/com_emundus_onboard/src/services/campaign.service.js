@@ -4,17 +4,22 @@ const qs = require("qs");
 
 export default {
 
-    async redirectjRoute(link) {
+    async updateDocument(data) {
+
         try {
-            const response = await client().post("index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument", {
-                params:qs.stringify({
-                    link:link
+
+            const response = await client().post("index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument",
+               qs.stringify({
+                    data:data
                 })
-            }
             );
+
             return response.data;
+
         } catch (e) {
+
             return false;
+            
         }
     },
 }

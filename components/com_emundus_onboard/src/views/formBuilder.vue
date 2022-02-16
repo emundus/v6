@@ -276,6 +276,8 @@
   import {global} from "../store/global";
 
   import formBuilderService from '../services/formBuilder.service';
+  import camapignService from '../services/formBuilder.service';
+import attachment from '../../../com_emundus/src/services/attachment';
 
   const qs = require("qs");
 
@@ -543,50 +545,30 @@
 
       },
 
-      createElementEMundusFileUpload(params,gid,plugin,order){
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify(params)
-        }).then((rep) => {
+     async  createElementEMundusFileUpload(params,gid,plugin,order){
+
+       const updateDocument = await camapignService.updateDocument(params);
+
+       if( this.updateDocument != false ) {
 
           this.$emit("UpdateDocuments");
-          axios({
-            method: "post",
-            url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              gid: gid,
-              plugin: plugin,
-              attachementId: rep.data.data
-            })
-          }).then((result) => {
+          const createElement = await formBuilderService.createElement(gid,plugin,updateDocument.data);
 
-            axios({
-              method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-              params: {
-                element: result.data.scalar,
-                gid: gid
-              },
-              paramsSerializer: params => {
-                return qs.stringify(params);
-              }
-            }).then(response => {
+          if (createElement != false) {
+                
+                 const getCreatedElement = await formBuilderService.getElement(gid,createElement.scalar);
+                 
+                 const updateElementParams = await formBuilderService.updateElementParams(getCreatedElement.data);
 
-             this.menuHighlightCustumisation(response,gid,order);
-             this.getDocuments();
-              this.loading = false;
-            });
-          });
+                 this.menuHighlightCustumisation(getCreatedElement,gid,order);
 
-        });
+                 this.getDocuments();
+
+                 this.loading = false;
+            }
+
+       }
+       
       },
 
       menuHighlightCustumisation(response,gid,order){

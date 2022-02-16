@@ -4,14 +4,21 @@ const qs = require("qs");
 
 export default {
 
-    async createElement(gid, plugin) {
+    async createElement(gid, plugin, attachmentId = null) {
         try {
             const response = await client().post("index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement", 
-            qs.stringify( {
+            attachmentId == 0 ?
+                qs.stringify( {
                     gid: gid,
                     plugin: plugin
-                  }
-            ));
+                    })
+                :  qs.stringify( {
+                    gid: gid,
+                    plugin: plugin,
+                    attachementId: attachmentId
+                    })
+                );
+
             return response.data
         } catch (e) {
             return false
