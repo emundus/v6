@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default (headers = {
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/x-www-form-urlencoded',
     'Cache-Control': 'no-cache',
 }) =>
     axios.create({
