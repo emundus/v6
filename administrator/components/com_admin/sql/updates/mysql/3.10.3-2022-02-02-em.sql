@@ -319,6 +319,8 @@ VALUES (@element_5, 'load', 'if(document.getElementById(&#039;jos_emundus_jury__
 
     _parent = this.element.parentElement;
 
+    _parent.hide();
+
     var _child = document.createElement(&quot;p&quot;);
 
     _child.setAttribute(&#039;id&#039;, &#039;msg-hostname&#039;);
@@ -328,8 +330,9 @@ VALUES (@element_5, 'load', 'if(document.getElementById(&#039;jos_emundus_jury__
     _child.style.color = &quot;#16afe1&quot;;
     _child.style.background = &quot;#eeeeee&quot;;
     _child.style.fontWeight = &quot;bold&quot;;
+    _child.style.width = &quot;100%&quot;;
 
-    _parent.append(_child);
+    _parent.parentElement.append(_child);
   } else {
     this.element.parentNode.parentElement.parentElement.show();
   }
