@@ -397,6 +397,30 @@ class ApogeeCustom {
         }
 
         $_afTel->nodeValue = $rawAfTel;
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /* third, find "donneesPersonnelles" node */
+        $_dpRoot = $this->xmlTree->getElementsByTagName('donneesPersonnelles')->item(0);
+        $_dpTelOpi = $_dpRoot->getElementsByTagName('numTelPorOpi')->item(0);
+
+        /* get SQL script */
+        $_getDpTelSql = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
+        $db->setQuery($_getDpTelSql);
+        $rawDpTel = $db->loadResult();
+
+        # find ")" in $rawDpTel
+        if(strpos($rawDpTel, ")")) {
+            # split string
+            $rawDpTel = explode(')', $rawDpTel)[1];
+
+            if(strlen($rawDpTel) > 15) {
+                # truncate string
+                $rawDpTel = substr($rawDpTel,0,15);
+            }
+        }
+
+        $_dpTelOpi->nodeValue = $rawDpTel;
+        return $this->xmlTree;
     }
 
     /* set value to repeat group */

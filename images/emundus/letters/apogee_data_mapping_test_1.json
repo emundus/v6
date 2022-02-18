@@ -234,7 +234,7 @@
         "default": ""
       },
       "numTelPorOpi": {
-        "sql": "select trim(replace(#__emundus_personal_detail.etu_telephone, ' ','')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "default": ""
       },
       "codRgi": {
         "default": ""
