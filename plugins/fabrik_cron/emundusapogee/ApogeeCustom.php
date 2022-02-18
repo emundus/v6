@@ -347,6 +347,58 @@ class ApogeeCustom {
         return $this->xmlTree;
     }
 
+    /* handle telephone number with max 15 digits from left to right (no country code) */
+    public function setCustomTelephoneNumber() {
+        $db = JFactory::getDbo();
+
+        /* find all xml nodes of numTel, we have at least 3 : numTel (aa), numTel (af), numTelPorOpi */
+
+        /* firstly, find "adresseAnnuelle" node */
+        $_aaRoot = $this->xmlTree->getElementsByTagName('adresseAnnuelle')->item(0);
+        $_aaTel = $_aaRoot->getElementsByTagName('numTel')->item(0);
+
+        /* set SQL script */
+        $_getAaSql = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
+        $db->setQuery($_getAaSql);
+        $rawAaTel = $db->loadResult();
+
+        # find ")" in $rawAaTel
+        if(strpos($rawAaTel, ")")) {
+            # split string
+            $rawAaTel = explode(')', $rawAaTel)[1];
+
+            if(strlen($rawAaTel) > 15) {
+                # truncate string if length is more than 15
+                $rawAaTel = substr($rawAaTel,0,15);
+            }
+        }
+
+        $_aaTel->nodeValue = $rawAaTel;
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /* secondly, find "adresseFixe" node */
+        $_afRoot = $this->xmlTree->getElementsByTagName('adresseFixe')->item(0);
+        $_afTel = $_afRoot->getElementsByTagName('numTel')->item(0);
+
+        /* set SQL script */
+        $_getAfBdiSql = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
+        $db->setQuery($_getAfBdiSql);
+        $rawAfTel = $db->loadResult();
+
+        # find ")" in $rawAaTel
+        if(strpos($rawAfTel, ")")) {
+            # split string
+            $rawAfTel = explode(')', $rawAfTel)[1];
+
+            if(strlen($rawAfTel) > 15) {
+                # truncate string if length is more than 15
+                $rawAfTel = substr($rawAfTel,0,15);
+            }
+        }
+
+        $_afTel->nodeValue = $rawAfTel;
+    }
+
     /* set value to repeat group */
     public function setConvocation() {
         $db = JFactory::getDbo();
@@ -470,6 +522,7 @@ class ApogeeCustom {
         $this->setDepPay_LastYear();
         $this->setCodBac();
         $this->setCustomFirstYear();
+        $this->setCustomTelephoneNumber();
 
         /* $this->setConvocation();
         $this->setTitreAccessExterne(); /// expected results :: print */

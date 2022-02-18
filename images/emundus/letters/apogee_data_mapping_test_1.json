@@ -10,10 +10,10 @@
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib1": {
-      "sql": "select trim(left(#__emundus_personal_detail.etu_no_et_rue,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_no_et_rue,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib2": {
-      "sql": "select trim(left(#__emundus_personal_detail.etu_chez,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_chez,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib3": {
       "default": ""
@@ -22,7 +22,7 @@
       "default": ""
     },
     "numTel": {
-      "sql": "select trim(replace(#__emundus_personal_detail.etu_telephone,' ','')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "default": ""
     }
   },
   "adresseFixe": {
@@ -36,10 +36,10 @@
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib1": {
-      "sql": "select trim(left(#__emundus_personal_detail.etu_no_et_rue,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_no_et_rue,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib2": {
-      "sql": "select trim(left(#__emundus_personal_detail.etu_chez,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_chez,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib3": {
       "default": ""
@@ -48,7 +48,7 @@
       "default": ""
     },
     "numTel": {
-      "sql": "select trim(replace(#__emundus_personal_detail.etu_telephone,' ','')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "default": ""
     }
   },
   "bac": {
@@ -251,19 +251,19 @@
         "sql": "select #__emundus_personal_detail.gender from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libNomPatIndOpi": {
-        "sql": "select trim(left(#__emundus_users.lastname,30)) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+        "sql": "select trim(right(#__emundus_users.lastname,30)) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
       },
       "libNomUsuIndOpi": {
-        "sql": "select trim(left(#__emundus_personal_detail.etu_nom_marital,30)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "sql": "select trim(right(#__emundus_personal_detail.etu_nom_marital,30)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libPr1IndOpi": {
-        "sql": "select trim(left(#__emundus_users.firstname,20)) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+        "sql": "select trim(right(#__emundus_users.firstname,20)) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
       },
       "libPr2IndOpi": {
-        "sql": "select trim(left(#__emundus_personal_detail.etu_prenom2,20)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "sql": "select trim(right(#__emundus_personal_detail.etu_prenom2,20)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libPr3IndOpi": {
-        "sql": "select trim(left(#__emundus_personal_detail.etu_prenom3,20)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "sql": "select trim(right(#__emundus_personal_detail.etu_prenom3,20)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       }
     },
     "inscriptionParallele": {
