@@ -544,6 +544,7 @@ import { global } from "../store/global";
 import formBuilderService from "../services/formBuilder.service";
 import camapignService from "../services/formBuilder.service";
 import formService from "../services/form.service";
+import settingsService from "../services/settings.service";
 
 const qs = require("qs");
 
@@ -961,11 +962,12 @@ export default {
       if (this.menuHighlight === 1) {
         param = this.submittionPages[this.indexHighlight].object.id;
       }
-      /*try {
+      try {
           const createGroup = await formBuilderService.createGroup(param).then(response => {
               console.log("the response is here");
               console.log(response.group_tag);
-              console.log(this.$vm.translate(response.group_tag));
+              this.loading = false;
+              console.log(this.$translate(response.group_tag));
               //response.group_showLegend = translate(response.group_tag);
 
               axios({
@@ -990,15 +992,17 @@ export default {
 
           )
         } catch (error) {
+          console.log("there is an stuppied error you now ? .........////////////////////////////");
           
-        }*/
+          alert(error);
+        }
       //
 
       /*if(createGroup != false){
 
 
         }*/
-      axios({
+      /*axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimplegroup",
         headers: {
@@ -1039,7 +1043,7 @@ export default {
             this.pushGroup(result.data);
           });
         });
-      });
+      });*/
     },
 
     // Update component dynamically
@@ -1351,11 +1355,6 @@ export default {
             link: response.link,
           });
         });
-
-        console.log("**************************************************")
-        console.log("Yo yo yo we ore you are welcome  ");
-    console.log(this.submittionPages);
-    console.log("**************************************************")
       } catch (error) {
         console.log(error);
       }
@@ -1392,41 +1391,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-
-      /*axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
-        params: {
-          profile_id: this.prid,
-        },
-        paramsSerializer: (params) => {
-          return qs.stringify(params);
-        },
-      })
-        .then((response) => {
-          this.formList = response.data.data;
-          setTimeout(() => {
-            //this.getDataObject();
-            if (this.formList.length > 0) {
-              this.formList.forEach((element) => {
-                this.formObjectArray.push({
-                  object: {},
-                  rgt: element.rgt,
-                  link: element.link,
-                });
-              });
-            } else {
-              this.showModal();
-            }
-
-            this.loading = false;
-            this.getDataObjectSingle(0);
-            this.getProfileLabel(this.prid);
-          }, 100);
-        })
-        .catch((e) => {
-          console.log(e);
-        });*/
     },
 
     async getDocuments() {
@@ -1439,162 +1403,111 @@ export default {
     },
 
     async removeDocument(index, did) {
-
       try {
-        await formService.removeDocumentFromProfile(did).then(()=>{
+        await formService.removeDocumentFromProfile(did).then(() => {
           this.documentsList.splice(index, 1);
-        })
+        });
       } catch (error) {
         console.log(error);
       }
-     /* axios({
-        method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=removeDocumentFromProfile",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        data: qs.stringify({
-          did: did,
-        }),
-      }).then(() => {
-        this.documentsList.splice(index, 1);
-      });*/
     },
 
     /**
      * Récupère le nom du formulaire
      */
-    getProfileLabel(profile_id) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getProfileLabelByProfileId",
-        params: {
-          profile_id: profile_id,
-        },
-        paramsSerializer: (params) => {
-          return qs.stringify(params);
-        },
-      })
-        .then((response) => {
-          this.profileLabel = response.data.data.label;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+    async getProfileLabel(profile_id) {
+      try {
+        await formService
+          .getProfilelabelByProfileId(profile_id)
+          .then((response) => {
+            this.profileLabel = response.data.label;
+          });
+      } catch (error) {
+        console.log(error);
+      }
     },
 
-    exitForm() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
-        params: {
-          link: "index.php?option=com_emundus_onboard&view=form",
-        },
-        paramsSerializer: (params) => {
-          return qs.stringify(params);
-        },
-      }).then((response) => {
-        window.location.href = window.location.pathname + response.data.data;
-      });
+    async exitForm() {
+      try {
+        await settingsService
+          .redirectjRoute("index.php?option=com_emundus_onboard&view=form")
+          .then((response) => {
+            window.location.href = window.location.pathname + response.data;
+          });
+      } catch (error) {
+        console.log(error);
+      }
     },
 
-    sendForm() {
+    async sendForm() {
       if (this.formList.length > 0) {
         if (this.cid != 0) {
-          axios({
-            method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
-            params: {
-              link:
+          try {
+            await settingsService
+              .redirectjRoute(
                 "index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=" +
-                this.cid +
-                "&index=4",
-            },
-            paramsSerializer: (params) => {
-              return qs.stringify(params);
-            },
-          }).then((response) => {
-            window.location.href =
-              window.location.pathname + response.data.data;
-          });
+                  this.cid +
+                  "&index=4"
+              )
+              .then((response) => {
+                window.location.href = window.location.pathname + response.data;
+              });
+          } catch (error) {
+            console.log(error);
+          }
         } else {
-          axios({
-            method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
-            params: {
-              pid: this.prid,
-            },
-            paramsSerializer: (params) => {
-              return qs.stringify(params);
-            },
-          })
-            .then((response) => {
-              if (response.data.data.length > 0) {
-                history.go(-1);
-              } else {
-                this.$modal.show("modalAffectCampaign");
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
+          try {
+            await formService
+              .getAssociatedCampaign(this.prid)
+              .then((response) => {
+                if (response != false && response.data.length > 0) {
+                  history.go(-1);
+                } else {
+                  this.$modal.show("modalAffectCampaign");
+                }
+              });
+          } catch (error) {
+            console.log(error);
+          }
         }
       } else {
         this.showModal();
       }
     },
 
-    testForm() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=gettestingparams",
-        params: {
-          prid: this.prid,
-        },
-        paramsSerializer: (params) => {
-          return qs.stringify(params);
-        },
-      }).then((response) => {
-        this.campaignsAffected = response.data.campaign_files;
-        if (Object.keys(this.campaignsAffected).length > 1) {
-          this.$modal.show("modalTestingForm");
-        } else if (Object.keys(this.campaignsAffected).length > 0) {
-          if (this.campaignsAffected[0].files.length > 0) {
-            this.$modal.show("modalTestingForm");
-          } else {
-            axios({
-              method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createtestingfile",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-              data: qs.stringify({
-                cid: this.campaignsAffected[0].id,
-              }),
-            }).then((rep) => {
-              window.open(
-                "/index.php?option=com_emundus&task=openfile&fnum=" +
-                  rep.data.fnum +
-                  "&redirect=1==&Itemid=1079#em-panel"
-              );
-            });
-          }
-        } else {
-          this.testing = true;
-          axios({
-            method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
-            params: {
-              pid: this.prid,
-            },
-            paramsSerializer: (params) => {
-              return qs.stringify(params);
-            },
-          }).then(() => {
-            this.$modal.show("modalAffectCampaign");
+    async testForm() {
+      try {
+        await formBuilderService
+          .getTestingParams(this.prid)
+          .then((response) => {
+            this.campaignsAffected = response.data.campaign_files;
+            if (Object.keys(this.campaignsAffected).length > 1) {
+              this.$modal.show("modalTestingForm");
+            } else if (Object.keys(this.campaignsAffected).length > 0) {
+              if (this.campaignsAffected[0].files.length > 0) {
+                this.$modal.show("modalTestingForm");
+              } else {
+                formBuilderService
+                  .createTestingFile(this.campaignsAffected[0].id)
+                  .then((response) => {
+                    window.open(
+                      "/index.php?option=com_emundus&task=openfile&fnum=" +
+                        response.data.fnum +
+                        "&redirect=1==&Itemid=1079#em-panel"
+                    );
+                  });
+              }
+            } else {
+              this.testing = true;
+
+              formBuilderService.getAssociatedCampaign(this.prid).then(() => {
+                this.$modal.show("modalAffectCampaign");
+              });
+            }
           });
-        }
-      });
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     // Triggers
@@ -1640,40 +1553,26 @@ export default {
     //
 
     // Draggable documents
-    reorderingDocuments: function () {
+    reorderingDocuments: async function () {
       this.documentsList.forEach((doc, index) => {
         doc.ordering = index;
       });
-
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=reorderDocuments",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        data: qs.stringify({
-          documents: this.documentsList,
-        }),
-      });
+      try {
+        await formService.reorderDocument(this.documentsList);
+      } catch (error) {
+        console.log(error);
+      }
     },
     //
 
     // Draggable pages
     reorderItems() {
       this.formList.forEach((item) => {
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=reordermenu",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          data: qs.stringify({
-            rgt: item.rgt,
-            link: item.link,
-          }),
-        }).catch((e) => {
-          console.log(e);
-        });
+        try {
+          formBuilderService.reorderMenuItems(item.rgt, item.link);
+        } catch (error) {
+          console.log(error);
+        }
       });
     },
     enableGrab(index) {
@@ -1749,7 +1648,6 @@ export default {
     this.getSubmittionPage();
     this.getFilesByForm();
     this.getLanguages();
-    
   },
 
   computed: {
