@@ -213,10 +213,10 @@
         "default": ""
       },
       "codPcs": {
-        "sql" : "select lpad(data_cat_soc_pfl.id,2,0) from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7877 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
+        "sql" : "select cod_sis_pcs from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7877 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
       },
       "codPcsAp": {
-        "sql": "select lpad(data_cat_soc_pfl.id,2,0) from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7878 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
+        "sql": "select cod_sis_pcs from data_cat_soc_pfl left join #__emundus_personal_detail on #__emundus_personal_detail.e_287_7878 = data_cat_soc_pfl.id where #__emundus_personal_detail.fnum = "
       },
       "codSim": {
         "default": ""
@@ -251,19 +251,19 @@
         "sql": "select #__emundus_personal_detail.gender from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libNomPatIndOpi": {
-        "sql": "select trim(#__emundus_users.lastname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+        "sql": "select trim(right(#__emundus_users.lastname,30)) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
       },
       "libNomUsuIndOpi": {
-        "sql": "select trim(#__emundus_personal_detail.etu_nom_marital) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "sql": "select trim(right(#__emundus_personal_detail.etu_nom_marital,30)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libPr1IndOpi": {
-        "sql": "select trim(#__emundus_users.firstname) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
+        "sql": "select trim(right(#__emundus_users.firstname,20)) from #__emundus_users left join #__emundus_final_grade on #__emundus_final_grade.student_id = #__emundus_users.user_id where #__emundus_final_grade.fnum = "
       },
       "libPr2IndOpi": {
-        "sql": "select trim(#__emundus_personal_detail.etu_prenom2) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "sql": "select trim(right(#__emundus_personal_detail.etu_prenom2,20)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "libPr3IndOpi": {
-        "sql": "select trim(#__emundus_personal_detail.etu_prenom3) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+        "sql": "select trim(right(#__emundus_personal_detail.etu_prenom3,20)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       }
     },
     "inscriptionParallele": {
