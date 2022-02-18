@@ -86,7 +86,7 @@ class ApogeeCustom {
             $_getAaBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
             $_aaCodBdi->nodeValue = "";
             /* set libAde --> concat(e_287_8117, '', e_287_8118) */
-            $_getAaLibAdeSql = "select trim(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
+            $_getAaLibAdeSql = "select trim(right(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118),32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
             $db->setQuery($_getAaLibAdeSql);
             $_aaLibAde->nodeValue =  $db->loadResult();
         }
@@ -111,7 +111,7 @@ class ApogeeCustom {
             $_getAfBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
             $_afCodBdi->nodeValue = "";
             /* set libAde --> concat(e_287_8117, '', e_287_8118) */
-            $_getAfLibAdeSql = "select trim(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
+            $_getAfLibAdeSql = "select trim(right(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118),32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
             $db->setQuery($_getAfLibAdeSql);
             $_afLibAde->nodeValue =  $db->loadResult();
         }
@@ -352,9 +352,9 @@ class ApogeeCustom {
         $db = JFactory::getDbo();
 
         $convocation_elems = array(
-                "datCvc" => ["default" => 'N'],
-                "dhhCvc" => ['sql' => "select concat(date_time, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', published) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
-                "dmnCvc" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N']
+            "datCvc" => ["default" => 'N'],
+            "dhhCvc" => ['sql' => "select concat(date_time, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', published) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
+            "dmnCvc" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N']
         );
 
 
