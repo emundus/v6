@@ -10,10 +10,10 @@
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib1": {
-      "sql": "select trim(#__emundus_personal_detail.etu_no_et_rue) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_no_et_rue,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib2": {
-      "sql": "select trim(#__emundus_personal_detail.etu_chez) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_chez,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib3": {
       "default": ""
@@ -36,10 +36,10 @@
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib1": {
-      "sql": "select trim(#__emundus_personal_detail.etu_no_et_rue) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_no_et_rue,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib2": {
-      "sql": "select trim(#__emundus_personal_detail.etu_chez) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
+      "sql": "select trim(right(#__emundus_personal_detail.etu_chez,32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
     },
     "lib3": {
       "default": ""
