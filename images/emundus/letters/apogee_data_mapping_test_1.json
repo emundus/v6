@@ -4,7 +4,7 @@
       "default": ""
     },
     "codCom": {
-      "sql": "select dc.code_commune from data_commune as dc left join jos_emundus_personal_detail as jepd on dc.id = jepd.e_287_8116 where jepd.fnum = "
+      "sql": "select lpad(dc.code_commune,5,'0') from data_commune as dc left join jos_emundus_personal_detail as jepd on dc.id = jepd.e_287_8116 where jepd.fnum = "
     },
     "codPay": {
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
@@ -30,7 +30,7 @@
       "default": ""
     },
     "codCom": {
-      "sql": "select dc.code_commune from data_commune as dc left join jos_emundus_personal_detail as jepd on dc.id = jepd.e_287_8116 where jepd.fnum = "
+      "sql": "select lpad(dc.code_commune,5,'0') from data_commune as dc left join jos_emundus_personal_detail as jepd on dc.id = jepd.e_287_8116 where jepd.fnum = "
     },
     "codPay": {
       "sql": "select #__emundus_personal_detail.country_1 from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
@@ -196,7 +196,7 @@
         "sql": "select date_format(#__emundus_personal_detail.birth_date, '%d%m%Y') from #__emundus_personal_detail where #__emundus_personal_detail.fnum = "
       },
       "codComNaiEtuOpi": {
-        "sql": "select dc.code_commune from data_commune as dc left join jos_emundus_personal_detail as jepd on dc.id = jepd.e_287_8113 where jepd.fnum = "
+        "sql": "select lpad(dc.code_commune,5,'0') from data_commune as dc left join jos_emundus_personal_detail as jepd on dc.id = jepd.e_287_8113 where jepd.fnum = "
       },
       "libVilNaiEtuOpi": {
         "sql": "select trim(#__emundus_personal_detail.e_287_8114) from #__emundus_personal_detail where fnum = "
