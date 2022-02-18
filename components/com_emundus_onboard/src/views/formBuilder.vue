@@ -471,8 +471,8 @@
                 class="MenuFormItem"
                 style="margin-left: 5px"
                 :title="
-                  value.object.show_title.value != ''
-                    ? value.object.show_title.value
+                  value.object.data.show_title.value != ''
+                    ? value.object.data.show_title.value
                     : translations.SubmittionPage
                 "
                 :class="
@@ -482,8 +482,8 @@
                 "
               >
                 {{
-                  value.object.show_title.value
-                    ? value.object.show_title.value
+                  value.object.data.show_title.value
+                    ? value.object.data.show_title.value
                     : translations.SubmittionPage
                 }}
               </a>
@@ -1351,6 +1351,11 @@ export default {
             link: response.link,
           });
         });
+
+        console.log("**************************************************")
+        console.log("Yo yo yo we ore you are welcome  ");
+    console.log(this.submittionPages);
+    console.log("**************************************************")
       } catch (error) {
         console.log(error);
       }
@@ -1744,6 +1749,7 @@ export default {
     this.getSubmittionPage();
     this.getFilesByForm();
     this.getLanguages();
+    
   },
 
   computed: {
