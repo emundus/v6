@@ -6,17 +6,22 @@ export default {
 
     async updateFormLabel(prid, label){
         try {
-            const response = await client().post("index.php?option=com_emundus_onboard&controller=form&task=updateformlabel",
-                qs.stringify({
-                    label: label,
-                     prid: prid,
-                })
-            );
+            const response = await client().post("index.php?option=com_emundus_onboard&controller=form&task=updateformlabel",{label: label, prid: prid});
             return response;
         } catch (error) {
             return false;
         }
         
+    },
+
+    async pushMenu(menuId){
+        try{
+            const response = await client().get("index.php?option=com_emundus_onboard&view=form&formid=" + menuId + "&format=vue_jsonclean");
+            return response.data;
+        } catch(error){
+            return false;
+        }
+
     },
 
     async getFilesByForm(prid){
@@ -31,16 +36,17 @@ export default {
     async getSubmissionPage(prid){
         try {
             const responseLink = await client().get("index.php?option=com_emundus_onboard&controller=form&task=getsubmittionpage",{
-                params: qs.stringify({
+                params: {
                     prid: prid
-                })
+                }
             })
 
             const link = responseLink.data.link.replace("fabrik","emundus_onboard");
             const responseVueJsonClean = await client().get(link+"&format=vue_jsonclean");
-
+           
             const response = {
-                responseAfterGettingSubmissionPage: responseLink,
+                link: responseLink.data.link,
+                rgt: responseLink.data.rgt,
                 responseAfterVueJsonClean: responseVueJsonClean
             }
 
@@ -53,14 +59,7 @@ export default {
 
     async getFormsByProfileId(profile_id){
         try {
-            const response = await client().get("index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
-                {
-                    params: qs.stringify({
-                        profile_id: profile_id
-                        }
-                    )
-                }
-            );
+            const response = await client().get("index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",{ params: { profile_id: profile_id } });
 
             return response.data;
         } catch (e) {
@@ -70,16 +69,10 @@ export default {
 
     async getDocuments(pid){
         try {
-            const response = await client().get("index.php?option=com_emundus_onboard&controller=form&task=getDocuments",
-                {
-                    params: qs.stringify({
-                        pid: pid
-                        }
-                    )
-                }
-            );
+            const response = await client().get("index.php?option=com_emundus_onboard&controller=form&task=getDocuments", { params: { pid: pid } } );
 
             return response.data;
+            
         } catch (e) {
             return false;
         }
