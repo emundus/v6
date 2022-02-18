@@ -53,7 +53,7 @@ export default {
       object_json: Object,
       GroupsObject: Object,
       change: false,
-      changedElement: "",
+      changedElement: [],
       changedGroup: "",
       update: false,
       builderViewKey: 0,

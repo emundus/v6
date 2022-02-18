@@ -12,7 +12,7 @@ import velocity from 'velocity-animate';
 
 /** Import Mixins **/
 import mixin_errors from '../../../media/com_emundus/js/mixins/errors.js';
-import translate from '../../com_emundus/src/mixins/translate';
+//import translate from '../../com_emundus/src/mixins/translate';
 
 Vue.directive('tooltip', VTooltip);
 Vue.directive('close-popover', VClosePopover);
@@ -26,7 +26,7 @@ Vue.use(VueSpinnersCss);
 
 /** Use Mixins **/
 Vue.mixin(mixin_errors);
-Vue.mixin(translate);
+//Vue.mixin(translate);
 
 import App from "./App";
 

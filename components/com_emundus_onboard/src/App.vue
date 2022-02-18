@@ -37,7 +37,7 @@ export default {
   name: "App",
   props: {
     component: String,
-    datas: Object,
+    datas: NamedNodeMap,
     actualLanguage: String,
     manyLanguages: String,
     coordinatorAccess: String,

@@ -234,7 +234,7 @@ export default {
     eval: Number,
     prid: String,
     actualLanguage: String,
-    manyLanguages: String,
+    manyLanguages: Number,
     pid: Number
   },
   components: {

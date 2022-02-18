@@ -15,7 +15,7 @@
         :actualLanguage="actualLanguage"
         :campaigns="campaignsAffected"
         :currentForm="formObjectArray[indexHighlight].object.id"
-        :currentMenu="formObjectArray[indexHighlight].object.menu_id"
+        :currentMenu="parseInt(formObjectArray[indexHighlight].object.menu_id)"
         @testForm="testForm"
         @modalClosed="optionsModal = false"
       />
@@ -49,10 +49,10 @@
         @modalClosed="optionsModal = false"
       />
       <ModalAddDocuments
-        :pid="prid"
+        :pid="parseInt(prid)"
         :currentDoc="currentDoc"
         :langue="actualLanguage"
-        :manyLanguages="manyLanguages"
+        :manyLanguages="parseInt(manyLanguages)"
         @modalClosed="optionsModal = false"
         @UpdateDocuments="getDocuments"
       />
@@ -240,12 +240,12 @@
               @modalClosed="optionsModal = false"
               @modalOpen="optionsModal = true"
               :key="builderKey"
-              :rgt="rgt"
+              :rgt="parseInt(rgt)"
               :prid="prid"
               :eval="0"
               :files="files"
               :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
+              :manyLanguages="parseInt(manyLanguages)"
               ref="builder"
             />
           </div>
@@ -962,12 +962,11 @@ export default {
       if (this.menuHighlight === 1) {
         param = this.submittionPages[this.indexHighlight].object.id;
       }
-      try {
+      /*try {
           const createGroup = await formBuilderService.createGroup(param).then(response => {
               console.log("the response is here");
               console.log(response.group_tag);
-              this.loading = false;
-              console.log(this.$translate(response.group_tag));
+              console.log(this.$vm.translate(response.group_tag));
               //response.group_showLegend = translate(response.group_tag);
 
               axios({
@@ -992,17 +991,15 @@ export default {
 
           )
         } catch (error) {
-          console.log("there is an stuppied error you now ? .........////////////////////////////");
           
-          alert(error);
-        }
+        }*/
       //
 
       /*if(createGroup != false){
 
 
         }*/
-      /*axios({
+      axios({
         method: "post",
         url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimplegroup",
         headers: {
@@ -1043,7 +1040,7 @@ export default {
             this.pushGroup(result.data);
           });
         });
-      });*/
+      });
     },
 
     // Update component dynamically
@@ -1367,7 +1364,7 @@ export default {
       this.loading = true;
       try {
         formService.getFormsByProfileId(this.prid).then((response) => {
-          console.log(response);
+         
           this.formList = response.data;
           setTimeout(() => {
             //this.getDataObject();
