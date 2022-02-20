@@ -1,80 +1,130 @@
 <template>
-    <div class="em-settings-menu">
+  <div class="em-settings-menu">
 
-      <div class="em-w-80">
-        <ul class="menus-home-row">
-            <li v-for="(value, index) in columns" :key="index" class="MenuFormHome">
-                <a class="MenuFormItemHome"
-                   @click="changeColumn(index)"
-                   :class="indexHighlight == index ? 'MenuFormItemHome_current' : ''">
-                    {{value}}
-                </a>
-            </li>
-        </ul>
-        <div class="form-group controls" v-if="indexHighlight == 0 && this.form.content.col1 != null">
-            <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.content.col1"></editor>
-        </div>
-        <div class="form-group controls" v-if="indexHighlight == 1 && this.form.content.col2 != null">
-            <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_en'" :key="dynamicComponent" v-model="form.content.col2"></editor>
-        </div>
+    <div class="em-w-80">
+
+      <div class="em-grid-3 em-mb-16">
+        <multiselect
+            v-model="selectedColumn"
+            label="label"
+            track-by="index"
+            :options="columns"
+            :multiple="false"
+            :taggable="false"
+            select-label=""
+            selected-label=""
+            deselect-label=""
+            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_COLUMN')"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :searchable="false"
+            :allow-empty="true"
+        ></multiselect>
+      </div>
+
+      <div class="form-group controls" v-if="selectedColumn.index === 0 && this.form.content.col1 != null">
+        <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @focusout="saveFooter"></editor>
+      </div>
+      <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null">
+        <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor>
       </div>
     </div>
+
+    <div class="em-page-loader" v-if="loading"></div>
+  </div>
 </template>
 
 <script>
-    import axios from "axios";
-    import Editor from "../../editor";
+/* COMPONENTS */
+import Editor from "../../editor";
+import Multiselect from 'vue-multiselect';
 
-    const qs = require("qs");
+/* SERVICES */
+import client from "com_emundus/src/services/axiosClient";
+import mixin from "com_emundus/src/mixins/mixin";
 
-    export default {
-        name: "editFooter",
+export default {
+  name: "editFooter",
 
-        components: {
-            Editor
-        },
+  components: {
+    Editor,
+    Multiselect
+  },
 
-        props: {
-            actualLanguage: String
-        },
+  props: {
+    actualLanguage: String
+  },
 
-        data() {
-            return {
-                dynamicComponent: 0,
-                indexHighlight: 0,
-                form: {
-                    content: {
-                        col1: null,
-                        col2: null
-                    }
-                },
-                columns: [
-                  this.translate("COM_EMUNDUS_ONBOARD_COLUMN") + ' 1',
-                  this.translate("COM_EMUNDUS_ONBOARD_COLUMN") + ' 2',
-                ],
-                TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-            };
-        },
+  mixins: [mixin],
 
-        methods: {
-            getArticles() {
-                axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getfooterarticles")
-                    .then(response => {
-                        this.form.content.col1 = response.data.data.column1;
-                        this.form.content.col2 = response.data.data.column2;
-                    });
-            },
+  data() {
+    return {
+      loading: false,
+      dynamicComponent: 0,
+      selectedColumn: 0,
 
-            changeColumn(index) {
-                this.indexHighlight = index;
-                this.dynamicComponent++;
-            }
-        },
-
-        created() {
-            this.getArticles();
+      form: {
+        content: {
+          col1: null,
+          col2: null
         }
+      },
+      columns: [
+        {
+          index: 0,
+          label: this.translate("COM_EMUNDUS_ONBOARD_COLUMN") + ' 1',
+        },
+        {
+          index: 1,
+          label: this.translate("COM_EMUNDUS_ONBOARD_COLUMN") + ' 2',
+        },
+      ],
     };
+  },
+
+  created() {
+    this.loading = true;
+    this.getArticles();
+    this.selectedColumn = this.columns[0];
+  },
+
+  methods: {
+    async getArticles() {
+      await client().get("index.php?option=com_emundus_onboard&controller=settings&task=getfooterarticles")
+          .then(response => {
+            this.form.content.col1 = response.data.data.column1;
+            this.form.content.col2 = response.data.data.column2;
+            this.loading = false;
+          });
+    },
+
+    async saveFooter() {
+      this.$emit('updateSaving',true);
+
+      const formData = new FormData();
+      formData.append('col1', this.form.content.col1);
+      formData.append('col2', this.form.content.col2);
+
+      await client().post(`index.php?option=com_emundus_onboard&controller=settings&task=updatefooter`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+      ).then(() => {
+        this.$emit('updateSaving',false);
+        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+      });
+    },
+  },
+
+  watch: {
+    selectedColumn: function() {
+      this.dynamicComponent++;
+    }
+  }
+};
 </script>
 <style scoped>
 </style>

@@ -25,15 +25,18 @@
 
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
-          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
+          <div v-for="menu in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
             <p class="em-font-size-16">{{translate(menu.title)}}</p>
           </div>
         </div>
 
         <transition name="fade">
-          <EditHomepage v-if="currentMenu === 1" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditHomepage>
-          <EditCGV v-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditCGV>
-          <EditFooter v-if="currentMenu === 3" class="em-modal-component"></EditFooter>
+          <EditArticle v-if="currentMenu === 1" :key="currentMenu" :article_id="'52'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditArticle v-if="currentMenu === 2" :key="currentMenu" :article_alias="'mentions-legales'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditArticle v-if="currentMenu === 3" :key="currentMenu" :article_alias="'politique-de-confidentialite-des-donnees'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditArticle v-if="currentMenu === 4" :key="currentMenu" :article_alias="'gestion-de-vos-droits'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditArticle v-if="currentMenu === 5" :key="currentMenu" :article_alias="'gestion-des-cookies'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditFooter v-if="currentMenu === 6" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
         </transition>
       </div>
 
@@ -45,14 +48,13 @@
 
 <script>
 /* COMPONENTS */
-import EditHomepage from "./editHomepage";
-import EditCGV from "./editCGV";
+import EditArticle from "./editArticle";
 import EditFooter from "./editFooter";
 
 export default {
   name: "contentTool",
   props: { },
-  components: {EditFooter, EditCGV, EditHomepage},
+  components: {EditFooter, EditArticle},
   data() {
     return {
       currentMenu: 1,
@@ -62,12 +64,24 @@ export default {
           index: 1
         },
         {
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_TERMS",
+          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
           index: 2
         },
         {
-          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
+          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS",
           index: 3
+        },
+        {
+          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS",
+          index: 4
+        },
+        {
+          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES",
+          index: 5
+        },
+        {
+          title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
+          index: 6
         },
       ],
 

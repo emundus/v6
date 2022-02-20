@@ -167,7 +167,7 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         exit;
     }
 
-    public function gethomepagearticle() {
+    public function getarticle() {
         $user = JFactory::getUser();
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -175,59 +175,24 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
+            $article_id = $jinput->getString('article_id',0);
+            $article_alias = $jinput->getString('article_alias','');
             $lang = $jinput->getString('lang');
+            $field = $jinput->getString('field');
 
-	        $m_settings = $this->model;
-            $content = $m_settings->getHomepageArticle($lang);
-            if (!empty($content)) {
-                $tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $content);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $content);
-            }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    public function updatehomepage() {
-        $user = JFactory::getUser();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-
-        	$m_settings = $this->model;
-	        $jinput = JFactory::getApplication()->input;
-	        $content = $jinput->getRaw('content');
-            $lang = $jinput->getString('lang');
-
-            $changeresponse = $m_settings->updateHomepage($content,$lang);
-        }
-        echo json_encode((object)$changeresponse);
-        exit;
-    }
-
-    public function getcgvarticle(){
-        $user = JFactory::getUser();
-
-        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
             $m_settings = $this->model;
-            $content = $m_settings->getCGVArticle();
+            $content = $m_settings->getArticle($lang,$article_id,$article_alias,$field);
             if (!empty($content)) {
-                $tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $content);
+                $tab = array('status' => 1, 'msg' => JText::_('ARTICLE_FIND'), 'data' => $content);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $content);
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_ARTICLE') . $article_id, 'data' => $content);
             }
         }
         echo json_encode((object)$tab);
         exit;
     }
 
-    public function updatecgv() {
+    public function updatearticle() {
         $user = JFactory::getUser();
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -238,8 +203,12 @@ class EmundusonboardControllersettings extends JControllerLegacy {
             $m_settings = $this->model;
             $jinput = JFactory::getApplication()->input;
             $content = $jinput->getRaw('content');
+            $article_id = $jinput->getString('article_id',0);
+            $article_alias = $jinput->getString('article_alias','');
+            $lang = $jinput->getString('lang');
+            $field = $jinput->getString('field');
 
-            $changeresponse = $m_settings->updateCGV($content);
+            $changeresponse = $m_settings->updateArticle($content,$lang,$article_id,$article_alias,$field);
         }
         echo json_encode((object)$changeresponse);
         exit;
@@ -274,9 +243,10 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
             $m_settings = $this->model;
             $jinput = JFactory::getApplication()->input;
-            $content = $jinput->getRaw('content');
+            $col1 = $jinput->getRaw('col1');
+            $col2 = $jinput->getRaw('col2');
 
-            $changeresponse = $m_settings->updateFooter($content);
+            $changeresponse = $m_settings->updateFooter($col1,$col2);
         }
         echo json_encode((object)$changeresponse);
         exit;

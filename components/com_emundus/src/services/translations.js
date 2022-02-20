@@ -19,6 +19,16 @@ export default {
     }
   },
 
+  async getAllLanguages() {
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=translations&task=getlanguages');
+
+      return response.data;
+    } catch (e) {
+      return false;
+    }
+  },
+
   async getDefaultLanguage() {
     try {
       const response = await client().get('index.php?option=com_emundus&controller=translations&task=getdefaultlanguage');

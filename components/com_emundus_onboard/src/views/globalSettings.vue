@@ -35,27 +35,6 @@
               @resetMenuIndex="menuHighlight = 0"
           />
 
-          <TranslationTool
-              v-if="menuHighlight === 9"
-              v-show="modal_ready"
-              @resetMenuIndex="menuHighlight = 0"
-              ref="translations"
-          />
-
-          <editCGV
-              v-if="menuHighlight === 3"
-              ref="cgv"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></editCGV>
-
-          <editFooter
-              v-if="menuHighlight === 4"
-              ref="footer"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></editFooter>
-
           <editStatus
               v-if="menuHighlight === 5"
               @LaunchLoading="updateLoading"
@@ -78,6 +57,13 @@
               @StopLoading="updateLoading"
               ref="applicants"
           ></edit-applicants>
+
+          <TranslationTool
+              v-if="menuHighlight === 9"
+              v-show="modal_ready"
+              @resetMenuIndex="menuHighlight = 0"
+              ref="translations"
+          />
 
 <!--          <editDatas
                   v-if="menuHighlight == 8 && coordinatorAccess != 0"
@@ -103,11 +89,8 @@
 import axios from "axios";
 import editStatus from "../components/Settings/editStatus";
 import editTags from "../components/Settings/editTags";
-import editHomepage from "../components/Settings/Content/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
-import editCGV from "../components/Settings/Content/editCGV";
-import editFooter from "../components/Settings/Content/editFooter";
 import EditApplicants from "@/components/Settings/editApplicants";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 import ContentTool from "../components/Settings/Content/ContentTool";
@@ -123,9 +106,6 @@ export default {
     EditApplicants,
     editStatus,
     editTags,
-    editCGV,
-    editFooter,
-    editHomepage,
     editStyle,
     editDatas,
   },
@@ -222,22 +202,6 @@ export default {
       axios({
         method: "post",
         url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatefooter',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          content: content
-        })
-      }).then(() => {
-        this.updateLoading(false);
-      });
-    },
-
-    updateCgv(content) {
-      this.updateLoading(true);
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatecgv',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

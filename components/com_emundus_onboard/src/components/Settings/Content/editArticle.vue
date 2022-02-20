@@ -1,8 +1,6 @@
 <template>
   <div class="em-settings-menu">
-
     <div class="em-w-80">
-      <label class="mb-1">{{ translate("COM_EMUNDUS_ONBOARD_HOME_CONTENT") }}</label>
 
       <div class="em-grid-3 em-mb-16">
         <multiselect
@@ -23,7 +21,7 @@
         ></multiselect>
       </div>
 
-      <div class="form-group controls" v-if="this.form.content != null">
+      <div class="form-group controls">
         <editor :height="'30em'" :text="form.content" :lang="actualLanguage" :enable_variables="false" :id="'editor'" :key="dynamicComponent" v-model="form.content" @focusout="saveContent"></editor>
       </div>
     </div>
@@ -37,17 +35,13 @@
 import Editor from "@/components/editor";
 import Multiselect from 'vue-multiselect';
 
-/* MIXINS */
-import mixin from "com_emundus/src/mixins/mixin";
-
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
-import axios from "axios";
-import qs from "qs";
+import mixin from "com_emundus/src/mixins/mixin";
 
 export default {
-  name: "editHomepage",
+  name: "editArticle",
 
   components: {
     Editor,
@@ -56,7 +50,9 @@ export default {
 
   props: {
     actualLanguage: String,
-    manyLanguages: Number
+    manyLanguages: Number,
+    article_alias: String,
+    article_id: Number
   },
   mixins: [mixin],
 
@@ -86,10 +82,21 @@ export default {
 
   methods: {
     async getArticle() {
-      await client().get("index.php?option=com_emundus_onboard&controller=settings&task=gethomepagearticle", {
-        params: {
+      let params = {
+        article_id: this.$props.article_id,
+        lang: this.lang.lang_code,
+        field: 'introtext',
+      }
+      if(typeof this.$props.article_alias !== 'undefined'){
+        params = {
+          article_alias: this.$props.article_alias,
           lang: this.lang.lang_code,
+          field: 'introtext',
         }
+      }
+
+      await client().get("index.php?option=com_emundus_onboard&controller=settings&task=getarticle", {
+        params: params
       }).then(response => {
         this.form.content = response.data.data.introtext;
         this.dynamicComponent++;
@@ -102,8 +109,14 @@ export default {
       const formData = new FormData();
       formData.append('content', this.form.content);
       formData.append('lang', this.lang.lang_code);
+      if(typeof this.$props.article_alias !== 'undefined') {
+        formData.append('article_alias', this.$props.article_alias);
+      } else {
+        formData.append('article_id', this.$props.article_id);
+      }
+      formData.append('field', 'introtext');
 
-      await client().post(`index.php?option=com_emundus_onboard&controller=settings&task=updatehomepage`,
+      await client().post(`index.php?option=com_emundus_onboard&controller=settings&task=updatearticle`,
           formData,
           {
             headers: {
@@ -117,13 +130,10 @@ export default {
     },
 
     async getAllLanguages() {
-      try {
-        const response = await client().get('index.php?option=com_emundus&controller=translations&task=getlanguages');
-        this.availableLanguages = response.data;
+      await translationsService.getAllLanguages().then((response) => {
+        this.availableLanguages = response;
         this.lang = this.defaultLang;
-      } catch (e) {
-        return false;
-      }
+      })
     },
   },
 
@@ -134,6 +144,5 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 </style>

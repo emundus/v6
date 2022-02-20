@@ -16,6 +16,14 @@ jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
 class EmundusonboardModelsettings extends JModelList {
+
+    /**
+     * Get all colors available for status and tags
+     *
+     * @return string[]
+     *
+     * @since 1.0
+     */
     function getColorClasses(){
         return array(
             'lightpurple' => '#DCC6E0',
@@ -43,12 +51,27 @@ class EmundusonboardModelsettings extends JModelList {
         );
     }
 
+    /**
+     * A helper function that replace spaces and special characters
+     *
+     * @param $string
+     * @return array|string|string[]|null
+     *
+     * @since 1.12.0
+     */
     function clean($string) {
         $string = str_replace(' ', '_', $string); // Replaces all spaces with hyphens.
 
         return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
     }
 
+    /**
+     * Get all status available and check if files is associated
+     *
+     * @return array|false|mixed
+     *
+     * @since 1.0
+     */
     function getStatus() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -86,6 +109,13 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    /**
+     * Get all emundus tags available
+     *
+     * @return array|false|mixed
+     *
+     * @since 1.0
+     */
     function getTags() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -102,6 +132,14 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    /**
+     * Delete a tag, foreign key delete also all files associated to this tag
+     *
+     * @param $id
+     * @return false|mixed
+     *
+     * @since 1.0
+     */
     function deleteTag($id) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -118,6 +156,13 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    /**
+     * Create a emundus tag with a default label and color
+     *
+     * @return false|mixed|null
+     *
+     * @since 1.0
+     */
     function createTag() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -145,6 +190,13 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    /**
+     * Create a new status
+     *
+     * @return false|mixed|null
+     *
+     * @since 1.0
+     */
     function createStatus() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -207,6 +259,14 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    /**
+     * Update a status (label and colors)
+     *
+     * @param $status
+     * @return array|false
+     *
+     * @since 1.0
+     */
     function updateStatus($status) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -252,6 +312,15 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    /**
+     * Delete a status that is not associated to files
+     *
+     * @param $id
+     * @param $step
+     * @return false|mixed
+     *
+     * @since 1.0
+     */
     function deleteStatus($id,$step) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -275,6 +344,14 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
+    /**
+     * Update emundus tags (label and colors)
+     *
+     * @param $tags
+     * @return array|false
+     *
+     * @since 1.0
+     */
     function updateTags($tags) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -301,59 +378,13 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function getCGVArticle() {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('*')
-            ->from($db->quoteName('#__content'))
-            ->where($db->quoteName('id') . ' = 2');
-
-        try {
-            $db->setQuery($query);
-            $cgv = $db->loadObject();
-
-            $cgv->title_en = '';
-            $cgv->introtext_en = '';
-
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = 2',
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('title'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $en_title = $db->loadResult();
-
-            $query->clear()
-                ->select('value')
-                ->from($db->quoteName('#__falang_content'))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = 2',
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $en_introtext = $db->loadResult();
-
-            if ($en_title != null) {
-                $cgv->title_en = $en_title;
-            }
-            if ($en_introtext != null) {
-                $cgv->introtext_en = $en_introtext;
-            }
-
-            return $cgv;
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at getting CGV article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
+    /**
+     * Get footer articles from the module mod_emundus_footer
+     *
+     * @return false|stdClass
+     *
+     * @since 1.28.0
+     */
     function getFooterArticles() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -372,8 +403,8 @@ class EmundusonboardModelsettings extends JModelList {
             if (!empty($params)) {
                 $params = json_decode($params->params);
 
-                $footers->column1 = $params->mod_emundus_footer_texte_col_1;
-                $footers->column2 = $params->mod_emundus_footer_texte_col_2;
+                $footers->column1 = $params->mod_emundus_footer_texte_col_1 !== 'null' ? $params->mod_emundus_footer_texte_col_1 : '';
+                $footers->column2 = $params->mod_emundus_footer_texte_col_2 !== 'null' ? $params->mod_emundus_footer_texte_col_2 : '';
                 return $footers;
             } else {
                 return $this->getOldFooterArticles();
@@ -387,6 +418,8 @@ class EmundusonboardModelsettings extends JModelList {
     /**
      * Deprecated footer handling
      * Get footer content from custom module in footer-a position
+     *
+     * @since 1.0
      */
     private function getOldFooterArticles() {
 
@@ -417,7 +450,18 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    function getHomepageArticle($lang_code) {
+    /**
+     * Get a Joomla article
+     *
+     * @param $lang_code
+     * @param $article_id
+     * @param $article_alias
+     * @param $reference_field
+     * @return false|mixed|null
+     *
+     * @since 1.29.0
+     */
+    function getArticle($lang_code,$article_id = 0,$article_alias = '',$reference_field = 'introtext'){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -429,20 +473,25 @@ class EmundusonboardModelsettings extends JModelList {
 
         $query->clear()
             ->select('*')
-            ->from($db->quoteName('#__content'))
-            ->where($db->quoteName('id') . ' = 52');
+            ->from($db->quoteName('#__content'));
+
+        if(!empty($article_id)) {
+            $query->where($db->quoteName('id') . ' = ' . $article_id);
+        } else {
+            $query->where($db->quoteName('alias') . ' = ' . $db->quote($article_alias));
+        }
 
         try {
             $db->setQuery($query);
-            $homepage = $db->loadObject();
+            $article = $db->loadObject();
 
             $query->clear()
                 ->select('value')
                 ->from($db->quoteName('#__falang_content'))
                 ->where(array(
-                    $db->quoteName('reference_id') . ' = 52',
+                    $db->quoteName('reference_id') . ' = ' . $article->id,
                     $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
+                    $db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
                     $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
                     $db->quoteName('published') . ' = ' . $db->quote(1)
                 ));
@@ -450,17 +499,29 @@ class EmundusonboardModelsettings extends JModelList {
             $result = $db->loadResult();
 
             if(!empty($result)){
-                $homepage->introtext = $result;
+                $article->{$reference_field} = $result;
             }
 
-            return $homepage;
+            return $article;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot get homepage article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-    function updateHomepage($content,$lang_code) {
+    /**
+     * Update a Joomla article
+     *
+     * @param $content
+     * @param $lang_code
+     * @param $article_id
+     * @param $article_alias
+     * @param $reference_field
+     * @return false|mixed
+     *
+     * @since 1.29.0
+     */
+    function updateArticle($content,$lang_code,$article_id = 0,$article_alias = '',$reference_field = 'introtext') {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -471,14 +532,26 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             $lang_id = $db->loadResult();
 
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__content'));
+
+            if(!empty($article_id)) {
+                $query->where($db->quoteName('id') . ' = ' . $article_id);
+            } else {
+                $query->where($db->quoteName('alias') . ' = ' . $db->quote($article_alias));
+            }
+            $db->setQuery($query);
+            $article = $db->loadObject();
+
             // Update content
             $query->clear()
                 ->select('value')
                 ->from($db->quoteName('#__falang_content'))
                 ->where(array(
-                    $db->quoteName('reference_id') . ' = 52',
+                    $db->quoteName('reference_id') . ' = ' . $article->id,
                     $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
+                    $db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
                     $db->quoteName('language_id') . ' = ' . $db->quote($lang_id),
                     $db->quoteName('published') . ' = ' . $db->quote(1)
                 ));
@@ -489,7 +562,7 @@ class EmundusonboardModelsettings extends JModelList {
                 $query->clear()
                     ->update($db->quoteName('#__content'))
                     ->set($db->quoteName('introtext') . ' = ' . $db->quote($content))
-                    ->where($db->quoteName('id') . ' = ' . 52);
+                    ->where($db->quoteName('id') . ' = ' . $article->id);
                 $db->setQuery($query);
                 return $db->execute();
             } else {
@@ -497,54 +570,30 @@ class EmundusonboardModelsettings extends JModelList {
                     ->update('#__falang_content')
                     ->set($db->quoteName('value') . ' = ' . $db->quote($content))
                     ->where(array(
-                        $db->quoteName('reference_id') . ' = 52',
+                        $db->quoteName('reference_id') . ' = ' . $article->id,
                         $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                        $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
+                        $db->quoteName('reference_field') . ' = ' . $db->quote($reference_field),
                         $db->quoteName('language_id') . ' = ' . $db->quote($lang_id)
                     ));
                 $db->setQuery($query);
                 return $db->execute();
             }
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at updating homepage article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/settings | Error at updating article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
 
-    function updateCGV($content) {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $results = [];
-
-        $query->update($db->quoteName('#__content'))
-            ->set($db->quoteName('introtext') . ' = ' . $db->quote($content['fr']))
-            ->where($db->quoteName('id') . ' = ' . 2);
-
-        try {
-            $db->setQuery($query);
-            $results[] = $db->execute();
-
-            $query->clear()
-                ->update('#__falang_content')
-                ->set($db->quoteName('value') . ' = ' . $db->quote($content['en']))
-                ->where(array(
-                    $db->quoteName('reference_id') . ' = 2',
-                    $db->quoteName('reference_table') . ' = ' . $db->quote('content'),
-                    $db->quoteName('reference_field') . ' = ' . $db->quote('introtext'),
-                    $db->quoteName('language_id') . ' = 1'
-                ));
-            $db->setQuery($query);
-            $results[] = $db->execute();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at updating CGV article : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-
-        return $results;
-    }
-
-    function updateFooter($content) {
+    /**
+     * Update the emundus footer module with 2 columns
+     *
+     * @param $col1
+     * @param $col2
+     * @return bool|mixed
+     *
+     * @since 1.28.0
+     */
+    function updateFooter($col1,$col2) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -558,8 +607,8 @@ class EmundusonboardModelsettings extends JModelList {
         if (!empty($params)) {
             $params = json_decode($params);
 
-            $params->mod_emundus_footer_texte_col_1 = $content['col1'];
-            $params->mod_emundus_footer_texte_col_2 = $content['col2'];
+            $params->mod_emundus_footer_texte_col_1 = $col1;
+            $params->mod_emundus_footer_texte_col_2 = $col2;
 
             $query->clear()
                 ->update($db->quoteName('#__modules'))
@@ -570,43 +619,107 @@ class EmundusonboardModelsettings extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/settings | Error at updating CGV articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus_onboard/models/settings | Error at updating footer : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
-            return $this->updateOldFooter($content);
+            return $this->updateOldFooter($col1,$col2);
         }
     }
 
     /**
      * Deprecated footer handling
-     * @param $content
+     *
+     * @param $col1
+     * @param $col2
      * @return bool
+     *
+     * @since 1.0
      */
-    private function updateOldFooter($content) {
+    private function updateOldFooter($col1,$col2) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $results = [];
 
         $query->update($db->quoteName('#__modules'))
-            ->set($db->quoteName('content') . ' = ' . $db->quote($content['col1']))
+            ->set($db->quoteName('content') . ' = ' . $db->quote($col1))
             ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-a'));
 
         try {
             $db->setQuery($query);
-            $results[] = $db->execute();
+            $db->execute();
 
             $query->clear()
                 ->update($db->quoteName('#__modules'))
-                ->set($db->quoteName('content') . ' = ' . $db->quote($content['col2']))
+                ->set($db->quoteName('content') . ' = ' . $db->quote($col2))
                 ->where($db->quoteName('position') . ' LIKE ' . $db->quote('footer-b'));
             $db->setQuery($query);
-            $results[] = $db->execute();
+            $db->execute();
 
-            return $results;
+            return true;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at updating CGV articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/settings | Error at updating footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    /**
+     * Get emundus tags published for wysiwig editor (emails, settings, formbuilder)
+     *
+     * @return array|false|mixed
+     *
+     * @since 1.10.0
+     */
+    function getEditorVariables() {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $lang = JFactory::getLanguage();
+        $actualLanguage = substr($lang->getTag(), 0 , 2);
+        if($actualLanguage == 'fr'){
+            $language = 2;
+        } else {
+            $language = 1;
+        }
+
+        $query->select('st.id as id,st.tag as tag,fc.value as description')
+            ->from($db->quoteName('#__emundus_setup_tags','st'))
+            ->leftJoin($db->quoteName('#__falang_content','fc').' ON '.$db->quoteName('fc.reference_id').' = '.$db->quoteName('st.id'))
+            ->where($db->quoteName('st.published') . ' = ' . $db->quote(1))
+            ->andWhere($db->quoteName('fc.reference_field') . ' = ' . $db->quote('description'))
+            ->andWhere($db->quoteName('fc.language_id') . ' = ' . $db->quote($language))
+            ->andWhere($db->quoteName('fc.reference_table') . ' = ' . $db->quote('emundus_setup_tags'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Error at getting editor variables : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    /**
+     * Update the main logo store in a module
+     *
+     * @param $newcontent
+     * @return false|mixed
+     *
+     * @since 1.0
+     */
+    function updateLogo($newcontent){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__modules'))
+                ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
+                ->where($db->quoteName('id') . ' = 90');
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
     }
@@ -882,46 +995,6 @@ class EmundusonboardModelsettings extends JModelList {
         }
     }
 
-    /*function unlockUser($user_id){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $query->update('#__users')
-            ->set($db->quoteName('block') . ' = 0')
-            ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
-
-        try {
-            $db->setQuery($query);
-            return $db->execute();
-        } catch (Exception $e) {
-            JLog::add('Error : '.$e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-            return false;
-        }
-    }
-
-    function lockUser($user_id){
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $user = JFactory::getUser();
-
-        if($user_id != 62 && $user_id != $user->id) {
-            $query->update('#__users')
-                ->set($db->quoteName('block') . ' = 1')
-                ->where($db->quoteName('id') . ' = ' . $db->quote($user_id));
-
-            try {
-                $db->setQuery($query);
-                return $db->execute();
-            } catch (Exception $e) {
-                JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }*/
-
     function checkFirstDatabaseJoin($user_id) {
         $user = JFactory::getUser($user_id);
 
@@ -934,35 +1007,6 @@ class EmundusonboardModelsettings extends JModelList {
             return $params->get('first_databasejoin', true);
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/settings | Error at checking if its the first databasejoin of the user ' . $user_id . ' : ' .$table->getError(), JLog::ERROR, 'com_emundus');
-            return false;
-        }
-    }
-
-    function getEditorVariables() {
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $lang = JFactory::getLanguage();
-        $actualLanguage = substr($lang->getTag(), 0 , 2);
-        if($actualLanguage == 'fr'){
-            $language = 2;
-        } else {
-            $language = 1;
-        }
-
-        $query->select('st.id as id,st.tag as tag,fc.value as description')
-            ->from($db->quoteName('#__emundus_setup_tags','st'))
-            ->leftJoin($db->quoteName('#__falang_content','fc').' ON '.$db->quoteName('fc.reference_id').' = '.$db->quoteName('st.id'))
-            ->where($db->quoteName('st.published') . ' = ' . $db->quote(1))
-            ->andWhere($db->quoteName('fc.reference_field') . ' = ' . $db->quote('description'))
-            ->andWhere($db->quoteName('fc.language_id') . ' = ' . $db->quote($language))
-            ->andWhere($db->quoteName('fc.reference_table') . ' = ' . $db->quote('emundus_setup_tags'));
-
-        try {
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at getting editor variables : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1084,22 +1128,6 @@ class EmundusonboardModelsettings extends JModelList {
                 return $db->execute();
             }
         }  catch (Exception $e) {
-            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
-            return false;
-        }
-    }
-
-    function updateLogo($newcontent){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->update($db->quoteName('#__modules'))
-                ->set($db->quoteName('content') . ' = ' . $db->quote($newcontent))
-                ->where($db->quoteName('id') . ' = 90');
-            $db->setQuery($query);
-            return $db->execute();
-        } catch (Exception $e) {
             JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
             return false;
         }
