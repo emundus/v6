@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
 	<name>Hikashop Add to Cart notification Plugin</name>
-	<creationDate>10 août 2020</creationDate>
-	<version>4.3.0</version>
+	<creationDate>09 novembre 2020</creationDate>
+	<version>4.4.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
@@ -36,6 +36,10 @@
 			<option value="no_redirect">HIKA_CARTNOTIFICATION_NO_REDIRECT</option>
 		</param>
 		<param name="auto_redirect_delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_LBL" description="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_DESC" />
+		<param name="guest_wishlist_redirect" type="list" default="0" label="HIKA_CARTNOTIFICATION_GUEST_WISHLIST_REDIRECT" description="HIKA_CARTNOTIFICATION_GUEST_WISHLIST_REDIRECT_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
+		</param>
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
@@ -62,6 +66,10 @@
 					<option value="no_redirect">HIKA_CARTNOTIFICATION_NO_REDIRECT</option>
 				</field>
 				<field name="auto_redirect_delay" type="text" size="50" default="4000" showon="auto_redirect:on_success[AND]notification_reference!:popup" label="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_LBL" description="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_DESC" />
+				<field name="guest_wishlist_redirect" type="list" default="0" label="HIKA_CARTNOTIFICATION_GUEST_WISHLIST_REDIRECT" description="HIKA_CARTNOTIFICATION_GUEST_WISHLIST_REDIRECT_DESC">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
 			</fieldset>
 		</fields>
 	</config>

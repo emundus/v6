@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -20,11 +20,22 @@ defined('_JEXEC') or die('Restricted access');
 						$this->category_page_title_input = "data[category][category_page_title]";
 						$this->category_alias_input = "data[category][category_alias]";
 						$this->category_canonical_input = "data[category][category_canonical]";
-						if($this->translation){
-							$this->setLayout('translation');
-						}else{
-							$this->setLayout('normal');
+						if($this->translation && !empty($this->element->category_id)){
+							echo '<div class="hikashop_multilang_buttons" id="hikashop_multilang_buttons">';
+							$popupHelper = hikashop_get('helper.popup');
+							foreach($this->element->translations as $language_id => $translation){
+								echo $popupHelper->display(
+									'<div class="hikashop_multilang_button">'.$this->transHelper->getFlag($language_id).'</div>',
+									$this->transHelper->getFlag($language_id),
+									'\''."index.php?option=com_hikashop&ctrl=category&task=edit_translation&category_id=".@$this->element->category_id."&language_id=".$language_id.'&tmpl=component\'',
+									'hikashop_edit_'.$language_id.'_translations',
+									760,480, '', '', 'link',true
+								);
+							}
+							echo '</div>';
+
 						}
+						$this->setLayout('normal');
 						echo $this->loadTemplate();
 					?>
 			</div>

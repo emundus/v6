@@ -3,6 +3,7 @@
 @import url("https://use.typekit.net/czx4mrf.css");
 
 @import "dependencies";
+@import "variables";
 
 /* Here you can add Anything you want to be present on the entire site AND with variables */
 /* - Laura.scss */
@@ -306,56 +307,56 @@ ul {
 
 .modal-body {
   a {
-    color: $dark-blue !important;
+    color: $dark-grey !important;
   }
 }
 
 .contentpane.modal {
   h1, h2, h3, h4, h5, h6 {
-    color: $dark-blue !important;
+    color: $night-blue !important;
   }
 
   form legend {
-    color: $dark-blue !important;
+    color: $night-blue !important;
   }
 }
 
 .modal-dialog .modal-body {
   h1, h2, h3, h4, h5, h6 {
-    color: $dark-blue !important;
+    color: $night-blue !important;
   }
 }
 
 
 .contentpane.modal form .fabrikActions.form-actions button.btn {
-  background: $dark-blue !important;
-  background-color: $dark-blue !important;
-  border: 2px solid $dark-blue !important;
-  border-radius: 25px !important;
+  background: $dark-grey !important;
+  background-color: $dark-grey !important;
+  border: 2px solid $dark-grey !important;
+  border-radius: 4px !important;
   color: #fff;
 
   &:active, &:focus, &:hover {
-    background: transparent!important;
-    background-color: transparent!important;
-    border: 2px solid $dark-blue !important;
-    border-radius: 25px !important;
-    color: $dark-blue !important;
+    background: $grey!important;
+    background-color: $grey!important;
+    border: 2px solid $grey !important;
+    border-radius: 4px !important;
+    color: $white !important;
   }
 }
 
 .files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"]  {
-  background: $dark-blue !important;
-  background-color: $dark-blue !important;
-  border: 2px solid $dark-blue !important;
-  border-radius: 25px !important;
+  background: $dark-grey !important;
+  background-color: $dark-grey !important;
+  border: 2px solid $dark-grey !important;
+  border-radius: 4px !important;
   color: #fff !important;
 
   &:active, &:focus, &:hover {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: 2px solid $dark-blue !important;
-    border-radius: 25px !important;
-    color: $dark-blue !important;
+    background: $grey !important;
+    background-color: $grey !important;
+    border: 2px solid $grey !important;
+    border-radius: 4px !important;
+    color: $white !important;
   }
 }
 
@@ -669,7 +670,7 @@ footer#g-footer {
 }
 
 footer#g-footer img {
-  max-width: 50%;
+  max-width: 35%;
 }
 
 #g-page-surround {
@@ -812,7 +813,7 @@ body>.g-container {
   }
 
   #userDropdownIcon {
-    background-color: white;
+    background: transparent;
     font-size: 1.5em;
     width: 30px !important;
     height: 30px !important;
@@ -979,7 +980,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 }
 
-/* MODULE APPLICATIONS  - COULEUR BTN IMPRIMER*/
+/* MODULE APPLICATIONS */
+.list-group.candidacy-files-list .row .ui.yellow.segment:not(.inverted) {
+  border-top: 2px solid $base-secondary-color !important;
+}
+
+/* MODULE APPLICATIONS COULEUR BTN IMPRIMER*/
 .homepage #g-main-mainbody #content-bottom-a {
   .platform-content .btn.btn-info {
     background: darken($base-secondary-color, 8%);
@@ -1043,6 +1049,21 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   margin-top: 50px;
 }
 
+.add-application-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 20em;
+  margin-bottom: 30px;
+
+  p {
+    width: 100%;
+  }
+  a#add-application {
+    width: 100%;
+    text-align: center !important;
+  }
+}
 
 /* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
 
@@ -1280,6 +1301,15 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   border-bottom-color: $dark-blue;
 }
 
+// remove
+.fabrikNav .pagination-list li {
+  margin: 0;
+}
+
+.fabrikNav .list-footer .limit .input-prepend.input-append {
+  display: flex;
+}
+
 /* DOCUMENTS OBLIGATOIRES */
 .need_missing.active a::before {
   color: $base-primary-color;
@@ -1371,16 +1401,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
-    background-color: $dark-blue;
+    background-color: $dark-grey;
     color: #fff;
-    border-color: $dark-blue;
+    border-color: $dark-grey;
 
     &:hover,
     &:active,
     :focus {
       background-color: transparent;
-      color: $dark-blue;
-      border-color: $dark-blue;
+      color: $grey;
+      border-color: $grey;
     }
   }
 
@@ -1464,6 +1494,32 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .view-form input[type='radio'] {
     border: 2px solid $base-secondary-color;
+  }
+
+  .fabrik_element___emundus_file_upload_parent{
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    input[type=file] {
+      left: 0;
+      top: 0;
+      opacity: 0;
+      position: absolute;
+      font-size: 40px;
+      cursor: pointer;
+    }
+    .btn-upload{
+      color: #fff;
+      background: $base-secondary-color;
+      border: 1px solid $base-secondary-color;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 8px 0;
+    }
+    .em-deleteFile{
+      margin-left: 10px;
+    }
   }
 
   /* STATUS ET ETIQUETTES */
@@ -1590,28 +1646,67 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #g-container-main {
       padding: 0 10px;
+      height: 100%;
+      margin: auto;
     }
   }
 
-  body.error-page p {
+  body.error-page .container-404 p {
     padding: 20px 0 !important;
   }
 
 
   /* BOUTONS */
 
-  .modal-dialog .modal-body a.btn.btn-link[title*="Télécharger"], .modal-dialog .modal-body a.btn.btn-link[title*="Download"]  {
+  .modal-dialog .modal-body #chargement a.btn.btn-link {
+    background-color: $night-blue;
+    border: 2px solid $night-blue !important;
+    border-radius: 5px !important;
+    padding: 5px 30px !important;
+    height: 36px;
+    color: $neutral-100;
+
     span {
-      color: #fff !important
+      color: $neutral-100;
     }
     &:hover, &:focus, &:active {
+      background-color: $grey;
+      border: 2px solid $grey !important;
+      border-radius: 5px !important;
+      padding: 5px 30px !important;
+      height: 36px;
+      color: $neutral-100 !important;
       text-decoration: none;
-      color: $base-primary-color !important;
       span {
-        color: $base-primary-color !important;
+        color: $neutral-100 !important;
       }
     }
   }
+
+.modal-dialog .modal-body #chargement button.btn-default#back,
+ .modal-dialog .modal-body button#delfilter,
+.modal-dialog .modal-body button#delPDFfilter {
+  background-color: $grey !important;
+  border: 2px solid $grey !important;
+  border-radius: 5px !important;
+  padding: 5px 30px !important;
+  height: 36px;
+  color: $neutral-100 !important;
+  span {
+    color: $neutral-100;
+  }
+  &:hover, &:focus, &:active {
+    background-color: $light-grey !important;
+    border: 2px solid $light-grey !important;
+    border-radius: 5px !important;
+    padding: 5px 30px !important;
+    height: 36px;
+    color: $grey !important;
+    span {
+      color: $grey !important;
+    }
+  }
+}
 
   .view-form p.select-program a {
     border: 1px solid $base-secondary-color !important;
@@ -1726,16 +1821,21 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     color: #fff;
   }
 
-  .modal-body .panel-heading button.btn.btn-info.btn-xs {
-    background: $dark-blue;
+  .modal-body #form-element button.btn.btn-info.btn-xs,
+  .modal-body .panel-heading button.btn.btn-info.btn-xs{
+    background: $dark-grey;
     color: #fff;
   }
 
-  .modal-body .panel-heading .btn-xs.btn.btn-elements-success {
-    background-color: $dark-green !important;
+.modal-body #form-element button.btn-xs.btn.btn-elements-success ,
+.modal-body .panel-heading button.btn-xs.btn.btn-elements-success {
+    background-color: $grey !important;
     color: #fff;
-  }
+}
 
+.modal-body .panel-body  .panel-primary>.panel-heading {
+  background: #a5a5ad;
+}
 
   .btn-warning.active.focus,
   .btn-warning.active:focus,
@@ -1827,12 +1927,20 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
-  .modal-header #can-val {
+  #em-modal-actions .modal-footer{
+    position: sticky;
+    bottom: 0;
+  }
+  .modal-footer table{
+    border: unset;
+  }
+  .modal-header #can-val, .modal-footer #can-val {
+    border: unset;
     button.btn.btn-danger {
       background: transparent;
-      border: 2px solid grey;
-      border-radius: 25px !important;
-      color: grey;
+      border: 1px solid $dark-grey;
+      border-radius: 4px !important;
+      color: $dark-grey;
       margin-right: 10px;
       font-weight: normal;
       padding: 7px 30px !important;
@@ -1840,26 +1948,26 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       &:hover,
       &:active,
       :focus {
-        background: grey;
-        border: 2px solid grey;
-        color: #fff;
+        background: $dark-grey;
+        border: 1px solid $dark-grey;
+        color: $white;
       }
     }
 
     button.btn.btn-success,
     a.btn-success {
-      background: $dark-blue;
-      border: 2px solid $dark-blue;
-      border-radius: 25px !important;
-      color: #fff;
+      background: $dark-grey;
+      border: 1px solid $dark-grey;
+      border-radius: 4px !important;
+      color: $white;
       padding: 7px 30px;
 
       &:hover,
       &:active,
       :focus {
-        background: transparent;
-        border: 2px solid $dark-blue;
-        color: $dark-blue;
+        background: $grey;
+        border: 1px solid $grey;
+        color: $white;
       }
     }
   }
@@ -2081,88 +2189,147 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
-    background: transparent;
+    background: $night-blue;
     border: none;
-    color: white;
+
+    width: 43px;
+    margin-right: -1px;
 
     &:hover,
-    &:focus &:active {
-      background-color: darken($base-primary-color, 10%);
-      color: #fff;
+    &:focus,
+    &:active {
+      background-color: $night-blue;
       outline: none;
     }
+
+    span {
+      color: $white;
+      &:hover,
+      &:focus,
+      &:active {
+        color: $neutral-500;
+      }
+    }
+  }
+
+  label[for='clear-search'] img:hover,
+  label[for='clear-search'] img:hover:active,
+  label[for='clear-search'] img:hover:focus {
+    filter: invert(0.8) !important;
   }
 
   #em_select_filter #del-filter {
     background-color: transparent;
     color: $red;
     border: none;
+    span{
+      color: $red-500;
+      font-size: 24px !important;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: $red-300;
+      }
+    }
 
     &:hover,
     &:active,
     &:focus {
       background: transparent;
-      color: $red;
+      color: #e86d7a;
     }
   }
 
+  #em-delete-files{
+    span{
+      color: $red-500
+    }
+  }
 
   #em-delete-files.btn.btn-danger.btn-xs.pull-right {
     background-color: transparent;
-    color: $red;
+    color: $red-500;
     border-color: transparent;
+
+    span {
+      color: $red-500;
+      &:hover,
+      &:active,
+      &:focus {
+        color: $red-300;
+      }
+    }
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent;
-      color: $red;
+      color: $red-300;
       border-color: transparent;
     }
   }
 
   #em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a, #em-user-filters .em_label label a {
-    color: $dark-green;
+    color: $dark-grey;
+    &:hover,
+    &:active,
+    &:focus {
+      color: $grey;
+    }
   }
 
-  .files-board .panel.panel-default.em-data span.em_list_text {
-    color: $dark-blue;
+  .gantry .panel.panel-default.em-data span.em_list_text {
+    color: $night-blue;
   }
 
   #filters #quick.form-group input#search.btn.btn-sm.btn-info {
     background-color: transparent;
-    color: $dark-blue;
+    color: $dark-grey;
     border: none;
     font-size: 19px !important;
+    padding-right: 3px !important;
 
     &:hover,
     &:active,
     &:focus {
       background: transparent;
-      color: $dark-blue;
+      color: $grey;
     }
   }
 
   .files-board .em-container-tags .em-container-tags-heading #add-tags {
-    color: #fff;
+    color: $white;
+    background: $dark-grey;
+    border-color: $dark-grey;
 
     &:hover, &:active, &:focus {
-      color: darken($base-secondary-color, 10%);
+      color: $white;
+      background: $grey;
+      border-color: $grey;
     }
   }
 
 
   #em-see-files.btn.btn-info.btn-xs.pull-right {
     background-color: transparent;
-    color: $dark-blue;
+    color: $dark-grey;
     border-color: transparent;
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent;
-      color: $dark-blue;
+      color: $grey;
       border-color: transparent;
+    }
+    span {
+      color: $dark-grey;
+      &:hover,
+      &:active,
+      &:focus {
+        color: $grey;
+      }
     }
   }
 
@@ -2171,18 +2338,28 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
     #em-prev-file.btn.btn-info.btn-xxl,
     #em-next-file.btn.btn-info.btn-xxl {
-      background-color: $dark-blue;
+      background-color: transparent;
       color: #fff;
-      border-color: $dark-blue;
-      margin-top: -5px;
+      border-color: transparent;
+      display: flex !important;
+      align-items: center !important;
+      span{
+        color: white;
+        font-weight: bold;
+      }
 
       &:hover,
       &:active,
       &:focus {
-        background: #fff;
-        border: 1px solid $dark-blue;
-        color: $dark-blue;
+        background: transparent;
+        span{
+          color: $neutral-500;
+        }
       }
+    }
+
+    button.btn.btn-danger.btn-xs.btn-attach {
+      margin-top: 15px !important;
     }
   }
 
@@ -2239,7 +2416,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   #em-appli-menu .panel-body .list-group-item:hover,
   #em-appli-menu .panel-body .list-group-item:active,
   #em-appli-menu .panel-body .list-group-item:focus {
-    color: $base-primary-color;
+    color: $night-blue;
   }
 
   .em-actions {
@@ -2249,9 +2426,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       padding: 5px !important;
       color: #fff;
 
-      &:hover {
+      &:hover, &:focus, &:active {
         border-radius: 4px;
-        background: $dark-blue !important;
+        background: $dark-grey !important;
       }
     }
   }
@@ -2539,19 +2716,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
   .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
-    background: $dark-blue !important;
-  }
-
-  .edit-comment-container button.edit-comment {
-    color: white;
-    background: $base-primary-color;
-    border: 1px solid $base-primary-color;
-
-    &:hover, &:active, &:focus {
-      color: $base-primary-color;
-      background: transparent;
-      border: 1px solid $base-primary-color;
-    }
+    background: $grey !important;
   }
 
   .import-csv-page .fabrikActions.form-actions button.importation {
@@ -2569,29 +2734,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .form.em-decision-form .btn.btn-success {
     padding: 5px 30px;
-    border: 2px solid $dark-blue;
-    background: $dark-blue;
-    border-radius: 25px !important;
-
-    &:hover, &:active, &:focus {
-      border: 2px solid $dark-blue;
-      background: transparent;
-      color: $dark-blue;
-    }
-  }
-
-  .edit-comment-container button.delete-comment {
-    color: white;
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
+    border: 2px solid $dark-grey;
+    background: $dark-grey;
     border-radius: 4px !important;
 
     &:hover, &:active, &:focus {
-      color: $base-secondary-color;
-      background: transparent;
-      border: 1px solid $base-secondary-color;
+      border: 2px solid $grey;
+      background: $grey;
+      color: $white;
     }
   }
+
 
   /* SIDEBAR FILTRES */
 
@@ -2604,49 +2757,129 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
-    background: $dark-blue;
+    background: $grey;
   }
 
   .g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
     color: $dark-blue !important;
   }
 
+  .panel-default .panel-heading h3.panel-title {
+    margin-left: 0px;
+  }
+
   .g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading {
-    background: $dark-green;
+    background: $night-blue;
   }
 
   #em_filters fieldset.em_filters_filedset > p,
   #em-user-filters fieldset.em_filters_filedset > p {
-    color: #12DB42;
+    color: $night-blue;
   }
 
-  .chosen-container .chosen-results li.highlighted {
-    background-color: $base-primary-color;
+  // CHOSEN css
+  .chosen-container{
+    width: auto;
+  }
+
+  .chosen-container {
+    .chosen-single {
+      background: #fff !important;
+      box-shadow: unset;
+      height: 40px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-color: $neutral-300;
+      div{
+        position: relative;
+      }
+    }
+
+    .chosen-search {
+      padding: 8px 12px;
+      input[type="text"] {
+        &:focus {
+          box-shadow: unset;
+          border: solid 1px $blue-400;
+        }
+      }
+    }
+
+    .chosen-results {
+      padding: 0;
+      margin: 0;
+      li {
+        padding: 8px 12px;
+      }
+    }
+
+    .chosen-results li.highlighted {
+      background-color: $neutral-300;
+      color: $neutral-900;
+    }
   }
 
   .navbar.navbar-inverse {
-    border: $dark-blue;
-    background: $dark-blue;
+    border: #353544;
+    background: #353544;
   }
 
-  #em-files-filters #em_filters fieldset input#save-filter {
+  .widget .panel-title {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    span {
+      color: white;
+      margin-right: 8px;
+      &:focus,
+      &:hover,
+      &:active {
+       color: $neutral-500;
+      }
+    }
+  }
+  .widget .panel-body {
+    padding: 16px;
+  }
+
+
+#em-attachments #filters .refresh:hover {
+  color: $neutral-500 !important;
+}
+
+#em-appli-block .com_emundus_vue #em-attachments .head {
+  padding-left: 18px;
+
+  .prev-next-files {
+    margin-right: 4px;
+  }
+}
+
+  #em-files-filters #em_filters fieldset input#save-filter,
+  #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter{
     margin-top: 10px;
-    background: $dark-blue;
-    border: 1px solid $dark-blue !important;
+    background: $white;
+    border: 1px solid $dark-grey !important;
     width: 100%;
+    color: $dark-grey;
     width: -moz-available;
     width: -webkit-fill-available;
     width: fill-available;
     padding: 8px 12px !important;
+    height: 100%;
 
     &:focus,
     &:hover,
     &:active {
-      background: #fff;
-      border-color: $dark-blue !important;
-      color: $dark-blue !important;
+      background: $dark-grey;
+      border-color: $dark-grey !important;
+      color: $white !important;
     }
   }
+
 
   .g-back-office-emundus-tableau {
 
@@ -2710,14 +2943,14 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $dark-blue;
-    background-color: $dark-blue;
+    border: 0 solid $dark-grey;
+    background-color: $dark-grey;
 
     &:hover,
     &:focus,
     &:active {
-      border: darken($dark-blue, 10%);
-      background-color: darken($dark-blue, 10%);
+      border: $grey;
+      background-color: $grey;
     }
   }
 
@@ -2740,14 +2973,27 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   /* SUPPRIMER EVAL */
   .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
     background: transparent !important;
-    color: $red !important;
+    color: $red-500 !important;
     border: none;
+    margin: unset !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: unset !important;
+
+    span {
+      color: $red-500 !important;
+      &:hover,
+      &:active,
+      &:focus {
+        color: $red-300 !important;
+      }
+    }
 
     &:hover,
     &:active,
     &:focus {
       background: transparent !important;
-      color: $red !important;
+      color: $red-300 !important;
     }
   }
 
@@ -2757,22 +3003,30 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     background-color: $base-primary-color;
   }
 
+
+  /* RECHERCHE */
+.gantry.files-page .selectize-control.multi .selectize-input [data-value],
+.gantry.files-board .selectize-control.multi .selectize-input [data-value]{
+  margin-top: 2.4px !important;
+}
+
+
   /* EDITER ET AJOUTER */
 
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
-  .g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
+  .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
+  .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
     height: 36px;
-    background-color: $dark-blue;
-    border: 2px solid $dark-blue !important;
-    border-radius: 25px !important;
+    background-color: $night-blue;
+    border: 2px solid $night-blue !important;
+    border-radius: 5px !important;
     padding: 5px 30px !important;
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent !important;
-      color: $dark-blue;
-      border: 2px solid darken($dark-blue, 10%);
+      color: $night-blue;
+      border: 2px solid $night-blue;
     }
 
     i {
@@ -2796,36 +3050,135 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   div#em-appli-block {
     .panel-heading {
-      background: $dark-blue;
+      background: $night-blue;
       border-radius: 0;
       margin-top: 2px;
-    }
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 18px !important;
+  }
 
     button.btn.btn-default {
-      background-color: $dark-blue;
+      background-color: transparent;
       border: none;
+      display: flex !important;
+      align-items: center !important;
+      margin-left: 8px;
+      padding: unset;
+      span{
+        color: white;
+      }
 
       &:hover {
-        background-color: darken($dark-blue, 10%);
+        background-color: transparent;
+        span{
+          color: $neutral-500;
+        }
       }
     }
 
+    /* ETIQUETTE / COMMENTAIRES */
+
+    .em-container-comment-body {
+      .actions-edit-comment .cancel-edit-comment.btn-danger  {
+        background: transparent;
+        border: 1px solid $red-500;
+        color: $red-500;
+        &:hover, &:focus, &:active {
+          background: $red-500;
+          border: 1px solid $red-500;
+          color: $neutral-100;
+        }
+      }
+
+      .actions-edit-comment .confirm-edit-comment.btn-success  {
+        background: transparent;
+        border: 1px solid $night-blue;
+        color: $night-blue;
+        &:hover, &:focus, &:active {
+          background: $night-blue;
+          border: 1px solid $night-blue;
+          color: $neutral-100;
+        }
+      }
+
+      .comment-name, .comment-date a {
+        color: $neutral-900;
+      }
+
+      .em-list-status-date a {
+        color: $night-blue;
+      }
+
+      .edit-comment-container button.edit-comment {
+        background: $neutral-100;
+        border: 1px solid $neutral-100;
+        border-radius: 4px !important;
+
+        span {
+          color: $night-blue;
+
+          &:hover {
+            color: $grey;
+          }
+        }
+      }
+    }
+
+    .em-container-tags-body .em-tags-date a   {
+      color: $night-blue;
+    }
+
+    .edit-comment-container button.delete-comment,
+    .em-container-tags-body button.btn-danger[title="Supprimer"]{
+      background: $neutral-100;
+      border: 1px solid $neutral-100;
+      border-radius: 4px !important;
+
+      span {
+        color: $red-500;
+
+        &:hover {
+          color: $red-300;
+        }
+      }
+    }
+
+    .chosen-container .chosen-results li.group-option,
+    .chosen-container .chosen-results li.group-result {
+      color: $neutral-900;
+    }
+
+    .chosen-container .chosen-results li.group-option.highlighted,
+    .chosen-container .chosen-results li.group-result.highlighted{
+      color: $neutral-100;
+      background: $night-blue;
+    }
+
+    .chosen-container-multi .chosen-choices li.search-choice span {
+      color: $neutral-900;
+    }
+
     #add-tags {
-      background: #fff;
-      border: 1px solid #fff;
-      color: $dark-blue;
+      background: $night-blue;
+      border: 1.5px solid $neutral-100;
+      color: $neutral-100;
+      padding: 8px 12px !important;
 
       &:hover, &:active, &:focus {
-        background: $dark-blue;
-        border: 1px solid #fff;
-        color: #fff;
+        background: $neutral-100 !important;
+        border: 1.5px solid $neutral-100;
+        border-radius: 5px;
+        color: $night-blue;
       }
     }
 
     span.label.label-info {
       background: #ffffff !important;
       text-shadow: none;
-      color: $base-primary-color !important;
+      color: $night-blue !important;
+      margin-left: 10px;
     }
   }
 
@@ -2879,6 +3232,19 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           background: #fff;
           border-color: $red;
           color: $red;
+        }
+      }
+
+      a.listplugin.btn-default {
+        background: $dark-blue;
+        border-color: $dark-blue;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: #fff;
+          border-color: $dark-blue;
+          color: $dark-blue;
         }
       }
     }
@@ -2952,9 +3318,22 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
   .view-list {
 
-    .fabrik___heading  a.fabrikorder, .fabrik___heading  a.fabrikorder-desc {
+    .fabrik___heading  a.fabrikorder,
+    .fabrik___heading  a.fabrikorder-desc,
+    .fabrik___heading a.fabrikorder-asc {
       color: $dark-blue;
     }
+
+    .fabrik_filter_submit.button {
+      background: $dark-blue;
+      border-color: $dark-blue;
+      &:hover, &:active, &:focus {
+        background: #fff;
+        border-color: $dark-blue;
+        color: $dark-blue;
+      }
+    }
+
     .filtertable {
       thead tr.fabrik___heading {
 
@@ -4181,3 +4560,760 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     }
   }
 
+  @media all and (max-width: 1024px) {
+    #g-container-main {
+      padding: 20px 20px 20px 75px;
+    }
+  }
+
+/**
+  eMundus classes
+**/
+
+.em-logo{
+  width: auto;
+  height: 24px;
+}
+.em-filter-grayscale{
+  filter: grayscale(1) brightness(100);
+}
+
+/* BUTTONS */
+.em-primary-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 $p-16;
+  border-radius: 4px;
+  border: unset;
+  height: 40px;
+  color: white;
+  background-color: $main-500;
+}
+
+.em-primary-disabled{
+  background-color: $main-100;
+}
+
+.em-secondary-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 $p-16;
+  border-radius: 4px;
+  border: solid 1px $neutral-300;
+  height: 40px;
+  background: transparent;
+  color: $neutral-900;
+}
+
+.em-tertiary-button{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 $p-16;
+  border-radius: 4px;
+  border: unset;
+  height: 40px;
+  background: transparent;
+  color: $neutral-900;
+}
+
+.em-radio-button{
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+
+// TOGGLE BUTTON //
+.em-switch {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 32px;
+  margin: 0;
+
+  /* Hide default HTML checkbox */
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* The slider */
+.em-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #F4F4F6;
+  -webkit-transition: .4s;
+  transition: .4s;
+
+  &:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 6px;
+    bottom: 8px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+}
+
+input:checked + .em-slider {
+  background-color: $em-green;
+
+  &:before {
+    -webkit-transform: translateX(32px);
+    -ms-transform: translateX(32px);
+    transform: translateX(32px);
+  }
+}
+
+input:focus + .em-slider {
+  box-shadow: 0 0 1px #F4F4F6;
+}
+
+.em-slider.em-round {
+  border-radius: 34px;
+
+  &:before {
+    border-radius: 50%;
+  }
+}
+
+
+/* UTILITIES */
+.em-flex-column{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.em-errors-alert .alert{
+  margin: unset;
+}
+
+.em-flex-row{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.em-grid {
+  display: grid;
+	grid-column-gap: 24px;
+  grid-row-gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+}
+
+.em-pointer{
+  cursor: pointer;
+}
+
+.em-z-index-10{
+  z-index: 10;
+}
+
+.em-min-height-100{
+  min-height: 100px;
+}
+
+.em-max-height-20{
+  max-height: 20px;
+}
+
+.em-max-width-48{
+  max-width: 48%;
+}
+
+.em-max-width-250{
+  max-width: 250px;
+}
+
+.em-max-width-448{
+  max-width: 448px;
+}
+
+.em-max-width-600{
+  max-width: 600px;
+}
+
+.em-max-width-1200{
+  max-width: 1200px;
+}
+
+.em-w-90{
+  width: 90%;
+}
+
+.em-w-40-vw{
+  width: 40vw;
+}
+
+.em-w-380{
+  width: 380px;
+}
+
+.em-green-color{
+  color: $em-green;
+}
+.em-main-100-color{
+  color: $main-100;
+}
+.em-main-500-color{
+  color: $main-500;
+}
+.em-yellow-500-color{
+  color: $yellow-500;
+}
+.em-blue-color{
+  color: $em-blue;
+}
+.em-gray-color{
+  color: $em-grey;
+}
+.em-neutral-700-color{
+  color: $neutral-700;
+}
+.em-text-neutral-900{
+  color: $neutral-900;
+}
+.em-red-500-color{
+  color: $red-500;
+}
+
+.em-green-bg{
+  background: $em-green;
+}
+.em-blue-bg{
+  background: $em-blue;
+}
+.em-gray-bg{
+  background: $em-grey;
+}
+.em-lightgray-bg{
+  background: #F5F6F6;
+}
+.em-bg-main-500{
+  background: $main-500;
+}
+
+.em-m-24{
+  margin: 24px;
+}
+
+.em-p-16{
+  padding: 16px;
+}
+
+.em-p-16-0{
+  padding: 16px 0;
+}
+
+.em-p-12-16{
+  padding: 12px 16px;
+}
+
+.em-p-24{
+  padding: 24px;
+}
+.em-pt-16{
+  padding-top: 16px;
+}
+.em-pt-24{
+  padding-top: 24px;
+}
+
+.em-pb-16{
+  padding-bottom: 16px;
+}
+
+.em-pb-24{
+  padding-bottom: 24px;
+}
+
+.em-pr-4{
+  padding-right: $p-4;
+}
+.em-pl-4{
+  padding-left: $p-4;
+}
+.em-pr-8{
+  padding-right: $p-8;
+}
+.em-pl-8{
+  padding-left: $p-8;
+}
+.em-mr-4{
+  margin-right: 4px;
+}
+.em-mr-8{
+  margin-right: 8px;
+}
+.em-mr-16{
+  margin-right: $m-16;
+}
+.em-mr-24{
+  margin-right: $m-24;
+}
+.em-ml-4{
+  margin-left: 4px;
+}
+.em-ml-8{
+  margin-left: 8px;
+}
+.em-ml-16{
+  margin-left: 16px;
+}
+.em-ml-24{
+  margin-left: $m-24;
+}
+.em-ml-64{
+  margin-left: 64px;
+}
+.em-ml-120{
+  margin-left: 120px;
+}
+.em-mr-120{
+  margin-right: 120px;
+}
+.em-mt-4{
+  margin-top: 4px;
+}
+.em-mt-8{
+  margin-top: $m-8;
+}
+.em-mt-16{
+  margin-top: $m-16;
+}
+.em-mt-24{
+  margin-top: $m-24;
+}
+.em-mt-32{
+  margin-top: $m-32;
+}
+.em-mt-48{
+  margin-top: $m-48;
+}
+.em-mt-80{
+  margin-top: $m-80;
+}
+.em-mb-16{
+  margin-bottom: $m-16;
+}
+.em-mb-32{
+  margin-bottom: $m-32;
+}
+.em-mb-44{
+  margin-bottom: 44px;
+}
+.em-mb-64{
+  margin-bottom: 64px;
+}
+.em-divider{
+  background: $neutral-300;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.em-h-32{
+  height: 32px;
+}
+
+
+/* Positions */
+.em-flex-start {
+  justify-content: flex-start;
+}
+
+.em-flex-end {
+  justify-content: flex-end;
+}
+
+.em-flex-space-between {
+  justify-content: space-between;
+}
+
+.em-flex-space-around {
+  justify-content: space-around;
+}
+
+
+/*
+  BORDERS
+*/
+.em-border-neutral-300{
+  border: 1px solid $neutral-300;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+.em-border-left-neutral-700{
+  border-left: solid 2px $neutral-700;
+}
+.em-border-left-yellow-500{
+  border-left: solid 2px $yellow-500;
+}
+.em-border-left-main-500{
+  border-left: solid 2px $main-500;
+}
+.em-border-left-red-500{
+  border-left: solid 2px $red-500;
+}
+.em-border-bottom-neutral-300{
+  border-bottom: solid 1px $neutral-300;
+}
+.em-border-top-neutral-300{
+  border-top: solid 1px $neutral-300;
+}
+.em-border-blue-400{
+  border: solid 1px $blue-400;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+.em-underline{
+  text-decoration: underline;
+}
+.em-box-shadow{
+  box-shadow: inset 0px -1px 0px #E3E5E8;
+}
+
+/**
+  TITLES
+*/
+.em-h1{
+  font-family: 'Mulish', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 56px;
+  line-height: 70px;
+  color: $neutral-900;
+}
+.em-h2{
+  font-family: 'Mulish', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 48px;
+  line-height: 60px;
+  color: $neutral-900;
+}
+.em-h3{
+  font-family: 'Mulish', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 40px;
+  color: $neutral-900;
+}
+.em-h4{
+  font-family: 'Mulish', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 30px;
+  color: $neutral-900;
+}
+.em-h5{
+  font-family: 'Mulish', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 25px;
+  color: $neutral-900;
+}
+.em-h6{
+  font-family: 'Mulish', sans-serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 23px;
+  color: $neutral-900;
+}
+
+.em-caption{
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.em-font-size-14{
+  font-size: 14px;
+}
+
+.em-font-size-16{
+  font-size: 16px;
+}
+
+.em-font-size-24{
+  font-size: 24px;
+}
+
+.em-font-size-32{
+  font-size: 32px;
+}
+
+.em-font-size-48{
+  font-size: 48px;
+}
+
+/**
+  Focus for lables
+*/
+.em-available{
+  color: $main-500;
+  align-items: center;
+  display: flex;
+}
+.em-border-available:focus {
+  border-color: $main-500 !important;
+}
+.em-not-available{
+  color: $red-500;
+  align-items: center;
+  display: flex;
+}
+.em-border-notavailable:focus {
+  border-color: $red-500 !important;
+}
+
+.em-overflow-ellipsis {
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+
+/**
+  MEDIA QUERIES
+**/
+
+@media (max-width: 768px) {
+  .em-logo{
+    filter: unset;
+  }
+
+  .em-mt-s-4{
+    margin-top: $m-8;
+  }
+
+  .em-mb-16-xs{
+    margin-bottom: 16px;
+  }
+
+  .em-mt-32-xs{
+    margin-top: 32px;
+  }
+
+  .em-s-display-none{
+    display: none !important;
+  }
+
+  .em-input-icon{
+    left: 75%;
+  }
+
+  .em-w-s-100{
+    width: 100%;
+  }
+
+  .em-minw-s-100{
+    min-width: 100%;
+  }
+
+  .em-p-s-16{
+    padding: 16px;
+  }
+
+  .em-ml-s-16{
+    margin-left: 16px;
+  }
+
+  .em-mr-s-16{
+    margin-right: 16px;
+  }
+
+  .em-ml-s-unset{
+    margin-left: unset;
+  }
+
+  .em-mr-s-unset{
+    margin-right: unset;
+  }
+
+  .em-mt-s-8{
+    margin-top: 8px;
+  }
+
+  .em-s-justify-content-center{
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .em-input-icon {
+    left: 85%;
+  }
+
+  .em-mt-xs-8{
+    margin-top: 8px;
+  }
+}
+
+/** 
+  LOADER 
+**/
+
+.em-loader {
+  border: 5px solid #f3f3f4;  
+  border-top: 5px solid $main-500;  
+  border-radius: 50%;  
+  width: 25px;  
+  height: 25px;  
+  animation: spin 2s linear infinite;  
+  text-align: center;
+}
+
+/**
+  LOGIN GUARD
+**/
+#loginguard-methods-list{
+  .clearfix{
+    display: none;
+  }
+  #loginguard-methods-reset-container{
+    border: unset;
+    .btn{
+      margin-bottom: 0;
+    }
+  }
+  #loginguard-methods-list-head{
+    opacity: 0;
+    margin: 0 16px;
+  }
+  #loginguard-methods-list-instructions{
+    margin: 0 clamp(10px, 1.5em, 50px) 1em;
+  }
+  #loginguard-methods-list-container{
+    margin: 0 clamp(10px, 1.5em, 50px) .5em;
+    padding: unset;
+    .loginguard-methods-list-method-name-backupcodes{
+      display: none;
+    }
+  }
+  .loginguard-methods-list-method{
+    border-radius: 4px;
+    padding: 1em;
+    .loginguard-methods-list-method-header {
+      align-items: center;
+      margin-bottom: 1em;
+      .loginguard-methods-list-method-image {
+        padding: unset;
+      }
+      .loginguard-methods-list-method-title {
+        display: flex;
+        align-items: center;
+
+        h4 {
+          margin-top: unset;
+          display: flex;
+          align-items: center;
+          #loginguard-methods-list-method-default-tag{
+            margin-left: 1em;
+          }
+        }
+      }
+      .loginguard-methods-list-method-info{
+        height: 100%;
+      }
+    }
+    .loginguard-methods-list-method-records-container{
+      .loginguard-methods-list-method-records{
+        .loginguard-methods-list-method-record {
+          align-items: center;
+          .loginguard-methods-list-method-record-title-container {
+            display: flex;
+            align-items: center;
+
+            #loginguard-methods-list-method-default-badge-small {
+              background: unset;
+              color: $base-secondary-color;
+            }
+          }
+          .loginguard-methods-list-method-record-lastused{
+            justify-content: start;
+            .loginguard-methods-list-method-record-createdon{
+              margin-right: 1em;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#loginguard-method-edit{
+  .float-end{
+    display: none;
+  }
+  input[type="checkbox"]{
+    margin: 0;
+  }
+  .control-group {
+    margin: 20px 0;
+  }
+  .buttons{
+    .controls{
+      display: flex;
+      justify-content: space-between;
+      .btn-primary{
+        background: $base-primary-color;
+        &:hover{
+          color: white;
+        }
+      }
+      .btn-danger{
+        background: transparent;
+        color: black;
+      }
+    }
+  }
+}
+
+.loginguard-captive{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10em;
+  #loginguard-captive-form-method-fields{
+    #loginguard-captive-form-remember-me{
+      margin-top: 10px;
+      .loginguard-toggle input:checked + label.green{
+        background: $main-500;
+        box-shadow: unset;
+      }
+      .loginguard-toggle input:checked + label.red{
+        background: $red-500;
+        box-shadow: unset;
+      }
+    }
+  }
+  #loginguard-captive-form-standard-buttons{
+    display: flex;
+    justify-content: space-between;
+  }
+  #loginguard-captive-form-choose-another{
+    margin-top: 1em;
+  }
+}

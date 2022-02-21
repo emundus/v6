@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -103,6 +103,17 @@ class hikashopNameboxType {
 				'add_url' => 'characteristic&task=addcharacteristic_ajax&characteristic_type=value&characteristic_parent_id={ID}&tmpl=json',
 			)
 		),
+		'column' => array(
+			'class' => 'helper.database',
+			'name' => 'column_name',
+			'mode' => 'list',
+			'displayFormat' => '{column_name}',
+			'params' => array(
+				'table' => ''
+			),
+			'url_params' => array('TABLE'),
+			'url' => 'cart&task=findList&table={TABLE}'
+		),
 		'discount' => array(
 			'class' => 'class.discount',
 			'name' => 'discount_code',
@@ -130,6 +141,21 @@ class hikashopNameboxType {
 			),
 			'url_params' => array('TABLE'),
 			'url' => 'cart&task=findList&table={TABLE}'
+		),
+		'filter' => array(
+			'class' => 'class.filter',
+			'name' => 'filter_name',
+			'mode' => 'list',
+			'displayFormat' => '{filter_name} - {filter_namekey} - {filter_type}',
+			'params' => array(
+			),
+			'options' => array(
+				'olist' => array(
+					'table' => array('filter_name' => 'FIELD_LABEL', 'filter_namekey' => 'FIELD_COLUMN', 'filter_type' => 'HIKA_TYPE' ),
+					'displayFormat' => '{filter_name} - {filter_namekey} - {filter_type}',
+				)
+			),
+			'url' => 'cart&task=findList'
 		),
 		'modules' => array(
 			'class' => 'class.modules',
@@ -306,6 +332,8 @@ class hikashopNameboxType {
 
 		if(!empty($options['displayFormat']))
 			$options['displayFormat'] = $this->getDisplayFormat($options['displayFormat'], $type);
+		if(empty($options['displayFormat']))
+			$options['displayFormat'] = @$typeConfig['displayFormat'];
 
 		$fullLoad = true;
 		list($elements, $values) = $nameboxClass->getNameboxData($typeConfig, $fullLoad, hikashopNameboxType::NAMEBOX_MULTIPLE, null, $search, $options);
@@ -313,7 +341,7 @@ class hikashopNameboxType {
 		if((!empty($typeConfig['mode']) && $typeConfig['mode'] == 'list') && empty($typeConfig['options']['olist']['table']) && !is_string(reset($elements))) {
 			$n = $typeConfig['name'];
 			foreach($elements as &$element) {
-				if(!empty($displayFormat))
+				if(!empty($options['displayFormat']))
 					$element = $this->getDisplayValue($element, $typeConfig, $options);
 				else
 					$element = $element->$n;
@@ -552,14 +580,14 @@ class hikashopNameboxType {
 	<div style="display:none;" data-oresize="'.$id.'" class="namebox-popup-resize namebox-popup-container">
 		<div id="'.$id.'_otree" class="oTree namebox-popup-content"></div>
 	</div>
-</div>
-<script type="text/javascript">
+</div>';
+			$js = '
+
 new window.oNamebox(
 	\''.$id.'\',
 	'.json_encode($elements).',
 	'.json_encode($namebox_options).'
-);
-</script>';
+);';
 		}
 		else {
 			$ret .= '
@@ -567,8 +595,8 @@ new window.oNamebox(
 	<div style="display:none;" data-oresize="'.$id.'" class="namebox-popup-resize namebox-popup-container">
 		<div id="'.$id.'_olist" class="oList namebox-popup-content"></div>
 	</div>
-</div>
-<script type="text/javascript">
+</div>';
+			$js = '
 new window.oNamebox(
 	\''.$id.'\',
 	'.json_encode($elements).',
@@ -579,14 +607,21 @@ new window.oNamebox(
 				foreach($values as $key => $name) {
 					$b[] = $key;
 				}
-				$ret .= '
+				$js .= '
 try{
 	window.oNameboxes[\''.$id.'\'].content.block('.json_encode($b).');
 }catch(e){}';
 			}
-
-			$ret .= '
-</script>';
+		}
+		$js = 'window.hikashop.ready( function(){
+			'.$js.'
+		});';
+		$tmpl = hikaInput::get()->getVar('tmpl');
+		if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+			$ret .= '<script type="text/javascript">'.$js.'</script>';
+		} else {
+			$doc = JFactory::getDocument();
+			$doc->addScriptDeclaration($js);
 		}
 
 		return $ret;

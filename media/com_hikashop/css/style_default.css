@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.3.0
+ * @version    4.4.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -968,17 +968,6 @@ a.hikashop_filter_list_selected:hover { color:black; font-weight:bold; text-deco
 .hikashop_filter_fieldset{ border: 1px solid #DDDDDD; border-radius: 3px 3px 3px 3px; margin-bottom: 10px; padding: 10px; }
 .hikashop_filter_fieldset legend{color:#555; font-weight:bold; font-size:12px; padding:0px 5px;}
 .hikashop_filter_cursor_range { border:0; color:#f6931f; font-weight:bold; }
-
-
-.ui-tabs { position: relative; padding: .2em; zoom: 1; }
-.ui-tabs .ui-tabs-nav { margin: 0; padding: .2em .2em 0; }
-.ui-tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; top: 1px; margin: 0 .2em 1px 0; border-bottom: 0 !important; padding: 0; white-space: nowrap; }
-.ui-tabs .ui-tabs-nav li a { float: left; padding: .5em 1em; text-decoration: none; }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 1px; }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
-.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; }
-.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
-.ui-tabs .ui-tabs-hide { display: none !important; }
 
 .hikashop_compare_table{width:100%;}
 

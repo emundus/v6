@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -103,7 +103,7 @@ if($this->invoice_type == 'order') {
 								?></th>
 <?php
 	$null = null;
-	$type = 'display:field_product_invoice=1';
+	$type = 'display:back_invoice=1';
 	if(hikashop_level(1)){
 		$productFields = $this->fieldsClass->getFields($type,$null,'product');
 		if(!empty($productFields)) {
@@ -137,6 +137,17 @@ if($this->invoice_type == 'order') {
 			break;
 		}
 	}
+
+	$weight = bccomp((float)$this->order->order_weight, 0, 3);
+	$unit_weight = false;
+	if($weight && $this->config->get('show_invoice_unit_weight',0))
+		$unit_weight = true;
+	$total_weight = false;
+	if($weight && $this->config->get('show_invoice_total_weight',0))
+		$total_weight = true;
+	$order_weight = false;
+	if($weight && $this->config->get('show_invoice_weight',0))
+		$order_weight = true;
 	if($this->invoice_type == 'order' && $files) {
 		$colspan++;
 ?>
@@ -149,6 +160,10 @@ if($this->invoice_type == 'order') {
 		$colspan++;
 		echo '<th class="hikashop_order_item_actions_title title titletoggle">' . JText::_('HIKASHOP_ACTIONS') . '</th>';
 	}
+	if($this->invoice_type != 'order' && $unit_weight) {
+		$colspan++;
+		echo '<th class="hikashop_order_item_unit_weight_title title titletoggle">' . JText::_('PRODUCT_WEIGHT') . '</th>';
+	}
 ?>
 								<th class="hikashop_order_item_price_title title"><?php
 									echo JText::_('UNIT_PRICE');
@@ -156,6 +171,12 @@ if($this->invoice_type == 'order') {
 								<th class="hikashop_order_item_quantity_title title titletoggle"><?php
 									echo JText::_('PRODUCT_QUANTITY');
 								?></th>
+<?php
+	if($this->invoice_type != 'order' && $total_weight) {
+		$colspan++;
+		echo '<th class="hikashop_order_item_total_weight_title title titletoggle">' . JText::_('TOTAL_WEIGHT') . '</th>';
+	}
+?>
 								<th class="hikashop_order_item_total_title title titletoggle"><?php
 									echo JText::_('PRICE');
 								?></th>
@@ -247,6 +268,7 @@ if($this->invoice_type == 'order') {
 				if($optionElement->order_product_option_parent_id != $product->order_product_id)
 					continue;
 
+				$product->order_product_weight += $optionElement->order_product_weight;
 				$product->order_product_price += $optionElement->order_product_price;
 				$product->order_product_tax += $optionElement->order_product_tax;
 				$product->order_product_total_price += $optionElement->order_product_total_price;
@@ -375,6 +397,10 @@ if($this->invoice_type == 'order') {
 			}
 			echo '</td>';
 		}
+
+		if($this->invoice_type != 'order' && $unit_weight) {
+			echo '<td data-title="'.JText::_('PRODUCT_WEIGHT').'" class="hikashop_order_item_weight_value">' . rtrim(rtrim($product->order_product_weight,'0'),',.').' '.JText::_($product->order_product_weight_unit) . '</td>';
+		}
 ?>
 								<td data-title="<?php echo JText::_('UNIT_PRICE'); ?>" class="hikashop_order_item_price_value"><?php
 									if($this->config->get('price_with_tax')) {
@@ -386,6 +412,11 @@ if($this->invoice_type == 'order') {
 								<td data-title="<?php echo JText::_('PRODUCT_QUANTITY'); ?>" class="hikashop_order_item_quantity_value"><?php
 									echo '<span>'.$product->order_product_quantity.'</span>';
 								?></td>
+<?php
+		if($this->invoice_type != 'order' && $total_weight) {
+			echo '<td data-title="'.JText::_('TOTAL_WEIGHT').'" class="hikashop_order_item_total_weight_value">' . rtrim(rtrim($product->order_product_weight*$product->order_product_quantity,'0'),',.').' '.JText::_($product->order_product_weight_unit) . '</td>';
+		}
+?>
 								<td data-title="<?php echo JText::_('PRICE'); ?>" class="hikashop_order_item_total_value"><?php
 									if($this->config->get('price_with_tax')) {
 										echo '<span>'.$this->currencyHelper->format($product->order_product_total_price,$this->order->order_currency_id).'</span>';
@@ -554,7 +585,7 @@ if($this->invoice_type == 'order') {
 			<td>
 <?php
 	if(!empty($this->shipping)) {
-		echo JText::_('HIKASHOP_SHIPPING_METHOD') . ' : ';
+		echo '<p class="hikashop_order_shipping_method">'.JText::_('HIKASHOP_SHIPPING_METHOD') . ' : ';
 		if(is_string($this->order->order_shipping_method)) {
 			if(strpos($this->order->order_shipping_id, '-') !== false)
 				echo $this->shippingClass->getShippingName($this->order->order_shipping_method, $this->order->order_shipping_id);
@@ -562,12 +593,15 @@ if($this->invoice_type == 'order') {
 				echo $this->shipping->getName($this->order->order_shipping_method, $this->order->order_shipping_id);
 		} else
 			echo implode(', ', $this->order->order_shipping_method);
-		echo '<br/>';
+		echo '</p>';
 	}
 ?>
 <?php
 	if(!empty($this->payment)) {
-		echo JText::_('HIKASHOP_PAYMENT_METHOD') . ' : ' . $this->payment->getName($this->order->order_payment_method, $this->order->order_payment_id);
+		echo '<p class="hikashop_order_payment_method">'.JText::_('HIKASHOP_PAYMENT_METHOD') . ' : ' . $this->payment->getName($this->order->order_payment_method, $this->order->order_payment_id).'</p>';
+	}
+	if($order_weight) {
+		echo '<p class="hikashpo_order_total_weight">'.JText::_('HIKASHOP_TOTAL_ORDER_WEIGHT') . ' : ' . rtrim(rtrim($this->order->order_weight,'0'),',.').' '.JText::_($this->order->order_weight_unit).'</p>';
 	}
 ?>
 			</td>

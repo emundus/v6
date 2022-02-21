@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -233,6 +233,7 @@ class hikashopAddressClass extends hikashopClass {
 		$app = JFactory::getApplication();
 		$new = empty($addressData->address_id);
 
+		$do = true;
 		if(!empty($addressData->address_id) && $addressData->address_id > 0) {
 			$oldData = $this->get($addressData->address_id);
 
@@ -247,7 +248,7 @@ class hikashopAddressClass extends hikashopClass {
 			if(!empty($cart->user_id))
 				$allowed[$cart->user_id] = $cart->user_id;
 			if(!hikashop_isClient('administrator') && (!in_array($oldData->address_user_id, $allowed) || !$oldData->address_published)) {
-				return false;
+				$do = false;
 			}
 
 			$orderClass = hikashop_get('class.order');
@@ -272,7 +273,6 @@ class hikashopAddressClass extends hikashopClass {
 			return false;
 
 		JPluginHelper::importPlugin('hikashop');
-		$do = true;
 		if($new) {
 			if(!empty($addressData->address_user_id)) {
 				$query = 'SELECT count(*) as cpt FROM '.hikashop_table('address').' WHERE address_user_id = '.(int)$addressData->address_user_id.' AND address_published = 1 AND address_default = 1';

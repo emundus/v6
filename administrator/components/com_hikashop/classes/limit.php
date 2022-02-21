@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,7 +26,7 @@ class hikashopLimitClass extends hikashopClass {
 		$formData = hikaInput::get()->get('data', array(), 'array');
 
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 
 		foreach($formData['limit'] as $column => $value) {
 			hikashop_secureField($column);

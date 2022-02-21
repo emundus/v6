@@ -2,12 +2,12 @@
 <extension version="3.1" type="module" client="administrator" method="upgrade">
 	<name>Securitycheck Pro Info Module</name>
 	<author>José A. Luque </author>
-	<creationDate>19-07-2021</creationDate>
+	<creationDate>22-11-2021</creationDate>
 	<copyright>Copyright www.protegetuordenador.com</copyright>
 	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
 	<authorEmail>contacto@protegetuordenador.com</authorEmail>
 	<authorUrl>www.protegetuordenador.com</authorUrl>
-	<version>3.4.1</version>
+	<version>3.4.3</version>
 	<description>MOD_SECURITYCHECKPRO_DESCRIPTION</description>
 
 	<files>
@@ -55,6 +55,8 @@
 		<language tag="ro-RO">ro-RO.mod_scpadmin_quickicons.sys.ini</language>
 		<language tag="ua-UA">ua-UA.mod_scpadmin_quickicons.ini</language>		
 		<language tag="ua-UA">ua-UA.mod_scpadmin_quickicons.sys.ini</language>
+		<language tag="af-ZA">af-ZA.mod_scpadmin_quickicons.ini</language>
+		<language tag="af-ZA">af-ZA.mod_scpadmin_quickicons.sys.ini</language>
 	</languages>
 	<config>
 		<fields name="params">

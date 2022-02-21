@@ -32,50 +32,164 @@ class EmundusonboardModeldashboard extends JModelList
             $dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
             $this->now = $dateTime->format('Y-m-d H:i:s');
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/controllers/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
     }
 
-    /**
-     * Get the last active campaign
-     */
-    public function getLastCampaignActive(){
-        $query = $this->_db->getQuery(true);
-
-        try {
-            $query->select('sc.*, cc.id as files')
-                ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
-                ->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'cc') . ' ON ' . $this->_db->quoteName('cc.campaign_id') . ' = ' . $this->_db->quoteName('sc.id'))
-                ->where('sc.published=1 AND "' . $this->now . '" <= sc.end_date and "' . $this->now . '">= sc.start_date')
-                ->group('sc.id')
-                ->order('sc.start_date DESC');
-
-            $this->_db->setQuery($query);
-            return $this->_db->loadObjectList();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get last active campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
-        }
-    }
-
-    public function getwidgets(){
+    public function getDashboard($user_id){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
 
         try {
-            $query->select('params')
-                ->from($this->_db->quoteName('#__modules'))
-                ->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_dashboard_vue'));
-
+            $query->select('id')
+                ->from($this->_db->quoteName('#__emundus_setup_dashboard'))
+                ->where($this->_db->quoteName('user') . ' = ' . $user_id);
             $this->_db->setQuery($query);
-            $modules = $this->_db->loadColumn();
+            return $this->_db->loadResult();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error at getting the dashboard of user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
 
-            $widgets = array();
+    public function createDashboard($user_id){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
 
-            foreach ($modules as $module) {
-                $params = json_decode($module, true);
-                if (in_array(JFactory::getSession()->get('emundusUser')->profile, $params['profile'])) {
-                    $widgets = $params['widgets'];
+        try {
+            $query->clear()
+                ->select('profile')
+                ->from($this->_db->quoteName('#__emundus_users'))
+                ->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+            $this->_db->setQuery($query);
+            $profile = $this->_db->loadResult();
+
+            $query->clear()
+                ->insert($this->_db->quoteName('#__emundus_setup_dashboard'))
+                ->set($this->_db->quoteName('user') . ' = ' . $user_id)
+                ->set($this->_db->quoteName('updated_by') . ' = ' . $user_id);
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+            $dashboard = $this->_db->insertid();
+
+            $query->clear()
+                ->select('parent_id,position')
+                ->from($this->_db->quoteName('#__emundus_widgets_repeat_access'))
+                ->where($this->_db->quoteName('default') . ' = 1')
+                ->andWhere($this->_db->quoteName('profile') . ' = ' . $profile);
+            $this->_db->setQuery($query);
+            $default_widgets = $this->_db->loadObjectList();
+
+            foreach ($default_widgets as $default_widget) {
+                $query->clear()
+                    ->insert($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
+                    ->set($this->_db->quoteName('parent_id') . ' = ' . $dashboard)
+                    ->set($this->_db->quoteName('widget') . ' = ' . $default_widget->parent_id)
+                    ->set($this->_db->quoteName('position') . ' = ' . $default_widget->position);
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+            }
+            return true;
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error at creating a dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function deleteDashboard($user_id){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try{
+            $query->delete('#__emundus_setup_dashboard')
+                ->where($this->_db->quoteName('user') . ' = ' . $user_id);
+            $this->_db->setQuery($query);
+            return $this->_db->execute();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error at deleting the dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getallwidgetsbysize($size,$user_id){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('profile')
+                ->from($this->_db->quoteName('#__emundus_users'))
+                ->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
+            $this->_db->setQuery($query);
+            $profile = $this->_db->loadResult();
+
+            $query->clear()
+                ->select('ew.id,ew.name,ew.label,ew.size,ew.size_small,ew.type,ew.chart_type,ew.article_id,ew.params')
+                ->from($this->_db->quoteName('#__emundus_widgets','ew'))
+                ->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access','ewra').' ON '.$this->_db->quoteName('ewra.parent_id').' = '.$this->_db->quoteName('ew.id'))
+                ->where($this->_db->quoteName('ew.name') . ' = ' . $this->_db->quote('custom'))
+                ->andWhere($this->_db->quoteName('ew.size') . ' = ' . $this->_db->quote($size))
+                ->andWhere($this->_db->quoteName('ewra.profile') . ' = ' . $this->_db->quote($profile))
+                ->andWhere($this->_db->quoteName('ew.type') . ' = ' . $this->_db->quote('chart'))
+                ->andWhere($this->_db->quoteName('ew.published') . ' = 1');
+            $this->_db->setQuery($query);
+            $widgets = $this->_db->loadObjectList();
+
+            if (!empty($widgets)) {
+                foreach ($widgets as $key => $widget) {
+                    $widgets[$key]->label = JText::_($widget->label);
+                }
+            }
+
+            return $widgets;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get all widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
+    public function getwidgets($user_id){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
+                ->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets','esdr'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard','esd').' ON '.$this->_db->quoteName('esd.id').' = '.$this->_db->quoteName('esdr.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.widget'))
+                ->where($this->_db->quoteName('user') . ' = ' . $this->_db->quote($user_id))
+                ->order('esdr.position');
+            $this->_db->setQuery($query);
+            $widgets = $this->_db->loadObjectList();
+
+            if(empty($widgets)) {
+                $query->clear()
+                    ->select('params')
+                    ->from($this->_db->quoteName('#__modules'))
+                    ->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_dashboard_vue'));
+
+                $this->_db->setQuery($query);
+                $modules = $this->_db->loadColumn();
+
+                $widgets = array();
+
+                foreach ($modules as $module) {
+                    $params = json_decode($module, true);
+                    if (in_array(JFactory::getSession()->get('emundusUser')->profile, $params['profile'])) {
+                        $widgets = $params['widgets'];
+                    }
+                }
+
+                $query->clear()
+                    ->select('id,name,label,params,size,size_small,class,type,chart_type,article_id,params')
+                    ->from($this->_db->quoteName('#__emundus_widgets'))
+                    ->where($this->_db->quoteName('name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')');
+                $this->_db->setQuery($query);
+                $widgets = $this->_db->loadObjectList();
+            }
+
+            if (!empty($widgets)) {
+                foreach ($widgets as $key => $widget) {
+                    $widgets[$key]->label = JText::_($widget->label);
                 }
             }
 
@@ -86,6 +200,62 @@ class EmundusonboardModeldashboard extends JModelList
         }
     }
 
+    public function updatemydashboard($widget,$position,$user_id){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try{
+            $dashboard = $this->getDashboard($user_id);
+
+            $query->clear()
+                ->update($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets'))
+                ->set($this->_db->quoteName('widget') . ' = ' . $this->_db->quote($widget))
+                ->where($this->_db->quoteName('position') . ' = ' . $this->_db->quote($position))
+                ->andWhere($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($dashboard));
+            $this->_db->setQuery($query);
+            return $this->_db->execute();
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try update my dashboard : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function renderchartbytag($id){
+        try {
+            $query = $this->_db->getQuery(true);
+
+            $query->select('eval')
+                ->from($this->_db->quoteName('#__emundus_widgets'))
+                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+            $this->_db->setQuery($query);
+            $value = $this->_db->loadResult();
+
+            $request = explode('|', $value);
+            return eval("$request[1]");
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '');
+        }
+    }
+
+    public function getarticle($id,$article){
+        try {
+            $query = $this->_db->getQuery(true);
+
+            $query->select('id,introtext')
+                ->from($this->_db->quoteName('#__content'))
+                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($article));
+            $this->_db->setQuery($query);
+            $value = $this->_db->loadObject();
+
+            return $value->introtext;
+        } catch (Exception $e){
+            JLog::add('component/com_emundus_onboard/models/dashboard | Error when get content of an article : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '');
+        }
+    }
+
+    /** Sciences PO */
     public function getfilescountbystatus(){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
@@ -629,4 +799,5 @@ class EmundusonboardModeldashboard extends JModelList
             return array('dataset' => '', 'category' => '');
         }
     }
+    /** END **/
 }
