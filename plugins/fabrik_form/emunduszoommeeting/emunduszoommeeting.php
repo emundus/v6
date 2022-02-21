@@ -66,7 +66,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 "email" => $raw->email,
                 'type' => current($_POST['jos_emundus_jury___user_type']),
                 "first_name" => $raw->firstname,
-                "last_name" => $raw->lastname],
+                "last_name" => $raw->lastname
+            ],
         ));
 
         # call to Zoom API endpoint
