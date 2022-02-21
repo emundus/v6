@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "watch": "vue-cli-service build --watch"
+    "watch": "vue-cli-service build --watch --mode production"
   },
   "dependencies": {
     "axios": "^0.21.1",

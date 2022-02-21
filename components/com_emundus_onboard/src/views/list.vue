@@ -40,8 +40,8 @@
           v-if="type === 'formulaire' || type === 'grilleEval'"
           v-model="type"
       >
-        <option value="formulaire">Candidature</option>
-        <option value="grilleEval">Grilles d'évaluation</option>
+        <option value="formulaire">{{ translations.candidature }}</option>
+        <option value="grilleEval">{{ translations.evaluations }}</option>
       </select>
 
       <div class="search-container">
@@ -171,6 +171,8 @@ export default {
       System: Joomla.JText._("COM_EMUNDUS_ONBOARD_SYSTEM"),
       Categories: Joomla.JText._("COM_EMUNDUS_ONBOARD_CATEGORIES"),
       Rechercher: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
+      candidature: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
+      evaluations: Joomla.JText._("COM_EMUNDUS_ONBOARD_EVALUATION"),
     },
     total: 0,
     filtersCount: "",
