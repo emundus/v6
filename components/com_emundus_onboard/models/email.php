@@ -100,7 +100,11 @@ class EmundusonboardModelemail extends JModelList {
             ->order($sortDb.$sort);
 
         try {
-            $db->setQuery($query, $offset, $limit);
+            if(empty($lim)) {
+                $db->setQuery($query, $offset);
+            } else {
+                $db->setQuery($query, $offset, $limit);
+            }
             return $db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
