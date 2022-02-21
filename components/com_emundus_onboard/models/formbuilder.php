@@ -1801,28 +1801,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $element['params']["join_val_column"] = "label_fr";
                     $element['params']["database_join_where_sql"] = "order by id";
 
-                    $joins_params = array(
-                        "join-label" => "label_fr",
-                        "type" => "element",
-                        "pk" => "`data_nationality`.`id`");
-
-                    $db = $this->getDbo();
-                    $query = $db->getQuery(true);
-                    $query->insert($db->quoteName('#__fabrik_joins'));
-                    $query->set($db->quoteName('list_id') . ' = ' . $db->quote(0))
-                        ->set($db->quoteName('element_id') . ' = ' . $db->quote($el_id))
-                        ->set($db->quoteName('join_from_table') . ' = ' . $db->quote(''))
-                        ->set($db->quoteName('table_join') . ' = ' . $db->quote('data_nationality'))
-                        ->set($db->quoteName('table_key') . ' = ' . $db->quote('e_' . $gid . '_' . $el_id))
-                        ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('id'))
-                        ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
-                        ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($joins_params)));
-                    $db->setQuery($query);
-
-
-                    $db->execute();
-
                     $this->UpdateParams($element, $user);
                     break;
                 case 'pays':
@@ -1840,28 +1818,6 @@ class EmundusonboardModelformbuilder extends JModelList {
                     $element['params']["join_key_column"] = "id";
                     $element['params']["join_val_column"] = "label_fr";
                     $element['params']["database_join_where_sql"] = "order by id";
-
-                    $joins_params = array(
-                        "join-label" => "label_fr",
-                        "type" => "element",
-                        "pk" => "`data_counrty`.`id`");
-
-                    $db = $this->getDbo();
-                    $query = $db->getQuery(true);
-                    $query->insert($db->quoteName('#__fabrik_joins'));
-                    $query->set($db->quoteName('list_id') . ' = ' . $db->quote(0))
-                        ->set($db->quoteName('element_id') . ' = ' . $db->quote($el_id))
-                        ->set($db->quoteName('join_from_table') . ' = ' . $db->quote(''))
-                        ->set($db->quoteName('table_join') . ' = ' . $db->quote('data_country'))
-                        ->set($db->quoteName('table_key') . ' = ' . $db->quote('e_' . $gid . '_' . $el_id))
-                        ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('id'))
-                        ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
-                        ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($joins_params)));
-                    $db->setQuery($query);
-
-
-                    $db->execute();
 
                     $this->UpdateParams($element, $user);
                     break;
