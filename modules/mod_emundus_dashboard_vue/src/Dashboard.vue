@@ -18,7 +18,7 @@
         </select>
       </div>
       <template v-if="widgets.length > 0">
-        <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" 
+        <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index"
         :class="enableDrag ? 'jello-horizontal handle' : widget.name + '-' + widget.class" :key="widget.name + '_' + index">
           <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
 
