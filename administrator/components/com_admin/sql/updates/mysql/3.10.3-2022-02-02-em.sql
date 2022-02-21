@@ -60,6 +60,7 @@ create table jos_emundus_jury
     date_time                      datetime     null,
     send_invitation                text         null,
     user_type                      text         null,
+    user                           int          null,
     constraint jos_emundus_jury___fk1
         foreign key (president) references jos_users (id)
             on update cascade on delete cascade
