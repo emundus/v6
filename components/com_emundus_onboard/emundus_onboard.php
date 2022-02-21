@@ -12,6 +12,8 @@ defined('_JEXEC') or die('Restricted access');
 // emundus helpers
 require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
+JHTML::styleSheet('https://fonts.googleapis.com/icon?family=Material+Icons');
+
 // LOGGER
 jimport('joomla.log.log');
 jimport('joomla.methods');

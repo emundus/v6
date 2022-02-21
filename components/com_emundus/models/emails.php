@@ -490,7 +490,13 @@ class EmundusModelEmails extends JModelList {
                 $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
             } else {
-                $replacements[] = "";
+                $request = explode('|', $value);
+                $result = eval("$request[1]");
+                if(!empty($result)){
+                    $replacements[] = $result;
+                } else {
+                    $replacements[] = "";
+                }
             }
 
         }
@@ -1360,7 +1366,8 @@ class EmundusModelEmails extends JModelList {
             ];
             $this->logEmail($log);
             // Log the email in the eMundus logging system.
-            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+            $logsParams = array('created' => [$subject]);
+            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
     }
 }

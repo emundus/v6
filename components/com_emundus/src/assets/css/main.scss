@@ -1,81 +1,77 @@
 :root {
-    --primary-color: #16AFE1;
-    --secondary-color: #12DB42;
-    --grey-color: #5E646E;
-    --grey-bg-color: #F2F2F3;
-    --night-blue: #353544;
-    --success-bg-color: #DFF5E9;
-    --success-color: #106949;
-    --warning-bg-color: #FFFBDB;
-    --warning-color: #805100;
-    --error-bg-color: #FFEEEE;
-    --error-color: #C31924;
-    --box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    --border-color: #E3E5E8;
-    --text-color: #5E646E;
-    --text-light-color: #F2F2F3;
-    --disabled-color: #C4C4C4;
+  --primary-color: #16afe1;
+  --secondary-color: #12db42;
+  --grey-color: #5e646e;
+  --grey-bg-color: #f2f2f3;
+  --night-blue: #353544;
+  --success-bg-color: #dff5e9;
+  --success-color: #106949;
+  --warning-bg-color: #fffbdb;
+  --warning-color: #805100;
+  --error-bg-color: #ffeeee;
+  --error-color: #c31924;
+  --box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  --border-color: #e3e5e8;
+  --text-color: #5e646e;
+  --text-light-color: #f2f2f3;
+  --disabled-color: #c4c4c4;
 }
 
 .material-icons {
-    transition: all .3s;
-    font-size: 18px !important;
-    color: var(--grey-color);
+  transition: all 0.3s;
+  font-size: 18px !important;
+  color: var(--grey-color);
 }
 
 .btn-icon-text {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    transition: all 0.3s ease-in-out;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
 }
 
 .btn-icon-text:hover {
-    background: var(--grey-bg-color);
+  background: var(--grey-bg-color);
 }
 
 .btn-primary-vue {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: center;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
-    color: var(--text-light-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 4px;
-    transition: all 0.3s ease-in-out;
-    width: fit-content;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: var(--text-light-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+  width: fit-content;
 }
 
 .btn-primary-vue:hover {
-    color: var(--primary-color);
-    background-color: var(--text-light-color);
+  color: var(--primary-color);
+  background-color: var(--text-light-color);
 }
 
 .vue-em-loader {
-    border: 5px solid #f3f3f4;
-    border-top: 5px solid var(--primary-color);
-    border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    animation: spin 2s linear infinite;
-    position: absolute !important;
-    text-align: center;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 0 9999px #cecece85;
-    background: #cecece85;
+  position: absolute !important;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 9999px #cecece85;
+  background: #cecece85;
+  width: 70px !important;
+  height: 70px !important;
 }
 
 body ::-webkit-scrollbar-track {
-    background-color: transparent !important;
-    background: transparent;
+  background-color: transparent !important;
+  background: transparent;
 }

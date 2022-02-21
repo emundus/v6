@@ -67,6 +67,7 @@ $csv = $formModel->data['jos_emundus_setup_csv_import___csv_file_raw'];
 $campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
 $profile_id = $formModel->data['jos_emundus_setup_csv_import___profile'];
 $create_new_fnum = $formModel->data['jos_emundus_setup_csv_import___create_new_fnum'];
+$send_email = $formModel->data['jos_emundus_setup_csv_import___send_email_raw'][0];
 
 // Check if the file is a file on the server and in the right format.
 if (!is_file(JPATH_ROOT.$csv)) {
@@ -830,7 +831,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
         }
     }
 
-    if ($new_user) {
+    if ($new_user && !empty($send_email) && $send_email == 1) {
         // Send email indicating account creation.
         $m_emails = new EmundusModelEmails();
 

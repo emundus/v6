@@ -238,11 +238,8 @@ class EmundusonboardModelformbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $app = JFactory::getApplication();
-
-        $model = new MenusModelItem();
-
-        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'falang.php');
+        $falang = new EmundusonboardModelfalang;
         $modules = [93,102,103,104,168,170];
 
         try {
@@ -1215,6 +1212,7 @@ class EmundusonboardModelformbuilder extends JModelList {
 
             return array(
                 'id' => $formid,
+                'db_table_name' => 'jos_emundus_' . $prid . '_' . $increment,
                 'label' => $label[$actualLanguage],
                 'link' => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
                 'rgt' => array_values($rgts)[strval(sizeof($rgts) - 1)] + 2,
