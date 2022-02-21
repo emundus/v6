@@ -112,12 +112,12 @@ import "@fortawesome/fontawesome-free/js/all.js";
 import "../assets/css/formbuilder.scss";
 import draggable from "vuedraggable";
 
-import Builder from "../components/FormClean/Builder";
-import ModalSide from "../components/FormClean/ModalSide";
-import ModalMenu from "../components/FormClean/ModalMenu";
+import Builder from "../components/formClean/Builder";
+import ModalSide from "../components/formClean/ModalSide";
+import ModalMenu from "../components/formClean/ModalMenu";
 
 import _ from 'lodash';
-import ModalAffectCampaign from "../components/FormClean/ModalAffectCampaign";
+import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
 import List from "./list";
 import {global} from "../store/global";
 

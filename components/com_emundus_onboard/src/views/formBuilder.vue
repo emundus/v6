@@ -12,16 +12,6 @@
               :prid="prid"
               :testing="testing"
       />
-      <ModalTestingForm
-          v-if="formObjectArray[indexHighlight]"
-          :profileId="prid"
-          :actualLanguage="actualLanguage"
-          :campaigns="campaignsAffected"
-          :currentForm="formObjectArray[indexHighlight].object.id"
-          :currentMenu="formObjectArray[indexHighlight].object.menu_id"
-          @testForm="testForm"
-          @modalClosed="optionsModal = false"
-      />
       <ModalMenu
               :profileId="prid"
               :actualLanguage="actualLanguage"
@@ -264,13 +254,12 @@
   import "../assets/css/formbuilder.scss";
   import draggable from "vuedraggable";
 
-  import Builder from "../components/FormClean/Builder";
-  import ModalSide from "../components/FormClean/ModalSide";
-  import ModalMenu from "../components/FormClean/ModalMenu";
+  import Builder from "../components/formClean/Builder";
+  import ModalSide from "../components/formClean/ModalSide";
+  import ModalMenu from "../components/formClean/ModalMenu";
 
   import _ from 'lodash';
-  import ModalAffectCampaign from "../components/FormClean/ModalAffectCampaign";
-  import ModalTestingForm from "@/components/FormClean/ModalTestingForm";
+  import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import ModalAddDocuments from "@/components/AdvancedModals/ModalAddDocuments";
   import Swal from "sweetalert2";
   import {global} from "../store/global";
@@ -281,7 +270,6 @@
     name: "FormBuilder",
     components: {
       ModalAddDocuments,
-      ModalTestingForm,
       ModalAffectCampaign,
       Builder,
       ModalSide,
