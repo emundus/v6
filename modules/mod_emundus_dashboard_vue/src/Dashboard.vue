@@ -138,7 +138,7 @@ export default {
 }
 
 .tchooz-widget{
-  height: 22.5rem;
+  height: 400px;
 }
 
 .cta-block{
