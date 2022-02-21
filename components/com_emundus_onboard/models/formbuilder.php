@@ -2210,6 +2210,34 @@ this.set(words.join(&quot; &quot;));
 
                     $element['params'] = $this->addDatabaseJoinParameters($element['params']);
 
+                    $query = $db->getQuery(true);
+
+                    $query->select('*')
+                        ->from($db->quoteName('#__fabrik_joins'))
+                        ->where($db->quoteName('element_id') . ' = ' . $element['id']);
+                    $db->setQuery($query);
+                    $fabrik_join = $db->loadObject();
+
+                    if(!empty($fabrik_join)){
+                        $join_params = json_decode($fabrik_join->params);
+                        $join_params->{'join-label'} = $element['params']['join_val_column'];
+                        $join_params->pk = $db->quoteName($element['params']['join_db_name']) . '.' . $db->quoteName($element['params']['join_key_column']);
+
+                        $fields = array(
+                            $db->quoteName('table_join_key') . ' = ' . $db->quote($element['params']['join_key_column']),
+                            $db->quoteName('table_join') . ' = ' . $db->quote($element['params']['join_db_name']),
+                            $db->quoteName('params') . ' = ' . $db->quote(json_encode($join_params)),
+                        );
+                        $query->clear()
+                            ->update($db->quoteName('#__fabrik_joins'))
+                            ->set($fields)
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($fabrik_join->id));
+                        $db->setQuery($query);
+                        $db->execute();
+                    }
+
+
+
                     $element['plugin'] = 'databasejoin';
                 } else {
                     $element['params'] = $this->deleteDatabaseJoinParams($element['params']);
