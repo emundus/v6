@@ -12,7 +12,9 @@
 			-1 : user registration
 			-2 : user login
 		-->
-		<field name="log_actions" label="LOG_ACTIONS" type="field" description="LOG_ACTIONS_DESC"/>
+		<field name="log_actions" label="LOG_ACTIONS" default="1,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37" type="field" description="LOG_ACTIONS_DESC"/>
+		<field name="log_actions_exclude" label="LOG_ACTIONS_EXCLUDE" type="field" description="LOG_ACTIONS_EXCLUDE_DESC"/>
+		<field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="62" type="field" description="LOG_ACTIONS_EXCLUDE_USER_DESC"/>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
@@ -58,6 +60,10 @@
 			"13":{"id":10, "c":0, "r":1, "u":0, "d":0},
 			"14":{"id":14, "c":1, "r":1, "u":1, "d":0}
 			}' label="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS" description="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS_DESC" />
+		<field name="hide_default_actions" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_HIDE_DEFAULT_ACTIONS">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="show_related_files" type="radio" default="0" label="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES" description="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
@@ -136,6 +142,7 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="scholarship_product" menu="hide" type="text" default="0" label="COM_EMUNDUS_SCHOLARSHIP_PRODUCT" description="COM_EMUNDUS_SCHOLARSHIP_PRODUCT_DESC" />
 		<field name="application_payment" menu="hide" type="list" default="user" label="COM_EMUNDUS_APPLICATION_PAYMENT" description="COM_EMUNDUS_APPLICATION_PAYMENT_DESC">
 			<option value="user">USER</option>
 			<option value="campaign">CAMPAIGN</option>
@@ -216,6 +223,8 @@
 		<field name="clientId" type="text" required="false" label="COM_EMUNDUS_CLIENTID_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
 		<field name="clientSecret" type="text" required="false" label="COM_EMUNDUS_CLIENTSECRET_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
 		<field name="refreshToken" type="text" required="false" label="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_LABEL" description="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
+		<field name="refreshToken_url" type="note" description="&lt;a href=&quot;/index.php?option=com_emundus&amp;controller=calendar&amp;task=authenticateclient&quot; target=&quot;_blank&quot;&gt;New Refresh Token	&lt;/a&gt;" />
+
 		<field name="parentCalId" type="text" required="false" label="COM_EMUNDUS_PARENTCAL_LABEL" description="COM_EMUNDUS_PARENTCAL_DESC" class="inputbox" default="" />
 		<field name="mailRecipients" type="text" required="false" label="COM_EMUNDUS_MAILRECIPIENTS_LABEL" description="COM_EMUNDUS_MAILRECIPIENTS_DESC" class="inputbox" default="5" />
 		<field name="bookedPrefix" type="text" required="false" label="COM_EMUNDUS_BOOKEDPREFIX_LABEL" description="COM_EMUNDUS_BOOKEDPREFIX_DESC" class="inputbox" default="BOOKED" />
@@ -349,6 +358,12 @@
 		<field name="filename" type="text" default="" label="COM_EMUNDUS_FILENAME" description="COM_EMUNDUS_FILENAME_DESC" />
 		<field name="filtre_ip" type="text" default="" label="COM_EMUNDUS_FILTRE_IP" description="COM_EMUNDUS_FILTRE_IP_DESC" />
 		<field name="attachment_id" type="text" default="" label="COM_EMUNDUS_ATTACHMENT_ID" description="COM_EMUNDUS_ATTACHMENT_ID_DESC" />
+
+<!--		<field name="spacer7" type="spacer" hr="true"/>-->
+
+<!--		<field name="export_banner" type="note" label="Export Banner"/>-->
+
+<!--		<field name="banner_limit" type="text" default="10" label="COM_EMUNDUS_BANNER_LIMIT" description="COM_EMUNDUS_BANNER_LIMIT_DESC" />-->
 	</fieldset>
 	<fieldset
 			name="permissions"

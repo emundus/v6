@@ -16,11 +16,8 @@ jQuery(document).ready(function ($) {
     var sourcecategories = $("#dropfiles-template-tree-categories").html();
     var sourcefile = $("#dropfiles-template-tree-box").html();
 
-    if (typeof sourcefiles != 'undefined' && sourcefiles != null) {
-        var reg = new RegExp(dropfilesRootUrl + "{{", 'g');
-        sourcefile = sourcefile.replace(reg, "{{");
-        sourcefiles = sourcefiles.replace(reg, "{{");
-    }
+    sourcefiles = fixJoomlaSef(sourcefiles);
+    sourcefile = fixJoomlaSef(sourcefile);
 
     var tree_hash = window.location.hash;
     var tree_load_done = false;
@@ -341,6 +338,16 @@ jQuery(document).ready(function ($) {
         var link_manager = $(".dropfiles-content-tree.dropfiles-content-multi").find('.openlink-manage-files').data('urlmanage');
         link_manager = link_manager + '&task=site_manage&site_catid=' + sourcecat + '&tmpl=dropfilesfrontend';
         $(".dropfiles-content-tree.dropfiles-content-multi").find('.openlink-manage-files').attr('href', link_manager);
+    }
+
+    // Remove the root url in case it's added by Joomla Sef plugin
+    function fixJoomlaSef(template) {
+        if (typeof template != 'undefined' && template != null) {
+            var reg = new RegExp(dropfilesRootUrl + "{{", 'g');
+            template = template.replace(reg, "{{");
+        }
+
+        return template;
     }
 
 });

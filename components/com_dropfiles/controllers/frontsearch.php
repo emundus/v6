@@ -307,7 +307,7 @@ class DropfilesControllerFrontsearch extends JControllerLegacy
         ));
 
         if (!empty($result[0])) {
-            if (version_compare(JVERSION, '3.10.0', 'ge')) {
+            if (DropfilesBase::isJoomla40()) {
                 JHtml::_('behavior.core');
             } else {
                 JHtml::_('behavior.framework', true);

@@ -1,6 +1,6 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.3.0
+ * @version    4.4.0
  * @author     hikashop.com
  * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -247,6 +247,8 @@ window.checkoutWorkflowEditor = {
 			return {"param": param, "value": val};
 		}
 		if(checkoutType == "namebox") {
+			if(!window.oNameboxes[el.id])
+				return null;
 			var nv = window.oNameboxes[el.id].get();
 			if(nv.value)
 				return {"param": param, "value": nv.value};

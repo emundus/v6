@@ -32,14 +32,13 @@
 <script>
 import FormViewer from "../Form/FormViewer";
 import axios from "axios";
-const qs = require("qs");
 import "../../assets/css/formbuilder.scss";
 
 export default {
   name: "FormCarrousel",
   props: {
-    formList: Object,
-    documentsList: Object,
+    formList: Array,
+    documentsList: Array,
     visibility: Number
   },
   components: {
@@ -49,7 +48,6 @@ export default {
     return {
       indexHighlight: "0",
       formNameArray: [],
-      documentsList: [],
       formLinkArray: [],
       formArray: [],
       FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
@@ -63,8 +61,6 @@ export default {
     },
     ChangeIndex(index) {
       this.indexHighlight = index;
-      //document.cookie = 'page='+index+'; expires=Session; path=/'
-      //this.$emit("getEmitIndex", this.indexHighlight);
     },
     EditPage() {
       this.$emit("formbuilder", this.indexHighlight);

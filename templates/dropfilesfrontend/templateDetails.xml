@@ -3,8 +3,8 @@
     "http://www.joomla.org/xml/dtd/2.5/template-install.dtd">
 <extension version="3.1" type="template" client="site" method="upgrade">
     <name>Dropfiles frontend</name>
-    <version>5.8.0</version>
-    <creationDate>2021-08-03 02:59:20</creationDate>
+    <version>5.8.5</version>
+    <creationDate>2021-10-11 02:44:17</creationDate>
     <author>JoomUnited</author>
     <authorEmail>contact@joomunited.com</authorEmail>
     <copyright>Copyright (C) 2005 - 2015 Open Source Matters, Inc. All rights reserved.</copyright>

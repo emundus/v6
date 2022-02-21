@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -28,6 +28,13 @@ class OrderViewOrder extends hikashopView{
 			$this->$function();
 		if(empty($this->displayCompleted))
 			parent::display($tpl);
+	}
+
+
+	public function address_template() {
+		if(!empty($this->params)) {
+			$this->address = $this->params->get('address');
+		}
 	}
 
 	public function listing() {
@@ -72,6 +79,9 @@ class OrderViewOrder extends hikashopView{
 		$filters = array(
 			'b.order_type=\'sale\''
 		);
+
+		$this->searchOptions = array('status'=> '','payment'=> '', 'partner'=> '', 'end'=> '','start'=> '');
+		$this->openfeatures_class = "hidden-features";
 
 		if(is_array($pageInfo->filter->filter_status) && count($pageInfo->filter->filter_status) == 1) {
 			$pageInfo->filter->filter_status = reset($pageInfo->filter->filter_status);
@@ -153,7 +163,8 @@ class OrderViewOrder extends hikashopView{
 		if(hikashop_level(2))
 			JPluginHelper::getPlugin('system', 'hikashopaffiliate');
 		$app = JFactory::getApplication();
-		$app->triggerEvent('onBeforeOrderListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters, &$tables, &$searchMap));
+		$select = 'a.*,b.*,c.*,d.*';
+		$app->triggerEvent('onBeforeOrderListing', array($this->paramBase, &$extrafilters, &$pageInfo, &$filters, &$tables, &$searchMap, &$select));
 		$this->assignRef('extrafilters', $extrafilters);
 
 		if(!empty($pageInfo->search)) {
@@ -183,7 +194,7 @@ class OrderViewOrder extends hikashopView{
 			' LEFT JOIN '.hikashop_table('user').' AS a ON b.order_user_id=a.user_id '.
 			' LEFT JOIN '.hikashop_table('users',false).' AS c ON a.user_cms_id = c.id ' .
 			implode(' ', $tables) . ' ' . $filters . $order;
-		$database->setQuery('SELECT a.*,b.*,c.*,d.*'.$query, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
+		$database->setQuery('SELECT '.$select.$query, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
 		$rows = $database->loadObjectList();
 
 		if(!empty($pageInfo->search)) {
@@ -357,21 +368,18 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('fields',$fields);
 		$this->assignRef('fieldsClass',$fieldsClass);
 
-		$products = array();
+		$this->products = array();
 		if(!empty($order->products)){
 			$products_ids = array();
 			$productClass = hikashop_get('class.product');
 			foreach($order->products as $item) {
 				if(!empty($item->product_id))
-					$products_ids[] = $item->product_id;
+					$products_ids[] = (int)$item->product_id;
 			}
 			if(count($products_ids)){
-				$productClass->getProducts($products_ids);
-				$products =& $productClass->all_products;
+				$this->products = $productClass->getRawProducts($products_ids, true);
 			}
 		}
-		$this->assignRef('products',$products);
-
 		$user_id = hikaInput::get()->getInt('user_id',0);
 		if(!empty($user_id)){
 			$user_info='&user_id='.$user_id;
@@ -652,7 +660,7 @@ class OrderViewOrder extends hikashopView{
 			}
 			if(!empty($search)) {
 				$searchVal = '\'%'.hikashop_getEscaped(HikaStringHelper::strtolower(trim($search)),true).'%\'';
-				$id = hikashop_decode($pageInfo->search);
+				$id = hikashop_decode($search);
 				$filter = implode(' LIKE '.$searchVal.' OR ', $searchMap).' LIKE '.$searchVal;
 				if(!empty($id)) {
 					$filter .= ' OR hk_order.order_id LIKE \'%'.hikashop_getEscaped($id, true).'%\'';
@@ -745,6 +753,8 @@ class OrderViewOrder extends hikashopView{
 				$order->order_full_tax += round($product->order_product_quantity * $product->order_product_tax, 2);
 			}
 			foreach($rows as $k => $row){
+				if(!isset($rows[$k]->order_full_tax))
+					$rows[$k]->order_full_tax = 0;
 				$rows[$k]->order_full_tax += $row->order_shipping_tax + $row->order_payment_tax - $row->order_discount_tax;
 			}
 		}
@@ -1278,6 +1288,12 @@ class OrderViewOrder extends hikashopView{
 					$orderProduct->order_product_name = strip_tags($product->product_name);
 
 					$orderProduct->order_product_code = $product->product_code;
+					$orderProduct->order_product_weight = $product->product_weight;
+					$orderProduct->order_product_weight_unit = $product->product_weight_unit;
+					$orderProduct->order_product_width = $product->product_width;
+					$orderProduct->order_product_height = $product->product_height;
+					$orderProduct->order_product_length = $product->product_length;
+					$orderProduct->order_product_dimension_unit = $product->product_dimension_unit;
 
 
 					$currencyClass = hikashop_get('class.currency');
@@ -1344,6 +1360,29 @@ class OrderViewOrder extends hikashopView{
 
 		$ratesType = hikashop_get('type.rates');
 		$this->assignRef('ratesType',$ratesType);
+
+
+		$weightType = hikashop_get('type.weight');
+		$this->assignRef('weightType',$weightType);
+		$volumeType = hikashop_get('type.volume');
+		$this->assignRef('volumeType',$volumeType);
+
+		$afterParams = array();
+		$after = hikaInput::get()->getString('after', '');
+		if(!empty($after)) {
+			list($ctrl, $task) = explode('|', $after, 2);
+
+			$afterParams = hikaInput::get()->getString('afterParams', '');
+			$afterParams = explode(',', $afterParams);
+			$obj = new stdClass();
+			foreach($afterParams as &$p) {
+				$p = explode('|', $p, 2);
+				$obj->{$p[0]} = $p[1];
+				unset($p);
+			}
+			$afterParams = $obj;
+		}
+		$this->assignRef('afterParams', $afterParams);
 	}
 
 	public function customer_set() {
@@ -1405,8 +1444,7 @@ class OrderViewOrder extends hikashopView{
 		$this->assignRef('order_id', $order_id);
 
 		if($closePopup) {
-			hikashop_loadJslib('mootools');
-			$js = 'window.hikashop.ready( function(){window.parent.hikashop.submitBox('.$data.');});';
+			$js = 'window.hikashop.ready( function(){window.top.hikashop.closeBox();});';
 			$doc = JFactory::getDocument();
 			$doc->addScriptDeclaration($js);
 		}

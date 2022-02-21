@@ -20,7 +20,7 @@ class plgEmundusAurion_sync_setup_teaching_unity extends JPlugin {
 		$this->query = $this->db->getQuery(true);
 
 		jimport('joomla.log.log');
-		JLog::addLogger(array('text_file' => 'com_emundus.syncSetupTeachingUnity.php'), JLog::ALL, array('com_emundus'));
+		JLog::addLogger(array('text_file' => 'com_emundus.syncSetupTeachingUnity.php'), JLog::ALL, array('com_emundus_syncSetupTeachingUnity'));
 	}
 
 	/**
@@ -82,7 +82,7 @@ class plgEmundusAurion_sync_setup_teaching_unity extends JPlugin {
 					try {
 						$db_au_year_data = $this->db->loadAssocList();
 					} catch (Exception $e) {
-						JLog::add('Could not get the year info from the Aurion years table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+						JLog::add('Could not get the year info from the Aurion years table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupTeachingUnity');
 						return false;
 					}
 
@@ -96,7 +96,7 @@ class plgEmundusAurion_sync_setup_teaching_unity extends JPlugin {
 						try {
 							$db_em_prog_code_id = $this->db->loadAssocList('id');
 						} catch (Exception $e) {
-							JLog::add('Could not get the program Codes from the prog table by ID in order to feed the years table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+							JLog::add('Could not get the program Codes from the prog table by ID in order to feed the years table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupTeachingUnity');
 							return false;
 						}
 
@@ -116,7 +116,7 @@ class plgEmundusAurion_sync_setup_teaching_unity extends JPlugin {
 					try {
 						$db_em_year_primary = $this->db->loadAssocList();
 					} catch (Exception $e) {
-						JLog::add('Could not get the year schoolyear/code the TU table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+						JLog::add('Could not get the year schoolyear/code the TU table. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupTeachingUnity');
 						return false;
 					}
 
@@ -168,7 +168,7 @@ class plgEmundusAurion_sync_setup_teaching_unity extends JPlugin {
 					try {
 						$programme_categories = $this->db->loadAssocList('code', 'programmes');
 					} catch (Exception $e) {
-						JLog::add('Could not get the programme categories organized by code. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+						JLog::add('Could not get the programme categories organized by code. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupTeachingUnity');
 						return false;
 					}
 
@@ -200,7 +200,7 @@ class plgEmundusAurion_sync_setup_teaching_unity extends JPlugin {
 						try {
 							$this->db->execute();
 						} catch (Exception $e) {
-							JLog::add('Could not INSERT data into jos_emundus_setup_teaching_unity. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+							JLog::add('Could not INSERT data into jos_emundus_setup_teaching_unity. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupTeachingUnity');
 							return false;
 						}
 					}
@@ -227,7 +227,7 @@ class plgEmundusAurion_sync_setup_teaching_unity extends JPlugin {
 							try {
 								$this->db->execute();
 							} catch (Exception $e) {
-								JLog::add('Could not UPDATE data into jos_emundus_setup_teaching_unity. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+								JLog::add('Could not UPDATE data into jos_emundus_setup_teaching_unity. -> '.$e->getMessage(), JLog::ERROR, 'com_emundus_syncSetupTeachingUnity');
 								return false;
 							}
 						}

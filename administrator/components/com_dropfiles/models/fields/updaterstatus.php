@@ -42,7 +42,7 @@ class JFormFieldUpdaterstatus extends JFormField
     protected function getInput()
     {
         // Load modal behavior
-        if (version_compare(JVERSION, '3.10.0', 'lt')) {
+        if (!DropfilesBase::isJoomla40()) {
             JHtml::_('behavior.modal', 'a.modal');
         }
 

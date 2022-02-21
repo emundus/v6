@@ -448,8 +448,9 @@ class EmundusHelperFiles
 
     public function getSchoolyears() {
         $db = JFactory::getDBO();
-        $query = 'SELECT DISTINCT(year) as schoolyear
-            FROM #__emundus_setup_campaigns
+        $query = 'SELECT DISTINCT(schoolyear)
+            FROM #__emundus_setup_teaching_unity
+            WHERE published = 1
             ORDER BY schoolyear DESC';
         $db->setQuery( $query );
         return $db->loadObjectList();
@@ -474,10 +475,21 @@ class EmundusHelperFiles
 
     public function getAttachmentsTypesByProfileID ($pid) {
         $db = JFactory::getDBO();
-        $query = 'SELECT *
-                FROM #__emundus_setup_attachments WHERE id IN (SELECT attachment_id FROM #__emundus_setup_attachment_profiles WHERE profile_id = '.$pid.')
-                ORDER BY ordering ASC';
-        $db->setQuery( $query );
+        $query = $db->getQuery(true);
+
+        $query->select('attachment_id')
+            ->from($db->quoteName('#__emundus_setup_attachment_profiles'))
+            ->where($db->quoteName('profile_id') . ' IN (' . implode(',', $pid) . ')');
+        $db->setQuery($query);
+        $attachments = $db->loadColumn();
+
+        $query->clear()
+            ->select('*')
+            ->from($db->quoteName('#__emundus_setup_attachments'))
+            ->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
+            ->order('ordering');
+
+        $db->setQuery($query);
         return $db->loadObjectList();
     }
 
@@ -541,7 +553,7 @@ class EmundusHelperFiles
             }
 
             // get profiles for selected programmes or campaigns
-            $plist = $m_profile->getProfileIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
+            $plist = $m_profile->getProfilesIDByCampaign((array)$campaigns) ?: $m_profile->getProfileIDByCourse((array)$programme);
 
         } else {
             $plist = $m_profile->getProfileIDByCourse($code, $camps);
@@ -934,7 +946,7 @@ class EmundusHelperFiles
             } elseif ($element_name=='training_id') {
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' ORDER BY '.str_replace('{thistable}', $params->join_db_name, $params->join_db_name.'.date_start ');
             } else {
-                $params->database_join_where_sql = (strpos($params->database_join_where_sql, '{rowid}') === false) ? $params->database_join_where_sql : '';
+                $params->database_join_where_sql =  (strpos($params->database_join_where_sql, '{rowid}') === false && strpos($params->database_join_where_sql, 'raw') === false ) ? $params->database_join_where_sql : '';
                 $query = 'SELECT '.$params->join_key_column.' AS elt_key, '.$join_val.' AS elt_val FROM '.$params->join_db_name.' '.str_replace('{thistable}', $params->join_db_name, preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $params->database_join_where_sql));
             }
             $db->setQuery($query);
@@ -1109,6 +1121,7 @@ class EmundusHelperFiles
                     <div id="quick" class="form-group">
                         <input type="text" id="input-tags" class="input-tags demo-default" value="'.$cs.'" placeholder="'.JText::_('SEARCH').' ...">
                        <input value="&#xf002" type="button" class="btn btn-sm btn-info" id="search" style="font-family: \'FontAwesome\';" title="'.JText::_('SEARCH_BTN').'"/>'.
+
 		        '</div>
 	        </div>';
         $filters .= '<script type="text/javascript">
@@ -1146,7 +1159,7 @@ class EmundusHelperFiles
         }
         $filters .= '</select>
 
-						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><i class="fas fa-trash"></i></button></div>
+						<button class="btn btn-xs" id="del-filter" title="'.JText::_('DELETE').'"><span class="material-icons">delete_outline</span></button></div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                                 <strong>'.JText::_('FILTER_SAVED').'</strong>
@@ -1219,7 +1232,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $profile .= '<div class="form-group em-filter" id="o_profiles">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                                    	<label class="control-label em-filter-label">'.JText::_('OTHER_PROFILES').'&ensp; <a href="javascript:clearchosen(\'#select_oprofiles\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a></label>
                                     </div>';
             }
 
@@ -1477,7 +1490,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $campaign .= '<div id="campaign" class="em-filter">
                             	<div class="em_label">
-                            		<label class="control-label em-filter-label">'.JText::_('CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                            		<label class="control-label em-filter-label">'.JText::_('CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a></label>
                             	</div>
                           		<div class="em_filtersElement">';
             }
@@ -1507,7 +1520,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $schoolyear .= '<div id="schoolyear" class="em-filter">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                                    	<label class="control-label em-filter-label">'.JText::_('SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a></label>
                                     </div>
                                    <div class="em_filtersElement">';
             }
@@ -1537,7 +1550,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $programme .= '<div id="programme" class="em-filter">
                     <div class="em_label">
-                    	<label class="control-label em-filter-label">'.JText::_('PROGRAMME').'&ensp;<a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                    	<label class="control-label em-filter-label">'.JText::_('PROGRAMME').'&ensp;<a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a></label>
                     </div>
                     <div class="em_filtersElement">';
             }
@@ -1577,7 +1590,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $status .= '<div class="em_filters em-filter" id="status">
                     <div class="em_label">
-                    	<label class="control-label em-filter-label">'.JText::_('STATUS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_status\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                    	<label class="control-label em-filter-label">'.JText::_('STATUS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_status\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a></label>
                     </div>
                     <div class="em_filtersElement">';
             }
@@ -1642,7 +1655,7 @@ class EmundusHelperFiles
 	        if (!$hidden) {
 		        $tag .= '<div id="tag" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em-filter-label">'.JText::_('TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                    			<label class="control-label em-filter-label">'.JText::_('TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
 	        }
@@ -1688,7 +1701,7 @@ class EmundusHelperFiles
 		    if (!$hidden) {
 			    $group_assoc .= '<div id="group_assoc" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_group_assoc\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a></label>
+                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_group_assoc\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
 		    }
@@ -1816,7 +1829,7 @@ class EmundusHelperFiles
                 $group .= '<div id="group">
                     		<div class="em_label">
                     			<label class="control-label em_filters_other_label">'.JText::_('GROUP').' &ensp;
-                    				<a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a>
+                    				<a href="javascript:clearchosen(\'#select_multiple_groups\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a>
                     			</label>
                             </div>
                     		<div class="em_filtersElement">';
@@ -1848,7 +1861,7 @@ class EmundusHelperFiles
                 $institution .= '<div id="group">
                     				<div class="em_label">
                     					<label class="control-label em_filters_other_label">'.JText::_('UNIVERSITY').' &ensp;
-                    						<a href="javascript:clearchosen(\'#select_multiple_institutions\')"><span class="fas fa-undo" title="'.JText::_('CLEAR').'"></span></a>
+                    						<a href="javascript:clearchosen(\'#select_multiple_institutions\')"><span class="fas fa-redo" title="'.JText::_('CLEAR').'"></span></a>
                     					</label>
                                     </div>
                     				<div class="em_filtersElement">';
@@ -1963,7 +1976,7 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
-                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="fas fa-trash" ></span></button>';
+                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
@@ -2098,13 +2111,13 @@ class EmundusHelperFiles
 
             if (!array_key_exists($group['fnum'], $evaluators)) {
                 $title = $group['name'];
-                $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
+                $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
             } else {
                 if ((strcmp($group['fnum'], $groupEval[$k + 1]['fnum'])  == 0) && (strcmp($groupEval[$k + 1]['title'], $group['title']) == 0 )) {
                     $title .= ' '.$group['name'];
                 } else {
                     $title .= ' '.$group['name'];
-                    $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
+                    $evaluators[$group['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator editlinktip hasTip"  title="'.$title.'">'.$group['title'].'</span><button class="btn btn-danger btn-xs group" id="'.$group['fnum'].'-'.$group['id'].'">X</button></li></ul>';
                     $title = '';
                 }
             }
@@ -2112,9 +2125,9 @@ class EmundusHelperFiles
 
         foreach ($evaluatorsDB as $ev) {
             if (!array_key_exists($ev['fnum'], $evaluators)) {
-                $evaluators[$ev['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs">X</button></li></ul>';
+                $evaluators[$ev['fnum']] = '<ul class="em-list-evaluator"><li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs">X</button></li></ul>';
             } else {
-                $evaluators[$ev['fnum']] = substr($evaluators[$ev['fnum']], 0, count($evaluators[$ev['fnum']]) - 6) . '<li class="em-list-evaluator-item"><span class="glyphicon glyphicon-eye-open"></span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs" id="'.$ev['fnum'].'-'.$ev['id'].'">X</button></li></ul>';
+                $evaluators[$ev['fnum']] = substr($evaluators[$ev['fnum']], 0, count($evaluators[$ev['fnum']]) - 6) . '<li class="em-list-evaluator-item"><span class="material-icons">visibility</span>  <span class="em-evaluator">'.$ev['name'].'</span><button class="btn btn-danger btn-xs" id="'.$ev['fnum'].'-'.$ev['id'].'">X</button></li></ul>';
             }
         }
         return $evaluators;

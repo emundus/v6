@@ -7,14 +7,18 @@
  */
 // no direct access
 defined('_JEXEC') or die;
-echo $description;
 ?>
-<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-    <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
-        <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
-    </a>
-    <hr>
-<?php endif; ?>
+<div class="add-application-actions">
+    <?php
+        echo $description;
+    ?>
+    <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
+        <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
+            <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
+        </a>
+        <hr>
+    <?php endif; ?>
+</div>
 <?php if (!empty($applications)) : ?>
     <div class="<?= $moduleclass_sfx ?>">
     <?php foreach ($applications as $application) : ?>
@@ -26,7 +30,7 @@ echo $description;
         $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
         $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
         if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
-            <?php 
+            <?php
             if ($file_tags != '') {
 
                 $post = array(
@@ -132,10 +136,17 @@ echo $description;
                     <?php endif; ?>
                 </section>
                 <div class="main-page-file-progress-label">
-                    <strong><?= JText::_('STATUS'); ?> :</strong>
-                    <span class="label label-<?= $application->class; ?>">
-                        <?= $application->value; ?>
-                    </span>
+                    <?php if(empty($visible_status)) : ?>
+                        <strong><?= JText::_('STATUS'); ?> :</strong>
+                        <span class="label label-<?= $application->class; ?>">
+                            <?= $application->value; ?>
+                        </span>
+                    <?php elseif (in_array($application->status,$visible_status)) :?>
+                        <strong><?= JText::_('STATUS'); ?> :</strong>
+                        <span class="label label-<?= $application->class; ?>">
+                            <?= $application->value; ?>
+                        </span>
+                    <?php endif; ?>
                     <?php if(!empty($application->order_status)): ?>
                         <br>
                         <strong><?= JText::_('ORDER_STATUS'); ?> :</strong>

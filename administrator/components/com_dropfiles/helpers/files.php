@@ -53,7 +53,7 @@ class DropfilesFilesHelper
     {
         $doc = JFactory::getDocument();
         $doc->addScript(JURI::root() . 'components/com_dropfiles/assets/js/helper.js');
-        if (version_compare(JVERSION, '3.10.0', 'ge')) {
+        if (DropfilesBase::isJoomla40()) {
             JHtml::_('behavior.core');
         } else {
             JHtml::_('behavior.framework', true);

@@ -3,7 +3,7 @@
       <ModalUpdateImage
           @UpdateImage="updateView"
       />
-      <div class="form-group d-flex">
+      <!-- <div class="form-group d-flex">
         <div class="toggle">
           <input type="checkbox"
                  true-value="1"
@@ -27,7 +27,7 @@
           <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
         </a>
       </div>
-<!--      <div class="form-group campaign-label col-lg-7 col-sm-12 mt-2" v-if="enableBackground == 1">
+      <div class="form-group campaign-label col-lg-7 col-sm-12 mt-2" v-if="enableBackground == 1">
         <label for="home_title">{{HomeTitle}}</label>
         <div class="input-can-translate">
           <input
@@ -68,8 +68,8 @@
 
 <script>
     import axios from "axios";
-    import Editor from "../../components/editor";
-    import ModalUpdateImage from "@/views/advancedModals/ModalUpdateImage";
+    import Editor from "@/components/editor";
+    import ModalUpdateImage from "@/components/AdvancedModals/ModalUpdateImage";
     import Translation from "@/components/translation";
 
     const qs = require("qs");

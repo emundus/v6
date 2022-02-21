@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-<!--    <a style="margin-left: 1em" class="cta-block pointer" @click="enableDrag = !enableDrag">
-      <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-    </a>-->
+    <!--    <a style="margin-left: 1em" class="cta-block pointer" @click="enableDrag = !enableDrag">
+          <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
+        </a>-->
     <draggable
         v-model="widgets"
         :disabled="!enableDrag"
@@ -10,13 +10,30 @@
         drag-class="plugin-drag"
         chosen-class="plugin-chosen"
         ghost-class="plugin-ghost">
-      <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''" :key="widget.name + '_' + index">
-        <Faq v-if="widget.name === 'faq'"/>
-        <FilesNumberByStatus v-if="widget.name === 'files_number_by_status'"/>
-        <UsersByMonth v-if="widget.name === 'users_by_month'"/>
-        <Tips v-if="widget.name === 'tips'"/>
-        <DemoCounter v-if="widget.name === 'demo_counter'"/>
+      <div v-if="this.programmeFilter == 1" class="program-filter">
+        <label>{{translations.filterByProgram}}</label>
+        <select v-model="selectedProgramme">
+          <option :value="null" selected>{{translations.all}}</option>
+          <option v-for="programme in programmes" v-bind:key="programme.id" :value="programme.code">{{programme.label}}</option>
+        </select>
       </div>
+      <template v-if="widgets.length > 0">
+        <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" 
+        :class="enableDrag ? 'jello-horizontal handle' : widget.name + '-' + widget.class" :key="widget.name + '_' + index">
+          <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
+
+          <!-- Sciences Po widgets -->
+          <KeyFigures v-if="widget.name === 'key_figures'" :program="selectedProgramme" :colors="colors"/>
+          <FilesNumberByDate v-if="widget.name === 'files_number_by_status_and_date'" :program="selectedProgramme" :colors="colors"/>
+          <FilesBySession v-if="widget.name === 'files_by_session'" :colors="colors"/>
+          <FilesBySessionPrecollege v-if="widget.name === 'files_by_session_precollege'" :colors="colors"/>
+          <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="1"/>
+          <FilesByCourses v-if="widget.name === 'files_by_courses'" :colors="colors" :session="2"/>
+          <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="1"/>
+          <FilesByCoursesPrecollege v-if="widget.name === 'files_by_courses_precollege'" :colors="colors" :session="2"/>
+          <FilesByNationalities v-if="widget.name === 'files_by_nationalities'" :program="selectedProgramme" :colors="colors"/>
+        </div>
+      </template>
     </draggable>
   </div>
 </template>
@@ -24,85 +41,106 @@
 <script>
 import draggable from "vuedraggable";
 import axios from "axios";
-import Faq from "@/components/Faq";
-import FilesNumberByStatus from "@/components/FilesNumberByStatus";
-import Tips from "@/components/Tips";
-import UsersByMonth from "@/components/UsersByMonth";
-import DemoCounter from "@/components/DemoCounter";
+import KeyFigures from "@/components/sciencespo/KeyFigures";
+import FilesNumberByDate from "@/components/sciencespo/FilesNumberByStatusAndDate";
+import FilesBySession from "@/components/sciencespo/FilesBySession";
+import FilesBySessionPrecollege from "@/components/sciencespo/FilesBySessionPrecollege";
+import FilesByCourses from "@/components/sciencespo/FilesByCourses";
+import FilesByCoursesPrecollege from "@/components/sciencespo/FilesByCoursesPrecollege";
+import FilesByNationalities from "@/components/sciencespo/FilesByNationalities";
+import Custom from "@/components/Custom";
 
 export default {
   name: 'App',
-  props: {},
+  props: {
+    programmeFilter: Number
+  },
   components: {
-    DemoCounter,
-    UsersByMonth,
-    Tips,
-    FilesNumberByStatus,
-    Faq,
+    Custom,
     draggable,
+    KeyFigures,
+    FilesNumberByDate,
+    FilesBySession,
+    FilesBySessionPrecollege,
+    FilesByCourses,
+    FilesByCoursesPrecollege,
+    FilesByNationalities,
   },
   data() {
     return {
-      campaigns: [],
+      programmes: [],
+      selectedProgramme: null,
       widgets: [],
+      colors: "",
+      translations:{
+        all: "",
+        filterByProgram: "",
+      },
       status: null,
-      lastCampaigns: 0,
       enableDrag: false
     }
   },
   created() {
+    this.getTranslations();
     this.getWidgets();
+    this.getPaletteColors();
+    if(this.programmeFilter == 1){
+      this.getProgrammes();
+    }
   },
   methods: {
+    getTranslations() {
+      this.translations = {
+        all: this.translate("COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES"),
+        filterByProgram: this.translate("COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES"),
+      };
+    },
     getWidgets(){
       axios({
         method: "get",
         url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getwidgets",
       }).then(response => {
-        response.data.data.forEach((data) => {
-          switch (data) {
-            case 'last_campaign_active':
-              if(this.campaigns.length == 0) {
-                this.getLastCampaignsActive();
-              }
-              this.widgets.push({
-                name: data,
-                cindex: this.lastCampaigns
-              });
-              this.lastCampaigns++;
-              break;
-            default:
-              this.widgets.push({
-                name: data,
-              });
-          }
-        });
-        if(response.data.data.indexOf('last_campaign_active') !== -1){
-          this.getLastCampaignsActive();
-        }
+        this.widgets = response.data.data;
       });
     },
 
-    getLastCampaignsActive(){
-      axios.get(
-          'index.php?option=com_emundus_onboard&controller=dashboard&task=getLastCampaignActive'
-      ).then(response => {
-        this.campaigns = response.data.data;
-      }).catch(e => {
-        console.log(e);
+    getPaletteColors(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getpalettecolors",
+      }).then(response => {
+        this.colors = response.data.data;
       });
-    }
+    },
+
+    getProgrammes(){
+      axios({
+        method: "get",
+        url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+      }).then(response => {
+        this.programmes = response.data.data;
+      });
+    },
   }
 }
 </script>
 
 <style scoped>
-.tchooz-widget{
-  height: 22.5rem;
-  margin-bottom: 30px !important;
-  margin-left: 0px !important;
-  padding-left: 30px !important;
+#app > div{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
+
+#app > div > div{
+  width: 100%;
+  margin: 0 0 30px 0;
+}
+
+.tchooz-widget{
+  height: 400px;
+}
+
 .cta-block{
   position: absolute;
   right: 20px;
@@ -185,5 +223,14 @@ export default {
 
 .handle{
   cursor: grab;
+}
+
+.program-filter{
+  text-align: center;
+  margin-bottom: 10px;
+}
+.program-filter label{
+  margin-bottom: 0 !important;
+  margin-right: 10px;
 }
 </style>

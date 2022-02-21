@@ -125,32 +125,60 @@ class ImportModelImport extends JModelForm
 
 			$elementTable = $actContentObject->_contentElement->getTable();
 
-			for( $i=0; $i<count($elementTable->Fields); $i++ ) {
-				$field = $elementTable->Fields[$i];
-				$fieldName=$field->Name;
-				if( isset($objs[$key .".". $fieldName]) && $field->Translate ) {
+			for( $i=0; $i<count($elementTable->Fields); $i++ )
+			{
+				$field     = $elementTable->Fields[$i];
+				$fieldName = $field->Name;
+				if ($field->Translate)
+				{
+					if (isset($objs[$key . "." . $fieldName]))
+					{
 
-					$translationValue = $objs[$key .".". $fieldName];
+						$translationValue = $objs[$key . "." . $fieldName];
 
-					$fieldContent = new falangContent($db);
-					$fieldContent->reference_id = $reference_id;
-					$fieldContent->language_id = $targetlanguageId;
-					$fieldContent->reference_table= $table;
-					$fieldContent->reference_field= $db->escape( $fieldName);
-					$fieldContent->value = $translationValue;
-					// original value will be already md5 encoded - based on that any encoding isn't needed!
-					//$fieldContent->original_value = $originalValue;
-					//$fieldContent->original_text = !is_null($originalText)?$originalText:"";
+						$fieldContent                  = new falangContent($db);
+						$fieldContent->reference_id    = $reference_id;
+						$fieldContent->language_id     = $targetlanguageId;
+						$fieldContent->reference_table = $table;
+						$fieldContent->reference_field = $db->escape($fieldName);
+						$fieldContent->value           = $translationValue;
+						// original value will be already md5 encoded - based on that any encoding isn't needed!
+						//$fieldContent->original_value = $originalValue;
+						//$fieldContent->original_text = !is_null($originalText)?$originalText:"";
 
-					$fieldContent->modified =  JFactory::getDate()->toSql();
+						$fieldContent->modified = JFactory::getDate()->toSql();
 
-					$fieldContent->modified_by = $user->id;
-					$fieldContent->published= $published;
+						$fieldContent->modified_by = $user->id;
+						$fieldContent->published   = $published;
 
-					//utilisation du bind de
-					$field->translationContent = $fieldContent;
+						//utilisation du bind de
+						$field->translationContent = $fieldContent;
 
-				}
+					}
+					else
+					{
+						//non existing field in translation file
+						$translationValue = $field->originalValue;
+
+						$fieldContent                  = new falangContent($db);
+						$fieldContent->reference_id    = $reference_id;
+						$fieldContent->language_id     = $targetlanguageId;
+						$fieldContent->reference_table = $table;
+						$fieldContent->reference_field = $db->escape($fieldName);
+						$fieldContent->value           = $translationValue;
+						// original value will be already md5 encoded - based on that any encoding isn't needed!
+						//$fieldContent->original_value = $originalValue;
+						//$fieldContent->original_text = !is_null($originalText)?$originalText:"";
+
+						$fieldContent->modified = JFactory::getDate()->toSql();
+
+						$fieldContent->modified_by = $user->id;
+						$fieldContent->published   = $published;
+
+						//utilisation du bind de
+						$field->translationContent = $fieldContent;
+					}
+				}//if translate
 			}
 
 			if ($actContentObject->state == -1) {
@@ -163,7 +191,6 @@ class ImportModelImport extends JModelForm
 			}
 
 		}
-
 
 		JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_FALANG_IMPORT_SUCCESS', $stats_items_stored,$stats_items_skipped));
 

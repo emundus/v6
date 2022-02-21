@@ -1518,7 +1518,7 @@ class EmundusModelEvaluation extends JModelList {
                 $limit = $session->get('limit');
 
                 $limitStart = $session->get('limitstart');
-                if ($limitStart > 0) {
+                if ($limit > 0) {
                     $query .= " limit $limitStart, $limit ";
                 }
             }
@@ -1614,9 +1614,13 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     public function getPageNavigation() : string {
+        if ($this->getPagination()->pagesTotal <= 1) {
+            return '';
+        }
+
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1662,7 +1666,7 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -2271,24 +2275,25 @@ class EmundusModelEvaluation extends JModelList {
             $_fnumsInfo = $_mFile->getFnumsInfos($_fnumArray);
 
             $_programs = [];
+            $_campaigns = [];
             $_status = [];
 
             foreach($_fnumsInfo as $fnum) {
                 $_programs[] = $fnum['training'];
+                $_campaigns[] = $fnum['campaign_id'];
                 $_status[] = $fnum['step'];
             }
 
-            $_letters = $this->getLettersByProgrammesStatus($_programs,$_status);
+            $_letters = $this->getLettersByProgrammesStatusCampaigns($_programs,$_status, $_campaigns);
 
-            if(!empty($_letters)) {
+            if (!empty($_letters)) {
                 if ($attachments == true) {
                     /// from $_letters --> get distinct attachment_id
                     $_letter_attachment_ids = [];
                     foreach ($_letters as $letter) {
-                        $_letter_attachment_ids[] = $letter->attachment_id;
+                        $_letter_attachment_ids[$letter->attachment_id] = $letter->attachment_id;
                     }
-
-                    return $this->getAttachmentByIds(array_unique($_letter_attachment_ids));
+                    return $this->getAttachmentByIds($_letter_attachment_ids);
                 } else {
                     /// from $_letters -> det distinct letter id
                     $_letter_ids = [];
@@ -2306,7 +2311,7 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     /// get letters by traininng and status
-    public function getLettersByProgrammesStatus($programs=array(), $status=array()) {
+    public function getLettersByProgrammesStatusCampaigns($programs=array(), $status=array(), $campaigns=array()) : array{
         $query = $this->_db->getQuery(true);
 
         try {
@@ -2315,10 +2320,12 @@ class EmundusModelEvaluation extends JModelList {
                 ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrc.parent_id'))
                 ->where($this->_db->quoteName('jeslrs.status') . ' IN (' . implode(',', $status) . ')')
-                ->andWhere($this->_db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
+                ->andWhere($this->_db->quoteName('jeslrt.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ') OR ' .$this->_db->quoteName('jeslrc.campaign') . ' IN (' . implode(',', $this->_db->quote($campaigns)) . ')');
 
             $this->_db->setQuery($query);
+
             return $this->_db->loadObjectList();
 
         } catch(Exception $e) {
@@ -2339,6 +2346,7 @@ class EmundusModelEvaluation extends JModelList {
 
             $_fnumStatus = $fnum_infos['status'];
             $_fnumProgram = $fnum_infos['training'];
+            $_fnumCampaign = $fnum_infos['id'];
 
             /// second :: status, program, templates --> detect the letter id to generate
             $query
@@ -2346,23 +2354,14 @@ class EmundusModelEvaluation extends JModelList {
                 ->from($this->_db->quoteName('#__emundus_setup_letters', 'jesl'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_status', 'jeslrs') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrs.parent_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_training', 'jeslrt') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrt.parent_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_letters_repeat_campaign', 'jeslrc') . ' ON ' . $this->_db->quoteName('jesl.id') . ' = ' . $this->_db->quoteName('jeslrc.parent_id'))
                 ->where($this->_db->quoteName('jeslrs.status') . ' = ' . $_fnumStatus)
-                ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram))
+                ->andWhere($this->_db->quoteName('jeslrt.training') . ' = ' . $this->_db->quote($_fnumProgram) . ' OR ' . $this->_db->quoteName('jeslrc.campaign') . ' = ' . $this->_db->quote($_fnumCampaign))
                 ->andWhere($this->_db->quoteName('jesl.attachment_id') . ' IN (' . implode(',', $templates) . ')')
                 ->order('id ASC');
 
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
-//            $query = 'SELECT #__emundus_setup_letters.*
-//                         FROM #__emundus_setup_letters
-//                             WHERE #__emundus_setup_letters.attachment_id
-//                                 IN ( SELECT jesl.attachment_id FROM #__emundus_setup_letters AS jesl LEFT JOIN #__emundus_setup_letters_repeat_status AS jeslrs ON jesl.id = jeslrs.parent_id LEFT JOIN #__emundus_setup_letters_repeat_training AS jeslrt ON jesl.id = jeslrt.parent_id
-//                                         WHERE jeslrs.status = ' .  $_fnumStatus .
-//                                             ' AND jeslrt.training = ' . $this->_db->quote($_fnumProgram) .
-//                                                 'AND jesl.attachment_id IN (' . implode(',', $templates) . ')' . ')';
-//
-//             $this->_db->setQuery($query);
-//             return $this->_db->loadObjectList();
         } catch(Exception $e) {
             return [];
         }
@@ -2735,7 +2734,11 @@ class EmundusModelEvaluation extends JModelList {
                                 if (is_numeric($tag)) {
                                     $idFabrik[] = $tag;
                                 } else {
-                                    $setupTags[] = $tag;
+                                    if(strpos($tag, 'IMG_') !== false) {
+                                        $setupTags[] = trim(explode(":", $tag)[0]);
+                                    } else {
+                                        $setupTags[] = $tag;
+                                    }
                                 }
                             }
 
@@ -2806,6 +2809,8 @@ class EmundusModelEvaluation extends JModelList {
 
                             $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
+                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                
                                 foreach ($setupTags as $tag) {
                                     $val = "";
                                     $lowerTag = strtolower($tag);
@@ -2828,7 +2833,7 @@ class EmundusModelEvaluation extends JModelList {
                                     } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
                                         $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
                                     } else {
-                                        $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                        //$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                         $i = 0;
                                         foreach ($tags['patterns'] as $value) {
                                             if ($value == $tag) {
@@ -2837,7 +2842,12 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                             $i++;
                                         }
-                                        $preprocess->setValue($tag, htmlspecialchars($val));
+                                        // replace tag by image if tag name start by IMG_
+                                       if(strpos($tag, 'IMG_') !== false) {
+                                            $preprocess->setImageValue($tag, $val);
+                                        } else {
+                                            $preprocess->setValue($tag, htmlspecialchars($val));
+                                       }
                                     }
                                 }
 

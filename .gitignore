@@ -19,9 +19,13 @@ templates/rt_afterburner2/css/rt_afterburner2-custom.css
 templates/g5_helium/templateDetails.xml
 templates/g5_helium/custom/*
 !templates/g5_helium/custom/scss/global.scss
+!templates/g5_helium/custom/scss/variables.scss
 templates/g5_helium/html/com_eventbooking/*
+templates/g5_helium/html/com_hikashop/*
 templates/emundus_vanilla/*
 /templates/emundus_vanilla/*
+libraries/emundus/custom/*
+!libraries/emundus/custom/.gitkeep
 images/emundus/import/*
 images/emundus/photo/*
 images/stories/*
@@ -33,12 +37,22 @@ templates/LaScala/*
 /images/emundus/letters/*
 /image/logo.png
 /images/custom/logo.png
+/images/custom/logo_custom.png
 #_bdd/*
 components/com_emundus.*
 components/com_emundus/*.bak
 components/com_emundus/.scannerwork
 media/com_emundus.*
 media/com_emundus/*.bak
+media/com_hikashop/b/*
+media/com_hikashop/l/*
+media/com_hikashop/pathfile
+media/com_hikashop/pc.*
+media/com_hikashop/mail/*
+paybox_*.php
+stripeconnect_*.php
+atos.php
+success.php
 php.ini
 /favicon.ico
 emundus_bdd*
@@ -78,3 +92,14 @@ plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 
 /components/node_modules/
 /components/com_emundus_messenger/node_modules/
+
+
+## event booking ##
+images/com_eventbooking/
+media/com_eventbooking/assets/css/custom.css
+media/com_eventbooking/assets/css/true
+media/com_eventbooking/images/thumbs/*
+
+## unit test ##
+/components/com_emundus_onboard/unittest/logs/
+/.phpunit.*

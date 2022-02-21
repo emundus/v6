@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="package" version="3.7" method="upgrade">
+<extension type="package" version="3.1" method="upgrade">
 	<name>FaLang Package</name>
 	<author>Stéphane Bouey</author>
-	<creationDate>June 2020</creationDate>
+	<creationDate>September 2021</creationDate>
  	<packagename>falang</packagename>
-	 <version>3.4.6</version>
+	 <version>3.10.1</version>
 	 <url>http://www.faboba.com</url>
 	 <variant>basic</variant>
 	 <packager>Stéphane Bouey</packager>
@@ -17,14 +17,14 @@
 	 <!-- List of extensions to install -->
 	 <files folder="packages">
 	     <!-- Modules -->
-		 <file type="module" id="mod_falang" client="site">mod_falang_346.zip</file>
+		 <file type="module" id="mod_falang" client="site">mod_falang_3.10.1.zip</file>
 		 
 		  <!-- Plugins -->
-		 <file type="plugin" id="falangdriver" group="system">plg_falangdriver_346.zip</file>
-		 <file type="plugin" id="falangquickjump" group="system">plg_falangquickjump_346.zip</file>
+		 <file type="plugin" id="falangdriver" group="system">plg_falangdriver_3.10.1.zip</file>
+		 <file type="plugin" id="falangquickjump" group="system">plg_falangquickjump_3.10.1.zip</file>
 		 
 		 <!-- Component -->
-		 <file type="component" id="com_falang" >com_falang_346.zip</file>
+		 <file type="component" id="com_falang" >com_falang_3.10.1.zip</file>
 	 </files>
 
 	 <!-- Update servers -->

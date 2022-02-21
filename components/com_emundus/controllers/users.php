@@ -686,7 +686,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 					$res = false;
 				} else {
 					$u->delete();
-					EmundusModelLogs::log($this->_user->id, $user, null, 20, 'd', 'COM_EMUNDUS_LOGS_DELETE_USER');
+					EmundusModelLogs::log($this->_user->id, $user, null, 20, 'd', 'COM_EMUNDUS_ADD_USER_DELETE');
 				}
 			}
 		}
@@ -864,5 +864,42 @@ class EmundusControllerUsers extends JControllerLegacy {
 			return true;
 
 		}
+	}
+
+	public function getusers() 
+	{
+		$m_users = new EmundusModelUsers();
+		$users_list = $m_users->getUsers();
+
+		echo json_encode($users_list);
+		exit;
+	}
+
+	public function getuserbyid() 
+	{
+		$id = JFactory::getApplication()->input->getInt('id', null);
+		$m_users = new EmundusModelUsers();
+		$user = $m_users->getUserById($id);
+
+		echo json_encode(array('status' => true, 'user' => $user));
+		exit;
+	}
+
+	public function getattachmentaccessrights() 
+	{
+		$rights = [
+			'canDelete' => false,
+			'canExport' => false,
+			'canUpdate' => false,
+		];
+
+		$fnum = JFactory::getApplication()->input->getString('fnum', null);
+
+		$rights['canDelete'] = EmundusHelperAccess::asAccessAction(4, 'd', $this->_user->id, $fnum);
+		$rights['canUpdate'] = EmundusHelperAccess::asAccessAction(4, 'u', $this->_user->id, $fnum);
+		$rights['canExport'] = EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum);
+
+		echo json_encode(array('status' => true, 'rights' => $rights));
+		exit;
 	}
 }

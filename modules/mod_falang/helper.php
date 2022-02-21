@@ -42,9 +42,7 @@ abstract class modFaLangHelper
 		//falang 2.9.5 need to clone uri
 		$router = JRouter::getInstance($app->getName());
 		$tmpuri = clone($uri);
-		$router->parse($tmpuri);
-		$vars = $router->getVars();
-
+		$vars = $router->parse($tmpuri);
 
         //On edit mode the flag/name must be disabled
 
@@ -73,8 +71,8 @@ abstract class modFaLangHelper
 
             if (class_exists($class) && is_callable(array($class, 'getAssociations')))
             {
-	            //don't load association for eshop and hikashop
-	            if ( $class != 'eshopHelperAssociation' && $class != 'hikashopHelperAssociation'){
+	            //don't load association for eshop , hikashop and Os property
+	            if ( $class != 'eshopHelperAssociation' && $class != 'hikashopHelperAssociation' && $class != 'ospropertyHelperAssociation'){
                     $cassociations = call_user_func(array($class, 'getAssociations'));
                 }
             }
@@ -301,7 +299,17 @@ abstract class modFaLangHelper
 							  if (isset($vars['view']) && $vars['view'] == 'product'){
 								  unset($vars['start']);
 							  }
-						}						
+						}
+
+	                    //fix for OsProperties need to have the l parameter
+	                    if (isset($vars['option']) && $vars['option'] == 'com_osproperty'){
+		                    if (isset($vars['task']) && $vars['task'] == 'property_details'){
+			                    $langcode = $language->lang_code;
+			                    $prefix = explode("-",$langcode);
+			                    $prefix = '_'.$prefix[0];
+			                    $vars['l'] = $prefix;
+		                    }
+	                    }
 
                         $url = 'index.php?'.JURI::buildQuery($vars);
                         $language->link = JRoute::_($url);

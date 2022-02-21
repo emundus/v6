@@ -35,6 +35,7 @@ class PlgEmundusReferent_status extends JPlugin {
         $fabrik_elts = $this->params->get('referent_status_fabrik_elements', '');
         $attachments_id = $this->params->get('referent_status_attachments_letters', '');
         $campaigns = $this->params->get('referent_status_campaigns', '');
+        $fabrik_form = $this->params->get('referent_status_fabrik_form', '68');
 
         if ($status_to_check != $state) {
             return false;
@@ -94,7 +95,7 @@ class PlgEmundusReferent_status extends JPlugin {
 
                 foreach ($referents_emails as $key => $referentEmail) {
                     $referent_key = md5($this->rand_string(20).time());
-                    $link_upload = $baseurl . 'index.php?option=com_fabrik&c=form&view=form&formid=68&tableid=71&keyid=' . $referent_key . '&sid=' . $applicant->applicant_id;
+                    $link_upload = $baseurl . 'index.php?option=com_fabrik&c=form&view=form&formid='.$fabrik_form.'&tableid=71&keyid=' . $referent_key . '&sid=' . $applicant->applicant_id;
 
                     $post = array(
                         'FNUM' => $applicant->fnum,

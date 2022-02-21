@@ -73,7 +73,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
 	        $m_emails = $this->model;
 
 	        $jinput = JFactory::getApplication()->input;
-	        $filter = $jinput->getString('filter');
+	        $filter = $jinput->getString('filter') ? $jinput->getString('filter') : 'Publish';
 	        $sort = $jinput->getString('sort');
 	        $recherche = $jinput->getString('recherche');
 	        $lim = $jinput->getInt('lim');
@@ -323,7 +323,7 @@ class EmundusonboardControlleremail extends JControllerLegacy {
                 }
             }
 
-            $result = $m_email->updateEmail($code, $data, $cc_list, $bcc_list, $letter_list, $candidate_attachments, $tags);
+            $result = $m_email->updateEmail($code, $data, $cc_list, $bcc_list, $letter_list, $document_list, $tag_list);        // updateEmail (models)
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_ADDED'), 'data' => $result);

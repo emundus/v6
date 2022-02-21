@@ -12,16 +12,6 @@
               :prid="prid"
               :testing="testing"
       />
-      <ModalTestingForm
-          v-if="formObjectArray[indexHighlight]"
-          :profileId="prid"
-          :actualLanguage="actualLanguage"
-          :campaigns="campaignsAffected"
-          :currentForm="formObjectArray[indexHighlight].object.id"
-          :currentMenu="formObjectArray[indexHighlight].object.menu_id"
-          @testForm="testForm"
-          @modalClosed="optionsModal = false"
-      />
       <ModalMenu
               :profileId="prid"
               :actualLanguage="actualLanguage"
@@ -83,10 +73,6 @@
                     <em class="add-element-icon"></em>
                     <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
                   </a>
-<!--                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="testForm" :title="testingForm">
-                    <em class="far fa-play-circle" style="font-size: 22px"></em>
-                    <label class="action-label col-md-offset-2 col-sm-offset-1">{{translations.testingForm}}</label>
-                  </a>-->
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
                     <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
@@ -104,7 +90,7 @@
                             chosen-class="plugin-chosen"
                             ghost-class="plugin-ghost"
                             style="padding-bottom: 2em;margin-top: 10%">
-                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :key="'plugin_' + index" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                           <em :class="plugin.icon"></em>
                           <span class="ml-10px">{{plugin.name}}</span>
                         </div>
@@ -113,14 +99,6 @@
                 </transition>
               </div>
             </div>
-            <!--<a class="send-form-button" @click="sendForm">
-              <label style="cursor: pointer" class="mb-0">{{sendFormButton}}</label>
-              <em class="fas fa-paper-plane" style="font-size: 20px"></em>
-            </a>
-            <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
-              <label style="cursor: pointer">{{testingForm}}</label>
-              <em class="fas fa-vial" style="font-size: 20px"></em>
-            </a>-->
           </div>
         </transition>
       </div>
@@ -128,9 +106,9 @@
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-6' : 'col-md-8'">
           <div class="d-flex form-title-block" v-show="!updateFormLabel">
             <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0">{{profileLabel}}</h2>
-<!--            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="Edit" class="cta-block pointer">
+            <a @click="enableUpdatingForm" style="margin-left: 1em" :title="translations.Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-            </a>-->
+            </a>
           </div>
           <div style="width: max-content;margin-left: 20px" v-show="updateFormLabel">
             <div class="input-can-translate">
@@ -254,7 +232,7 @@
             </li>
           </div>
           <div class="d-flex">
-            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{translations.Validate}}</button>
+            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="translations.Validate">{{translations.Validate}}</button>
             <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
           </div>
         </ul>
@@ -263,7 +241,6 @@
     <div class="loading-form" v-if="loading">
       <Ring-Loader :color="'#12DB42'" />
     </div>
-<!--    <tasks></tasks>-->
   </div>
 </template>
 
@@ -283,28 +260,16 @@
 
   import _ from 'lodash';
   import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
-  import List from "./list";
-  import Tasks from "@/views/tasks";
-  import ModalTestingForm from "@/components/formClean/ModalTestingForm";
-  import ModalAddDocuments from "./advancedModals/ModalAddDocuments";
+  import ModalAddDocuments from "@/components/AdvancedModals/ModalAddDocuments";
   import Swal from "sweetalert2";
+  import {global} from "../store/global";
 
   const qs = require("qs");
 
   export default {
     name: "FormBuilder",
-    props: {
-      prid: String,
-      index: String,
-      cid: String,
-      actualLanguage: String,
-      manyLanguages: String
-    },
     components: {
       ModalAddDocuments,
-      Tasks,
-      ModalTestingForm,
-      List,
       ModalAffectCampaign,
       Builder,
       ModalSide,
@@ -313,6 +278,12 @@
     },
     data() {
       return {
+        prid: "",
+        index: "",
+        cid: "",
+        manyLanguages: 0,
+        actualLanguage: "",
+
         // UX variables
         actions_menu: true,
         optionsModal: false,
@@ -495,12 +466,9 @@
         return (label.split(/-(.+)/))[1];
       },
       showModal () {
-
         Swal.fire({
-          //title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
           text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NOFORMPAGEWARNING"),
           type: "warning",
-          //showCancelButton: true
         })
       },
       hide () {
@@ -744,7 +712,7 @@
             label: this.profileLabel,
             prid: this.prid,
           })
-        }).then((result) => {
+        }).then(() => {
             this.show("foo-velocity", "success", this.updateSuccess, this.update);
             this.updateFormLabel = false;
         }).catch(e => {
@@ -811,10 +779,15 @@
       },
       removeMenu(form_id) {
         this.formObjectArray.forEach((form, index) => {
-          if(form.object.id == form_id){
-            this.formObjectArray.splice(index,1);
+        if(form.object.id == form_id) {
+            this.formObjectArray.splice(index, 1);
           }
         });
+        this.formList.forEach((form, index) => {
+          if(form.id == form_id) {
+          this.formList.splice(index,1);
+          }
+      });
         this.builderKey += 1;
         this.indexHighlight -= 1;
       },
@@ -902,18 +875,13 @@
                   rgt: element.rgt,
                   link: element.link
                 });
-              }).then(r => {
+              }).then(() => {
                 this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
               }).catch(e => {
                 console.log(e);
               });
         });
         this.loading = false;
-        /*if(this.getCookie('page_' + this.prid) !== '') {
-          this.indexHighlight = this.getCookie('page_' + this.prid);
-        } else {
-          this.indexHighlight = 0;
-        }*/
         this.indexHighlight = 0;
         this.elementDisabled = _.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups);
         this.rgt = this.formObjectArray[this.indexHighlight].rgt;
@@ -926,27 +894,14 @@
           await axios.get(ellink + "&format=vue_jsonclean")
               .then(response => {
                 this.formObjectArray[index].object = response.data;
-                /*this.formObjectArray.push({
-                object: response.data,
-                rgt: this.formList[index].rgt,
-                link: this.formList[index].link
-              });*/
-              }).then(r => {
+              }).then(() => {
                 this.formObjectArray.sort((a, b) => a.rgt - b.rgt);
               }).catch(e => {
                 console.log(e);
               });
 
-
-        //this.loading = false;
-
-        /*if(this.getCookie('page_' + this.prid) !== '') {
-          this.indexHighlight = this.getCookie('page_' + this.prid);
-        } else {
-          this.indexHighlight = 0;
-        }*/
-        this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
-        this.rgt = this.formObjectArray[index].rgt;
+          this.elementDisabled = _.isEmpty(this.formObjectArray[index].object.Groups);
+          this.rgt = this.formObjectArray[index].rgt;
         }
 
           this.loading = false;
@@ -1154,7 +1109,6 @@
           }).catch(e => {
             console.log(e);
           });
-          //history.go(-1);
         }
       } else {
         this.showModal();
@@ -1204,7 +1158,7 @@
                 paramsSerializer: params => {
                   return qs.stringify(params);
                 }
-              }).then(response => {
+              }).then(() => {
                 this.$modal.show('modalAffectCampaign');
               });
             }
@@ -1212,7 +1166,7 @@
       },
 
       // Triggers
-      changeGroup(index,rgt){
+      changeGroup(index){
         this.loading = true;
         if(_.isEmpty(this.formObjectArray[index].object)) {
           this.getDataObjectSingle(index).then(() => {
@@ -1234,15 +1188,11 @@
         }
         document.cookie = 'page_' + this.prid + '='+index+'; expires=Session; path=/'
       },
-      SomethingChange: function(e) {
+      SomethingChange: function() {
         this.dragging = true;
-        let rgts = [];
         this.formList.forEach((menu, index) => {
           menu.rgt = this.formObjectArray[index].rgt;
         });
-        /*this.formObjectArray.forEach((item, index) => {
-          item.rgt = rgts[index];
-        });*/
         this.reorderItems();
       },
       showElements() {
@@ -1348,9 +1298,14 @@
       //
     },
     created() {
-      //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)");
-      //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)");
-      //this.indexHighlight = 0;
+      // Get datas that we need with store
+      this.actualLanguage = global.getters.actualLanguage;
+      this.manyLanguages = global.getters.manyLanguages;
+      this.index = global.getters.datas.index.value;
+      this.prid = global.getters.datas.prid.value;
+      this.cid = global.getters.datas.cid.value;
+      //
+
       this.getForms();
       this.getDocuments();
       this.getSubmittionPage();

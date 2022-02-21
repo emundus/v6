@@ -324,7 +324,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
 		//$secret 	= JFactory::getConfig()->get('secret');
 		//$token 		= JFactory::getApplication()->input->get('token', '', 'ALNUM');
-		//$fnum 		= JFactory::getApplication()->input->get('fnum', '', 'STRING'); 
+		//$fnum 		= JFactory::getApplication()->input->get('fnum', '', 'STRING');
 		$aid = JFactory::getApplication()->input->get('aid', '', 'ALNUM');
 		$applicant_id = JFactory::getApplication()->input->get('applicant_id', '', 'ALNUM');
 
@@ -347,7 +347,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         } catch (Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage().' :: '.$query;
             JLog::add($error, JLog::ERROR, 'com_emundus.webhook');
-	
+
 		    echo json_encode((object)(array('status' => false)));
 			exit();
 		}
@@ -511,6 +511,145 @@ class EmundusControllerWebhook extends JControllerLegacy {
         }
         else {
             JLog::add('Your ip address is blocked', JLog::ERROR, 'com_emundus.webhook');
+        }
+    }
+
+    public function export_banner(){
+        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        $mFile = new EmundusModelFiles;
+
+        $eMConfig 	= JComponentHelper::getParams('com_emundus');
+        $banner_limit = JFactory::getApplication()->input->get('limit', 100);
+
+        $db = JFactory::getDbo();
+        $res = new stdClass();
+
+        /* "program - label - semester" mapping --> stocked in "prog" field */
+        // standard format: prog=univ,stp,202020|winter-school,wstp,202010
+
+        header('Content-type: application/json');
+        try {
+            // controle des remontees --> Si is_up_banner = 0 or null, do not call api
+            $query = "SELECT e_360_7749 AS Nom, e_360_7747 AS Prenom, e_360_7746 AS Civilite, e_360_7751 AS DateNaissance,e_360_7755 AS VilleNaissance, dc.code AS PaysNaissance,
+                                dn.code AS Nationalite, code_prg_banner AS Programme, semester AS Semestre, ju.email AS Email,trim(e_362_7764) AS Telephone, e_362_7757 AS AdrPersoL1,e_362_7758 AS AdrPersoL2,e_362_7760 AS AdrPersoCodePost,
+                                e_362_7761 AS AdrPersoVille, dc1.code AS AdrPersoCodePays, e.e_394_8112 AS UsagePhoto, jecc.fnum AS NoClientemundus, 'summer.school@sciencespo.fr' AS EmailAssistante, filename AS Photo
+
+                        FROM #__emundus_1001_00
+                        
+                        LEFT JOIN #__emundus_campaign_candidature jecc ON #__emundus_1001_00.fnum = jecc.fnum
+                        LEFT JOIN data_country dc ON #__emundus_1001_00.e_360_7754 = dc.id
+                        LEFT JOIN data_nationality dn ON #__emundus_1001_00.e_360_7752 = dn.id
+                        LEFT JOIN #__users ju ON ju.id = jecc.applicant_id
+                        LEFT JOIN #__emundus_1001_01 j ON #__emundus_1001_00.fnum = j.fnum
+                        LEFT JOIN data_country dc1 ON j.e_362_7763 = dc1.id
+                        LEFT JOIN #__emundus_1025_00 e ON #__emundus_1001_00.fnum = e.fnum
+                        LEFT JOIN #__emundus_uploads jeu ON #__emundus_1001_00.fnum = jeu.fnum
+                        LEFT JOIN #__emundus_setup_campaigns jesc ON jecc.campaign_id = jesc.id
+                        
+                        WHERE jecc.status = 4
+                            AND jesc.is_up_banner = 1
+                            AND jeu.attachment_id = 10
+                            AND (jecc.id_banner IS NULL OR jecc.id_banner = '')   
+            ";
+
+            $db->setQuery($query,0,$banner_limit);
+
+            $raw = $db->loadObjectList();
+
+            $res->Status = 'OK';
+            $res->Message = '';
+            $res->Count = sizeof($raw);
+
+            /* encode 64 bit images + mapping prog..lbl, prog..session*/
+            foreach($raw as $data) {
+                // get user_id from $data->noClientemundus
+                $fnum_Info = $mFile->getFnumsInfos([$data->NoClientemundus])[$data->NoClientemundus];
+                $user_id = $fnum_Info['applicant_id'];
+
+                // get url to image
+                $img_url = "images/emundus/files" . DS . $user_id . DS . $data->Photo;
+
+                $handle = fopen($img_url, "r");
+                $contents = fread($handle, filesize($img_url));
+                fclose($handle);
+
+                $data->Photo = base64_encode($contents);
+
+                if($data->UsagePhoto === 'JNO' or is_null($data->UsagePhoto)) {
+                    $data->UsagePhoto = 'Non';
+                } else {
+                    $data->UsagePhoto = 'Oui';
+                }
+
+                if($data->Civilite === 'Femme') {
+                    $data->Civilite = 0;
+                } else {
+                    $data->Civilite = 1;
+                }
+            }
+
+            $res->Results = $raw;
+            echo json_encode((array)$res);
+            exit;
+        } catch(Exception $e) {
+            $res->Status = 'NOK';
+            $res->Message = $e->getMessage();
+            JLog::add('Cannot get files', JLog::ERROR, 'com_emundus.webhook');
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function process_banner() {
+//        $request = file_get_contents('php://input');        /// POST method
+
+        $cand_num 		= JFactory::getApplication()->input->get('noClientemundus');
+        $cand_idBanner  = JFactory::getApplication()->input->get('IDBanner');
+
+        header('Content-type: application/json');
+
+        if (empty($cand_num) || !isset($cand_idBanner) || (isset($cand_idBanner) and ($cand_idBanner == '')) || (isset($cand_num) and ($cand_num == ''))) {
+            JLog::add('BAD_REQUEST_OR_MISSING_PARAMS', JLog::ERROR, 'com_emundus.webhook');
+            echo json_encode(array('Status' => 'NOK', 'message' => JText::_('BAD_REQUEST_OR_MISSING_PARAMS')));
+        } else {
+            $this->update_banner($cand_idBanner, $cand_num);
+        }
+        exit;
+    }
+
+    /* using GET methos */
+    public function update_banner($id, $fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            /* check if fnum exists, if yes, update, if no, return error code */
+            $query->clear()
+                ->select('COUNT(*)')
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
+                ->where($db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quote($fnum));
+            $db->setQuery($query);
+            $is_exist = $db->loadResult();
+
+            if($is_exist == 1) {
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_campaign_candidature'))
+                    ->set($db->quoteName('#__emundus_campaign_candidature.id_banner') . ' = ' . $db->quote($id))
+                    ->where($db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quote($fnum));
+
+                $db->setQuery($query);
+
+                $db->execute();
+                echo json_encode(array('Status' => 'OK', 'message' => JText::_('RECORD_UPDATED_SUCCESSFULLY')));
+            } else {
+                echo json_encode(array('Status' => 'NOK', 'message' => JText::_('NO_CLIENT_NOT_EXIST')));
+            }
+            exit;
+        } catch(Exception $e) {
+            JLog::add('Cannot update id banner', JLog::ERROR, 'com_emundus.webhook');
+            echo json_encode(array('Status' => 'NOK', 'message' => JText::_('RECORD_UPDATED_FAILED')));
+            exit;
         }
     }
 }

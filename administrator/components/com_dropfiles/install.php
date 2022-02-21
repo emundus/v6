@@ -560,6 +560,37 @@ class Com_DropfilesInstallerScript
             $dbo->setQuery($query);
             $dbo->execute();
         }
+
+        if (version_compare($this->oldRelease, '5.8.4', 'lt')) {
+            $query = 'ALTER TABLE `#__dropfiles_files` MODIFY `hits` int(11) NOT NULL DEFAULT "0", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_multi_category` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "",
+                        MODIFY `language` char(7) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_google_files` MODIFY `description` varchar(220) NOT NULL DEFAULT "", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_tags` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_dropbox_files` MODIFY `description` varchar(220) NOT NULL DEFAULT "", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_tags` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+
+            $query = 'ALTER TABLE `#__dropfiles_onedrive_files` MODIFY `description` varchar(220) NOT NULL DEFAULT "", 
+                        MODIFY `version` varchar(20) NOT NULL DEFAULT "",
+                        MODIFY `file_tags` varchar(255) NOT NULL DEFAULT "",
+                        MODIFY `author` varchar(100) NOT NULL DEFAULT "" ';
+            $dbo->setQuery($query);
+            $dbo->execute();
+        }
     }
 
 
@@ -773,7 +804,7 @@ class Com_DropfilesInstallerScript
         $menuTypeId = $db->loadResult();
 
         if (empty($menuTypeId)) {
-            if (version_compare(JVERSION, '3.10.0', 'ge')) {
+            if (version_compare(JVERSION, '4.0.0', 'ge')) {
                 $model = new Joomla\Component\Menus\Administrator\Model\MenuModel();
                 $menuType = array(
                     'menutype' => 'dropfiles',
@@ -840,7 +871,7 @@ class Com_DropfilesInstallerScript
                 if (empty($componentId)) {
                     echo 'Error reading just installed com_dropfiles extension id, cannot create front end menu item';
                 } else {
-                    if (version_compare(JVERSION, '3.10.0', 'ge')) {
+                    if (version_compare(JVERSION, '4.0.0', 'ge')) {
                         $model = new Joomla\Component\Menus\Administrator\Model\ItemModel();
                         // prepare menu item record
                         $menuItem = array(

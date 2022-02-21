@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -112,7 +112,7 @@ class PluginsViewPlugins extends hikashopView{
 
 		$rows = $db->loadObjectList();
 		if(!empty($pageInfo->search)) {
-			$rows = hikashop_search($pageInfo->search, $rows, array($cfg['main_key'], $type.'_params', $type.'_type'));
+			$rows = hikashop_search($pageInfo->search, $rows, array($cfg['main_key'], $type.'_params', $type.'_type', $type.'_zone_namekey1'));
 		}
 		$this->assignRef('rows', $rows);
 		$pageInfo->elements->page = count($rows);
@@ -241,7 +241,6 @@ class PluginsViewPlugins extends hikashopView{
 	}
 
 	function form() {
-		JHTML::_('behavior.modal');
 		$app = JFactory::getApplication();
 		$db = JFactory::getDBO();
 		$task = hikaInput::get()->getVar('task');
@@ -650,7 +649,18 @@ class PluginsViewPlugins extends hikashopView{
 					case 'big-textarea':
 						$html .= '<textarea name="data['.$type.']['.$paramsType.']['.$key.']" rows="9" width="100%" style="width:100%;">'.@$this->element->$paramsType->$key.'</textarea>';
 						break;
-
+					case 'wysiwyg':
+						if(empty($this->editorHelper)) {
+							$this->editorHelper = hikashop_get('helper.editor');
+							$config = hikashop_config();
+							$this->editorHelper->setEditor($config->get('editor', ''));
+							if($config->get('editor_disable_buttons', 0))
+								$this->editorHelper->options = false;
+						}
+						$this->editorHelper->name = 'data['.$type.']['.$paramsType.']['.$key.']';
+						$this->editorHelper->content = @$this->element->$paramsType->$key;
+						$html .= $this->editorHelper->display() . '<div style="clear:both"></div>';
+						break;
 					case 'boolean':
 						if(!isset($this->element->$paramsType))
 							$this->element->$paramsType = new stdClass();

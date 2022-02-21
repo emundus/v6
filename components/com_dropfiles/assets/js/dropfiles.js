@@ -1491,10 +1491,14 @@ jQuery(document).ready(function ($) {
                     $('#userModal_jform_params_canview .modal-body').append($('#userModal_jform_params_canview').attr('data-iframe')) ;
                 }
             });
-            $('.hasPopover').popover({
-                trigger: 'hover',
-                placement: 'top'
-            });
+
+            if (typeof($.fn.popover) != "undefined") {
+                $('.hasPopover').popover({
+                    trigger: 'hover',
+                    placement: 'top'
+                });
+            }
+
             /*
              * auto save params when user foget save button click
              */

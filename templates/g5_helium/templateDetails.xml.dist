@@ -48,45 +48,22 @@
         <position>content-top-a</position>
         <position>content-top-b</position>
         <position>content-top-c</position>
-        <position>copyright-a</position>
-        <position>copyright-b</position>
-        <position>copyright-c</position>
         <position>debug</position>
         <position>drawer</position>
         <position>drawer-a</position>
         <position>drawer-b</position>
         <position>drawer-c</position>
-        <position>extension-a</position>
-        <position>extension-b</position>
-        <position>extension-c</position>
-        <position>feature-a</position>
-        <position>feature-b</position>
-        <position>feature-c</position>
         <position>footer-a</position>
         <position>footer-b</position>
-        <position>footer-c</position>
+        <position>footer-rgpd</position>
         <position>header-a</position>
         <position>header-b</position>
         <position>header-c</position>
-        <position>mainbottom-a</position>
-        <position>mainbottom-b</position>
-        <position>mainbottom-c</position>
-        <position>maintop-a</position>
-        <position>maintop-b</position>
-        <position>maintop-c</position>
-        <position>showcase-a</position>
-        <position>showcase-b</position>
-        <position>showcase-c</position>
         <position>sidebar-a</position>
         <position>sidebar-b</position>
         <position>sidebar-c</position>
-        <position>top-a</position>
         <position>top-b</position>
         <position>top-c</position>
-        <position>user-menu-phone</position>
-        <position>utility-a</position>
-        <position>utility-b</position>
-        <position>utility-c</position>
     </positions>
 
     <config>

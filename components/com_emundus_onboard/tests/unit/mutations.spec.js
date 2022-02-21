@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import Vue from 'vue';
 
-import { ListMutations } from '../../src/store';
+import { ListMutations } from '../../src/store/store';
 
 const {
   selectItem, resetSelectedItemsList, listUpdate, listInsert, publish, unpublish, deleteSelected,

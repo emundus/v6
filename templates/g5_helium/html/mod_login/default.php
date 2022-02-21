@@ -15,7 +15,7 @@ JHtml::_('behavior.keepalive');
 JHtml::_('bootstrap.tooltip');
 
 $doc = JFactory::getDocument();
-$doc->addStyleSheet('/templates/g5_helium/html/mod_login/style/mod_login.css');
+$doc->addStyleSheet('templates/g5_helium/html/mod_login/style/mod_login.css');
 
 ?>
 

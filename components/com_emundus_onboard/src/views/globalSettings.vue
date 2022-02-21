@@ -1,26 +1,12 @@
 <template>
     <div class="w-row">
-      <!--<div class="tchooz-sidebar-menu">
-        <transition name="slide-right">
-          <div class="col-md-12 tchooz-sidebar-menus">
-            <div class="container-menu-funnel">
-              <div v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
-                <a @click="menuHighlight = index"
-                   class="menu-item"
-                   :class="menuHighlight == index ? 'w--current' : ''"
-                >{{ settingsCat }}</a>
-              </div>
-            </div>
-          </div>
-        </transition>
-      </div>-->
 
       <div class="col-md-12 p-1" style="padding-left: 2em !important;">
         <!--- start Menu --->
         <div class="d-flex" >
           <ul class="nav nav-tabs topnav">
 
-            <li v-for="(settingsCat, index) in settingsCategories[langue]" :key="index">
+            <li v-for="(settingsCat, index) in settingsCategories[actualLanguage]" :key="index">
               <a @click="menuHighlight = index"
                  class="menu-item"
                  :class="menuHighlight == index ? 'w--current' : ''"
@@ -105,29 +91,9 @@
                   :actualLanguage="actualLanguage"
                   :manyLanguages="manyLanguages"
           ></editDatas>
-
-          <help-settings
-              v-if="menuHighlight == 8"
-              ref="help"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></help-settings>
         </transition>
       </div>
     </div>
-
-    <!--<div
-            class="section-sauvegarder-et-continuer-funnel"
-    >
-      <div class="w-container">
-        <div class="container-evaluation w-clearfix">
-          <a @click="next()" class="bouton-sauvergarder-et-continuer-3">{{ Continuer }}</a>
-          <a class="bouton-sauvergarder-et-continuer-3 w-retour" @click="previous()">
-            {{Retour}}
-          </a>
-        </div>
-      </div>
-    </div>-->
 </template>
 
 <script>
@@ -137,13 +103,10 @@ import editTags from "../components/Settings/editTags";
 import editHomepage from "../components/Settings/editHomepage";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
-import editUsers from "../components/Settings/editUsers";
 import editCGV from "../components/Settings/editCGV";
 import editFooter from "../components/Settings/editFooter";
-import helpSettings from "@/components/Settings/helpSettings";
-import Tasks from "@/views/tasks";
-import HelpSettings from "@/components/Settings/helpSettings";
 import EditApplicants from "@/components/Settings/editApplicants";
+import { global } from "../store/global";
 
 const qs = require("qs");
 
@@ -152,8 +115,6 @@ export default {
 
   components: {
     EditApplicants,
-    HelpSettings,
-    Tasks,
     editStatus,
     editTags,
     editCGV,
@@ -161,13 +122,6 @@ export default {
     editHomepage,
     editStyle,
     editDatas,
-    editUsers
-  },
-
-  props: {
-    actualLanguage: String,
-    coordinatorAccess: Number,
-    manyLanguages: Number
   },
 
   data: () => ({
@@ -175,39 +129,43 @@ export default {
     langue: 0,
     saving: false,
     endSaving: false,
-
-    settingsCategories: [
-      [
+    actualLanguage: "",
+    coordinatorAccess: 0,
+    manyLanguages: 0,
+    settingsCategories: {
+      "fr": [
         "Style",
         "Page d'accueil",
         "Conditions générales",
         "Pied de page",
         "Statuts",
-        "Etiquettes",
+        "Étiquettes",
         "Candidats",
         "Référentiels de données",
-        "Aide"
       ],
-      [
+      "en": [
         "Styling",
-        "Home page",
+        "Homepage",
         "General Terms and Conditions",
         "Footer",
         "Status",
         "Tags",
         "Applicants",
         "Data repository",
-        "Help"
-      ]
-    ],
-
+      ],
+      
+    },
     Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
     Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
     Save: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVE"),
     Saved: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVED"),
     Settings: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
   }),
-
+  created() {
+    this.actualLanguage = global.getters.actualLanguage;
+    this.manyLanguages = Number(global.getters.manyLanguages);
+    this.coordinatorAccess = global.getters.coordinatorAccess;
+  },
   methods: {
     updateStatus(status) {
       this.updateLoading(true);
@@ -328,17 +286,6 @@ export default {
         this.endSaving = false;
       },3000);
     }
-  },
-
-  created() {
-    if (this.actualLanguage == "en") {
-      this.langue = 1;
-    }
-    /*this.$nextTick(function () {
-      window.setInterval(() => {
-        this.saveCurrentPage();
-      },20000);
-    })*/
   },
 };
 </script>

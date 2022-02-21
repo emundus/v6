@@ -150,7 +150,7 @@ $template_type = array(
         content: "";
         height: 16px;
         width: 16px;
-        left: 20px;
+        /*left: 20px;*/
         transition: .4s;
         background: #f9f5f5;
     }

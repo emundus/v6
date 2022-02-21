@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.1" client="site" method="upgrade">
+	<name>mod_emundus_footer</name>
+	<author>Joomla! Project</author>
+	<creationDate>July 2006</creationDate>
+	<copyright>Copyright (C) 2005 - 2020 Open Source Matters. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>3.0.0</version>
+	<description>MOD_LOGIN_XML_DESCRIPTION</description>
+	<files>
+		<folder>tmpl</folder>
+		<filename>mod_emundus_footer.xml</filename>
+		<filename module="mod_emundus_footer">mod_emundus_footer.php</filename>
+		<filename>index.html</filename>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+	</files>
+	<help key="JHELP_EXTENSIONS_MODULE_MANAGER_LOGIN" />
+	<config>
+		<fields name="params">
+			<fieldset name="basic"
+				addfieldpath="/administrator/components/com_menus/models/fields"
+			>
+				<field
+						name="mod_emundus_footer_texte_col_1"
+						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+						default=""
+						label="MOD_EM_FOOTER_COL_1"
+						description="MOD_EM_FOOTER_COL_1">
+				</field>
+				<field class="text" label="TAB1" name="spacer1" type="spacer" hr="true"/>
+				<field
+						name="mod_emundus_footer_texte_col_2"
+						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
+						default=""
+						label="MOD_EM_FOOTER_COL_2"
+						description="MOD_EM_FOOTER_COL_2">
+				</field>
+
+
+
+
+			</fieldset>
+		</fields>
+	</config>
+</extension>

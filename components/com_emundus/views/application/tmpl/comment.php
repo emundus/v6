@@ -16,7 +16,6 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 <style type="text/css">
 	.widget .panel-body { padding:0px; }
 	.widget .list-group { margin-bottom: 0; }
-	.widget .panel-title { display:inline }
 	.widget .label-info { float: right; }
 	.widget li.list-group-item {border-radius: 0;border: 0;border-top: 1px solid #ddd;}
 	.widget li.list-group-item:hover { background-color: rgba(86,61,124,.1); }
@@ -32,14 +31,14 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
             <div class="panel-heading em-container-comment-heading">
 
                 <h3 class="panel-title">
-                	<span class="glyphicon glyphicon-comment"></span>
+                	<span class="material-icons">mode_comment</span>
                 	<?php echo JText::_('COMMENTS'); ?>
                 	<span class="label label-info"><?php echo count($this->userComments); ?></span>
                 </h3>
 
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><i class="small arrow right icon"></i></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_back</span></button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-icons">arrow_forward</span></button>
                 </div>
 
             </div>
@@ -65,13 +64,14 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                 <div class="action em-list-status-action">
                                     <div class="edit-comment-container">
                                         <button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >
-                                            <span class="glyphicon glyphicon-edit"></span>
+
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
+                                            <span class="material-icons">edit</span>
                                         </button>
                                         <?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)) || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)) :?>
                                             <div class="action">
                                                 <button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">
-                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                    <span class="material-icons">delete_outline</span>
                                                 </button>
                                             </div>
                                         <?php endif; ?>
@@ -82,7 +82,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                         <button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >
-                                            <span class="glyphicon glyphicon-ok"></span>
+                                            <span class="material-icons">edit</span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                     </div>
@@ -205,12 +205,12 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                 '<div class="action">'+
                                     '<div class="edit-comment-container">'+
                                         '<button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
-                                            '<span class="glyphicon glyphicon-edit"></span>'+
+                                            '<span class="material-icons">edit</span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
                                         '<div class="action">'+
                                             '<button type="button" class="btn btn-danger btn-xs delete-comment" title="<?php echo JText::_('DELETE');?>">'+
-                                                '<span class="glyphicon glyphicon-trash"></span>'+
+                                                '<span class="material-icons">delete_outline</span>'+
                                             '</button>'+
                                         '</div>'+
                                     '</div>'+

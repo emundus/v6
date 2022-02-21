@@ -19,4 +19,4 @@ VALUES ('messenger_reminder', 'Messages not read', '', '<p>Vous avez des message
 <p>Cordialement,</p>
 <hr />
 <p>You have unread messages on <a href="[SITE_URL]">[SITE_URL]</a>. Please log in again to read them.</p>
-<p>Sincerely,</p>', '', 2, 1, 1, null, null, '', null, null);
+<p>Sincerely,</p>', '', 2, 1, 1, null, null, null, null, null);

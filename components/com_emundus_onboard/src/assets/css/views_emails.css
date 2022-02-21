@@ -60,6 +60,10 @@
   margin-top: 20px;
 }
 
+#program-form {
+  margin-top: 50px;
+}
+
 .moduletable.send-application-file {
   background: none !important;
   padding: 0 !important;

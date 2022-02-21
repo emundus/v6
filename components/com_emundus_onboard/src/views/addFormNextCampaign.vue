@@ -1,12 +1,7 @@
-<!--
-  $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
-  $str = "0001427";
-  echo ltrim($str, "0");
--->
 <template>
   <div>
     <ModalWarningFormBuilder
-        :pid="profileId"
+        :pid="getProfileId"
         :cid="campaignId"
     />
     <div class="w-row">
@@ -14,7 +9,7 @@
         <div class="section-sub-menu">
           <div class="container-2 w-container" style="max-width: unset">
             <div class="d-flex">
-              <img src="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
+              <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
               <h2 class="tchooz-section-titles" v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
               <h2 class="tchooz-section-titles" v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
             </div>
@@ -24,13 +19,17 @@
             <hr>
             <div class="d-flex">
               <p>
-                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>  {{From}} {{form.start_date}}   {{To}} {{form.end_date}}
+                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
+                {{translations.From}}
+                <strong>{{form.start_date}}</strong>
+                {{translations.To}}
+                <strong>{{form.end_date}}</strong>
               </p>
             </div>
 
             <div v-if="profileId == null && loading == false" style="display: flex;" class="d-flex required">
               <em class="fas fa-exclamation-circle icon-warning-margin"></em>
-              <p>{{chooseProfileWarning}}</p>
+              <p>{{translations.chooseProfileWarning}}</p>
             </div>
             </div>
 
@@ -43,7 +42,7 @@
         <div class="d-flex" >
           <ul class="nav nav-tabs topnav">
 
-            <li v-for="(formCat, index) in formCategories[langue]" :key="index" v-show="closeSubmenu">
+            <li v-for="(formCat, index) in formCategories[langue]" :key="'category-' + index" v-show="closeSubmenu">
               <a  @click="profileId != null ? changeToCampMenu(index): ''"
                   class="menu-item"
                   :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
@@ -51,7 +50,7 @@
               </a>
             </li>
 
-            <li v-for="(formProg, index) in formPrograms[langue]" :key="index" v-show="closeSubmenu">
+            <li v-for="(formProg, index) in formPrograms[langue]" :key="'program-' + index" v-show="closeSubmenu">
               <a @click="profileId != null ? changeToProgMenu(index) : ''"
                  class="menu-item"
                  :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
@@ -68,14 +67,14 @@
         <!-- end Menu -->
 
         <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
-          <p style="color: #e5283b;"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{ProgramWarning}}</p>
+          <p style="color: #e5283b;"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{translations.ProgramWarning}}</p>
           <ul v-if="campaignsByProgram.length > 0">
-            <li v-for="(campaign, index) in campaignsByProgram">{{campaign.label}}</li>
+            <li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
           </ul>
         </div>
         <transition name="slide-right">
           <add-campaign
-              v-if="menuHighlight == 0"
+              v-if="menuHighlight == 0 && campaignId !== ''"
               :campaign="campaignId"
               :coordinatorAccess="true"
               :actualLanguage="actualLanguage"
@@ -93,73 +92,29 @@
               :visibility="null"
           ></addFormulaire>
 
-<!--          <addDocuments
-              v-if="menuHighlight == 4"
-              :funnelCategorie="formCategories[langue][menuHighlight]"
-              :profileId="profileId"
-              :campaignId="campaignId"
-              :menuHighlight="menuHighlight"
-              :langue="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></addDocuments>-->
-
           <add-documents-dropfiles
               v-if="menuHighlight == 1"
               :funnelCategorie="formCategories[langue][menuHighlight]"
-              :profileId="profileId"
+              :profileId="getProfileId"
               :campaignId="campaignId"
               :menuHighlight="menuHighlight"
               :langue="actualLanguage"
               :manyLanguages="manyLanguages"
           />
 
-<!--          <add-documents-form
-              v-if="menuHighlight == 3"
-              :funnelCategorie="formCategories[langue][menuHighlight]"
-              :profileId="profileId"
-              :campaignId="campaignId"
-              :menuHighlight="menuHighlight"
-              :langue="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></add-documents-form>-->
-
-<!--          <add-gestionnaires
-              v-if="menuHighlightProg == 0 && program.id != 0"
-              :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :group="prog_group"
-              :coordinatorAccess="true"
-          ></add-gestionnaires>-->
-
           <add-evaluation-grid
               v-if="menuHighlightProg == 0 && program.id != 0"
               :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :prog="program.id"
+              :prog="Number(program.id)"
           ></add-evaluation-grid>
 
           <add-email
               v-if="menuHighlightProg == 1 && program.id != 0"
-              :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :prog="program.id"
+              :prog="Number(program.id)"
           ></add-email>
-
-          <!--          <addEvalEval
-                            v-if="menuHighlight == 6"
-                            :funnelCategorie="formCategories[langue][menuHighlight]"
-                    ></addEvalEval>-->
         </transition>
       </div>
     </div>
-
-    <!--        <div class="section-sauvegarder-et-continuer-funnel">
-                <div class="w-container">
-                    <div class="container-evaluation w-clearfix">
-                        <button @click="next()" class="bouton-sauvergarder-et-continuer" type="button">{{ Continuer }}</button>
-                        <button class="bouton-sauvergarder-et-continuer w-retour" type="button" @click="previous()">
-                            {{ Retour }}
-                        </button>
-                    </div>
-                </div>
-            </div>-->
     <div class="loading-form" v-if="loading">
       <Ring-Loader :color="'#12DB42'" />
     </div>
@@ -169,21 +124,14 @@
 <script>
 import moment from "moment";
 import axios from "axios";
-import { Datetime } from "vue-datetime";
 
-import addFormulaire from "../views/funnelFormulaire/addFormulaire";
-import addDocuments from "../views/funnelFormulaire/addDocuments";
-import addGestionnaires from "../views/funnelFormulaire/addGestionnaires";
-import addEmail from "../views/funnelFormulaire/addEmail";
-import addEvaluation from "../views/funnelFormulaire/addEvaluation";
-import addEvalVisi from "../views/funnelFormulaire/addEvalVisi";
-import addEvalEval from "../views/funnelFormulaire/addEvalEval";
-import ModalWarningFormBuilder from "./advancedModals/ModalWarningFormBuilder";
-import Tasks from "@/views/tasks";
-import AddDocumentsDropfiles from "@/views/funnelFormulaire/addDocumentsDropfiles";
-import AddDocumentsForm from "@/views/funnelFormulaire/addDocumentsForm";
 import addCampaign from "@/views/addCampaign";
-import AddEvaluationGrid from "@/views/funnelFormulaire/addEvaluationGrid";
+import ModalWarningFormBuilder from "@/components/AdvancedModals/ModalWarningFormBuilder";
+import AddDocumentsDropfiles from "@/components/FunnelFormulaire/addDocumentsDropfiles";
+import addEmail from "@/components/FunnelFormulaire/addEmail";
+import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
+import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
+import {global} from "../store/global";
 
 const qs = require("qs");
 
@@ -192,29 +140,22 @@ export default {
 
   components: {
     AddEvaluationGrid,
-    AddDocumentsForm,
-    Tasks,
     AddDocumentsDropfiles,
     addCampaign,
     ModalWarningFormBuilder,
-    Datetime,
     addFormulaire,
-    addDocuments,
-    addGestionnaires,
     addEmail,
-    addEvaluation,
-    addEvalVisi,
-    addEvalEval
   },
 
-  props: {
-    campaignId: Number,
-    actualLanguage: String,
+  props: {    
     index: Number,
-    manyLanguages: Number,
   },
 
   data: () => ({
+    campaignId: 0,
+    actualLanguage: "",
+    manyLanguages: 0,
+
     prid: "",
     EmitIndex: "0",
     menuHighlight: 0,
@@ -223,20 +164,14 @@ export default {
     selectedform: "default",
     formList: "",
     prog: 0,
-
     loading: false,
-
     closeSubmenu: true,
-
     profileId: null,
     profiles: [],
     campaignsByProgram: [],
-
     currentElement: "",
     currentSpan: "",
-
     langue: 0,
-
     formCategoriesDesc: [
       [
         "Vous pouvez modifier vos dates limites de campagne, vos descriptifs et définir une limite de dossiers",
@@ -317,24 +252,30 @@ export default {
       manager: null,
     },
 
-    From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
-    To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
-    Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
-    Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-    CAMPAIGN: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
-    FORM: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
-    ChooseEvaluatorGroup: Joomla.JText._(
-        "COM_EMUNDUS_ONBOARD_CHOOSE_EVALUATOR_GROUP"
-    ),
-    Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-    Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-    chooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
-    chooseProfileWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
-    ProgramWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
+    translations:{
+      DATE_FORMAT: Joomla.JText._("DATE_FORMAT_JS_LC2"),
+      From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
+      To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
+      chooseProfileWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
+      ProgramWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
+    },
   }),
 
+  created () {
+    // Get datas that we need with store
+    this.campaignId = Number(global.getters.datas.campaignId.value);
+    this.actualLanguage = global.getters.actualLanguage;
+    this.manyLanguages = Number(global.getters.manyLanguages);
+    //
+
+    this.loading = true;
+    if (this.actualLanguage === "en") {
+      this.langue = 1;
+    }
+  },
+
   methods: {
-    initInformations(campaign){
+    initInformations(campaign) {
       this.form.label = campaign.label;
       this.form.profile_id = campaign.profile_id;
       this.form.program_id = campaign.progid;
@@ -342,12 +283,12 @@ export default {
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
       this.form.start_date = moment(this.form.start_date).format(
-          "DD/MM/YYYY h:mm A"
+          this.translations.DATE_FORMAT
       );
       if (this.form.end_date == "0000-00-00 00:00:00") {
         this.form.end_date = null;
       } else {
-        this.form.end_date = moment(this.form.end_date).format("DD/MM/YYYY h:mm A");
+        this.form.end_date = moment(this.form.end_date).format(this.translations.DATE_FORMAT);
       }
 
       axios.get(
@@ -374,7 +315,7 @@ export default {
       },500);
     },
 
-    changeToProgMenu(index){
+    changeToProgMenu(index) {
       axios.get(`index.php?option=com_emundus_onboard&controller=program&task=getprogrambyid&id=${this.form.program_id}`)
           .then(rep => {
             this.program.id = rep.data.data.id;
@@ -417,12 +358,12 @@ export default {
       this.menuHighlight = -1;
     },
 
-    changeToCampMenu(index){
+    changeToCampMenu(index) {
       this.menuHighlight = index;
       this.menuHighlightProg = -1;
     },
 
-    setProfileId(prid){
+    setProfileId(prid) {
       this.profileId = prid;
     },
 
@@ -465,8 +406,8 @@ export default {
       var name = cname + "=";
       var decodedCookie = decodeURIComponent(document.cookie);
       var ca = decodedCookie.split(';');
-      for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
+
+      for (let c of ca) {
         while (c.charAt(0) == ' ') {
           c = c.substring(1);
         }
@@ -479,14 +420,10 @@ export default {
   },
 
   computed: {
-    console: () => console
-  },
-
-  created() {
-    this.loading = true;
-    if (this.actualLanguage == "en") {
-      this.langue = 1;
-    }
+    console: () => console,
+    getProfileId() {
+      return Number(this.profileId);
+    },
   },
 };
 </script>

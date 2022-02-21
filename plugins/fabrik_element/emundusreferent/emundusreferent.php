@@ -372,7 +372,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 	protected function isReferentFormUploaded($attachment_id,$fnum){
         $db = JFactory::getDBO();
-        $query = 'SELECT uploaded FROM #__emundus_files_request WHERE fnum LIKE '.$db->quote($fnum).' AND attachment_id='.$attachment_id.' limit 1 ORDER DESC';
+        $query = 'SELECT uploaded FROM #__emundus_files_request WHERE fnum LIKE '.$db->quote($fnum).' AND attachment_id='.$attachment_id.' ORDER BY ID limit 1';
         $db->setQuery($query);
 
         return $db->loadColumn();

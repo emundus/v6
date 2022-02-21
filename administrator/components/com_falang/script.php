@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2017. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2021. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -64,27 +64,6 @@ class com_falangInstallerScript
             ),
             'folders' => array()
         );
-
-	/**
-	 * The minimum PHP version required to install this extension
-	 *
-	 * @var   string
-	 */
-	protected $minimumPHPVersion = '5.6.0';
-
-	/**
-	 * The minimum Joomla! version required to install this extension
-	 *
-	 * @var   string
-	 */
-	protected $minimumJoomlaVersion = '3.8.0';
-
-	/**
-	 * The maximum Joomla! version required to install this extension
-	 *
-	 * @var   string
-	 */
-	protected $maximumJoomlaVersion = '3.9.99';
 
     private $falangRemoveFilesPaid = array(
         'files'	=> array(

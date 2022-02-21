@@ -26,7 +26,7 @@ $formid = $jinput->get('formid', 284);
 $fnum = $jinput->get('jos_emundus_evaluations___fnum', '')[0];
 
 // Log evaluation opening action.
-EmundusModelLogs::log($user->id, (int)substr($fnum, -7), $fnum, 5, 'r', 'COM_EMUNDUS_LOGS_OPEN_EVALUATION');
+EmundusModelLogs::log($user->id, (int)substr($fnum, -7), $fnum, 5, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION_READ');
 
 // Check if we are opening an evaluation created by the user.
 $query = $db->getQuery(true);

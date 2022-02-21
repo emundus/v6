@@ -1249,28 +1249,19 @@ class EmundusModelMessages extends JModelList {
     /// add tags by fnum
     public function addTagsByFnum($fnum, $tmpl) {
         if(!empty($fnum) and !empty($tmpl)) {
-            /// get fnum info
-
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
             $m_files = new EmundusModelFiles();
 
             $fnum_info = $m_files->getFnumInfos($fnum);
-
             $_tags = $this->getTagsByEmail($tmpl);      // return type :: array
 
             if(!empty($_tags)) {
                 foreach ($_tags as $key => $tag) {
-
                     $assoc_tag = $m_files->getTagsByIdFnumUser($tag->id, $fnum_info['fnum'], $fnum_info['applicant_id']);
-
-                    if($assoc_tag == false) {
-                        $fnum_tag = $m_files->tagFile([$fnum_info['fnum']], [$tag->id]);
-                    } else {
-                        /// do nothing
+                    if(!$assoc_tag) {
+                        $m_files->tagFile([$fnum_info['fnum']], [$tag->id]);
                     }
                 }
-            } else {
-
             }
         } else {
             return false;
@@ -1358,10 +1349,15 @@ class EmundusModelMessages extends JModelList {
                 $_profiles = array();
 
                 foreach($fnums as $fnum) {
-                    $profile = $_mProfiles->getProfileByStatus($fnum)['profile'];
+                    $fnumInfos = $_mFiles->getFnumInfos($fnum);
 
-                    if(!is_null($profile)) {
-                        $_profiles[] = $profile;
+                    //$profile = $_mProfiles->getProfileByStatus($fnum)['profile'];
+                    $profiles = $_mProfiles->getProfilesIDByCampaign([$fnumInfos['id']]);
+
+                    if(!is_null($profiles)) {
+                        foreach ($profiles as $profile) {
+                            $_profiles[] = $profile;
+                        }
                     }
                     else {
                         /// if profile is null, get default profile of campaign
@@ -1408,13 +1404,34 @@ class EmundusModelMessages extends JModelList {
         try {
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
-                ->from($db->quoteName('#__emundus_setup_attachments'));
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('published') . " = 1");
 
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
             JLog::add('Cannot get all attachments : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return [];      /// return empty array
+        }
+    }
+
+    /// add tags by fnums
+    public function addTagsByFnums($fnums, $tmpl) {
+        $set_tag = [];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if(!empty($fnums) and !empty($tmpl)) {
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $m_files = new EmundusModelFiles();
+
+            foreach($fnums as $fnum) {
+                $this->addTagsByFnum($fnum, $tmpl);
+            }
+            return true;
+        } else {
+            return false;       /// no fnum or no email template, cannot add tag
         }
     }
 }

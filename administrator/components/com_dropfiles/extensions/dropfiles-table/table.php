@@ -48,7 +48,7 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
             return null;
         }
         $doc = JFactory::getDocument();
-        if (version_compare(JVERSION, '3.10.0', 'ge')) {
+        if (DropfilesBase::isJoomla40()) {
             JHtml::_('behavior.core');
         } else {
             JHtml::_('behavior.framework', true);
@@ -58,7 +58,7 @@ class PlgDropfilesthemesTable extends DropfilesPluginBase
         JLoader::register('DropfilesHelper', JPATH_ADMINISTRATOR . '/components/com_dropfiles/helpers/dropfiles.php');
         JHtml::_('jquery.framework');
         $this->addScriptTagLoading();
-        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.1.0.js');
+        $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/handlebars-v4.7.7.js');
 
         $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/jaofoldertree.js');
         $doc->addScript(JURI::base('true') . '/components/com_dropfiles/assets/js/colorbox.init.js');
