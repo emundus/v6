@@ -203,14 +203,13 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function getdocumentsbycampaign(){
-        $user = JFactory::getUser();
 
         $m_messages = $this->model;
 
         $jinput = JFactory::getApplication()->input;
-
+        
         $fnum = $jinput->getString('fnum');
-        $applicant = $jinput->getBool('applicant');
+        $applicant = $jinput->getVar('applicant');
 
         $messages_readed = $m_messages->getDocumentsByCampaign($fnum, $applicant);
 
