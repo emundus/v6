@@ -1,7 +1,7 @@
 <template>
   <div class="messages__vue_attach_document">
     <span :id="'attach_documents' + fnum">
-      <modal
+      <div
           :name="'attach_documents' + fnum"
           transition="nice-modal-fade"
           :adaptive="true"
@@ -21,7 +21,7 @@
 
           <div v-if="action === 1">
             <label v-if="applicant">{{translations.sendDocument}}</label>
-            <div v-if="applicant" class="messages__attach_applicant_doc">
+            <div v-if="applicant && types.length > 0" class="messages__attach_applicant_doc">
               <label for="applicant_attachment_input">{{translations.typeAttachment}}</label>
               <select v-model="attachment_input" id="applicant_attachment_input">
                 <option :value="0">{{translations.pleaseSelect }}</option>
@@ -57,7 +57,7 @@
             </select>
           </div>
         </div>
-      </modal>
+      </div>
     </span>
     <div class="loader" v-if="loading"></div>
   </div>
@@ -219,9 +219,11 @@ export default {
         }
         this.$refs.dropzone.processQueue();
       } else {
-        this.message_input = 'Demande de document : ';
-        this.message_input += message;
-        this.askAttachment();
+        if (this.attachment_input) {
+          this.message_input = 'Demande de document : ';
+          this.message_input += message;
+          this.askAttachment();
+        }
       }
     },
   },
