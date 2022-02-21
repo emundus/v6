@@ -21,7 +21,7 @@
 
           <div v-if="action === 1">
             <label v-if="applicant">{{translations.sendDocument}}</label>
-            <div v-if="applicant" class="messages__attach_applicant_doc">
+            <div v-if="applicant && types.length > 0" class="messages__attach_applicant_doc">
               <label for="applicant_attachment_input">{{translations.typeAttachment}}</label>
               <select v-model="attachment_input" id="applicant_attachment_input">
                 <option :value="0">{{translations.pleaseSelect }}</option>

@@ -61,7 +61,7 @@
               </transition>
             </div>
             <div class="messages__bottom-input">
-              <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
+              <textarea type="text" class="messages__input_text" rows="1" :disabled="send_progress" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
             </div>
             <div class="messages__bottom-input-actions">
               <div class="messages__actions_bar">
@@ -114,6 +114,8 @@ export default {
       interval: 0,
       showDate: 0,
       attachOpen: false,
+      send_progress: false,
+
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
         send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
@@ -191,7 +193,8 @@ export default {
       if(typeof e != 'undefined') {
         e.stopImmediatePropagation();
       }
-      if(this.message.trim() !== '') {
+      if(this.message.trim() !== '' && !this.send_progress) {
+        this.send_progress = true;
         axios({
           method: "post",
           url:
@@ -205,6 +208,7 @@ export default {
           })
         }).then(response => {
           this.message = '';
+          this.send_progress = false;
           this.pushToDatesArray(response.data);
           this.scrollToBottom();
         });
@@ -260,6 +264,7 @@ export default {
 
     attachDocument(){
       this.attachOpen = !this.attachOpen;
+      this.scrollToBottom();
       setTimeout(() => {
         if(this.attachOpen){
           this.$refs.attachment.getTypesByCampaign();
@@ -271,6 +276,7 @@ export default {
       //this.$modal.hide('attach_documents' + this.fileSelected);
       this.pushToDatesArray(message);
       this.scrollToBottom();
+      this.attachOpen = !this.attachOpen;
     }
   },
 
