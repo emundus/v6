@@ -100,7 +100,11 @@ class EmundusonboardModelemail extends JModelList {
             ->order($sortDb.$sort);
 
         try {
-            $db->setQuery($query, $offset, $limit);
+            if(empty($lim)) {
+                $db->setQuery($query, $offset);
+            } else {
+                $db->setQuery($query, $offset, $limit);
+            }
             return $db->loadObjectList();
         } catch (Exception $e) {
             JLog::add('component/com_emundus_onboard/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -288,7 +292,8 @@ class EmundusonboardModelemail extends JModelList {
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
                 ->from($db->quoteName('#__emundus_setup_attachments'))
-                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_attachments.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
+                ->leftJoin($db->quoteName('#__emundus_setup_letters') . ' ON ' . $db->quoteName('#__emundus_setup_letters.attachment_id') . ' = ' . $db->quoteName('#__emundus_setup_attachments.id'))
+                ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_letters.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment'))
                 ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . (int)$id);
 
             $db->setQuery($query);

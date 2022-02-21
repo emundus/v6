@@ -22,7 +22,7 @@ $fnum = $jinput->get('jos_emundus_final_grade___fnum', '')[0];
 
 
 // Log decision opening action.
-EmundusModelLogs::log(JFactory::getUser()->id, $student_id, $fnum, 29, 'r', 'COM_EMUNDUS_LOGS_OPEN_DECISION');
+EmundusModelLogs::log(JFactory::getUser()->id, $student_id, $fnum, 29, 'r', 'COM_EMUNDUS_DECISION_READ');
 
 
 $student = JUser::getInstance($student_id);

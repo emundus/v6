@@ -650,7 +650,7 @@ class EmundusControllerApplication extends JControllerLegacy
 
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
-        foreach($attachments as $attachment)
+        foreach($attachments as $key => $attachment)
         {
             // check if file is in server
             if (!file_exists(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename)) {
@@ -658,9 +658,20 @@ class EmundusControllerApplication extends JControllerLegacy
             } else {
                 $attachment->existsOnServer = true;
             }
+
+            // do not display files that are printed by applicant
+            if ($attachment->lbl === '_application_form') {
+                unset($attachments[$key]);
+            }
         }
 
-        echo json_encode($attachments);
+        // if array is associative, json encode will return an object
+        // it is supposed to recieve an array (response is checking type anyway)
+        if ($attachments !== array_values($attachments)) {
+            $attachments = array_values($attachments);
+        }
+
+        echo json_encode(['status' => $attachments !== false ? true : false, 'attachments' => $attachments]);
         exit;
     }
 
@@ -675,11 +686,11 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
             $m_application = $this->getModel('Application');
-    
+
             if ($jinput->files->get('file')) {
                 $data['file'] = $jinput->files->get('file');
             }
-    
+
             if ($data['fnum'] && $data['user']) {
                 $update = $m_application->updateAttachment($data);
             } else {
@@ -707,13 +718,13 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function getfilters() 
+    public function getfilters()
     {
         $filters = [];
         $jinput = JFactory::getApplication()->input;
         $type = $jinput->getS('type', null);
         $id = $jinput->getVar('id', null);
-        
+
         $m_application = $this->getModel('Application');
         $filters = $m_application->getFilters($type, $id);
 
@@ -721,13 +732,13 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function mountquery() 
+    public function mountquery()
     {
         $jinput = JFactory::getApplication()->input;
         $filters = $jinput->getVar('filters', null);
         $listId = $jinput->getVar('id', null);
         $filters = json_decode($filters, true);
-        
+
         $m_application = $this->getModel('Application');
         $res = $m_application->mountQuery($listId, $filters);
 

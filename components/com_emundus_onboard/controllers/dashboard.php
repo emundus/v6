@@ -32,14 +32,15 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         $this->model = $this->getModel('dashboard');
     }
 
-    /**
-     * Get the last active campaign
-     */
-    public function getLastCampaignActive(){
+    public function getallwidgetsbysize(){
         try {
-            $campaigns = $this->model->getLastCampaignActive();
+            $user = JFactory::getUser();
+            $jinput = JFactory::getApplication()->input;
+            $size = $jinput->getInt('size');
 
-            $tab = array('status' => 0, 'msg' => 'success', 'data' => $campaigns);
+            $widgets = $this->model->getallwidgetsbysize($size,$user->id);
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }
@@ -87,9 +88,29 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
 
     public function getwidgets(){
         try {
-            $widgets = $this->model->getwidgets();
+            $user = JFactory::getUser();
+            $widgets = $this->model->getwidgets($user->id);
 
             $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatemydashboard(){
+        try {
+            $user = JFactory::getUser();
+
+            $jinput = JFactory::getApplication()->input;
+
+            $widget = $jinput->getInt('widget');
+            $position = $jinput->getInt('position');
+
+            $result = $this->model->updatemydashboard($widget,$position,$user->id);
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
         } catch (Exception $e) {
             $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
         }
@@ -161,6 +182,71 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         exit;
     }
 
+    public function getfilters(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $widget = $jinput->getInt('widget');
+
+            $tab = array('msg' => 'success', 'filters' => JFactory::getSession()->get('widget_filters_' . $widget));
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function renderchartbytag(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $widget = $jinput->getInt('widget');
+            $filters = $jinput->getRaw('filters');
+
+            $session = JFactory::getSession();
+            $session->set('widget_filters_' . $widget, $filters);
+
+            $results = $this->model->renderchartbytag($widget);
+
+            $tab = array('msg' => 'success', 'dataset' => $results);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getarticle(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $widget = $jinput->getInt('widget');
+            $article = $jinput->getInt('article');
+
+            $results = $this->model->getarticle($widget,$article);
+
+            $tab = array('msg' => 'success', 'data' => $results);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function geteval(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+            $widget = $jinput->getInt('widget');
+
+            $results = $this->model->renderchartbytag($widget);
+
+            $tab = array('msg' => 'success', 'data' => $results);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+
+    /** Sciences PO */
     public function getfilescountbystatusgroupbydate(){
         try {
             $jinput = JFactory::getApplication()->input;
@@ -238,4 +324,5 @@ class EmundusonboardControllerdashboard extends JControllerLegacy
         echo json_encode((object)$tab);
         exit;
     }
+    /** END **/
 }

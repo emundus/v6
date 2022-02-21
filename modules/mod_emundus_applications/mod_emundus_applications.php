@@ -59,11 +59,20 @@ $show_progress_documents = $params->get('show_progress_documents', '#EA5012');
 $admission_status = explode(',', $params->get('admission_status'));
 $add_admission_prefix = $params->get('add_admission_prefix', 1);
 $absolute_urls = $params->get('absolute_urls', 1);
+$specific_profiles = $params->get('for_specific_profiles', "");
+
+if (!empty($specific_profiles)) {
+	$specific_profiles = explode(",", $specific_profiles);
+}
 
 $show_remove_files = $params->get('show_remove_files', 1);
 $show_archive_files = $params->get('show_archived_files', 1);
 $show_state_files = $params->get('show_state_files', 0);
 $show_payment_status = $params->get('show_payment_status', 0);
+$visible_status = $params->get('visible_status', '');
+if ($visible_status != "") {
+  $visible_status = explode(',', $params->get('visible_status', ''));
+}
 
 $order_applications = $params->get('order_applications', 'esc.end_date');
 $applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
@@ -112,7 +121,7 @@ $m_email = new EmundusModelEmails;
 // show application files if applicant profile like current profile and nothing if not
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
-if (empty($user->profile) || in_array($user->profile, $applicant_profiles)) {
+if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles))) {
 
 	$fnums = array_keys($applications);
 	$attachments = $m_application->getAttachmentsProgress($fnums);

@@ -51,12 +51,12 @@
 
 <script>
 import axios from "axios";
-import ModalUpdateLogo from "../../views/advancedModals/ModalUpdateLogo";
 import VSwatches from 'vue-swatches'
 import 'vue-swatches/dist/vue-swatches.css'
-import ModalUpdateIcon from "@/views/advancedModals/ModalUpdateIcon";
 import Swal from "sweetalert2";
-import ModalUpdateColors from "@/views/advancedModals/ModalUpdateColors";
+import ModalUpdateIcon from "@/components/AdvancedModals/ModalUpdateIcon";
+import ModalUpdateLogo from "@/components/AdvancedModals/ModalUpdateLogo";
+import ModalUpdateColors from "@/components/AdvancedModals/ModalUpdateColors";
 
 const qs = require("qs");
 
@@ -97,11 +97,11 @@ export default {
 
   methods: {
     updateView(image) {
-      this.imageLink = image;
+      this.imageLink = 'images/custom/logo_custom.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateIcon(image) {
-      this.iconLink = image;
+      this.iconLink = 'images/custom/favicon.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateColors(colors){

@@ -100,7 +100,7 @@ class EmundusonboardModelcampaign extends JModelList
         }
     }
 
-    function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page) {
+    function getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -125,7 +125,18 @@ class EmundusonboardModelcampaign extends JModelList
 
         // Get affected programs
         $user = JFactory::getUser();
-        $programs = $this->model_program->getUserPrograms($user->id);
+        $programs=$this->model_program->getUserPrograms($user->id);
+
+        if($program !="all"){
+            $programs=array_filter($programs,function($value) use ($program) {
+                //var_dump($program);die();
+                return $value == $program;
+            });
+            /*var_dump($programs);
+            die();*/
+        }
+
+
         //
 
         if ($filter == 'notTerminated') {
@@ -458,8 +469,8 @@ class EmundusonboardModelcampaign extends JModelList
                     array_splice($data, $i, 1);
                 }
                 if ($key == 'label') {
-                    $labels->fr = $data['label']['fr'];
-                    $labels->en = $data['label']['en'];
+                    $labels->fr = !empty($data['label']['fr']) ? $data['label']['fr'] : '';
+                    $labels->en = !empty($data['label']['en']) ? $data['label']['en'] : '';
                     $data['label'] = $data['label'][$actualLanguage];
                 }
                 if ($key == 'limit_status') {

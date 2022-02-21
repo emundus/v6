@@ -6,25 +6,39 @@
         <div class="input-group">
           <label for="description">{{ translate("DESCRIPTION") }} </label>
           <textarea
-            name="description"
-            type="text"
-            v-model="attachment.description"
-            :disabled="!canUpdate"
+              name="description"
+              type="text"
+              v-model="attachmentDescription"
+              :disabled="!canUpdate"
           >
-          </textarea>
+					</textarea>
         </div>
 
-        <div class="input-group">
-          <label for="status">{{translate("COM_EMUNDUS_ATTACHMENTS_CHECK")}}</label>
+        <div 
+          class="input-group valid-state"
+          :class="{
+			    	success: attachmentIsValidated == 1,
+			    	warning: attachmentIsValidated == 2,
+			    	error: attachmentIsValidated == 0,
+			    }"
+        >
+          <label for="status">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CHECK")
+            }}</label>
           <select
-            name="status"
-            v-model="attachment.is_validated"
-            :disabled="!canUpdate"
+              name="status"
+              v-model="attachmentIsValidated"
+              @change="updateAttachmentStatus"
+              :disabled="!canUpdate"
           >
-            <option value="-2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
-            <option value="2">{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
-            <option value="1">{{ translate("VALID") }}</option>
-            <option value="0">{{ translate("INVALID") }}</option>
+            <option value=1>{{ translate("VALID") }}</option>
+            <option value=0>{{ translate("INVALID") }}</option>
+            <option value=2>
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
+            </option>
+            <option value=-2>
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
+            </option>
           </select>
         </div>
         <div class="input-group" v-if="canUpdate">
@@ -32,10 +46,32 @@
             {{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label
           >
           <input
-            type="file"
-            name="replace"
-            @change="updateFile"
-            :accept="allowedType"
+              type="file"
+              name="replace"
+              @change="updateFile"
+              :accept="allowedType"
+          />
+        </div>
+        <div class="input-group">
+          <label for="can_be_viewed">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")
+            }}</label>
+          <input
+              type="checkbox"
+              name="can_be_viewed"
+              v-model="attachmentCanBeViewed"
+              :disabled="!canUpdate"
+          />
+        </div>
+        <div class="input-group">
+          <label for="can_be_deleted">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")
+            }}</label>
+          <input
+              type="checkbox"
+              name="can_be_deleted"
+              v-model="attachmentCanBeDeleted"
+              :disabled="!canUpdate"
           />
         </div>
       </div>
@@ -50,32 +86,28 @@
         </div>
         <div v-if="attachment.category">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
-          <span>{{ translate(attachment.category) }}</span>
+          <span>{{ this.categories[attachment.category] }}</span>
         </div>
         <div v-if="attachment.modified_by">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
           <span>{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
-          <span>{{
-            translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
-          }}</span>
+					<span>{{
+              translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
+            }}</span>
           <span>{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
-        <!-- <div v-if="attachment.file_size">
-                    <span>{{ translate('FILE_SIZE') }}</span>
-                    <span> ... kb </span>
-                </div> -->
       </div>
     </div>
     <div class="actions">
-      <button v-if="canUpdate" @click="saveChanges" class="btn-primary-vue">
+      <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
         {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
       </button>
     </div>
 
-    <div v-if="error" class="error">{{ errorMessage }}</div>
+    <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
 </template>
 
@@ -95,24 +127,43 @@ export default {
   data() {
     return {
       attachment: {},
+      categories: {},
       file: null,
       canUpdate: false,
       error: false,
       errorMessage: "",
+      attachmentIsValidated: "-2",
+      attachmentCanBeViewed: false,
+      attachmentCanBeDeleted: false,
+      attachmentDescription: "",
     };
   },
   mounted() {
-    this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
+    this.canUpdate = this.$store.state.user.rights[this.fnum]
+        ? this.$store.state.user.rights[this.fnum].canUpdate
+        : false;
     this.attachment = this.$store.state.attachment.selectedAttachment;
+    this.categories = this.$store.state.attachment.categories;
+
+    this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
+    this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
+    this.attachmentDescription = this.attachment.description;
+    this.attachmentIsValidated = this.attachment.is_validated;
   },
   methods: {
     async saveChanges() {
       let formData = new FormData();
+
+      const canBeViewed = this.attachmentCanBeViewed ? "1" : "0";
+      const canBeDeleted = this.attachmentCanBeDeleted ? "1" : "0";
+
       formData.append("fnum", this.fnum);
       formData.append("user", this.$store.state.user.currentUser);
       formData.append("id", this.attachment.aid);
-      formData.append("description", this.attachment.description);
-      formData.append("is_validated", this.attachment.is_validated);
+      formData.append("description", this.attachmentDescription);
+      formData.append("is_validated", this.attachmentIsValidated);
+      formData.append("can_be_viewed", canBeViewed);
+      formData.append("can_be_deleted", canBeDeleted);
 
       if (this.file) {
         formData.append("file", this.file);
@@ -122,6 +173,10 @@ export default {
 
       if (response.status.update) {
         this.attachment.modified_by = this.$store.state.user.currentUser;
+        this.attachment.description = this.attachmentDescription;
+        this.attachment.is_validated = this.attachmentIsValidated;
+        this.attachment.can_be_viewed = this.attachmentCanBeViewed;
+        this.attachment.can_be_deleted = this.attachmentCanBeDeleted;
 
         this.$store.dispatch("attachment/updateAttachmentOfFnum", {
           fnum: this.fnum,
@@ -131,8 +186,8 @@ export default {
         if (response.status.file_update) {
           // need to update file preview
           const data = await attachmentService.getPreview(
-            this.$store.state.user.displayedUser,
-            this.attachment.filename
+              this.$store.state.user.displayedUser,
+              this.attachment.filename
           );
 
           // store preview data
@@ -149,6 +204,9 @@ export default {
     },
     updateFile(event) {
       this.file = event.target.files[0];
+    },
+    updateAttachmentStatus(event) {
+      this.attachmentIsValidated = event.target.value;
     },
     showError(error) {
       this.error = true;
@@ -174,7 +232,9 @@ export default {
   watch: {
     "$store.state.attachment.selectedAttachment": function () {
       // check if selected attchment is not an empty object
-      if (Object.keys(this.$store.state.attachment.selectedAttachment).length !== 0) {
+      const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
+
+      if (keys.length > 0) {
         this.attachment = this.$store.state.attachment.selectedAttachment;
       }
     },
@@ -191,7 +251,7 @@ export default {
   border-left: 1px solid var(--border-color);
   position: relative;
 
-  .error {
+  .error-msg {
     position: absolute;
     margin: 10px 10px;
     top: 0;
@@ -279,10 +339,6 @@ export default {
     button {
       transition: all 0.3s;
       padding: 8px 12px;
-
-      &:last-of-type {
-        margin-left: 10px;
-      }
     }
   }
 
@@ -291,6 +347,46 @@ export default {
 
     display: flex;
     flex-direction: column;
+
+    [type="checkbox"] {
+      width: fit-content;
+    }
   }
+
+	.valid-state {
+		select {
+			padding: 4px 8px;
+			border-radius: 4px;
+			background-color: var(--grey-bg-color);
+			color: var(--grey-color);
+			border: none;
+			width: max-content;
+		}
+
+		select::-ms-expand {
+			display: none !important;
+		}
+
+		&.warning {
+			select {
+				color: var(--warning-color);
+				background-color: var(--warning-bg-color);
+			}
+		}
+
+		&.success {
+			select {
+				color: var(--success-color);
+				background-color: var(--success-bg-color);
+			}
+		}
+
+		&.error {
+			select {
+				color: var(--error-color);
+				background-color: var(--error-bg-color);
+			}
+		}
+	}
 }
 </style>
