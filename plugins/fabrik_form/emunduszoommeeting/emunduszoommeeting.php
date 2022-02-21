@@ -83,7 +83,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $uzId = $host;
             
             if($response['code'] == 1005) {
-                # User already exist :: update the user setting except the firstname, lastname, email
+                # User already exist :: update the user settings except the firstname, lastname, email
 
                 # find user id (Zoom) from $uzId
                 $getUserSql = "select * from data_referentiel_zoom_token where data_referentiel_zoom_token.user = " . $uzId;
