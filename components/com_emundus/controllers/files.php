@@ -3991,18 +3991,23 @@ class EmundusControllerFiles extends JControllerLegacy
         $adm = $m_adm->getGroupsAdmissionByProgramme($code);
         $adm .= $m_adm->getGroupsApplicantAdmissionByProgramme($code);
 
+        $hasAccessForm = EmundusHelperAccess::asAccessAction(1,  'r', $user_id);
         $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user_id);
         $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
         $hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user_id);
         $hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user_id);
         $hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
+        $showform = 0;
         $showatt = 0;
         $showeval = 0;
         $showdec  = 0;
         $showadm  = 0;
         $showtag  =0;
 
+        if ($hasAccessForm) {
+            $showform = 1;
+        }
         if ($hasAccessAtt) {
             $showatt = 1;
         }
@@ -4019,7 +4024,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $showtag = 1;
         }
 
-        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag)));
+        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag, 'form' => $showform)));
         exit;
 
     }
@@ -4116,7 +4121,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 $sessionCity = !empty($session['city']) ?' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))) : ' '.$session['location_title'];
-                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            
+                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
             }
         }
         $sessions .= '</ul>';
