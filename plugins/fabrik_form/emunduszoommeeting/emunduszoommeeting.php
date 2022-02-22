@@ -267,11 +267,17 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $db->setQuery($getEvaluatorsSql);
         $evaluators = $db->loadObjectList();
 
-        # add list of evaluators to $post
-        $post['ZOOM_SESSION_JURY'] = '<ul>';
+        if(count($evaluators) >= 1) {
+            # add list of evaluators to $post
+            $post['ZOOM_SESSION_JURY'] = '<ul>';
 
-        # grab all evaluator of this Zoom meeting
-        foreach($evaluators as $eval) { $post['ZOOM_SESSION_JURY'] .= '<li>' . $eval->name . '</li>'; }
+            # grab all evaluator of this Zoom meeting
+            foreach ($evaluators as $eval) {
+                $post['ZOOM_SESSION_JURY'] .= '<li>' . $eval->name . '</li>';
+            }
+        } else {
+            $post['ZOOM_SESSION_JURY'] = '<p style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</p>";
+        }
 
         $post['ZOOM_SESSION_JURY'] .= '</ul>';
 
@@ -284,7 +290,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $post['ZOOM_SESSION_URL'] = '<a href="' . $start_url . '" target="_blank">' .  JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST') . '</a>';
 
             # add PROFILE to $post
-            $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST');
+            $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST_PROFILE');
 
             # call to method 'sendEmailNoFnum'
             $cMessages->sendEmailNoFnum($recipient->email, $email_template, $post, null ,array(), null);
@@ -299,7 +305,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $post['ZOOM_SESSION_URL'] = '<a href="' . $join_url . '" target="_blank">' .  JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT') . '</a>';
 
             # add PROFILE to $post
-            $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT');
+            $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT_PROFILE');
 
             # call to method 'sendEmailNoFnum'
             $cMessages->sendEmailNoFnum($evaluator->email, $email_template, $post, null ,array(), null);
