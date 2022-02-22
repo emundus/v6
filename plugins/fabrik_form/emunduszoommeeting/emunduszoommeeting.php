@@ -161,9 +161,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                 # get last insert id
                 try {
-                    $getLastIdSql = "SELECT MAX(id) FROM jos_emundus_jury";
+                    $getLastIdSql = "SELECT MAX(id), date_time FROM jos_emundus_jury";
                     $db->setQuery($getLastIdSql);
-                    $lid = $db->loadResult();
+                    $lid = $db->loadObject();
 
                     # update missing fields to table "jos_emundus_jury"
                     $updateSql = "UPDATE #__emundus_jury 
@@ -174,8 +174,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                          " , registration_url = " . $db->quote($response['registration_url']) .
                                                             " , password = "        . $db->quote($response['password']) .
                                                                 ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
-                                                                    ", user = "                 . $db->quote($creator->id) . 
-                                                                        " WHERE #__emundus_jury.id = " . $lid;
+                                                                    ", user = "                 . $db->quote($creator->id) .
+                                                                        ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
+                                                                            " WHERE #__emundus_jury.id = " . $lid->id;
                     $db->setQuery($updateSql);
                     $db->execute();
 
@@ -193,6 +194,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                     # get the join_url from $response
                     $join_url = $response['join_url'];
+
+                    # get the date_time from table
+                    $created_at = date('Y-m-d H:i:s');
                 } catch(Exception $e) {
                     JLog::add('Create Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                 }
@@ -219,8 +223,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                 ", registration_url ="      . $db->quote($response['registration_url']) .
                                                     ", password ="              . $db->quote($response['password']) .
                                                         ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
-                                                            " WHERE #__emundus_jury.id = " . $_POST['jos_emundus_jury___id'] .
-                                                                " AND #__emundus_jury.meeting_session LIKE (" . $_POST['jos_emundus_jury___meeting_session'] . ")";
+                                                            ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
+                                                                " WHERE #__emundus_jury.id = " . $_POST['jos_emundus_jury___id'] .
+                                                                    " AND #__emundus_jury.meeting_session LIKE (" . $_POST['jos_emundus_jury___meeting_session'] . ")";
 
                         $db->setQuery($updateSql);
                         $db->execute();
@@ -239,6 +244,11 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         # get the join_url from $response
                         $join_url = $response['join_url'];
+
+                        # get created_at from $response
+                        $created_at = date('Y-m-d H:i:s');
+                        
+//                        echo '<pre>'; var_dump($_POST); echo '</pre>'; die;
                     } catch(Exception $e) {
                         JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                     }
@@ -280,6 +290,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         }
 
         $post['ZOOM_SESSION_JURY'] .= '</ul>';
+
+        # add CREATED_AT to $post
+        $post['ZOOM_SESSION_UPDATE_TIME'] = $created_at;
 
         # send email to Coordinator + Host with start_url ✅ ✅ ✅
         foreach ($raws as $recipient) {
