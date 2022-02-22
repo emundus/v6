@@ -4320,7 +4320,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
 
-        echo $letters;
+        if($letters) {
+            echo json_encode((object)(array('status' => true, 'data' => $letters)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'data' => null)));
+        }
+
         exit;
     }
 
