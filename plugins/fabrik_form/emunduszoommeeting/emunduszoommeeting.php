@@ -30,6 +30,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         * creator: eMundus
      */
     public function onAfterProcess() {
+        # get the creator
+        $user = JFactory::getUser();
+
         # read and parse json template file
         $route = JPATH_BASE.'/plugins/fabrik_form/emunduszoommeeting/api_templates' . DS;
         $template = file_get_contents($route . __FUNCTION__ . '_meeting.json');
@@ -163,7 +166,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                          " , registration_url = " . $db->quote($response['registration_url']) .
                                                             " , password = "        . $db->quote($response['password']) .
                                                                 ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
-                                                                    " WHERE #__emundus_jury.id = " . $lid;
+                                                                    ", user = "                 . $db->quote($user) . 
+                                                                        " WHERE #__emundus_jury.id = " . $lid;
                     $db->setQuery($updateSql);
                     $db->execute();
                 } catch(Exception $e) {
