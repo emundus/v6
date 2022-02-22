@@ -46,27 +46,25 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
     public function onBeforeLoad() {
         $rowId = $this->getModel()->getRowId();
 
-        if(empty($rowId)) {
-            return false;
+        if(!empty($rowId)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            # get the previous data of ZOOM meeting
+            $getPreviousData = "SELECT * FROM jos_emundus_jury AS jej WHERE jej.id = " . $db->quote($rowId);
+            $db->setQuery($getPreviousData);
+            $raw = $db->loadObject();
+
+            # create session
+            $session = JFactory::getSession();
+            $zoomSession = new stdClass();
+
+            $zoomSession->ZOOM_SESSION_NAME = $raw->topic;
+            $zoomSession->ZOOM_SESSION_START_TIME = $raw->start_time_;
+
+            # set "emunusZoomSession" session
+            $session->set('emundusZoomSession', $zoomSession);
         }
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        # get the previous data of ZOOM meeting
-        $getPreviousData = "SELECT * FROM jos_emundus_jury AS jej WHERE jej.id = " . $db->quote($rowId);
-        $db->setQuery($getPreviousData);
-        $raw = $db->loadObject();
-
-        # create session
-        $session = JFactory::getSession();
-        $zoomSession = new stdClass();
-
-        $zoomSession->ZOOM_SESSION_NAME = $raw->topic;
-        $zoomSession->ZOOM_SESSION_START_TIME = $raw->start_time_;
-
-        # set "emunusZoomSession" session
-        $session->set('emundusZoomSession', $zoomSession);
     }
     
 
