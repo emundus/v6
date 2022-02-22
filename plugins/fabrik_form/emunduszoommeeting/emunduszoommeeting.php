@@ -179,7 +179,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                                     ", user = "                 . $db->quote($creator->id) .
                                                                         ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
                                                                             " WHERE #__emundus_jury.id = " . $lid;
-                    
+
                     $db->setQuery($updateSql);
                     $db->execute();
 
