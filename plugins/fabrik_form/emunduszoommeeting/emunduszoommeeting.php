@@ -16,6 +16,17 @@ require_once "ZoomAPIWrapper.php";
 
 class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
+    public function getParam($pname, $default = '') {
+        $params = $this->getParams();
+
+        if ($params->get($pname) == '') {
+            return $default;
+        }
+
+        return $params->get($pname);
+    }
+
+
     public function searchSubArray(Array $array, $key) {
         foreach ($array as $index => $subarray){
             if (isset($subarray[$key])) {
@@ -30,6 +41,17 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         * creator: eMundus
      */
     public function onAfterProcess() {
+        # this flag (true,false) indicates which email type will be sent (creation, update)
+        $send_first_email_flag = false;
+
+        # get two types of email
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $creationEmail = $this->getParam('emunduszoommeeting_first_email_to_send', null);
+        $updateEmail = $this->getParam('emunduszoommeeting_secondary_email_to_send', null);
+
+        # end config email
+
         # get the creator
         $creator = JFactory::getUser();
 
@@ -97,6 +119,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 # get the user id by email
                 $response = $zoom->doRequest('GET', '/users/' . $email, array(), array(), '');
 
+                # get the Zoom user id
                 $host_id = $response['id'];
             } else {
                 $zoom->requestErrors();
@@ -132,6 +155,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         # if meeting id (in db, not in Zoom) and meeting session do not exist, call endpoint to generate the new one
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
+            $send_first_email_flag = true;
             $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
 
             $httpCode = $zoom->responseCode();
@@ -164,17 +188,13 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 $zoom->requestErrors();
             }
         } else {
-            /** HTTP Status Code
-                * 204 : Meeting updated
-                * 300 : Invalid enforce_login_domains, separate multiple domains by semicolon / A maximum of {rateLimitNumber} meetings can be created/updated for a single user in one day.
-                * 400 : User not found on this account: {accountId} (error 1010) / Cannot access meeting information (error 3000) / You are not the meeting host. (error 3003) / (error 3000)
-                * 404 : Meeting not found
-            **/
             $zoom->doRequest('PATCH', '/meetings/' . $_POST['jos_emundus_jury___meeting_session'], array(), array(), json_encode($json, JSON_PRETTY_PRINT));
 
             if($zoom->responseCode() != 204) {
                 $zoom->requestErrors();
             } else {
+                $send_first_email_flag = false;
+
                 # be careful, each time the meeting room is updated, the start_url / join_url / registration / password / encrypted_password will be updated too. So, we need to get again the meeting by calling
                 $response = $zoom->doRequest('GET', '/meetings/' . $_POST['jos_emundus_jury___meeting_session'], array(), array(), "");
 
