@@ -281,7 +281,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $post['NAME'] = $recipient->name;
 
             # add START_URL to $post
-            $post['ZOOM_SESSION_URL'] = '<a href="' . $start_url . '" target="_blank"> Session de Zoom </a>';
+            $post['ZOOM_SESSION_URL'] = '<a href="' . $start_url . '" target="_blank">' .  JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST') . '</a>';
 
             # call to method 'sendEmailNoFnum'
             $cMessages->sendEmailNoFnum($recipient->email, $email_template, $post, null ,array(), null);
@@ -292,8 +292,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             # add NAME to $post
             $post['NAME'] = $evaluator->name;
 
-            # add START_URL to $post
-            $post['ZOOM_SESSION_URL'] = '<a href="' . $join_url . '" target="_blank"> Session de Zoom </a>';
+            # add JOIN_URL to $post
+            $post['ZOOM_SESSION_URL'] = '<a href="' . $join_url . '" target="_blank">' .  JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT') . '</a>';
 
             # call to method 'sendEmailNoFnum'
             $cMessages->sendEmailNoFnum($evaluator->email, $email_template, $post, null ,array(), null);
