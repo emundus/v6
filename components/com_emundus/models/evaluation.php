@@ -1614,9 +1614,13 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     public function getPageNavigation() : string {
+        if ($this->getPagination()->pagesTotal <= 1) {
+            return '';
+        }
+
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1662,7 +1666,7 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -2281,7 +2285,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_letters = $this->getLettersByProgrammesStatusCampaigns($_programs,$_status, $_campaigns);
-            
+
             if (!empty($_letters)) {
                 if ($attachments == true) {
                     /// from $_letters --> get distinct attachment_id
@@ -2550,12 +2554,10 @@ class EmundusModelEvaluation extends JModelList {
                                 copy($file, $original_name);
 
                                 /// reupdate in database
-//                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                 $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
                                 $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             } else {
                                 if (copy($file, $path_name) and copy($file, $original_name)) {
-//                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                     $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
                                     $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
@@ -2689,7 +2691,6 @@ class EmundusModelEvaluation extends JModelList {
                                 $this->_db->execute();
                             }
                             /// copy generated letter to --letters folder
-//                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
                             $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
 
                             $pdf->Output($path_name, 'F');
@@ -2818,7 +2819,7 @@ class EmundusModelEvaluation extends JModelList {
                             $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
                                 $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
-                                
+
                                 foreach ($setupTags as $tag) {
                                     $val = "";
                                     $lowerTag = strtolower($tag);
@@ -2944,7 +2945,6 @@ class EmundusModelEvaluation extends JModelList {
                                     copy($original_name, $path_name);
                                 }
 
-//                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                 $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             }
@@ -3123,12 +3123,10 @@ class EmundusModelEvaluation extends JModelList {
 
                                 copy($original_name, $path_name);
 
-//                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                 $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
                                 $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
 
                             } else {
-//                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
                                 $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
                                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
@@ -3218,7 +3216,7 @@ class EmundusModelEvaluation extends JModelList {
             $out = array();
 
             foreach($raw as $r) { $out[] = $r['uid']; }
-            
+
             /* from $out, get the filename of each */
             unset($res->files);
             $getFiles = $_mFile->getAttachmentsById($out);
@@ -3417,7 +3415,7 @@ class EmundusModelEvaluation extends JModelList {
                     mkdir($dir_Name_Path, 0755, true);
                     if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
                 }
-                
+
                 $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                    // get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {
@@ -3434,7 +3432,7 @@ class EmundusModelEvaluation extends JModelList {
                     } else {
                         copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
                     }
-                    
+
                     /// copy into /tmp/
                     $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';                                   // zip file name (e.g: "Convention de financement")
                     $this->ZipLetter($dir_Name_Path, $tmp_path . $_zipName, 'true');
@@ -3547,7 +3545,7 @@ class EmundusModelEvaluation extends JModelList {
             $raw = [];
 
             foreach($res->files as $file) { $raw[$file['type']] += 1; }
-            
+
            foreach($raw as $k => $v) {
                $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $k;
                $this->_db->setQuery($query);

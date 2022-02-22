@@ -29,7 +29,7 @@ class EmundusonboardViewForm extends FabrikViewFormBase
 {
     /**
      * Main setup routine for displaying the form/detail view
-     * @param returnObject est l'objet retourné
+     * @since 0.1.0
      */
     public function display($tpl = null)
     {
@@ -309,10 +309,6 @@ class EmundusonboardViewForm extends FabrikViewFormBase
                 $returnObject->pluginbottom = $this->pluginbottom;
             endif;
 
-            /**
-             * @param returnObject
-             * *Contient toute les informations
-             */
             echo json_encode($returnObject);
         } catch(Exception $e){
             JLog::add('component/com_emundus_onboard/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

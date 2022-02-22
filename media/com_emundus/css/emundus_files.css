@@ -19,7 +19,6 @@
 
 .files-page .em-containerFilter-heading div.buttons {
     display: flex;
-    margin-top: -4px !important;
 }
 
 .em-containerFilter-heading div.buttons {
@@ -220,15 +219,23 @@ table .btn-group > .btn {
 .suwala-doubleScroll-scroll-wrapper {
     width: 100% !important;
 }
-
+.pagination{
+    margin: 16px 12px !important;
+    height: 30px;
+}
 ul.pagination.pagination-sm a {
     color: #4E5B6D;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
 }
 
 ul.pagination.pagination-sm a:active,
 ul.pagination.pagination-sm a:focus,
 ul.pagination.pagination-sm a:hover {
     color: #404B5A;
+    text-decoration: unset;
 }
 
 #check {
@@ -334,7 +341,7 @@ button#em-close-file {
 }
 
 .panel-default>div {
-    padding-left: 1rem;
+    padding-left: 13px;
 }
 
 .suwala-doubleScroll-scroll-wrapper,
@@ -435,12 +442,7 @@ div#em-appli-block button.btn.btn-default {
 }
 /* Panel droit dossier */
 .em-close-minimise {
-    align-self: flex-end;
-    display: block;
-    position: absolute;
-    right: 20px;
     margin: 0;
-    top: 7px;
 }
 button#em-close-file {
     color: #ffffff;
@@ -690,12 +692,14 @@ div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
     margin-right: 1%;
     border-radius: 4px;
     margin-top: 10px;
-    background: #12db42;
-    border: solid 1px #12db42;
+    background: #5a5a72;
+    border: solid 1px #5a5a72;
+    color: #fff;
 }
 div#em-modal-actions #savePDFfilter:hover, div#em-modal-actions #savefilter:hover{
-    background: transparent;
-    color: #12db42;
+   background: #b0b0bf;
+    color: #fff;
+    border: solid 1px #b0b0bf;
 }
 
 div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
@@ -729,11 +733,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
-    margin-top: 5px;
 }
 
 #filters #quick .selectize-control  {
-    height: 28px;
     width: 85%;
 }
 
@@ -770,7 +772,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 #filters #quick .selectize-input input {
-    height: 30px !important;
+    height: 100% !important;
 }
 
 #filters #quick #input-tags-selectized {
@@ -797,6 +799,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau .panel-body {
     background-color: #f8f8f8;
+    padding: 16px 24px;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -804,9 +807,20 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    height: 50px !important;
+    height: 40px !important;
     border-radius: 0;
-    padding: 10px;
+    padding: 8px 22px;
+    border-bottom: unset;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.em-containerFilter-heading div:first-of-type{
+    display: flex;
+    align-items: center;
+}
+label[for='clear-search']{
+    margin-bottom: unset !important;
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
@@ -826,13 +840,10 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter{
     margin-bottom: 10px;
 }
-.g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter .em_filters_adv_filter_addColumn{
-    margin-top: 5px;
-    height: 35px;
-}
 
 .g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
-    padding: 0 1rem;
+    padding: 0px;
+    height: 29px !important;
 }
 
 
@@ -855,9 +866,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
     background: #ffffff;
     border: 1px solid #ccc !important;
     box-shadow: none;
-    padding: 10px;
+    padding: 8px;
     margin-top: 1px;
-    height: 31px;
+    height: 29px;
 }
 
 #em-user-filters .chosen-container-single .chosen-single  {
@@ -889,9 +900,10 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info {
     box-shadow: none;
     border-radius:0;
-   border-right: 2px solid #eee;
+    border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
+    border-top:none;
     margin-bottom: 0px !important;
 }
 
@@ -914,9 +926,12 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 #em_filters .chosen-container-single .chosen-single span {
     margin-top: -3.5px;
-    font-style: italic;
     opacity: 0.4;
     font-size: 15px;
+}
+
+.em_filters_filedset .SumoSelect > .CaptionCont > span.placeholder {
+    font-style: normal !important;
 }
 
 #em-files-filters td,
@@ -971,8 +986,13 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .list-group-item {
-    padding: 6px 20px;
+    padding: 8px 20px;
 }
+
+.list-group-item strong {
+    font-weight: 500;
+}
+
 
 .list-item-notifications{
     display: flex;
@@ -1040,7 +1060,6 @@ div#em-assoc-files .panel-body {
 div#em-assoc-files h3.panel-title,
 div#em-last-open h3.panel-title {
     font-size: 1rem;
-    padding-top: 5px;
 }
 
 div#em-assoc-files .panel.panel-primary,
@@ -1086,7 +1105,7 @@ div#em-assoc-files .pull-right.btn-group {
 }
 
 div#em-synthesis .panel-body {
-    padding: 0 !important;
+    padding-left: 11px !important;
 }
 
 div#em-last-open .panel-body {
@@ -1140,18 +1159,19 @@ p {
 
 .navbar-brand{
     padding: 0;
-    height: 37px;
+    height: unset;
     font-size: 16px;
     font-weight: bold;
+    margin-left: 10px;
     /*margin-top: 5px;*/
 }
 .navbar-collapse.collapse{
     overflow: hidden;
 }
 .container-nav{
-    margin-top: 5px;
-    height: 25px;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
 .em-container-assocFiles > .em-container-assocFiles-heading span.label{
     overflow: hidden;
@@ -2197,6 +2217,8 @@ footer#g-footer {
 #em-last-open .list-group-item{
     background-color: #fafafa !important;
     border: 1px solid #fafafa;
+    padding-left: 11px;
+    justify-content: flex-start;
 }
 
 .list-group a.list-group-item.active, .list-group a.list-group-item.active:hover, .list-group a.list-group-item.active:focus {
@@ -2247,7 +2269,7 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
     font-size: 19px !important;
     border-radius: 4px !important;
-    padding-top: 0px;
+    padding: unset !important;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
@@ -2302,15 +2324,6 @@ div#em-assoc-files .panel > .panel-heading {
     padding: 11px;
 }
 
-.g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading h3 span, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading h3 span, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading h3 span, .g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading h3 span  {
-    margin-top: 10px;
-}
-
-.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.admissions-page .main-panel .panel-heading .btn-group.pull-right {
-    position: relative;
-    top: -29px;
-}
-
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {
     position: relative;
     top: 0px;
@@ -2335,7 +2348,11 @@ button#em-close-file {
     text-shadow: none;
     background-image: none;
     margin-top: -3px;
-    height: 36px;
+    height: 34px;
+}
+#em-close-file span{
+    color: white;
+    font-weight: bold;
 }
 
 button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
@@ -2398,7 +2415,9 @@ table#groups-table a:hover {
 /* MENU ACTIONS */
 .navbar.navbar-inverse {
     border-radius: 0;
-    padding: 10px;
+    padding: 8px 7px;
+    height: 40px !important;
+    min-height: auto !important;
 }
 
 .em-cell a:focus {

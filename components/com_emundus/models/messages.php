@@ -1340,10 +1340,15 @@ class EmundusModelMessages extends JModelList {
                 $_profiles = array();
 
                 foreach($fnums as $fnum) {
-                    $profile = $_mProfiles->getProfileByStatus($fnum)['profile'];
+                    $fnumInfos = $_mFiles->getFnumInfos($fnum);
 
-                    if(!is_null($profile)) {
-                        $_profiles[] = $profile;
+                    //$profile = $_mProfiles->getProfileByStatus($fnum)['profile'];
+                    $profiles = $_mProfiles->getProfilesIDByCampaign([$fnumInfos['id']]);
+
+                    if(!is_null($profiles)) {
+                        foreach ($profiles as $profile) {
+                            $_profiles[] = $profile;
+                        }
                     }
                     else {
                         /// if profile is null, get default profile of campaign

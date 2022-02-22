@@ -77,6 +77,12 @@ $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
 
-<div id="em-addCampaign-vue" campaign="<?= $this->id ;?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" coordinatorAccess="<?= $coordinator_access ?>"></div>
+<div id="em-component-vue"
+     component="addcampaign"
+     campaign="<?= $this->id ;?>"
+     actualLanguage="<?= $actualLanguage ?>"
+     manyLanguages="<?= $many_languages ?>"
+     coordinatorAccess="<?= $coordinator_access ?>"
+></div>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

@@ -1,7 +1,7 @@
 export default {
     methods: {
         translate(key) {
-            return Joomla.JText._(key);
+            return key.length > 0 && Joomla.JText._(key) ? Joomla.JText._(key) : key;
         },
     },
 }

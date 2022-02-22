@@ -3,6 +3,7 @@
   --secondary-color: #12db42;
   --grey-color: #5e646e;
   --grey-bg-color: #f2f2f3;
+  --night-blue: #353544;
   --success-bg-color: #dff5e9;
   --success-color: #106949;
   --warning-bg-color: #fffbdb;
@@ -59,12 +60,6 @@
 }
 
 .vue-em-loader {
-  border: 5px solid #f3f3f4;
-  border-top: 5px solid var(--primary-color);
-  border-radius: 50%;
-  width: 70px;
-  height: 70px;
-  animation: spin 2s linear infinite;
   position: absolute !important;
   text-align: center;
   top: 50%;
@@ -72,6 +67,8 @@
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 9999px #cecece85;
   background: #cecece85;
+  width: 70px !important;
+  height: 70px !important;
 }
 
 body ::-webkit-scrollbar-track {

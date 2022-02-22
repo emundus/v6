@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="library" version="3.0" method="upgrade">
+    <name>LIB_MINIORANGESAMLPLUGIN_NAME</name>
+    <libraryname>miniorangesamlplugin</libraryname>
+    <author>miniOrange Security Software Pvt. Ltd.</author>
+	<authorEmail>info@xecurify.com</authorEmail>
+	<authorUrl>www.miniorange.com</authorUrl>
+    <creationDate>May 2017</creationDate>
+    <copyright>Copyright 2017 miniOrange. All Rights Reserved.</copyright>
+    <license>GNU General Public License version 3</license>
+    <version>6.5</version>
+    <description>LIB_MINIORANGESAMLPLUGIN_XML_DESCRIPTION</description>
+    <files>
+        <folder>utility</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.lib_miniorangesamlplugin.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.lib_miniorangesamlplugin.sys.ini</language>
+    </languages>
+</extension>

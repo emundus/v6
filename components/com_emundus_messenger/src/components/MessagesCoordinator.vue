@@ -22,7 +22,7 @@
         <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
       </transition>
       <div class="messages__bottom-input">
-        <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" v-model="message" :placeholder="translations.writeMessage" @keyup.enter.exact.prevent="sendMessage($event)"/>
+        <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" v-model="message" :placeholder="translations.writeMessage" @keydown.enter.exact.prevent="sendMessage($event)"/>
       </div>
       <div class="messages__bottom-input-actions">
         <div class="messages__actions_bar">
@@ -128,7 +128,7 @@ export default {
         this.$refs.attachment.sendMessage(this.message);
         this.message = '';
       } else {
-        if (this.message !== '') {
+        if (this.message.trim() !== '') {
           axios({
             method: "post",
             url:
@@ -195,8 +195,9 @@ export default {
   created(){
     if(typeof this.fnum != 'undefined'){
       this.fileSelected = this.fnum;
+      this.getMessagesByFnum();
       setInterval(() => {
-        this.getMessagesByFnum(false);
+        this.getMessagesByFnum(false, false);
       },20000);
     }
   },

@@ -836,7 +836,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                 ];
                 $m_emails->logEmail($log);
                 // Log the email in the eMundus logging system.
-                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+                $logsParams = array('created' => [$subject]);
+                EmundusModelLogs::log($user->id, $fnum->applicant_id, $fnum->fnum, 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             // Due to mailtrap now limiting emails sent to fast, we add a long sleep.
@@ -985,7 +986,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 				];
 				$m_emails->logEmail($log);
 				// Log the email in the eMundus logging system.
-				EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+                $logsParams = array('created' => [$subject]);
+				EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 			}
 
 		}
@@ -1194,7 +1196,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    $m_emails->logEmail($log);
 
 		    // Log the email in the eMundus logging system.
-		    EmundusModelLogs::log($user->id, $fnum['applicant_id'], $fnum['fnum'], 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+            $logsParams = array('created' => [$subject]);
+		    EmundusModelLogs::log($user->id, $fnum['applicant_id'], $fnum['fnum'], 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
 		    return true;
 	    }
@@ -1238,12 +1241,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mail_from_name = $mail_from_sys_name;
 		}
 
-		// Set sender
-		$sender = [
-			$mail_from_address,
-			$mail_from_name
-		];
-
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
 		} else {
@@ -1261,6 +1258,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         if($user_id != null) {
             $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
             $post = $m_email->setTags($user_id, $post, null, $password);
+
+            $mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
+		    $mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
         } else {
             // Handle [] in post keys.
             $keys = [];
@@ -1268,7 +1268,6 @@ class EmundusControllerMessages extends JControllerLegacy {
                 $keys[] = '/\['.$key.'\]/';
             }
         }
-
 
 		// Tags are replaced with their corresponding values using the PHP preg_replace function.
         if($user_id != null) {
@@ -1291,6 +1290,12 @@ class EmundusControllerMessages extends JControllerLegacy {
         if($fnum != null) {
             $body = $m_email->setTagsFabrik($body, array($fnum));
         }
+
+        // Set sender
+		$sender = [
+			$mail_from_address,
+			$mail_from_name
+		];
 
 		// Configure email sender
 		$mailer = JFactory::getMailer();

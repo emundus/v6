@@ -6,7 +6,7 @@
           transition="nice-modal-fade"
           :adaptive="true"
           height="auto"
-          width="45%"
+          width="60%"
           :scrollable="true"
           :delay="100"
           :clickToClose="true"
@@ -26,7 +26,6 @@
                 </div>
               </div>
               <div></div>
-              <AttachDocument :user="user" :fnum="file.fnum" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage"/>
             </div>
           </div>
 
@@ -57,9 +56,12 @@
                   </div>
                 </div>
               </div>
+              <transition :name="'slide-up'" type="transition">
+               <AttachDocument :user="user" :fnum="fileSelected" v-if="attachOpen" :applicant="true" @pushAttachmentMessage="pushAttachmentMessage" ref="attachment"/>
+              </transition>
             </div>
             <div class="messages__bottom-input">
-              <textarea type="text" class="messages__input_text" rows="1" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keyup.enter.exact.prevent="sendMessage($event)"/>
+              <textarea type="text" class="messages__input_text" rows="1" :disabled="send_progress" spellcheck="true" :placeholder="translations.writeMessage" v-model="message" @keydown.enter.exact.prevent="sendMessage($event)"/>
             </div>
             <div class="messages__bottom-input-actions">
               <div class="messages__actions_bar">
@@ -111,6 +113,9 @@ export default {
       loading: false,
       interval: 0,
       showDate: 0,
+      attachOpen: false,
+      send_progress: false,
+
       translations:{
         messages: Joomla.JText._("COM_EMUNDUS_MESSENGER_TITLE"),
         send: Joomla.JText._("COM_EMUNDUS_MESSENGER_SEND"),
@@ -188,7 +193,8 @@ export default {
       if(typeof e != 'undefined') {
         e.stopImmediatePropagation();
       }
-      if(this.message !== '') {
+      if(this.message.trim() !== '' && !this.send_progress) {
+        this.send_progress = true;
         axios({
           method: "post",
           url:
@@ -202,6 +208,7 @@ export default {
           })
         }).then(response => {
           this.message = '';
+          this.send_progress = false;
           this.pushToDatesArray(response.data);
           this.scrollToBottom();
         });
@@ -256,13 +263,20 @@ export default {
     },
 
     attachDocument(){
-      this.$modal.show('attach_documents' + this.fileSelected);
+      this.attachOpen = !this.attachOpen;
+      this.scrollToBottom();
+      setTimeout(() => {
+        if(this.attachOpen){
+          this.$refs.attachment.getTypesByCampaign();
+        }
+      },500);
     },
 
     pushAttachmentMessage(message){
-      this.$modal.hide('attach_documents' + this.fileSelected);
+      //this.$modal.hide('attach_documents' + this.fileSelected);
       this.pushToDatesArray(message);
       this.scrollToBottom();
+      this.attachOpen = !this.attachOpen;
     }
   },
 

@@ -8,7 +8,7 @@
           <textarea
               name="description"
               type="text"
-              v-model="attachment.description"
+              v-model="attachmentDescription"
               :disabled="!canUpdate"
           >
 					</textarea>
@@ -17,9 +17,9 @@
         <div 
           class="input-group valid-state"
           :class="{
-			    	success: attachment.is_validated == 1,
-			    	warning: attachment.is_validated == 2,
-			    	error: attachment.is_validated == 0,
+			    	success: attachmentIsValidated == 1,
+			    	warning: attachmentIsValidated == 2,
+			    	error: attachmentIsValidated == 0,
 			    }"
         >
           <label for="status">{{
@@ -27,15 +27,16 @@
             }}</label>
           <select
               name="status"
-              v-model="attachment.is_validated"
+              v-model="attachmentIsValidated"
+              @change="updateAttachmentStatus"
               :disabled="!canUpdate"
           >
-            <option value="1">{{ translate("VALID") }}</option>
-            <option value="0">{{ translate("INVALID") }}</option>
-            <option value="2">
+            <option value=1>{{ translate("VALID") }}</option>
+            <option value=0>{{ translate("INVALID") }}</option>
+            <option value=2>
               {{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
             </option>
-            <option value="-2">
+            <option value=-2>
               {{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
             </option>
           </select>
@@ -101,7 +102,7 @@
       </div>
     </div>
     <div class="actions">
-      <button v-if="canUpdate" @click="saveChanges" class="btn-primary-vue">
+      <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
         {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
       </button>
     </div>
@@ -131,6 +132,10 @@ export default {
       canUpdate: false,
       error: false,
       errorMessage: "",
+      attachmentIsValidated: "-2",
+      attachmentCanBeViewed: false,
+      attachmentCanBeDeleted: false,
+      attachmentDescription: "",
     };
   },
   mounted() {
@@ -139,17 +144,26 @@ export default {
         : false;
     this.attachment = this.$store.state.attachment.selectedAttachment;
     this.categories = this.$store.state.attachment.categories;
+
+    this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
+    this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
+    this.attachmentDescription = this.attachment.description;
+    this.attachmentIsValidated = this.attachment.is_validated;
   },
   methods: {
     async saveChanges() {
       let formData = new FormData();
+
+      const canBeViewed = this.attachmentCanBeViewed ? "1" : "0";
+      const canBeDeleted = this.attachmentCanBeDeleted ? "1" : "0";
+
       formData.append("fnum", this.fnum);
       formData.append("user", this.$store.state.user.currentUser);
       formData.append("id", this.attachment.aid);
-      formData.append("description", this.attachment.description);
-      formData.append("is_validated", this.attachment.is_validated);
-      formData.append("can_be_viewed", this.attachment.can_be_viewed);
-      formData.append("can_be_deleted", this.attachment.can_be_deleted);
+      formData.append("description", this.attachmentDescription);
+      formData.append("is_validated", this.attachmentIsValidated);
+      formData.append("can_be_viewed", canBeViewed);
+      formData.append("can_be_deleted", canBeDeleted);
 
       if (this.file) {
         formData.append("file", this.file);
@@ -159,6 +173,10 @@ export default {
 
       if (response.status.update) {
         this.attachment.modified_by = this.$store.state.user.currentUser;
+        this.attachment.description = this.attachmentDescription;
+        this.attachment.is_validated = this.attachmentIsValidated;
+        this.attachment.can_be_viewed = this.attachmentCanBeViewed;
+        this.attachment.can_be_deleted = this.attachmentCanBeDeleted;
 
         this.$store.dispatch("attachment/updateAttachmentOfFnum", {
           fnum: this.fnum,
@@ -187,6 +205,9 @@ export default {
     updateFile(event) {
       this.file = event.target.files[0];
     },
+    updateAttachmentStatus(event) {
+      this.attachmentIsValidated = event.target.value;
+    },
     showError(error) {
       this.error = true;
       this.errorMessage = error;
@@ -206,22 +227,6 @@ export default {
       }
 
       return allowed_type;
-    },
-    attachmentCanBeViewed: {
-      get: function () {
-        return this.attachment.can_be_viewed == "1";
-      },
-      set: function (value) {
-        this.attachment.can_be_viewed = value ? "1" : "0";
-      },
-    },
-    attachmentCanBeDeleted: {
-      get: function () {
-        return this.attachment.can_be_deleted == "1";
-      },
-      set: function (value) {
-        this.attachment.can_be_deleted = value ? "1" : "0";
-      },
     },
   },
   watch: {
@@ -334,10 +339,6 @@ export default {
     button {
       transition: all 0.3s;
       padding: 8px 12px;
-
-      &:last-of-type {
-        margin-left: 10px;
-      }
     }
   }
 
@@ -346,6 +347,10 @@ export default {
 
     display: flex;
     flex-direction: column;
+
+    [type="checkbox"] {
+      width: fit-content;
+    }
   }
 
 	.valid-state {

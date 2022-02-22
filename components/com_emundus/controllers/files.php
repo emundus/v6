@@ -496,17 +496,17 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $dispatcher->trigger('callEventHandler', ['onBeforeTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
 
-        $tagged = $m_files->getTaggedFile($tag);
+        /*$tagged = $m_files->getTaggedFile($tag);
         $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
 
-        $validFnums = array_diff($validFnums, $tagged_fnums);
+        $validFnums = array_diff($validFnums, $tagged_fnums);*/
         $res = $m_files->tagFile($validFnums, $tag);
 
         if ($res) {
             $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
         }
 
-        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $tagged)));
+        echo json_encode((object)(array('status' => $res, 'msg' => JText::_('TAG_SUCCESS'), 'tagged' => $validFnums)));
         exit;
     }
 
@@ -656,6 +656,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 // We're getting the first link in the user's menu that's from com_emundus, which is PROBABLY a files/evaluation view, but this does not guarantee it.
+                /* this methode does not word at all, it get a random link from invited evaluator
                 $index = 0;
                 foreach ($items as $k => $item) {
                     if ($item->component === 'com_emundus') {
@@ -669,10 +670,11 @@ class EmundusControllerFiles extends JControllerLegacy
                 } else {
                     $userLink = $items[$index]->link.'&Itemid='.$items[0]->id;
                 }
-
+                */
                 $fnumList = '<ul>';
                 foreach ($fnums as $fnum) {
-                    $fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    //$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    $fnumList .= '<li><a href="'.JURI::base().'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
                 }
                 $fnumList .= '</ul>';
 
@@ -849,15 +851,10 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
 
-                $row = array('applicant_id' => $fnum['applicant_id'],
-                    'user_id' => $this->_user->id,
-                    'reason' => JText::_('STATUS'),
-                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
-                    'fnum' => $fnum['fnum'],
-                    'status_from' => $fnum['step'],
-                    'status_to' => $state
-                );
-                $m_application->addComment($row);
+                // Log the update
+                $logsParams = array('updated' => []);
+                array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
+                EmundusModelLogs::log($this->_user->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             //*********************************************************************
@@ -3994,18 +3991,23 @@ class EmundusControllerFiles extends JControllerLegacy
         $adm = $m_adm->getGroupsAdmissionByProgramme($code);
         $adm .= $m_adm->getGroupsApplicantAdmissionByProgramme($code);
 
+        $hasAccessForm = EmundusHelperAccess::asAccessAction(1,  'r', $user_id);
         $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user_id);
         $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
         $hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user_id);
         $hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user_id);
         $hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
+        $showform = 0;
         $showatt = 0;
         $showeval = 0;
         $showdec  = 0;
         $showadm  = 0;
         $showtag  =0;
 
+        if ($hasAccessForm) {
+            $showform = 1;
+        }
         if ($hasAccessAtt) {
             $showatt = 1;
         }
@@ -4022,7 +4024,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $showtag = 1;
         }
 
-        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag)));
+        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag, 'form' => $showform)));
         exit;
 
     }
@@ -4119,7 +4121,8 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 $sessionCity = !empty($session['city']) ?' à '.ucfirst(str_replace(' cedex','',mb_strtolower($session['city']))) : ' '.$session['location_title'];
-                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';            }
+                $sessions .= $sessionCity.' : '.$session['price'].' € '.(!empty($session['tax_rate'])?'HT':'net de taxe').'</li>';
+            }
         }
         $sessions .= '</ul>';
 
@@ -4353,12 +4356,63 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+    // Get actions on fnum with offset
+    public function getactionsonfnum() {
+        $jinput = JFactory::getApplication()->input;
+        $user = JFactory::getUser()->id;
+        $fnum = $jinput->post->getString('fnum');
+        $offset = $jinput->post->getInt('offset');
+        $fnumErrorList = [];
+
+        if (EmundusHelperAccess::asAccessAction(37, 'r', $user, $fnum)) {
+            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $m_logs = new EmundusModelLogs;
+
+            $res = $m_logs->getActionsOnFnum($fnum, null, null, null, $offset);
+            $details = [];
+
+            if (empty($res)) {
+                $fnumErrorList[] = $fnum;
+            } else {
+                foreach ($res as $log) {
+                    $details[] = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
+                }
+            }
+        } else {
+            $fnumErrorList[] = $fnum;
+        }
+
+        if (empty($fnumErrorList)) {
+            echo json_encode((object)(array('status' => true, 'res' => $res, 'details' => $details)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('ERROR'). implode(', ', $fnumErrorList))));
+        }
+        exit;
+    }
+
+
     public function getattachmentcategories()
     {
         $m_files = $this->getModel('Files');
         $categories = $m_files->getAttachmentCategories();
 
         echo json_encode((array('status' => true, 'categories' => $categories)));
+        exit;
+    }
+
+    public function getattachmentprogress()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->get->getString('fnum', '');
+
+        if (!empty($fnum)) {
+            $m_files = $this->getModel('Files');
+            $progress = $m_files->getAttachmentProgress(array($fnum));
+            echo json_encode((array('status' => true, 'progress' => $progress)));
+            exit;
+        }
+
+        echo json_encode((array('status' => false, 'msg' => 'missing fnum')));
         exit;
     }
 }
