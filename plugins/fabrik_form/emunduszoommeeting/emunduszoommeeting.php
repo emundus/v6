@@ -276,7 +276,12 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $post['ZOOM_SESSION_URL'] = '<a href="' . $start_url . '" target="_blank"> Session de Zoom </a>';
 
             # add list of evaluators to $post
-            $post['ZOOM_SESSION_JURY'] = '';
+            $post['ZOOM_SESSION_JURY'] = '<ul>';
+
+            # grab all evaluator of this Zoom meeting
+            foreach($evaluators as $eval) { $post['ZOOM_SESSION_JURY'] .= '<li>' . $eval->name . ' (' . $eval->email . ')</li>'; }
+
+            $post['ZOOM_SESSION_JURY'] .= '</ul>';
 
             # call to method 'sendEmailNoFnum'
             $cMessages->sendEmailNoFnum($recipient->email, $email_template, $post, null ,array(), null);
@@ -292,6 +297,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
             # add list of evaluators to $post
             $post['ZOOM_SESSION_JURY'] = '';
+
+            $post['ZOOM_SESSION_PROFILE'] = JText::_("ZOOM_SESSION_PARTICIPANT_PROFILE");
 
             # call to method 'sendEmailNoFnum'
             $cMessages->sendEmailNoFnum($evaluator->email, $email_template, $post, null ,array(), null);
