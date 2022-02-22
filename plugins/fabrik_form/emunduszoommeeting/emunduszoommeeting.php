@@ -155,12 +155,13 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         # if meeting id (in db, not in Zoom) and meeting session do not exist, call endpoint to generate the new one
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
-            $send_first_email_flag = true;
             $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
 
             $httpCode = $zoom->responseCode();
 
             if($httpCode == 201) {
+                $send_first_email_flag = true;
+
                 # get last insert id
                 try {
                     $getLastIdSql = "SELECT MAX(id) FROM jos_emundus_jury";
@@ -178,9 +179,17 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                                 ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
                                                                     ", user = "                 . $db->quote($creator->id) . 
                                                                         " WHERE #__emundus_jury.id = " . $lid;
-                    // var_dump($updateSql);die;
                     $db->setQuery($updateSql);
                     $db->execute();
+
+                    # set email body (firstemail)
+                    $post = [
+                        'ZOOM_SESSION_NAME' => 'P@$$sword123',
+                        'ZOOM_SESSION_START_TIME' => 'Test-Zoom-CELSA',
+                        'ZOOM_SESSION_URL' => 'Zoom Session Acces uRL',
+                        'ZOOM_SESSION_JURY' => '123456'
+                    ];
+
                 } catch(Exception $e) {
                     JLog::add('Create Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                 }
@@ -193,8 +202,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             if($zoom->responseCode() != 204) {
                 $zoom->requestErrors();
             } else {
-                $send_first_email_flag = false;
-
                 # be careful, each time the meeting room is updated, the start_url / join_url / registration / password / encrypted_password will be updated too. So, we need to get again the meeting by calling
                 $response = $zoom->doRequest('GET', '/meetings/' . $_POST['jos_emundus_jury___meeting_session'], array(), array(), "");
 
@@ -214,12 +221,30 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         $db->setQuery($updateSql);
                         $db->execute();
+
+                        $send_first_email_flag = false;
+
+                        $post = [
+                            'ZOOM_SESSION_NAME' => 'P@$$sword123---update',
+                            'ZOOM_SESSION_START_TIME' => 'Test-Zoom-CELSA---update',
+                            'ZOOM_SESSION_URL' => 'Zoom Session Acces uRL---update',
+                            'ZOOM_SESSION_JURY' => '123456---update'
+                        ];
                     } catch(Exception $e) {
                         JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                     }
                 }
             }
         }
+
+        # send email # call the 'messages' controllers
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+        $cMessages = new EmundusControllerMessages;
+        
+        #echo '<pre>'; var_dump($post); echo '</pre>'; die;
+
+        # call to method 'sendEmailNoFnum'
+        $cMessages->sendEmailNoFnum('duy.tran@emundus.fr', 116, $post, null,array(), null);
     }
 
     /**
