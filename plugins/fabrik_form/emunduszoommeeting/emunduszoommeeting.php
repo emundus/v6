@@ -31,7 +31,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
      */
     public function onAfterProcess() {
         # get the creator
-        $user = JFactory::getUser();
+        $creator = JFactory::getUser();
 
         # read and parse json template file
         $route = JPATH_BASE.'/plugins/fabrik_form/emunduszoommeeting/api_templates' . DS;
@@ -89,33 +89,20 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             if($response['code'] == 1005) {
                 # User already exist :: update the user settings except the firstname, lastname, email
 
-                # find user id (Zoom) from $uzId
-                $getUserSql = "select * from data_referentiel_zoom_token where data_referentiel_zoom_token.user = " . $uzId;
+                # find the president email
+                $getUserSql = "select distinct(email) from jos_users as ju left join jos_emundus_jury as jej on ju.id = jej.president where jej.president = " . $db->quote($uzId);
                 $db->setQuery($getUserSql);
-                $res = $db->loadObject();
+                $email = $db->loadResult();
 
-                # update this user # prepare the json data
-                $updateUserJson = json_encode(array("type" => current($_POST['jos_emundus_jury___user_type'])));
-                
-                # send request to update user endpoint
-                $response = $zoom->doRequest('PATCH', '/users/' . $res->zoom_id, array(), array(), $updateUserJson);
+                # get the user id by email
+                $response = $zoom->doRequest('GET', '/users/' . $email, array(), array(), '');
 
-                # reget the hostid
-                $host_id = $res->zoom_id;
-
-                // var_dump($host_id);die;
-
-                # update SQL
-                $updateUserSQL = "update data_referentiel_zoom_token SET user = " . $db->quote($res->user) . ", email = " . $db->quote($res->user) . " WHERE user = " . $db->quote($res->user);
-                $db->setQuery($updateUserSQL);
-                $db->execute();
+                $host_id = $response['id'];
             } else {
                 $zoom->requestErrors();
             }
         }
         
-        // var_dump($host_id);die;
-
         #right now, we have $host_id
 
         # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
@@ -147,7 +134,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
             $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
 
-            // echo '<pre>'; var_dump(json_encode($json, JSON_PRETTY_PRINT)); echo '</pre>'; die;
             $httpCode = $zoom->responseCode();
 
             if($httpCode == 201) {
@@ -166,8 +152,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                          " , registration_url = " . $db->quote($response['registration_url']) .
                                                             " , password = "        . $db->quote($response['password']) .
                                                                 ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
-                                                                    ", user = "                 . $db->quote($user) . 
+                                                                    ", user = "                 . $db->quote($creator->id) . 
                                                                         " WHERE #__emundus_jury.id = " . $lid;
+                    // var_dump($updateSql);die;
                     $db->setQuery($updateSql);
                     $db->execute();
                 } catch(Exception $e) {

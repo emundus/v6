@@ -1,25 +1,4 @@
 -- Zoom API SQL file --
--- Step 1 : Generate table "data_referentiel_zoom_token" --
-create table data_referentiel_zoom_token
-(
-    id              int auto_increment primary key,
-    date_time       datetime      null,
-    user            int           not null,
-    email           int           not null,
-    zoom_id         mediumtext    null,
-    constraint data_referentiel_zoom_token_email_uindex
-        unique (email),
-    constraint data_referentiel_zoom_token_user_uindex
-        unique (user),
-    constraint data_referentiel_zoom_token___fk1
-        foreign key (user) references jos_users (id)
-            on update cascade on delete cascade,
-    constraint data_referentiel_zoom_token___fk2
-        foreign key (email) references jos_users (id)
-            on update cascade on delete cascade
-);
-
--- END OF PART 1 ---
 -- Step 5 : Create table "jos_emundus_jury"
 create table jos_emundus_jury
 (
