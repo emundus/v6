@@ -154,6 +154,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
             $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
 
+//            echo '<pre>'; var_dump($response); echo '</pre>'; die;
+            
             $httpCode = $zoom->responseCode();
 
             if($httpCode == 201) {
@@ -180,12 +182,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     $db->setQuery($updateSql);
                     $db->execute();
 
-                    # set email body (firstemail)
-                    $post = [
-                        'ZOOM_SESSION_NAME' => $response['topic'],
-                        'ZOOM_SESSION_START_TIME' => $response['start_time']
-                    ];
-
                     # get jos_emundus_jury.id
                     $jid = $lid;
 
@@ -195,8 +191,12 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     # get the join_url from $response
                     $join_url = $response['join_url'];
 
-                    # get the date_time from table
-                    $created_at = date('Y-m-d H:i:s');
+                    # set email body (creation)
+                    $post = [
+                        'ZOOM_SESSION_NAME' => $response['topic'],
+                        'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),       # convert UTC t
+                        'ZOOM_SESSION_UPDATE_TIME' => date('Y-m-d H:i:s')
+                    ];
                 } catch(Exception $e) {
                     JLog::add('Create Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                 }
@@ -232,11 +232,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         $send_first_email_flag = false;
 
-                        $post = [
-                            'ZOOM_SESSION_NAME' => $response['topic'],
-                            'ZOOM_SESSION_START_TIME' => $response['start_time']
-                        ];
-
                         $jid = $_POST['jos_emundus_jury___id'];
 
                         # get the start_url from $response
@@ -245,10 +240,12 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                         # get the join_url from $response
                         $join_url = $response['join_url'];
 
-                        # get created_at from $response
-                        $created_at = date('Y-m-d H:i:s');
-                        
-//                        echo '<pre>'; var_dump($_POST); echo '</pre>'; die;
+                        # set email content (update)
+                        $post = [
+                            'ZOOM_SESSION_NAME' => $response['topic'],
+                            'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),
+                            'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s');
+                        ];
                     } catch(Exception $e) {
                         JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                     }
@@ -282,17 +279,13 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $post['ZOOM_SESSION_JURY'] = '<ul>';
 
             # grab all evaluator of this Zoom meeting
-            foreach ($evaluators as $eval) {
-                $post['ZOOM_SESSION_JURY'] .= '<li>' . $eval->name . '</li>';
-            }
+            foreach ($evaluators as $eval) { $post['ZOOM_SESSION_JURY'] .= '<li>' . $eval->name . '</li>'; }
+
         } else {
             $post['ZOOM_SESSION_JURY'] = '<p style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</p>";
         }
 
         $post['ZOOM_SESSION_JURY'] .= '</ul>';
-
-        # add CREATED_AT to $post
-        $post['ZOOM_SESSION_UPDATE_TIME'] = $created_at;
 
         # send email to Coordinator + Host with start_url ✅ ✅ ✅
         foreach ($raws as $recipient) {
