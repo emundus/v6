@@ -29,5 +29,20 @@ defined('_JEXEC') or die;
                     "<span>Version <?php echo trim($file_version) ?></span>",
             }
         )
+
+        document.addEventListener("click", function(evt) {
+            let popover = document.getElementById('mod_emundus_help'),
+                targetEl = evt.target; // clicked element
+            do {
+                if(targetEl === popover) {
+                    return;
+                }
+                // Go up the DOM
+                targetEl = targetEl.parentNode;
+            } while (targetEl);
+            if(document.querySelector('#mod_emundus_help .popover') != null) {
+                jQuery('[data-toggle="popover"]').click();
+            }
+        });
     })
 </script>

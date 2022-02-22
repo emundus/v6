@@ -1,10 +1,12 @@
 #mod_emundus_help .popover {
+    font-family: unset !important;
     position: fixed !important;
     padding: 0;
+    margin-top: 0 !important;
 }
 
 #mod_emundus_help .popover.top{
-    left: calc(100% - 170px) !important;
+    left: calc(100% - 200px) !important;
 }
 
 #mod_emundus_help .popover-content{
@@ -12,6 +14,10 @@
     flex-direction: column;
     width: max-content;
     padding: 0;
+}
+
+#mod_emundus_help .popover-content .material-icons{
+    font-size: 18px !important;
 }
 
 #mod_emundus_help hr{
@@ -31,13 +37,14 @@
 #mod_emundus_help .popover-content a:hover{
     background-color: #E3E5E8;
     cursor: pointer;
+    text-decoration: unset;
 }
 
 #mod_emundus_help .popover-content a:focus{
     text-decoration: unset;
 }
 
-#mod_emundus_help .popover-content a,span{
+#mod_emundus_help .popover-content a, #mod_emundus_help .popover-content span{
     padding: 8px 12px;
     color: black;
 }
@@ -49,15 +56,16 @@
 #mod_emundus_help .mod_emundus_help__popover{
     z-index: 20;
     position: fixed;
-    right: 10px;
-    bottom: 10px;
+    right: 30px;
+    bottom: 70px;
     cursor: pointer;
 }
 
 .mod_emundus_help__popover .material-icons{
     font-size: 24px !important;
+    color: rgb(94, 100, 110);
 }
 
 .mod_emundus_help__popover .material-icons:hover{
-    color: #2B313B;
+    color: #2B313B !important;
 }

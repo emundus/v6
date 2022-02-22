@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_help/style/mod_emundus_help.css" );
+$document->addStyleSheet('https://fonts.googleapis.com/icon?family=Material+Icons' );
 
 // Get release version
 $file_version = file_get_contents('version.txt');

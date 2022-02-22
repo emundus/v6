@@ -11,7 +11,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>brice.hubinet@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>6.0</version>
+	<version>1.0</version>
 	<description>MOD_EMUNDUS_HELP_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_emundus_help">mod_emundus_help.php</filename>
