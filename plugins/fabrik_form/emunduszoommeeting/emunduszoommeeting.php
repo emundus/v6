@@ -14,6 +14,11 @@ require_once "ZoomAPIWrapper.php";
 * @since       3.0
 */
 
+$GLOBAL_ZOOM_SESSION = array(
+    'NAME' => '',
+    'START_TIME' => ''
+);
+
 class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
     public function getParam($pname, $default = '') {
@@ -36,11 +41,44 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
     }
 
     /**
+        * onBeforeProcess ==> get the previous data
+    */
+    public function onBeforeLoad() {
+        $rowId = $this->getModel()->getRowId();
+
+        if(empty($rowId)) {
+            return false;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        # get the previous data of ZOOM meeting
+        $getPreviousData = "SELECT * FROM jos_emundus_jury AS jej WHERE jej.id = " . $db->quote($rowId);
+        $db->setQuery($getPreviousData);
+        $raw = $db->loadObject();
+
+        # create session
+        $session = JFactory::getSession();
+        $zoomSession = new stdClass();
+
+        $zoomSession->ZOOM_SESSION_NAME = $raw->topic;
+        $zoomSession->ZOOM_SESSION_START_TIME = $raw->start_time_;
+
+        # set "emunusZoomSession" session
+        $session->set('emundusZoomSession', $zoomSession);
+    }
+    
+
+    /**
         * onAfterProcess ==> create new Zoom meeting
         * onAfterProcess ==> update an existing Zoom meeting
         * creator: eMundus
-     */
+    */
     public function onAfterProcess() {
+        # get emundusZoomSession session
+        $zoomSession = JFactory::getSession()->get('emundusZoomSession');
+
         # this flag (true,false) indicates which email type will be sent (creation, update)
         $send_first_email_flag = false;
 
@@ -123,8 +161,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             }
         }
 
-//        echo '<pre>'; var_dump($host_id); echo '</pre>'; die;
-        
         #right now, we have $host_id
 
         # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
@@ -243,8 +279,12 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         # set email content (update)
                         $post = [
+                            'ZOOM_SESSION_PREVIOUS_NAME' => $zoomSession->ZOOM_SESSION_NAME,
                             'ZOOM_SESSION_NAME' => $response['topic'],
+
+                            'ZOOM_SESSION_PREVIOUS_START_TIME' => $zoomSession->ZOOM_SESSION_START_TIME,
                             'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),   # convert UTC time to local time
+
                             'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s')
                         ];
                     } catch(Exception $e) {
