@@ -184,10 +184,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                     # set email body (firstemail)
                     $post = [
-                        'ZOOM_SESSION_NAME' => 'P@$$sword123',
-                        'ZOOM_SESSION_START_TIME' => 'Test-Zoom-CELSA',
-                        'ZOOM_SESSION_URL' => 'Zoom Session Acces uRL',
-                        'ZOOM_SESSION_JURY' => '123456'
+                        'ZOOM_SESSION_NAME' => $_POST['jos_emundus_jury___topic'],
+                        'ZOOM_SESSION_START_TIME' => $startTimeCELSA
                     ];
 
                 } catch(Exception $e) {
@@ -225,10 +223,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                         $send_first_email_flag = false;
 
                         $post = [
-                            'ZOOM_SESSION_NAME' => 'P@$$sword123---update',
-                            'ZOOM_SESSION_START_TIME' => 'Test-Zoom-CELSA---update',
-                            'ZOOM_SESSION_URL' => 'Zoom Session Acces uRL---update',
-                            'ZOOM_SESSION_JURY' => '123456---update'
+                            'ZOOM_SESSION_NAME' => $response['topic'],
+                            'ZOOM_SESSION_START_TIME' => $response['start_time']
                         ];
                     } catch(Exception $e) {
                         JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
@@ -240,11 +236,16 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # send email # call the 'messages' controllers
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
         $cMessages = new EmundusControllerMessages;
-        
-        #echo '<pre>'; var_dump($post); echo '</pre>'; die;
+
+        # select which email will be sent by $send_first_email_flag (true, false)
+        if ($send_first_email_flag === true) {
+            $email_template = $creationEmail;
+        } else {
+            $email_template = $updateEmail;
+        }
 
         # call to method 'sendEmailNoFnum'
-        $cMessages->sendEmailNoFnum('duy.tran@emundus.fr', 116, $post, null,array(), null);
+        $cMessages->sendEmailNoFnum('duy.tran@emundus.fr', $email_template, $post, null,array(), null);
     }
 
     /**
