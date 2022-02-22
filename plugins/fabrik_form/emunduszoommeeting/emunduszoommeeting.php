@@ -184,8 +184,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                     # set email body (firstemail)
                     $post = [
-                        'ZOOM_SESSION_NAME' => $_POST['jos_emundus_jury___topic'],
-                        'ZOOM_SESSION_START_TIME' => $startTimeCELSA
+                        'ZOOM_SESSION_NAME' => $response['topic'],
+                        'ZOOM_SESSION_START_TIME' => $response['start_time']
                     ];
 
                 } catch(Exception $e) {
@@ -239,13 +239,13 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         # select which email will be sent by $send_first_email_flag (true, false)
         if ($send_first_email_flag === true) {
-            $email_template = $creationEmail;
+            $email_template = intval($creationEmail);
         } else {
-            $email_template = $updateEmail;
+            $email_template = intval($updateEmail);
         }
 
         # call to method 'sendEmailNoFnum'
-        $cMessages->sendEmailNoFnum('duy.tran@emundus.fr', $email_template, $post, null,array(), null);
+        # $cMessages->sendEmailNoFnum('duy.tran@emundus.fr', $email_template, $post, null,array(), null);
     }
 
     /**
