@@ -123,7 +123,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             }
         }
         
-        echo '<pre>'; var_dump($host_id); echo '</pre>'; die;
         #right now, we have $host_id
 
         # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
@@ -154,8 +153,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # if meeting id (in db, not in Zoom) and meeting session do not exist, call endpoint to generate the new one
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
             $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
-            
-//            echo '<pre>'; var_dump($response); echo '</pre>'; die;
 
             $httpCode = $zoom->responseCode();
 
