@@ -122,7 +122,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 $zoom->requestErrors();
             }
         }
-        
+
         #right now, we have $host_id
 
         # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
@@ -185,6 +185,14 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                         'ZOOM_SESSION_START_TIME' => $response['start_time']
                     ];
 
+                    # get jos_emundus_jury.id
+                    $jid = $lid;
+
+                    # get the start_url from $response
+                    $start_url = $response['start_url'];
+
+                    # get the join_url from $response
+                    $join_url = $response['join_url'];
                 } catch(Exception $e) {
                     JLog::add('Create Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                 }
@@ -223,6 +231,14 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                             'ZOOM_SESSION_NAME' => $response['topic'],
                             'ZOOM_SESSION_START_TIME' => $response['start_time']
                         ];
+
+                        $jid = $_POST['jos_emundus_jury___id'];
+
+                        # get the start_url from $response
+                        $start_url = $response['start_url'];
+
+                        # get the join_url from $response
+                        $join_url = $response['join_url'];
                     } catch(Exception $e) {
                         JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
                     }
@@ -241,8 +257,45 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $email_template = intval($updateEmail);
         }
 
-        # call to method 'sendEmailNoFnum'
-        # $cMessages->sendEmailNoFnum('duy.tran@emundus.fr', $email_template, $post, null,array(), null);
+        # get "creator" of Zoom meeting
+        $getCreatorSql = "select ju.email, ju.name from jos_users as ju left join jos_emundus_jury jej on ju.id = jej.user or ju.id = jej.president where jej.id = " . $db->quote($jid);
+        $db->setQuery($getCreatorSql);
+        $raws = $db->loadObjectList();
+
+        # get all evaluators of Zoom meeting
+        $getEvaluatorsSql = "select ju.email, ju.name from jos_users as ju left join jos_emundus_jury_repeat_jury as jejrj on ju.id = jejrj.user where jejrj.parent_id = " . $db->quote($jid);
+        $db->setQuery($getEvaluatorsSql);
+        $evaluators = $db->loadObjectList();
+
+        # send email to Coordinator + Host
+        foreach ($raws as $recipient) {
+            # add NAME to $post
+            $post['NAME'] = $recipient->name;
+
+            # add START_URL to $post
+            $post['ZOOM_SESSION_URL'] = '<a href="' . $start_url . '" target="_blank"> Session de Zoom </a>';
+
+            # add list of evaluators to $post
+            $post['ZOOM_SESSION_JURY'] = '';
+
+            # call to method 'sendEmailNoFnum'
+            $cMessages->sendEmailNoFnum($recipient->email, $email_template, $post, null ,array(), null);
+        }
+
+        # send email to all Evaluators
+        foreach ($evaluators as $evaluator) {
+            # add NAME to $post
+            $post['NAME'] = $evaluator->name;
+
+            # add START_URL to $post
+            $post['ZOOM_SESSION_URL'] = '<a href="' . $join_url . '" target="_blank"> Session de Zoom </a>';
+
+            # add list of evaluators to $post
+            $post['ZOOM_SESSION_JURY'] = '';
+
+            # call to method 'sendEmailNoFnum'
+            $cMessages->sendEmailNoFnum($evaluator->email, $email_template, $post, null ,array(), null);
+        }
     }
 
     /**
