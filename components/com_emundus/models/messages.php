@@ -1170,7 +1170,8 @@ class EmundusModelMessages extends JModelList {
 
                 /// get message template from attachment list
                 $query->clear()
-                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
+//                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
+                    ->select('distinct #__emundus_setup_emails.*')
                     ->from($db->quoteName('#__emundus_setup_emails'))
                     ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
                     ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
@@ -1182,29 +1183,18 @@ class EmundusModelMessages extends JModelList {
                 $uploads = array();
 
                 foreach($attachment_list as $key => $attach) {
+                    /* generate letters each time get instant message */
+                    $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
 
-                    $upload_files = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
+                    $upload_id = current($letter->files)['upload'];
+                    $upload_filename = current($letter->files)['url'] . current($letter->files)['filename'];
 
-                    /// $uploaded_files is not empty --> get this file
-                    if(!empty($upload_files)) {
-                        /// check this file exist on disk or not
-                        $file_path = EMUNDUS_PATH_ABS . $upload_files[0]->user_id . DS. $upload_files[0]->filename;
-                        if(file_exists($file_path)) {
-                            $uploads[] = array('is_existed' => true, 'id' => $upload_files[0]->id, 'value' => $upload_files[0]->value, 'label' => $upload_files[0]->lbl, 'dest' => JURI::base() . EMUNDUS_PATH_REL . $upload_files[0]->user_id . DS . $upload_files[0]->filename);
-                        } else {
-                            /// generate document
-                            $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
-                            $_generated_letter = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
-                            $uploads[] = array('is_existed' => true, 'id' => $_generated_letter[0]->id, 'value' => $_generated_letter[0]->value, 'label' => $_generated_letter[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $_generated_letter[0]->user_id . DS. $_generated_letter[0]->filename);
-                        }
-                    } else {
-                        /// if upload file does not exist --> generate this file
-                        //$letter = $_mEval->getLetterTemplateForFnum($fnum, [$attach]);
+                    $attachment_raw = $_mFile->getSetupAttachmentsById([$attach]);
 
-                        $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
-                        $_generated_letter = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
-                        $uploads[] = array('is_existed' => true, 'id' => $_generated_letter[0]->id, 'value' => $_generated_letter[0]->value, 'label' => $_generated_letter[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $_generated_letter[0]->user_id . DS. $_generated_letter[0]->filename);
-                    }
+                    $attachment_value = current($attachment_raw)['value'];
+                    $attachment_label = current($attachment_raw)['lbl'];
+
+                    $uploads[] = array('is_existed' => true, 'id' => $upload_id, 'value' => $attachment_value, 'label' => $attachment_label, 'dest' => $upload_filename);
                 }
 
                 /// get tags by email
@@ -1262,6 +1252,7 @@ class EmundusModelMessages extends JModelList {
                         $m_files->tagFile([$fnum_info['fnum']], [$tag->id]);
                     }
                 }
+                return true;
             }
         } else {
             return false;

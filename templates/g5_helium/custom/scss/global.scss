@@ -3712,6 +3712,17 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   /* MOBILE */
   @media all and (max-width: 479px) {
 
+    /* BURGER */
+
+    #g-navigation .g-main-nav {
+      margin-top: 50px;
+    }
+
+    .g-main-nav .g-standard {
+      display: none;
+    }
+
+
     .view-programme {
       #documents .single-campaign .below-content {
         width: 100%;
@@ -3914,9 +3925,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     /* BURGER */
     #g-page-surround .g-offcanvas-toggle {
       top: 20px !important;
-      position: fixed !important;
-      width: 100vw !important;
-      left: 86vw;
+      left: 5vw;
     }
 
     /* BURGER OUVERT */

@@ -191,9 +191,9 @@ class PlgFabrik_Cronemundusmessengernotify extends PlgFabrik_Cron {
                 if(empty($users_to_send)){
                     $query->clear()
                         ->select('distinct eu.user_id')
-                        ->from($db->quoteName('#__emundus_users_profiles','eup'))
-                        ->leftJoin($db->quoteName('#__emundus_users','eu').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
-                        ->where($db->quoteName('profile_id') . ' = 2');
+                        ->from($db->quoteName('#__emundus_users','eu'))
+                        ->leftJoin($db->quoteName('#__emundus_users_profiles','eup').' ON '.$db->quoteName('eu.user_id').' = '.$db->quoteName('eup.user_id'))
+                        ->where($db->quoteName('eup.profile_id') . ' = 2');
                     $db->setQuery($query);
                     $users_to_send = $db->loadColumn();
                 }

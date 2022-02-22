@@ -13,7 +13,7 @@ if (document.getElementById('em-notifications')) {
     render(h) {
       return h(Notifications, {
         props: {
-          user: this.$el.attributes.user.value,
+          user: Number(this.$el.attributes.user.value),
           fnum: this.$el.attributes.fnum.value,
         }
       });
