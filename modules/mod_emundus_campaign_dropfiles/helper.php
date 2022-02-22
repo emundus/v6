@@ -13,7 +13,8 @@ class modEmundusCampaignDropfilesHelper {
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
-        $id = JFactory::getApplication()->input->getInt('id', null);
+        $jinput = JFactory::getApplication()->input;
+        $id = $jinput->get('id') ? $jinput->getInt('id',null) : $jinput->getInt('cid',null);
         $groupUser = JFactory::getUser()->getAuthorisedGroups();
         $dateTime = new Date('now', 'UTC');
         $now = $dateTime->toSQL();
