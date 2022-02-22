@@ -123,6 +123,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             }
         }
 
+//        echo '<pre>'; var_dump($host_id); echo '</pre>'; die;
+        
         #right now, we have $host_id
 
         # --- BEGIN CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
@@ -153,8 +155,6 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # if meeting id (in db, not in Zoom) and meeting session do not exist, call endpoint to generate the new one
         if(empty($_POST['jos_emundus_jury___id']) and empty($_POST['jos_emundus_jury___meeting_session'])) {
             $response = $zoom->doRequest('POST', '/users/'. $host_id .'/meetings', array(), array(), json_encode($json, JSON_PRETTY_PRINT));
-
-//            echo '<pre>'; var_dump($response); echo '</pre>'; die;
             
             $httpCode = $zoom->responseCode();
 
@@ -163,9 +163,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                 # get last insert id
                 try {
-                    $getLastIdSql = "SELECT MAX(id), date_time FROM jos_emundus_jury";
+                    $getLastIdSql = "SELECT MAX(id) FROM jos_emundus_jury";
                     $db->setQuery($getLastIdSql);
-                    $lid = $db->loadObject();
+                    $lid = $db->loadResult();
 
                     # update missing fields to table "jos_emundus_jury"
                     $updateSql = "UPDATE #__emundus_jury 
@@ -178,7 +178,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                                 ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
                                                                     ", user = "                 . $db->quote($creator->id) .
                                                                         ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
-                                                                            " WHERE #__emundus_jury.id = " . $lid->id;
+                                                                            " WHERE #__emundus_jury.id = " . $lid;
+                    
                     $db->setQuery($updateSql);
                     $db->execute();
 
