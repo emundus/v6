@@ -194,7 +194,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     # set email body (creation)
                     $post = [
                         'ZOOM_SESSION_NAME' => $response['topic'],
-                        'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),       # convert UTC t
+                        'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),       # convert UTC time to local time
                         'ZOOM_SESSION_UPDATE_TIME' => date('Y-m-d H:i:s')
                     ];
                 } catch(Exception $e) {
@@ -243,8 +243,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                         # set email content (update)
                         $post = [
                             'ZOOM_SESSION_NAME' => $response['topic'],
-                            'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),
-                            'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s');
+                            'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),   # convert UTC time to local time
+                            'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s')
                         ];
                     } catch(Exception $e) {
                         JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
