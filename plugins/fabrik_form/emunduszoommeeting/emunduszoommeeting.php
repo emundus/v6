@@ -100,11 +100,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         # HTTP status = 201 :: User created
         if($zoom->responseCode() == 201) {
-            $host_id = $response['id'];
-            # create new zoom host
-            $insertSql = "INSERT INTO data_referentiel_zoom_token (user,email,zoom_id) VALUES (" . $db->quote($host) . ', ' . $db->quote($host) . ', ' . $db->quote($response['id']) . ')';
-            $db->setQuery($insertSql);
-            $db->execute();
+            # NOTHING
         } else {
             $uzId = $host;
             
