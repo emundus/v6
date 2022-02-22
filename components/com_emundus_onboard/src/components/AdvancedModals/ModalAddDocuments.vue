@@ -67,14 +67,8 @@
         <div class="form-group">
           <label for="description">{{ translations.Description }} :</label>
           <div class="input-can-translate">
-
-            <editor :height="'20em'" :text="form.description[langue]" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.description[langue]"></editor>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.description}"
-                    v-if="manyLanguages !== '0'" type="button"
-                    @click="translate.description = !translate.description"></button>
+            <editor :height="'20em'" :text="form.description[langue]" :lang="langue" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.description[langue]"></editor>
           </div>
-
-          <translation :label="form.description" :actualLanguage="langue" v-if="translate.description" :inputType="'wysiwygs'"></translation>
         </div>
         <div class="form-group">
           <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
