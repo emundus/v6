@@ -644,16 +644,20 @@ class EmundusControllerApplication extends JControllerLegacy
     public function getattachmentsbyfnum()
     {
         $m_application = $this->getModel('Application');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+        $m_files = new EmundusModelFiles;
 
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getVar('fnum', null);
 
+        $fnumInfos = $m_files->getFnumInfos($fnum);
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
         foreach($attachments as $key => $attachment)
         {
             // check if file is in server
-            if (!file_exists(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename)) {
+            if (!file_exists(EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS.$attachment->filename)) {
                 $attachment->existsOnServer = false;
             } else {
                 $attachment->existsOnServer = true;
