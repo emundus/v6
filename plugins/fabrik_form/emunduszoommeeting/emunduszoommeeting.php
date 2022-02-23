@@ -221,16 +221,17 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     # update missing fields to table "jos_emundus_jury"
                     $updateSql = "UPDATE #__emundus_jury 
                                         SET meeting_session = "     . $db->quote($response['id']) .
-                                            " , visio_link = "      . $db->quote($response['start_url']) .
-                                                " , duration = "        . $db->quote($response['duration']) .
-                                                    " , join_url = "        . $db->quote($response['join_url']) .
+                                            " , visio_link = "          . $db->quote($response['start_url']) .
+                                                " , duration = "            . $db->quote($response['duration']) .
+                                                    " , join_url = "            . $db->quote($response['join_url']) .
                                                          " , registration_url = " . $db->quote($response['registration_url']) .
                                                             " , password = "        . $db->quote($response['password']) .
                                                                 ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
                                                                     ", user = "                 . $db->quote($creator->id) .
                                                                         ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
                                                                             ", end_time_ = "             .$db->quote($_POST["jos_emundus_jury___end_time_"]['date']) .
-                                                                                " WHERE #__emundus_jury.id = " . $lid;
+                                                                                ", topic = "                . $db->quote($response['topic']) .
+                                                                                    " WHERE #__emundus_jury.id = " . $lid;
 
                     $db->setQuery($updateSql);
                     $db->execute();
