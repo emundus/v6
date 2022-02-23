@@ -3,11 +3,11 @@
       <div class="w-100">
 
         <!-- HEADER -->
-        <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2" style="margin-left: 10%" @click="menuHighlight = 0">
+        <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%" @click="menuHighlight = 0">
           <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
         </div>
         <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0 && !modal_ready" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
-        <h5 class="em-h5 em-m-24" v-else-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
+        <h5 class="em-h5 em-m-24" v-else-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
 
         <!--- MENU --->
         <transition name="slide-right">
@@ -24,8 +24,6 @@
         <transition name="fade">
           <editStyle
               v-if="menuHighlight === 1"
-              @LaunchLoading="updateLoading"
-              @StopLoading="updateLoading"
               ref="styling"
           ></editStyle>
 
@@ -35,28 +33,11 @@
               @resetMenuIndex="menuHighlight = 0"
           />
 
-          <editStatus
-              v-if="menuHighlight === 5"
-              @LaunchLoading="updateLoading"
-              @StopLoading="updateLoading"
-              ref="status"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></editStatus>
-
-          <editTags
-              v-if="menuHighlight === 6"
-              @LaunchLoading="updateLoading"
-              @StopLoading="updateLoading"
-              ref="tags"
-          ></editTags>
-
-          <edit-applicants
-              v-if="menuHighlight === 7"
-              @LaunchLoading="updateLoading"
-              @StopLoading="updateLoading"
-              ref="applicants"
-          ></edit-applicants>
+          <FilesTool
+              v-if="menuHighlight === 3"
+              v-show="modal_ready"
+              @resetMenuIndex="menuHighlight = 0"
+          />
 
           <TranslationTool
               v-if="menuHighlight === 9"
@@ -86,14 +67,13 @@
 </template>
 
 <script>
-import axios from "axios";
-import editStatus from "../components/Settings/editStatus";
-import editTags from "../components/Settings/editTags";
+import editStatus from "../components/Settings/FilesTool/editStatus";
+import editTags from "../components/Settings/FilesTool/editTags";
 import editStyle from "../components/Settings/editStyle";
 import editDatas from "../components/Settings/editDatas";
-import EditApplicants from "@/components/Settings/editApplicants";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 import ContentTool from "../components/Settings/Content/ContentTool";
+import FilesTool from "../components/Settings/FilesTool/FilesTool";
 
 const qs = require("qs");
 
@@ -101,9 +81,9 @@ export default {
   name: "globalSettings",
 
   components: {
+    FilesTool,
     ContentTool,
     TranslationTool,
-    EditApplicants,
     editStatus,
     editTags,
     editStyle,
@@ -137,22 +117,10 @@ export default {
         index: 2
       },
       {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STATUS",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STATUS_DESC",
-        icon: 'bookmark_border',
-        index: 5
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TAGS_DESC",
-        icon: 'label',
-        index: 6
-      },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_APPLICANTS_DESC",
-        icon: 'people',
-        index: 7
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL_DESC",
+        icon: 'source',
+        index: 3
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
@@ -164,105 +132,33 @@ export default {
     modal_ready: false
   }),
 
-  methods: {
-    updateStatus(status) {
-      this.updateLoading(true);
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatestatus',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          status: status
-        })
-      }).then(() => {
-        this.updateLoading(false);
-      });
-    },
-
-    updateTags(tags){
-      this.updateLoading(true);
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatetags',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          tags: tags
-        })
-      }).then(() => {
-        this.updateLoading(false);
-      });
-    },
-
-    updateFooter(content) {
-      this.updateLoading(true);
-      axios({
-        method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatefooter',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({
-          content: content
-        })
-      }).then(() => {
-        this.updateLoading(false);
-      });
-    },
-
-    saveCurrentPage() {
-      switch (this.menuHighlight) {
-        case 3:
-          this.updateFooter(this.$refs.footer.$data.form.content);
-          break;
-        case 4:
-          this.updateStatus(this.$refs.status.$data.status);
-          break;
-        case 5:
-          this.updateTags(this.$refs.tags.$data.tags);
-          break;
-        case 6:
-          this.updateLoading(true);
-          setTimeout(() => {
-            this.updateLoading(false);
-          },500);
-          break;
-      }
-    },
-
-    updateLoading(run) {
-      this.saving = run;
-      if(this.saving === false){
-        setTimeout(() => {
-          this.endSaving = true;
-        },500)
-      }
-      setTimeout(() => {
-        this.endSaving = false;
-      },3000);
-    }
-  },
-
   created() {
     if (this.actualLanguage == "en") {
       this.langue = 1;
     }
   },
 
+  methods: {},
+
   watch: {
     menuHighlight: function(value){
       this.modal_ready = false;
       setTimeout(() => {
-        if(value === 9){
-          this.$modal.show('translationTool');
-          this.modal_ready = true;
-        }
-        if(value === 2){
-          this.$modal.show('contentTool');
-          this.modal_ready = true;
+        switch (value){
+          case 2:
+            this.$modal.show('contentTool');
+            this.modal_ready = true;
+            break;
+          case 3:
+            this.$modal.show('filesTool');
+            this.modal_ready = true;
+            break;
+          case 9:
+            this.$modal.show('translationTool');
+            this.modal_ready = true;
+            break;
+          default:
+            break;
         }
       },500)
     }

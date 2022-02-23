@@ -93,6 +93,14 @@
   }
 }
 
+.em-editable-content{
+  caret-color: $main-500;
+  &:focus{
+    border: solid 1px $neutral-500;
+    border-radius: 5px;
+  }
+}
+
 
 // TOGGLE BUTTON //
 .em-switch {
@@ -434,6 +442,10 @@ input:focus + .em-slider {
 
 .em-p-16-0{
   padding: 16px 0;
+}
+
+.em-p-8-12{
+  padding: 8px 12px;
 }
 
 .em-p-12-16{
@@ -805,7 +817,7 @@ button.em-swal-cancel-button{
 }
 
 /** Vue Modal - Translation tool **/
-#translationTool,#contentTool {
+#translationTool,#contentTool,#filesTool {
   .v--modal-overlay {
     background: #0000002e !important;
     overflow-y: auto !important;

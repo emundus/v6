@@ -267,47 +267,67 @@ class EmundusonboardModelsettings extends JModelList {
      *
      * @since 1.0
      */
-    function updateStatus($status) {
+    function updateStatus($status,$label,$color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
-        $lang = JFactory::getLanguage();
-        $actualLanguage = substr($lang->getTag(), 0 , 2);
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
+        $m_translations = new EmundusModelTranslations;
+
+        $lang_to = $m_translations->getDefaultLanguage()->lang_code;
 
         $classes = $this->getColorClasses();
         $results = [];
 
         try {
-            foreach($status as $statu) {
-                $class = array_search($statu['class'], $classes);
+            $class = array_search($color, $classes);
 
-                $query->clear()
-                    ->update('#__falang_content')
-                    ->set($db->quoteName('value') . ' = ' . $db->quote($class))
-                    ->where(array(
-                        $db->quoteName('reference_id') . ' = ' . $db->quote($statu['step']),
-                        $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
-                        $db->quoteName('reference_field') . ' = ' . $db->quote('class'),
-                        $db->quoteName('language_id') . ' = 2'
-                    ));
-                $db->setQuery($query);
-                $results[] = $db->execute();
+            $query->clear()
+                ->update('#__falang_content')
+                ->set($db->quoteName('value') . ' = ' . $db->quote($class))
+                ->where(array(
+                    $db->quoteName('reference_id') . ' = ' . $db->quote($status),
+                    $db->quoteName('reference_table') . ' = ' . $db->quote('emundus_setup_status'),
+                    $db->quoteName('reference_field') . ' = ' . $db->quote('class'),
+                    $db->quoteName('language_id') . ' = 2'
+                ));
+            $db->setQuery($query);
+            $db->execute();
 
-                $results[] = $falang->updateFalang($statu['label'], $statu['step'], 'emundus_setup_status', 'value');
+            $results[] = $m_translations->updateFalangTranslation($label, $lang_to,'emundus_setup_status',$status,'value');
 
-                $query->clear()
-                    ->update('#__emundus_setup_status')
-                    ->set($db->quoteName('value') . ' = ' . $db->quote($statu['label'][$actualLanguage]))
-                    ->set($db->quoteName('class') . ' = ' . $db->quote($class))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($statu['id']));
-                $db->setQuery($query);
-                $results[] = $db->execute();
-            }
+            $query->clear()
+                ->update('#__emundus_setup_status')
+                ->set($db->quoteName('value') . ' = ' . $db->quote($label))
+                ->set($db->quoteName('class') . ' = ' . $db->quote($class))
+                ->where($db->quoteName('step') . ' = ' . $db->quote($status));
+            $db->setQuery($query);
+            $db->execute();
 
             return $results;
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/settings | Cannot update status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function updateStatusOrder($status){
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            foreach ($status as $order => $statu) {
+                $query->clear()
+                    ->update('#__emundus_setup_status')
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote($order))
+                    ->where($db->quoteName('step') . ' = ' . $db->quote($statu));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus_onboard/models/settings | Cannot update status order : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -352,26 +372,21 @@ class EmundusonboardModelsettings extends JModelList {
      *
      * @since 1.0
      */
-    function updateTags($tags) {
+    function updateTags($tag,$label,$color) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         $classes = $this->getColorClasses();
-        $results = [];
 
         try {
-            foreach ($tags as $tag) {
-                $class = array_search($tag['class'], $classes);
-                $query->clear()
-                    ->update('#__emundus_setup_action_tag')
-                    ->set($db->quoteName('label') . ' = ' . $db->quote($tag['label']))
-                    ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $class))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($tag['id']));
-                $db->setQuery($query);
-                $results[] = $db->execute();
-            }
-
-            return $results;
+            $class = array_search($color, $classes);
+            $query->clear()
+                ->update('#__emundus_setup_action_tag')
+                ->set($db->quoteName('label') . ' = ' . $db->quote($label))
+                ->set($db->quoteName('class') . ' = ' . $db->quote('label-' . $class))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($tag));
+            $db->setQuery($query);
+            return $db->execute();
         } catch (Exception $e){
             JLog::add('component/com_emundus_onboard/models/settings | Cannot update tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

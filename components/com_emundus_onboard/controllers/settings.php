@@ -142,8 +142,28 @@ class EmundusonboardControllersettings extends JControllerLegacy {
         } else {
 	        $m_settings = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $status = $jinput->getRaw('status');
-            $changeresponse = $m_settings->updateStatus($status);
+	        $status = $jinput->getInt('status');
+	        $label = $jinput->getString('label');
+	        $color = $jinput->getString('color');
+
+            $changeresponse = $m_settings->updateStatus($status,$label,$color);
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+
+    public function updatestatusorder() {
+        $user = JFactory::getUser();
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $m_settings = $this->model;
+            $jinput = JFactory::getApplication()->input;
+            $status = $jinput->getString('status');
+
+            $changeresponse = $m_settings->updateStatusOrder(explode(',',$status));
         }
         echo json_encode((object)$changeresponse);
         exit;
@@ -159,9 +179,11 @@ class EmundusonboardControllersettings extends JControllerLegacy {
 
         	$m_settings = $this->model;
 	        $jinput = JFactory::getApplication()->input;
-	        $tags = $jinput->getRaw('tags');
+            $tag = $jinput->getInt('tag');
+            $label = $jinput->getString('label');
+            $color = $jinput->getString('color');
 
-            $changeresponse = $m_settings->updateTags($tags);
+            $changeresponse = $m_settings->updateTags($tag,$label,$color);
         }
         echo json_encode((object)$changeresponse);
         exit;

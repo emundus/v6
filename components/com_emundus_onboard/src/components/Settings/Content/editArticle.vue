@@ -54,6 +54,7 @@ export default {
     article_alias: String,
     article_id: Number
   },
+
   mixins: [mixin],
 
   data() {
