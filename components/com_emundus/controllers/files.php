@@ -656,6 +656,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 }
 
                 // We're getting the first link in the user's menu that's from com_emundus, which is PROBABLY a files/evaluation view, but this does not guarantee it.
+                /* this methode does not word at all, it get a random link from invited evaluator
                 $index = 0;
                 foreach ($items as $k => $item) {
                     if ($item->component === 'com_emundus') {
@@ -669,10 +670,11 @@ class EmundusControllerFiles extends JControllerLegacy
                 } else {
                     $userLink = $items[$index]->link.'&Itemid='.$items[0]->id;
                 }
-
+                */
                 $fnumList = '<ul>';
                 foreach ($fnums as $fnum) {
-                    $fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    //$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    $fnumList .= '<li><a href="'.JURI::base().'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
                 }
                 $fnumList .= '</ul>';
 
@@ -3989,18 +3991,23 @@ class EmundusControllerFiles extends JControllerLegacy
         $adm = $m_adm->getGroupsAdmissionByProgramme($code);
         $adm .= $m_adm->getGroupsApplicantAdmissionByProgramme($code);
 
+        $hasAccessForm = EmundusHelperAccess::asAccessAction(1,  'r', $user_id);
         $hasAccessAtt  = EmundusHelperAccess::asAccessAction(4,  'r', $user_id);
         $hasAccessEval = EmundusHelperAccess::asAccessAction(5,  'r', $user_id);
         $hasAccessDec  = EmundusHelperAccess::asAccessAction(29, 'r', $user_id);
         $hasAccessAdm  = EmundusHelperAccess::asAccessAction(32, 'r', $user_id);
         $hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
 
+        $showform = 0;
         $showatt = 0;
         $showeval = 0;
         $showdec  = 0;
         $showadm  = 0;
         $showtag  =0;
 
+        if ($hasAccessForm) {
+            $showform = 1;
+        }
         if ($hasAccessAtt) {
             $showatt = 1;
         }
@@ -4017,7 +4024,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $showtag = 1;
         }
 
-        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag)));
+        echo json_encode((object)(array('status' => true,'att' => $showatt, 'eval' => $showeval, 'dec' => $showdec, 'adm' => $showadm, 'tag' => $showtag, 'form' => $showform)));
         exit;
 
     }
@@ -4313,7 +4320,12 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $letters = $_mEval->generateLetters($fnums,$templates,$canSee,$showMode,$mergeMode);
 
-        echo $letters;
+        if($letters) {
+            echo json_encode((object)(array('status' => true, 'data' => $letters)));
+        } else {
+            echo json_encode((object)(array('status' => false, 'data' => null)));
+        }
+
         exit;
     }
 

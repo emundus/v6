@@ -54,7 +54,7 @@
           <birthdayF v-if="plugin =='birthday'" :element="element"></birthdayF>
           <checkboxF v-if="plugin =='checkbox'" :element="element" :databases="databases"  @subOptions="subOptions"></checkboxF>
           <dropdownF v-if="plugin =='dropdown'" :element="element" :databases="databases" @subOptions="subOptions"></dropdownF>
-          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" @subOptions="subOptions"></radiobtnF>
+          <radiobtnF v-if="plugin == 'radiobutton'" :element="element" :databases="databases"  @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
           <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
@@ -245,7 +245,8 @@
           this.element = response.data;
 
           if(this.element.plugin == 'databasejoin'){
-            this.plugin = this.element.params.database_join_display_type;
+            this.element.params.database_join_display_type =='radio'?  this.plugin ='radiobutton':  this.plugin =this.element.params.database_join_display_type;
+
           } else if (this.element.plugin == 'date' || this.element.plugin == 'years') {
             this.plugin = 'birthday';
           } else {
@@ -366,6 +367,13 @@
       plugin: function(value) {
         switch (value){
           case 'dropdown':
+
+            if(this.element.plugin !== 'databasejoin'){
+              this.element.plugin = value;
+            }
+            break;
+          case 'radiobutton':
+
             if(this.element.plugin !== 'databasejoin'){
               this.element.plugin = value;
             }

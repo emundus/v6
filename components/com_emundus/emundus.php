@@ -400,6 +400,7 @@ JText::script('CANDIDATE_EMAIL');
 JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');
 JText::script('COM_EMUNDUS_UNAVAILABLE_FEATURES');
+JText::script('SENDING_EMAILS');
 
 // EXPORT EXCEL MODEL
 JText::script('COM_EMUNDUS_CHOOSE_LETTER');
@@ -457,6 +458,9 @@ JText::script('COM_EMUNDUS_ACTIONS_SEARCH');
 JText::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
 JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
 
+// GOTENBERG EXPORT FAILED
+JText::script('COM_EMUNDUS_EXPORT_FAILED');
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
@@ -468,6 +472,7 @@ JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
 
 JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');

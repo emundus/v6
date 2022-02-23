@@ -26,7 +26,7 @@ export default {
 
   props: {
     label: Object,
-    actualLanguage: String
+    actualLanguage: String,
   },
 
   data() {

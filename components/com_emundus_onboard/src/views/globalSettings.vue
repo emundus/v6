@@ -1,69 +1,69 @@
 <template>
-    <div class="w-row em-mt-80">
-      <div class="w-100">
+  <div class="w-row em-mt-80">
+    <div class="w-100">
 
-        <!-- HEADER -->
-        <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%" @click="menuHighlight = 0">
-          <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
-        </div>
-        <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0 && !modal_ready" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
-        <h5 class="em-h5 em-m-24" v-else-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
-
-        <!--- MENU --->
-        <transition name="slide-right">
-          <div class="em-settings-menu" style="margin-left: 10%" v-if="menuHighlight === 0">
-            <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3" v-wave @click="menuHighlight = menu.index;currentTitle = menu.title">
-              <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
-              <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
-              <p class="em-font-size-14">{{translate(menu.description)}}</p>
-            </div>
-          </div>
-        </transition>
-
-        <!-- COMPONENTS -->
-        <transition name="fade">
-          <editStyle
-              v-if="menuHighlight === 1"
-              ref="styling"
-          ></editStyle>
-
-          <ContentTool
-              v-if="menuHighlight === 2"
-              v-show="modal_ready"
-              @resetMenuIndex="menuHighlight = 0"
-          />
-
-          <FilesTool
-              v-if="menuHighlight === 3"
-              v-show="modal_ready"
-              @resetMenuIndex="menuHighlight = 0"
-          />
-
-          <TranslationTool
-              v-if="menuHighlight === 9"
-              v-show="modal_ready"
-              @resetMenuIndex="menuHighlight = 0"
-              ref="translations"
-          />
-
-<!--          <editDatas
-                  v-if="menuHighlight == 8 && coordinatorAccess != 0"
-                  ref="datas"
-                  :actualLanguage="actualLanguage"
-                  :manyLanguages="manyLanguages"
-          ></editDatas>-->
-
-
-
-<!--          <help-settings
-              v-if="menuHighlight == 8"
-              ref="help"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-          ></help-settings>-->
-        </transition>
+      <!-- HEADER -->
+      <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%" @click="menuHighlight = 0">
+        <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
       </div>
+      <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0 && !modal_ready" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
+      <h5 class="em-h5 em-m-24" v-else-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
+
+      <!--- MENU --->
+      <transition name="slide-right">
+        <div class="em-settings-menu" style="margin-left: 10%" v-if="menuHighlight === 0">
+          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3" v-wave @click="menuHighlight = menu.index;currentTitle = menu.title">
+            <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
+            <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
+            <p class="em-font-size-14">{{translate(menu.description)}}</p>
+          </div>
+        </div>
+      </transition>
+
+      <!-- COMPONENTS -->
+      <transition name="fade">
+        <editStyle
+            v-if="menuHighlight === 1"
+            ref="styling"
+        ></editStyle>
+
+        <ContentTool
+            v-if="menuHighlight === 2"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        />
+
+        <FilesTool
+            v-if="menuHighlight === 3"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        />
+
+        <TranslationTool
+            v-if="menuHighlight === 9"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+            ref="translations"
+        />
+
+        <!--          <editDatas
+                          v-if="menuHighlight == 8 && coordinatorAccess != 0"
+                          ref="datas"
+                          :actualLanguage="actualLanguage"
+                          :manyLanguages="manyLanguages"
+                  ></editDatas>-->
+
+
+
+        <!--          <help-settings
+                      v-if="menuHighlight == 8"
+                      ref="help"
+                      :actualLanguage="actualLanguage"
+                      :manyLanguages="manyLanguages"
+                  ></help-settings>-->
+      </transition>
     </div>
+  </div>
 </template>
 
 <script>

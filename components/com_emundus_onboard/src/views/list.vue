@@ -40,8 +40,8 @@
           v-if="type === 'formulaire' || type === 'grilleEval'"
           v-model="type"
       >
-        <option value="formulaire">Candidature</option>
-        <option value="grilleEval">Grilles d'évaluation</option>
+        <option value="formulaire">{{ translations.candidature }}</option>
+        <option value="grilleEval">{{ translations.evaluations }}</option>
       </select>
 
       <div class="search-container">
@@ -171,6 +171,8 @@ export default {
       System: this.translate("COM_EMUNDUS_ONBOARD_SYSTEM"),
       Categories: this.translate("COM_EMUNDUS_ONBOARD_CATEGORIES"),
       Rechercher: this.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
+      candidature: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGN"),
+      evaluations: this.translate("COM_EMUNDUS_ONBOARD_EVALUATION"),
     },
     total: 0,
     filtersCount: "",

@@ -208,6 +208,13 @@
 						label="MOD_EMUNDUS_VISIBLE_STATUS"
 						description=""
 						default="" />
+				<field 
+					name="for_specific_profiles"
+					type="text"
+					label="MOD_EMUNDUS_SPECIFIC_PROFILES"
+					description="MOD_EMUNDUS_SPECIFIC_PROFILES"
+					default=""
+				/>
 			</fieldset>
 			<fieldset
 					name="advanced">

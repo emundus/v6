@@ -18,7 +18,8 @@
         </select>
       </div>
       <template v-if="widgets.length > 0">
-        <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index" :class="enableDrag ? 'jello-horizontal handle' : ''" :key="widget.name + '_' + index">
+        <div v-for="(widget,index) in widgets" :id="widget.name + '_' + index"
+        :class="enableDrag ? 'jello-horizontal handle' : widget.name + '-' + widget.class" :key="widget.name + '_' + index">
           <Custom v-if="widget.name === 'custom'" :widget="widget" @forceUpdate="$forceUpdate"/>
 
           <!-- Sciences Po widgets -->
@@ -125,12 +126,21 @@ export default {
 </script>
 
 <style scoped>
+#app > div{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+#app > div > div{
+  width: 100%;
+  margin: 0 0 30px 0;
+}
+
 .tchooz-widget{
   height: 400px;
-  margin-bottom: 30px !important;
-  margin-left: 0px !important;
-  padding-left: 30px !important;
 }
+
 .cta-block{
   position: absolute;
   right: 20px;
