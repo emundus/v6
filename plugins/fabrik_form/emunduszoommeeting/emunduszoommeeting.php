@@ -326,34 +326,36 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         $post['ZOOM_SESSION_JURY'] .= '</ul>';
 
-        # send email to Coordinator + Host with start_url ✅ ✅ ✅
-        foreach ($raws as $recipient) {
-            # add NAME to $post
-            $post['NAME'] = $recipient->name;
+        if($email_template !== 0) {
+            # send email to Coordinator + Host with start_url ✅ ✅ ✅
+            foreach ($raws as $recipient) {
+                # add NAME to $post
+                $post['NAME'] = $recipient->name;
 
-            # add START_URL to $post
-            $post['ZOOM_SESSION_URL'] = '<a href="' . $start_url . '" target="_blank">' .  JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST') . '</a>';
+                # add START_URL to $post
+                $post['ZOOM_SESSION_URL'] = '<a href="' . $start_url . '" target="_blank">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST') . '</a>';
 
-            # add PROFILE to $post
-            $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST_PROFILE');
+                # add PROFILE to $post
+                $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_HOST_PROFILE');
 
-            # call to method 'sendEmailNoFnum'
-            $cMessages->sendEmailNoFnum($recipient->email, $email_template, $post, null ,array(), null);
-        }
+                # call to method 'sendEmailNoFnum'
+                $cMessages->sendEmailNoFnum($recipient->email, $email_template, $post, null, array(), null);
+            }
 
-        # send email to all Evaluators with join_url ✅ ✅ ✅
-        foreach ($evaluators as $evaluator) {
-            # add NAME to $post
-            $post['NAME'] = $evaluator->name;
+            # send email to all Evaluators with join_url ✅ ✅ ✅
+            foreach ($evaluators as $evaluator) {
+                # add NAME to $post
+                $post['NAME'] = $evaluator->name;
 
-            # add JOIN_URL to $post
-            $post['ZOOM_SESSION_URL'] = '<a href="' . $join_url . '" target="_blank">' .  JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT') . '</a>';
+                # add JOIN_URL to $post
+                $post['ZOOM_SESSION_URL'] = '<a href="' . $join_url . '" target="_blank">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT') . '</a>';
 
-            # add PROFILE to $post
-            $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT_PROFILE');
+                # add PROFILE to $post
+                $post['ZOOM_SESSION_PROFILE'] = JText::_('COM_EMUNDUS_ZOOM_SESSION_LABEL_PARTICIPANT_PROFILE');
 
-            # call to method 'sendEmailNoFnum'
-            $cMessages->sendEmailNoFnum($evaluator->email, $email_template, $post, null ,array(), null);
+                # call to method 'sendEmailNoFnum'
+                $cMessages->sendEmailNoFnum($evaluator->email, $email_template, $post, null, array(), null);
+            }
         }
     }
 
