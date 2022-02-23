@@ -184,6 +184,23 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         # --- END CONFIG START TIME, END TIME, DURATION, TIMEZONE --- #
 
+        # IF THE MEETING NAME IS MISSED, WE SET THE DEFAULT NAME BY FORMAT "Session {{start_time_just_date}} {{Number#Integer}} {{Meeting_Host}}"
+        if(empty($_POST['jos_emundus_jury___topic'])) {
+            # get date from $startTimeCElSA
+            $_date = date('d/m/Y', strtotime($startTimeCELSA));
+
+            # hostname ($raw->firstname)
+
+            # find if this host already has another meeting in $_date
+            $findMeetingByHost = "SELECT COUNT(*) FROM jos_emundus_jury AS jej WHERE jej.president = " . $db->quote($host) . ' AND DATE(start_time_) = ' . $db->quote(date('Y-m-d', strtotime($startTimeCELSA)));
+            $db->setQuery($findMeetingByHost);
+            $count = $db->loadResult();
+
+            # set the default name for meeting
+            $meetingDefaultName = JText::_('COM_EMUNDUS_ZOOM_SESSION_DEFAULT_NAME') . ' ' . $_date . ' ' . ($count + 1) . ' ' . $raw->firstname;
+            $_POST['jos_emundus_jury___topic'] = $meetingDefaultName;
+        }
+
         $json = $this->dataMapping($_POST, 'jos_emundus_jury___', $json);
 
         # if meeting id (in db, not in Zoom) and meeting session do not exist, call endpoint to generate the new one
@@ -212,7 +229,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                                 ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
                                                                     ", user = "                 . $db->quote($creator->id) .
                                                                         ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
-                                                                            " WHERE #__emundus_jury.id = " . $lid;
+                                                                            ", end_time_ = "             .$db->quote($_POST["jos_emundus_jury___end_time_"]['date']) .
+                                                                                " WHERE #__emundus_jury.id = " . $lid;
 
                     $db->setQuery($updateSql);
                     $db->execute();
