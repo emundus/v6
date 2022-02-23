@@ -272,14 +272,14 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     try {
                         # write update SQL query
                         $updateSql = "UPDATE #__emundus_jury
-                                        SET visio_link = "          . $db->quote($response['start_url']) .
-                                            ", join_url = "             . $db->quote($response['join_url']) .
-                                                ", registration_url ="      . $db->quote($response['registration_url']) .
-                                                    ", password ="              . $db->quote($response['password']) .
-                                                        ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
-                                                            ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
-                                                                " WHERE #__emundus_jury.id = " . $_POST['jos_emundus_jury___id'] .
-                                                                    " AND #__emundus_jury.meeting_session LIKE (" . $_POST['jos_emundus_jury___meeting_session'] . ")";
+                                            SET visio_link = "          . $db->quote($response['start_url']) .
+                                                ", join_url = "             . $db->quote($response['join_url']) .
+                                                    ", registration_url ="      . $db->quote($response['registration_url']) .
+                                                        ", password ="              . $db->quote($response['password']) .
+                                                            ", encrypted_password ="    . $db->quote($response['encrypted_password']) .
+                                                                ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
+                                                                    " WHERE #__emundus_jury.id = " . $_POST['jos_emundus_jury___id'] .
+                                                                        " AND #__emundus_jury.meeting_session LIKE (" . $_POST['jos_emundus_jury___meeting_session'] . ")";
 
                         $db->setQuery($updateSql);
                         $db->execute();
