@@ -197,7 +197,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $count = $db->loadResult();
 
             # set the default name for meeting
-            $meetingDefaultName = JText::_('COM_EMUNDUS_ZOOM_SESSION_DEFAULT_NAME') . ' ' . $_date . ' ' . ($count + 1) . ' ' . $raw->firstname;
+            $meetingDefaultName = JText::_('COM_EMUNDUS_ZOOM_SESSION_DEFAULT_NAME') . ' ' . $_date . ' ' . $count . ' ' . $raw->firstname;
             $_POST['jos_emundus_jury___topic'] = $meetingDefaultName;
         }
 
@@ -230,7 +230,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                                                                     ", user = "                 . $db->quote($creator->id) .
                                                                         ", date_time = "            . $db->quote(date('Y-m-d H:i:s')) .
                                                                             ", end_time_ = "             .$db->quote($_POST["jos_emundus_jury___end_time_"]['date']) .
-                                                                                ", topic = "                . $db->quote($response['topic']) .
+                                                                                ", topic = "                . $db->quote($_POST['jos_emundus_jury___topic']) .
                                                                                     " WHERE #__emundus_jury.id = " . $lid;
 
                     $db->setQuery($updateSql);
