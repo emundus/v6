@@ -510,3 +510,27 @@ $db->setQuery($query);
 $raw = $db->loadResult();
 $html = ''<strong><a href="'' . $raw . ''" target="_blank">'' . '' ici '' . ''</a></strong>'';
 return $html;', 'Zoom meeting session link', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 10:06:35', 'ZOOM_SESSION_NAME', '[ZOOM_SESSION_NAME]', 'Zoom meeting name (room name)', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 10:06:35', 'ZOOM_SESSION_START_TIME', '[ZOOM_SESSION_START_TIME]', 'Zoom meeting start time', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 10:06:35', 'ZOOM_SESSION_URL', '[ZOOM_SESSION_URL]', 'Zoom meeting access url (will be customize to Host, Participant)', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 10:06:35', 'ZOOM_SESSION_JURY', '[ZOOM_SESSION_JURY]', 'Zoom meeting jury', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 13:42:33', 'ZOOM_SESSION_PROFILE', '[ZOOM_SESSION_PROFILE]', 'Zoom session profile (Coordinator / Host / Evaluator)', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 14:23:54', 'ZOOM_SESSION_UPDATE_TIME', '[ZOOM_SESSION_UPDATE_TIME]', 'Zoom session (created/updated) time', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 16:06:06', 'ZOOM_SESSION_PREVIOUS_NAME', '[ZOOM_SESSION_PREVIOUS_NAME]', 'Zoom session previous name', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-22 16:08:42', 'ZOOM_SESSION_PREVIOUS_START_TIME', '[ZOOM_SESSION_PREVIOUS_START_TIME]', 'Zoom session previous start time', 1);
