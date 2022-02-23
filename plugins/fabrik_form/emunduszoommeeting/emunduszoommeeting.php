@@ -299,8 +299,10 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # select which email will be sent by $send_first_email_flag (true, false)
         if ($send_first_email_flag === true) {
             $email_template = intval($creationEmail);
+            $app->enqueueMessage(JText::_('ZOOM_SESSION_CREATED_SUCCESSFULLY'), 'success');
         } else {
             $email_template = intval($updateEmail);
+            $app->enqueueMessage(JText::_('ZOOM_SESSION_UPDATED_SUCCESSFULLY'), 'success');
         }
 
         # get "creator" of Zoom meeting
