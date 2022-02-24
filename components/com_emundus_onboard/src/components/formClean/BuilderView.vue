@@ -275,7 +275,7 @@ export default {
         format: "DD/MM/YYYY",
         useCurrent: false
       },
-      translate: {
+      can_translate: {
         label: false,
         label_group: false,
         label_page: false,
@@ -693,7 +693,7 @@ export default {
                 this.updateSuccess,
                 this.update
             );
-            this.translate.label = false;
+            this.can_translate.label = false;
           });
         }
         this.clickUpdatingLabel = false;
@@ -786,7 +786,7 @@ export default {
             this.update
         );
         group.group_showLegend = group.label[this.actualLanguage];
-        this.translate.label_group = false;
+        this.can_translate.label_group = false;
         this.updateGroup = false;
       }).catch(e => {
         this.$emit(
@@ -908,7 +908,7 @@ export default {
                     this.update
                 );
                 group.group_showLegend = group.label[this.actualLanguage];
-                this.translate.label_group = false;
+                this.can_translate.label_group = false;
                 this.updateGroup = false;
               }
             });
@@ -946,7 +946,7 @@ export default {
                     this.update
                 );
                 group.group_showLegend = group.label[this.actualLanguage];
-                this.translate.label_group = false;
+                this.can_translate.label_group = false;
                 this.updateGroup = false;
               }
             });
@@ -1155,7 +1155,7 @@ export default {
         this.hoverUpdating = false;
         this.clickUpdatingLabel = false;
         this.indexHighlight = 0;
-        this.translate.label = false;
+        this.can_translate.label = false;
       }
     },
     enableLabelInput(eid) {
@@ -1167,8 +1167,8 @@ export default {
       }
     },
     enableTranslationLabel(eid) {
-      this.translate.label = !this.translate.label;
-      if(this.translate.label) {
+      this.can_translate.label = !this.can_translate.label;
+      if(this.can_translate.label) {
         /*setTimeout(() => {
           document.getElementById('label_en_' + eid).focus();
         },100);*/
@@ -1197,8 +1197,8 @@ export default {
       }
     },
     enableTranslationPage(pid) {
-      this.translate.label_page = !this.translate.label_page;
-      if(this.translate.label_page) {
+      this.can_translate.label_page = !this.can_translate.label_page;
+      if(this.can_translate.label_page) {
         /*setTimeout(() => {
           document.getElementById('label_page_en_' + pid).focus();
         },100);*/
@@ -1209,8 +1209,8 @@ export default {
       }
     },
     enableTranslationPageIntro(pid) {
-      this.translate.intro_page = !this.translate.intro_page;
-      if(this.translate.intro_page) {
+      this.can_translate.intro_page = !this.can_translate.intro_page;
+      if(this.can_translate.intro_page) {
         /*setTimeout(() => {
           document.getElementById('label_page_en_' + pid).focus();
         },100);*/
@@ -1233,8 +1233,8 @@ export default {
 
     },
     enableTranslationGroup(gid) {
-      this.translate.label_group = !this.translate.label_group;
-      if(this.translate.label_group) {
+      this.can_translate.label_group = !this.can_translate.label_group;
+      if(this.can_translate.label_group) {
         /*setTimeout(() => {
           document.getElementById('label_group_en_' + gid).focus();
         },100);*/

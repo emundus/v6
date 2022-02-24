@@ -10,86 +10,85 @@
       :delay="100"
       :adaptive="true"
       :clickToClose="false"
-      @closed="beforeClose"
       @before-open="beforeOpen"
     >
       <div class="fixed-header-modal">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddEvaluation')">
-              <em class="fas fa-times"></em>
-            </button>
+        <div class="topright">
+          <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddEvaluation')">
+            <em class="fas fa-times"></em>
+          </button>
           </div>
-                        <div class="update-field-header">
-          <h2 class="update-title-header">
-             {{addGrid}}
-          </h2>
-                        </div>
+          <div class="update-field-header">
+            <h2 class="update-title-header">
+              {{ translations.addGrid }}
+            </h2>
         </div>
+      </div>
       <div class="modalC-content">
         <div class="form-group">
-          <label>{{ChooseExistingGridModel}} :</label>
+          <label>{{ translations.ChooseExistingGridModel }} :</label>
           <select v-model="model_id" class="dropdown-toggle">
             <option value="-1"></option>
-            <option v-for="(model, index) in models" :value="model.form_id">{{model.label}}</option>
+            <option v-for="model in models" :key="model.form_id" :value="model.form_id">{{model.label}}</option>
           </select>
         </div>
-        <div class="form-group" :class="{ 'mb-0': translate.label}">
-          <label>{{Name}}<span class="em-red-500-color">*</span> :</label>
+        <div class="form-group" :class="{ 'mb-0': can_translate.label}">
+          <label>{{ translations.Name }}<span class="em-red-500-color">*</span> :</label>
           <div class="input-can-translate">
             <input v-model="label.fr" type="text" maxlength="40" class="form__input field-general w-input" id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
+            <button class="translate-icon" :class="{'translate-icon-selected': can_translate.label}" type="button" @click="can_translate.label = !can_translate.label"></button>
           </div>
         </div>
         <transition :name="'slide-down'" type="transition">
-          <div class="inlineflex" v-if="translate.label">
+          <div class="inlineflex" v-if="can_translate.label">
             <label class="translate-label">
-              {{TranslateEnglish}}
+              {{ translations.TranslateEnglish }}
             </label>
             <i class="fas fa-sort-down"></i>
           </div>
         </transition>
         <transition :name="'slide-down'" type="transition">
-          <div class="form-group mb-1" v-if="translate.label">
+          <div class="form-group mb-1" v-if="can_translate.label">
             <input v-model="label.en" type="text" maxlength="40" class="form__input field-general w-input"/>
           </div>
         </transition>
         <p v-if="errors && model_id == -1" class="error col-md-12 mb-2">
-          <span class="error">{{LabelRequired}}</span>
+          <span class="error">{{ translations.LabelRequired }}</span>
         </p>
-        <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
-          <label>{{Intro}} :</label>
+        <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
+          <label>{{ translations.Intro }} :</label>
           <div class="input-can-translate">
               <textarea v-model="intro.fr" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
+              <button class="translate-icon" :class="{'translate-icon-selected': can_translate.intro}" type="button" @click="can_translate.intro = !can_translate.intro"></button>
           </div>
         </div>
         <transition :name="'slide-down'" type="transition">
-          <div class="inlineflex" v-if="translate.intro">
+          <div class="inlineflex" v-if="can_translate.intro">
             <label class="translate-label">
-              {{TranslateEnglish}}
+              {{ translations.TranslateEnglish }}
             </label>
             <em class="fas fa-sort-down"></em>
           </div>
         </transition>
         <transition :name="'slide-down'" type="transition">
-          <div class="form-group mb-1" v-if="translate.intro">
+          <div class="form-group mb-1" v-if="can_translate.intro">
             <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
           </div>
         </transition>
         <div class="col-md-12 d-flex" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px">{{SaveAsTemplate}} :</label>
+          <label class="ml-10px">{{ translations.SaveAsTemplate }} :</label>
         </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
-                <button type="button"
-                        class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="$modal.hide('modalAddEvaluation')"
-                >{{Retour}}</button>
         <button type="button"
-                class="bouton-sauvergarder-et-continuer"
-                @click.prevent="createGrid()"
-        >{{ Continuer }}</button>
+          class="bouton-sauvergarder-et-continuer w-retour"
+          @click.prevent="$modal.hide('modalAddEvaluation')"
+        >{{ translations.Retour }}</button>
+        <button type="button"
+          class="bouton-sauvergarder-et-continuer"
+          @click.prevent="createGrid()"
+        >{{ translations.Continuer }}</button>
       </div>
       <div class="loading-form" style="top: 10vh" v-if="submitted">
         <Ring-Loader :color="'#12DB42'" />
@@ -108,7 +107,7 @@ export default {
   props: { prog: Number, grid: Number },
   data() {
     return {
-      translate: {
+      can_translate: {
         label: false,
         intro: false
       },
@@ -126,19 +125,27 @@ export default {
       errors: false,
       changes: false,
       submitted: false,
-      addGrid: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID"),
-      ChooseExistingGridModel: this.translate("COM_EMUNDUS_ONBOARD_GRIDMODEL"),
-      Name: this.translate("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
-      Intro: this.translate("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
-      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      LabelRequired: this.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-      TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-      SaveAsTemplate: this.translate("COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE"),
+      translations: {
+        addGrid: "COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID",
+        ChooseExistingGridModel: "COM_EMUNDUS_ONBOARD_GRIDMODEL",
+        Name: "COM_EMUNDUS_ONBOARD_FIELD_NAME",
+        Intro: "COM_EMUNDUS_ONBOARD_FIELD_INTRO",
+        Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+        Continuer: "COM_EMUNDUS_ONBOARD_ADD_CONTINUER",
+        LabelRequired: "COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME",
+        TranslateEnglish: "COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH",
+        SaveAsTemplate: "COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE",
+      }
     };
   },
+  beforeMount() {
+    if (this.translations !== null && typeof this.translations !== "undefined") {
+      Object.entries(this.translations).forEach(([key, value]) => {
+        this.translations[key] = this.translate(value);
+      });
+    }
+  },
   methods: {
-    beforeClose(event) {},
     beforeOpen(event) {
       this.getExistingGrids();
     },
@@ -154,10 +161,10 @@ export default {
       this.changes = true;
 
       if(this.label.fr != '' || this.model_id != -1) {
-        if(!this.translate.label){
+        if(!this.can_translate.label){
           this.label.en = this.label.fr;
         }
-        if(!this.translate.intro){
+        if(!this.can_translate.intro){
           this.intro.en = this.intro.fr;
         }
         this.submitted = true;

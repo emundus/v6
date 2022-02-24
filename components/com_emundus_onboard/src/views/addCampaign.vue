@@ -30,11 +30,11 @@
                   v-model="form.label[actualLanguage]"
                   @keyup="enableTranslationTip"
                   required
-                  :class="{ 'is-invalid': errors.label, 'mb-0': translate.label }"
+                  :class="{ 'is-invalid': errors.label, 'mb-0': can_translate.label }"
               />
-              <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
+              <button class="translate-icon" :class="{'translate-icon-selected': can_translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
             </div>
-            <translation :label="form.label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
+            <translation :label="form.label" :actualLanguage="actualLanguage" v-if="can_translate.label"></translation>
           </div>
           <p v-if="errors.label" class="error col-md-12 mb-2">
             <span class="error">{{translations.LabelRequired}}</span>
@@ -322,7 +322,7 @@ export default {
       limit_status: [],
     },
 
-    translate: {
+    can_translate: {
       label: false,
     },
 
@@ -356,41 +356,41 @@ export default {
     },
 
     translations: {
-      Parameter: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER"),
-      CampName: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME"),
-      StartDate: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE"),
-      EndDate: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE"),
-      Information: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-      Resume: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME"),
-      Description: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-      Program: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      AddProgram: this.translate("COM_EMUNDUS_ONBOARD_ADDPROGRAM"),
-      ChooseProg: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG"),
-      PickYear: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR"),
-      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Quitter: this.translate("COM_EMUNDUS_ONBOARD_ADD_QUITTER"),
-      Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      Publish: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      DepotDeDossier: this.translate("COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER"),
-      ProgName: this.translate("COM_EMUNDUS_ONBOARD_PROGNAME"),
-      ProgCode: this.translate("COM_EMUNDUS_ONBOARD_PROGCODE"),
-      ChooseCategory: this.translate("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-      NameCategory: this.translate("COM_EMUNDUS_ONBOARD_NAMECATEGORY"),
-      LabelRequired: this.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-      RequiredFieldsIndicate: this.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-      ProgramResume: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_RESUME"),
-      ProgLabelRequired: this.translate("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
-      ResumeRequired: this.translate("COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME"),
-      OK: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-      Cancel: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-      TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-      FilesLimit: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT"),
-      FilesNumberLimit: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER"),
-      StatusLimit: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS"),
-      StatusLimitRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-      FilesLimitRequired: this.translate("COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED"),
-      AddCampaign: this.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
-      ProgramDesc: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC"),
+      Parameter: "COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER",
+      CampName: "COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME",
+      StartDate: "COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE",
+      EndDate: "COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE",
+      Information: "COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION",
+      Resume: "COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME",
+      Description: "COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION",
+      Program: "COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM",
+      AddProgram: "COM_EMUNDUS_ONBOARD_ADDPROGRAM",
+      ChooseProg: "COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG",
+      PickYear: "COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR",
+      Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+      Quitter: "COM_EMUNDUS_ONBOARD_ADD_QUITTER",
+      Continuer: "COM_EMUNDUS_ONBOARD_ADD_CONTINUER",
+      Publish: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH",
+      DepotDeDossier: "COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER",
+      ProgName: "COM_EMUNDUS_ONBOARD_PROGNAME",
+      ProgCode: "COM_EMUNDUS_ONBOARD_PROGCODE",
+      ChooseCategory: "COM_EMUNDUS_ONBOARD_CHOOSECATEGORY",
+      NameCategory: "COM_EMUNDUS_ONBOARD_NAMECATEGORY",
+      LabelRequired: "COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME",
+      RequiredFieldsIndicate: "COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE",
+      ProgramResume: "COM_EMUNDUS_ONBOARD_PROGRAM_RESUME",
+      ProgLabelRequired: "COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL",
+      ResumeRequired: "COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME",
+      OK: "COM_EMUNDUS_ONBOARD_OK",
+      Cancel: "COM_EMUNDUS_ONBOARD_CANCEL",
+      TranslateEnglish: "COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH",
+      FilesLimit: "COM_EMUNDUS_ONBOARD_FILES_LIMIT",
+      FilesNumberLimit: "COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER",
+      StatusLimit: "COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS",
+      StatusLimitRequired: "COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED",
+      FilesLimitRequired: "COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED",
+      AddCampaign: "COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN",
+      ProgramDesc: "COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC",
     },
 
     submitted: false
@@ -416,6 +416,14 @@ export default {
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
     this.getLanguages();
     this.getCampaignById();
+  },
+
+  beforeMount() {
+    if (this.translations !== null && typeof this.translations !== "undefined") {
+      Object.entries(this.translations).forEach(([key, value]) => {
+        this.translations[key] = this.translate(value);
+      });
+    }
   },
 
   methods: {
@@ -527,8 +535,8 @@ export default {
     },
 
     enableLabelTranslation(){
-      this.translate.label = !this.translate.label
-      if(this.translate.label){
+      this.can_translate.label = !this.can_translate.label
+      if(this.can_translate.label){
         setTimeout(() => {
           document.getElementById('label_en').focus();
         },100);
