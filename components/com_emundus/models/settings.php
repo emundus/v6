@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
-class EmundusonboardModelsettings extends JModelList {
+class EmundusModelsettings extends JModelList {
 
     /**
      * Get all colors available for status and tags
@@ -75,7 +75,9 @@ class EmundusonboardModelsettings extends JModelList {
     function getStatus() {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+        $falang = new EmundusModelFalang;
 
         $query->select('*')
             ->from ($db->quoteName('#__emundus_setup_status'))
@@ -104,7 +106,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return $status;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at getting status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at getting status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -127,7 +129,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at getting action tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at getting action tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -151,7 +153,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot delete the tag ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -185,7 +187,7 @@ class EmundusonboardModelsettings extends JModelList {
             return $db->loadObject();
 
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot create a tag : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -201,7 +203,8 @@ class EmundusonboardModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $falang = JModelLegacy::getInstance('falang', 'EmundusonboardModel');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+        $falang = new EmundusModelFalang;
 
         $query->select('MAX(step)')
             ->from($db->quoteName('#__emundus_setup_status'));
@@ -254,7 +257,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return $status;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot create a status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot create a status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -306,7 +309,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return $results;
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot update status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot update status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -327,7 +330,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot update status order : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot update status order : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -359,7 +362,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot delete the status ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot delete the status ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -388,7 +391,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot update tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot update tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -425,7 +428,7 @@ class EmundusonboardModelsettings extends JModelList {
                 return $this->getOldFooterArticles();
             }
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -460,7 +463,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return $footers;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at getting footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -519,7 +522,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return $article;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Cannot get article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -594,7 +597,7 @@ class EmundusonboardModelsettings extends JModelList {
                 return $db->execute();
             }
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at updating article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at updating article ' . $article_id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -634,7 +637,7 @@ class EmundusonboardModelsettings extends JModelList {
                 $db->setQuery($query);
                 return $db->execute();
             } catch(Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/settings | Error at updating footer : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus/models/settings | Error at updating footer : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -674,7 +677,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return true;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at updating footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at updating footer articles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -710,7 +713,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at getting editor variables : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at getting editor variables : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -734,7 +737,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -753,7 +756,7 @@ class EmundusonboardModelsettings extends JModelList {
             }
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at set tutorial param after create a campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -764,7 +767,7 @@ class EmundusonboardModelsettings extends JModelList {
             $this->createParam('first_formbuilder', $user_id);
             $this->createParam('first_documents', $user_id);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at set tutorial param after create a campaign : ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at set tutorial param after create a campaign : ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -802,7 +805,7 @@ class EmundusonboardModelsettings extends JModelList {
 
         // Save user data
         if (!$table->store()) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error when create a param in the user ' . $user_id . ' : ' .$table->getError(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error when create a param in the user ' . $user_id . ' : ' .$table->getError(), JLog::ERROR, 'com_emundus');
             return false;
         }
         return true;
@@ -832,7 +835,7 @@ class EmundusonboardModelsettings extends JModelList {
 
         // Save user data
         if (!$table->store()) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error when remove a param from the user ' . $user_id . ' : ' .$table->getError(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error when remove a param from the user ' . $user_id . ' : ' .$table->getError(), JLog::ERROR, 'com_emundus');
             return false;
         }
         return true;
@@ -862,7 +865,7 @@ class EmundusonboardModelsettings extends JModelList {
             try {
                 return $db->loadAssocList();
             } catch (Exception $e) {
-                JLog::add('component/com_emundus_onboard/models/settings | Error at getting datas from databasejoin table ' . $table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                JLog::add('component/com_emundus/models/settings | Error at getting datas from databasejoin table ' . $table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return false;
             }
         } else {
@@ -929,7 +932,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at saving datas in a new databasejion table : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at saving datas in a new databasejion table : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1005,7 +1008,7 @@ class EmundusonboardModelsettings extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at saving imported datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at saving imported datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1021,7 +1024,7 @@ class EmundusonboardModelsettings extends JModelList {
             $params = $user->getParameters();
             return $params->get('first_databasejoin', true);
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/settings | Error at checking if its the first databasejoin of the user ' . $user_id . ' : ' .$table->getError(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at checking if its the first databasejoin of the user ' . $user_id . ' : ' .$table->getError(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1063,7 +1066,7 @@ class EmundusonboardModelsettings extends JModelList {
             $db->execute();
             return $db->insertid();
         }  catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/settings | Error at moving uploaded file ' . $file . ' to the dropbox category ' . $campaign_cat . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/settings | Error at moving uploaded file ' . $file . ' to the dropbox category ' . $campaign_cat . ': ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -1143,7 +1146,7 @@ class EmundusonboardModelsettings extends JModelList {
                 return $db->execute();
             }
         }  catch (Exception $e) {
-            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_onboard');
+            JLog::add('Error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }

@@ -131,7 +131,7 @@
         });
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=savedatas",
+          url: "index.php?option=com_emundus&controller=settings&task=savedatas",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

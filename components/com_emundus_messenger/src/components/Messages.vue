@@ -136,7 +136,7 @@ export default {
     getFilesByUser(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_messenger&controller=messages&task=getfilesbyuser",
+        url: "index.php?option=com_emundus&controller=messenger&task=getfilesbyuser",
       }).then(response => {
         this.files = response.data.data;
         if(this.fnum != ''){
@@ -155,7 +155,7 @@ export default {
       this.loading = loader;
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_messenger&controller=messages&task=getmessagesbyfnum",
+        url: "index.php?option=com_emundus&controller=messenger&task=getmessagesbyfnum",
         params: {
           fnum: this.fileSelected,
         },
@@ -177,7 +177,7 @@ export default {
     markAsRead(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_messenger&controller=messages&task=markasread",
+        url: "index.php?option=com_emundus&controller=messenger&task=markasread",
         params: {
           fnum: this.fileSelected,
         },
@@ -198,7 +198,7 @@ export default {
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_messenger&controller=messages&task=sendmessage",
+              "index.php?option=com_emundus&controller=messenger&task=sendmessage",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -239,7 +239,7 @@ export default {
       setTimeout(() => {
             axios({
               method: "get",
-              url: "index.php?option=com_emundus_messenger&controller=messages&task=getmessagesbyfnum",
+              url: "index.php?option=com_emundus&controller=messenger&task=getmessagesbyfnum",
               params: {
                 fnum: this.campaignSelected,
                 offset: this.messages.length,

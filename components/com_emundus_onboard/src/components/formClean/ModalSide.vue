@@ -193,7 +193,7 @@ export default {
           axios({
           method: "post",
           url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+            "index.php?option=com_emundus&controller=formbuilder&task=formsTrad",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -212,7 +212,7 @@ export default {
       return new Promise(resolve => {
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=updatemenulabel",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -231,7 +231,7 @@ export default {
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=savemenuastemplate",
+              "index.php?option=com_emundus&controller=formbuilder&task=savemenuastemplate",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -253,7 +253,7 @@ export default {
     async axiostrad(totrad) {
       return await axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getalltranslations",
+        url: "index.php?option=com_emundus&controller=formbuilder&task=getalltranslations",
         params: {
           toJTEXT: totrad ,
         },
@@ -281,7 +281,7 @@ export default {
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=deletemenu",
+                    "index.php?option=com_emundus&controller=formbuilder&task=deletemenu",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -299,7 +299,7 @@ export default {
     checkIfTemplate(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getPagesModel"
+        url: "index.php?option=com_emundus&controller=formbuilder&task=getPagesModel"
       }).then(response => {
 
         var BreakException = {};

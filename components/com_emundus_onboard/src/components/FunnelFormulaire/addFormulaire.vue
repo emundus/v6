@@ -75,7 +75,7 @@ export default {
       axios({
         method: "get",
         url:
-          "index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
+          "index.php?option=com_emundus&controller=form&task=getFormsByProfileId",
         params: {
           profile_id: profile_id
         },
@@ -95,7 +95,7 @@ export default {
     getDocuments(profile_id){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getDocuments",
+        url: "index.php?option=com_emundus&controller=form&task=getDocuments",
         params: {
           pid: profile_id,
         },
@@ -110,7 +110,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },
@@ -126,7 +126,7 @@ export default {
       this.loading = true;
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=createform",
+        url: "index.php?option=com_emundus&controller=form&task=createform",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -143,7 +143,7 @@ export default {
     updateProfileCampaign(){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateprofile",
+        url: "index.php?option=com_emundus&controller=campaign&task=updateprofile",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -159,7 +159,7 @@ export default {
     },
 
     formbuilder(index) {
-      axios.get("index.php?option=com_emundus_onboard&controller=form&task=getfilesbyform&pid=" + this.profileId)
+      axios.get("index.php?option=com_emundus&controller=form&task=getfilesbyform&pid=" + this.profileId)
           .then(response => {
             if(response.data.data != 0){
               this.$modal.show('modalWarningFormBuilder');

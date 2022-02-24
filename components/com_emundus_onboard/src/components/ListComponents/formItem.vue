@@ -101,7 +101,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },
@@ -116,7 +116,7 @@ export default {
     getAssociatedCampaigns(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+        url: "index.php?option=com_emundus&controller=form&task=getassociatedcampaign",
         params: {
           pid: this.data.id,
         },

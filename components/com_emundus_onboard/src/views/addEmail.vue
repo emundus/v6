@@ -448,7 +448,7 @@ export default {
 
     this.actualLanguage = global.getters.actualLanguage;
 
-    axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+    axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
       .then(rep => {
         this.categories = rep.data.data;
         this.email = global.getters.datas.email.value;
@@ -475,7 +475,7 @@ export default {
   },
   methods: {
     getEmailById() {
-      axios.get(`index.php?option=com_emundus_onboard&controller=email&task=getemailbyid&id=${this.email}`)
+      axios.get(`index.php?option=com_emundus&controller=email&task=getemailbyid&id=${this.email}`)
       .then((resp) => {
         if (resp.data.data === false || resp.data.status == 0) {
           this.runError(undefined, resp.data.msg);
@@ -545,7 +545,7 @@ export default {
     getAllUsers: function() {
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=getallusers',
+        url: 'index.php?option=com_emundus&controller=settings&task=getallusers',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -560,7 +560,7 @@ export default {
     getProgramsList() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+        url: "index.php?option=com_emundus&controller=program&task=getallprogram",
         params: {
           filter: '',
           sort: '',
@@ -576,19 +576,19 @@ export default {
       });
     },
     getStatus() {
-      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
+      axios.get("index.php?option=com_emundus&controller=email&task=getstatus")
         .then(response => {
           this.status = response.data.data;
         });
     },
     getUsers() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
+      axios.get("index.php?option=com_emundus&controller=program&task=getuserswithoutapplicants")
         .then(response => {
           this.users = response.data.data;
         });
     },
     searchUserByTerm() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+      axios.get("index.php?option=com_emundus&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
         .then(response => {
           this.users = response.data.data;
         });
@@ -660,7 +660,7 @@ export default {
       if (this.email !== "") {
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=email&task=updateemail",
+          url: "index.php?option=com_emundus&controller=email&task=updateemail",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -680,7 +680,7 @@ export default {
       } else {
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=email&task=createemail",
+          url: "index.php?option=com_emundus&controller=email&task=createemail",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -695,7 +695,7 @@ export default {
           this.trigger.model = response.data.data;
           axios({
             method: "post",
-            url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
+            url: 'index.php?option=com_emundus&controller=email&task=createtrigger',
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -726,7 +726,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },
@@ -765,7 +765,7 @@ export default {
     getAllTags: function() {
       axios({
         method: 'post',
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=gettags',
+        url: 'index.php?option=com_emundus&controller=settings&task=gettags',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

@@ -90,7 +90,7 @@ export default {
 
   methods: {
     async getArticles() {
-      await client().get("index.php?option=com_emundus_onboard&controller=settings&task=getfooterarticles")
+      await client().get("index.php?option=com_emundus&controller=settings&task=getfooterarticles")
           .then(response => {
             this.form.content.col1 = response.data.data.column1;
             this.form.content.col2 = response.data.data.column2;
@@ -105,7 +105,7 @@ export default {
       formData.append('col1', this.form.content.col1);
       formData.append('col2', this.form.content.col2);
 
-      await client().post(`index.php?option=com_emundus_onboard&controller=settings&task=updatefooter`,
+      await client().post(`index.php?option=com_emundus&controller=settings&task=updatefooter`,
           formData,
           {
             headers: {

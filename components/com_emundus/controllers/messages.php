@@ -1517,8 +1517,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
         /// call to com_emundus_onbooard/settings
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'settings.php');
-        $_mSettings = new EmundusonboardModelsettings;
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+        $_mSettings = new EmundusModelSettings;
 
         echo json_encode((object)['status' => true, 'recap' => $_recap, 'color' => $_mSettings->getColorClasses()[$_recap['class']]]);
         exit;

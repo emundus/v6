@@ -144,7 +144,7 @@ export default {
 
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=duplicateelement",
+        url: "index.php?option=com_emundus&controller=formbuilder&task=duplicateelement",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -163,7 +163,7 @@ export default {
     getFormPages(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
+        url: "index.php?option=com_emundus&controller=form&task=getFormsByProfileId",
         params: {
           profile_id: this.prid
         },
@@ -179,7 +179,7 @@ export default {
     getGroupsByForm(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getgroupsbyform",
+        url: "index.php?option=com_emundus&controller=form&task=getgroupsbyform",
         params: {
           form_id: this.page
         },

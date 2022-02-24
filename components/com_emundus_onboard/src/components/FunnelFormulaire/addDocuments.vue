@@ -211,14 +211,14 @@ export default {
 
     getDocuments() {
       this.loading = true;
-      axios.get("index.php?option=com_emundus_onboard&controller=form&task=getalldocuments&prid=" + this.profileId + "&cid=" + this.campaignId)
+      axios.get("index.php?option=com_emundus&controller=form&task=getalldocuments&prid=" + this.profileId + "&cid=" + this.campaignId)
           .then(response => {
             for (let i = 0; i < response.data.data.length; i++) {
               this.unid.push(response.data.data[i].id);
               this.documents.push(response.data.data[i]);
             }
           }).then(() => {
-        axios.get("index.php?option=com_emundus_onboard&controller=form&task=getundocuments")
+        axios.get("index.php?option=com_emundus&controller=form&task=getundocuments")
             .then(response => {
               var currentId = 0;
 
@@ -261,7 +261,7 @@ export default {
     updateMandatory(doc){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=updatemandatory",
+        url: "index.php?option=com_emundus&controller=form&task=updatemandatory",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -280,7 +280,7 @@ export default {
     addDocument(undoc){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=adddocument",
+        url: "index.php?option=com_emundus&controller=form&task=adddocument",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -294,7 +294,7 @@ export default {
     removeDocument(id) {
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=removedocument",
+        url: "index.php?option=com_emundus&controller=form&task=removedocument",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -322,7 +322,7 @@ export default {
         if(result.value){
           axios({
             method: "POST",
-            url: "index.php?option=com_emundus_onboard&controller=form&task=deletedocument",
+            url: "index.php?option=com_emundus&controller=form&task=deletedocument",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },

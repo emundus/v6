@@ -96,7 +96,7 @@ export default {
         }
       }
 
-      await client().get("index.php?option=com_emundus_onboard&controller=settings&task=getarticle", {
+      await client().get("index.php?option=com_emundus&controller=settings&task=getarticle", {
         params: params
       }).then(response => {
         this.form.content = response.data.data.introtext;
@@ -117,7 +117,7 @@ export default {
       }
       formData.append('field', 'introtext');
 
-      await client().post(`index.php?option=com_emundus_onboard&controller=settings&task=updatearticle`,
+      await client().post(`index.php?option=com_emundus&controller=settings&task=updatearticle`,
           formData,
           {
             headers: {

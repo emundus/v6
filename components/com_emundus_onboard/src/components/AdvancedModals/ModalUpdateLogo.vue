@@ -83,7 +83,7 @@
     data() {
       return {
         dropzoneOptions: {
-          url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatelogo',
+          url: 'index.php?option=com_emundus&controller=settings&task=updatelogo',
           maxFilesize: 10,
           maxFiles: 1,
           autoProcessQueue: false,

@@ -25,7 +25,7 @@ export default {
     rewind(){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=rewindtutorial",
+        url: "index.php?option=com_emundus&controller=settings&task=rewindtutorial",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

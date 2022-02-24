@@ -15,9 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
-JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
+JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
-class EmundusonboardModeldashboard extends JModelList
+class EmundusModelDashboard extends JModelList
 {
     var $_db = null;
 
@@ -32,7 +32,7 @@ class EmundusonboardModeldashboard extends JModelList
             $dateTime = $dateTime->setTimezone(new DateTimeZone($this->offset));
             $this->now = $dateTime->format('Y-m-d H:i:s');
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error at defining the offset datetime : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
     }
 
@@ -47,7 +47,7 @@ class EmundusonboardModeldashboard extends JModelList
             $this->_db->setQuery($query);
             return $this->_db->loadResult();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error at getting the dashboard of user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error at getting the dashboard of user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
     }
 
@@ -90,7 +90,7 @@ class EmundusonboardModeldashboard extends JModelList
             }
             return true;
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error at creating a dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error at creating a dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -105,7 +105,7 @@ class EmundusonboardModeldashboard extends JModelList
             $this->_db->setQuery($query);
             return $this->_db->execute();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error at deleting the dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error at deleting the dashboard for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -142,7 +142,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return $widgets;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get all widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get all widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -195,7 +195,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return $widgets;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
         }
     }
@@ -215,7 +215,7 @@ class EmundusonboardModeldashboard extends JModelList
             $this->_db->setQuery($query);
             return $this->_db->execute();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try update my dashboard : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try update my dashboard : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -233,7 +233,7 @@ class EmundusonboardModeldashboard extends JModelList
             $request = explode('|', $value);
             return eval("$request[1]");
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '');
         }
     }
@@ -250,7 +250,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return $value->introtext;
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when get content of an article : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when get content of an article : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '');
         }
     }
@@ -284,7 +284,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return array('files' => $files, 'status' => $status);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get files count by status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get files count by status : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('files' => '', 'status' => '');
         }
     }
@@ -301,7 +301,7 @@ class EmundusonboardModeldashboard extends JModelList
             $this->_db->setQuery($query);
             return $this->_db->loadResult();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get files by campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get files by campaign : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
     }
@@ -337,7 +337,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return array('users' => $users, 'days' => $days, 'total' => $totalUsers);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('users' => '', 'days' => '', 'total' => 0);
         }
     }
@@ -433,7 +433,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return array('dataset' => $dataset, 'category' => $category);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '', 'category' => '');
         }
     }
@@ -543,7 +543,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return array('dataset' => $dataset, 'category' => $category);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '', 'category' => '');
         }
     }
@@ -627,7 +627,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return array('dataset' => $dataset, 'category' => $category);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '', 'category' => '');
         }
     }
@@ -716,7 +716,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return array('dataset' => $dataset, 'category' => $category);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '', 'category' => '');
         }
     }
@@ -795,7 +795,7 @@ class EmundusonboardModeldashboard extends JModelList
 
             return array('dataset' => $dataset, 'category' => $category);
         } catch (Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get users by day : ' . preg_replace("/[\r\n]/"," ",$query.' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '', 'category' => '');
         }
     }

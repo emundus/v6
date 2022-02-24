@@ -134,7 +134,7 @@ export default {
         if (typeof this.element.params.sub_options !== 'undefined') {
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXTA",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=getJTEXTA",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -162,7 +162,7 @@ export default {
       axios({
         method: 'post',
         url:
-            'index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoinOrdonancementColomns',
+            'index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoinOrdonancementColomns',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -178,7 +178,7 @@ export default {
     checkOnboarding() {
       axios({
         method: 'get',
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=checkfirstdatabasejoin',
+        url: 'index.php?option=com_emundus&controller=settings&task=checkfirstdatabasejoin',
       }).then((response) => {
         if (response.data.status) {
           Swal.fire({
@@ -194,7 +194,7 @@ export default {
             if (result.value) {
               axios({
                 method: 'post',
-                url: 'index.php?option=com_emundus_onboard&controller=settings&task=removeparam',
+                url: 'index.php?option=com_emundus&controller=settings&task=removeparam',
                 headers: {
                   'Content-Type': 'application/x-www-form-urlencoded',
                 },

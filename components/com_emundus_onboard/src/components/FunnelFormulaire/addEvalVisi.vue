@@ -66,7 +66,7 @@ export default {
   methods: {
     getFormByCampaign() {
       axios.get(
-              'index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=' + this.cid
+              'index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=' + this.cid
       ).then(response => {
         this.profile = response.data.data.campaign.profile_id;
         if(this.profile != null) {
@@ -76,7 +76,7 @@ export default {
     },
 
     getCampaignsByProgram(){
-      axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignsbyprogram&pid=" + this.prog)
+      axios.get("index.php?option=com_emundus&controller=campaign&task=getcampaignsbyprogram&pid=" + this.prog)
               .then(response => {
                 this.campaigns = response.data.data;
               });

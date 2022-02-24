@@ -125,7 +125,7 @@
             return new Promise(resolve=>{
                 axios({
                     method: "get",
-                    url: "index.php?option=com_emundus_onboard&controller=program&task=getusers",
+                    url: "index.php?option=com_emundus&controller=program&task=getusers",
                     params: {
                        filters : this.filters,
                        page: {page}
@@ -148,7 +148,7 @@
             getUsers(){
                 axios({
                     method: "get",
-                    url: "index.php?option=com_emundus_onboard&controller=program&task=getusers",
+                    url: "index.php?option=com_emundus&controller=program&task=getusers",
                     params: {
                        filters : this.filters,
                     },
@@ -167,7 +167,7 @@
             getProgramsList() {
                 axios({
                     method: "get",
-                    url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+                    url: "index.php?option=com_emundus&controller=program&task=getallprogram",
                     params: {
                         filter: '',
                         sort: '',
@@ -185,7 +185,7 @@
             unlockUser(id){
                 axios({
                     method: "post",
-                    url: 'index.php?option=com_emundus_onboard&controller=settings&task=unlockuser',
+                    url: 'index.php?option=com_emundus&controller=settings&task=unlockuser',
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
@@ -202,7 +202,7 @@
             lockUser(id){
                 axios({
                     method: "post",
-                    url: 'index.php?option=com_emundus_onboard&controller=settings&task=lockuser',
+                    url: 'index.php?option=com_emundus&controller=settings&task=lockuser',
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },

@@ -62,7 +62,7 @@ export default {
 
   methods: {
     getEvaluationGridByProgram(redirect){
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getevaluationgrid&pid=" + this.prog)
+      axios.get("index.php?option=com_emundus&controller=program&task=getevaluationgrid&pid=" + this.prog)
               .then(response => {
                 this.grid = response.data.data;
                 if(this.grid != null) {
@@ -94,7 +94,7 @@ export default {
           axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=program&task=deletegrid",
+                "index.php?option=com_emundus&controller=program&task=deletegrid",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -121,7 +121,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },

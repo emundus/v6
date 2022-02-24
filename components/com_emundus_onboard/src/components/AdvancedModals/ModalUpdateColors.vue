@@ -58,7 +58,7 @@
       changeColors(preset) {
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=updatecolor",
+          url: "index.php?option=com_emundus&controller=settings&task=updatecolor",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

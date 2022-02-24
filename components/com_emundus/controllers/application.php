@@ -414,9 +414,9 @@ class EmundusControllerApplication extends JControllerLegacy
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
                         if($action[0] == 36){
-                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_messenger'.DS.'models'.DS.'messages.php');
+                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messenger.php');
 
-                            $messenger = new EmundusmessengerModelmessages;
+                            $messenger = new EmundusModelMessenger;
                             $notifications = $messenger->getNotificationsByFnum($fnum);
                             if($notifications > 0) {
                                 $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);

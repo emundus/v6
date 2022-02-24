@@ -147,7 +147,7 @@ export default {
     removeTrigger(trigger) {
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=email&task=removetrigger',
+        url: 'index.php?option=com_emundus&controller=email&task=removetrigger',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -159,7 +159,7 @@ export default {
       });
     },
     getTriggers() {
-      axios.get("index.php?option=com_emundus_onboard&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
+      axios.get("index.php?option=com_emundus&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
       .then(response => {
         this.triggers = response.data.data;
       });

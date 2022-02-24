@@ -200,7 +200,7 @@
         axios({
           method: "post",
           url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
+                  "index.php?option=com_emundus&controller=formbuilder&task=updateparams",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -220,7 +220,7 @@
         return axios({
           method: "post",
           url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=getalltranslations",
+                  "index.php?option=com_emundus&controller=formbuilder&task=getalltranslations",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -233,7 +233,7 @@
         this.loading = true;
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
           params: {
             element: this.ID,
             gid: this.gid
@@ -269,7 +269,7 @@
       getDatabases(){
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoin",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoin",
         }).then(response => {
           this.databases = response.data.data;
         });
@@ -299,7 +299,7 @@
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=publishunpublishelement",
+              "index.php?option=com_emundus&controller=formbuilder&task=publishunpublishelement",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -333,7 +333,7 @@
           axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+                "index.php?option=com_emundus&controller=formbuilder&task=changerequire",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },

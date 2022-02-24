@@ -292,7 +292,7 @@ export default {
       }
 
       axios.get(
-          `index.php?option=com_emundus_onboard&controller=form&task=getallformpublished`
+          `index.php?option=com_emundus&controller=form&task=getallformpublished`
       ).then(profiles => {
         this.profiles = profiles.data.data;
         if(this.form.profile_id == null) {
@@ -316,7 +316,7 @@ export default {
     },
 
     changeToProgMenu(index) {
-      axios.get(`index.php?option=com_emundus_onboard&controller=program&task=getprogrambyid&id=${this.form.program_id}`)
+      axios.get(`index.php?option=com_emundus&controller=program&task=getprogrambyid&id=${this.form.program_id}`)
           .then(rep => {
             this.program.id = rep.data.data.id;
             this.program.code = rep.data.data.code;
@@ -340,7 +340,7 @@ export default {
             this.prog_group.manager = rep.data.data.manager_group;
             axios({
               method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=program&task=getcampaignsbyprogram",
+              url: "index.php?option=com_emundus&controller=program&task=getcampaignsbyprogram",
               params: {
                 pid: this.program.id,
               },
@@ -390,7 +390,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },

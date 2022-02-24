@@ -111,7 +111,7 @@ export default {
 
   methods: {
     getEmundusParams() {
-      axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getemundusparams")
+      axios.get("index.php?option=com_emundus&controller=settings&task=getemundusparams")
           .then(response => {
             this.config = response.data.config;
             this.params.applicant_can_renew.value = parseInt(this.config.applicant_can_renew);
@@ -125,7 +125,7 @@ export default {
       this.$emit('updateSaving',true);
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=updateemundusparam',
+        url: 'index.php?option=com_emundus&controller=settings&task=updateemundusparam',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

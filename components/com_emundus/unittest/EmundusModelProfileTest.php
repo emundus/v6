@@ -10,7 +10,7 @@ include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once (__DIR__ . '/../models/profile.php');
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus_onboard/models/formbuilder.php');
+include_once (JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
 include_once(JPATH_SITE.'/components/com_emundus/helpers/files.php');
 
 jimport('joomla.user.helper');
@@ -40,7 +40,7 @@ class EmundusModelProfileTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
         $this->m_profile = new EmundusModelProfile;
-        $this->m_formbuilder = new EmundusonboardModelformbuilder;
+        $this->m_formbuilder = new EmundusModelFormbuilder;
         $this->db = JFactory::getDbo();
     }
 

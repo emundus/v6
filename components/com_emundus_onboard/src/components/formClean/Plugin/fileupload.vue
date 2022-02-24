@@ -116,7 +116,7 @@ export default {
     retrieveAssociateElementDoc(docid){
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=formbuilder&task=retriveElementFormAssociatedDoc',
+        url: 'index.php?option=com_emundus&controller=formbuilder&task=retriveElementFormAssociatedDoc',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -151,7 +151,7 @@ export default {
     retrieveDocumentNameFalangs(docid){
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=campaign&task=getDocumentFalang',
+        url: 'index.php?option=com_emundus&controller=campaign&task=getDocumentFalang',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -170,7 +170,7 @@ export default {
     updateDocumentFalengs(params){
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updateDocumentFalang',
+        url: 'index.php?option=com_emundus&controller=campaign&task=updateDocumentFalang',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -184,7 +184,7 @@ export default {
 
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument',
+        url: 'index.php?option=com_emundus&controller=campaign&task=updatedocument',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

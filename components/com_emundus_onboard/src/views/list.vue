@@ -225,12 +225,12 @@ export default {
 
     axios({
       method: "get",
-      url: "index.php?option=com_emundus_onboard&controller=form&task=getActualLanguage",
+      url: "index.php?option=com_emundus&controller=form&task=getActualLanguage",
     }).then(response => {
       this.actualLanguage = response.data.msg;
     });
 
-    axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
+    axios.get("index.php?option=com_emundus&controller=program&task=getallprogram")
         .then(response => {
           this.allPrograms = response.data.data;
 
@@ -356,7 +356,7 @@ export default {
     allFilters() {
       let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
       if (this.type !== "files") {
-        axios.get("index.php?option=com_emundus_onboard&controller=" +
+        axios.get("index.php?option=com_emundus&controller=" +
           controller +
           "&task=get" +
           this.typeForAdd +
@@ -364,7 +364,7 @@ export default {
           this.filtersCount
         ).then(response => {
           axios.get(
-            "index.php?option=com_emundus_onboard&controller=" +
+            "index.php?option=com_emundus&controller=" +
             controller +
             "&task=getall" +
             this.typeForAdd +
@@ -376,7 +376,7 @@ export default {
             this.countPages = Math.ceil(this.total / this.limit);
             if (this.type == 'email') {
 
-              axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcategories")
+              axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
               .then(catrep => {
                 this.email_categories = catrep.data.data;
               });

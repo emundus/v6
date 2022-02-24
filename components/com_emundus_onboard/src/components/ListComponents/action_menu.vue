@@ -84,7 +84,7 @@
       filesNumber() {
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilesbycampaign",
+          url: "index.php?option=com_emundus&controller=dashboard&task=getfilesbycampaign",
           params: {
             cid: this.selected,
           },
@@ -113,7 +113,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=program&task=deleteprogram",
+                  url: "index.php?option=com_emundus&controller=program&task=deleteprogram",
                   data: qs.stringify({ id })
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -126,7 +126,7 @@
                   });
                 }).then(() => {
                   axios.get(
-                          "index.php?option=com_emundus_onboard&controller=program&task=getprogramcount"
+                          "index.php?option=com_emundus&controller=program&task=getprogramcount"
                   ).then(response => {
                     this.total = response.data.data;
                     this.updateTotal(this.total);
@@ -153,7 +153,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=campaign&task=deletecampaign",
+                  url: "index.php?option=com_emundus&controller=campaign&task=deletecampaign",
                   data: qs.stringify({ id })
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -168,7 +168,7 @@
                   });
                 }).then(() => {
                   axios.get(
-                          "index.php?option=com_emundus_onboard&controller=campaign&task=getcampaigncount"
+                          "index.php?option=com_emundus&controller=campaign&task=getcampaigncount"
                   ).then(response => {
                     this.total = response.data.data;
                     this.updateTotal(this.total);
@@ -197,7 +197,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=email&task=deleteemail",
+                  url: "index.php?option=com_emundus&controller=email&task=deleteemail",
                   data: qs.stringify({ id })
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -211,7 +211,7 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get("index.php?option=com_emundus_onboard&controller=email&task=getemailcount")
+                  axios.get("index.php?option=com_emundus&controller=email&task=getemailcount")
                           .then(response => {
                             this.total = response.data.data;
                             this.updateTotal(this.total);
@@ -240,7 +240,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=form&task=deleteform",
+                  url: "index.php?option=com_emundus&controller=form&task=deleteform",
                   data: qs.stringify({ id })
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -254,7 +254,7 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get("index.php?option=com_emundus_onboard&controller=form&task=getformcount")
+                  axios.get("index.php?option=com_emundus&controller=form&task=getformcount")
                           .then(response => {
                             this.total = response.data.data;
                             this.updateTotal(this.total);
@@ -287,7 +287,7 @@
                 axios({
                   method: "post",
                   url:
-                          "index.php?option=com_emundus_onboard&controller=program&task=unpublishprogram",
+                          "index.php?option=com_emundus&controller=program&task=unpublishprogram",
                   data: qs.stringify({ id })
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -320,7 +320,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=campaign&task=unpublishcampaign",
+                  url: "index.php?option=com_emundus&controller=campaign&task=unpublishcampaign",
                   data: qs.stringify({id})
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -342,7 +342,7 @@
           case "email":
             axios({
               method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=email&task=unpublishemail",
+              url: "index.php?option=com_emundus&controller=email&task=unpublishemail",
               data: qs.stringify({ id })
             }).then(response => {
               list.commit("unpublish", id);
@@ -372,7 +372,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=form&task=unpublishform",
+                  url: "index.php?option=com_emundus&controller=form&task=unpublishform",
                   data: qs.stringify({id})
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -398,7 +398,7 @@
           case "program":
             axios({
               method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=program&task=publishprogram",
+              url: "index.php?option=com_emundus&controller=program&task=publishprogram",
               data: qs.stringify({ id })
             }).then(response => {
               list.commit("publish", id);
@@ -417,7 +417,7 @@
           case "campaign":
             axios({
               method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=campaign&task=publishcampaign",
+              url: "index.php?option=com_emundus&controller=campaign&task=publishcampaign",
               data: qs.stringify({ id })
             }).then(response => {
               list.commit("publish", id);
@@ -436,7 +436,7 @@
           case "email":
             axios({
               method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=email&task=publishemail",
+              url: "index.php?option=com_emundus&controller=email&task=publishemail",
               data: qs.stringify({ id })
             }).then(response => {
               list.commit("publish", id);
@@ -455,7 +455,7 @@
           case "formulaire":
             axios({
               method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=form&task=publishform",
+              url: "index.php?option=com_emundus&controller=form&task=publishform",
               data: qs.stringify({ id })
             }).then(response => {
               list.commit("publish", id);
@@ -489,7 +489,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=campaign&task=duplicatecampaign",
+                  url: "index.php?option=com_emundus&controller=campaign&task=duplicatecampaign",
                   data: qs.stringify({id})
                 }).then(response => {
                   window.location.reload();
@@ -512,7 +512,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=form&task=duplicateform",
+                  url: "index.php?option=com_emundus&controller=form&task=duplicateform",
                   data: qs.stringify({id})
                 }).then(response => {
                   window.location.reload();

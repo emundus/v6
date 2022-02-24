@@ -105,7 +105,7 @@ export default {
         });
         axios({
           method: "post",
-          url: 'index.php?option=com_emundus_onboard&controller=form&task=affectcampaignstoform',
+          url: 'index.php?option=com_emundus&controller=form&task=affectcampaignstoform',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -134,7 +134,7 @@ export default {
     goAddCampaign() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: 'index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=',
         },
@@ -146,13 +146,13 @@ export default {
       });
     },
     getCampaigns() {
-      axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignstoaffect")
+      axios.get("index.php?option=com_emundus&controller=campaign&task=getcampaignstoaffect")
           .then(response => {
             this.campaigns = response.data.data;
           });
     },
     searchCampaignByTerm() {
-      axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignstoaffectbyterm&term=" + this.searchTerm)
+      axios.get("index.php?option=com_emundus&controller=campaign&task=getcampaignstoaffectbyterm&term=" + this.searchTerm)
           .then(response => {
             this.campaigns = response.data.data;
           });
@@ -160,7 +160,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },

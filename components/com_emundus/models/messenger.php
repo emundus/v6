@@ -15,9 +15,9 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
-JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_messenger/models');
+JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
-class EmundusmessengerModelmessages extends JModelList
+class EmundusModelMessenger extends JModelList
 {
     public function __construct($config = array()) {
         parent::__construct($config);

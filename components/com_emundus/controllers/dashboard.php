@@ -21,7 +21,7 @@ jimport('joomla.application.component.controller');
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusonboardControllerdashboard extends JControllerLegacy
+class EmundusControllerDashboard extends JControllerLegacy
 {
 
     var $model = null;

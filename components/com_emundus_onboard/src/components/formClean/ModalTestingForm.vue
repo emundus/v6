@@ -91,7 +91,7 @@ export default {
     createNewFile(){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=deletetestingfile",
+        url: "index.php?option=com_emundus&controller=formbuilder&task=deletetestingfile",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -102,7 +102,7 @@ export default {
           if(result.data.status == true){
             axios({
               method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createtestingfile",
+              url: "index.php?option=com_emundus&controller=formbuilder&task=createtestingfile",
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
               },

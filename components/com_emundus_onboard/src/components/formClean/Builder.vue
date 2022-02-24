@@ -102,7 +102,7 @@ export default {
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=deleteMenu",
+                    "index.php?option=com_emundus&controller=formbuilder&task=deleteMenu",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },

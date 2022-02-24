@@ -97,7 +97,7 @@ export default {
 
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=program&task=affectuserstogroup',
+        url: 'index.php?option=com_emundus&controller=program&task=affectuserstogroup',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -113,13 +113,13 @@ export default {
       });
     },
     getUsers() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserstoaffect&group=" + this.group.prog)
+      axios.get("index.php?option=com_emundus&controller=program&task=getuserstoaffect&group=" + this.group.prog)
               .then(response => {
                 this.users = response.data.data;
               });
     },
     searchUserByTerm() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserstoaffectbyterm&group=" + this.group.prog + "&term=" + this.searchTerm)
+      axios.get("index.php?option=com_emundus&controller=program&task=getuserstoaffectbyterm&group=" + this.group.prog + "&term=" + this.searchTerm)
               .then(response => {
                 this.users = response.data.data;
               });

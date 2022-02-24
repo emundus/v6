@@ -225,7 +225,7 @@ export default {
       if(this.trigger != null){
         axios({
           method: "post",
-          url: 'index.php?option=com_emundus_onboard&controller=email&task=updatetrigger',
+          url: 'index.php?option=com_emundus&controller=email&task=updatetrigger',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -242,7 +242,7 @@ export default {
       } else {
         axios({
           method: "post",
-          url: 'index.php?option=com_emundus_onboard&controller=email&task=createtrigger',
+          url: 'index.php?option=com_emundus&controller=email&task=createtrigger',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -258,31 +258,31 @@ export default {
       }
     },
     getUsers() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getuserswithoutapplicants")
+      axios.get("index.php?option=com_emundus&controller=program&task=getuserswithoutapplicants")
               .then(response => {
                 this.users = response.data.data;
               });
     },
     searchUserByTerm() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+      axios.get("index.php?option=com_emundus&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
               .then(response => {
                 this.users = response.data.data;
               });
     },
     getEmailModels() {
-      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getallemail")
+      axios.get("index.php?option=com_emundus&controller=email&task=getallemail")
               .then(response => {
                 this.models = response.data.data;
               });
     },
     getStatus() {
-      axios.get("index.php?option=com_emundus_onboard&controller=email&task=getstatus")
+      axios.get("index.php?option=com_emundus&controller=email&task=getstatus")
               .then(response => {
                 this.status = response.data.data;
               });
     },
     getTrigger() {
-      axios.get("index.php?option=com_emundus_onboard&controller=email&task=gettriggerbyid&tid=" + this.trigger)
+      axios.get("index.php?option=com_emundus&controller=email&task=gettriggerbyid&tid=" + this.trigger)
               .then(response => {
                 this.form.model = response.data.data.model;
                 this.form.status = response.data.data.status;

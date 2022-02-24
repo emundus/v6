@@ -94,7 +94,7 @@
             getDatabases(){
                 axios({
                     method: "get",
-                    url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getdatabasesjoin",
+                    url: "index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoin",
                 }).then(response => {
                     this.databases = response.data.data;
                 });
@@ -111,7 +111,7 @@
                     };
                     axios({
                         method: "get",
-                        url: "index.php?option=com_emundus_onboard&controller=settings&task=getdatasfromtable",
+                        url: "index.php?option=com_emundus&controller=settings&task=getdatasfromtable",
                         params: {
                             db: db_name,
                         },

@@ -105,7 +105,7 @@ export default {
 
   methods: {
     getStatus() {
-      axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getstatus")
+      axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
           .then(response => {
             this.status = response.data.data;
             setTimeout(() => {
@@ -124,7 +124,7 @@ export default {
       formData.append('label', document.getElementById(('status_label_' + status.step)).textContent);
       formData.append('color', status.class);
 
-      await client().post('index.php?option=com_emundus_onboard&controller=settings&task=updatestatus',
+      await client().post('index.php?option=com_emundus&controller=settings&task=updatestatus',
           formData,
           {
             headers: {
@@ -148,7 +148,7 @@ export default {
       const formData = new FormData();
       formData.append('status', status_steps.join(','));
 
-      await client().post('index.php?option=com_emundus_onboard&controller=settings&task=updatestatusorder',
+      await client().post('index.php?option=com_emundus&controller=settings&task=updatestatusorder',
           formData,
           {
             headers: {
@@ -167,7 +167,7 @@ export default {
 
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=createstatus',
+        url: 'index.php?option=com_emundus&controller=settings&task=createstatus',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -188,7 +188,7 @@ export default {
 
         axios({
           method: "post",
-          url: 'index.php?option=com_emundus_onboard&controller=settings&task=deletestatus',
+          url: 'index.php?option=com_emundus&controller=settings&task=deletestatus',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

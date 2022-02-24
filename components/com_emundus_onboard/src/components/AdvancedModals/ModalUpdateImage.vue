@@ -83,7 +83,7 @@
     data() {
       return {
         dropzoneOptions: {
-          url: 'index.php?option=com_emundus_onboard&controller=settings&task=updatehomebackground',
+          url: 'index.php?option=com_emundus&controller=settings&task=updatehomebackground',
           maxFilesize: 10,
           maxFiles: 1,
           autoProcessQueue: false,

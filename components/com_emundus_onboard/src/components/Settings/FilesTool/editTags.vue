@@ -93,7 +93,7 @@ export default {
 
   methods: {
     getTags() {
-      axios.get("index.php?option=com_emundus_onboard&controller=settings&task=gettags")
+      axios.get("index.php?option=com_emundus&controller=settings&task=gettags")
           .then(response => {
             this.tags = response.data.data;
             setTimeout(() => {
@@ -112,7 +112,7 @@ export default {
       formData.append('label', document.getElementById(('tag_label_' + tag.id)).textContent);
       formData.append('color', tag.class);
 
-      await client().post('index.php?option=com_emundus_onboard&controller=settings&task=updatetags',
+      await client().post('index.php?option=com_emundus&controller=settings&task=updatetags',
           formData,
           {
             headers: {
@@ -130,7 +130,7 @@ export default {
 
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=createtag',
+        url: 'index.php?option=com_emundus&controller=settings&task=createtag',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -150,7 +150,7 @@ export default {
 
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=deletetag',
+        url: 'index.php?option=com_emundus&controller=settings&task=deletetag',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

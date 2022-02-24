@@ -183,7 +183,7 @@ export default {
     getExistingPages() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getPagesModel"
+        url: "index.php?option=com_emundus&controller=formbuilder&task=getPagesModel"
       }).then(response => {
         this.models = response.data;
       });
@@ -208,7 +208,7 @@ export default {
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=createMenu",
+              "index.php?option=com_emundus&controller=formbuilder&task=createMenu",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

@@ -303,7 +303,7 @@ export default {
 
   created() {
     axios
-      .get(`index.php?option=com_emundus_onboard&controller=files&task=getallfiles`)
+      .get(`index.php?option=com_emundus&controller=files&task=getallfiles`)
       .then(response => {
         this.total = response.data.data.length;
 
@@ -315,7 +315,7 @@ export default {
       })
       .then(() => {
         axios
-          .get("index.php?option=com_emundus_onboard&controller=files&task=getdistincts", {
+          .get("index.php?option=com_emundus&controller=files&task=getdistincts", {
             params: {
               ids: this.campaignsId
             },
@@ -539,7 +539,7 @@ export default {
 
     allFilters(filters) {
       axios
-        .get("index.php?option=com_emundus_onboard&controller=files&task=getallfiles" + filters)
+        .get("index.php?option=com_emundus&controller=files&task=getallfiles" + filters)
         .then(response => {
           this.total = response.data.data.length;
 

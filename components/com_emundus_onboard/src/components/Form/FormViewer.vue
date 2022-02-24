@@ -111,7 +111,7 @@
                     axios({
                       method: "get",
                       url:
-                              "index.php?option=com_emundus_onboard&controller=formbuilder&task=checkconstraintgroup",
+                              "index.php?option=com_emundus&controller=formbuilder&task=checkconstraintgroup",
                       params: {
                         cid: this.visibility
                       },
@@ -124,7 +124,7 @@
                           axios({
                             method: "get",
                             url:
-                                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=checkvisibility",
+                                    "index.php?option=com_emundus&controller=formbuilder&task=checkvisibility",
                             params: {
                               group: this.object_json.Groups[group]['group_id'],
                               cid: this.visibility
@@ -158,7 +158,7 @@
         this.object_json.Groups['group_' + gid]['visibility'] = !this.object_json.Groups['group_' + gid]['visibility'];
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=updatevisibility",
+          url: "index.php?option=com_emundus&controller=program&task=updatevisibility",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

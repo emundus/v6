@@ -99,7 +99,7 @@ export default {
   data() {
     return {
       dropzoneOptions: {
-        url: 'index.php?option=com_emundus_onboard&controller=settings&task=uploaddropfiledoc&cid=' + this.campaignId,
+        url: 'index.php?option=com_emundus&controller=settings&task=uploaddropfiledoc&cid=' + this.campaignId,
         maxFilesize: 10,
         maxFiles: 1,
         autoProcessQueue: true,
@@ -129,7 +129,7 @@ export default {
     getDocumentsDropfiles() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=campaign&task=getdocumentsdropfiles",
+        url: "index.php?option=com_emundus&controller=campaign&task=getdocumentsdropfiles",
         params: {
           cid: this.campaignId,
         },
@@ -146,7 +146,7 @@ export default {
       });
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateorderdropfiledocuments",
+        url: "index.php?option=com_emundus&controller=campaign&task=updateorderdropfiledocuments",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -172,7 +172,7 @@ export default {
           let newname = document.getElementById('label_' + doc.id).value
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=editdocumentdropfile",
+            url: "index.php?option=com_emundus&controller=campaign&task=editdocumentdropfile",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -190,7 +190,7 @@ export default {
       this.documents.splice(index, 1);
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=campaign&task=deletedocumentdropfile",
+        url: "index.php?option=com_emundus&controller=campaign&task=deletedocumentdropfile",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

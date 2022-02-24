@@ -341,7 +341,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateOrder",
+            "index.php?option=com_emundus&controller=formbuilder&task=updateOrder",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -376,7 +376,7 @@ export default {
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=changerequire",
+              "index.php?option=com_emundus&controller=formbuilder&task=changerequire",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -401,7 +401,7 @@ export default {
     updateRequireEvent(element) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+        url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
         params: {
           element: element.id,
           gid: element.group_id
@@ -437,7 +437,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=campaign&task=deletedocumentdropfile",
+            "index.php?option=com_emundus&controller=campaign&task=deletedocumentdropfile",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -450,7 +450,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=form&task=removeDocumentFromProfile",
+            "index.php?option=com_emundus&controller=form&task=removeDocumentFromProfile",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -463,7 +463,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=form&task=removeDocument",
+            "index.php?option=com_emundus&controller=form&task=removeDocument",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -497,7 +497,7 @@ export default {
           axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=deleteElement",
+                "index.php?option=com_emundus&controller=formbuilder&task=deleteElement",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -539,7 +539,7 @@ export default {
     retrieveAssociateElementDoc(docid){
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=formbuilder&task=retriveElementFormAssociatedDoc',
+        url: 'index.php?option=com_emundus&controller=formbuilder&task=retriveElementFormAssociatedDoc',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -574,7 +574,7 @@ export default {
     updateAssociateDocElement(params){
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument',
+        url: 'index.php?option=com_emundus&controller=campaign&task=updatedocument',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -582,7 +582,7 @@ export default {
       }).then((rep) => {
         axios({
           method: "post",
-          url: 'index.php?option=com_emundus_onboard&controller=campaign&task=updateDocumentFalang',
+          url: 'index.php?option=com_emundus&controller=campaign&task=updateDocumentFalang',
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -609,7 +609,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+            "index.php?option=com_emundus&controller=formbuilder&task=formsTrad",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -622,7 +622,7 @@ export default {
         if(rep.data.status == 0){
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateelementlabelwithouttranslation",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=updateelementlabelwithouttranslation",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -633,7 +633,7 @@ export default {
           }).then(() => {
             axios({
               method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+              url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
               params: {
                 element: element.id,
                 gid: element.group_id
@@ -675,7 +675,7 @@ export default {
           }
           axios({
             method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
             params: {
               element: element.id,
               gid: element.group_id
@@ -711,7 +711,7 @@ export default {
     reloadElement(element){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+        url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
         params: {
           element: element.id,
           gid: element.group_id
@@ -754,7 +754,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+            "index.php?option=com_emundus&controller=formbuilder&task=formsTrad",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -767,7 +767,7 @@ export default {
         if(rep.data.status == 0){
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updategrouplabelwithouttranslation",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=updategrouplabelwithouttranslation",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -814,7 +814,7 @@ export default {
           axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=deleteGroup",
+                "index.php?option=com_emundus&controller=formbuilder&task=deleteGroup",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -848,7 +848,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=reordergroups",
+            "index.php?option=com_emundus&controller=formbuilder&task=reordergroups",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -890,7 +890,7 @@ export default {
           if(result.value) {
             axios({
               method: "POST",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=enablegrouprepeat",
+              url: "index.php?option=com_emundus&controller=formbuilder&task=enablegrouprepeat",
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
@@ -928,7 +928,7 @@ export default {
           if(result.value) {
             axios({
               method: "POST",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=disablegrouprepeat",
+              url: "index.php?option=com_emundus&controller=formbuilder&task=disablegrouprepeat",
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
@@ -971,7 +971,7 @@ export default {
         if(result.value) {
           axios({
             method: "POST",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=displayhidegroup",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=displayhidegroup",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -999,7 +999,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+            "index.php?option=com_emundus&controller=formbuilder&task=formsTrad",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -1012,7 +1012,7 @@ export default {
         if(rep.data.status == 0){
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepagelabelwithouttranslation",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=updatepagelabelwithouttranslation",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -1025,7 +1025,7 @@ export default {
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatemenulabel",
+              "index.php?option=com_emundus&controller=formbuilder&task=updatemenulabel",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -1064,7 +1064,7 @@ export default {
       axios({
         method: "post",
         url:
-            "index.php?option=com_emundus_onboard&controller=formbuilder&task=formsTrad",
+            "index.php?option=com_emundus&controller=formbuilder&task=formsTrad",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -1076,7 +1076,7 @@ export default {
         if(rep.data.status == 0){
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=updatepageintrowithouttranslation",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=updatepageintrowithouttranslation",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -1294,7 +1294,7 @@ export default {
     getAccess(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getAccess",
+        url: "index.php?option=com_emundus&controller=form&task=getAccess",
       }).then(response => {
         this.sysaccess = response.data.access;
       });

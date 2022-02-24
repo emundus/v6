@@ -75,7 +75,7 @@ export default {
       axios({
         method: "post",
         url:
-                "index.php?option=com_emundus_onboard&controller=form&task=duplicateform",
+                "index.php?option=com_emundus&controller=form&task=duplicateform",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -85,7 +85,7 @@ export default {
       }).then((rep) => {
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=campaign&task=updateprofile",
+          url: "index.php?option=com_emundus&controller=campaign&task=updateprofile",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

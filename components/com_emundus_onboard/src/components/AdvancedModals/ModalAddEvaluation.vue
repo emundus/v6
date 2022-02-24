@@ -145,7 +145,7 @@ export default {
     getExistingGrids() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=program&task=getgridsmodel"
+        url: "index.php?option=com_emundus&controller=program&task=getgridsmodel"
       }).then(response => {
         this.models = response.data.data;
       });
@@ -163,7 +163,7 @@ export default {
         this.submitted = true;
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=creategrid",
+          url: "index.php?option=com_emundus&controller=program&task=creategrid",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

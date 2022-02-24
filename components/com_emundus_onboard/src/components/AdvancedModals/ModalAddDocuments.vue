@@ -430,17 +430,17 @@ export default {
         }
 
       if(!image_error) {
-        let url = 'index.php?option=com_emundus_onboard&controller=campaign&task=createdocument';
+        let url = 'index.php?option=com_emundus&controller=campaign&task=createdocument';
 
         if (this.form.name[this.langue] === this.model.value && this.doc != null) {
-          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+          url = 'index.php?option=com_emundus&controller=campaign&task=updatedocument';
 
           params.did = this.doc;
 
         }
         if (this.currentDoc != null) {
 
-          url = 'index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument';
+          url = 'index.php?option=com_emundus&controller=campaign&task=updatedocument';
           params.did = this.doc;
 
 
@@ -584,7 +584,7 @@ export default {
         if(result.value){
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=form&task=deletemodeldocument",
+            url: "index.php?option=com_emundus&controller=form&task=deletemodeldocument",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -620,7 +620,7 @@ export default {
     getModelsDocs() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=form&task=getundocuments",
+        url: "index.php?option=com_emundus&controller=form&task=getundocuments",
       }).then(response => {
         this.models = response.data.data;
         if (this.currentDoc != null) {

@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 use Joomla\CMS\Date\Date;
 
-class EmundusonboardModelfalang extends JModelList {
+class EmundusModelFalang extends JModelList {
 
   function insertFalang($values,$reference_id,$reference_table,$reference_field){
       $db = $this->getDbo();
@@ -60,7 +60,7 @@ class EmundusonboardModelfalang extends JModelList {
 
           return $results;
       }  catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }
@@ -88,7 +88,7 @@ class EmundusonboardModelfalang extends JModelList {
           return $db->execute();
           //
       }  catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus/models/falang | Error when try to insert the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }
@@ -107,7 +107,7 @@ class EmundusonboardModelfalang extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus_onboard/models/falang | Error when try to update the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/falang | Error when try to update the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;
         }
     }
@@ -124,7 +124,7 @@ class EmundusonboardModelfalang extends JModelList {
           $db->setQuery($query);
           return $db->execute();
       } catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error when try to delete the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus/models/falang | Error when try to delete the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }
@@ -165,7 +165,7 @@ class EmundusonboardModelfalang extends JModelList {
 
           return $results;
       } catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error when try to update the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus/models/falang | Error when try to update the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }
@@ -195,7 +195,7 @@ class EmundusonboardModelfalang extends JModelList {
 
           return $labels;
       } catch(Exception $e) {
-          JLog::add('component/com_emundus_onboard/models/falang | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+          JLog::add('component/com_emundus/models/falang | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
           return false;
       }
   }

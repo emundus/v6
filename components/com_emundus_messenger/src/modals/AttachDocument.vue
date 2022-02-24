@@ -111,7 +111,7 @@ export default {
       loading: false,
       action: 1,
       dropzoneOptions: {
-        url: 'index.php?option=com_emundus_messenger&controller=messages&task=uploaddocument&fnum=' + this.fnum + '&applicant=' + this.applicant,
+        url: 'index.php?option=com_emundus&controller=messenger&task=uploaddocument&fnum=' + this.fnum + '&applicant=' + this.applicant,
         maxFilesize: 10,
         maxFiles: 5,
         autoProcessQueue: false,
@@ -182,7 +182,7 @@ export default {
     getTypesByCampaign(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_messenger&controller=messages&task=getdocumentsbycampaign",
+        url: "index.php?option=com_emundus&controller=messenger&task=getdocumentsbycampaign",
         params: {
           fnum: this.fnum,
           applicant: this.applicant
@@ -198,7 +198,7 @@ export default {
     askAttachment(){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_messenger&controller=messages&task=askattachment",
+        url: "index.php?option=com_emundus&controller=messenger&task=askattachment",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

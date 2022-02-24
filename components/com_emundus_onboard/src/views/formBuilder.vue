@@ -573,7 +573,7 @@
             axios({
               method: "post",
               url:
-                  "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+                  "index.php?option=com_emundus&controller=formbuilder&task=createsimpleelement",
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
@@ -598,7 +598,7 @@
         this.loading=true;
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
           params: {
             element: element,
             gid: gid
@@ -617,7 +617,7 @@
           axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
+                "index.php?option=com_emundus&controller=formbuilder&task=updateparams",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -635,7 +635,7 @@
       createElementEMundusFileUpload(params,gid,plugin,order){
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatedocument",
+          url: "index.php?option=com_emundus&controller=campaign&task=updatedocument",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -646,7 +646,7 @@
           axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimpleelement",
+                "index.php?option=com_emundus&controller=formbuilder&task=createsimpleelement",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -659,7 +659,7 @@
 
             axios({
               method: "get",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+              url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
               params: {
                 element: result.data.scalar,
                 gid: gid
@@ -724,7 +724,7 @@
         axios({
           method: "post",
           url:
-              "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsectionsimpleelements",
+              "index.php?option=com_emundus&controller=formbuilder&task=createsectionsimpleelements",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -750,7 +750,7 @@
         }
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimplegroup",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=createsimplegroup",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -763,7 +763,7 @@
         }).then((result) => {
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXT",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=getJTEXT",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -774,7 +774,7 @@
             result.data.group_showLegend = resultTrad.data;
             axios({
               method: "post",
-              url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getalltranslations",
+              url: "index.php?option=com_emundus&controller=formbuilder&task=getalltranslations",
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
               },
@@ -810,7 +810,7 @@
       updateLabelForm(){
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=form&task=updateformlabel",
+          url: "index.php?option=com_emundus&controller=form&task=updateformlabel",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -913,7 +913,7 @@
       getElement(element,gid){
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
           params: {
             element: element,
             gid: gid
@@ -1038,7 +1038,7 @@
       },
 
       getFilesByForm() {
-        axios.get("index.php?option=com_emundus_onboard&controller=form&task=getfilesbyform&pid=" + this.prid).then(response => {
+        axios.get("index.php?option=com_emundus&controller=form&task=getfilesbyform&pid=" + this.prid).then(response => {
           this.files = response.data.data;
           if(this.files != 0){
             this.tip();
@@ -1049,7 +1049,7 @@
       getSubmittionPage() {
         axios({
           method: "GET",
-          url: "index.php?option=com_emundus_onboard&controller=form&task=getsubmittionpage",
+          url: "index.php?option=com_emundus&controller=form&task=getsubmittionpage",
           params: {
             prid: this.prid,
           },
@@ -1077,7 +1077,7 @@
         axios({
           method: "get",
           url:
-                  "index.php?option=com_emundus_onboard&controller=form&task=getFormsByProfileId",
+                  "index.php?option=com_emundus&controller=form&task=getFormsByProfileId",
           params: {
             profile_id: this.prid
           },
@@ -1113,7 +1113,7 @@
       getDocuments(){
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=form&task=getDocuments",
+          url: "index.php?option=com_emundus&controller=form&task=getDocuments",
           params: {
             pid: this.prid,
           },
@@ -1130,7 +1130,7 @@
       removeDocument(index,did){
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=form&task=removeDocumentFromProfile",
+          url: "index.php?option=com_emundus&controller=form&task=removeDocumentFromProfile",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -1149,7 +1149,7 @@
         axios({
           method: "get",
           url:
-                  "index.php?option=com_emundus_onboard&controller=form&task=getProfileLabelByProfileId",
+                  "index.php?option=com_emundus&controller=form&task=getProfileLabelByProfileId",
           params: {
             profile_id: profile_id
           },
@@ -1168,7 +1168,7 @@
       exitForm(){
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+          url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
           params: {
             link: 'index.php?option=com_emundus_onboard&view=form',
           },
@@ -1185,7 +1185,7 @@
         if(this.cid != 0){
           axios({
             method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+            url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
             params: {
               link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
             },
@@ -1199,7 +1199,7 @@
           axios({
             method: "get",
             url:
-                    "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+                    "index.php?option=com_emundus&controller=form&task=getassociatedcampaign",
             params: {
               pid: this.prid
             },
@@ -1224,7 +1224,7 @@
       testForm() {
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=gettestingparams",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=gettestingparams",
           params: {
            prid : this.prid,
           },
@@ -1241,7 +1241,7 @@
               } else {
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createtestingfile",
+                  url: "index.php?option=com_emundus&controller=formbuilder&task=createtestingfile",
                   headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                   },
@@ -1257,7 +1257,7 @@
               axios({
                 method: "get",
                 url:
-                    "index.php?option=com_emundus_onboard&controller=form&task=getassociatedcampaign",
+                    "index.php?option=com_emundus&controller=form&task=getassociatedcampaign",
                 params: {
                   pid: this.prid
                 },
@@ -1323,7 +1323,7 @@
 
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=form&task=reorderDocuments",
+          url: "index.php?option=com_emundus&controller=form&task=reorderDocuments",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -1341,7 +1341,7 @@
           axios({
             method: "post",
             url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=reordermenu",
+                    "index.php?option=com_emundus&controller=formbuilder&task=reordermenu",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -1401,7 +1401,7 @@
       getLanguages(){
         axios({
           method: "get",
-          url: "index.php?option=com_emundus_onboard&controller=settings&task=getactivelanguages",
+          url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages",
         }).then(response => {
             this.languages = response.data.data;
         });

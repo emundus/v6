@@ -423,7 +423,7 @@ export default {
       // Check if we add or edit a campaign
       if (typeof this.campaignId !== 'undefined' && this.campaignId !== "") {
         axios.get(
-            `index.php?option=com_emundus_onboard&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
+            `index.php?option=com_emundus&controller=campaign&task=getcampaignbyid&id=${this.campaignId}`
         ).then(response => {
           let label = response.data.data.campaign.label;
 
@@ -466,7 +466,7 @@ export default {
       this.getAllPrograms();
     },
     getAllPrograms() {
-      axios.get("index.php?option=com_emundus_onboard&controller=program&task=getallprogram")
+      axios.get("index.php?option=com_emundus&controller=program&task=getallprogram")
           .then(response => {
             this.programs = response.data.data;
             if(Object.keys(this.programs).length !== 0) {
@@ -479,7 +479,7 @@ export default {
       this.getYears();
     },
     getYears() {
-      axios.get("index.php?option=com_emundus_onboard&controller=campaign&task=getyears")
+      axios.get("index.php?option=com_emundus&controller=campaign&task=getyears")
         .then(response => {
           this.years = response.data.data;
 
@@ -496,7 +496,7 @@ export default {
     getLanguages() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=getactivelanguages"
+        url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages"
       }).then(response => {
         this.languages = response.data.data;
       });
@@ -536,7 +536,7 @@ export default {
     },
 
     getStatus() {
-      axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getstatus")
+      axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
           .then(response => {
             this.status = response.data.data;
           });
@@ -545,7 +545,7 @@ export default {
     createCampaignWithExistingProgram(form_data){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
+        url: "index.php?option=com_emundus&controller=campaign&task=createcampaign",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -561,7 +561,7 @@ export default {
     createCampainWithNoExistingProgram(programForm){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=program&task=createprogram",
+        url: "index.php?option=com_emundus&controller=program&task=createprogram",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -572,7 +572,7 @@ export default {
         this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=campaign&task=createcampaign",
+          url: "index.php?option=com_emundus&controller=campaign&task=createcampaign",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -673,7 +673,7 @@ export default {
         }
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=program&task=" + task,
+          url: "index.php?option=com_emundus&controller=program&task=" + task,
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -685,7 +685,7 @@ export default {
 
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=campaign&task=updatecampaign",
+            url: "index.php?option=com_emundus&controller=campaign&task=updatecampaign",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -724,7 +724,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },

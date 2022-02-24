@@ -143,7 +143,7 @@ export default {
           axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=settings&task=removeicon",
+                "index.php?option=com_emundus&controller=settings&task=removeicon",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -167,7 +167,7 @@ export default {
         axios({
             method: "post",
             url:
-                "index.php?option=com_emundus_onboard&controller=settings&task=updatecolor",
+                "index.php?option=com_emundus&controller=settings&task=updatecolor",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -213,7 +213,7 @@ export default {
 
     axios({
       method: "get",
-      url: 'index.php?option=com_emundus_onboard&controller=settings&task=getappcolors',
+      url: 'index.php?option=com_emundus&controller=settings&task=getappcolors',
     }).then((rep) => {
       this.primary = rep.data.primary;
       this.secondary = rep.data.secondary;

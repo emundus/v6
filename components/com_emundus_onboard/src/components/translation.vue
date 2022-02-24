@@ -45,7 +45,7 @@ export default {
     getLanguages() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=getactivelanguages"
+        url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages"
       }).then(response => {
         this.languages = response.data.data;
         this.languages.forEach((element,index) => {

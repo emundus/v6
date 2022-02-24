@@ -21,15 +21,15 @@ jimport('joomla.application.component.controller');
  * @subpackage eMundus
  * @since      5.0.0
  */
-class EmundusmessengerControllermessages extends JControllerLegacy
+class EmundusControllerMessenger extends JControllerLegacy
 {
 
-    var $model = null;
+    var $m_messenger = null;
 
     public function __construct($config = array())
     {
         parent::__construct($config);
-        $this->model = $this->getModel('messages');
+        $this->m_messenger = $this->getModel('messenger');
     }
 
     /**
@@ -38,9 +38,7 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     public function getfilesbyuser() {
         $user = JFactory::getUser();
 
-        $m_messages = $this->model;
-
-        $files = $m_messages->getFilesByUser();
+        $files = $this->m_messenger->getFilesByUser();
 
         $data = array('data' => $files, 'current_user' => $user->id);
 
@@ -49,16 +47,12 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function getmessagesbyfnum(){
-        $user = JFactory::getUser();
-
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->getString('fnum');
         $offset = $jinput->getString('offset',0);
 
-        $messages = $m_messages->getMessagesByFnum($fnum,$offset);
+        $messages = $this->m_messenger->getMessagesByFnum($fnum,$offset);
 
         $data = array('data' => $messages);
 
@@ -67,31 +61,23 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function sendmessage(){
-        $user = JFactory::getUser();
-
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
 
         $message = $jinput->getString('message');
         $fnum = $jinput->getString('fnum');
 
-        $new_message = $m_messages->sendMessage($message,$fnum);
+        $new_message = $this->m_messenger->sendMessage($message,$fnum);
 
         echo json_encode((object)$new_message);
         exit;
     }
 
     public function getnotifications(){
-        $user = JFactory::getUser();
-
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
 
         $user = $jinput->getString('user');
 
-        $notifications = $m_messages->getNotifications($user);
+        $notifications = $this->m_messenger->getNotifications($user);
 
         $data = array('data' => $notifications, 'status' => true);
 
@@ -100,15 +86,11 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function getnotificationsbyfnum(){
-        $user = JFactory::getUser();
-
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->getString('fnum');
 
-        $notifications = $m_messages->getNotificationsByFnum($fnum);
+        $notifications = $this->m_messenger->getNotificationsByFnum($fnum);
 
         $data = array('data' => $notifications, 'status' => true);
 
@@ -117,15 +99,11 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function markasread(){
-        $user = JFactory::getUser();
-
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->getString('fnum');
 
-        $messages_readed = $m_messages->markAsRead($fnum);
+        $messages_readed = $this->m_messenger->markAsRead($fnum);
 
         $data = array('data' => $messages_readed);
 
@@ -134,8 +112,6 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function uploaddocument(){
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
 
         $file = $jinput->files->get('file');
@@ -189,9 +165,9 @@ class EmundusmessengerControllermessages extends JControllerLegacy
 
             if (move_uploaded_file($file["tmp_name"], $target_file)) {
                 $message = '<p>' . $message_input . '</p><a href="'.$target_file.'" download><img src="/images/emundus/messenger/file_download.svg" class="messages__download_icon" alt="'.$filename.'">'.$filename.'</a>';
-                $new_message = $m_messages->sendMessage($message,$fnum);
+                $new_message = $this->m_messenger->sendMessage($message,$fnum);
                 if($applicant){
-                    $upload_emundus = $m_messages->moveToUploadedFile($fnumInfos,$attachment,$filesrc,$target_file);
+                    $upload_emundus = $this->m_messenger->moveToUploadedFile($fnumInfos,$attachment,$filesrc,$target_file);
                 }
                 echo json_encode(array('msg' => $upload_emundus,'data' => $new_message));
             } else {
@@ -203,15 +179,12 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function getdocumentsbycampaign(){
-
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
-        
+
         $fnum = $jinput->getString('fnum');
         $applicant = $jinput->getVar('applicant');
 
-        $messages_readed = $m_messages->getDocumentsByCampaign($fnum, $applicant);
+        $messages_readed = $this->m_messenger->getDocumentsByCampaign($fnum, $applicant);
 
         $data = array('data' => $messages_readed);
 
@@ -220,17 +193,13 @@ class EmundusmessengerControllermessages extends JControllerLegacy
     }
 
     public function askattachment(){
-        $user = JFactory::getUser();
-
-        $m_messages = $this->model;
-
         $jinput = JFactory::getApplication()->input;
 
         $fnum = $jinput->getString('fnum');
         $attachment = $jinput->getString('attachment');
         $message = $jinput->getString('message');
 
-        $new_message = $m_messages->askAttachment($fnum,$attachment,$message);
+        $new_message = $this->m_messenger->askAttachment($fnum,$attachment,$message);
 
         $data = array('data' => $new_message);
 

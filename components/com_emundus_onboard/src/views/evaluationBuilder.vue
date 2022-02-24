@@ -246,7 +246,7 @@ export default {
         axios({
           method: "post",
           url:
-                    "index.php?option=com_emundus_onboard&controller=formbuilder&task=createcriteria",
+                    "index.php?option=com_emundus&controller=formbuilder&task=createcriteria",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -257,7 +257,7 @@ export default {
         }).then((result) => {
           axios({
             method: "get",
-            url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+            url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
             params: {
               element: result.data.scalar,
               gid: gid
@@ -302,7 +302,7 @@ export default {
       this.loading = true;
       axios({
         method: "post",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsimplegroup",
+        url: "index.php?option=com_emundus&controller=formbuilder&task=createsimplegroup",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -312,7 +312,7 @@ export default {
       }).then((result) => {
         axios({
           method: "post",
-          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getJTEXT",
+          url: "index.php?option=com_emundus&controller=formbuilder&task=getJTEXT",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -323,7 +323,7 @@ export default {
           result.data.group_showLegend = resultTrad.data;
           axios({
             method: "post",
-            url: "index.php?option=com_emundus_onboard&controller=program&task=affectgrouptoprogram",
+            url: "index.php?option=com_emundus&controller=program&task=affectgrouptoprogram",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },
@@ -387,7 +387,7 @@ export default {
     getElement(element,gid){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+        url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
         params: {
           element: element,
           gid: gid
@@ -455,7 +455,7 @@ export default {
     redirectJRoute(link) {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=settings&task=redirectjroute",
+        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
           link: link,
         },
