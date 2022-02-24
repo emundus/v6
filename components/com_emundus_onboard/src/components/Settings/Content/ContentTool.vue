@@ -25,13 +25,17 @@
 
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
-          <div v-for="menu in menus" :key="'menu_' + menu.index" @click="currentMenu = menu.index" class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''">
+          <div v-for="menu in menus" :key="'menu_' + menu.index" 
+            @click="currentMenu = menu.index"
+            class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" 
+            :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''"
+          >
             <p class="em-font-size-16">{{translate(menu.title)}}</p>
           </div>
         </div>
 
         <transition name="fade">
-          <EditArticle v-if="currentMenu === 1" :key="currentMenu" :article_id="'52'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditArticle v-if="currentMenu === 1" :key="currentMenu" :article_id="52" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
           <EditArticle v-if="currentMenu === 2" :key="currentMenu" :article_alias="'mentions-legales'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
           <EditArticle v-if="currentMenu === 3" :key="currentMenu" :article_alias="'politique-de-confidentialite-des-donnees'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
           <EditArticle v-if="currentMenu === 4" :key="currentMenu" :article_alias="'gestion-de-vos-droits'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>

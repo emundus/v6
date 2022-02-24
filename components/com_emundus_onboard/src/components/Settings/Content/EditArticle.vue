@@ -17,7 +17,7 @@
             :close-on-select="true"
             :clear-on-select="false"
             :searchable="false"
-            :allow-empty="true"
+            :allow-empty="false"
         ></multiselect>
       </div>
 
@@ -49,13 +49,25 @@ export default {
   },
 
   props: {
-    actualLanguage: String,
-    manyLanguages: Number,
-    article_alias: String,
-    article_id: Number
+    actualLanguage: {
+      type: String,
+      default: "fr"
+    },
+    article_alias: {
+      type: String,
+      default: null
+    },
+    article_id: {
+      type: Number,
+      default: 0
+    }
   },
 
   mixins: [mixin],
+
+  beforeDestroy() {
+    this.saveContent();
+  },
 
   data() {
     return {
@@ -88,7 +100,7 @@ export default {
         lang: this.lang.lang_code,
         field: 'introtext',
       }
-      if(typeof this.$props.article_alias !== 'undefined'){
+      if (this.$props.article_alias !== null) {
         params = {
           article_alias: this.$props.article_alias,
           lang: this.lang.lang_code,
@@ -110,7 +122,7 @@ export default {
       const formData = new FormData();
       formData.append('content', this.form.content);
       formData.append('lang', this.lang.lang_code);
-      if(typeof this.$props.article_alias !== 'undefined') {
+      if (this.$props.article_alias !== null) {
         formData.append('article_alias', this.$props.article_alias);
       } else {
         formData.append('article_id', this.$props.article_id);
@@ -140,7 +152,12 @@ export default {
 
   watch: {
     lang: function() {
-      this.getArticle();
+      if (this.lang !== null) {
+        this.getArticle();
+      } else {
+        this.form.content = '';
+        this.dynamicComponent++;
+      }
     },
   }
 };

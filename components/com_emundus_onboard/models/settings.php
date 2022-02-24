@@ -551,7 +551,7 @@ class EmundusonboardModelsettings extends JModelList {
                 ->select('*')
                 ->from($db->quoteName('#__content'));
 
-            if(!empty($article_id)) {
+            if (!empty($article_id)) {
                 $query->where($db->quoteName('id') . ' = ' . $article_id);
             } else {
                 $query->where($db->quoteName('alias') . ' = ' . $db->quote($article_alias));
@@ -654,8 +654,6 @@ class EmundusonboardModelsettings extends JModelList {
     private function updateOldFooter($col1,$col2) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-
-        $results = [];
 
         $query->update($db->quoteName('#__modules'))
             ->set($db->quoteName('content') . ' = ' . $db->quote($col1))
