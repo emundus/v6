@@ -12,34 +12,38 @@ $forms = [];
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 $m_application = new EmundusModelApplication();
 
-foreach ($applications as $application) {
-    // get voie d'acces
-    $db = JFactory::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('data_voie_d_acces')
-        ->from($db->quoteName('#__emundus_campaign_candidature'))
-        ->where($db->quoteName('fnum') . ' = ' . $application->fnum);
+if (!empty($applications)) {
+    foreach ($applications as $application) {
+        // get voie d'acces
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('data_voie_d_acces')
+            ->from($db->quoteName('#__emundus_campaign_candidature'))
+            ->where($db->quoteName('fnum') . ' = ' . $application->fnum);
 
-    $db->setQuery($query);
-    $voie_d_acces = $db->loadResult();
+        $db->setQuery($query);
+        $voie_d_acces = $db->loadResult();
 
-    // get profile by campaign_id and voie dacces
-    $query->clear();
-    $query->select('data_profile_acces_formation.profile')
-    ->from('data_profile_acces_formation')
-    ->leftJoin('data_profile_acces_formation_repeat_voies_d_acces ON data_profile_acces_formation.id = data_profile_acces_formation_repeat_voies_d_acces.parent_id')
-    ->where('data_profile_acces_formation_repeat_voies_d_acces.voies_d_acces = ' . $db->quote($voie_d_acces))
-    ->andWhere('data_profile_acces_formation.formation = ' . $application->campaign_id);
+        if (!empty($voie_d_acces)) {
+            // get profile by campaign_id and voie dacces
+            $query->clear();
+            $query->select('data_profile_acces_formation.profile')
+            ->from('data_profile_acces_formation')
+            ->leftJoin('data_profile_acces_formation_repeat_voies_d_acces ON data_profile_acces_formation.id = data_profile_acces_formation_repeat_voies_d_acces.parent_id')
+            ->where('data_profile_acces_formation_repeat_voies_d_acces.voies_d_acces = ' . $db->quote($voie_d_acces))
+            ->andWhere('data_profile_acces_formation.formation = ' . $application->campaign_id);
 
-    $db->setQuery($query);
-    $profile = $db->loadResult();
+            $db->setQuery($query);
+            $profile = $db->loadResult();
 
-    // calcul form progress from profile found
-    $query->clear();
+            // calcul form progress from profile found
+            $query->clear();
 
-    if (!empty($profile)) {
-        $forms[$application->fnum] = $m_application->getFormsProgressWithProfile($application->fnum, $profile);
-        $attachments[$application->fnum] = $m_application->getAttachmentsProgressWithProfile($application->fnum, $profile);
+            if (!empty($profile)) {
+                $forms[$application->fnum] = $m_application->getFormsProgressWithProfile($application->fnum, $profile);
+                $attachments[$application->fnum] = $m_application->getAttachmentsProgressWithProfile($application->fnum, $profile);
+            }
+        }
     }
 }
 
@@ -64,7 +68,8 @@ foreach ($applications as $application) {
         $state = $states[$application->fnum]['published'];
         $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
         $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
-        if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
+    
+        if ($state == '1') : ?>
             <?php 
             if ($file_tags != '') {
 
