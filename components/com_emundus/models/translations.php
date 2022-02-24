@@ -758,7 +758,7 @@ class EmundusModelTranslations extends JModelList
      *
      * @param $lang_code
      * @param $published
-     * @param $default
+     * @param $default boolean to specify if we are changing default language or secondary languages
      *
      * @return false|mixed
      *
@@ -776,6 +776,13 @@ class EmundusModelTranslations extends JModelList
                 $m_installed->publish($lang_code);
 
                 $query->update($this->_db->quoteName('#__languages'))
+                    ->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))
+                    ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+
+                $query->clear()
+                    ->update($this->_db->quoteName('#__languages'))
                     ->set($this->_db->quoteName('published') . ' = 0')
                     ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($old_lang->lang_code));
                 $this->_db->setQuery($query);
