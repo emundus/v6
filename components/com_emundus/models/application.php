@@ -744,6 +744,7 @@ class EmundusModelApplication extends JModelList
 
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
         $m_profile = new EmundusModelProfile;
+        $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
         $query = 'SELECT COUNT(profiles.id)
             FROM #__emundus_setup_attachment_profiles AS profiles
