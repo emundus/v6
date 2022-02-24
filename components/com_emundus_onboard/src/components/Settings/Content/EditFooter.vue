@@ -44,7 +44,7 @@ import client from "com_emundus/src/services/axiosClient";
 import mixin from "com_emundus/src/mixins/mixin";
 
 export default {
-  name: "editFooter",
+  name: "EditFooter",
 
   components: {
     Editor,

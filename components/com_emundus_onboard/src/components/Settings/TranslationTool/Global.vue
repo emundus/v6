@@ -62,7 +62,6 @@ import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
 import Multiselect from 'vue-multiselect';
 import Swal from "sweetalert2";
-import axios from "axios";
 
 export default {
   name: "global",

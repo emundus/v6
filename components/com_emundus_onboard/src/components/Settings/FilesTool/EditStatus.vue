@@ -17,7 +17,7 @@
           :class="'draggables-list'"
           @end="updateStatusOrder"
       >
-        <div v-for="(statu, index) in status" class="em-mb-24" :title="'step_' + statu.step" :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+        <div v-for="(statu, index) in status" class="em-mb-24" :title="'step_' + statu.step"  :key="statu.step" :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
           <div class="em-flex-row em-flex-row-start em-w-100">
             <span class="handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
               <span class="material-icons">drag_indicator</span>
@@ -159,7 +159,6 @@ export default {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
       });
-      console.log(status_steps);
     },
 
     pushStatus() {

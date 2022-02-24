@@ -11,7 +11,7 @@
         </button>
       </div>
 
-        <div v-for="(tag, index) in tags" class="em-mb-24" :id="'tag_' + tag.id" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+        <div v-for="(tag, index) in tags" class="em-mb-24" :id="'tag_' + tag.id" :key="'tag_' + tag.id" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
           <div class="em-flex-row em-flex-row-start em-w-100">
             <div class="status-field">
               <div style="width: 100%">

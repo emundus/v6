@@ -78,10 +78,8 @@ import ModalUpdateIcon from "@/components/AdvancedModals/ModalUpdateIcon";
 import ModalUpdateLogo from "@/components/AdvancedModals/ModalUpdateLogo";
 import ModalUpdateColors from "@/components/AdvancedModals/ModalUpdateColors";
 
-const qs = require("qs");
-
 export default {
-  name: "editStyle",
+  name: "EditStyle",
 
   components: {
     ModalUpdateColors,

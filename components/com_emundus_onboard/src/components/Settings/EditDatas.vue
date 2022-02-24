@@ -1,19 +1,19 @@
 <template>
     <div class="em-settings-menu">
         <notifications
-                group="foo-velocity"
-                animation-type="velocity"
-                :speed="500"
-                position="bottom left"
-                :classes="'vue-notification-custom'"
+            group="foo-velocity"
+            animation-type="velocity"
+            :speed="500"
+            position="bottom left"
+            :classes="'vue-notification-custom'"
         />
         <ModalAddDatas
-                @updateDatabases="getDatabases"
-                :actualLanguage="actualLanguage"
-                :manyLanguages="manyLanguages"
+            @updateDatabases="getDatabases"
+            :actualLanguage="actualLanguage"
+            :manyLanguages="manyLanguages"
         />
         <ModalImportDatas
-                @updateDatabases="getDatabases"
+            @updateDatabases="getDatabases"
         />
         <div class="d-flex">
           <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer mr-1" style="width: max-content">
@@ -27,22 +27,19 @@
             </button>
         </div>
         <div class="mt-1">
-            <div v-for="(database,index) in databases" class="db-table">
+            <div v-for="(database, index) in databases" :key="database.database_name"  class="db-table">
                 <div :class="[index == indexOpen ? 'down-arrow' : 'right-arrow']" class="db-item" @click="getDatas(database.database_name,index)">
                     <h3>{{database.label}}</h3>
                     <p>{{database.description}}</p>
                 </div>
                 <transition :name="'slide-down'" type="transition">
                 <div v-if="index == indexOpen" class="mt-1">
-<!--                    <a class="bouton-sauvergarder-et-continuer-3 mr-1" style="float: left" @click="$modal.show('modalAddDatas')">
-                        {{UpdateDatas}}
-                    </a>-->
                     <table class="db-description">
                         <tr class="db-columns">
-                            <th v-for="(data,i) in datas.columns" :id="'column_' + data">{{data}}</th>
+                            <th v-for="(data, i) in datas.columns" :key="i" :id="'column_' + data">{{data}}</th>
                         </tr>
-                        <tr v-for="(data, i) in datas.datas" class="db-values">
-                            <th v-for="value in data">{{value}}</th>
+                        <tr v-for="(data, i) in datas.datas" :key="i" class="db-values">
+                            <th v-for="(value, key) in data" :key="key"> {{value}} </th>
                         </tr>
                     </table>
                 </div>
@@ -63,7 +60,7 @@
     const qs = require("qs");
 
     export default {
-        name: "editDatas",
+        name: "EditDatas",
 
         components: {
             ModalAddDatas,

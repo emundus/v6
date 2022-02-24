@@ -48,8 +48,8 @@
 
 <script>
 /* COMPONENTS */
-import EditArticle from "./editArticle";
-import EditFooter from "./editFooter";
+import EditArticle from "./EditArticle";
+import EditFooter from "./EditFooter";
 
 export default {
   name: "contentTool",
