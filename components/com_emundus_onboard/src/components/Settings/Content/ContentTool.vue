@@ -35,12 +35,8 @@
         </div>
 
         <transition name="fade">
-          <EditArticle v-if="currentMenu === 1" :key="currentMenu" :article_id="52" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
-          <EditArticle v-if="currentMenu === 2" :key="currentMenu" :article_alias="'mentions-legales'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
-          <EditArticle v-if="currentMenu === 3" :key="currentMenu" :article_alias="'politique-de-confidentialite-des-donnees'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
-          <EditArticle v-if="currentMenu === 4" :key="currentMenu" :article_alias="'gestion-de-vos-droits'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
-          <EditArticle v-if="currentMenu === 5" :key="currentMenu" :article_alias="'gestion-des-cookies'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
-          <EditFooter v-if="currentMenu === 6" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
+          <EditArticle v-if="selectedMenu.type === 'article'" :key="currentMenu" :article_id="selectedMenu.id" :article_alias="selectedMenu.alias" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditArticle>
+          <EditFooter v-else-if="selectedMenu.type === 'footer'" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></EditFooter>
         </transition>
       </div>
 
@@ -64,26 +60,38 @@ export default {
       currentMenu: 1,
       menus: [
         {
+          type: "article",
+          id: 52,
+          alias: null,
           title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_HOMEPAGE",
           index: 1
         },
         {
+          type: "article",
+          alias: "mentions-legales",
           title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_LEGAL_MENTION",
           index: 2
         },
         {
+          type: "article",
+          alias: "politique-de-confidentialite-des-donnees",
           title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_DATAS",
           index: 3
         },
         {
+          type: "article",
+          alias: "gestion-de-vos-droits",
           title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_RIGHTS",
           index: 4
         },
         {
+          type: "article",
+          alias: "gestion-des-cookies",
           title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_COOKIES",
           index: 5
         },
         {
+          type: "footer",
           title: "COM_EMUNDUS_ONBOARD_CONTENT_TOOL_FOOTER",
           index: 6
         },
@@ -106,6 +114,11 @@ export default {
 
     updateLastSaving(last_save){
       this.last_save = last_save;
+    }
+  },
+  computed: {
+    selectedMenu() {
+      return this.menus.find(menu => menu.index === this.currentMenu);
     }
   }
 }
