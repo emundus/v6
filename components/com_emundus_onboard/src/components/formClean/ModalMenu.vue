@@ -32,34 +32,33 @@
           <label>{{translations.ChooseExistingPageModel}} :</label>
           <select v-model="model_id" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
             <option value="-1"></option>
-            <option v-for="(model, index) in models" :value="model.form_id">{{model.label[actualLanguage]}}</option>
+            <option v-for="model in models" :key="model.form_id" :value="model.form_id"> {{ model.label[actualLanguage] }}</option>
           </select>
         </div>
-        <div class="form-group" :class="{ 'mb-0': translate.label}">
+        <div class="form-group" :class="{ 'mb-0': can_translate.label}">
           <label>{{translations.Name}}* :</label>
           <div class="input-can-translate">
             <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.label}" type="button" @click="translate.label = !translate.label"></button>
+            <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': can_translate.label}" type="button" @click="can_translate.label = !can_translate.label"></button>
           </div>
         </div>
-        <translation :label="label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
+        <translation :label="label" :actualLanguage="actualLanguage" v-if="can_translate.label"></translation>
         <p v-if="errors && model_id == -1" class="error col-md-12 mb-2">
           <span class="error">{{translations.LabelRequired}}</span>
         </p>
-        <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
+        <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
           <div class="d-flex">
             <label>{{translations.Intro}}</label>
-            <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
+            <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': can_translate.intro}" type="button" @click="can_translate.intro = !can_translate.intro"></button>
           </div>
           <div>
-            <div class="d-flex" v-if="translate.intro">
+            <div class="d-flex" v-if="can_translate.intro">
               <span>{{translations.TranslateIn}} : </span>
               <select v-model="selectedLanguage" v-if="manyLanguages !== '0'" @change="dynamicComponent++" style="margin: 10px 0;">
-                <option v-for="(language,index_group) in languages" :value="language.sef">{{language.title_native}}</option>
+                <option v-for="language in languages" :key="language.sef" :value="language.sef">{{language.title_native}}</option>
               </select>
             </div>
             <div class="input-can-translate">
-  <!--              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="2000" style="margin: 0"></textarea>-->
                 <editor v-for="(language,index_group) in languages"
                         v-if="language.sef === selectedLanguage"
                         :height="'30em'"
@@ -69,15 +68,9 @@
                         :id="'editor_' + language.sef"
                         :key="dynamicComponent"
                         v-model="intro[language.sef]"></editor>
-<!--                <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>-->
             </div>
           </div>
         </div>
-<!--        <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>
-        <div class="col-md-12 d-flex" v-if="model_id == -1">
-          <input type="checkbox" v-model="template">
-          <label class="ml-10px mb-0">{{translations.SaveAsTemplate}}</label>
-        </div>-->
       </div>
       <div class="d-flex justify-content-between mb-1">
         <button
@@ -120,7 +113,7 @@ export default {
   },
   data() {
     return {
-      translate: {
+      can_translate: {
         label: false,
         intro: false
       },
@@ -141,17 +134,17 @@ export default {
       submitted: false,
       selectedLanguage: this.actualLanguage,
       translations: {
-        Name: this.translate("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
-        Intro: this.translate("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
-        Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Add: this.translate("COM_EMUNDUS_ONBOARD_ADD"),
-        dataSaved: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
-        informations: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
-        addMenu: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
-        LabelRequired: this.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-        ChooseExistingPageModel: this.translate("COM_EMUNDUS_ONBOARD_FORM_CHOOSE_EXISTING_MODEL_PAGE"),
-        TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        SaveAsTemplate: this.translate("COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE"),
+        Name: "COM_EMUNDUS_ONBOARD_FIELD_NAME",
+        Intro: "COM_EMUNDUS_ONBOARD_FIELD_INTRO",
+        Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+        Add: "COM_EMUNDUS_ONBOARD_ADD",
+        dataSaved: "COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED",
+        informations: "COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS",
+        addMenu: "COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU",
+        LabelRequired: "COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME",
+        ChooseExistingPageModel: "COM_EMUNDUS_ONBOARD_FORM_CHOOSE_EXISTING_MODEL_PAGE",
+        TranslateEnglish: "COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH",
+        SaveAsTemplate: "COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE",
       }
     };
   },

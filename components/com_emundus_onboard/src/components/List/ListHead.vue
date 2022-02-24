@@ -1,10 +1,10 @@
 <template>
 	<div id="list-head">
 		<div class="list-head-container">
-			<h2> {{ translations.title[data.type] }}</h2>
+			<h2> {{ translations['title_' + data.type] }}</h2>
 			<a @click="redirectToAddElement">
     	  <div class="em-primary-button">
-					{{ translations.add[data.type] }}
+					{{ translations['add_' + data.type] }}
 				</div>
 			</a>
 		</div>
@@ -30,20 +30,16 @@ export default {
 			title: 'List',
 			loading: false,
 			translations: {
-				title: {
-					campaign: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNS"),
-					email: this.translate("COM_EMUNDUS_ONBOARD_EMAILS"),
-					formulaire: this.translate("COM_EMUNDUS_ONBOARD_FORMS"),
-					grilleEval: this.translate("COM_EMUNDUS_ONBOARD_FORMS"),
-					form: this.translate("COM_EMUNDUS_ONBOARD_FORMS"),
-				},
-				add: {
-					campaign: this.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
-					email: this.translate("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
-					formulaire: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-					grilleEval: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-					form: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-				}
+				title_campaign: "COM_EMUNDUS_ONBOARD_CAMPAIGNS",
+				title_email: "COM_EMUNDUS_ONBOARD_EMAILS",
+				title_formulaire: "COM_EMUNDUS_ONBOARD_FORMS",
+				title_grilleEval: "COM_EMUNDUS_ONBOARD_FORMS",
+				title_form: "COM_EMUNDUS_ONBOARD_FORMS",
+				add_campaign: "COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN",
+				add_email: "COM_EMUNDUS_ONBOARD_ADD_EMAIL",
+				add_formulaire: "COM_EMUNDUS_ONBOARD_ADD_FORM",
+				add_grilleEval: "COM_EMUNDUS_ONBOARD_ADD_FORM",
+				add_form: "COM_EMUNDUS_ONBOARD_ADD_FORM"
 			}
 		}
 	},

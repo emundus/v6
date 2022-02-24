@@ -238,14 +238,6 @@ export default {
     this.link = 'index.php?option=com_fabrik&view=form&formid=' + this.eval;
     this.getDataObject();
   },
-  beforeMount() {
-     if (this.translations !== null && typeof this.translations !== "undefined") {
-      Object.entries(this.translations).forEach(([key, value]) => {
-        this.translations[key] = this.translate(value);
-      });
-    }
-  },
-
   methods: {
     createElement(gid,plugin,order) {
       if(!_.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups)){

@@ -36,7 +36,7 @@
           @start="startGroupDrag"
           @end="SomethingChangeInGroup">
         <div v-for="(group,index_group) in orderedGroups"
-             v-bind:key="group.index"
+             v-bind:key="'group_' + group.group_id"
              class="group-item-block"
              @mouseover="enableGroupHover(group.group_id)"
              @mouseleave="disableGroupHover()">
@@ -117,7 +117,7 @@
                        @mouseleave="disableActionBar()"
                        class="builder-item-element">
                     <modalEditElement
-                        :ID="element.id"
+                        :elementId="element.id"
                         :gid="element.group_id"
                         :files="files"
                         :manyLanguages="manyLanguages"
@@ -301,30 +301,30 @@ export default {
 
       // TRANSLATIONS
       translations: {
-        update: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-        updating: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
-        updateSuccess: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
-        orderSuccess: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ORDERSUCESS"),
-        orderFailed: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ORDERFAILED"),
-        updateFailed: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
-        sidemenuhelp: this.translate("COM_EMUNDUS_ONBOARD_SIDEMENUHELP"),
-        TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        Unpublish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
-        Publish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
-        Required: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
-        Settings: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS_SETTINGS"),
-        Delete: this.translate("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
-        Edit: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
-        Cancel: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        Validate: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-        RepeatGroup: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP"),
-        RepeatedGroup: this.translate("COM_EMUNDUS_ONBOARD_REPEATED_GROUP"),
-        Duplicate: this.translate("COM_EMUNDUS_ONBOARD_DUPLICATE"),
-        NoElementsTips: this.translate("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS"),
-        EditName: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_NAME"),
-        EditIntro: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDIT_INTRO"),
-        DisplayHide: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE"),
-        HiddenGroup: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HIDDEN_GROUP"),
+        update: "COM_EMUNDUS_ONBOARD_BUILDER_UPDATE",
+        updating: "COM_EMUNDUS_ONBOARD_BUILDER_UPDATING",
+        updateSuccess: "COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS",
+        orderSuccess: "COM_EMUNDUS_ONBOARD_BUILDER_ORDERSUCESS",
+        orderFailed: "COM_EMUNDUS_ONBOARD_BUILDER_ORDERFAILED",
+        updateFailed: "COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED",
+        sidemenuhelp: "COM_EMUNDUS_ONBOARD_SIDEMENUHELP",
+        TranslateEnglish: "COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH",
+        Unpublish: "COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH",
+        Publish: "COM_EMUNDUS_ONBOARD_ACTION_PUBLISH",
+        Required: "COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED",
+        Settings: "COM_EMUNDUS_ONBOARD_ACTIONS_SETTINGS",
+        Delete: "COM_EMUNDUS_ONBOARD_ACTION_DELETE",
+        Edit: "COM_EMUNDUS_ONBOARD_MODIFY",
+        Cancel: "COM_EMUNDUS_ONBOARD_CANCEL",
+        Validate: "COM_EMUNDUS_ONBOARD_OK",
+        RepeatGroup: "COM_EMUNDUS_ONBOARD_REPEAT_GROUP",
+        RepeatedGroup: "COM_EMUNDUS_ONBOARD_REPEATED_GROUP",
+        Duplicate: "COM_EMUNDUS_ONBOARD_DUPLICATE",
+        NoElementsTips: "COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS",
+        EditName: "COM_EMUNDUS_ONBOARD_BUILDER_EDIT_NAME",
+        EditIntro: "COM_EMUNDUS_ONBOARD_BUILDER_EDIT_INTRO",
+        DisplayHide: "COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE",
+        HiddenGroup: "COM_EMUNDUS_ONBOARD_BUILDER_HIDDEN_GROUP",
       }
     };
   },

@@ -138,13 +138,6 @@ export default {
       }
     };
   },
-  beforeMount() {
-    if (this.translations !== null && typeof this.translations !== "undefined") {
-      Object.entries(this.translations).forEach(([key, value]) => {
-        this.translations[key] = this.translate(value);
-      });
-    }
-  },
   methods: {
     beforeOpen(event) {
       this.getExistingGrids();

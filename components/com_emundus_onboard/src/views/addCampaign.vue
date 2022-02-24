@@ -417,15 +417,6 @@ export default {
     this.getLanguages();
     this.getCampaignById();
   },
-
-  beforeMount() {
-    if (this.translations !== null && typeof this.translations !== "undefined") {
-      Object.entries(this.translations).forEach(([key, value]) => {
-        this.translations[key] = this.translate(value);
-      });
-    }
-  },
-
   methods: {
     getCampaignById() {
       // Check if we add or edit a campaign

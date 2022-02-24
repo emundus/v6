@@ -59,12 +59,6 @@
 					</div>
 				</div>
 
-				<!-- <div v-if="type == 'email' && data.type">
-					<div :class="'type-color-' + data.type">
-						{{ translations.emailType[data.type] }}
-					</div>
-				</div> -->
-
 				<div v-if="type == 'email' && data.category && data.category.length > 0">
 					<div>
 						{{ data.category }}
@@ -124,22 +118,18 @@ export default {
 			title: "",
 			lang: 'fr',
 			translations: {
-				publishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-				unpublishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-				active: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
-				inactive: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
-				isFinished: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-				edit: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
-				files: this.translate("COM_EMUNDUS_ONBOARD_FILES"),
-      	file: this.translate("COM_EMUNDUS_ONBOARD_FILE"),
-				emailType: {
-					1: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM"),
-					2: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TYPE_MODEL"),
-				},
-				campaignAssociated: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED"),
-        campaignsAssociated: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED"),
-				from: this.translate("COM_EMUNDUS_ONBOARD_FROM"),
-				to: this.translate("COM_EMUNDUS_ONBOARD_TO"),
+				publishedTag: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH",
+				unpublishedTag: "COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH",
+				active: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM",
+				inactive: "COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM",
+				isFinished: "COM_EMUNDUS_ONBOARD_FILTER_CLOSE",
+				edit: "COM_EMUNDUS_ONBOARD_MODIFY",
+				files: "COM_EMUNDUS_ONBOARD_FILES",
+      	file: "COM_EMUNDUS_ONBOARD_FILE",
+				campaignAssociated: "COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED",
+        campaignsAssociated: "COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED",
+				from: "COM_EMUNDUS_ONBOARD_FROM",
+				to: "COM_EMUNDUS_ONBOARD_TO",
 			},
 			campaign: {
 				associatedCampaigns: null
