@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import mockAttachment from '../mocks/attachments.mock';
-import AttachmentRow from '../../src/components/AttachmentRow.vue';
+import AttachmentRow from '../../src/components/Attachments/AttachmentRow.vue';
 import store from '../../src/store';
 import translate from '../mocks/mixins/translate';
 import mixin from '../../src/mixins/mixin';

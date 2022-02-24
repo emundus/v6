@@ -5,15 +5,41 @@
 			:fnum="data.fnum"
 			:user="data.user"
 		></Attachments>
+
+    <transition v-else name="slide-right">
+      <component v-bind:is="$props.component"/>
+    </transition>
 	</div>
 </template>
 
 <script>
 import moment from "moment";
+
+//Register my components
 import Attachments from "./views/Attachments.vue";
+import list from "./views/list";
+import addcampaign from "./views/addCampaign"
+import addemail from "./views/addEmail"
+import addformnextcampaign from "./views/addFormNextCampaign"
+import formbuilder from "./views/formBuilder"
+import evaluationbuilder from "./views/evaluationBuilder"
+import settings from "./views/globalSettings"
+
+//CSS
+import "./assets/css/normalize.css";
+import "./assets/css/emundus-webflow.scss";
+import "./assets/css/bootstrap.css";
+import "./assets/css/codemirror.css";
+import "./assets/css/views_emails.css";
+import "./assets/css/date-time.css";
 
 export default {
 	props: {
+    component: String,
+    datas: Object,
+    actualLanguage: String,
+    manyLanguages: String,
+    coordinatorAccess: String,
 		componentName: {
 			type: String,
 			required: true,
@@ -25,13 +51,40 @@ export default {
 	},
 	components: {
 		Attachments,
+    list,
+    addcampaign,
+    addformnextcampaign,
+    addemail,
+    formbuilder,
+    evaluationbuilder,
+    settings,
 	},
+
+  created() {
+    console.log( this.$store.getters)
+    console.table( this.$store.getters)
+    if(typeof this.$props.datas != 'undefined') {
+      this.$store.commit("global/initDatas", this.$props.datas);
+    }
+    if(typeof this.$props.actualLanguage != 'undefined') {
+      this.$store.commit("global/initCurrentLanguage", this.$props.actualLanguage);
+    }
+    if(typeof this.$props.manyLanguages != 'undefined') {
+      this.$store.commit("global/initManyLanguages", this.$props.manyLanguages);
+    }
+    if(typeof this.$props.coordinatorAccess != 'undefined') {
+      this.$store.commit("global/initCoordinatorAccess", this.$props.coordinatorAccess);
+    }
+  },
+
 	mounted() {
 		if (this.data.lang) {
 			this.$store.dispatch("global/setLang", this.data.lang.split("-")[0]);
 		} else {
 			this.$store.dispatch("global/setLang", "fr");
 		}
+
+
 
 		moment.locale(this.$store.state.global.lang);
 

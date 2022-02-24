@@ -300,9 +300,9 @@
 </template>
 
 <script>
-import AttachmentPreview from "../components/AttachmentPreview.vue";
-import AttachmentEdit from "../components/AttachmentEdit.vue";
-import AttachmentRow from "../components/AttachmentRow.vue";
+import AttachmentPreview from "../components/Attachments/AttachmentPreview.vue";
+import AttachmentEdit from "../components/Attachments/AttachmentEdit.vue";
+import AttachmentRow from "../components/Attachments/AttachmentRow.vue";
 import attachmentService from "../services/attachment.js";
 import userService from "../services/user.js";
 import fileService from "../services/file.js";

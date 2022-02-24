@@ -27,6 +27,8 @@ class EmundusControllerCampaign extends JControllerLegacy {
     var $m_campaign = null;
 
     function __construct($config = array()){
+        parent::__construct($config);
+
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 
         $this->_user = JFactory::getUser();
@@ -34,8 +36,6 @@ class EmundusControllerCampaign extends JControllerLegacy {
         $this->_db = JFactory::getDBO();
 
         $this->m_campaign = $this->getModel('campaign');
-
-        parent::__construct($config);
     }
     function display($cachable = false, $urlparams = false) {
         // Set a default view if none exists
