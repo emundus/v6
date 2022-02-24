@@ -64,11 +64,6 @@ export default {
   },
 
   mixins: [mixin],
-
-  beforeDestroy() {
-    this.saveContent();
-  },
-
   data() {
     return {
       defaultLang: null,
