@@ -224,7 +224,7 @@
             <div class="form-group">
               <label>{{translations.Status}}<span style="color: #E5283B">*</span></label>
               <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
-                <option v-for="statu in status" :key="'status-' +statu.step" :value="statu.step">{{statu.value}}</option>
+                <option v-for="statu in status" :key="'status-' + statu.step" :value="statu.step">{{statu.value}}</option>
               </select>
               <p v-if="errors.trigger.status" class="error">
                 <span class="error">{{translations.StatusRequired}}</span>
@@ -322,64 +322,64 @@ export default {
     displayAdvancedParameters: false,
 
     translations:{
-      AddEmail: this.translate("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
-      Advanced: this.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
-      Informations: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION"),
-      Trigger: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER"),
-      emailType: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE"),
-      emailCategory: this.translate("COM_EMUNDUS_ONBOARD_CHOOSECATEGORY"),
-      retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      emailName: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME"),
-      emailBody: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY"),
-      receiverName: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER"),
-      emailAddress: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS"),
-      EmailResume: this.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME"),
-      RequiredFieldsIndicate: this.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE"),
-      EmailType: this.translate("COM_EMUNDUS_ONBOARD_EMAILTYPE"),
-      SubjectRequired: this.translate("COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED"),
-      BodyRequired: this.translate("COM_EMUNDUS_ONBOARD_BODY_REQUIRED"),
-      Program: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      Model: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERMODEL"),
-      ModelRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED"),
-      Status: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS"),
-      StatusRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED"),
-      Target: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET"),
-      TargetRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED"),
-      Administrators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS"),
-      Evaluators: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS"),
-      Candidates: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES"),
-      DefinedUsers: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS"),
-      ChooseUsers: this.translate("COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS"),
-      UsersRequired: this.translate("COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED"),
-      Search: this.translate("COM_EMUNDUS_ONBOARD_SEARCH_USERS"),
-      TheCandidate: this.translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE"),
-      Manual: this.translate("COM_EMUNDUS_ONBOARD_MANUAL"),
-      Actions: this.translate("COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS"),
-      Tags: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_TAGS"),
-      DocumentType: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
+      AddEmail: "COM_EMUNDUS_ONBOARD_ADD_EMAIL",
+      Advanced: "COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING",
+      Informations: "COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION",
+      Trigger: "COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER",
+      emailType: "COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE",
+      emailCategory: "COM_EMUNDUS_ONBOARD_CHOOSECATEGORY",
+      retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+      continuer: "COM_EMUNDUS_ONBOARD_ADD_CONTINUER",
+      emailName: "COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME",
+      emailBody: "COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY",
+      receiverName: "COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER",
+      emailAddress: "COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS",
+      EmailResume: "COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME",
+      RequiredFieldsIndicate: "COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE",
+      EmailType: "COM_EMUNDUS_ONBOARD_EMAILTYPE",
+      SubjectRequired: "COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED",
+      BodyRequired: "COM_EMUNDUS_ONBOARD_BODY_REQUIRED",
+      Program: "COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM",
+      Model: "COM_EMUNDUS_ONBOARD_TRIGGERMODEL",
+      ModelRequired: "COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED",
+      Status: "COM_EMUNDUS_ONBOARD_TRIGGERSTATUS",
+      StatusRequired: "COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED",
+      Target: "COM_EMUNDUS_ONBOARD_TRIGGERTARGET",
+      TargetRequired: "COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED",
+      Administrators: "COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS",
+      Evaluators: "COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS",
+      Candidates: "COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES",
+      DefinedUsers: "COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS",
+      ChooseUsers: "COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS",
+      UsersRequired: "COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED",
+      Search: "COM_EMUNDUS_ONBOARD_SEARCH_USERS",
+      TheCandidate: "COM_EMUNDUS_ONBOARD_THE_CANDIDATE",
+      Manual: "COM_EMUNDUS_ONBOARD_MANUAL",
+      Actions: "COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS",
+      Tags: "COM_EMUNDUS_ONBOARD_EMAIL_TAGS",
+      DocumentType: "COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT",
 
       /// Letters field
-      Letters: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT"),
-      LettersPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT"),
+      Letters: "COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT",
+      LettersPlaceHolder: "COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT",
 
       /// Receiver CC field
-      ReceiversCC: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS"),
-      ReceiversCCPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER"),
+      ReceiversCC: "COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS",
+      ReceiversCCPlaceHolder: "COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER",
 
       /// Receiver BCC field
-      ReceiversBCC: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS"),
-      ReceiversBCCPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER"),
+      ReceiversBCC: "COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS",
+      ReceiversBCCPlaceHolder: "COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER",
 
       /// Receiver Tooltips
-      CopiesTooltips: this.translate("COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS"),
+      CopiesTooltips: "COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS",
 
       /// Selected Action Tags
-      TagsPlaceHolder: this.translate("COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS"),
+      TagsPlaceHolder: "COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS",
 
       /// Candidat Attachments (title, placeholder)
-      CandidateAttachments: this.translate("COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS"),
-      CandidateAttachmentsPlaceholder: this.translate("COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS"),
+      CandidateAttachments: "COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS",
+      CandidateAttachmentsPlaceholder: "COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS",
     },
 
     categories: [],
@@ -467,6 +467,13 @@ export default {
     this.getProgramsList();
     this.getStatus();
     this.getUsers();
+  },
+  beforeMount() {
+    if (this.translations !== null && typeof this.translations !== "undefined") {
+      Object.entries(this.translations).forEach(([key, value]) => {
+        this.translations[key] = this.translate(value);
+      });
+    }
   },
   mounted() {
     if (this.actualLanguage === "en") {
