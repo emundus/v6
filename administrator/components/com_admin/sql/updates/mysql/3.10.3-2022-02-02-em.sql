@@ -439,8 +439,6 @@ VALUES (0, @element_8, '', 'jos_emundus_jury', 'session', 'id', 'left', @group_4
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
 VALUES (@element_8, 'change', 'var opt = jQuery(&#039;#jos_emundus_candidat_meeting___session&#039;).val();
 if(opt !== &quot;&quot;) {
-
-
   jQuery.ajax({
     url: &quot;index.php?option=com_emundus&amp;controller=webhook&amp;task=getzoomsession&quot;,
     dataType: &#039;json&#039;,
@@ -453,6 +451,8 @@ if(opt !== &quot;&quot;) {
       console.log(jqXHR.responseText);
     }
   });
+} else {
+  jQuery(&#039;#jos_emundus_candidat_meeting___start_time&#039;).val(&#039;&#039;);
 }', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group975","js_e_condition":"","js_e_value":"","js_published":"1"}');
 -- --
 
