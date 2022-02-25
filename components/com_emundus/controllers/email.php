@@ -26,7 +26,9 @@ class EmundusControllerEmail extends JControllerLegacy {
     var $m_emails = null;
 
 	function __construct($config = array()){
-		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
+        parent::__construct($config);
+
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
 
@@ -34,9 +36,7 @@ class EmundusControllerEmail extends JControllerLegacy {
 		$this->_user = JFactory::getUser();
 		$this->_db = JFactory::getDBO();
         $this->m_emails = $this->getModel('emails');
-
-		parent::__construct($config);
-	}
+    }
 
 	function display($cachable = false, $urlparams = false) {
 		// Set a default view if none exists

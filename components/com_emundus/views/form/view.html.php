@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusonboardViewForm extends JViewLegacy
+class EmundusViewForm extends JViewLegacy
 {
 
 	function display($tpl = null)

@@ -231,4 +231,18 @@ export default {
 };
 </script>
 <style scoped>
+.status-field{
+  border-radius: 5px;
+  width: 100%;
+  margin-right: 1em;
+  display: flex;
+}
+
+.status-item{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 95%;
+  width: 100%;
+}
 </style>

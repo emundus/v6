@@ -1,12 +1,12 @@
 <template>
   <div>
     <h2>{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h2>
-    <div class="em-mb-24 d-flex">
-      <div class="col-md-4">
+    <div class="em-mb-24 em-flex-row em-flex-space-between">
+      <div>
         <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
         <p class="em-font-size-14">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}</p>
       </div>
-      <div class="col-md-3">
+      <div class="em-w-33">
         <multiselect
             v-model="defaultLang"
             label="title_native"
@@ -26,12 +26,12 @@
       </div>
     </div>
 
-    <div class="em-mb-24 d-flex">
-      <div class="col-md-4">
+    <div class="em-mb-24 em-flex-row em-flex-space-between">
+      <div>
         <p class="em-body-16-semibold em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
         <p class="em-font-size-14">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}</p>
       </div>
-      <div class="col-md-3">
+      <div class="em-w-33">
         <multiselect
             v-model="secondaryLanguages"
             label="title_native"

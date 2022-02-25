@@ -5103,20 +5103,6 @@ fieldset[disabled] .multiselect {
   left: 1px;
 }
 
-/** 
-  LOADER 
-**/
-
-.em-loader {
-  border: 5px solid #f3f3f4;  
-  border-top: 5px solid $main-500;  
-  border-radius: 50%;  
-  width: 25px;  
-  height: 25px;  
-  animation: spin 2s linear infinite;  
-  text-align: center;
-}
-
 /**
   LOGIN GUARD
 **/
@@ -5249,4 +5235,112 @@ fieldset[disabled] .multiselect {
   #loginguard-captive-form-choose-another{
     margin-top: 1em;
   }
+}
+/** END **/
+
+/** TOOLTIP **/
+.tooltip-target{
+  cursor: pointer;
+}
+.tooltip {
+  display: block !important;
+  z-index: 10000;
+  .tooltip-inner {
+    background: #de6339;
+    color: white;
+    border-radius: 16px;
+    box-shadow: 0 -2.1px 53px rgba(0, 0, 0, 0.02), 0 -1px 59.5px rgba(0, 0, 0, 0.028), 0 4.6px 59.9px rgba(0, 0, 0, 0.035), 0 16.7px 58.8px rgba(0, 0, 0, 0.042), 0 40.7px 59.9px rgba(0, 0, 0, 0.05), 0 100px 80px rgba(0, 0, 0, 0.07);
+    padding: 5px 10px 4px;
+  }
+  .tooltip-arrow {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+    margin: 5px;
+    border-color: #de6339;
+    z-index: 1;
+  }
+}
+.tooltip[x-placement^="top"] {
+  margin-bottom: 5px;
+  .tooltip-arrow {
+    border-width: 5px 5px 0 5px;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    bottom: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+.tooltip[x-placement^="bottom"] {
+  margin-top: 5px;
+  left: -30px !important;
+  .tooltip-arrow {
+    border-width: 0 5px 5px 5px;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-top-color: transparent !important;
+    top: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+.tooltip[x-placement^="right"] {
+  margin-left: 5px;
+  .tooltip-arrow {
+    border-width: 5px 5px 5px 0;
+    border-left-color: transparent !important;
+    border-top-color: transparent !important;
+    border-bottom-color: transparent !important;
+    left: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+.tooltip[x-placement^="left"] {
+  margin-right: 5px;
+  .tooltip-arrow {
+    border-width: 5px 0 5px 5px;
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    right: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+.tooltip.popover {
+  .popover-inner {
+    background: #f9f9f9;
+    color: black;
+    padding: 16px 16px 16px 8px;
+    border-radius: 5px;
+    box-shadow: 0 5px 30px rgba(black, .1);
+  }
+  .popover-arrow {
+    border-color: #f9f9f9;
+  }
+}
+.tooltip[aria-hidden='true'] {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .15s, visibility .15s;
+}
+.tooltip[aria-hidden='false'] {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .15s;
+}
+/** END **/
+
+.view-campaigns #g-container-main .g-container,
+.view-emails #g-container-main .g-container,
+.view-form #g-container-main .g-container{
+  width: 90% !important;
 }

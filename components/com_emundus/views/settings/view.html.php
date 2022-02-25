@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusonboardViewSettings extends JViewLegacy {
+class EmundusViewSettings extends JViewLegacy {
 
 	function display($tpl = null) {
         $jinput = JFactory::getApplication()->input;

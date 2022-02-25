@@ -10,9 +10,6 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
-$document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
-$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 ## MENU ##
 JText::script('COM_EMUNDUS_ONBOARD_SIDEMENUHELP');
@@ -252,7 +249,7 @@ if(count($languages) > 1){
 }
 
 $user = JFactory::getUser();
-$coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
+$coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
 
 $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
 
@@ -269,4 +266,4 @@ $component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationb
      coordinatorAccess="<?= $coordinator_access ?>"
 ></div>
 
-<script src="media/com_emundus_onboard/app_onboard.js"></script>
+<script src="media/com_emundus_vue/app_emundus.js"></script>

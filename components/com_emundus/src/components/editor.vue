@@ -67,7 +67,7 @@ export default {
     }).then(response => {
         this.variables = response.data.data;
     });
-    var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/';
+    var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus/tinymce/';
 
     let options = {
       selector: '#tiny_' + this.selector_id,

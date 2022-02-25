@@ -35,7 +35,7 @@
                   <div class="filter-subtitle">
                     <div>{{ translations.Filter }}</div>
                   </div>
-                  <nav aria-label="filter" class="actions-dropdown">
+                  <nav aria-label="filter" class="em-flex-col-start">
                     <a @click="filter('all');updateFilter('all');"
                        :class="filtre == 'all' ? 'selected' : ''"
                        class="action-submenu">
@@ -78,7 +78,7 @@
                   <div class="filter-subtitle">
                     <div>{{ translations.NbResults }}</div>
                   </div>
-                  <nav aria-label="Nb Results" class="actions-dropdown">
+                  <nav aria-label="Nb Results" class="em-flex-col-start">
                     <a @click="nbresults(999999);updateDisplay('max');"
                        :class="afficher == 'max' ? 'selected' : ''"
                        class="action-submenu">
@@ -192,7 +192,7 @@
   };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .search {
     width: 245px;
     position: relative;
@@ -235,6 +235,49 @@
 
   div nav a:hover {
     cursor: pointer;
+  }
+
+  .action-submenu {
+    padding: 7px !important;
+    background-color: transparent;
+    -webkit-transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    transition: background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    font-size: 12px;
+    color: black;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
+    &:hover {
+       color: #16AFE1;
+     }
+  }
+
+  .filters-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .filters-menu-space-between {
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+  }
+
+  .filters-menu{
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+
+  .filter-subtitle {
+    font-size: 14px;
+    font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+    border-bottom: solid 1px #dedede;
+    padding-bottom: 8px;
+    color: #868585;
+    font-weight: bold;
   }
 
   @media (max-width: 991px) {

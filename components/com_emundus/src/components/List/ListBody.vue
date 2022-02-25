@@ -171,4 +171,8 @@ export default {
 	  transform: scale(0.9);
 	}
 }
+
+.material-icons{
+  font-size: 24px !important;
+}
 </style>

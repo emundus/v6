@@ -26,10 +26,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     var $m_formbuilder = null;
 
     public function __construct($config = array()) {
+        parent::__construct($config);
+
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         $this->m_formbuilder = $this->getModel('formbuilder');
-
-        parent::__construct($config);
     }
 
     public function updateOrder() {

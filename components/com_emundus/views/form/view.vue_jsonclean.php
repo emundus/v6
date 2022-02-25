@@ -25,7 +25,7 @@ require_once JPATH_SITE . '/components/com_fabrik/views/form/view.base.php';
  * @subpackage  Fabrik
  * @since       3.0.6
  */
-class EmundusonboardViewForm extends FabrikViewFormBase
+class EmundusViewForm extends FabrikViewFormBase
 {
     /**
      * Main setup routine for displaying the form/detail view

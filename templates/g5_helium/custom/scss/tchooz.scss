@@ -358,12 +358,20 @@ input:focus + .em-slider {
   max-width: 1200px;
 }
 
+.em-w-auto{
+  width: auto;
+}
+
 .em-w-80{
   width: 80%;
 }
 
 .em-w-90{
   width: 90%;
+}
+
+.em-w-33{
+  width: 33%;
 }
 
 .em-w-100{
@@ -834,6 +842,7 @@ button.em-swal-cancel-button{
     overflow-y: auto !important;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    margin-top: unset !important;
   }
   .v--modal-box{
     padding: 0;

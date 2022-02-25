@@ -61,8 +61,6 @@ export default {
 	},
 
   created() {
-    console.log( this.$store.getters)
-    console.table( this.$store.getters)
     if(typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);
     }
@@ -84,8 +82,6 @@ export default {
 			this.$store.dispatch("global/setLang", "fr");
 		}
 
-
-
 		moment.locale(this.$store.state.global.lang);
 
 		// baseUrl
@@ -103,6 +99,37 @@ export default {
 @import url("./assets/css/main.scss");
 
 .com_emundus_vue {
+  input {
+    display: block;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border: 2px solid #cccccc;
+    border-radius: 4px;
+    -webkit-transition: border-color 200ms linear;
+    transition: border-color 200ms linear;
+    &:hover {
+      border-color: #cecece;
+    }
+    &:focus {
+      border-color: #16AFE1;
+      -webkit-box-shadow: 0 0 6px #e0f3f8;
+      -moz-box-shadow: 0 0 6px #e0f3f8;
+      box-shadow: 0 0 6px #e0f3f8;
+    }
+    &::-webkit-input-placeholder {
+      color: dimgrey;
+    }
+    &:-ms-input-placeholder {
+      color: dimgrey;
+    }
+    &::-ms-input-placeholder {
+      color: dimgrey;
+    }
+    &::placeholder {
+      color: dimgrey;
+    }
+  }
+
   @media (max-width: 1440px) {
     .v--modal-box.v--modal {
       width: 90vw !important;
@@ -113,4 +140,6 @@ export default {
     }
   }
 }
+
+
 </style>

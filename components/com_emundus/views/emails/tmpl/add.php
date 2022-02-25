@@ -9,9 +9,6 @@
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
-$document = JFactory::getDocument();
-$document->addScript('media/com_emundus_onboard/chunk-vendors_onboard.js');
-$document->addStyleSheet('media/com_emundus_onboard/app_onboard.css');
 
 JText::script('COM_EMUNDUS_ONBOARD_ADD_EMAIL');
 JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE');
@@ -96,7 +93,7 @@ if(count($languages) > 1){
 }
 
 $user = JFactory::getUser();
-$coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
+$coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
 ?>
 
 <div id="em-component-vue"
@@ -107,4 +104,4 @@ $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
      manyLanguages="<?= $many_languages ?>">
 ></div>
 
-<script src="media/com_emundus_onboard/app_onboard.js"></script>
+<script src="media/com_emundus_vue/app_emundus.js"></script>

@@ -26,8 +26,9 @@ class EmundusControllerForm extends JControllerLegacy {
 
     var $m_form = null;
     public function __construct($config = array()) {
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         parent::__construct($config);
+
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         $this->m_form = $this->getModel('form');
     }
 

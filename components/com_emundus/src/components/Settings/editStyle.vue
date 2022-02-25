@@ -24,7 +24,7 @@
         <div class="em-logo-box pointer" @click="$modal.show('modalUpdateLogo')">
           <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
         </div>
-        <div class="w-100 em-ml-24">
+        <div class="em-w-100 em-ml-24">
           <div class="em-flex-row em-flex-space-between">
             <h2 style="margin: 0">Logo</h2>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateLogo')">
@@ -39,7 +39,7 @@
         <div class="em-logo-box pointer" @click="$modal.show('modalUpdateIcon')">
           <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
         </div>
-        <div class="w-100 em-ml-24">
+        <div class="em-w-100 em-ml-24">
           <div class="em-flex-row em-flex-space-between">
             <h2 style="margin: 0">{{Icon}}</h2>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateIcon')">
@@ -55,7 +55,7 @@
           <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
           </div>
         </div>
-        <div class="w-100 em-ml-24">
+        <div class="em-w-100 em-ml-24">
           <div class="em-flex-row em-flex-space-between">
             <h2 style="margin: 0">{{Colors}}</h2>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateColors')">

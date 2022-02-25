@@ -27,11 +27,11 @@ class EmundusControllerProgramme extends JControllerLegacy {
     var $m_programme = null;
 
     function __construct($config = array()){
+        parent::__construct($config);
+
         $this->_user = JFactory::getUser();
         $this->_db = JFactory::getDBO();
         $this->m_programme = $this->getModel('programme');
-
-        parent::__construct($config);
     }
 
     function display($cachable = false, $urlparams = false) {

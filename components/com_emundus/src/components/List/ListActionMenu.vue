@@ -14,7 +14,7 @@
 			v-if="showTootlip === true"
 			:popoverArrowClass="'custom-popover-arrow'"
 		>
-      <button class="tooltip-target b3 card-button"></button>
+      <span class="tooltip-target b3 material-icons">more_vert</span>
 			<template slot="popover">
 				<actions
 					:data="{type: type}"
@@ -86,5 +86,8 @@ export default {
 		margin: 0;
 		transform: rotate(90deg);
 	}
+}
+.material-icons{
+  font-size: 24px !important;
 }
 </style>

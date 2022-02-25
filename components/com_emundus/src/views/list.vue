@@ -7,7 +7,7 @@
     </list-head>
 
     <div
-      class="filters-menu-space-between"
+      class="em-flex-row em-flex-space-between em-w-auto"
     >
       <select
           v-if="type === 'campaign'"
@@ -45,7 +45,7 @@
       </select>
 
       <div class="search-container">
-        <div class="search">
+        <div class="search em-flex-row">
           <input class="searchTerm"
             :placeholder="translations.Rechercher"
             v-model="recherche"
@@ -54,11 +54,10 @@
           />
         </div>
         <v-popover :popoverArrowClass="'custom-popover-arrow'">
-          <button class="tooltip-target b3 card-button"></button>
+          <span class="tooltip-target b3 material-icons">more_vert</span>
 
           <template slot="popover">
             <filters
-                v-if="type != 'files'"
                 :data="actions"
                 :selected="selecedItems"
                 :updateTotal="updateTotal"
@@ -411,64 +410,13 @@ export default {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 h2 {
   color: #de6339 !important;
 }
 
 .loading-form {
   top: unset;
-}
-
-.dropbtn {
-  background-color: #f9f9f9;
-  color: #0f0f0f;
-  /*padding: 16px;
-  font-size: 16px;*/
-  border: none;
-  cursor: pointer;
-  min-width: 160px;
-  /*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);*/
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-content {
-  position: absolute;
-  background-color: #f9f9f9;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 98;
-  max-height: 0;
-  min-width: 160px;
-  transition: max-height 0.15s ease-out;
-  overflow: hidden;
-}
-
-.dropdown-content a {
-  color: black;
-  background-color: #f9f9f9;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown-content a:hover {
-  background-color: #e2e2e2;
-}
-
-.dropdown:hover .dropdown-content {
-  max-height: 500px;
-  min-width: 160px;
-  transition: max-height 0.25s ease-in;
-}
-
-.dropdown:hover .dropbtn {
-  background-color: #f9f9f9;
-  border-bottom: 1px solid #e0e0e0;
-  transition: max-height 0.25s ease-in;
 }
 
 .list-vue-select
@@ -482,5 +430,93 @@ h2 {
   align-items: center;
 }
 
+.searchTerm {
+  width: 100%;
+  font-size: 14px !important;
+  padding: 8px 36px 8px 8px !important;
+  outline: none;
+  color: #9DBFAF;
+  right: 0;
+  height: 30px;
+  position: relative;
+  margin-bottom: 0 !important;
+
+  &:focus {
+     border-color: #16AFE1 !important;
+     box-shadow: unset !important;
+   }
+}
+
+#g-container-main .g-container{
+  width: 90% !important;
+}
+
+.pagination {
+  list-style: none;
+  padding: 8px;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  a,li{
+    border-radius: 50%;
+    color: #212121;
+    transition: 0.15s ease-in;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .pagination-number{
+    font-family: sans-serif;
+    padding: unset;
+    font-size: 14px;
+    text-align: center;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 24px;
+    width: 35px;
+    height: 35px;
+    margin-right: 10px;
+    .current-number{
+      background: #12DB42;
+      color: #fff;
+      border: unset;
+    }
+  }
+}
+.pagination-pages{
+  text-align: center;
+}
+.pagination a:hover {
+  background: rgba(27, 31, 60, 0.8);
+  color: white;
+  text-decoration: unset;
+}
+.pagination-arrow{
+  width: 35px;
+  height: 35px;
+  align-items: center;
+  display: flex !important;
+  justify-content: center;
+}
+.arrow-left {
+  margin-right: 10px !important;
+}
+.noneDiscover {
+  font-size: 20px;
+  color: #1b1f3c;
+  width: 100%;
+  margin: 3% 0;
+  text-align: center;
+}
+.email-sections{
+  width: 98% !important;
+  margin: 3% auto !important;
+}
+.noPagination{
+  display: none;
+}
+.material-icons{
+  font-size: 24px !important;
+}
 
 </style>
