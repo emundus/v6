@@ -321,7 +321,7 @@ export default {
           result.data.group_showLegend = resultTrad.data;
           axios({
             method: "post",
-            url: "index.php?option=com_emundus&controller=program&task=affectgrouptoprogram",
+            url: "index.php?option=com_emundus&controller=programme&task=affectgrouptoprogram",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             },

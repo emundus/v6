@@ -173,7 +173,7 @@ export default {
     getProgramsList() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&controller=program&task=getallprogram",
+        url: "index.php?option=com_emundus&controller=programme&task=getallprogram",
         params: {
           filter: '',
           sort: '',
@@ -222,7 +222,7 @@ export default {
           if(!this.least_one_program && this.userManage == 1){
             axios({
               method: "get",
-              url: "index.php?option=com_emundus&controller=program&task=getgroupsbyprograms",
+              url: "index.php?option=com_emundus&controller=programme&task=getgroupsbyprograms",
               params: {
                 programs: this.affected_programs,
               },
@@ -269,7 +269,7 @@ export default {
 
       axios({
         method: "post",
-        url: 'index.php?option=com_emundus&controller=program&task=affectusertogroup',
+        url: 'index.php?option=com_emundus&controller=programme&task=affectusertogroup',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },

@@ -1,5 +1,5 @@
 <template>
-  <div class="section-principale">
+  <div>
     <notifications
         group="foo-velocity"
         position="bottom left"
@@ -7,192 +7,195 @@
         :speed="500"
         :classes="'vue-notification-custom'"
     />
-    <div class="w-container">
-      <div class="section-sub-menu sub-form" v-if="email == ''">
-        <div class="container-2 w-container" style="max-width: unset">
-          <div class="d-flex">
-            <img src="/images/emundus/menus/email.png" srcset="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
-            <h1 class="tchooz-section-titles">{{translations.AddEmail}}</h1>
+    <div>
+      <div v-if="email == ''">
+        <div style="max-width: unset">
+          <div class="em-flex-row">
+            <img src="/images/emundus/menus/email.png" srcset="/images/emundus/menus/email.png" alt="email">
+            <h1>{{translations.AddEmail}}</h1>
           </div>
         </div>
       </div>
-      <form id="program-form" @submit.prevent="submit">
-        <div class="sous-container">
-          <p class="required mb-1">{{translations.RequiredFieldsIndicate}}</p>
-          <div class="heading-form">
-            <h2 class="heading">{{ translations.Informations }}</h2>
+
+      <form @submit.prevent="submit">
+        <div>
+          <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
+          <div class="em-mb-16">
+            <h2>{{ translations.Informations }}</h2>
           </div>
-          <div class="w-form">
-            <div class="form-group">
+
+          <div>
+            <div class="em-mb-16">
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
-                type="text"
-                class="form__input field-general w-input"
-                v-model="form.subject"
-                :class="{ 'is-invalid': errors.subject}"
+                  type="text"
+                  class=""
+                  v-model="form.subject"
+                  :class="{ 'is-invalid': errors.subject}"
               />
             </div>
-            <p v-if="errors.subject" class="error col-md-12 mb-2">
-              <span class="error">{{translations.SubjectRequired}}</span>
-            </p>
+            <span v-if="errors.subject" class="em-red-500-color em-mb-8">
+              <span class="em-red-500-color">{{translations.SubjectRequired}}</span>
+            </span>
 
-            <div class="form-group controls forms-emails-editor">
+            <div class="em-mb-16">
               <label>{{translations.emailBody}} <span style="color: #E5283B">*</span></label>
               <editor
-                v-if="dynamicComponent"
-                v-model="form.message"
-                :id="'email'"
-                :class="{ 'is-invalid': errors.message}"
-                :height="'30em'"
-                :text="form.message"
-                :lang="actualLanguage"
-                :enable_variables="true"
-                :placeholder="translations.EmailResume"
+                  v-if="dynamicComponent"
+                  v-model="form.message"
+                  :id="'email'"
+                  :class="{ 'is-invalid': errors.message}"
+                  :height="'30em'"
+                  :text="form.message"
+                  :lang="actualLanguage"
+                  :enable_variables="true"
+                  :placeholder="translations.EmailResume"
               >
               </editor>
             </div>
-            <p v-if="errors.message" class="error col-md-12 mb-2">
-              <span class="error">{{translations.BodyRequired}}</span>
+            <p v-if="errors.message" class="em-red-500-color em-mb-8">
+              <span class="em-red-500-color">{{translations.BodyRequired}}</span>
             </p>
           </div>
         </div>
 
-        <div class="divider"></div>
-        <div class="sous-container last-container">
-          <div class="heading-form d-flex">
-            <h2 class="heading mb-0">{{ translations.Advanced }}</h2>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="buttonAddDoc" v-show="!displayAdvancedParameters">
-              <em class="fas fa-plus"></em>
+        <hr/>
+
+        <div>
+          <div class="em-flex-row em-mb-16">
+            <p class="em-h4">{{ translations.Advanced }}</p>
+            <button :title="translations.Advanced" type="button" class="em-transparent-button" @click="displayAdvanced" v-show="!displayAdvancedParameters">
+              <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="buttonAddDoc" v-show="displayAdvancedParameters">
-              <em class="fas fa-minus"></em>
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button" v-show="displayAdvancedParameters">
+              <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
           <div v-if="displayAdvancedParameters">
-          <div class="form-group">
-            <label>{{translations.receiverName}}</label>
-            <input
-              type="text"
-              class="form__input field-general w-input"
-              v-model="form.name"
-            />
-          </div>
+            <div class="form-group">
+              <label>{{translations.receiverName}}</label>
+              <input
+                  type="text"
+                  class="form__input field-general w-input"
+                  v-model="form.name"
+              />
+            </div>
 
-          <div class="form-group">
-            <label>{{translations.emailAddress}}</label>
-            <input
-              type="text"
-              class="form__input field-general w-input"
-              v-model="form.emailfrom"
-            />
-          </div>
+            <div class="form-group">
+              <label>{{translations.emailAddress}}</label>
+              <input
+                  type="text"
+                  class="form__input field-general w-input"
+                  v-model="form.emailfrom"
+              />
+            </div>
 
-          <div class="form-group">
-            <label>{{ translations.emailCategory }}</label>
-            <autocomplete
-              @searched="onSearchCategory"
-              :items="this.categories"
-              :year="this.form.category"
-            />
-          </div>
+            <div class="form-group">
+              <label>{{ translations.emailCategory }}</label>
+              <autocomplete
+                  @searched="onSearchCategory"
+                  :items="this.categories"
+                  :year="this.form.category"
+              />
+            </div>
 
-          <div class="form-group" id="receivers_cc">
-            <label>{{ translations.ReceiversCC }}</label>
-            <multiselect
-              v-model="selectedReceiversCC"
-              label="email"
-              track-by="email"
-              :options="receivers_cc"
-              :multiple="true"
-              :searchable="true"
-              :taggable="true"
-              select-label=""
-              selected-label=""
-              deselect-label=""
-              :placeholder="translations.ReceiversCCPlaceHolder"
-              @tag="addNewCC"
-              :close-on-select="false"
-              :clear-on-select="false"
-            ></multiselect>
-          </div>
+            <div class="form-group" id="receivers_cc">
+              <label>{{ translations.ReceiversCC }}</label>
+              <multiselect
+                  v-model="selectedReceiversCC"
+                  label="email"
+                  track-by="email"
+                  :options="receivers_cc"
+                  :multiple="true"
+                  :searchable="true"
+                  :taggable="true"
+                  select-label=""
+                  selected-label=""
+                  deselect-label=""
+                  :placeholder="translations.ReceiversCCPlaceHolder"
+                  @tag="addNewCC"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+              ></multiselect>
+            </div>
 
-          <!-- Email -- BCC (in form of email adress or fabrik element -->
-          <div class="form-group" id="receivers_bcc">
-            <label>{{ translations.ReceiversBCC }}</label>
-            <multiselect
-              v-model="selectedReceiversBCC"
-              label="email"
-              track-by="email"
-              :options="receivers_bcc"
-              :multiple="true"
-              :searchable="true"
-              :taggable="true"
-              select-label=""
-              selected-label=""
-              deselect-label=""
-              :placeholder="translations.ReceiversBCCPlaceHolder"
-              @tag="addNewBCC"
-              :close-on-select="false"
-              :clear-on-select="false">
-            </multiselect>
-          </div>
+            <!-- Email -- BCC (in form of email adress or fabrik element -->
+            <div class="form-group" id="receivers_bcc">
+              <label>{{ translations.ReceiversBCC }}</label>
+              <multiselect
+                  v-model="selectedReceiversBCC"
+                  label="email"
+                  track-by="email"
+                  :options="receivers_bcc"
+                  :multiple="true"
+                  :searchable="true"
+                  :taggable="true"
+                  select-label=""
+                  selected-label=""
+                  deselect-label=""
+                  :placeholder="translations.ReceiversBCCPlaceHolder"
+                  @tag="addNewBCC"
+                  :close-on-select="false"
+                  :clear-on-select="false">
+              </multiselect>
+            </div>
 
-          <!-- Email -- Associated letters (in form of email adress or fabrik element -->
-          <div class="form-group" id="attached_letters" v-if="attached_letters">
-            <label>{{ translations.Letters }}</label>
-            <multiselect
-              v-model="selectedLetterAttachments"
-              label="value"
-              track-by="id"
-              :options="attached_letters"
-              :multiple="true"
-              :taggable="true"
-              select-label=""
-              selected-label=""
-              deselect-label=""
-              :placeholder="translations.LettersPlaceHolder"
-              :close-on-select="false"
-              :clear-on-select="false"
-            ></multiselect>
-          </div>
+            <!-- Email -- Associated letters (in form of email adress or fabrik element -->
+            <div class="form-group" id="attached_letters" v-if="attached_letters">
+              <label>{{ translations.Letters }}</label>
+              <multiselect
+                  v-model="selectedLetterAttachments"
+                  label="value"
+                  track-by="id"
+                  :options="attached_letters"
+                  :multiple="true"
+                  :taggable="true"
+                  select-label=""
+                  selected-label=""
+                  deselect-label=""
+                  :placeholder="translations.LettersPlaceHolder"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+              ></multiselect>
+            </div>
 
-          <!-- Email -- Action tags -->
-          <div class="form-group" v-if="tags">
-            <label>{{ translations.Tags }}</label>
-            <multiselect
-                v-model="selectedTags"
-                label="label"
-                track-by="id"
-                :options="action_tags"
-                :multiple="true"
-                :taggable="true"
-                select-label=""
-                selected-label=""
-                deselect-label=""
-                :placeholder="translations.TagsPlaceHolder"
-                :close-on-select="false"
-                :clear-on-select="false"
-            ></multiselect>
-          </div>
+            <!-- Email -- Action tags -->
+            <div class="form-group" v-if="tags">
+              <label>{{ translations.Tags }}</label>
+              <multiselect
+                  v-model="selectedTags"
+                  label="label"
+                  track-by="id"
+                  :options="action_tags"
+                  :multiple="true"
+                  :taggable="true"
+                  select-label=""
+                  selected-label=""
+                  deselect-label=""
+                  :placeholder="translations.TagsPlaceHolder"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+              ></multiselect>
+            </div>
 
-          <!-- Email -- Candidat attachments -->
-          <div class="form-group" id="">
-            <label>{{ translations.CandidateAttachments }}</label>
-            <multiselect
-                v-model="selectedCandidateAttachments"
-                label="value"
-                track-by="id"
-                :options="candidate_attachments"
-                :multiple="true"
-                :taggable="true"
-                select-label=""
-                selected-label=""
-                deselect-label=""
-                :placeholder="translations.CandidateAttachmentsPlaceholder"
-                :close-on-select="false"
-                :clear-on-select="false"
-            ></multiselect>
-          </div>
+            <!-- Email -- Candidat attachments -->
+            <div class="form-group" id="">
+              <label>{{ translations.CandidateAttachments }}</label>
+              <multiselect
+                  v-model="selectedCandidateAttachments"
+                  label="value"
+                  track-by="id"
+                  :options="candidate_attachments"
+                  :multiple="true"
+                  :taggable="true"
+                  select-label=""
+                  selected-label=""
+                  deselect-label=""
+                  :placeholder="translations.CandidateAttachmentsPlaceholder"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+              ></multiselect>
+            </div>
           </div>
         </div>
         <div class="divider"></div>
@@ -216,8 +219,8 @@
                 <option value="to_current_user">{{translations.TheCandidate}}</option>
                 <option value="to_applicant">{{translations.Manual}}</option>
               </select>
-              <p v-if="errors.trigger.action_status" class="error">
-                <span class="error">{{translations.StatusRequired}}</span>
+              <p v-if="errors.trigger.action_status" class="em-red-500-color em-mb-8">
+                <span class="em-red-500-color">{{translations.StatusRequired}}</span>
               </p>
             </div>
 
@@ -226,8 +229,8 @@
               <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
                 <option v-for="statu in status" :key="'status-' + statu.step" :value="statu.step">{{statu.value}}</option>
               </select>
-              <p v-if="errors.trigger.status" class="error">
-                <span class="error">{{translations.StatusRequired}}</span>
+              <p v-if="errors.trigger.status" class="em-red-500-color em-mb-8">
+                <span class="em-red-500-color">{{translations.StatusRequired}}</span>
               </p>
             </div>
 
@@ -238,8 +241,8 @@
                 <option value="6">{{translations.Evaluators}}</option>
                 <option value="1000">{{translations.Candidates}}</option>
               </select>
-              <p v-if="errors.trigger.target" class="error">
-                <span class="error">{{translations.TargetRequired}}</span>
+              <p v-if="errors.trigger.target" class="em-red-500-color em-mb-8">
+                <span class="em-red-500-color">{{translations.TargetRequired}}</span>
               </p>
             </div>
             <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
@@ -267,27 +270,23 @@
                   </div>
                 </div>
               </div>
-              <p v-if="errors.trigger.selectedUsers" class="error">
-                <span class="error">{{translations.UsersRequired}}</span>
+              <p v-if="errors.trigger.selectedUsers" class="em-red-500-color em-mb-8">
+                <span class="em-red-500-color">{{translations.UsersRequired}}</span>
               </p>
             </div>
           </div>
         </div>
 
-        <div class="section-sauvegarder-et-continuer">
-          <div class="w-container">
-            <div class="container-evaluation d-flex justify-content-between">
-              <button
-                  type="button"
-                  class="bouton-sauvergarder-et-continuer w-retour"
-                  onclick="history.back()">
-                {{ translations.retour }}
-              </button>
-              <button type="submit" class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green">
-                {{ translations.continuer }}
-              </button>
-            </div>
-          </div>
+        <div class="em-flex-row em-flex-space-between">
+          <button
+              type="button"
+              class="em-tertiary-button em-w-auto"
+              onclick="history.back()">
+            {{ translations.retour }}
+          </button>
+          <button type="submit" class="em-primary-button em-w-auto">
+            {{ translations.continuer }}
+          </button>
         </div>
       </form>
     </div>
@@ -449,18 +448,18 @@ export default {
     this.actualLanguage = this.$store.getters['global/actualLanguage'];
 
     axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
-      .then(rep => {
-        this.categories = rep.data.data;
-        this.email = this.$store.getters['global/datas'].email.value;
-        if (typeof this.email !== 'undefined' && this.email !== 0 && this.email !== '') {
-          this.getEmailById(this.email);
-        } else {
-          this.dynamicComponent = true;
-          this.$parent.loading = false;
-        }
-      }).catch(e => {
-        console.log(e);
-      });
+        .then(rep => {
+          this.categories = rep.data.data;
+          this.email = this.$store.getters['global/datas'].email.value;
+          if (typeof this.email !== 'undefined' && this.email !== 0 && this.email !== '') {
+            this.getEmailById(this.email);
+          } else {
+            this.dynamicComponent = true;
+            this.$parent.loading = false;
+          }
+        }).catch(e => {
+      console.log(e);
+    });
     setTimeout(() => {
       this.enableVariablesTip();
     },2000);
@@ -476,24 +475,24 @@ export default {
   methods: {
     getEmailById() {
       axios.get(`index.php?option=com_emundus&controller=email&task=getemailbyid&id=${this.email}`)
-      .then((resp) => {
-        if (resp.data.data === false || resp.data.status == 0) {
-          this.runError(undefined, resp.data.msg);
-          return;
-        }
+          .then((resp) => {
+            if (resp.data.data === false || resp.data.status == 0) {
+              this.runError(undefined, resp.data.msg);
+              return;
+            }
 
-        this.form = resp.data.data.email;
-        this.dynamicComponent = true;
+            this.form = resp.data.data.email;
+            this.dynamicComponent = true;
 
-        this.selectedLetterAttachments = resp.data.data.letter_attachment ? resp.data.data.letter_attachment : [];
-        this.selectedCandidateAttachments = resp.data.data.candidate_attachment ? resp.data.data.candidate_attachment : [];
-        this.selectedTags = resp.data.data.tags ? resp.data.data.tags : [];
+            this.selectedLetterAttachments = resp.data.data.letter_attachment ? resp.data.data.letter_attachment : [];
+            this.selectedCandidateAttachments = resp.data.data.candidate_attachment ? resp.data.data.candidate_attachment : [];
+            this.selectedTags = resp.data.data.tags ? resp.data.data.tags : [];
 
-        if (resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
-          this.setEmailReceivers(resp.data.data.receivers);
-        }
-        this.$parent.loading = false;
-      }).catch(e => {
+            if (resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
+              this.setEmailReceivers(resp.data.data.receivers);
+            }
+            this.$parent.loading = false;
+          }).catch(e => {
         console.log(e);
         this.runError(undefined, e.data.msg);
       });
@@ -560,7 +559,7 @@ export default {
     getProgramsList() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&controller=program&task=getallprogram",
+        url: "index.php?option=com_emundus&controller=programme&task=getallprogram",
         params: {
           filter: '',
           sort: '',
@@ -577,21 +576,21 @@ export default {
     },
     getStatus() {
       axios.get("index.php?option=com_emundus&controller=email&task=getstatus")
-        .then(response => {
-          this.status = response.data.data;
-        });
+          .then(response => {
+            this.status = response.data.data;
+          });
     },
     getUsers() {
-      axios.get("index.php?option=com_emundus&controller=program&task=getuserswithoutapplicants")
-        .then(response => {
-          this.users = response.data.data;
-        });
+      axios.get("index.php?option=com_emundus&controller=programme&task=getuserswithoutapplicants")
+          .then(response => {
+            this.users = response.data.data;
+          });
     },
     searchUserByTerm() {
-      axios.get("index.php?option=com_emundus&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
-        .then(response => {
-          this.users = response.data.data;
-        });
+      axios.get("index.php?option=com_emundus&controller=programme&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+          .then(response => {
+            this.users = response.data.data;
+          });
     },
 
     addTrigger() {
@@ -743,9 +742,9 @@ export default {
      */
     tip: function () {
       this.show(
-        "foo-velocity",
-        this.translate("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
-        this.translate("COM_EMUNDUS_ONBOARD_TIP"),
+          "foo-velocity",
+          this.translate("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
+          this.translate("COM_EMUNDUS_ONBOARD_TIP"),
       );
     },
 
@@ -808,5 +807,4 @@ export default {
 </script>
 
 <style>
-
 </style>

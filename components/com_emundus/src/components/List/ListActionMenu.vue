@@ -1,15 +1,14 @@
 <template>
 	<div class="list-actions-menu">
-		<button
+<!--		<button
 			v-if="type == 'email'"
-			class="cta-block"
-			style="height: unset"
 			type="button"
+      class="em-transparent-button"
 			:title="translations.visualize"
 			@click="showModalPreview"
 		>
-      <em class="fas fa-eye"></em>
-    </button>
+      <span class="material-icons-outlined">visibility</span>
+    </button>-->
 		<v-popover
 			v-if="showTootlip === true"
 			:popoverArrowClass="'custom-popover-arrow'"

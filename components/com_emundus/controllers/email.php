@@ -381,7 +381,7 @@ class EmundusControllerEmail extends JControllerLegacy {
 
             $id = $jinput->getInt('id');
 
-            $email = $this->m_emails->getEmailById($id);
+            $email = $this->m_emails->getAdvancedEmailById($id);
 
             if (!empty($email)) {
                 $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $email);

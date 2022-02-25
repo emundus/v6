@@ -124,7 +124,7 @@ export default {
       return new Promise(resolve=>{
         axios({
           method: "get",
-          url: "index.php?option=com_emundus&controller=program&task=getusers",
+          url: "index.php?option=com_emundus&controller=programme&task=getusers",
           params: {
             filters : this.filters,
             page: {page}
@@ -147,7 +147,7 @@ export default {
     getUsers(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&controller=program&task=getusers",
+        url: "index.php?option=com_emundus&controller=programme&task=getusers",
         params: {
           filters : this.filters,
         },
@@ -166,7 +166,7 @@ export default {
     getProgramsList() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus&controller=program&task=getallprogram",
+        url: "index.php?option=com_emundus&controller=programme&task=getallprogram",
         params: {
           filter: '',
           sort: '',

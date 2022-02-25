@@ -258,13 +258,13 @@ export default {
       }
     },
     getUsers() {
-      axios.get("index.php?option=com_emundus&controller=program&task=getuserswithoutapplicants")
+      axios.get("index.php?option=com_emundus&controller=programme&task=getuserswithoutapplicants")
               .then(response => {
                 this.users = response.data.data;
               });
     },
     searchUserByTerm() {
-      axios.get("index.php?option=com_emundus&controller=program&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
+      axios.get("index.php?option=com_emundus&controller=programme&task=searchuserbytermwithoutapplicants&term=" + this.searchTerm)
               .then(response => {
                 this.users = response.data.data;
               });

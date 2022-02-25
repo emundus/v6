@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 
 Vue.config.productionTip = false;
+Vue.config.devtools = true;
 
 /** COMPONENTS **/
 import VModal from 'vue-js-modal';
@@ -94,8 +95,6 @@ if (document.getElementById("em-application-attachment")) {
         document.querySelector(".com_emundus_vue").addEventListener('changeFile', changeFile);
     }
 }
-
-console.log('here');
 
 if (document.getElementById("em-component-vue")) {
     const vue = new Vue({

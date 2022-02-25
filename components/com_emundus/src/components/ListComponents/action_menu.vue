@@ -113,7 +113,7 @@
                 this.$emit("updateLoading",true);
                 axios({
                   method: "post",
-                  url: "index.php?option=com_emundus&controller=program&task=deleteprogram",
+                  url: "index.php?option=com_emundus&controller=programme&task=deleteprogram",
                   data: qs.stringify({ id })
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -126,7 +126,7 @@
                   });
                 }).then(() => {
                   axios.get(
-                          "index.php?option=com_emundus&controller=program&task=getprogramcount"
+                          "index.php?option=com_emundus&controller=programme&task=getprogramcount"
                   ).then(response => {
                     this.total = response.data.data;
                     this.updateTotal(this.total);
@@ -287,7 +287,7 @@
                 axios({
                   method: "post",
                   url:
-                          "index.php?option=com_emundus&controller=program&task=unpublishprogram",
+                          "index.php?option=com_emundus&controller=programme&task=unpublishprogram",
                   data: qs.stringify({ id })
                 }).then(response => {
                   this.$emit("updateLoading",false);
@@ -398,7 +398,7 @@
           case "program":
             axios({
               method: "post",
-              url: "index.php?option=com_emundus&controller=program&task=publishprogram",
+              url: "index.php?option=com_emundus&controller=programme&task=publishprogram",
               data: qs.stringify({ id })
             }).then(response => {
               this.$store.commit("lists/publish", id);

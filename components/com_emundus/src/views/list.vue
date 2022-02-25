@@ -227,7 +227,7 @@ export default {
       this.actualLanguage = response.data.msg;
     });
 
-    axios.get("index.php?option=com_emundus&controller=program&task=getallprogram")
+    axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
         .then(response => {
           this.allPrograms = response.data.data;
 

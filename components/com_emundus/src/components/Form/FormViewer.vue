@@ -158,7 +158,7 @@
         this.object_json.Groups['group_' + gid]['visibility'] = !this.object_json.Groups['group_' + gid]['visibility'];
         axios({
           method: "post",
-          url: "index.php?option=com_emundus&controller=program&task=updatevisibility",
+          url: "index.php?option=com_emundus&controller=programme&task=updatevisibility",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

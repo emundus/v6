@@ -464,7 +464,7 @@ export default {
       this.getAllPrograms();
     },
     getAllPrograms() {
-      axios.get("index.php?option=com_emundus&controller=program&task=getallprogram")
+      axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
           .then(response => {
             this.programs = response.data.data;
             if(Object.keys(this.programs).length !== 0) {
@@ -559,7 +559,7 @@ export default {
     createCampainWithNoExistingProgram(programForm){
       axios({
         method: "post",
-        url: "index.php?option=com_emundus&controller=program&task=createprogram",
+        url: "index.php?option=com_emundus&controller=programme&task=createprogram",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
@@ -671,7 +671,7 @@ export default {
         }
         axios({
           method: "post",
-          url: "index.php?option=com_emundus&controller=program&task=" + task,
+          url: "index.php?option=com_emundus&controller=programme&task=" + task,
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },

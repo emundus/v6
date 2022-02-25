@@ -315,7 +315,7 @@ export default {
     },
 
     changeToProgMenu(index) {
-      axios.get(`index.php?option=com_emundus&controller=program&task=getprogrambyid&id=${this.form.program_id}`)
+      axios.get(`index.php?option=com_emundus&controller=programme&task=getprogrambyid&id=${this.form.program_id}`)
           .then(rep => {
             this.program.id = rep.data.data.id;
             this.program.code = rep.data.data.code;
@@ -339,7 +339,7 @@ export default {
             this.prog_group.manager = rep.data.data.manager_group;
             axios({
               method: "get",
-              url: "index.php?option=com_emundus&controller=program&task=getcampaignsbyprogram",
+              url: "index.php?option=com_emundus&controller=programme&task=getcampaignsbyprogram",
               params: {
                 pid: this.program.id,
               },
