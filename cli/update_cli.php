@@ -190,15 +190,15 @@ class UpdateCli extends JApplicationCli
             return true;
         }
     }
-
     public function installExtension($app, $name) {
+        echo $name;
         $this->out('INSTALL ' . $name);
         $app = JFactory::getApplication();
 
         $app->input->set('installtype', 'url');
         $app->input->set('install_directory', JPATH_BASE . '/tmp');
         $app->input->set('max_upload_size', '10485760');
-        $version = '8.2.0';
+        $version = '1.0.0';
         $app->input->set('install_url', 'http://localhost/emundus-updates/packages/'. $name .'/' . $name . '_' . $version .'.zip');
 
 
@@ -216,8 +216,7 @@ class UpdateCli extends JApplicationCli
 
     public function doExecute()
     {
-
-        JLog::addLogger(array('text_file' => 'update_cli.log.php'), JLog::ALL, array('jerror'));
+        JLog::addLogger(array('text_file' => 'update_cli.log.php'), JLog::ALL, array('jerror, error'));
 
         $app = JFactory::getApplication('site');
         $app->initialise();
@@ -239,7 +238,7 @@ class UpdateCli extends JApplicationCli
         if ($this->input->get('h', $this->input->get('help'))) {
             $this->doEchoHelp();
         }
-        if ($id = $this->input->get('id', $this->input->get('id'))) {
+        if ($id = $this->input->get('x', $this->input->get('extension'))) {
             $this->updateExtensions($uid = $id);
         }
         if ($this->input->get('e', $this->input->get('extensions'))) {
