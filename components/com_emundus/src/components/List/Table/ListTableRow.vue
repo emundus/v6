@@ -54,15 +54,11 @@ export default {
 			tds: [],
 			lang: 'fr',
 			translations: {
-				finished: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-				published: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-				unpublished: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-				active: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM"),
-				inactive: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM"),
-				emailType: {
-					1: "Système",
-					2: "Modèle",
-				},
+				finished: "COM_EMUNDUS_ONBOARD_FILTER_CLOSE",
+				published: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH",
+				unpublished: "COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH",
+				active: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM",
+				inactive: "COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH_FORM",
 			}
 		}
 	},
@@ -104,8 +100,6 @@ export default {
 		},
 		formattedEmailData(td) {
 			switch(td.value) {
-				case 'type':
-					return this.translations.emailType[this.data[td.value]];
 				case 'published':
 					if (this.isPublished) {
 						return this.translations.published;

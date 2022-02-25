@@ -5,14 +5,14 @@
             :trigger="this.triggerSelected"
             :triggerAction="'candidate'"
             @UpdateTriggers="getTriggers"
-            :key="candidate_trigger"
+            :key="'candidate' + candidate_trigger"
     />
     <ModalAddTrigger
-            :prog="this.prog"
-            :trigger="this.triggerSelected"
-            :triggerAction="'manual'"
-            @UpdateTriggers="getTriggers"
-            :key="manual_trigger"
+      :prog="this.prog"
+      :trigger="this.triggerSelected"
+      :triggerAction="'manual'"
+      @UpdateTriggers="getTriggers"
+      :key="'manual-' + manual_trigger"
     />
     <div class="choices-buttons">
       <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>

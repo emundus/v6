@@ -26,49 +26,42 @@
       </div>
       <div class="modalC-content">
 
-        <div class="form-group" :class="{ 'mb-0': translate.label}">
+        <div class="form-group" :class="{ 'mb-0': can_translate.label}">
             <label>{{translations.Name}} :</label>
           <div class="input-can-translate">
             <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.label}" type="button" v-if="manyLanguages !== '0'" @click="translate.label = !translate.label"></button>
+            <button class="translate-icon" :class="{'translate-icon-selected': can_translate.label}" type="button" v-if="manyLanguages !== '0'" @click="can_translate.label = !can_translate.label"></button>
           </div>
-          <translation :label="label" :actualLanguage="actualLanguage" v-if="translate.label"></translation>
+          <translation :label="label" :actualLanguage="actualLanguage" v-if="can_translate.label"></translation>
         </div>
         <p v-if="errors" class="error col-md-12 mb-2">
           <span class="error">{{translations.LabelRequired}}</span>
         </p>
 
-        <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
+        <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
           <div class="em-flex-row">
             <label>{{translations.Intro}}</label>
-            <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
+            <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': can_translate.intro}" type="button" @click="can_translate.intro = !can_translate.intro"></button>
           </div>
           <div>
-            <div class="em-flex-row" v-if="translate.intro">
+            <div class="em-flex-row" v-if="can_translate.intro">
               <span>{{translations.TranslateIn}} : </span>
               <select v-model="selectedLanguage" v-if="manyLanguages !== '0'" @change="dynamicComponent++" style="margin: 10px 0;">
-                <option v-for="(language,index_group) in languages" :value="language.sef">{{language.title_native}}</option>
+                <option v-for="language in languages" :key="language.sef" :value="language.sef">{{language.title_native}}</option>
               </select>
             </div>
             <div class="input-can-translate">
-  <!--              <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="2000" style="margin: 0"></textarea>-->
-                <editor v-for="(language,index_group) in languages"
-                        v-if="language.sef === selectedLanguage && intro.hasOwnProperty(language.sef)"
-                        :height="'30em'"
-                        :text="intro[language.sef]"
-                        :lang="actualLanguage"
-                        :enable_variables="false"
-                        :id="'editor_' + language.sef"
-                        :key="dynamicComponent"
-                        v-model="intro[language.sef]"></editor>
-  <!--              <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>-->
+                <editor
+                  v-if="intro.hasOwnProperty(selectedLanguage)"
+                  :height="'30em'"
+                  :text="intro[selectedLanguage]"
+                  :lang="actualLanguage"
+                  :enable_variables="false"
+                  :id="'editor_' + selectedLanguage"
+                  :key="dynamicComponent"
+                  v-model="intro[selectedLanguage]"></editor>
             </div>
           </div>
-<!--          <div class="input-can-translate">
-            <textarea v-model="intro[actualLanguage]" class="form__input field-general w-input" rows="3" maxlength="300" style="margin: 0"></textarea>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.intro}" type="button" v-if="manyLanguages !== '0'" @click="translate.intro = !translate.intro"></button>
-          </div>
-          <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>-->
         </div>
 
         <div class="form-group em-flex-row mb-1" id="template_checkbox" style="align-items: center">
@@ -122,7 +115,7 @@ export default {
   data() {
     return {
       tempEl: [],
-      translate: {
+      can_translate: {
         label: false,
         intro: false
       },
@@ -134,19 +127,19 @@ export default {
       changes: false,
       selectedLanguage: this.actualLanguage,
       translations: {
-        Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-        dataSaved: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED"),
-        informations: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS"),
-        orderingMenu: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_MENUORDERING"),
-        editMenu: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDITMENU"),
-        Name: this.translate("COM_EMUNDUS_ONBOARD_FIELD_NAME"),
-        Intro: this.translate("COM_EMUNDUS_ONBOARD_FIELD_INTRO"),
-        Delete: this.translate("COM_EMUNDUS_ONBOARD_ACTION_DELETE"),
-        TranslateEnglish: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        LabelRequired: this.translate("COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME"),
-        SaveAsTemplate: this.translate("COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE"),
-        TranslateIn: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_IN"),
+        Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+        Continuer: "COM_EMUNDUS_ONBOARD_ADD_CONTINUER",
+        dataSaved: "COM_EMUNDUS_ONBOARD_BUILDER_DATASAVED",
+        informations: "COM_EMUNDUS_ONBOARD_BUILDER_INFORMATIONS",
+        orderingMenu: "COM_EMUNDUS_ONBOARD_BUILDER_MENUORDERING",
+        editMenu: "COM_EMUNDUS_ONBOARD_BUILDER_EDITMENU",
+        Name: "COM_EMUNDUS_ONBOARD_FIELD_NAME",
+        Intro: "COM_EMUNDUS_ONBOARD_FIELD_INTRO",
+        Delete: "COM_EMUNDUS_ONBOARD_ACTION_DELETE",
+        TranslateEnglish: "COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH",
+        LabelRequired: "COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME",
+        SaveAsTemplate: "COM_EMUNDUS_ONBOARD_SAVE_AS_TEMPLATE",
+        TranslateIn: "COM_EMUNDUS_ONBOARD_TRANSLATE_IN",
       }
     };
   },
@@ -171,11 +164,11 @@ export default {
     beforeClose(event) {
       if (this.changes !== false) {
         this.$emit(
-                "show",
-                "foo-velocity",
-                "success",
-                this.dataSaved,
-                this.informations
+          "show",
+          "foo-velocity",
+          "success",
+          this.dataSaved,
+          this.informations
         );
         this.changes = false;
       }

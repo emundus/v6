@@ -252,12 +252,12 @@ export default {
       manager: null,
     },
 
-    translations:{
-      DATE_FORMAT: this.translate("DATE_FORMAT_JS_LC2"),
-      From: this.translate("COM_EMUNDUS_ONBOARD_FROM"),
-      To: this.translate("COM_EMUNDUS_ONBOARD_TO"),
-      chooseProfileWarning: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING"),
-      ProgramWarning: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_WARNING"),
+    translations: {
+      DATE_FORMAT: "DATE_FORMAT_JS_LC2",
+      From: "COM_EMUNDUS_ONBOARD_FROM",
+      To: "COM_EMUNDUS_ONBOARD_TO",
+      chooseProfileWarning: "COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING",
+      ProgramWarning: "COM_EMUNDUS_ONBOARD_PROGRAM_WARNING",
     },
   }),
 
@@ -273,7 +273,6 @@ export default {
       this.langue = 1;
     }
   },
-
   methods: {
     initInformations(campaign) {
       this.form.label = campaign.label;

@@ -45,32 +45,15 @@
             @resetMenuIndex="menuHighlight = 0"
             ref="translations"
         />
-
-        <!--          <editDatas
-                          v-if="menuHighlight == 8 && coordinatorAccess != 0"
-                          ref="datas"
-                          :actualLanguage="actualLanguage"
-                          :manyLanguages="manyLanguages"
-                  ></editDatas>-->
-
-
-
-        <!--          <help-settings
-                      v-if="menuHighlight == 8"
-                      ref="help"
-                      :actualLanguage="actualLanguage"
-                      :manyLanguages="manyLanguages"
-                  ></help-settings>-->
       </transition>
     </div>
   </div>
 </template>
 
 <script>
-import editStatus from "../components/Settings/FilesTool/editStatus";
-import editTags from "../components/Settings/FilesTool/editTags";
-import editStyle from "../components/Settings/editStyle";
-import editDatas from "../components/Settings/editDatas";
+import EditStatus from "../components/Settings/FilesTool/EditStatus";
+import EditTags from "../components/Settings/FilesTool/EditTags";
+import EditStyle from "../components/Settings/EditStyle";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 import ContentTool from "../components/Settings/Content/ContentTool";
 import FilesTool from "../components/Settings/FilesTool/FilesTool";
@@ -84,10 +67,9 @@ export default {
     FilesTool,
     ContentTool,
     TranslationTool,
-    editStatus,
-    editTags,
-    editStyle,
-    editDatas,
+    EditStatus,
+    EditTags,
+    EditStyle
   },
 
   props: {

@@ -45,9 +45,9 @@
 
 <script>
 /* COMPONENTS */
-import EditStatus from "./editStatus";
-import EditTags from "./editTags";
-import EditApplicants from "./editApplicants";
+import EditStatus from "./EditStatus";
+import EditTags from "./EditTags";
+import EditApplicants from "./EditApplicants";
 
 export default {
   name: "filesTool",

@@ -38,7 +38,7 @@
       </div>
 
       <div v-else>
-        <div v-for="(translation,index) in translations">
+        <div v-for="(translation,index) in translations" :key="index">
           <div class="em-mb-32 em-neutral-100-box em-p-24">
             <div class="em-flex-space-between em-mt-16 em-grid-50">
               <p class="em-neutral-700-color">{{ translation.override }}</p>
@@ -101,7 +101,7 @@ export default {
 
         this.allLanguages = response.data;
         this.allLanguages.forEach((lang) => {
-          if(lang.lang_code !== this.defaultLang.lang_code) {
+          if (lang.lang_code !== this.defaultLang.lang_code) {
             if (lang.published == 1) {
               this.availableLanguages.push(lang);
             }
@@ -114,7 +114,7 @@ export default {
 
     async saveTranslation(value,translation,index){
       this.saving = true;
-      translationsService.insertTranslation(value,'override',this.lang.lang_code,translation.reference_id,translation.tag,translation.reference_table).then((response) => {
+      translationsService.insertTranslation(value,'override', this.lang.lang_code, translation.reference_id, translation.tag, translation.reference_table).then((response) => {
         this.last_save = this.formattedDate('','LT');
         this.saving = false;
         this.translations.splice(index,1);
@@ -124,6 +124,10 @@ export default {
 
   watch: {
     lang: function(value){
+      if (value === null || typeof value === undefined) {
+        return;
+      }
+
       this.loading = true;
       this.translations = [];
 

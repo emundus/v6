@@ -96,7 +96,17 @@
 
   export default {
     name: "modalEditElement",
-    props: { ID: Number, gid: Number, files: Number, manyLanguages: Number, actualLanguage: String, profileId:Number },
+    props: { 
+      elementId: {
+        type: Number,
+        required: true
+      }, 
+      gid: Number, 
+      files: Number, 
+      manyLanguages: Number, 
+      actualLanguage: String, 
+      profileId:Number 
+    },
     components: {
       fieldF,
       birthdayF,
@@ -120,9 +130,6 @@
         sublabel: "",
         plugin: '',
         element: null,
-        translate: {
-          label: false,
-        },
         // Plugins
         plugins: {
           field: {
@@ -211,7 +218,7 @@
           setTimeout(() => {
             this.$emit("reloadElement")
           },200);
-          this.$modal.hide('modalEditElement' + this.ID);
+          this.$modal.hide('modalEditElement' + this.elementId);
         }).catch(e => {
           console.log(e);
         });
@@ -235,7 +242,7 @@
           method: "get",
           url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
           params: {
-            element: this.ID,
+            element: this.elementId,
             gid: this.gid
           },
           paramsSerializer: params => {

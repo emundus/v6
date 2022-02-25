@@ -1,9 +1,9 @@
 <template>
   <div>
     <ModalAddEvaluation
-            :prog="prog"
-            :grid="grid"
-            @updateGrid="getEvaluationGridByProgram(1)"
+      :prog="prog"
+      :grid="grid"
+      @updateGrid="getEvaluationGridByProgram(1)"
     />
     <div class="container-evaluation">
       <div class="text-center" v-if="grid == null">
@@ -53,19 +53,18 @@ export default {
       viewer: 0,
       grid: null,
       translations:{
-        addGrid: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID"),
-        editGrid: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDITGRID"),
-        deleteGrid: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID"),
+        addGrid: "COM_EMUNDUS_ONBOARD_BUILDER_ADDGRID",
+        editGrid: "COM_EMUNDUS_ONBOARD_BUILDER_EDITGRID",
+        deleteGrid: "COM_EMUNDUS_ONBOARD_BUILDER_DELETEGRID",
       },
     };
   },
-
   methods: {
     getEvaluationGridByProgram(redirect){
       axios.get("index.php?option=com_emundus&controller=program&task=getevaluationgrid&pid=" + this.prog)
               .then(response => {
                 this.grid = response.data.data;
-                if(this.grid != null) {
+                if (this.grid != null) {
                   this.link.link = 'index.php?option=com_fabrik&view=form&formid=' + response.data.data;
                   this.viewer++;
                   if(redirect){

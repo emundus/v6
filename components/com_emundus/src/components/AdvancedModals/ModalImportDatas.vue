@@ -10,37 +10,35 @@
             :delay="100"
             :adaptive="true"
             :clickToClose="false"
-            @closed="beforeClose"
-            @before-open="beforeOpen"
     >
-      <div class="fixed-header-modal">
-              <div class="topright">
-                <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalImportDatas')">
-                  <em class="fas fa-times"></em>
-                </button>
-              </div>
-                                <div class="update-field-header">
-              <h2 class="update-title-header">
-                 {{ImportDatasTable}}
-              </h2>
-                                </div>
-            </div>
+    <div class="fixed-header-modal">
+        <div class="topright">
+            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalImportDatas')">
+              <em class="fas fa-times"></em>
+            </button>
+        </div>
+        <div class="update-field-header">
+            <h2 class="update-title-header">
+                {{translations.ImportDatasTable}}
+            </h2>
+        </div>
+    </div>
 
-      <div class="modalC-content">
-          <div v-if="!importCSV">
+     <div class="modalC-content">
+        <div v-if="!importCSV">
             <div class="form-group">
-              <label>{{Name}} :</label>
+              <label>{{translations.Name}} :</label>
               <input v-model="form.label" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors.label}"/>
               <p v-if="errors.label" class="error">
-                <span class="error">{{NameRequired}}</span>
+                <span class="error">{{translations.NameRequired}}</span>
               </p>
             </div>
             <div class="form-group">
-              <label>{{Description}} :</label>
+              <label>{{translations.Description}} :</label>
               <textarea v-model="form.desc" maxlength="150" class="form__input field-general w-input" style="margin: 0"/>
             </div>
             <div class="col-md-8 flex">
-              <label class="require col-md-3">{{Columns}} :</label>
+              <label class="require col-md-3">{{translations.Columns}} :</label>
               <button @click.prevent="add" class="add-option">+</button>
             </div>
             <div class="col-md-12">
@@ -49,32 +47,31 @@
                 <button @click.prevent="leave(i)" class="remove-option">-</button>
               </div>
               <p v-if="errors.db_columns" class="error">
-                <span class="error">{{LeastOneColumnRequired}}</span>
+                <span class="error">{{translations.LeastOneColumnRequired}}</span>
               </p>
             </div>
           </div>
           <vue-csv-import v-model="csv" :map-fields="form.db_columns" :key="csv_comp" tableSelectClass="dropdown-toggle" tableClass="custom-table-csv" v-if="importCSV" ref="csvimport">
               <template slot="hasHeaders" slot-scope="{headers, toggle}">
                   <label style="display: none">
-                      <input type="checkbox" id="hasHeaders" :value="headers" @change="toggle">
-                      Headers?
+                    <input type="checkbox" id="hasHeaders" :value="headers" @change="toggle"> Headers?
                   </label>
               </template>
 
               <template slot="error">
-                  {{FileTypeInvalid}}
+                  {{translations.FileTypeInvalid}}
               </template>
 
               <template slot="thead">
-                  <p style="margin-top: 2em;width: max-content;">{{CSVAssociate}}</p>
+                  <p style="margin-top: 2em;width: max-content;">{{ translations.CSVAssociate }}</p>
                   <tr>
-                      <th>{{MyColumns}}</th>
-                      <th>{{CSVColumns}}</th>
+                      <th id="my-columns">{{ translations.MyColumns }}</th>
+                      <th id="csv-columns">{{ translations.CSVColumns }}</th>
                   </tr>
               </template>
 
               <template slot="next" slot-scope="{load}">
-                  <button class="bouton-sauvergarder-et-continuer" style="float: left" @click.prevent="load">{{Load}}</button>
+                  <button class="bouton-sauvergarder-et-continuer" style="float: left" @click.prevent="load">{{ translations.Load }}</button>
               </template>
 
               <template slot="submit" slot-scope="{submit}">
@@ -83,13 +80,12 @@
         </vue-csv-import>
       </div>
       <div class="em-flex-row em-flex-space-between mb-1">
-                <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="goBack">
-          {{Retour}}
+        <button type="button" class="bouton-sauvergarder-et-continuer w-retour" @click.prevent="goBack">
+            {{ translations.Retour }}
         </button>
         <button type="button" class="bouton-sauvergarder-et-continuer"
            @click.prevent="saveDatas()">
-          {{ Continuer }}
+          {{ translations.Continuer }}
         </button>
       </div>
     </modal>
@@ -122,27 +118,24 @@
                 csv: null,
                 csv_comp: 0,
                 importCSV: false,
-                Name: this.translate("COM_EMUNDUS_ONBOARD_LASTNAME"),
-                NameRequired: this.translate("COM_EMUNDUS_ONBOARD_LASTNAME_REQUIRED"),
-                Translate: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-                Columns: this.translate("COM_EMUNDUS_ONBOARD_COLUMNS"),
-                Description: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-                ImportDatasTable: this.translate("COM_EMUNDUS_ONBOARD_IMPORT_DATAS"),
-                Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-                Continuer: this.translate("COM_EMUNDUS_ONBOARD_NEXT"),
-                Load: this.translate("COM_EMUNDUS_ONBOARD_LOAD_FILE"),
-                MyColumns: this.translate("COM_EMUNDUS_ONBOARD_MY_COLUMNS"),
-                CSVColumns: this.translate("COM_EMUNDUS_ONBOARD_CSV_COLUMNS"),
-                CSVAssociate: this.translate("COM_EMUNDUS_ONBOARD_CSV_ASSOCIATION"),
-                LeastOneColumnRequired: this.translate("COM_EMUNDUS_ONBOARD_LEAST_ONE_COLUMN_REQUIRED"),
-                FileTypeInvalid: this.translate("COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE"),
+                translations: {
+                    Name: "COM_EMUNDUS_ONBOARD_LASTNAME",
+                    NameRequired: "COM_EMUNDUS_ONBOARD_LASTNAME_REQUIRED",
+                    Columns: "COM_EMUNDUS_ONBOARD_COLUMNS",
+                    Description: "COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION",
+                    ImportDatasTable: "COM_EMUNDUS_ONBOARD_IMPORT_DATAS",
+                    Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+                    Continuer: "COM_EMUNDUS_ONBOARD_NEXT",
+                    Load: "COM_EMUNDUS_ONBOARD_LOAD_FILE",
+                    MyColumns: "COM_EMUNDUS_ONBOARD_MY_COLUMNS",
+                    CSVColumns: "COM_EMUNDUS_ONBOARD_CSV_COLUMNS",
+                    CSVAssociate: "COM_EMUNDUS_ONBOARD_CSV_ASSOCIATION",
+                    LeastOneColumnRequired: "COM_EMUNDUS_ONBOARD_LEAST_ONE_COLUMN_REQUIRED",
+                    FileTypeInvalid: "COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE",
+                }
             };
         },
         methods: {
-            beforeClose(event) {
-            },
-            beforeOpen(event) {
-            },
             goBack() {
                 if(!this.importCSV){
                     this.$modal.hide('modalImportDatas');

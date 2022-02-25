@@ -21,14 +21,14 @@
           </div>
         <div class="update-field-header">
           <h2 class="update-title-header">
-             {{DuplicateElement}}
+             {{translations.DuplicateElement}}
           </h2>
-          <p>{{Target}}</p>
+          <p>{{translations.Target}}</p>
         </div>
       </div>
       <div class="modalC-content">
         <div class="form-group mb-2">
-          <label>{{Page}}* :</label>
+          <label>{{translations.Page}}* :</label>
           <select id="select_page" class="dropdown-toggle" v-model="page" :class="{ 'is-invalid': errors.page}">
             <option v-for="(page, index) in pages" :key="index" :value="page.id">
               {{page.label}}
@@ -36,7 +36,7 @@
           </select>
         </div>
         <p v-if="errors.page" class="error col-md-12 mb-2">
-          <span class="error">{{PageRequired}}</span>
+          <span class="error">{{translations.PageRequired}}</span>
         </p>
         <transition :name="'slide-down'" type="transition">
           <div class="form-group mb-2" v-if="page !== -1 && groups.length > 1">
@@ -49,22 +49,19 @@
           </div>
         </transition>
         <p v-if="errors.group" class="error col-md-12 mb-2">
-          <span class="error">{{GroupRequired}}</span>
+          <span class="error">{{ translations.GroupRequired }}</span>
         </p>
       </div>
       <div class="em-flex-row em-flex-space-between mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
                 @click.prevent="$modal.hide('modalDuplicateElement' + ID)">
-          {{Retour}}
+          {{ translations.Retour }}
         </button>
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
           @click.prevent="duplicate()"
-        >{{ Continuer }}</button>
-      </div>
-      <div class="loading-form" style="top: 10vh" v-if="submitted">
-        <Ring-Loader :color="'#12DB42'" />
+        >{{ translations.Continuer }}</button>
       </div>
     </modal>
   </span>
@@ -92,14 +89,16 @@ export default {
         page: false,
         group: false,
       },
-      DuplicateElement: this.translate("COM_EMUNDUS_ONBOARD_DUPLICATE_ELEMENT"),
-      Page: this.translate("COM_EMUNDUS_ONBOARD_BUILDMENU"),
-      Group: this.translate("COM_EMUNDUS_ONBOARD_GROUP"),
-      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: this.translate("COM_EMUNDUS_ONBOARD_SAVE"),
-      PageRequired: this.translate("COM_EMUNDUS_ONBOARD_REQUIRED_FORM"),
-      GroupRequired: this.translate("COM_EMUNDUS_ONBOARD_REQUIRED_GROUP"),
-      Target: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_TARGET"),
+      translations: {
+        DuplicateElement: "COM_EMUNDUS_ONBOARD_DUPLICATE_ELEMENT",
+        Page: "COM_EMUNDUS_ONBOARD_BUILDMENU",
+        Group: "COM_EMUNDUS_ONBOARD_GROUP",
+        Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+        Continuer: "COM_EMUNDUS_ONBOARD_SAVE",
+        PageRequired: "COM_EMUNDUS_ONBOARD_REQUIRED_FORM",
+        GroupRequired: "COM_EMUNDUS_ONBOARD_REQUIRED_GROUP",
+        Target: "COM_EMUNDUS_ONBOARD_CHOOSE_TARGET",
+      }
     };
   },
   methods: {
@@ -156,7 +155,6 @@ export default {
         })
       }).then((result) => {
         window.location.reload();
-        //this.$modal.hide('modalDuplicateElement' + this.ID);
       });
     },
 
