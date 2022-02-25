@@ -449,7 +449,7 @@ export default {
     },
 
     sendForm() {
-      this.redirectJRoute('index.php?option=com_emundus_onboard&view=form');
+      this.redirectJRoute('index.php?option=com_emundus&view=form');
     },
 
     redirectJRoute(link) {

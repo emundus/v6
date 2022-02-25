@@ -5,7 +5,7 @@
       <div class="em-grid-3 em-mb-16">
         <button @click="pushStatus" class="em-primary-button em-mb-24" style="width: max-content">
           <div class="add-button-div">
-            <em class="fas fa-plus mr-1"></em>
+            <em class="fas fa-plus em-mr-4"></em>
             {{ translate('COM_EMUNDUS_ONBOARD_ADD_STATUS') }}
           </div>
         </button>

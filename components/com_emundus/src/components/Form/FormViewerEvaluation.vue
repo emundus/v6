@@ -20,7 +20,7 @@
         <div v-for="(group,index_group) in object_json.Groups"
              v-bind:key="group.index">
           <fieldset :class="group.group_class" :id="'group_'+group.group_id" :style="group.group_css">
-            <div class="d-flex">
+            <div class="em-flex-row">
               <legend
                       v-if="group.group_showLegend"
                       class="legend ViewerLegend"
@@ -35,9 +35,9 @@
                      v-show="element.hidden === false"
                      class="builder-item-element"
                      :class="{'unpublished': !element.publish}">
-                  <div class="d-flex builder-item-element__properties">
+                  <div class="em-flex-row builder-item-element__properties">
                     <div class="w-100">
-                      <div class="d-flex" style="align-items: baseline">
+                      <div class="em-flex-row" style="align-items: baseline">
                         <span v-if="element.label_value" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
                       </div>
                       <div v-if="element.params.date_table_format">
@@ -48,7 +48,7 @@
                         <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
                         <span v-if="element.tipSide" v-html="element.tipSide"></span>
                       </div>
-                      <span v-else class="d-flex w-100">
+                      <span v-else class="em-flex-row w-100">
                       <div v-if="element.element" class="fabrikElement" v-html="element.error"></div>
                       <div v-if="element.element" :class="element.errorClass" v-html="element.element" class="w-100"></div>
                       <span v-if="element.tipSide" v-html="element.tipSide"></span>

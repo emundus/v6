@@ -76,12 +76,12 @@
             <textarea v-model="intro.en" rows="3" class="form__input field-general w-input" maxlength="300"></textarea>
           </div>
         </transition>
-        <div class="col-md-12 d-flex" v-if="model_id == -1">
+        <div class="col-md-12 em-flex-row" v-if="model_id == -1">
           <input type="checkbox" v-model="template">
           <label class="ml-10px">{{SaveAsTemplate}} :</label>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
+      <div class="em-flex-row em-flex-space-between mb-1">
                 <button type="button"
                         class="bouton-sauvergarder-et-continuer w-retour"
                         @click.prevent="$modal.hide('modalAddEvaluation')"

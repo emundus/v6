@@ -55,29 +55,29 @@
         <transition name="move-right">
           <div class="actions-menu menu-block">
 <!--            <button class="g-menu-item g-standard burger-button"><img src="/images/emundus/menus/menu.png" @click="enableActionsMenu" style="width: 30px" alt="Menu"></button>-->
-            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="translations.Back">
+            <a class="em-flex-row back-button-action pointer" style="padding: 0 15px" :title="translations.Back">
               {{ translations.BuildYourForm }}
             </a>
             <hr style="width: 80%;margin: 10px auto;">
             <div>
               <div class="action-links">
-                  <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
-                    <em class="add-page-icon"></em>
+                  <a class="em-flex-row action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
+                    <span class="material-icons">note_add</span>
                     <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addMenu}}</label>
                   </a>
-                  <!--<a class="d-flex action-link" @click="createGroup()" :title="translations.addGroup">-->
-                <a class="d-flex action-link" @click="showSections()" :title="translations.addGroup">
-                    <em class="add-group-icon"></em>
+                  <!--<a class="em-flex-row action-link" @click="createGroup()" :title="translations.addGroup">-->
+                <a class="em-flex-row action-link" @click="showSections()" :title="translations.addGroup">
+                    <span class="material-icons">table_rows</span>
                     <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addGroup}}</label>
                   </a>
-                  <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="translations.addItem">
-                    <em class="add-element-icon"></em>
+                  <a class="em-flex-row action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="translations.addItem">
+                    <span class="material-icons">text_fields</span>
                     <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
                   </a>
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
-                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
-                      <em class="fas fa-arrow-left mr-1"></em>
+                    <a class="em-flex-row col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
+                      <em class="fas fa-arrow-left em-mr-4"></em>
                       {{ translations.Back }}
                     </a>
                     <hr style="width: 80%;margin: 10px auto;">
@@ -91,7 +91,7 @@
                             chosen-class="plugin-chosen"
                             ghost-class="plugin-ghost"
                             style="padding-bottom: 2em;margin-top: 10%">
-                        <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :key="'plugin_' + index" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                        <div class="em-flex-row plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :key="'plugin_' + index" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                           <em :class="plugin.icon"></em>
                           <span class="ml-10px">{{plugin.name}}</span>
                         </div>
@@ -101,8 +101,8 @@
 
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingSection">
-                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingSection = !addingSection" :title="Back">
-                      <em class="fas fa-arrow-left mr-1"></em>
+                    <a class="em-flex-row col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingSection = !addingSection" :title="Back">
+                      <em class="fas fa-arrow-left em-mr-4"></em>
                       {{ translations.Back }}
                     </a>
                     <hr style="width: 80%;margin: 10px auto;">
@@ -116,7 +116,7 @@
                         chosen-class="plugin-chosen"
                         ghost-class="plugin-ghost"
                         style="padding-bottom: 2em;margin-top: 10%">-->
-                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 " v-for="(section,index) in sections" :id="'section_' + section.value" @click="createGroup(section.value,section.label)" :title="section.name" style="cursor: default" >
+                      <div class="em-flex-row plugin-link col-md-offset-1 col-sm-offset-1 " v-for="(section,index) in sections" :id="'section_' + section.value" @click="createGroup(section.value,section.label)" :title="section.name" style="cursor: default" >
                         <em :class="section.icon"></em>
                         <span class="ml-10px">{{section.name}}</span>
                       </div>
@@ -130,7 +130,7 @@
       </div>
       <div  :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-6' : 'col-md-8'">
-          <div class="d-flex form-title-block" v-show="!updateFormLabel">
+          <div class="em-flex-row form-title-block" v-show="!updateFormLabel">
             <h2 class="form-title" @click="enableUpdatingForm" style="padding: 0; margin: 0">{{profileLabel}}</h2>
             <a @click="enableUpdatingForm" style="margin-left: 1em" :title="translations.Edit" class="cta-block pointer">
               <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
@@ -139,9 +139,9 @@
           <div style="width: max-content;margin-left: 20px" v-show="updateFormLabel">
             <div class="input-can-translate">
               <input v-model="profileLabel" class="form__input field-general w-input" style="width: 400px;" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
-              <div class="d-flex actions-update-label ml-10px">
+              <div class="em-flex-row actions-update-label ml-10px">
                 <a @click="updateLabelForm()" :title="translations.Validate">
-                  <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
+                  <em class="fas fa-check em-mr-4" data-toggle="tooltip" data-placement="top"></em>
                 </a>
               </div>
             </div>
@@ -192,12 +192,12 @@
           </div>
         </div>
         <ul class="col-md-3 sticky-form-pages" :class="[addingElement || actions_menu && formList.length >0? 'ml-10px col-sm-offset-5 col-sm-7' : '',optionsModal ? 'col-sm-5' : '',formList.length ===0 ? 'col-sm-offset-5 col-sm-7':'']" style="margin-top: 0" v-if="formObjectArray">
-          <div class="d-flex justify-content-between mb-1">
-            <h3 class="mb-0" style="padding: 0;">{{ translations.FormPage }}</h3>
+          <div class="em-flex-row em-flex-space-between em-mb-8">
+            <h3 style="padding: 0;margin-bottom: unset">{{ translations.FormPage }}</h3>
             <label class="saving-at">{{ translations.Savingat }} {{lastUpdate}}<em class="fas fa-sync ml-10px"></em></label>
           </div>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="translations.Form">{{ translations.Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 0;padding: 0"><img src="/images/emundus/menus/form.png" class="em-mr-4" :alt="translations.Form">{{ translations.Form }}</h4>
             <draggable
                 handle=".handle"
                 v-model="formList"
@@ -219,7 +219,7 @@
             <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="translations.addMenuAction">{{translations.addMenuAction}}</button>
           </div>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open mr-1" :alt="translations.Documents"></em>{{ translations.Documents }}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><em class="far fa-folder-open em-mr-4" :alt="translations.Documents"></em>{{ translations.Documents }}</h4>
             <draggable
                 handle=".handle"
                 v-model="documentsList"
@@ -246,7 +246,7 @@
 
           </div>
           <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="mr-1" :alt="translations.SubmitPage">{{translations.SubmitPage}}</h4>
+            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="em-mr-4" :alt="translations.SubmitPage">{{translations.SubmitPage}}</h4>
             <li v-for="(value, index) in submittionPages" :key="index" class="MenuForm">
               <a @click="menuHighlight = 1;indexHighlight = index"
                  class="MenuFormItem"
@@ -257,7 +257,7 @@
               </a>
             </li>
           </div>
-          <div class="d-flex">
+          <div class="em-flex-row">
             <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="translations.Validate">{{translations.Validate}}</button>
             <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
           </div>
@@ -873,7 +873,7 @@
       },
       pushMenu(menu){
         this.formList.push(menu);
-        axios.get("index.php?option=com_emundus_onboard&view=form&formid=" + menu.id + "&format=vue_jsonclean")
+        axios.get("index.php?option=com_emundus&view=form&formid=" + menu.id + "&format=vue_jsonclean")
                 .then(response => {
                   this.formObjectArray.push({
                     object: response.data,
@@ -973,7 +973,7 @@
 
       async getDataObject() {
         await this.asyncForEach(this.formList, async (element) => {
-          let ellink = element.link.replace("fabrik","emundus_onboard");
+          let ellink = element.link.replace("fabrik","emundus");
           await axios.get(ellink + "&format=vue_jsonclean")
               .then(response => {
                 this.formObjectArray.push({
@@ -996,7 +996,7 @@
       async getDataObjectSingle(index) {
 
         if(this.formList.length>0) {
-          let ellink = this.formList[index].link.replace("fabrik", "emundus_onboard");
+          let ellink = this.formList[index].link.replace("fabrik", "emundus");
           await axios.get(ellink + "&format=vue_jsonclean")
               .then(response => {
                 this.formObjectArray[index].object = response.data;
@@ -1057,7 +1057,7 @@
              return qs.stringify(params);
           }
         }).then(response => {
-          let ellink = response.data.link.replace("fabrik","emundus_onboard");
+          let ellink = response.data.link.replace("fabrik","emundus");
           axios.get(ellink + "&format=vue_jsonclean")
                   .then(rep => {
                     this.submittionPages.push({
@@ -1170,7 +1170,7 @@
           method: "get",
           url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
           params: {
-            link: 'index.php?option=com_emundus_onboard&view=form',
+            link: 'index.php?option=com_emundus&view=form',
           },
           paramsSerializer: params => {
             return qs.stringify(params);
@@ -1187,7 +1187,7 @@
             method: "get",
             url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
             params: {
-              link: 'index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
+              link: 'index.php?option=com_emundus&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
             },
             paramsSerializer: params => {
               return qs.stringify(params);
@@ -1537,6 +1537,135 @@
     .form-builder{
       order: 3;
       margin-left: 25px;
+    }
+  }
+
+  .add-page-icon {
+    width: 25px;
+    height: 25px;
+    margin-left: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transition: transform 0.3s ease-in-out;
+  }
+  .add-group-icon {
+    width: 25px;
+    height: 25px;
+    margin-left: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transition: transform 0.3s ease-in-out;
+  }
+  .add-element-icon {
+    width: 25px;
+    height: 25px;
+    margin-left: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transition: transform 0.3s ease-in-out;
+  }
+  .vue-notification-custom {
+    font-size: 12px;
+    padding: 10px;
+    margin: 0 5px 5px;
+    color: #fff;
+    background: #32EE5F !important;
+    border-left: 5px solid #16AFE1;
+    .notification-content {
+      line-height: 20px;
+    }
+    .translate-icon {
+      //background-color: #fff;
+      padding: 3px 10px 2px 10px;
+      position: static;
+      margin-left: 5px;
+      background-size: 13px;
+    }
+    &.success{
+      background: #32EE5F !important;
+      border-left: 5px solid #16AFE1;
+    }
+    &.error{
+      background: #DB333E !important;
+      border-left: 5px solid #16AFE1;
+    }
+  }
+  .MenuForm {
+    list-style: none;
+    text-decoration: none;
+    margin: 10px 0 20px 5px;
+    width: auto;
+    display: flex;
+    align-items: center;
+  }
+  .MenuFormItem {
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    //white-space: nowrap;
+    margin-left: 10px;
+    font-size: 14px;
+    &:not(.MenuFormItem_current) {
+      &:hover {
+        color: #12DB42;
+        text-decoration: none;
+      }
+    }
+  }
+  .MenuFormItem_current {
+    color: #12DB42;
+    cursor: pointer;
+    &:after {
+      opacity: 1 !important;
+      width: 50% !important;
+    }
+    &:before {
+      opacity: 1 !important;
+      width: 50% !important;
+    }
+  }
+  .MenuFormItem.MenuFormItem_current {
+    &:hover {
+      text-decoration: none;
+      color: #12DB42;
+    }
+  }
+  .menus-row {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    padding-left: 0 !important;
+    padding-top: 10px;
+    margin: 0 auto;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    background-color: #1b1f3c;
+    height: auto;
+    z-index: 10;
+    position: relative;
+    box-shadow: 0 0.7px 24.4px rgba(0, 0, 0, 0.013), 0 1.7px 46.9px rgba(0, 0, 0, 0.022), 0 3.1px 67.3px rgba(0, 0, 0, 0.029), 0 5.6px 84.7px rgba(0, 0, 0, 0.037), 0 10.4px 96.9px rgba(0, 0, 0, 0.048), 0 25px 80px rgba(0, 0, 0, 0.07);
+    a {
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      &:after {
+        content: none;
+        position: absolute;
+        bottom: -15px;
+        width: 100% !important;
+        height: 7px;
+        margin: 3px 0 0;
+        transition: all 0.2s ease-in-out;
+        transition-duration: 0.2s;
+        opacity: 0;
+        background-color: #fff;
+        border-radius: 5px;
+        right: 0;
+      }
     }
   }
 </style>

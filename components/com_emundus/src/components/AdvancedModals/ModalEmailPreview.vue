@@ -15,7 +15,7 @@
             @before-open="beforeOpen"
     >
       <div class="fixed-header-modal">
-        <div class="update-field-header d-flex justify-content-between">
+        <div class="update-field-header em-flex-row em-flex-space-between">
           <h2 class="update-title-header" style="margin-bottom: 10px">
              {{ModelPreview}}
           </h2>

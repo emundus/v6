@@ -252,7 +252,7 @@ export default {
     if (this.typeForAdd === "form") {
       this.type = "formulaire";
     }
-    this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + this.typeForAdd + '&layout=add'
+    this.actions.add_url =  'index.php?option=com_emundus&view=' + this.typeForAdd + '&layout=add'
     this.validateFilters();
   },
 
@@ -267,7 +267,7 @@ export default {
 
       if (this.typeForAdd !== "files") {
         let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
-        this.actions.add_url =  'index.php?option=com_emundus_onboard&view=' + view  + '&layout=add'
+        this.actions.add_url =  'index.php?option=com_emundus&view=' + view  + '&layout=add'
       }
 
       this.validateFilters();

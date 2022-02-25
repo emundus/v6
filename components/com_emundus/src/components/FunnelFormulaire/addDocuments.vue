@@ -11,13 +11,13 @@
 
     <a @click="$modal.show('modalAddDocuments')" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
       <div class="add-button-div">
-        <em class="fas fa-plus mr-1"></em>
+        <em class="fas fa-plus em-mr-4"></em>
         {{ createDocument }}
       </div>
     </a>
 
     <transition :name="'slide-down'" type="transition">
-      <div class="w-form d-flex" style="align-items: unset">
+      <div class="w-form em-flex-row" style="align-items: unset">
         <ul style="padding-left: 0" class="ml-0 w-50">
           <h2 class="blue-text-instruction" v-html="documentNoAssigned"></h2>
           <draggable
@@ -41,10 +41,10 @@
                   v-for="(undocument, indexUndoc) in undocuments"
                   :key="indexUndoc"
               >
-                <div class="justify-content-between d-flex">
-                  <div class="d-flex">
+                <div class="em-flex-space-between em-flex-row">
+                  <div class="em-flex-row">
                     <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-                    <span class="d-flex ml-10px">
+                    <span class="em-flex-row ml-10px">
                       {{ undocument.value }}
                       <span class="document-allowed_types">({{ undocument.allowed_types }})</span>
                     </span>
@@ -58,7 +58,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="d-flex doc-desc">
+                <div class="em-flex-row doc-desc">
                   <p v-html="undocument.description"></p>
                   <a @click="openUpdateDoc(undocument)" class="cta-block pointer">
                     <em class="fas fa-pen"></em>
@@ -87,16 +87,16 @@
                   :id="'itemDoc' + document.id"
                   v-for="(document, indexDoc) in documents"
                   :key="indexDoc">
-                <div class="justify-content-between d-flex">
-                  <div class="d-flex">
+                <div class="em-flex-space-between em-flex-row">
+                  <div class="em-flex-row">
                     <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-                    <span class="d-flex ml-10px">
+                    <span class="em-flex-row ml-10px">
                       <span>{{ document.value }}</span>
                       <span class="document-allowed_types">({{ document.allowed_types }})</span>
                     </span>
                   </div>
-                  <div class="d-flex">
-                    <div class="d-flex" style="margin-right: 30px">
+                  <div class="em-flex-row">
+                    <div class="em-flex-row" style="margin-right: 30px">
                       <div @click="updateMandatory(document)"
                            :id="'spanDoc' + document.id"
                            style="float: right; margin: 0 12px"
@@ -124,7 +124,7 @@
                     </button>
                   </div>
                 </div>
-                <div class="d-flex doc-desc">
+                <div class="em-flex-row doc-desc">
                   <p>{{ document.description }}</p>
                   <a @click="openUpdateDoc(document)" class="cta-block pointer">
                     <em class="fas fa-pen"></em>

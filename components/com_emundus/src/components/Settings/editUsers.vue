@@ -8,20 +8,20 @@
         />
         <button class="create-user-admin__button bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalAddUser')">{{ addUser }}</button>
         <div class="mt-1" id="blocked_filter">
-            <div class="d-flex mr-2">
-                <input type="checkbox" class="mr-1" v-model="block" />
+            <div class="em-flex-row mr-2">
+                <input type="checkbox" class="em-mr-4" v-model="block" />
                 <p>{{BlockedUsers}}</p>
             </div>
-          <div class="d-flex mt-1">
-            <div class="d-flex">
-                <p class="mb-0 mr-1" style="white-space: nowrap">{{Program}} : </p>
+          <div class="em-flex-row mt-1">
+            <div class="em-flex-row">
+                <p class="mb-0 em-mr-4" style="white-space: nowrap">{{Program}} : </p>
                 <select class="dropdown-toggle" style="min-width: 80%" v-model="searchProgram">
                     <option selected value="-1"></option>
                     <option v-for="program in programs" :value="program.id">{{program.label}}</option>
                 </select>
             </div>
-            <div class="d-flex" style="margin-left: 5em">
-              <p class="mb-0 mr-1" style="white-space: nowrap">{{Role}} : </p>
+            <div class="em-flex-row" style="margin-left: 5em">
+              <p class="mb-0 em-mr-4" style="white-space: nowrap">{{Role}} : </p>
               <select class="dropdown-toggle" style="min-width: 80%" v-model="searchRole">
                 <option selected value="-1"></option>
                 <option value="5">{{Administrator}}</option>

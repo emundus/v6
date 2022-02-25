@@ -238,7 +238,6 @@ $vue = 'em-formBuilder-vue';
 if($this->eval != 0){
     $vue = 'em-evaluationBuilder-vue';
 }
-
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);
 $languages = JLanguageHelper::getLanguages();

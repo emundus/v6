@@ -49,7 +49,7 @@ export default {
 	},
 	methods: {
 		redirectToAddElement: function () {
-			if (this.data.add_url == 'index.php?option=com_emundus_onboard&view=form&layout=add'){
+			if (this.data.add_url == 'index.php?option=com_emundus&view=form&layout=add'){
         this.getAddUrlToCreateForm();
       } else {
         this.redirect();
@@ -78,7 +78,7 @@ export default {
           this.loading = false;
           const profileId = response.data.data;
 
-					this.data.add_url = 'index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + profileId + '&index=0&cid=';
+					this.data.add_url = 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + profileId + '&index=0&cid=';
           this.redirect();
         }).catch(error => {
           console.log(error);

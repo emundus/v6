@@ -46,7 +46,7 @@
           </div>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
+      <div class="em-flex-row em-flex-space-between mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
             @click.prevent="affectToForm">
@@ -61,7 +61,7 @@
       </div>
       <button type="button"
               class="bouton-sauvergarder-et-continuer w-retour"
-              @click.prevent="redirectJRoute('index.php?option=com_emundus_onboard&view=form')">
+              @click.prevent="redirectJRoute('index.php?option=com_emundus&view=form')">
           {{ translations.BackWithoutAssociation }}
         </button>
     </modal>
@@ -115,7 +115,7 @@ export default {
           })
         }).then(() => {
           if(!this.testing) {
-            this.redirectJRoute('index.php?option=com_emundus_onboard&view=form');
+            this.redirectJRoute('index.php?option=com_emundus&view=form');
           } else {
             if(campaigns.length > 0){
               this.$emit("testForm");
@@ -125,7 +125,7 @@ export default {
         });
       } else {
         if(!this.testing) {
-          this.redirectJRoute('index.php?option=com_emundus_onboard&view=form');
+          this.redirectJRoute('index.php?option=com_emundus&view=form');
         } else {
           this.$modal.hide('modalAffectCampaign');
         }
@@ -136,7 +136,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
-          link: 'index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=',
+          link: 'index.php?option=com_emundus&view=campaign&layout=add&cid=',
         },
         paramsSerializer: params => {
           return qs.stringify(params);

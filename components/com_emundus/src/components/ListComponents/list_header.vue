@@ -3,15 +3,15 @@
     <div class="container-2 w-container" style="max-width: unset">
       <transition :name="'slide-down'" type="transition">
         <div>
-          <div class="d-flex" v-if="data.type === 'campaign'">
+          <div class="em-flex-row" v-if="data.type === 'campaign'">
             <img src="images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
             <h1 class="tchooz-section-titles">{{ translations.Campaigns }}</h1>
           </div>
-          <div class="d-flex" v-if="data.type === 'email'">
+          <div class="em-flex-row" v-if="data.type === 'email'">
             <img src="images/emundus/menus/email.png" srcset="/images/emundus/menus/email.png" class="tchooz-icon-title" alt="email">
             <h1 class="tchooz-section-titles">{{ translations.Emails }}</h1>
           </div>
-          <div class="d-flex" v-if="data.type === 'form' ||data.type === 'grilleEval' ||data.type === 'formulaire'">
+          <div class="em-flex-row" v-if="data.type === 'form' ||data.type === 'grilleEval' ||data.type === 'formulaire'">
             <img src="images/emundus/menus/form.png" srcset="/images/emundus/menus/form.png" class="tchooz-icon-title" alt="form">
             <h1 class="tchooz-section-titles">{{ translations.Forms }}</h1>
           </div>
@@ -22,15 +22,15 @@
               <p v-if="data.type === 'email'" class="tchooz-section-description">{{ translations.EmailsDesc }}</p>
               <a @click="redirectToAdd" class="bouton-ajouter pointer" v-if="!addHidden">
                 <div v-if="data.type === 'campaign'" class="add-button-div">
-                  <em class="fas fa-plus mr-1"></em>
+                  <em class="fas fa-plus em-mr-4"></em>
                   {{ translations.AddCampaign }}
                 </div>
                 <div v-if="data.type === 'email'" class="add-button-div">
-                  <em class="fas fa-plus mr-1"></em>
+                  <em class="fas fa-plus em-mr-4"></em>
                   {{ translations.AddEmail }}
                 </div>
                 <div v-if="data.type === 'form' ||data.type === 'grilleEval' ||data.type === 'formulaire'" class="add-button-div">
-                  <em class="fas fa-plus mr-1"></em>
+                  <em class="fas fa-plus em-mr-4"></em>
                   {{ translations.AddForm }}
                 </div>
               </a>
@@ -91,7 +91,7 @@
 
     methods: {
       redirectToAdd() {
-        if(this.data.add_url == 'index.php?option=com_emundus_onboard&view=form&layout=add'){
+        if(this.data.add_url == 'index.php?option=com_emundus&view=form&layout=add'){
           this.createForm();
         } else {
           this.redirectJRoute(this.data.add_url);
@@ -125,7 +125,7 @@
         }).then(response => {
           this.loading = false;
           this.profileId = response.data.data;
-          this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=');
+          this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=');
         }).catch(error => {
           console.log(error);
         });

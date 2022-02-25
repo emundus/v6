@@ -375,7 +375,7 @@ export default {
       if (this.menuHighlight < 1) {
         this.menuHighlight++;
       } else {
-        this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
+        this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       }
     },
 
@@ -383,7 +383,7 @@ export default {
       if (this.menuHighlight > 0) {
         this.menuHighlight--;
       } else {
-        this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
+        this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       }
     },
 

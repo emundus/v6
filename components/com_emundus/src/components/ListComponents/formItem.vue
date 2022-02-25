@@ -20,7 +20,7 @@
                 <li v-for="(campaign, index) in campaigns" :key="index" class="campaigns-item">{{campaign.label}}</li>
               </ul>
             </div>
-            <div class="d-flex">
+            <div class="em-flex-row">
               <div :class="isPublished ? 'publishedTag' : 'unpublishedTag'">
                 {{ isPublished ? translations.publishedTag : translations.unpublishedTag }}
               </div>
@@ -29,7 +29,7 @@
               <hr class="divider-card">
               <div class="stats-block">
                 <a class="bouton-ajouter pointer add-button-div"
-                   @click="redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
+                   @click="redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + data.id + '&index=0&cid=')"
                    :title="translations.Modify">
                   <em class="fas fa-pen"></em> {{translations.Modify}}
                 </a>

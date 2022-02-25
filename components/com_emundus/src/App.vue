@@ -25,14 +25,6 @@ import formbuilder from "./views/formBuilder"
 import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 
-//CSS
-import "./assets/css/normalize.css";
-import "./assets/css/emundus-webflow.scss";
-import "./assets/css/bootstrap.css";
-import "./assets/css/codemirror.css";
-import "./assets/css/views_emails.css";
-import "./assets/css/date-time.css";
-
 export default {
 	props: {
     component: String,

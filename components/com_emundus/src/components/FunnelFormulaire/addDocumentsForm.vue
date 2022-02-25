@@ -24,7 +24,7 @@
           <li class="list-group-item"
               v-for="(document, indexDoc) in documents"
               :key="indexDoc">
-            <div class="d-flex justify-content-between">
+            <div class="em-flex-row em-flex-space-between">
                 <span class="draggable">
                   {{ document.name }}
                 </span>

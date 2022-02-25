@@ -5,7 +5,7 @@
             :class="object_json.show_page_heading.class"
             v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="d-flex justify-content-between">
+    <div class="em-flex-row em-flex-space-between">
       <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
       <a @click="formbuilder" class="cta-block pointer">
         <em class="fas fa-pen"></em>

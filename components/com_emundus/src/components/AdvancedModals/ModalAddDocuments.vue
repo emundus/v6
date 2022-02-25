@@ -32,7 +32,7 @@
       <div class="modalC-content">
         <div class="mb-1">
 
-          <a class="d-flex tool-icon">
+          <a class="em-flex-row tool-icon">
             <div class="toggle">
               <input type="checkbox" class="check" v-model="req" @click="updateRequireMandatory()"/>
               <strong class="b switch"></strong>
@@ -103,7 +103,7 @@
         <br/>
         <div class="form-group">
           <label for="image-min-width">{{ translations.ImageWidth }}</label>
-          <div class="input-can-translate d-flex justify-content-between">
+          <div class="input-can-translate em-flex-row em-flex-space-between">
               <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-width" min="300" v-model="form.minResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
               <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-width" min="300" v-model="form.maxResolution.width" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
@@ -114,7 +114,7 @@
 
         <div class="form-group">
           <label for="image-min-height">{{ translations.ImageHeight }}</label>
-          <div class="input-can-translate d-flex justify-content-between">
+          <div class="input-can-translate em-flex-row em-flex-space-between">
               <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-min-height" min="300" v-model="form.minResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MinResolutionPlaceholder"/>
               <input type="number" maxlength="100" class="form__input field-general w-input mb-0" id="image-max-height" min="300" v-model="form.maxResolution.height" style="max-width: 48%" @keyup="ZeroOrNegative()" v-on:keydown.tab="ZeroOrNegative()" :placeholder="translations.MaxResolutionPlaceholder"/>
           </div>
@@ -124,7 +124,7 @@
         </div>
 
       </div>
-      <div class="d-flex justify-content-between mb-1">
+      <div class="em-flex-row em-flex-space-between mb-1">
         <button
             type="button"
             class="bouton-sauvergarder-et-continuer w-retour"

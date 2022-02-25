@@ -9,7 +9,7 @@
         </option>
       </select>
       <a v-if="cid != null"
-         :href="'index.php?option=com_emundus_onboard&view=campaign&layout=add&cid=' + cid"
+         :href="'index.php?option=com_emundus&view=campaign&layout=add&cid=' + cid"
          class="modifier-la-campagne">
         <button class="w-inline-block edit-icon">
           <em class="fas fa-edit"></em>

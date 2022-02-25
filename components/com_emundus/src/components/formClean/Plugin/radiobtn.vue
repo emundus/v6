@@ -5,7 +5,7 @@
         <label>{{ helptext }} :</label>
         <input type="text" class="form__input field-general w-input" v-model="element.params.rollover"/>
       </div>
-      <div class="d-flex mb-1">
+      <div class="em-flex-row mb-1">
         <label class="require col-md-3">{{ suboptions }} :</label>
       </div>
       <div class="col-md-10 form-group flex">
@@ -30,7 +30,7 @@
             v-if="databasejoin != 1"
             handle=".handle"
             style="padding-bottom: 2em">
-          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="d-flex mb-1">
+          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="em-flex-row mb-1">
             <span class="icon-handle">
               <em class="fas fa-grip-vertical handle"></em>
             </span>

@@ -47,7 +47,7 @@
           </div>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
+      <div class="em-flex-row em-flex-space-between mb-1">
         <button
           type="button"
           class="bouton-sauvergarder-et-continuer w-retour"

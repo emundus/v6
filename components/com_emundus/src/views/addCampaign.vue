@@ -713,10 +713,10 @@ export default {
 
     quitFunnelOrContinue(quit) {
       if (quit == 0) {
-        this.redirectJRoute('index.php?option=com_emundus_onboard&view=campaign');
+        this.redirectJRoute('index.php?option=com_emundus&view=campaign');
       } else if (quit == 1) {
         document.cookie = 'campaign_'+this.campaignId+'_menu = 2; expires=Session; path=/'
-        this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
+        this.redirectJRoute('index.php?option=com_emundus&view=form&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
       }
     },
 

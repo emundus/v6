@@ -35,8 +35,8 @@
                 :id="'itemDoc' + document.id"
                 v-for="document in documents"
                 :key="document.id">
-              <div class="d-flex justify-content-between">
-                <div class="d-flex w-100">
+              <div class="em-flex-row em-flex-space-between">
+                <div class="em-flex-row w-100">
                   <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
                   <span class="draggable em-overflow-ellipsis em-max-width-250 em-mr-4">
                     {{ document.title }}

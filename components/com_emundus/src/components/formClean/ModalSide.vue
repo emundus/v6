@@ -39,12 +39,12 @@
         </p>
 
         <div class="form-group mt-1" :class="{'mb-0': translate.intro}">
-          <div class="d-flex">
+          <div class="em-flex-row">
             <label>{{translations.Intro}}</label>
             <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': translate.intro}" type="button" @click="translate.intro = !translate.intro"></button>
           </div>
           <div>
-            <div class="d-flex" v-if="translate.intro">
+            <div class="em-flex-row" v-if="translate.intro">
               <span>{{translations.TranslateIn}} : </span>
               <select v-model="selectedLanguage" v-if="manyLanguages !== '0'" @change="dynamicComponent++" style="margin: 10px 0;">
                 <option v-for="(language,index_group) in languages" :value="language.sef">{{language.title_native}}</option>
@@ -71,18 +71,18 @@
           <translation :label="intro" :actualLanguage="actualLanguage" v-if="translate.intro"></translation>-->
         </div>
 
-        <div class="form-group d-flex mb-1" id="template_checkbox" style="align-items: center">
+        <div class="form-group em-flex-row mb-1" id="template_checkbox" style="align-items: center">
           <input type="checkbox" v-model="template">
           <label class="ml-10px mb-0">{{translations.SaveAsTemplate}}</label>
         </div>
 
-        <div class="d-flex justify-content-between mb-1">
+        <div class="em-flex-row em-flex-space-between mb-1">
           <button
               class="bouton-sauvergarder-et-continuer w-retour"
               @click.prevent="$modal.hide('modalSide' + ID)">
             {{translations.Retour}}
           </button>
-          <div class="d-flex">
+          <div class="em-flex-row">
           <button
               class="bouton-sauvergarder-et-continuer"
               @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
@@ -90,7 +90,7 @@
           </button>
           </div>
         </div>
-        <div class="form-group d-flex mb-1">
+        <div class="form-group em-flex-row mb-1">
           <button class="bouton-sauvergarder-et-continuer w-delete"
                   @click.prevent="deleteMenu()"
                   v-if="menus.length > 1 && files == 0">

@@ -31,11 +31,11 @@
             <div class="container-gerer-modifier-visualiser">
               <a class="cta-block pointer"
                  :title="AdvancedSettings"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=advancedsettings&pid=' + data.id)">
+                 @click="redirectJRoute('index.php?option=com_emundus&view=program&layout=advancedsettings&pid=' + data.id)">
                 <em class="fas fa-cog"></em>
               </a >
               <a class="cta-block ml-10px pointer"
-                 @click="redirectJRoute('index.php?option=com_emundus_onboard&view=program&layout=add&pid=' + data.id)"
+                 @click="redirectJRoute('index.php?option=com_emundus&view=program&layout=add&pid=' + data.id)"
                  :title="Modify">
                 <em class="fas fa-edit"></em>
               </a>

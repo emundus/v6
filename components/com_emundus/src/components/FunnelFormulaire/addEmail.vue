@@ -18,7 +18,7 @@
       <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>
       <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
         <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
+          <em class="fas fa-plus em-mr-4"></em>
           {{ addTrigger }}
         </div>
       </a>
@@ -59,7 +59,7 @@
       <h2 style="margin-bottom: 0">{{ ManagerAction }}</h2>
       <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
         <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
+          <em class="fas fa-plus em-mr-4"></em>
           {{ addTrigger }}
         </div>
       </a>

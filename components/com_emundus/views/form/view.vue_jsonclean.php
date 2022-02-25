@@ -35,7 +35,7 @@ class EmundusViewForm extends FabrikViewFormBase
     {
         try {
             JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-            JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');
+            JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
             error_reporting(E_ALL ^ E_NOTICE);
 
@@ -47,7 +47,7 @@ class EmundusViewForm extends FabrikViewFormBase
             // Display the template
             $formid = $jinput->getString('formid', null);
 
-            $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');
+            $formbuilder = JModelLegacy::getInstance('formbuilder', 'EmundusModel');
             $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
             $form->setId(intval($formid));
             $getParams = $form->getParams();

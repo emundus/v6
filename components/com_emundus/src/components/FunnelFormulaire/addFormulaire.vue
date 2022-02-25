@@ -9,7 +9,7 @@
       </select>
       <a @click="addNewForm" class="bouton-ajouter bouton-ajouter-green pointer">
         <div class="add-button-div">
-          <em class="fas fa-plus mr-1"></em>
+          <em class="fas fa-plus em-mr-4"></em>
           {{ AddForm }}
         </div>
       </a>
@@ -134,7 +134,7 @@ export default {
       }).then(response => {
         this.loading = false;
         this.$props.profileId = response.data.data;
-        this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
+        this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + this.profileId + '&index=0&cid=' + this.campaignId);
       }).catch(error => {
         console.log(error);
       });
@@ -164,7 +164,7 @@ export default {
             if(response.data.data != 0){
               this.$modal.show('modalWarningFormBuilder');
             } else {
-              this.redirectJRoute('index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' +
+              this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' +
                   this.profileId +
                   '&index=' +
                   index +

@@ -6,7 +6,7 @@
       </div>
         <ul class="col-md-3 sticky-form-pages">
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><img src="/images/emundus/menus/form.png" class="mr-1" :alt="Form">{{ Form }}</h4>
+            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><img src="/images/emundus/menus/form.png" class="em-mr-4" :alt="Form">{{ Form }}</h4>
             <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
               <a
                 class="MenuFormItem"
@@ -17,7 +17,7 @@
             </li>
           </div>
           <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><em class="far fa-folder-open mr-1" :alt="Documents"></em>{{ Documents }}</h4>
+            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><em class="far fa-folder-open em-mr-4" :alt="Documents"></em>{{ Documents }}</h4>
             <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm">
               <a class="MenuFormItem"
               >{{doc.label}}</a>
@@ -67,7 +67,7 @@ export default {
     },
     getDataObject: function() {
       this.formList.forEach(element => {
-        let ellink = element.link.replace("fabrik","emundus_onboard");
+        let ellink = element.link.replace("fabrik","emundus");
         axios
           .get(ellink + "&format=vue_jsonclean")
           .then(response => {

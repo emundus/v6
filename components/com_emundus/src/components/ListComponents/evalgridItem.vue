@@ -105,7 +105,7 @@ export default {
     },
     evaluationBuilder() {
       this.redirectJRoute(
-        "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=&index=0&cid=" +
+        "index.php?option=com_emundus&view=form&layout=formbuilder&prid=&index=0&cid=" +
           "" +
           "&evaluation=" +
           this.data.id

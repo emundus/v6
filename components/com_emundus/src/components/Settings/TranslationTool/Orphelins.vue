@@ -40,7 +40,7 @@
       <div v-else>
         <div v-for="(translation,index) in translations">
           <div class="em-mb-32 em-neutral-100-box em-p-24">
-            <div class="justify-content-between em-mt-16 em-grid-50">
+            <div class="em-flex-space-between em-mt-16 em-grid-50">
               <p class="em-neutral-700-color">{{ translation.override }}</p>
               <div>
                 <input class="mb-0 em-input" type="text" :value="translation.override" @focusout="saveTranslation($event.target.value,translation,index)" />

@@ -27,12 +27,12 @@
         </div>
       <div v-if="element != null" class="modalC-content">
         <div class="mb-1">
-          <a class="d-flex tool-icon mb-1" @click="publishUnpublishElement()">
+          <a class="em-flex-row tool-icon mb-1" @click="publishUnpublishElement()">
             <em :class="[element.publish ? 'fa-eye-slash' : 'fa-eye','far']" style="width: 45px" :id="'publish_icon_' + element.id"></em>
             <span class="ml-10px" v-if="element.publish">{{Unpublish}}</span>
             <span class="ml-10px" v-if="!element.publish">{{Publish}}</span>
           </a>
-          <a class="d-flex tool-icon" v-if="plugin != 'display'">
+          <a class="em-flex-row tool-icon" v-if="plugin != 'display'">
             <div class="toggle">
               <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement()"/>
               <strong class="b switch"></strong>
@@ -61,7 +61,7 @@
           <yesnoF v-if="plugin=='yesno'" :element="element"></yesnoF>
         </div>
       </div>
-      <div class="d-flex justify-content-between mb-1">
+      <div class="em-flex-row em-flex-space-between mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
                 @click.prevent="$modal.hide('modalEditElement' + ID)">

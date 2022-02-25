@@ -177,7 +177,7 @@ export default {
           return qs.stringify(params);
         }
       }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
+        window.location.href = link;
       });
 		},
 		getEditUrlByType() {
@@ -185,17 +185,17 @@ export default {
 
 			switch(this.type) {
 				case 'campaign':
-					url = 'index.php?option=com_emundus_onboard&view=campaign&layout=addnextcampaign&cid=' + this.data.id + '&index=0';
+					url = 'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.data.id + '&index=0';
 				break;
 				case 'form':
 				case 'formulaire':
-					url = 'index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=' + this.data.id + '&index=0&cid=';
+					url = 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + this.data.id + '&index=0&cid=';
 				break;
 				case 'grilleEval':
-					url =  "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=&index=0&cid=" + "" + "&evaluation=" + this.data.id
+					url =  "index.php?option=com_emundus&view=form&layout=formbuilder&prid=&index=0&cid=" + "" + "&evaluation=" + this.data.id
 				break;
 				case 'email':
-					url = 'index.php?option=com_emundus_onboard&view=email&layout=add&eid=' + this.data.id;
+					url = 'index.php?option=com_emundus&view=emails&layout=add&eid=' + this.data.id;
 				break;
 			}
 

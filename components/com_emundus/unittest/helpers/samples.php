@@ -20,6 +20,7 @@ jimport('joomla.plugin.helper');
 
 include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
 include_once(JPATH_SITE.'/components/com_emundus/models/formbuilder.php');
+include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
 
 /**
  * eMundus Component Query Helper
@@ -70,5 +71,17 @@ class EmundusUnittestHelperSamples
         $m_formbuilder = new EmundusModelFormbuilder;
 
         return $m_formbuilder->createTestingFile($cid,$uid);
+    }
+
+    public function createSampleTag(){
+        $m_settings = new EmundusModelSettings;
+
+        return $m_settings->createTag()->id;
+    }
+
+    public function createSampleStatus(){
+        $m_settings = new EmundusModelSettings;
+
+        return $m_settings->createStatus()->step;
     }
 }

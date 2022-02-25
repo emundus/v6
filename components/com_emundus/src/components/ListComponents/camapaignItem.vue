@@ -23,7 +23,7 @@
             <p class="description-block" v-html="data.short_description"></p>
             <p class="description-block" v-if="programFilter =='all'">{{Programme}}: {{data.program_label}}</p>
 
-            <div class="d-flex">
+            <div class="em-flex-row">
               <div :class="isPublished ? 'publishedTag' : isFinish ? 'passeeTag' : 'unpublishedTag'">
                 {{ isPublished ? publishedTag : isFinish ? passeeTag : unpublishedTag }}
               </div>
@@ -35,7 +35,7 @@
             <div>
               <hr class="divider-card">
             <div class="stats-block">
-              <a @click="redirectJRoute('index.php?option=com_emundus_onboard&view=campaign&layout=addnextcampaign&cid=' + data.id + '&index=0')"
+              <a @click="redirectJRoute('index.php?option=com_emundus&view=campaign&layout=addnextcampaign&cid=' + data.id + '&index=0')"
                  class="bouton-ajouter pointer add-button-div"
                  :title="AdvancedSettings">
                 <em class="fas fa-pen"></em>

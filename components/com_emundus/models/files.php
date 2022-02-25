@@ -1873,7 +1873,11 @@ class EmundusModelFiles extends JModelLegacy
                     $tags_already_associated = $db->loadColumn();
 
                     // Log the tag in the eMundus logging system.
-                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
+                    try{
+                        EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
+                    } catch (Exception $e) {
+                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
 
                     // Insert valid tags
                     foreach ($tags as $tag) {
@@ -1881,8 +1885,13 @@ class EmundusModelFiles extends JModelLegacy
                             $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
                         }
                     }
+
                     // Log the tags in the eMundus logging system.
-                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                    try {
+                        EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                    } catch (Exception $e){
+                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
                 }
 
                 $query = substr_replace($query, ";", -1);

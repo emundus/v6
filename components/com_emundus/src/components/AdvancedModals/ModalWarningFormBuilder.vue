@@ -30,13 +30,13 @@
       </div>
 
       <div class="modalC-content">
-        <div class="d-flex justify-content-between mb-1">
+        <div class="em-flex-row em-flex-space-between mb-1">
           <button class="bouton-sauvergarder-et-continuer w-retour"
                   type="button"
                   @click.prevent="$modal.hide('modalWarningFormBuilder')">
             {{Retour}}
           </button>
-            <button class="bouton-sauvergarder-et-continuer mr-1"
+            <button class="bouton-sauvergarder-et-continuer em-mr-4"
                     type="button"
                     @click.prevent="formbuilder()">
             {{ Update }}
@@ -95,7 +95,7 @@ export default {
           })
         }).then(() => {
           window.location.replace(
-                  "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=" +
+                  "index.php?option=com_emundus&view=form&layout=formbuilder&prid=" +
                   rep.data.data +
                   "&index=0&cid=" +
                   this.cid
@@ -106,7 +106,7 @@ export default {
 
     formbuilder(){
       window.location.replace(
-              "index.php?option=com_emundus_onboard&view=form&layout=formbuilder&prid=" +
+              "index.php?option=com_emundus&view=form&layout=formbuilder&prid=" +
               this.pid +
               "&index=0&cid=" +
               this.cid

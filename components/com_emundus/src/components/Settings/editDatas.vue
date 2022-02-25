@@ -15,10 +15,10 @@
         <ModalImportDatas
                 @updateDatabases="getDatabases"
         />
-        <div class="d-flex">
-          <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer mr-1" style="width: max-content">
+        <div class="em-flex-row">
+          <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer em-mr-4" style="width: max-content">
             <div class="add-button-div">
-              <em class="fas fa-plus mr-1"></em>
+              <em class="fas fa-plus em-mr-4"></em>
               {{ CreateDatas }}
             </div>
           </a>
@@ -34,7 +34,7 @@
                 </div>
                 <transition :name="'slide-down'" type="transition">
                 <div v-if="index == indexOpen" class="mt-1">
-<!--                    <a class="bouton-sauvergarder-et-continuer-3 mr-1" style="float: left" @click="$modal.show('modalAddDatas')">
+<!--                    <a class="bouton-sauvergarder-et-continuer-3 em-mr-4" style="float: left" @click="$modal.show('modalAddDatas')">
                         {{UpdateDatas}}
                     </a>-->
                     <table class="db-description">

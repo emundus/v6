@@ -7,8 +7,8 @@
          :class="object_json.show_page_heading.class"
          v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="d-flex header-form-page mb-1" v-if="eval == 0 && !updatePage">
-      <h2 v-if="object_json.show_title" class="page_header mr-1" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
+    <div class="em-flex-row header-form-page mb-1" v-if="eval == 0 && !updatePage">
+      <h2 v-if="object_json.show_title" class="page_header em-mr-4" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
       <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="cta-block pointer" style="font-size: 16px">
         <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
       </span>
@@ -17,9 +17,9 @@
       <div class="input-can-translate" style="margin-top: 40px">
         <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]"  class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
         <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
-        <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+        <div class="em-flex-row actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
           <a @click="updateLabelPage(object_json)" :title="translations.Validate">
-            <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
+            <em class="fas fa-check em-mr-4" data-toggle="tooltip" data-placement="top"></em>
           </a>
         </div>
       </div>
@@ -41,9 +41,9 @@
              @mouseover="enableGroupHover(group.group_id)"
              @mouseleave="disableGroupHover()">
           <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.hidden_group == -1 ? 'background: #e3e3e3;' : ''" style="background-size: 20px; width: 100%">
-            <div class="hidden-notice d-flex" v-if="group.hidden_group == -1"><i class="fas fa-exclamation-circle"></i><span class="ml-10px">{{translations.HiddenGroup}}</span></div>
-            <div class="d-flex justify-content-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
-              <div class="d-flex justify-content-between" style="width: 100%">
+            <div class="hidden-notice em-flex-row" v-if="group.hidden_group == -1"><i class="fas fa-exclamation-circle"></i><span class="ml-10px">{{translations.HiddenGroup}}</span></div>
+            <div class="em-flex-row em-flex-space-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
+              <div class="em-flex-row em-flex-space-between" style="width: 100%">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
                     <em class="fas fa-grip-vertical handle"></em>
                   </span>
@@ -53,7 +53,7 @@
                     class="legend ViewerLegend">
                   {{group.group_showLegend}}
                 </legend>
-                <div class="d-flex">
+                <div class="em-flex-row">
                   <a :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="translations.RepeatedGroup" @click="enableRepatedGroup(group)">
                     <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
                   </a>
@@ -87,9 +87,9 @@
               <div class="input-can-translate">
                 <input v-model="group.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
                 <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
-                <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                <div class="em-flex-row actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                   <a @click="updateLabelGroup(group)" :title="translations.Validate">
-                    <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
+                    <em class="fas fa-check em-mr-4" data-toggle="tooltip" data-placement="top"></em>
                   </a>
                 </div>
               </div>
@@ -141,9 +141,9 @@
                         @modalClosed="$emit('modalClosed')"
                         :key="keyElements['element' + element.id]"
                     />
-                    <div class="d-flex builder-item-element__properties" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
+                    <div class="em-flex-row builder-item-element__properties" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
                       <div class="w-100">
-                        <div class="d-flex" style="align-items: baseline" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
+                        <div class="em-flex-row" style="align-items: baseline" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
                           <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
                           <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="translations.Edit" class="cta-block pointer" style="font-size: 16px">
                             <em class="fas fa-pen ml-10px" data-toggle="tooltip" data-placement="top"></em>
@@ -152,7 +152,7 @@
                         <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
                           <input v-model="element.label[actualLanguage]" class="form__input field-general w-input" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
                           <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
-                          <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
+                          <div class="em-flex-row actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
                             <a @click="updateLabelElement(element)" :title="translations.Validate">
                               <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
                             </a>
@@ -164,7 +164,7 @@
                           <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
                           <span v-if="element.tipSide" v-html="element.tipSide"></span>
                         </div>
-                        <span v-else class="d-flex w-100">
+                        <span v-else class="em-flex-row w-100">
                           <div v-if="element.element" class="fabrikElement" v-html="element.error"></div>
                           <div v-if="element.element" :class="element.errorClass" v-html="element.element" class="w-100"></div>
                           <span v-if="element.tipSide" v-html="element.tipSide"></span>
@@ -172,17 +172,17 @@
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
                       <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                        <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="translations.Settings">
+                        <a class="em-flex-row mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="translations.Settings">
                           <em class="fas fa-cog settings-elt"></em>
                         </a>
-                        <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0" :title="translations.Delete">
+                        <a class="em-flex-row mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0" :title="translations.Delete">
                           <em class="fas fa-trash-alt delete-icon-elt"></em>
                         </a>
-                        <a class="d-flex mr-2 mt-1" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">
+                        <a class="em-flex-row mr-2 mt-1" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">
                           <em class="fas fa-link settings-elt"></em>
                         </a>
                       </div>
-                      <a class="d-flex mr-2" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                      <a class="em-flex-row mr-2" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
                         <div class="toggle">
                           <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
                           <strong class="b switch"></strong>

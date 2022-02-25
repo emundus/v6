@@ -3,7 +3,7 @@
     <div v-for="translation in translations_rows" class="em-mb-32 em-neutral-100-box em-p-24">
       <div v-for="(field,index) in translation" class="em-mb-24">
         <p>{{ field.reference_label.toUpperCase() }}</p>
-        <div class="justify-content-between em-mt-16 em-grid-50 em-ml-24">
+        <div class="em-flex-space-between em-mt-16 em-grid-50 em-ml-24">
           <p class="em-neutral-700-color">{{ field.default_lang }}</p>
           <input v-if="field.field_type === 'field'" class="mb-0 em-input" type="text" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
           <textarea v-if="field.field_type === 'textarea'" class="mb-0 em-input" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
