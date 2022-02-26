@@ -266,7 +266,7 @@ VALUES ('waiting_room', @group_2, 'radiobutton', 'waiting_room', 0, '2022-02-02 
 SET @element_waiting_room := LAST_INSERT_ID();
 
 -- update table "jos_fabrik_jsactions" --
-INSERT INTO celsa.jos_fabrik_jsactions (element_id, action, code, params)
+INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
 VALUES (@element_waiting_room, 'load', 'jQuery(&#039;#jos_emundus_jury___waiting_room&#039;).closest(&#039;.row-fluid&#039;).hide();', '{"js_e_event":"","js_e_trigger":"fabrik_trigger_group_group973","js_e_condition":"","js_e_value":"","js_published":"1"}');
 -- --
 
