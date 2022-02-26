@@ -163,8 +163,11 @@ VALUES (@group_3, 'field', 'fnum', 0, '2022-02-07 21:37:25', '2022-02-07 21:37:2
 SET @element_5 := LAST_INSERT_ID();
 
 -- update table "jos_fabrik_jsactions" --
-INSERT INTO jos_fabrik_jsactions (element_id, action, code, params) 
-VALUES (@element_5, 'load', 'var _session = this.form.elements;
+INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
+VALUES (@element_5, 'load', 'jQuery(&#039;#jos_emundus_candidat_meeting___fnum_ro&#039;).css(&#039;color&#039;,&#039;#e16c16&#039;);
+jQuery(&#039;#jos_emundus_candidat_meeting___fnum_ro&#039;).css(&#039;font-size&#039;,&#039;larger&#039;);
+
+var _session = this.form.elements;
 _session.get(&#039;jos_emundus_candidat_meeting___zoom_target&#039;).element.parentNode.parentNode.parentNode.parentNode.hide();
 
 var fnum = this.element;
