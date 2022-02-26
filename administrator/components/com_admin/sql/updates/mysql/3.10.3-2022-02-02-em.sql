@@ -135,6 +135,12 @@ jQuery(&#039;#jos_emundus_jury___waiting_room_ro&#039;).closest(&#039;.row-fluid
 jQuery(&#039;#jos_emundus_jury___show_share_button_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
 jQuery(&#039;#jos_emundus_jury___mute_participant_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
 
+jQuery(&#039;#jos_emundus_jury___president_ro&#039;).css(&#039;color&#039;,&#039;#16AFE1&#039;);
+jQuery(&#039;#jos_emundus_jury___president_ro&#039;).css(&#039;font-weight&#039;,&#039;bold&#039;);
+
+jQuery(&#039;#jos_emundus_jury___meeting_session_ro&#039;).css(&#039;color&#039;,&#039;#e16c16&#039;);
+jQuery(&#039;#jos_emundus_jury___meeting_session_ro&#039;).css(&#039;font-size&#039;,&#039;larger&#039;);
+
 if(document.getElementById(&#039;jos_emundus_jury___meeting_session&#039;).value !== &quot;&quot;) {
   host = this.element;
   host_val = this.get(&#039;value&#039;);
