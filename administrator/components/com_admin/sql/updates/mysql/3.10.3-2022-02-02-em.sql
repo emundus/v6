@@ -126,7 +126,16 @@ VALUES (0, @element_5, '', 'jos_users', 'president', 'id', 'left', @group_2, '{"
 
 -- update table "jos_fabrik_jsactions" --
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
-VALUES (@element_5, 'load', 'if(document.getElementById(&#039;jos_emundus_jury___meeting_session&#039;).value !== &quot;&quot;) {
+VALUES (@element_5, 'load', 'jQuery(&#039;#jos_emundus_jury___user_type_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___join_before_host_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___approval_type_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___host_video_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___participant_video_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___waiting_room_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___show_share_button_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___mute_participant_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+
+if(document.getElementById(&#039;jos_emundus_jury___meeting_session&#039;).value !== &quot;&quot;) {
   host = this.element;
   host_val = this.get(&#039;value&#039;);
 
