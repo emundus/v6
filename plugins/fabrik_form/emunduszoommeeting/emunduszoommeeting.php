@@ -340,11 +340,11 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         # set email content (update)
                         $post = [
-                            'ZOOM_SESSION_PREVIOUS_NAME' => '<span style="color:#e88679;font-size:small;font-weight: normal">' . $zoomSession->ZOOM_SESSION_NAME . '</span>',
-                            'ZOOM_SESSION_NAME' => '<span style="color:#16afe1;font-size:small;font-weight: normal">' . $response['topic'] . '</span>',
+                            'ZOOM_SESSION_PREVIOUS_NAME' => '<span style="color:#e88679;font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_NAME . '</span>',
+                            'ZOOM_SESSION_NAME' => '<span style="color:#16afe1;font-weight: normal">' . $response['topic'] . '</span>',
 
-                            'ZOOM_SESSION_PREVIOUS_START_TIME' => '<span style="color:#e88679;font-size:small;font-weight: normal">' . $zoomSession->ZOOM_SESSION_START_TIME . '</span>',
-                            'ZOOM_SESSION_START_TIME' => '<span style="color:#16afe1;font-size:small;font-weight: normal">' . $juryStartDate . '</span>',
+                            'ZOOM_SESSION_PREVIOUS_START_TIME' => '<span style="color:#e88679;font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_START_TIME . '</span>',
+                            'ZOOM_SESSION_START_TIME' => '<span style="color:#16afe1;font-weight: normal">' . $juryStartDate . '</span>',
 
                             'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s'),
 
