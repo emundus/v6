@@ -332,6 +332,22 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                         # get the join_url from $response
                         $join_url = $response['join_url'];
 
+                        # compare previous and new meeting name (using strcmp() method)
+                        if(strcmp($zoomSession->ZOOM_SESSION_NAME, $response['topic']) === 0) {
+                            $zoomSession->ZOOM_SESSION_NAME = '';
+                            $response['topic'] = $response['topic'] . ' ' . '<span style="color:#16afe1;font-size:small;font-weight: normal;font-style: italic">' . JText::_('ZOOM_SESSION_HAS_NO_CHANGED') . '</span>';
+                        } else {
+                            $zoomSession->ZOOM_SESSION_NAME = $zoomSession->ZOOM_SESSION_NAME . JText::_('ZOOM_SESSION_IS_CHANGED');
+                        }
+
+                        # compare previous and new start time (using strcmp() method)
+                        if(strcmp($zoomSession->ZOOM_SESSION_START_TIME, $juryStartDate) === 0) {
+                            $zoomSession->ZOOM_SESSION_START_TIME = '';
+                            $juryStartDate = $juryStartDate . ' ' . '<span style="color:#16afe1;font-size:small;font-weight: normal;font-style: italic">' . JText::_('ZOOM_SESSION_HAS_NO_CHANGED') . '</span>';
+                        } else {
+                            $zoomSession->ZOOM_SESSION_START_TIME = $zoomSession->ZOOM_SESSION_START_TIME . JText::_('ZOOM_SESSION_IS_CHANGED');
+                        }
+
                         # set email content (update)
                         $post = [
                             'ZOOM_SESSION_PREVIOUS_NAME' => $zoomSession->ZOOM_SESSION_NAME,
