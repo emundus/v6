@@ -378,7 +378,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         # get all evaluators of Zoom meeting
         $query->clear()
-            ->select('ju.id, ju.name')
+            ->select('ju.id, ju.name, ju.email')
             ->from($db->quoteName('#__users', 'ju'))
             ->leftJoin($db->quoteName('#__emundus_jury_repeat_jury', 'jejrj') . ' ON ju.id = jejrj.user')
             ->where($db->quoteName('jejrj.parent_id') . ' = ' . $db->quote($jid));
@@ -399,36 +399,31 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # add list of evaluators to $post
         $post['ZOOM_SESSION_JURY'] = '<ul>';
 
-        if(empty($lastJuries)) {
-            $post['ZOOM_SESSION_JURY'] = '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
+        if(empty($lastJuries) or is_null(current($lastJuries))) {
+            $post['ZOOM_SESSION_JURY'] .= '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
         } else {
-            if(empty($juriesDiff) or is_null(current($juriesDiff))) {
-                $post['ZOOM_SESSION_JURY'] = '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
-            } else {
-                # get info of $juriesDiff
-                $query->clear()
-                    ->select('ju.name')
-                    ->from($db->quoteName('#__users', 'ju'))
-                    ->where($db->quoteName('ju.id') . ' IN (' . implode(',', $juriesDiff) . ')');
+            # get info of $juriesDiff
+            $query->clear()
+                ->select('ju.name')
+                ->from($db->quoteName('#__users', 'ju'))
+                ->where($db->quoteName('ju.id') . ' IN (' . implode(',', $lastJuries) . ')');
 
-                $db->setQuery($query);
-                $jrs = $db->loadColumn();
+            $db->setQuery($query);
+            $jrs = $db->loadColumn();
 
-                foreach ($jrs as $jr) {
-                    $post['ZOOM_SESSION_JURY'] .= '<div style="color:orange;text-decoration: line-through"><li>' . $jr . '</li></div>';
-                }
+            foreach ($jrs as $jr) {
+                $post['ZOOM_SESSION_JURY'] .= '<div style="color:orangered;text-decoration: line-through"><li>' . $jr . '</li></div>';
             }
         }
 
         if (count($evaluators) >= 1) {
             # grab all new evaluators of this Zoom meeting
             foreach ($evaluators as $eval) {
-                $post['ZOOM_SESSION_JURY'] .= '<div style="color:#16ab39"><li>' . $eval->name . '</li></div>';
+                $post['ZOOM_SESSION_JURY'] .= '<div style="color:#15d23b"><li>' . $eval->name . '</li></div>';
             }
         } else {
-            $post['ZOOM_SESSION_JURY'] = '<div style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
+            $post['ZOOM_SESSION_JURY'] .= '<div style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
         }
-
 
         $post['ZOOM_SESSION_JURY'] .= '</ul>';
 
