@@ -71,7 +71,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $session->set('emundusZoomSession', $zoomSession);
         }
     }
-    
+
 
     /**
         * onAfterProcess ==> create new Zoom meeting
@@ -150,6 +150,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             if ($zoom->responseCode() == 201) {
                 # get host id
                 $host_id = $response['id'];
+                $host_last_name = $response['last_name'];
+                $host_first_name = $response['first_name'];
             } else {
                 $uzId = $host;
 
@@ -172,6 +174,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         # get the Zoom user id
                         $host_id = $response['id'];
+
+                        $host_last_name = $response['last_name'];
+                        $host_first_name = $response['first_name'];
                     } else {
                         // TODO: handle email not found
                     }
@@ -281,7 +286,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     $post = [
                         'ZOOM_SESSION_NAME' => $response['topic'],
                         'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),       # convert UTC time to local time
-                        'ZOOM_SESSION_UPDATE_TIME' => date('Y-m-d H:i:s')
+                        'ZOOM_SESSION_UPDATE_TIME' => date('Y-m-d H:i:s'),
+                        'ZOOM_SESSION_HOST' => $host_first_name . ' ' . $host_last_name
                     ];
                 } catch(Exception $e) {
                     JLog::add('Create Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
@@ -332,9 +338,11 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                             'ZOOM_SESSION_NAME' => $response['topic'],
 
                             'ZOOM_SESSION_PREVIOUS_START_TIME' => $zoomSession->ZOOM_SESSION_START_TIME,
-                            'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),   # convert UTC time to local time
+                            'ZOOM_SESSION_START_TIME' => $juryStartDate,
 
-                            'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s')
+                            'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s'),
+
+                            'ZOOM_SESSION_HOST' => $host_first_name . ' ' . $host_last_name
                         ];
                     } catch(Exception $e) {
                         JLog::add('Update Zoom meeting failed : ' . $e->getMessage(),JLog::ERROR, 'com_emundus');
