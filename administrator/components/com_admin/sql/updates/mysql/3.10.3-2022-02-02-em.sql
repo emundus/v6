@@ -622,3 +622,12 @@ VALUES ('2022-02-22 16:06:06', 'ZOOM_SESSION_PREVIOUS_NAME', '[ZOOM_SESSION_PREV
 
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-02-22 16:08:42', 'ZOOM_SESSION_PREVIOUS_START_TIME', '[ZOOM_SESSION_PREVIOUS_START_TIME]', 'Zoom session previous start time', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-27 14:23:42', 'ZOOM_MEETING_START_DATE', 'php|
+$fnum = ''[FNUM]'';
+$db = JFactory::getDbo();
+$query = "select date(start_time_) from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like (" . $fnum . ")";
+$db->setQuery($query);
+$raw = $db->loadResult();
+return $raw;', 'Zoom meeting start date (just date)', 1);
