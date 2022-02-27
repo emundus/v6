@@ -53,19 +53,25 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $query = $db->getQuery(true);
 
             # get the previous data of ZOOM meeting
-            $query->select('*')
+            $query->select('jej.*, jejrj.user')
                 ->from($db->quoteName('#__emundus_jury', 'jej'))
+                ->leftJoin($db->quoteName('#__emundus_jury_repeat_jury', 'jejrj') . ' ON ' . $db->quoteName('jej.id') . ' = ' . $db->quoteName('jejrj.parent_id'))
                 ->where('jej.id = ' . $db->quote($rowId));
 
             $db->setQuery($query);
-            $raw = $db->loadObject();
+            $raw = $db->loadObjectList();
 
             # create session
             $session = JFactory::getSession();
             $zoomSession = new stdClass();
 
-            $zoomSession->ZOOM_SESSION_NAME = $raw->topic;
-            $zoomSession->ZOOM_SESSION_START_TIME = $raw->start_time_;
+            $zoomSession->ZOOM_SESSION_NAME = current($raw)->topic;
+            $zoomSession->ZOOM_SESSION_START_TIME = current($raw)->start_time_;
+            $zoomSession->ZOOM_SESSION_JURY = [];
+
+            foreach($raw as $jr) {
+                $zoomSession->ZOOM_SESSION_JURY[] = $jr->user;
+            }
 
             # set "emunusZoomSession" session
             $session->set('emundusZoomSession', $zoomSession);
@@ -332,29 +338,13 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                         # get the join_url from $response
                         $join_url = $response['join_url'];
 
-                        # compare previous and new meeting name (using strcmp() method)
-                        if(strcmp($zoomSession->ZOOM_SESSION_NAME, $response['topic']) === 0) {
-                            $zoomSession->ZOOM_SESSION_NAME = '';
-                            $response['topic'] = $response['topic'] . ' ' . '<span style="color:#16afe1;font-size:small;font-weight: normal;font-style: italic">' . JText::_('ZOOM_SESSION_HAS_NO_CHANGED') . '</span>';
-                        } else {
-                            $zoomSession->ZOOM_SESSION_NAME = $zoomSession->ZOOM_SESSION_NAME . JText::_('ZOOM_SESSION_IS_CHANGED');
-                        }
-
-                        # compare previous and new start time (using strcmp() method)
-                        if(strcmp($zoomSession->ZOOM_SESSION_START_TIME, $juryStartDate) === 0) {
-                            $zoomSession->ZOOM_SESSION_START_TIME = '';
-                            $juryStartDate = $juryStartDate . ' ' . '<span style="color:#16afe1;font-size:small;font-weight: normal;font-style: italic">' . JText::_('ZOOM_SESSION_HAS_NO_CHANGED') . '</span>';
-                        } else {
-                            $zoomSession->ZOOM_SESSION_START_TIME = $zoomSession->ZOOM_SESSION_START_TIME . JText::_('ZOOM_SESSION_IS_CHANGED');
-                        }
-
                         # set email content (update)
                         $post = [
-                            'ZOOM_SESSION_PREVIOUS_NAME' => $zoomSession->ZOOM_SESSION_NAME,
-                            'ZOOM_SESSION_NAME' => $response['topic'],
+                            'ZOOM_SESSION_PREVIOUS_NAME' => '<span style="color:#e88679;font-size:small;font-weight: normal">' . $zoomSession->ZOOM_SESSION_NAME . '</span>',
+                            'ZOOM_SESSION_NAME' => '<span style="color:#16afe1;font-size:small;font-weight: normal">' . $response['topic'] . '</span>',
 
-                            'ZOOM_SESSION_PREVIOUS_START_TIME' => $zoomSession->ZOOM_SESSION_START_TIME,
-                            'ZOOM_SESSION_START_TIME' => $juryStartDate,
+                            'ZOOM_SESSION_PREVIOUS_START_TIME' => '<span style="color:#e88679;font-size:small;font-weight: normal">' . $zoomSession->ZOOM_SESSION_START_TIME . '</span>',
+                            'ZOOM_SESSION_START_TIME' => '<span style="color:#16afe1;font-size:small;font-weight: normal">' . $juryStartDate . '</span>',
 
                             'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s'),
 
@@ -388,7 +378,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         # get all evaluators of Zoom meeting
         $query->clear()
-            ->select('ju.email, ju.name')
+            ->select('ju.id, ju.name')
             ->from($db->quoteName('#__users', 'ju'))
             ->leftJoin($db->quoteName('#__emundus_jury_repeat_jury', 'jejrj') . ' ON ju.id = jejrj.user')
             ->where($db->quoteName('jejrj.parent_id') . ' = ' . $db->quote($jid));
@@ -396,19 +386,49 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $db->setQuery($query);
 
         $evaluators = $db->loadObjectList();
+        $evaluatorsIds = [];
+
+        foreach($evaluators as $eval) { $evaluatorsIds[] = $eval->id; }
+
+        # now, we compare the latest juries and the newest juries
+        $lastJuries = $zoomSession->ZOOM_SESSION_JURY;
+
+        # now, we get the differences between last juries and newest juries
+        $juriesDiff = array_diff($lastJuries,$evaluatorsIds);
+
+        # add list of evaluators to $post
+        $post['ZOOM_SESSION_JURY'] = '<ul>';
+
+        if(empty($lastJuries)) {
+            $post['ZOOM_SESSION_JURY'] = '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
+        } else {
+            if(empty($juriesDiff) or is_null(current($juriesDiff))) {
+                $post['ZOOM_SESSION_JURY'] = '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
+            } else {
+                # get info of $juriesDiff
+                $query->clear()
+                    ->select('ju.name')
+                    ->from($db->quoteName('#__users', 'ju'))
+                    ->where($db->quoteName('ju.id') . ' IN (' . implode(',', $juriesDiff) . ')');
+
+                $db->setQuery($query);
+                $jrs = $db->loadColumn();
+
+                foreach ($jrs as $jr) {
+                    $post['ZOOM_SESSION_JURY'] .= '<div style="color:orange;text-decoration: line-through"><li>' . $jr . '</li></div>';
+                }
+            }
+        }
 
         if (count($evaluators) >= 1) {
-            # add list of evaluators to $post
-            $post['ZOOM_SESSION_JURY'] = '<ul>';
-
-            # grab all evaluator of this Zoom meeting
+            # grab all new evaluators of this Zoom meeting
             foreach ($evaluators as $eval) {
-                $post['ZOOM_SESSION_JURY'] .= '<li>' . $eval->name . '</li>';
+                $post['ZOOM_SESSION_JURY'] .= '<div style="color:#16ab39"><li>' . $eval->name . '</li></div>';
             }
-
         } else {
-            $post['ZOOM_SESSION_JURY'] = '<p style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</p>";
+            $post['ZOOM_SESSION_JURY'] = '<div style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
         }
+
 
         $post['ZOOM_SESSION_JURY'] .= '</ul>';
 
