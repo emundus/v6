@@ -340,11 +340,11 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
                         # set email content (update)
                         $post = [
-                            'ZOOM_SESSION_PREVIOUS_NAME' => '<span style="color:#e88679;font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_NAME . '</span>',
-                            'ZOOM_SESSION_NAME' => '<span style="color:#16afe1;font-weight: normal">' . $response['topic'] . '</span>',
+                            'ZOOM_SESSION_PREVIOUS_NAME' => '<span style="font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_NAME . '</span>',
+                            'ZOOM_SESSION_NAME' => '<span style="font-weight: normal">' . $response['topic'] . '</span>',
 
-                            'ZOOM_SESSION_PREVIOUS_START_TIME' => '<span style="color:#e88679;font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_START_TIME . '</span>',
-                            'ZOOM_SESSION_START_TIME' => '<span style="color:#16afe1;font-weight: normal">' . $juryStartDate . '</span>',
+                            'ZOOM_SESSION_PREVIOUS_START_TIME' => '<span style="font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_START_TIME . '</span>',
+                            'ZOOM_SESSION_START_TIME' => '<span style="font-weight: normal">' . $juryStartDate . '</span>',
 
                             'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s'),
 
@@ -412,14 +412,14 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
             $jrs = $db->loadColumn();
 
             foreach ($jrs as $jr) {
-                $post['ZOOM_SESSION_JURY'] .= '<div style="color:orangered;text-decoration: line-through"><li>' . $jr . '</li></div>';
+                $post['ZOOM_SESSION_JURY'] .= '<div style="text-decoration: line-through"><li>' . $jr . '</li></div>';
             }
         }
 
         if (count($evaluators) >= 1) {
             # grab all new evaluators of this Zoom meeting
             foreach ($evaluators as $eval) {
-                $post['ZOOM_SESSION_JURY'] .= '<div style="color:#15d23b"><li>' . $eval->name . '</li></div>';
+                $post['ZOOM_SESSION_JURY'] .= '<div><li>' . $eval->name . '</li></div>';
             }
         } else {
             $post['ZOOM_SESSION_JURY'] .= '<div style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
