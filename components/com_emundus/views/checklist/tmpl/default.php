@@ -139,7 +139,7 @@ if (!empty($this->custom_title)) :?>
                         $div .= JText::_('CANT_VIEW');
                     }
                     $div .= '&nbsp;-&nbsp;' ;
-                    if ($item->can_be_deleted == 1 && !$block_upload) {
+                    if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
                         $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons">delete_outline</span> '.JText::_('DELETE').'</a>';
                     } else {
                         $div .= JText::_('CANT_DELETE');
