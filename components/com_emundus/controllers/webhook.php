@@ -652,4 +652,30 @@ class EmundusControllerWebhook extends JControllerLegacy {
             exit;
         }
     }
+
+    /* get zoom session by id */
+    public function getzoomsession() {
+        $tab = array('status' => false, 'msg' => JText::_('ZOOM_SESION_RETRIEVED_FAILED'), 'data' => null);
+        $jinput = JFactory::getApplication()->input;
+        $zid = $jinput->getString('zid', null);
+
+        if (!empty($zid)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_jury', 'jej'))
+                ->where('jej.id = ' . $db->quote($zid));
+            $db->setQuery($query);
+
+            $raw = $db->loadObject();
+
+            if (!empty($raw)) {
+                $tab = array('status' => true, 'msg' => JText::_('ZOOM_SESION_RETRIEVED_SUCCESSFULLY'), 'data' => $raw);
+            }
+        }
+
+        echo json_encode($tab);
+        exit;
+    }
 }
