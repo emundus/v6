@@ -190,8 +190,9 @@ class UpdateCli extends JApplicationCli
             return true;
         }
     }
-    public function installExtension($app, $name) {
-        echo $name;
+
+    public function installExtension($app, $name)
+    {
         $this->out('INSTALL ' . $name);
         $app = JFactory::getApplication();
 
@@ -199,23 +200,84 @@ class UpdateCli extends JApplicationCli
         $app->input->set('install_directory', JPATH_BASE . '/tmp');
         $app->input->set('max_upload_size', '10485760');
         $version = '1.0.0';
-        $app->input->set('install_url', 'http://localhost/emundus-updates/packages/'. $name .'/' . $name . '_' . $version .'.zip');
+        if ($name == 'com_emundus') {
+            $app->input->set('install_url', 'http://localhost:81/emundus-updates/packages/com_emundus/com_emundus_1.0.0.zip');
+            $this->getInstall();
+
+        } elseif ($name == 'com_fabrik') {
+            $fabrik = "http://fabrikar.com/update/fabrik31/package_list.xml";
+            $data = simplexml_load_file($fabrik);
+            foreach ($data->extension as $ext) {
+                $name = (string)$ext['name'];
+                $this->out($name);
+                if (!strpos($name, "zoom")) {
+                    $url = (string)$ext["detailsurl"];
+                    $app->input->set('install_url', $url);
+                    $this->getInstall($name);
+                } else
+                    $this->out("Fabrik Form Zoom missing files : no install");
+
+            }
+
+        } elseif ($name == 'hikashop') {
+            $hikashop = "http://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-Starter/file-extension.xml";
+            $data = simplexml_load_file($hikashop);
+            foreach ($data->update as $ext) {
+                $version = (string)$ext->targetplatform['version'];
+                #$this->out($name);
+            }
+            if (!strpos($version, "3")) {
+                $url = (string)$ext->downloads->downloadurl[1];
+                $app->input->set('install_url', $url);
+                $app->input->set('installtype', 'url');
+                $input = JFactory::getApplication()->input;
+                $this->getInstall($name);
+                $updateHelper = hikashop_get('helper.update');
+                $updateHelper->installExtensions();
+            }
+
+        } elseif ($name == 'dpcalendar') {
+            $url = "https://joomla.digital-peak.com/download/dpcalendar/dpcalendar-8.2.2/dpcalendar-free-8-2-2.zip?format=zip";
+            $name = "dpcalendar";
+            $app->input->set('install_url', $url);
+            $this->getInstall($name);
+
+        } elseif ($name == "dropfiles") {
+            $dropfiles = "https://www.joomunited.com/juupdater_files/dropfiles-update.xml";
+            $data = simplexml_load_file($dropfiles);
+            foreach ($data->update as $ext) {
+                $version = (string)$ext->targetplatform['version'];
+                $name = (string)$ext->name;
+                $this->out($name);
+                if (strpos($version, "3")) {
+                    $url = $ext->detailsurl;
+                    $app->input->set('install_url', $url);
+                    $this->getInstall($name);
+                }
+            }
+
+        } elseif ($name == 'gantry'){
+            $gantry = "https://github.com/gantry/gantry5/releases/download/5.5.5/joomla-pkg_gantry5_v5.5.5.zip";
+            $name = "gantry";
+            $app->input->set('install_url', $gantry);
+            $this->getInstall($name);
+        }
+    }
 
 
-//        return = "655955cdcf37f31d742a05d0fa20ff70"
-//        task = "install.install"
-//        655955cdcf37f31d742a05d0fa20ff70 = "1"
-
+    public function getInstall($extension_name){
         $installer = JModelLegacy::getInstance('InstallerModelInstall');
         $result = $installer->install();
         if (!$result) {
-            $this->out('Install failed');
-        }
+            JLog::add($extension_name, JLog::WARNING, 'jerror');
+            $this->out("\n" . "Install failed");
+        } else { $this->out("\n" . "Install OK");}
     }
 
 
     public function doExecute()
     {
+
         JLog::addLogger(array('text_file' => 'update_cli.log.php'), JLog::ALL, array('jerror, error'));
 
         $app = JFactory::getApplication('site');
@@ -225,7 +287,7 @@ class UpdateCli extends JApplicationCli
         $executionStartTime = microtime(true);
         $this->db = JFactory::getDbo();
 
-        echo "Emundus SQL Update Tool \n\n";
+        echo "Emundus Update Tool \n\n";
         if ($name = $this->input->get('i', $this->input->get('install'))) {
             $this->installExtension($app, $name);
         }
