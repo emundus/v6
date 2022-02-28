@@ -401,7 +401,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
 
         if($send_first_email_flag === false) {
             if (empty($lastJuries) or is_null(current($lastJuries))) {
-                $post['ZOOM_SESSION_JURY'] .= '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
+                $post['ZOOM_SESSION_JURY'] .= '<div style="color:red;text-decoration: line-through"><li>' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</li></div>";
             } else {
                 # get info of $juriesDiff
                 $query->clear()
@@ -424,17 +424,17 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                 $post['ZOOM_SESSION_JURY'] .= '<div><li>' . $eval->name . '</li></div>';
             }
         } else {
-            $post['ZOOM_SESSION_JURY'] .= '<div style="color:red">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
+            $post['ZOOM_SESSION_JURY'] .= '<div style="color:red"><li>' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</li></div>";
         }
 
         $post['ZOOM_SESSION_JURY'] .= '</ul>';
 
         if ($email_template !== 0) {
-            $this->sendMailToRecievers($email_template, $raws, $evaluators, $post, $start_url, $join_url);
+            $this->sendMailToReceivers($email_template, $raws, $evaluators, $post, $start_url, $join_url);
         }
     }
 
-    private function sendMailToRecievers($email_template, $recipients, $evaluators, $post, $start_url, $join_url) {
+    private function sendMailToReceivers($email_template, $recipients, $evaluators, $post, $start_url, $join_url) {
         # send email # call the 'messages' controllers
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
         $cMessages = new EmundusControllerMessages;
