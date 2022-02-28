@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_form" method="upgrade" type="plugin" version="30">
+    <name>PLG_FABRIK_FORM_EMUNDUSEVENTHANDLER</name>
+    <author>Jérémy LEGENDRE</author>
+    <creationDate>February 2022</creationDate>
+    <copyright>Copyright (C) 2017-2021 eMundus.fr - All rights reserved.</copyright>
+    <license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.29.0</version>
+    <help url="PLG_FORM_EMUNDUSEVENTHANDLER_HELP_SERVER"/>
+    <files>
+        <filename plugin="emunduseventhandler">emunduseventhandler.php</filename>
+        <filename>index.html</filename>
+        <folder>forms</folder>
+        <folder>language</folder>
+    </files>
+</extension>

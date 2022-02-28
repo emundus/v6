@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-emunduseventhandler" label="PLG_FABRIK_FORM_EMUNDUSEVENTHANDLER_FIELDS">
+           <field type="radio"
+                  name="emundus_event_handler_dispatch_all_events"
+                  default="0"
+                  label="PLG_FABRIK_FORM_EMUNDUSEVENTHANDLER_DISPATCH_ALL_EVENTS"
+                  description="PLG_FABRIK_FORM_EMUNDUSEVENTHANDLER_DISPATCH_ALL_EVENTS_DESC"
+                  class="inputbox"
+           >
+               <option value="0">PLG_FABRIK_FORM_EMUNDUSEVENTHANDLER_DISPATCH_ALL_EVENTS_NO</option>
+               <option value="1">PLG_FABRIK_FORM_EMUNDUSEVENTHANDLER_DISPATCH_ALL_EVENTS_YES</option>
+           </field>
+        </fieldset>
+    </fields>
+</form>
