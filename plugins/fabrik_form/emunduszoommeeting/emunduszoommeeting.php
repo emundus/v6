@@ -32,7 +32,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
     }
 
 
-    public function searchSubArray(Array $array, $key) {
+    public function searchSubArray(Array $array, $key): array {
         foreach ($array as $index => $subarray){
             if (isset($subarray[$key])) {
                 return array('parent' => $index, 'status' => true);
@@ -136,6 +136,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $db->setQuery($query);
         $raw = $db->loadObject();
         $host_id = 0;
+        $host_first_name = '';
+        $host_last_name = '';
 
         if (!empty($raw)) {
             # prepare the user data
@@ -346,7 +348,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                             'ZOOM_SESSION_PREVIOUS_START_TIME' => '<span style="font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_START_TIME . '</span>',
                             'ZOOM_SESSION_START_TIME' => '<span style="font-weight: normal">' . $juryStartDate . '</span>',
 
-                            'ZOOM_SESSION_UPDATE_TIME' => $created_at = date('Y-m-d H:i:s'),
+                            'ZOOM_SESSION_UPDATE_TIME' => date('Y-m-d H:i:s'),
 
                             'ZOOM_SESSION_HOST' => $host_first_name . ' ' . $host_last_name
                         ];
