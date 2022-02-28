@@ -75,12 +75,7 @@
 
 		<hr>
 
-		<div class="actions"
-			:class="{
-				'not-published': isPublished === false || isActive === false,
-				'finished': isFinished
-			}"
-		>
+		<div class="actions">
 			<a 
 				@click="redirectToEditItem" 
 				class="em-primary-button em-font-size-14"
@@ -152,8 +147,8 @@ export default {
 		};
 	},
 	mounted() {
-		this.getTitle();
 		this.lang = global.getters.actualLanguage;
+		this.getTitle();
 
 		if (this.type === "formulaire" || this.type === "form" || this.type === "grilleEval") {
 			this.getAssociatedCampaigns();
@@ -161,7 +156,7 @@ export default {
 	},
 	methods: {
 		getTitle() {
-			if (this.data.label && !this.data.label.fr) {
+			if (this.data.label && typeof this.data.label === "string") {
 				this.title = this.data.label;
 			} else if (this.data.label && this.data.label[this.lang]) {
 				this.title = this.data.label[this.lang];

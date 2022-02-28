@@ -97,11 +97,11 @@ export default {
 
   methods: {
     updateView(image) {
-      this.imageLink = image;
+      this.imageLink = 'images/custom/logo_custom.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateIcon(image) {
-      this.iconLink = image;
+      this.iconLink = 'images/custom/favicon.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateColors(colors){

@@ -9,6 +9,7 @@ JText::script('COM_EMUNDUS_MESSENGER_DROP_HERE');
 JText::script('COM_EMUNDUS_MESSENGER_SEND');
 JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 JText::script('COM_EMUNDUS_MESSENGER_TYPE_ATTACHMENT');
+JText::script('COM_EMUNDUS_PLEASE_SELECT');
 
 $user = JFactory::getSession()->get('emundusUser')->id;
 

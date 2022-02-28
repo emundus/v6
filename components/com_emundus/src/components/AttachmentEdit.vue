@@ -102,7 +102,7 @@
       </div>
     </div>
     <div class="actions">
-      <button v-if="canUpdate" @click="saveChanges" class="btn-primary-vue">
+      <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
         {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
       </button>
     </div>
@@ -339,10 +339,6 @@ export default {
     button {
       transition: all 0.3s;
       padding: 8px 12px;
-
-      &:last-of-type {
-        margin-left: 10px;
-      }
     }
   }
 

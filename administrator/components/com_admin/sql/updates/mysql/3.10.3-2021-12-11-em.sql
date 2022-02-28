@@ -58,7 +58,7 @@ create table jos_emundus_setup_dashbord_repeat_widgets
 );
 
 INSERT INTO jos_emundus_widgets (name, label, size, size_small, params, eval, class, published, type, chart_type, article_id, profile)
-VALUES ('custom', 'Files by status', 10, 12, null, 'php|$db = JFactory::getDbo();
+VALUES ('custom', 'COM_EMUNDUS_DASHBOARD_FILES_BY_STATUS', 10, 12, null, 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
 try {
@@ -103,7 +103,7 @@ try {
 SET @widget_1 = LAST_INSERT_ID();
 
 INSERT INTO jos_emundus_widgets (name, label, size, size_small, params, eval, class, published, type, chart_type, article_id, profile)
-VALUES ('custom', 'Users by month', 10, 1, null, 'php|$db = JFactory::getDbo();
+VALUES ('custom', 'COM_EMUNDUS_DASHBOARD_USERS_BY_MONTH', 10, 1, null, 'php|$db = JFactory::getDbo();
 $offset = JFactory::getApplication()->get(''offset'', ''UTC'');
 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone(''UTC''));
 $dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
@@ -159,7 +159,7 @@ try {
 SET @widget_2 = LAST_INSERT_ID();
 
 INSERT INTO jos_emundus_widgets (name, label, size, size_small, params, eval, class, published, type, chart_type, article_id, profile)
-VALUES ('custom', 'Files associated by status', 10, 12, null, 'php|$db = JFactory::getDbo();
+VALUES ('custom', 'COM_EMUNDUS_DASHBOARD_FILES_ASSOCIATED_BY_STATUS', 10, 12, null, 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
 $user_id = JFactory::getUser()->id;
@@ -278,7 +278,7 @@ try {
 SET @widget_4 = LAST_INSERT_ID();
 
 INSERT INTO jos_emundus_widgets (name, label, size, size_small, params, eval, class, published, type, chart_type, article_id, profile)
-VALUES ('custom', 'Files by tags', 10, 12, null, 'php|$db = JFactory::getDbo();
+VALUES ('custom', 'COM_EMUNDUS_DASHBOARD_FILES_BY_TAG', 10, 12, null, 'php|$db = JFactory::getDbo();
 $query = $db->getQuery(true);
 
 try {
@@ -321,9 +321,9 @@ try {
 SET @widget_5 = LAST_INSERT_ID();
 
 INSERT INTO jos_content (asset_id, title, alias, introtext, `fulltext`, state, catid, created, created_by, created_by_alias, modified, modified_by, checked_out, checked_out_time, publish_up, publish_down, images, urls, attribs, version, ordering, metakey, metadesc, access, hits, metadata, featured, language, xreference, note)
-VALUES (392, 'Widget FAQ', 'widget-faq', '<h3>Une question ?</h3>
-<p class="faq-intro">Contactez nos équipes depuis notre centre d''assistance en ligne et accédez à des articles d''aides.</p>
-<p><a href="https://emundus.atlassian.net/wiki/spaces/HD/overview" target="_blank" rel="noopener noreferrer"><button class="bouton-faq">Accéder au centre d''aide</button></a></p>', '', 1, 21, '2021-12-10 10:09:27', 62, '', '2021-12-10 10:36:20', 62, 0, '0000-00-00 00:00:00', '2021-12-10 10:09:27', '0000-00-00 00:00:00', '{}', '{}', '{"article_layout":"","show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","alternative_readmore":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 3, 0, '', '', 1, 0, '{}', 0, '*', '', '');
+VALUES (392, 'Widget FAQ', 'widget-faq', '<div><h3>Une question ?</h3>
+<p class="faq-intro">Contactez nos équipes depuis notre centre d''assistance en ligne et accédez à des articles d''aides.</p></div>
+<p><a href="https://emundus.atlassian.net/wiki/spaces/HD/overview" target="_blank" rel="noopener noreferrer"><button class="bouton-faq">Accéder au centre d''aide</button></a></p>', '', 1, 21, '2021-12-10 10:09:27', 62, '', '2021-12-10 10:36:20', 62, 0, '2021-12-10 10:36:20', '2021-12-10 10:09:27', '2099-12-10 10:36:20', '{}', '{}', '{"article_layout":"","show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","alternative_readmore":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 3, 0, '', '', 1, 0, '{}', 0, '*', '', '');
 SET @article_id = LAST_INSERT_ID();
 
 INSERT INTO jos_emundus_widgets (name, label, size, size_small, params, eval, class, published, type, chart_type, article_id, profile)
