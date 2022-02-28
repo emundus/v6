@@ -399,20 +399,22 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         # add list of evaluators to $post
         $post['ZOOM_SESSION_JURY'] = '<ul>';
 
-        if(empty($lastJuries) or is_null(current($lastJuries))) {
-            $post['ZOOM_SESSION_JURY'] .= '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
-        } else {
-            # get info of $juriesDiff
-            $query->clear()
-                ->select('ju.name')
-                ->from($db->quoteName('#__users', 'ju'))
-                ->where($db->quoteName('ju.id') . ' IN (' . implode(',', $lastJuries) . ')');
+        if($send_first_email_flag === false) {
+            if (empty($lastJuries) or is_null(current($lastJuries))) {
+                $post['ZOOM_SESSION_JURY'] .= '<div style="color:red;text-decoration: line-through">' . JText::_('COM_EMUNDUS_ZOOM_SESSION_NO_JURY') . "</div>";
+            } else {
+                # get info of $juriesDiff
+                $query->clear()
+                    ->select('ju.name')
+                    ->from($db->quoteName('#__users', 'ju'))
+                    ->where($db->quoteName('ju.id') . ' IN (' . implode(',', $lastJuries) . ')');
 
-            $db->setQuery($query);
-            $jrs = $db->loadColumn();
+                $db->setQuery($query);
+                $jrs = $db->loadColumn();
 
-            foreach ($jrs as $jr) {
-                $post['ZOOM_SESSION_JURY'] .= '<div style="text-decoration: line-through"><li>' . $jr . '</li></div>';
+                foreach ($jrs as $jr) {
+                    $post['ZOOM_SESSION_JURY'] .= '<div style="text-decoration: line-through"><li>' . $jr . '</li></div>';
+                }
             }
         }
 
