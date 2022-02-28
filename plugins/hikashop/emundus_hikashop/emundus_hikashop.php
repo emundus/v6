@@ -144,19 +144,22 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         }
     }
 
-    public function onAfterOrderUpdate(&$order){
-        $db         = JFactory::getDbo();
+    public function onAfterOrderUpdate(&$order)
+    {
+        JFactory::getSession()->set('emundusHikashopUser', null);
+
+        $db = JFactory::getDbo();
         $order_id = $order->order_parent_id ?: $order->order_id;
 
         if ($order_id > 0) {
-            $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id='.$order_id;
+            $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id=' . $order_id;
             $db->setQuery($query);
 
             try {
                 $em_order = $db->loadObject();
-                if(empty($em_order)){
+                if (empty($em_order)) {
                     $this->onAfterOrderCreate($order);
-                    $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id='.$order_id;
+                    $query = 'SELECT * FROM #__emundus_hikashop WHERE order_id=' . $order_id;
                     $db->setQuery($query);
                     $em_order = $db->loadObject();
                 }
@@ -166,12 +169,11 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
                 $status = $em_order->status;
 
             } catch (Exception $exception) {
-                JLog::add('Error SQL -> '. preg_replace("/[\r\n]/"," ",$query), JLog::ERROR, 'com_emundus');
+                JLog::add('Error SQL -> ' . preg_replace("/[\r\n]/", " ", $query), JLog::ERROR, 'com_emundus');
                 return false;
             }
-        }
-        else {
-            JLog::add('Could not get user session on order ID. -> '. $order_id, JLog::ERROR, 'com_emundus');
+        } else {
+            JLog::add('Could not get user session on order ID. -> ' . $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
 
@@ -184,36 +186,69 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         $key = array_search($status, $application_payment_status);
 
         $config = hikashop_config();
-        $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses','confirmed,shipped'), ','));
+        $confirmed_statuses = explode(',', trim($config->get('invoice_order_statuses', 'confirmed,shipped'), ','));
 
         if ($status_after_payment[$key] > 0 && in_array($order->order_status, $confirmed_statuses)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $m_files = new EmundusModelFiles();
             $m_files->updateState($fnum, $status_after_payment[$key]);
-            JLog::add('Application file status updated to -> '.$status_after_payment[$key], JLog::ERROR, 'com_emundus');
-        }
-        else {
-            $query = 'SELECT * FROM #__hikashop_order WHERE order_id='.$order_id;
+            JLog::add('Application file status updated to -> ' . $status_after_payment[$key], JLog::ERROR, 'com_emundus');
+        } else {
+            $query = 'SELECT * FROM #__hikashop_order WHERE order_id=' . $order_id;
             $db->setQuery($query);
             $hika_order = $db->loadObject();
 
-            if(empty($hika_order->order_payment_method)){
+            if (empty($hika_order->order_payment_method)) {
                 $user = JFactory::getSession()->get('emundusUser');
-                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
                 $app = JFactory::getApplication();
-                $app->enqueueMessage( JText::_('THANK_YOU_FOR_PURCHASE') );
+                $app->enqueueMessage(JText::_('THANK_YOU_FOR_PURCHASE'));
 
-                $m_application 	= new EmundusModelApplication;
+                $m_application = new EmundusModelApplication;
                 $redirect = $m_application->getConfirmUrl();
 
                 $app->redirect($redirect);
             }
 
-            JLog::add('Could not set application file status on order ID -> '. $order_id, JLog::ERROR, 'com_emundus');
+            JLog::add('Could not set application file status on order ID -> ' . $order_id, JLog::ERROR, 'com_emundus');
             return false;
         }
 
         $this->onAfterOrderCreate($order);
+    }
+
+    public function onBeforeCartSave(&$element,&$do) {
+        $app = JFactory::getApplication();
+
+        // check if input goBackInHistory is clicked
+        if (isset($_POST['goBackInHistory'])) {
+            $goBackInHistory = filter_input(INPUT_POST, 'goBackInHistory', FILTER_SANITIZE_STRING);
+            if (!empty($goBackInHistory)) {
+                // delete hikashop session user
+                JFactory::getSession()->set('emundusHikashopUser', null);
+
+                $do = false;
+                return $app->redirect('index.php');
+            }
+        }
+
+        $hikashop_user = JFactory::getSession()->get('emundusHikashopUser');
+        $user = JFactory::getSession()->get('emundusUser');
+
+        if (empty($hikashop_user)) {
+            $hikashop_user = new StdClass();
+            $hikashop_user->user_id = $user->id;
+            $hikashop_user->fnum = $user->fnum;
+
+            JFactory::getSession()->set('emundusHikashopUser', $hikashop_user);
+        } else if ($hikashop_user->fnum != $user->fnum) {
+            $do = false;
+            $user->fnum = $hikashop_user->fnum;
+            JFactory::getSession()->set('emundusUser', $user);
+
+            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+            $app->redirect('index.php');
+        }
     }
 }

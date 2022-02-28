@@ -25,6 +25,16 @@ if ($jinput->get('view') == 'form') {
 
 	$user = JFactory::getSession()->get('emundusUser');
 
+    // check if there is not another cart open
+    $hikashop_user = JFactory::getSession()->get('emundusHikashopUser');
+    if (!empty($hikashop_user) && $hikashop_user->fnum != $user->fnum) {
+        $user->fnum = $hikashop_user->fnum;
+        JFactory::getSession()->set('emundusUser', $user);
+
+        $mainframe->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+        $mainframe->redirect('index.php');
+    }
+
 	$params 					= JComponentHelper::getParams('com_emundus');
     $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
 	$application_fee 			= $params->get('application_fee', 0);
@@ -36,7 +46,7 @@ if ($jinput->get('view') == 'form') {
 	$attachments 	= $m_application->getAttachmentsProgress($user->fnum);
 	$forms 			= $m_application->getFormsProgress($user->fnum);
 
-	// If students with a scholarship have a different fee.
+    // If students with a scholarship have a different fee.
 	// The form ID will be appended to the URL, taking him to a different checkout page.
 	if (isset($scholarship_document_id)) {
 
@@ -70,7 +80,7 @@ if ($jinput->get('view') == 'form') {
 			if (!empty($scholarship_product)) {
 				$return_url = $m_application->getHikashopCheckoutUrl($user->profile);
 				$return_url = preg_replace('/&product_id=[0-9]+/', "&product_id=$scholarship_product", $return_url);
-				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
+                $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
 				$mainframe->redirect($checkout_url);
 			}
 		}
