@@ -631,3 +631,6 @@ $query = "select date(start_time_) from jos_emundus_jury as jej left join jos_em
 $db->setQuery($query);
 $raw = $db->loadResult();
 return $raw;', 'Zoom meeting start date (just date)', 1);
+
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-27 17:42:43', 'ZOOM_SESSION_HOST', '[ZOOM_SESSION_HOST]', 'Zoom meeting host', 1);
