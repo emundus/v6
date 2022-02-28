@@ -295,9 +295,6 @@ class PlgFabrik_FormPHP extends PlgFabrik_Form
 	{
 		$params = $this->getParams();
 
-		JPluginHelper::importPlugin('emundus');
-		JEventDispatcher::getInstance()->trigger('callEventHandler', ['onBeforeLoad', $this->getProcessData()]);
-
 		if ($params->get('only_process_curl') == 'onBeforeLoad')
 		{
 			return $this->_runPHP();
