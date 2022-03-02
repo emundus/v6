@@ -985,7 +985,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         //get title
         $title = $config->get('sitename');
         if (is_file($logo)) {
-            $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+            $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
         }
 
         unset($logo);
@@ -1244,7 +1244,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     //get title
     $title = $config->get('sitename');
     if (is_file($logo)) {
-        $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+        $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
     }
 
     unset($logo);
