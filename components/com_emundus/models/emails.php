@@ -500,7 +500,7 @@ class EmundusModelEmails extends JModelList {
                 if (!empty($replacements)) {
                     $replacements[] = $result;
                 } else {
-                    $replacements = "";
+                    $replacements[] = "";
                 }
             } else {
                 $request = explode('|', $value);
