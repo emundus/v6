@@ -570,34 +570,49 @@ SET @element_12 := LAST_INSERT_ID();
 
 -- Step 16 P Add some Zoom tags to table "jos_emundus_setup_tags" --
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
-VALUES ('2022-01-25 09:54:59', 'ZOOM_MEETING_START_TIME', 'php|
-$fnum = ''[FNUM]'';
-$db = JFactory::getDbo();
-$query = "select start_time from jos_emundus_candidat_meeting as jecm where jecm.fnum like (" . $fnum . ")";
-$db->setQuery($query);
-$raw = $db->loadResult();
-$html = ''<strong>'' . $raw . ''</strong>'';
-return $html;', 'Zoom meeting start time', 1);
+VALUES ('2022-01-25 09:54:59', 'ZOOM_MEETING_START_TIME', 'php|$fnum = ''[FNUM]'';
+if(!empty($fnum)) {
+    try {
+        $db = JFactory::getDbo();
+        $query = "select start_time from jos_emundus_candidat_meeting as jecm where jecm.fnum like " . $fnum;
+        $db->setQuery($query);
+        $raw = $db->loadResult();
+        $html = ''<strong>'' . $raw . ''</strong>'';
+        return $html;
+    } catch (Exception $e) {
+        return '''';
+    }
+}', 'Zoom meeting start time', 1);
 
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
-VALUES ('2022-01-25 09:59:38', 'ZOOM_MEETING_DURATION', 'php|
-$fnum = ''[FNUM]'';
-$db = JFactory::getDbo();
-$query = "select duration from jos_emundus_candidat_meeting as jecm where jecm.fnum like (" . $fnum . ")";
-$db->setQuery($query);
-$raw = $db->loadResult();
-$html = ''<strong>'' . $raw . ''</strong>'';
-return $html;', 'Zoom meeting duration (in minutes)', 1);
+VALUES ('2022-01-25 09:59:38', 'ZOOM_MEETING_DURATION', 'php|$fnum = ''[FNUM]'';
+if(!empty($fnum)) {
+    try {
+        $db = JFactory::getDbo();
+        $query = "select duration from jos_emundus_candidat_meeting as jecm where jecm.fnum like " . $fnum;
+        $db->setQuery($query);
+        $raw = $db->loadResult();
+        $html = ''<strong>'' . $raw . ''</strong>'';
+        return $html;
+    } catch (Exception $e) {
+        return '''';
+    }
+}', 'Zoom meeting duration (in minutes)', 1);
 
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
-VALUES ('2022-01-25 09:59:39', 'ZOOM_MEETING_SESSION_LINK', 'php|
-$fnum = ''[FNUM]'';
-$db = JFactory::getDbo();
-$query = "select join_url from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like (" . $fnum . ")";
-$db->setQuery($query);
-$raw = $db->loadResult();
-$html = ''<strong><a href="'' . $raw . ''" target="_blank">'' . '' ici '' . ''</a></strong>'';
-return $html;', 'Zoom meeting session link', 1);
+VALUES ('2022-01-25 09:59:39', 'ZOOM_MEETING_SESSION_LINK', 'php|$fnum = ''[FNUM]'';
+if(!empty($fnum)){
+    try {
+        $db = JFactory::getDbo();
+        $query = "select join_url from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like " . $fnum ;
+        $db->setQuery($query);
+        $raw = $db->loadResult();
+        $html = ''<strong><a href="'' . $raw . ''" target="_blank">'' . '' ici '' . ''</a></strong>'';
+        return $html;
+    } catch (Exception $e) {
+        return '''';
+    }
+}', 'Zoom meeting session link', 1);
 
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-02-22 10:06:35', 'ZOOM_SESSION_NAME', '[ZOOM_SESSION_NAME]', 'Zoom meeting name (room name)', 1);
@@ -623,14 +638,19 @@ VALUES ('2022-02-22 16:06:06', 'ZOOM_SESSION_PREVIOUS_NAME', '[ZOOM_SESSION_PREV
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-02-22 16:08:42', 'ZOOM_SESSION_PREVIOUS_START_TIME', '[ZOOM_SESSION_PREVIOUS_START_TIME]', 'Zoom session previous start time', 1);
 
-INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
-VALUES ('2022-02-27 14:23:42', 'ZOOM_MEETING_START_DATE', 'php|
-$fnum = ''[FNUM]'';
-$db = JFactory::getDbo();
-$query = "select date(start_time_) from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like (" . $fnum . ")";
-$db->setQuery($query);
-$raw = $db->loadResult();
-return $raw;', 'Zoom meeting start date (just date)', 1);
+INSERT INTO c93_i1026_db.jos_emundus_setup_tags (date_time, tag, request, description, published)
+VALUES ('2022-02-27 14:23:42', 'ZOOM_MEETING_START_DATE', 'php|$fnum = ''[FNUM]'';
+if(!empty($fnum)) {
+    try {
+        $db = JFactory::getDbo();
+        $query = "select date(start_time_) from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like " . $fnum;
+        $db->setQuery($query);
+        $raw = $db->loadResult();
+        return $raw;
+    } catch (Exception $e) {
+        return '''';
+    }
+}', 'Zoom meeting start date (just date)', 1);
 
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-02-27 17:42:43', 'ZOOM_SESSION_HOST', '[ZOOM_SESSION_HOST]', 'Zoom meeting host', 1);
