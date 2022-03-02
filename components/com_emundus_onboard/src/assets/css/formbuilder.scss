@@ -67,7 +67,10 @@ fieldset.radio.btn-group{
 }
 .span4 .radio{
   display: flex !important;
-  justify-content: space-between;
+  justify-content: left;
+  span{
+    margin-left: 10px;
+  }
 }
 .fabrikgrid_checkbox {
   display: flex !important;
