@@ -64,9 +64,7 @@
         </div>
       <div v-if="object_json.pluginbottom" v-html="object_json.pluginbottom"></div>
     </form>
-    <div class="loading-form" v-if="loading">
-      <Ring-Loader :color="'#12DB42'" />
-    </div>
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 

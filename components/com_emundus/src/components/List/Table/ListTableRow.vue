@@ -169,20 +169,7 @@ export default {
 			if (td.redirect !== true) {
 				return;
 			}
-			const link = this.getEditUrlByType();
-
-			axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-        params: {
-          link: link,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
-      });
+      window.location.href = this.getEditUrlByType();
 		},
 		getEditUrlByType() {
 			let url;

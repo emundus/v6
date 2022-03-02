@@ -72,9 +72,7 @@
                 @click.prevent="UpdateParams"
         >{{ Continuer }}</button>
       </div>
-      <div class="loading-form" v-if="loading">
-        <Ring-Loader :color="'#12DB42'" />
-      </div>
+      <div class="em-page-loader" v-if="loading"></div>
     </modal>
   </span>
 </template>
@@ -96,16 +94,16 @@
 
   export default {
     name: "modalEditElement",
-    props: { 
+    props: {
       elementId: {
         type: Number,
         required: true
-      }, 
-      gid: Number, 
-      files: Number, 
-      manyLanguages: Number, 
-      actualLanguage: String, 
-      profileId:Number 
+      },
+      gid: Number,
+      files: Number,
+      manyLanguages: Number,
+      actualLanguage: String,
+      profileId:Number
     },
     components: {
       fieldF,

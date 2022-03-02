@@ -2,15 +2,18 @@
 	<div id="list-head">
 		<div class="list-head-container">
 			<h2> {{ translations['title_' + data.type] }}</h2>
-			<a @click="redirectToAddElement">
+			<a :href="data.add_url" v-if="data.type !== 'form'">
     	  <div class="em-primary-button">
 					{{ translations['add_' + data.type] }}
 				</div>
 			</a>
+      <a @click="getAddUrlToCreateForm()" v-else>
+        <div class="em-primary-button">
+          {{ translations['add_' + data.type] }}
+        </div>
+      </a>
 		</div>
-		<div class="loading-form" style="top: 10vh" v-if="loading">
-      <Ring-Loader :color="'#12db42'" />
-    </div>
+    <div class="em-page-loader" v-if="loading"></div>
 	</div>
 </template>
 
@@ -44,13 +47,6 @@ export default {
 		}
 	},
 	methods: {
-		redirectToAddElement: function () {
-			if (this.data.add_url == 'index.php?option=com_emundus&view=form&layout=add'){
-        this.getAddUrlToCreateForm();
-      } else {
-        this.redirect();
-      }
-		},
 		getAddUrlToCreateForm() {
 			this.loading = true;
 
@@ -74,25 +70,10 @@ export default {
           this.loading = false;
           const profileId = response.data.data;
 
-					this.data.add_url = 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + profileId + '&index=0&cid=';
-          this.redirect();
+          window.location.href = 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' + profileId + '&index=0&cid=';
         }).catch(error => {
           console.log(error);
 					this.loading = false;
-        });
-		},
-		redirect() {
-			axios({
-          method: "get",
-          url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-          params: {
-            link: this.data.add_url,
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          window.location.href = window.location.pathname + response.data.data;
         });
 		},
 	}

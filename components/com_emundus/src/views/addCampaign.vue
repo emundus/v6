@@ -1,5 +1,5 @@
 <template>
-  <div class="section-principale">
+  <div class="campaigns__add-campaign">
     <notifications
         group="foo-velocity"
         position="bottom left"
@@ -7,41 +7,30 @@
         :speed="500"
         :classes="'vue-notification-custom'"
     />
-    <div class="w-container general-information">
-      <div class="section-sub-menu sub-form" v-if="campaignId == ''">
-        <div class="container-2 w-container" style="max-width: unset">
-          <div class="d-flex">
-            <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
-            <h1 class="tchooz-section-titles">{{translations.AddCampaign}}</h1>
-          </div>
-        </div>
-      </div>
-      <form id="campaign-form" @submit.prevent="submit">
-        <div class="sous-container">
-          <p class="required mb-1">{{translations.RequiredFieldsIndicate}}</p>
-          <div class="form-group campaign-label">
+
+    <div>
+      <form @submit.prevent="submit">
+        <div>
+          <div class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</div>
+
+          <div class="em-mb-16">
             <label for="campLabel">{{translations.CampName}} <span class="em-red-500-color">*</span></label>
-            <div class="input-can-translate">
-              <input
-                  id="campLabel"
-                  type="text"
-                  v-focus
-                  class="form__input field-general w-input"
-                  v-model="form.label[actualLanguage]"
-                  @keyup="enableTranslationTip"
-                  required
-                  :class="{ 'is-invalid': errors.label, 'mb-0': can_translate.label }"
-              />
-              <button class="translate-icon" :class="{'translate-icon-selected': can_translate.label}" v-if="manyLanguages !== '0'" type="button" @click="enableLabelTranslation"></button>
-            </div>
-            <translation :label="form.label" :actualLanguage="actualLanguage" v-if="can_translate.label"></translation>
+            <input
+                id="campLabel"
+                type="text"
+                v-focus
+                v-model="form.label[actualLanguage]"
+                required
+                :class="{ 'is-invalid': errors.label }"
+            />
           </div>
-          <p v-if="errors.label" class="error col-md-12 mb-2">
-            <span class="error">{{translations.LabelRequired}}</span>
-          </p>
-          <div class="d-flex justify-content-between">
-            <div class="w-col col-md-5">
-              <div class="w-form">
+          <span v-if="errors.label" class="em-red-500-color em-mb-8">
+            <span class="em-red-500-color">{{translations.LabelRequired}}</span>
+          </span>
+
+          <div class="em-grid-2 em-mb-16">
+            <div>
+              <div>
                 <label for="startDate">{{translations.StartDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
                     v-model="form.start_date"
@@ -53,8 +42,8 @@
                 ></datetime>
               </div>
             </div>
-            <div class="w-col col-md-5">
-              <div class="w-form">
+            <div>
+              <div>
                 <label for="endDate">{{translations.EndDate}} <span class="em-red-500-color">*</span></label>
                 <datetime
                     v-model="form.end_date"
@@ -68,7 +57,8 @@
               </div>
             </div>
           </div>
-          <div class="form-group campaign-label">
+
+          <div class="em-mb-16">
             <label for="year">{{translations.PickYear}} <span class="em-red-500-color">*</span></label>
             <autocomplete
                 :id="'year'"
@@ -78,22 +68,24 @@
                 :name="'2020 - 2021'"
             />
           </div>
-          <div class="form-group d-flex">
-            <div class="toggle">
+
+          <div class="em-mb-16 em-flex-row">
+            <div class="em-toggle">
               <input type="checkbox"
                      true-value="1"
                      false-value="0"
-                     class="check"
+                     class="em-toggle-check"
                      id="published"
                      name="published"
                      v-model="form.published"
               />
-              <strong class="b switch"></strong>
-              <strong class="b track"></strong>
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="published" class="ml-10px">{{ translations.Publish }}</span>
+            <span for="published" class="em-ml-8">{{ translations.Publish }}</span>
           </div>
-          <div class="form-group d-flex">
+
+<!--          <div class="em-mb-16 em-flex-row">
             <div class="toggle">
               <input type="checkbox"
                      true-value="1"
@@ -106,78 +98,81 @@
               <strong class="b switch"></strong>
               <strong class="b track"></strong>
             </div>
-            <span for="limit" class="ml-10px">{{ translations.FilesLimit }}</span>
+            <span for="limit" class="em-ml-8">{{ translations.FilesLimit }}</span>
           </div>
+
           <transition name="'slide-down'">
             <div v-if="form.is_limited == 1">
-              <div class="form-group campaign-label">
+              <div class="em-mb-16">
                 <label for="campLabel">{{translations.FilesNumberLimit}} <span class="em-red-500-color">*</span></label>
                 <input type="number"
-                       class="form__input field-general w-input"
                        v-model="form.limit"
                        :class="{ 'is-invalid': errors.limit_files_number }"
                 />
               </div>
-              <p v-if="errors.limit_files_number" class="error">
-                <span class="error">{{translations.FilesLimitRequired}}</span>
-              </p>
-              <div class="form-group campaign-label">
+              <span v-if="errors.limit_files_number" class="em-red-500-color em-mb-8">
+                <span class="em-red-500-color">{{translations.FilesLimitRequired}}</span>
+              </span>
+
+              <div class="em-mb-16">
                 <label for="campLabel">{{translations.StatusLimit}} <span class="em-red-500-color">*</span></label>
                 <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
                   <div v-for="(statu, index) in status" :key="index" class="user-item">
                     <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
-                    <div class="ml-10px">
+                    <div class="em-ml-8">
                       <p>{{statu.value}}</p>
                     </div>
                   </div>
                 </div>
-                <p v-if="errors.limit_status" class="error">
-                  <span class="error">{{translations.StatusLimitRequired}}</span>
+                <p v-if="errors.limit_status" class="em-red-500-color em-mb-8">
+                  <span class="em-red-500-color">{{translations.StatusLimitRequired}}</span>
                 </p>
               </div>
             </div>
-          </transition>
+          </transition>-->
         </div>
 
-        <div class="divider"></div>
+        <hr/>
 
-        <div class="sous-container">
-          <div class="heading-form">
-            <h2 class="heading">{{ translations.Information }}</h2>
+        <div>
+          <div class="em-mb-16">
+            <h2>{{ translations.Information }}</h2>
           </div>
-          <div class="form-group campaign-label">
+
+          <div class="em-mb-16">
             <label style="top: 5em">{{translations.Resume}} <span class="em-red-500-color">*</span></label>
             <textarea
                 type="textarea"
                 rows="2"
                 id="campResume"
                 maxlength="500"
-                class="form__input field-general w-input"
                 placeholder=" "
                 v-model="form.short_description"
                 @keyup="checkMaxlength('campResume')"
                 @focusout="removeBorderFocus('campResume')"
             />
           </div>
-          <p v-if="errors.short_description" class="error col-md-12 mb-2">
-            <span class="error">{{translations.ResumeRequired}}</span>
+          <p v-if="errors.short_description" class="em-red-500-color em-mb-8">
+            <span class="em-red-500-color">{{translations.ResumeRequired}}</span>
           </p>
-          <div class="form-group controls" v-if="form.description != null">
+
+          <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
             <editor :height="'30em'" :text="form.description" v-model="form.description" :enable_variables="false" :placeholder="translations.Description" :id="'campaign_description'" :key="editorKey"></editor>
           </div>
         </div>
 
-        <div class="divider"></div>
+        <hr/>
 
-        <div class="sous-container last-container">
-          <div class="heading-form">
-            <h2 class="heading">{{ translations.Program }}</h2>
+        <div>
+          <div class="em-mb-16">
+            <h2>{{ translations.Program }}</h2>
           </div>
-          <p>{{translations.ProgramDesc}}<span class="em-red-500-color">*</span></p>
-          <div class="form-group container-flexbox-choisir-ou-plus w-clearfix mt-1">
+          <div class="em-mb-16">{{translations.ProgramDesc}}<span class="em-red-500-color">*</span></div>
+
+          <div class="em-flex-row em-mb-16">
             <select
-                class="dropdown-toggle w-select" style="margin-bottom: 0"
                 id="select_prog"
+                class="em-w-100"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -191,61 +186,53 @@
                 {{ item.label }}
               </option>
             </select>
-            <button v-if="coordinatorAccess != 0" :title="translations.AddProgram" type="button" @click="displayProgram" class="buttonAddDoc" id="add-program">
-              <em class="fas fa-plus"></em>
+            <button v-if="coordinatorAccess != 0" :title="translations.AddProgram" type="button" id="add-program" class="em-ml-8 em-transparent-button" @click="displayProgram">
+              <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
           </div>
 
           <transition name="slide-fade">
-            <div class="program-addCampaign" v-if="isHiddenProgram">
-              <div class="w-form">
-                <div class="form-group prog-label">
-                  <label for="prog_label" style="top: 5.7em">{{translations.ProgName}} <span class="em-red-500-color">*</span></label>
+            <div v-if="isHiddenProgram">
+              <div>
+                <div class="em-mb-16">
+                  <label for="prog_label">{{translations.ProgName}} <span class="em-red-500-color">*</span></label>
                   <input
                       type="text"
                       id="prog_label"
-                      class="form__input field-general w-input"
                       placeholder=" "
                       v-model="programForm.label"
                       @keyup="updateCode"
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
-                <p v-if="errors.progLabel" class="error col-md-12 mb-2">
-                  <span class="error">{{translations.ProgLabelRequired}}</span>
+                <p v-if="errors.progLabel" class="em-red-500-color em-mb-8">
+                  <span class="em-red-500-color">{{translations.ProgLabelRequired}}</span>
                 </p>
               </div>
             </div>
           </transition>
         </div>
 
-        <div class="divider"></div>
+        <hr/>
 
-        <div class="section-sauvegarder-et-continuer">
-          <div class="w-container btns-sauvegarder-et-continuer">
-            <div class="container-evaluation d-flex justify-content-between">
-              <button
-                  type="button"
-                  class="bouton-sauvergarder-et-continuer w-retour"
-                  onclick="history.back()">
-                {{ translations.Retour }}
-              </button>
-              <div class="d-flex">
-                <button
-                    type="button"
-                    class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green"
-                    @click="quit = 1; submit()">
-                  {{ translations.Continuer }}
-                </button>
-              </div>
-            </div>
-          </div>
+        <div class="em-flex-row em-flex-space-between">
+          <button
+              type="button"
+              class="em-secondary-button em-w-auto"
+              onclick="history.back()">
+            {{ translations.Retour }}
+          </button>
+          <button
+              type="button"
+              class="em-primary-button em-w-auto"
+              @click="quit = 1; submit()">
+            {{ translations.Continuer }}
+          </button>
         </div>
       </form>
     </div>
-    <div class="loading-form" v-if="submitted">
-      <RingLoader :color="'#12DB42'" />
-    </div>
+
+    <div class="em-page-loader" v-if="submitted"></div>
   </div>
 </template>
 
@@ -720,18 +707,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-        params: {
-          link: link,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
-      });
+      window.location.href = link
     },
 
     onSearchYear(value) {
@@ -822,15 +798,13 @@ export default {
 </script>
 
 <style scoped>
-.w-container.general-information {
-  max-width: inherit !important;
+@import "../assets/css/date-time.css";
+.campaigns__add-campaign{
+  width: 75rem;
 }
-
-.w-container.btns-sauvegarder-et-continuer {
-  max-width: inherit !important;
-}
-
-.w-container.btns-sauvegarder-et-continuer .container-evaluation {
-  margin: 0;
+#add-program{
+  height: 24px;
+  width: 24px;
+  padding: unset;
 }
 </style>

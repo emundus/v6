@@ -31,9 +31,7 @@
         </div>
       </transition>
     </div>
-    <div class="loading-form" style="top: 10vh" v-if="loading">
-      <Ring-Loader :color="'#12db42'" />
-    </div>
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 

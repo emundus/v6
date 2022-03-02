@@ -115,18 +115,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-        params: {
-          link: link,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
-      });
+      window.location.href = link;
     }
   },
 

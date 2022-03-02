@@ -67,13 +67,13 @@ export default {
     }).then(response => {
         this.variables = response.data.data;
     });
-    var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus/tinymce/';
+    var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_vue/';
 
     let options = {
       selector: '#tiny_' + this.selector_id,
       images_upload_url: 'index.php?option=com_emundus&controller=settings&task=uploadimages',
-      plugins: 'paste link media preview image code anchor advlist hr emoticons lists searchreplace charmap quickbars imagetools pagebreak autolink print mention',
-      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image link preview | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
+      plugins: 'paste link media preview image code anchor advlist hr emoticons lists searchreplace charmap quickbars pagebreak autolink print mention',
+      toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect formatselect | image preview | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
       content_css: baseUrl + 'skins/ui/oxide/content.min.css',
       convert_urls: false,

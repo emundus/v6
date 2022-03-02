@@ -1,6 +1,6 @@
 <template>
 	<div class="list-actions-menu">
-<!--		<button
+    <button
 			v-if="type == 'email'"
 			type="button"
       class="em-transparent-button"
@@ -8,7 +8,7 @@
 			@click="showModalPreview"
 		>
       <span class="material-icons-outlined">visibility</span>
-    </button>-->
+    </button>
 		<v-popover
 			v-if="showTootlip === true"
 			:popoverArrowClass="'custom-popover-arrow'"

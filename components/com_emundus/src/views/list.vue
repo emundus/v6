@@ -115,9 +115,7 @@
     <div v-show="total == 0 && type != 'files' && !loading" class="noneDiscover">
       {{ noneDiscoverTranslation }}
     </div>
-    <div class="loading-form" v-if="loading">
-      <RingLoader :color="'#12DB42'"/>
-    </div>
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -245,15 +243,6 @@ export default {
         }).catch(e => {
       console.log(e);
     });
-
-
-    this.actions.type = this.type;
-    this.typeForAdd = this.type;
-    if (this.typeForAdd === "form") {
-      this.type = "formulaire";
-    }
-    this.actions.add_url =  'index.php?option=com_emundus&view=' + this.typeForAdd + '&layout=add'
-    this.validateFilters();
   },
 
   watch: {
@@ -265,9 +254,11 @@ export default {
         this.type = "formulaire";
       }
 
-      if (this.typeForAdd !== "files") {
-        let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
-        this.actions.add_url =  'index.php?option=com_emundus&view=' + view  + '&layout=add'
+      let view= this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
+      if(this.type == 'email' || this.type == 'campaign') {
+        this.actions.add_url = 'index.php?option=com_emundus&view=' + this.type + 's&layout=add'
+      } else {
+        this.actions.add_url = 'index.php?option=com_emundus&view=' + view + '&layout=add'
       }
 
       this.validateFilters();
@@ -411,6 +402,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+#list{
+  width: 100%;
+}
 h2 {
   color: #de6339 !important;
 }

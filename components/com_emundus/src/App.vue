@@ -1,5 +1,5 @@
 <template>
-	<div class="com_emundus_vue">
+	<div class="com_emundus_vue em-flex-column em-flex-col-center">
 		<Attachments
 			v-if="componentName === 'attachments'"
 			:fnum="data.fnum"

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="emails__add-email">
     <notifications
         group="foo-velocity"
         position="bottom left"
@@ -8,15 +8,6 @@
         :classes="'vue-notification-custom'"
     />
     <div>
-      <div v-if="email == ''">
-        <div style="max-width: unset">
-          <div class="em-flex-row">
-            <img src="/images/emundus/menus/email.png" srcset="/images/emundus/menus/email.png" alt="email">
-            <h1>{{translations.AddEmail}}</h1>
-          </div>
-        </div>
-      </div>
-
       <form @submit.prevent="submit">
         <div>
           <span class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</span>
@@ -29,7 +20,6 @@
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
-                  class=""
                   v-model="form.subject"
                   :class="{ 'is-invalid': errors.subject}"
               />
@@ -76,7 +66,6 @@
               <label>{{translations.receiverName}}</label>
               <input
                   type="text"
-                  class="form__input field-general w-input"
                   v-model="form.name"
               />
             </div>
@@ -85,7 +74,6 @@
               <label>{{translations.emailAddress}}</label>
               <input
                   type="text"
-                  class="form__input field-general w-input"
                   v-model="form.emailfrom"
               />
             </div>
@@ -198,89 +186,11 @@
             </div>
           </div>
         </div>
-        <div class="divider"></div>
-        <div class="sous-container last-container" v-if="email == ''">
-          <div class="heading-form">
-            <h2 class="heading">{{ translations.Trigger }}</h2>
-          </div>
-
-          <div class="form-group">
-            <label>{{translations.Program}}</label>
-            <select v-model="trigger.program" class="dropdown-toggle w-select" @change="addTrigger">
-              <option :value="null"></option>
-              <option v-for="program in programs" :key="'program-' + program.id" :value="program.id">{{program.label}}</option>
-            </select>
-          </div>
-
-          <div v-if="triggered">
-            <div class="form-group">
-              <label>{{translations.Actions}}<span style="color: #E5283B">*</span></label>
-              <select v-model="trigger.action_status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.action_status}">
-                <option value="to_current_user">{{translations.TheCandidate}}</option>
-                <option value="to_applicant">{{translations.Manual}}</option>
-              </select>
-              <p v-if="errors.trigger.action_status" class="em-red-500-color em-mb-8">
-                <span class="em-red-500-color">{{translations.StatusRequired}}</span>
-              </p>
-            </div>
-
-            <div class="form-group">
-              <label>{{translations.Status}}<span style="color: #E5283B">*</span></label>
-              <select v-model="trigger.status" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.status}">
-                <option v-for="statu in status" :key="'status-' + statu.step" :value="statu.step">{{statu.value}}</option>
-              </select>
-              <p v-if="errors.trigger.status" class="em-red-500-color em-mb-8">
-                <span class="em-red-500-color">{{translations.StatusRequired}}</span>
-              </p>
-            </div>
-
-            <div class="form-group">
-              <label>{{translations.Target}}<span style="color: #E5283B">*</span></label>
-              <select v-model="trigger.target" class="dropdown-toggle w-select" :class="{ 'is-invalid': errors.trigger.target}">
-                <option value="5">{{translations.Administrators}}</option>
-                <option value="6">{{translations.Evaluators}}</option>
-                <option value="1000">{{translations.Candidates}}</option>
-              </select>
-              <p v-if="errors.trigger.target" class="em-red-500-color em-mb-8">
-                <span class="em-red-500-color">{{translations.TargetRequired}}</span>
-              </p>
-            </div>
-            <div class="form-group" v-if="trigger.target == 0" style="align-items: baseline">
-              <label>{{translations.ChooseUsers}}<span style="color: #E5283B">*</span> :</label>
-              <div class="wrap">
-                <div class="search">
-                  <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
-                  <button type="button" class="searchButton" @click="searchUserByTerm">
-                    <em class="fas fa-search"></em>
-                  </button>
-                </div>
-              </div>
-              <div class="select-all">
-                <input type="checkbox" class="form-check-input bigbox" @click="selectAllUsers" v-model="selectall">
-                <label>
-                  {{translations.SelectAll}}
-                </label>
-              </div>
-              <div class="users-block" :class="{ 'is-invalid': errors.trigger.selectedUsers}">
-                <div v-for="user in users" :key="'user-' + user.id" class="user-item">
-                  <input type="checkbox" class="form-check-input bigbox" v-model="selectedUsers[user.id]">
-                  <div class="ml-10px">
-                    <p>{{user.name}}</p>
-                    <p>{{user.email}}</p>
-                  </div>
-                </div>
-              </div>
-              <p v-if="errors.trigger.selectedUsers" class="em-red-500-color em-mb-8">
-                <span class="em-red-500-color">{{translations.UsersRequired}}</span>
-              </p>
-            </div>
-          </div>
-        </div>
 
         <div class="em-flex-row em-flex-space-between">
           <button
               type="button"
-              class="em-tertiary-button em-w-auto"
+              class="em-secondary-button em-w-auto"
               onclick="history.back()">
             {{ translations.retour }}
           </button>
@@ -290,6 +200,8 @@
         </div>
       </form>
     </div>
+
+    <div class="em-page-loader" v-if="loading || submitted"></div>
   </div>
 </template>
 
@@ -426,6 +338,7 @@ export default {
       }
     },
     submitted: false,
+    loading: false,
 
     selectedReceiversCC: [],
     selectedReceiversBCC: [],
@@ -439,7 +352,7 @@ export default {
     candidate_attachments: [],
   }),
   created() {
-    this.$parent.loading = true;
+    this.loading = true;
 
     this.getAllAttachments();
     this.getAllTags();
@@ -455,7 +368,7 @@ export default {
             this.getEmailById(this.email);
           } else {
             this.dynamicComponent = true;
-            this.$parent.loading = false;
+            this.loading = false;
           }
         }).catch(e => {
       console.log(e);
@@ -491,7 +404,7 @@ export default {
             if (resp.data.data.receivers !== null && resp.data.data.receivers !== undefined && resp.data.data.receivers !== "") {
               this.setEmailReceivers(resp.data.data.receivers);
             }
-            this.$parent.loading = false;
+            this.loading = false;
           }).catch(e => {
         console.log(e);
         this.runError(undefined, e.data.msg);
@@ -723,18 +636,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-        params: {
-          link: link,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
-      });
+      window.location.href = link;
     },
 
     /**
@@ -806,5 +708,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.emails__add-email{
+  width: 75rem !important;
+}
 </style>

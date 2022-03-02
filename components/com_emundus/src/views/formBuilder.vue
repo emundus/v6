@@ -264,9 +264,7 @@
         </ul>
       </div>
     </div>
-    <div class="loading-form" v-if="loading">
-      <Ring-Loader :color="'#12DB42'" />
-    </div>
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -1166,40 +1164,17 @@
       },
 
       exitForm(){
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-          params: {
-            link: 'index.php?option=com_emundus&view=form',
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          window.location.href = window.location.pathname + response.data.data;
-        });
+        window.location.href = 'index.php?option=com_emundus&view=form';
       },
 
       sendForm() {
         if(this.formList.length>0){
         if(this.cid != 0){
-          axios({
-            method: "get",
-            url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-            params: {
-              link: 'index.php?option=com_emundus&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4',
-            },
-            paramsSerializer: params => {
-              return qs.stringify(params);
-            }
-          }).then(response => {
-            window.location.href = window.location.pathname + response.data.data;
-          });
+          window.location.href = 'index.php?option=com_emundus&view=form&layout=addnextcampaign&cid=' + this.cid + '&index=4';
         } else {
           axios({
             method: "get",
-            url:
-                    "index.php?option=com_emundus&controller=form&task=getassociatedcampaign",
+            url: "index.php?option=com_emundus&controller=form&task=getassociatedcampaign",
             params: {
               pid: this.prid
             },

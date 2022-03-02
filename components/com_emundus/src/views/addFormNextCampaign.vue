@@ -115,9 +115,7 @@
         </transition>
       </div>
     </div>
-    <div class="loading-form" v-if="loading">
-      <Ring-Loader :color="'#12DB42'" />
-    </div>
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -387,18 +385,7 @@ export default {
     },
 
     redirectJRoute(link) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-        params: {
-          link: link,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
-      });
+      window.location.href = link;
     },
 
     getCookie(cname) {

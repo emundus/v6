@@ -243,6 +243,7 @@ select {
   margin-bottom: 0;
   border-radius: 4px;
   border-color: #ccc;
+  height: 50px;
 }
 
 textarea {
@@ -4783,9 +4784,9 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__tags {
-  min-height: 40px;
+  min-height: 50px;
   display: block;
-  padding: 12px 40px 0 8px;
+  padding: 16px 40px 0 8px;
   border-radius: 4px;
   border: 1px solid $neutral-300;
   background: #fff;
@@ -5343,7 +5344,7 @@ fieldset[disabled] .multiselect {
 .view-emails #g-container-main .g-container,
 .view-form #g-container-main .g-container,
 .view-settings #g-container-main .g-container{
-  width: 90% !important;
+  width: 90%;
 }
 
 /** ANIMATIONS **/

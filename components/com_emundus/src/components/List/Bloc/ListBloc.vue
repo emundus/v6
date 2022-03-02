@@ -155,20 +155,7 @@ export default {
 			}
 		},
 		redirectToEditItem() {
-			const link = this.getEditUrlByType();
-
-			axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-        params: {
-          link: link,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        window.location.href = link;
-      });
+      window.location.href = this.getEditUrlByType();
 		},
 		getEditUrlByType() {
 			let url;
