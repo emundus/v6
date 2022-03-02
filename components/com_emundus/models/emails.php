@@ -497,7 +497,7 @@ class EmundusModelEmails extends JModelList {
                     $result = "";
                 }
 
-                if (!empty($replacements)) {
+                if (!empty($result)) {
                     $replacements[] = $result;
                 } else {
                     $replacements[] = "";
