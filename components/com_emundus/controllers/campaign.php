@@ -402,7 +402,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $id = $jinput->getInt('id');
 
-            $campaign = $this->m_campaign->getCampaignById($id);
+            $campaign = $this->m_campaign->getCampaignDetailsById($id);
 
             if (!empty($campaign)) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign);

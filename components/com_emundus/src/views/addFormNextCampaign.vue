@@ -4,20 +4,19 @@
         :pid="getProfileId"
         :cid="campaignId"
     />
-    <div class="w-row">
-      <div class="col-md-12 col-sm-10 p-1" style="padding-left: 2em !important">
-        <div class="section-sub-menu">
-          <div class="container-2 w-container" style="max-width: unset">
-            <div class="d-flex">
-              <img src="/images/emundus/menus/megaphone.svg" srcset="/images/emundus/menus/megaphone.svg" class="tchooz-icon-title" alt="megaphone">
-              <h2 class="tchooz-section-titles" v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
-              <h2 class="tchooz-section-titles" v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
+    <div>
+      <div>
+        <div>
+          <div>
+            <div class="em-flex-row em-mt-16">
+              <h2 v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
+              <h2 v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
             </div>
 
-            <p class="tchooz-section-description" v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
-            <p class="tchooz-section-description" v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
+            <p v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
+            <p v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
             <hr>
-            <div class="d-flex">
+            <div class="em-flex-row em-mb-16">
               <p>
                 <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
                 {{translations.From}}
@@ -27,7 +26,7 @@
               </p>
             </div>
 
-            <div v-if="profileId == null && loading == false" style="display: flex;" class="d-flex required">
+            <div v-if="profileId == null && loading == false" style="display: flex;" class="em-flex-row required">
               <em class="fas fa-exclamation-circle icon-warning-margin"></em>
               <p>{{translations.chooseProfileWarning}}</p>
             </div>
@@ -39,7 +38,7 @@
 
         </div>
         <!--- start Menu --->
-        <div class="d-flex" >
+        <div class="em-flex-row" >
           <ul class="nav nav-tabs topnav">
 
             <li v-for="(formCat, index) in formCategories[langue]" :key="'category-' + index" v-show="closeSubmenu">
@@ -266,7 +265,7 @@ export default {
     this.manyLanguages = Number(this.$store.getters['global/manyLanguages']);
     //
 
-    this.loading = true;
+    //this.loading = true;
     if (this.actualLanguage === "en") {
       this.langue = 1;
     }

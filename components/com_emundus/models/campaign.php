@@ -1460,8 +1460,8 @@ class EmundusModelCampaign extends JModelList {
         try {
             $query->select(['sc.*', 'spr.label AS profileLabel','sp.id as progid'])
                 ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'spr').' ON '.$this->_db->quoteName('spr.id').' = '.$db->quoteName('sc.profile_id'))
-                ->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$this->_db->quoteName('sp.code').' = '.$db->quoteName('sc.training'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'spr').' ON '.$this->_db->quoteName('spr.id').' = '.$this->_db->quoteName('sc.profile_id'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp').' ON '.$this->_db->quoteName('sp.code').' = '.$this->_db->quoteName('sc.training'))
                 ->where($this->_db->quoteName('sc.id') . ' = ' . $id);
 
             $this->_db->setQuery($query);

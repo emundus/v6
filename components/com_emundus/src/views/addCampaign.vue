@@ -428,7 +428,7 @@ export default {
           // Convert date
           this.form.start_date = LuxonDateTime.fromSQL(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date).toISO();
-          if (this.form.end_date == "0000-00-00T00:00:00.000Z") {
+          if (this.form.end_date === "0000-00-00T00:00:00.000Z") {
             this.form.end_date = "";
           } else {
             this.olderDate = this.form.end_date;
