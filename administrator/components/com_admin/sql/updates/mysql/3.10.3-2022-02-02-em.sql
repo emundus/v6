@@ -639,7 +639,7 @@ VALUES ('2022-02-22 16:06:06', 'ZOOM_SESSION_PREVIOUS_NAME', '[ZOOM_SESSION_PREV
 INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-02-22 16:08:42', 'ZOOM_SESSION_PREVIOUS_START_TIME', '[ZOOM_SESSION_PREVIOUS_START_TIME]', 'Zoom session previous start time', 1);
 
-INSERT INTO c93_i1026_db.jos_emundus_setup_tags (date_time, tag, request, description, published)
+INSERT INTO jos_emundus_setup_tags (date_time, tag, request, description, published)
 VALUES ('2022-02-27 14:23:42', 'ZOOM_MEETING_START_DATE', 'php|$fnum = ''[FNUM]'';
 if(!empty($fnum)) {
     try {
