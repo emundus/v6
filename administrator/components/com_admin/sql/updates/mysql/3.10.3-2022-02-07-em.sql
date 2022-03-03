@@ -255,7 +255,7 @@ VALUES ('fnum', @group_jury_jury, 'field', 'fnum', 0, '2022-03-03 17:30:36', '20
 SET @element_fnum_jury_jury := LAST_INSERT_ID();
 
 --- UPDATE TABLE JOS_FABRIK_JSACTIONS ---
-INSERT INTO c93_i1026_db.jos_fabrik_jsactions (element_id, action, code, params)
+INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
 VALUES (@element_fnum_jury_jury, 'load', 'jQuery(&#039;#jos_emundus_candidat_meeting___fnum_ro&#039;).css(&#039;color&#039;,&#039;#e16c16&#039;);
 jQuery(&#039;#jos_emundus_candidat_meeting___fnum_ro&#039;).css(&#039;font-size&#039;,&#039;larger&#039;);
 
