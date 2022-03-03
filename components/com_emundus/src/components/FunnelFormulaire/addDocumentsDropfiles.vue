@@ -1,60 +1,63 @@
 <template>
-  <div class="container-evaluation">
+  <div>
     <transition :name="'slide-down'" type="transition">
-    <div class="w-form">
-      <vue-dropzone
-          ref="dropzone"
-          id="customdropzone"
-          :include-styling="false"
-          :options="dropzoneOptions"
-          :useCustomSlot=true
-          v-on:vdropzone-file-added="afterAdded"
-          v-on:vdropzone-removed-file="afterRemoved"
-          v-on:vdropzone-success="onComplete"
-          v-on:vdropzone-error="catchError">
-        <div class="dropzone-custom-content" id="dropzone-message">
-          <em class="fas fa-file-upload"></em>
-          {{DropHere}}
-        </div>
-      </vue-dropzone>
+      <div class="w-form">
+        <vue-dropzone
+            ref="dropzone"
+            id="customdropzone"
+            :include-styling="false"
+            :options="dropzoneOptions"
+            :useCustomSlot=true
+            v-on:vdropzone-file-added="afterAdded"
+            v-on:vdropzone-removed-file="afterRemoved"
+            v-on:vdropzone-success="onComplete"
+            v-on:vdropzone-error="catchError">
+          <div class="dropzone-custom-content" id="dropzone-message">
+            {{DropHere}}
+          </div>
+        </vue-dropzone>
 
-      <hr>
+        <hr>
 
-      <ul style="padding-left: 0;margin: 0" class="w-100">
         <draggable
             v-model="documents"
-            tag="ul"
-            class="list-group"
             style="margin: 0"
             handle=".handle"
+            class="em-flex-row"
+            chosen-class="em-grab"
             v-bind="dragOptions"
             @end="updateDocumentsOrder"
         >
-          <transition-group type="transition" :value="!drag ? 'flip-list' : null">
-            <li class="list-group-item"
-                :id="'itemDoc' + document.id"
-                v-for="document in documents"
-                :key="document.id">
-              <div class="em-flex-row em-flex-space-between">
-                <div class="em-flex-row w-100">
-                  <em class="fas fa-grip-vertical handle" style="color: #cecece;"></em>
-                  <span class="draggable em-overflow-ellipsis em-max-width-250 em-mr-4">
-                    {{ document.title }}
-                  </span>
-                  <span class="document-allowed_types">({{ document.ext }})</span>
-                  <a @click="editName(document)" class="cta-block pointer">
-                    <em class="fas fa-pen em-font-size-16"></em>
-                  </a>
+          <transition-group type="transition" :value="!drag ? 'flip-list' : null" class="em-grid-3 em-w-100 handle">
+            <div :id="'itemDoc' + document.id"
+                 v-for="document in documents"
+                 :key="document.id"
+                 class="em-document-dropzone-card">
+              <button type="button" class="em-float-right em-transparent-button" @click="deleteDoc(indexDoc,document.id)">
+                <span class="material-icons">close</span>
+              </button>
+              <div class="em-flex-row em-w-100 em-flex-center">
+                <div class="em-flex-column">
+                  <img v-if="document.ext === 'pdf'" src="media/com_emundus/images/icones/filetype/pdf.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['docx','doc','odf'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/doc.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['xls','xlsx','csv'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/excel.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['png','gif','jpg','jpeg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/image.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['zip','rar'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
+                  <img v-else-if="['svg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/svg.png" class="em-filetype-icon" alt="filetype">
+                  <div class="em-mt-8">
+                    <span class="em-overflow-ellipsis em-max-width-250 em-mr-4" @click="editName(document)">{{ document.title }}</span>
+                  </div>
                 </div>
-                <button type="button" @click="deleteDoc(indexDoc,document.id)" class="buttonDeleteDoc">
-                  <em class="fas fa-times"></em>
-                </button>
               </div>
-            </li>
+              <hr/>
+              <div>
+                <span><strong>{{ translate('COM_EMUNDUS_ONBOARD_FILE_SIZE') }} : </strong></span>
+                <span>{{ formatBytes(document.size) }}</span>
+              </div>
+            </div>
           </transition-group>
         </draggable>
-      </ul>
-    </div>
+      </div>
     </transition>
   </div>
 </template>
@@ -134,10 +137,10 @@ export default {
           cid: this.campaignId,
         },
         paramsSerializer: params => {
-           return qs.stringify(params);
+          return qs.stringify(params);
         }
       }).then(response => {
-          this.documents = response.data.documents;
+        this.documents = response.data.documents;
       });
     },
     updateDocumentsOrder(){
@@ -199,6 +202,17 @@ export default {
         })
       });
     },
+    formatBytes(bytes, decimals = 2) {
+      if (bytes === 0) return '0 Bytes';
+
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    },
 
     afterAdded() {
       document.getElementById('dropzone-message').style.display = 'none';
@@ -241,15 +255,74 @@ export default {
   }
 };
 </script>
-<style scoped>
-  .fa-file-upload{
-    font-size: 25px;
-    margin-right: 20px;
-  }
+<style scoped lang="scss">
+.fa-file-upload{
+  font-size: 25px;
+  margin-right: 20px;
+}
 
-  .list-group-item{
-    border: 2px solid #ececec;
-    margin-bottom: 10px;
-    border-radius: 5px;
+.list-group-item{
+  border: 2px solid #ececec;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+/**** CUSTOM VUE DROPZONE ****/
+#customdropzone {
+  letter-spacing: 0.2px;
+  background: #fff;
+  color: #777;
+  transition: background-color .2s linear;
+  height: 200px;
+  padding: 40px;
+  border: dashed;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  .dz-preview {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+    .dz-image {
+      width: auto;
+      height: 100px;
+      >div {
+        width: inherit;
+        height: inherit;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      >img {
+        width: 100%;
+      }
+    }
+    .dz-details {
+      color: black;
+      transition: opacity .2s linear;
+      text-align: center;
+    }
   }
+  .dz-success-mark {
+    display: none;
+  }
+}
+.dz-default.dz-message {
+  text-align: center !important;
+}
+.dz-error-mark {
+  display: none;
+}
+/**** END ****/
+
+.em-document-dropzone-card{
+  background: white;
+  border-radius: 5px;
+  padding: 16px 24px;
+}
+.em-filetype-icon{
+  width: 50px;
+}
 </style>

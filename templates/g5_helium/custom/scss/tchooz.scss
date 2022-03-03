@@ -380,8 +380,16 @@ input:focus + .em-slider {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.em-float-right{
+  float: right;
+}
+
 .em-pointer{
   cursor: pointer;
+}
+
+.em-grab{
+  cursor: grabbing;
 }
 
 /** HOVER **/

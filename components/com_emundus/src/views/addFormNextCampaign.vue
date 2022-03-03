@@ -43,7 +43,7 @@
 
             <li v-for="(formCat, index) in formCategories[langue]" :key="'category-' + index" v-show="closeSubmenu">
               <a  @click="profileId != null ? changeToCampMenu(index): ''"
-                  class="menu-item"
+                  class="em-neutral-700-color em-pointer em-hover-blue-500"
                   :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
                 {{ formCat }}
               </a>
@@ -51,7 +51,7 @@
 
             <li v-for="(formProg, index) in formPrograms[langue]" :key="'program-' + index" v-show="closeSubmenu">
               <a @click="profileId != null ? changeToProgMenu(index) : ''"
-                 class="menu-item"
+                 class="em-neutral-700-color em-pointer em-hover-blue-500"
                  :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
                 {{ formProg }}
               </a>
@@ -281,7 +281,7 @@ export default {
       this.form.start_date = moment(this.form.start_date).format(
           this.translations.DATE_FORMAT
       );
-      if (this.form.end_date == "0000-00-00 00:00:00") {
+      if (this.form.end_date === "0000-00-00 00:00:00") {
         this.form.end_date = null;
       } else {
         this.form.end_date = moment(this.form.end_date).format(this.translations.DATE_FORMAT);
