@@ -136,6 +136,7 @@ jQuery(&#039;#jos_emundus_jury___participant_video_ro&#039;).closest(&#039;.row-
 jQuery(&#039;#jos_emundus_jury___waiting_room_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
 jQuery(&#039;#jos_emundus_jury___show_share_button_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
 jQuery(&#039;#jos_emundus_jury___mute_participant_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
+jQuery(&#039;#jos_emundus_jury___status&#039;).closest(&#039;.row-fluid&#039;).hide();
 
 jQuery(&#039;#jos_emundus_jury___president_ro&#039;).css(&#039;color&#039;,&#039;#16AFE1&#039;);
 jQuery(&#039;#jos_emundus_jury___president_ro&#039;).css(&#039;font-weight&#039;,&#039;bold&#039;);
