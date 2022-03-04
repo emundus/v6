@@ -506,7 +506,7 @@ if(opt !== &quot;&quot;) {
     type: &#039;get&#039;,
     data: { zid: opt},
     success: function(result) {
-      var start_time = (result.data[&#039;start_time_&#039;].split(&quot; &quot;)[1]).split(&quot;:00&quot;)[0];
+      var start_time = (result.data[&#039;start_time_&#039;].split(&quot; &quot;)[1]);
       jQuery(&#039;#jos_emundus_candidat_meeting___start_time&#039;).val(start_time);
     },
     error: function(jqXHR) {
