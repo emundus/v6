@@ -451,6 +451,7 @@ create table jos_emundus_candidat_meeting
     applicant    int          not null,
     zoom_target  mediumtext   null,
     start_time_candidat_calc text         null,
+    duration_calc            text         null,
     constraint jos_emundus_candidat_meeting___fk1
         foreign key (session) references jos_emundus_jury (id)
             on update cascade on delete cascade,
@@ -544,11 +545,15 @@ INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
 VALUES (@element_10, 'load', 'var _session = this.form.elements;
 _session.get(&#039;jos_emundus_candidat_meeting___zoom_target&#039;).element.parentNode.parentNode.parentNode.parentNode.hide();
 _session.get(&#039;jos_emundus_candidat_meeting___start_time_candidat_calc&#039;).element.parentNode.parentNode.parentNode.parentNode.hide();
+_session.get(&#039;jos_emundus_candidat_meeting___duration_calc&#039;).element.parentNode.parentNode.parentNode.parentNode.hide();
+
 jQuery(&#039;#jos_emundus_candidat_meeting___zoom_target_ro&#039;).closest(&#039;.row-fluid&#039;).show();
 jQuery(&#039;#jos_emundus_candidat_meeting___start_time_candidat_calc_ro&#039;).closest(&#039;.row-fluid&#039;).show();
 jQuery(&#039;#jos_emundus_candidat_meeting___lien_session_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
 jQuery(&#039;#jos_emundus_candidat_meeting___start_time_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
 
+jQuery(&#039;#jos_emundus_candidat_meeting___duration_calc_ro&#039;).closest(&#039;.row-fluid&#039;).show();
+jQuery(&#039;#jos_emundus_candidat_meeting___duration_ro&#039;).closest(&#039;.row-fluid&#039;).hide();
 var fnum = this.element;
 fnum.hide();
 
