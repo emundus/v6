@@ -498,7 +498,7 @@ VALUES (0, @element_8, '', 'jos_emundus_jury', 'session', 'id', 'left', @group_4
 
 -- update table "jos_fabrik_jsactions" --
 INSERT INTO jos_fabrik_jsactions (element_id, action, code, params)
-VALUES (@element_8, 'change', 'var opt = jQuery(&#039;#jos_emundus_candidat_meeting___session&#039;).val();
+VALUES (@element_8, 'change', 'var opt = this.form.elements.get(&#039;jos_emundus_candidat_meeting___session&#039;).get(&#039;value&#039;);
 if(opt !== &quot;&quot;) {
   jQuery.ajax({
     url: &quot;index.php?option=com_emundus&amp;controller=webhook&amp;task=getzoomsession&quot;,
@@ -506,7 +506,7 @@ if(opt !== &quot;&quot;) {
     type: &#039;get&#039;,
     data: { zid: opt},
     success: function(result) {
-      var start_time = (result.data[&#039;start_time_&#039;].split(&quot; &quot;)[1]);
+      var start_time = result.data[&#039;start_time_&#039;].split(&quot; &quot;)[1].substring(0,5);
       jQuery(&#039;#jos_emundus_candidat_meeting___start_time&#039;).val(start_time);
     },
     error: function(jqXHR) {
