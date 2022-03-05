@@ -43,6 +43,8 @@ create table jos_emundus_jury
     zoom_target_pt                 text         null,
     is_president                   text         null,
     status                         text         null,
+    start_time_calc                text         null,
+    end_time_calc                  text         null,
     constraint jos_emundus_jury___fk1
         foreign key (president) references jos_users (id)
             on update cascade on delete cascade
