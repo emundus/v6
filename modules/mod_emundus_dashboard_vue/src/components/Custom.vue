@@ -2,9 +2,7 @@
 	<div
 		class="tchooz-widget"
 		:class="[
-			'col-md-' + selectedWidget.size,
-			'col-sm-' + selectedWidget.size_small,
-			selectedWidget.class,
+			selectedWidget.class
 		]"
 	>
 		<div
@@ -218,7 +216,11 @@ export default {
 				},
 			})
 				.then((response) => {
-					this.widgets = response.data.data;
+					if (response.data.data) {
+						this.widgets = response.data.data;
+					} else {
+						this.widgets = [];
+					}
 				})
 				.catch((error) => {
 					// TODO: handle error

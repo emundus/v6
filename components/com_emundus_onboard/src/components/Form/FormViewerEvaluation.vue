@@ -75,7 +75,7 @@
   import _ from "lodash";
   import datePicker from "vue-bootstrap-datetimepicker";
   import axios from "axios";
-  import modalEditElement from "../FormClean/Modal";
+  import modalEditElement from "../formClean/Modal";
   import Swal from "sweetalert2";
   const qs = require("qs");
   export default {

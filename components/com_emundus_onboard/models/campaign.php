@@ -469,8 +469,8 @@ class EmundusonboardModelcampaign extends JModelList
                     array_splice($data, $i, 1);
                 }
                 if ($key == 'label') {
-                    $labels->fr = $data['label']['fr'];
-                    $labels->en = $data['label']['en'];
+                    $labels->fr = !empty($data['label']['fr']) ? $data['label']['fr'] : '';
+                    $labels->en = !empty($data['label']['en']) ? $data['label']['en'] : '';
                     $data['label'] = $data['label'][$actualLanguage];
                 }
                 if ($key == 'limit_status') {

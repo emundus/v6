@@ -393,10 +393,15 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
 
         $jinput = JFactory::getApplication()->input;
         $fid = $jinput->getInt('fid');
-        $label = array(
-            'fr' => 'Nouveau groupe',
-            'en' => 'New group'
-        );
+        if($jinput->getRaw('label')){
+            $label=$jinput->getRaw('label');
+        } else{
+            $label = array(
+                'fr' => 'Nouveau groupe',
+                'en' => 'New group'
+            );
+        }
+
 
         if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $result = 0;
@@ -486,6 +491,28 @@ class EmundusonboardControllerformbuilder extends JControllerLegacy {
                 $changeresponse = $m_form->createSimpleElement($gid, $plugin,0);
 
             }
+        }
+        echo json_encode((object)$changeresponse);
+        exit;
+    }
+    public function createsectionsimpleelements() {
+        $user = JFactory::getUser();
+        $m_form = $this->model;
+
+        $jinput = JFactory::getApplication()->input;
+        $gid = $jinput->getInt('gid');
+        $plugin = $jinput->getString('plugins');
+
+
+
+        if (!EmundusonboardHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+
+                $changeresponse = $m_form->createSectionSimpleElements($gid,$plugin);
+
+
         }
         echo json_encode((object)$changeresponse);
         exit;

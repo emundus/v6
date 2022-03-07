@@ -66,6 +66,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                         <button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >
 
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
+                                            <span class="material-icons">edit</span>
                                         </button>
                                         <?php if (($this->_user->id == $comment->user_id && EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum)) || EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum)) :?>
                                             <div class="action">
@@ -81,7 +82,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                         <button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('EDIT');?>" >
-                                            <span class="glyphicon glyphicon-ok"></span>
+                                            <span class="material-icons">edit</span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                     </div>
@@ -204,7 +205,7 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                 '<div class="action">'+
                                     '<div class="edit-comment-container">'+
                                         '<button type="button" class="btn btn-info btn-xs edit-comment" title="<?php echo JText::_('EDIT');?>" >'+
-                                            ''+
+                                            '<span class="material-icons">edit</span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
                                         '<div class="action">'+

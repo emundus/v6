@@ -186,7 +186,9 @@ li>a:hover {
     }
 
     div#userDropdownLabel {
-        display: none;
+        position: absolute;
+        right: -167px;
+        top: -104px;
     }
 }
 

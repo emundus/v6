@@ -12,16 +12,6 @@
               :prid="prid"
               :testing="testing"
       />
-      <ModalTestingForm
-          v-if="formObjectArray[indexHighlight]"
-          :profileId="prid"
-          :actualLanguage="actualLanguage"
-          :campaigns="campaignsAffected"
-          :currentForm="formObjectArray[indexHighlight].object.id"
-          :currentMenu="formObjectArray[indexHighlight].object.menu_id"
-          @testForm="testForm"
-          @modalClosed="optionsModal = false"
-      />
       <ModalMenu
               :profileId="prid"
               :actualLanguage="actualLanguage"
@@ -75,7 +65,8 @@
                     <em class="add-page-icon"></em>
                     <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addMenu}}</label>
                   </a>
-                  <a class="d-flex action-link" @click="createGroup()" :title="translations.addGroup">
+                  <!--<a class="d-flex action-link" @click="createGroup()" :title="translations.addGroup">-->
+                <a class="d-flex action-link" @click="showSections()" :title="translations.addGroup">
                     <em class="add-group-icon"></em>
                     <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addGroup}}</label>
                   </a>
@@ -105,6 +96,31 @@
                           <span class="ml-10px">{{plugin.name}}</span>
                         </div>
                     </draggable>
+                  </div>
+                </transition>
+
+                <transition :name="'slide-right'" type="transition">
+                  <div class="plugins-list" v-if="addingSection">
+                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingSection = !addingSection" :title="Back">
+                      <em class="fas fa-arrow-left mr-1"></em>
+                      {{ translations.Back }}
+                    </a>
+                    <hr style="width: 80%;margin: 10px auto;">
+                   <!-- <draggable
+                        v-model="sections"
+                        v-bind="dragOptions"
+                        handle=".handle"
+                        @start="startDragging();dragging = true;draggingIndex = index"
+                        @end="addingNewElement($event)"
+                        drag-class="plugin-drag"
+                        chosen-class="plugin-chosen"
+                        ghost-class="plugin-ghost"
+                        style="padding-bottom: 2em;margin-top: 10%">-->
+                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 " v-for="(section,index) in sections" :id="'section_' + section.value" @click="createGroup(section.value,section.label)" :title="section.name" style="cursor: default" >
+                        <em :class="section.icon"></em>
+                        <span class="ml-10px">{{section.name}}</span>
+                      </div>
+                   <!-- </draggable>-->
                   </div>
                 </transition>
               </div>
@@ -264,13 +280,12 @@
   import "../assets/css/formbuilder.scss";
   import draggable from "vuedraggable";
 
-  import Builder from "../components/FormClean/Builder";
-  import ModalSide from "../components/FormClean/ModalSide";
-  import ModalMenu from "../components/FormClean/ModalMenu";
+  import Builder from "../components/formClean/Builder";
+  import ModalSide from "../components/formClean/ModalSide";
+  import ModalMenu from "../components/formClean/ModalMenu";
 
   import _ from 'lodash';
-  import ModalAffectCampaign from "../components/FormClean/ModalAffectCampaign";
-  import ModalTestingForm from "@/components/FormClean/ModalTestingForm";
+  import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
   import ModalAddDocuments from "@/components/AdvancedModals/ModalAddDocuments";
   import Swal from "sweetalert2";
   import {global} from "../store/global";
@@ -281,7 +296,6 @@
     name: "FormBuilder",
     components: {
       ModalAddDocuments,
-      ModalTestingForm,
       ModalAffectCampaign,
       Builder,
       ModalSide,
@@ -353,6 +367,7 @@
         draggingIndex: -1,
         elementDisabled: false,
         addingElement: false,
+        addingSection:false,
         plugins: {
           field: {
             id: 0,
@@ -427,6 +442,47 @@
             //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
             name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
           },*/
+        },
+        sections: {
+          default_empty: {
+            id: 0,
+            value: [],
+            icon: 'fas fa-font',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMPTY_SECTION"),
+
+          },
+          personal_informations: {
+            id: 0,
+            value: ['nom','prenom','email','telephone','birthday','nationalite'],
+            icon: 'fas fa-id-card-alt',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_PERSONAL_INFORMATIONS"),
+            label: {
+              fr:"Informations Personelles",
+              en: "Personal Informations",
+            }
+
+          },
+
+          adress: {
+            id: 1,
+            value: ['adresse','code postal','pays','ville','adresseComplementaire'],
+            icon: 'fas fa-address-card',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADRESSE"),
+            label: {
+              fr:"Adresse",
+              en: "Adress",
+            }
+          },
+          eexperience_pro: {
+            id: 1,
+            value: ['date_debut','date_fin','fonction','employeur','ville_employeur','pays','missions'],
+            icon: 'fas fa-briefcase',
+            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_WORK_EXPERIENCE"),
+            label: {
+              fr:"Expérience professionnelle",
+              en: "Work experience",
+            }
+          },
         },
         //create document when choosing plugin emundunsFileupload plugin
         docForm: {
@@ -527,40 +583,8 @@
               })
             }).then((result) => {
 
-              axios({
-                method: "get",
-                url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
-                params: {
-                  element: result.data.scalar,
-                  gid: gid
-                },
-                paramsSerializer: params => {
-                  return qs.stringify(params);
-                }
-              }).then(response => {
-
-
-                if (plugin=="email") {
-                  response.data.params.password = 3;
-                } else {
-                  response.data.params.password=0;
-                }
-                axios({
-                  method: "post",
-                  url:
-                      "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
-                  headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                  },
-                  data: qs.stringify({
-                    element: response.data,
-                  })
-                })
-
-                this.menuHighlightCustumisation(response,gid,order);
-
-                this.loading = false;
-              });
+                this.getSimpleElement(gid,result.data.scalar,order,plugin);
+              this.loading = false;
             });
 
           }
@@ -568,6 +592,44 @@
 
         }
 
+      },
+
+      getSimpleElement(gid,element,order,plugin){
+        this.loading=true;
+        axios({
+          method: "get",
+          url: "index.php?option=com_emundus_onboard&controller=formbuilder&task=getElement",
+          params: {
+            element: element,
+            gid: gid
+          },
+          paramsSerializer: params => {
+            return qs.stringify(params);
+          }
+        }).then(response => {
+
+
+          if (plugin=="email") {
+            response.data.params.password = 3;
+          } else {
+            response.data.params.password=0;
+          }
+          axios({
+            method: "post",
+            url:
+                "index.php?option=com_emundus_onboard&controller=formbuilder&task=updateparams",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            data: qs.stringify({
+              element: response.data,
+            })
+          })
+
+          this.menuHighlightCustumisation(response,gid,order);
+          this.loading=false;
+
+        });
       },
 
       createElementEMundusFileUpload(params,gid,plugin,order){
@@ -657,7 +719,30 @@
           this.createElement(gid,plugin,index)
         }
       }, 250, { 'maxWait': 1000 }),
-      createGroup() {
+      createGroupSimpleElements(gid,plugins){
+
+        axios({
+          method: "post",
+          url:
+              "index.php?option=com_emundus_onboard&controller=formbuilder&task=createsectionsimpleelements",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          data: qs.stringify({
+            gid: gid,
+            plugins: plugins,
+          })
+        }).then(resp=>{
+
+          resp.data.data.forEach((el,index)=>{
+
+
+            this.getSimpleElement(gid,el,index);
+          })
+
+        })
+      },
+      createGroup(plugins,label) {
         this.loading = true;
         let param = this.formObjectArray[this.indexHighlight].object.id;
         if(this.menuHighlight === 1){
@@ -670,7 +755,10 @@
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify({
-            fid: param
+            fid: param,
+            label:label
+
+
           })
         }).then((result) => {
           axios({
@@ -696,8 +784,14 @@
             }).then((traductions) => {
               result.data.label.fr = traductions.data.fr;
               result.data.label.en = traductions.data.en;
-              this.loading = false;
+
               this.pushGroup(result.data);
+              if(plugins.length>0){
+                this.createGroupSimpleElements(result.data.group_id, plugins);
+              }else{
+                this.loading = false;
+              }
+
             });
             });
           });
@@ -1213,6 +1307,11 @@
         } else {
           this.addingElement = !this.addingElement;
         }
+      },
+      showSections() {
+
+          this.addingSection = !this.addingSection;
+
       },
       //
 
