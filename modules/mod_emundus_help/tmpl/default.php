@@ -24,7 +24,7 @@ defined('_JEXEC') or die;
                     "<a href='https://emundus.atlassian.net/wiki/spaces/HD/overview' target='_blank'><span class='material-icons'>menu_book</span><p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p></a>" +
                     "<a href='https://emundus.atlassian.net/servicedesk/customer/portals' target='_blank'><span class='material-icons'>textsms</span><p><?= JText::_('MOD_EMUNDUS_HELP_HELP_CENTER'); ?></p></a>" +
                     "<hr/>" +
-                    "<a href='https://emundus.atlassian.net/wiki/spaces/FDD/pages/2049966122/Release+note#<?php echo trim($file_version) ?>' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
+                    "<a href='https://emundus.atlassian.net/wiki/external/2049966122/Y2Q4ODg1ZWQ0YWJkNGViZDgxMTEwOTFhYzlhNGI0Y2Y?atlOrigin=eyJpIjoiZWQ2ZTEzZWJhM2Y0NDFmNGFiMmZiN2M0NWJhNzg4YTQiLCJwIjoiYyJ9' target='_blank'><span class='material-icons'>new_releases</span><p><?= JText::_('MOD_EMUNDUS_HELP_LAST_RELEASE'); ?></p></a>" +
                     "<hr/>" +
                     "<span>Version <?php echo trim($file_version) ?></span>",
             }

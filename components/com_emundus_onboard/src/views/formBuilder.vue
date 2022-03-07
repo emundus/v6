@@ -66,7 +66,7 @@
                     <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addMenu}}</label>
                   </a>
                   <!--<a class="d-flex action-link" @click="createGroup()" :title="translations.addGroup">-->
-                <a class="d-flex action-link" @click="showSections()" :title="translations.addGroup">
+                <a class="d-flex action-link" @click="createGroup([],'')" :title="translations.addGroup">
                     <em class="add-group-icon"></em>
                     <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addGroup}}</label>
                   </a>
