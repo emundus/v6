@@ -358,7 +358,7 @@ export default {
             this.orderSuccess,
             this.update
         );
-        let ellink = this.object.link.replace("fabrik","emundus_onboard");
+        let ellink = this.object.link.replace("fabrik","emundus");
         axios.get(ellink + "&format=vue_jsonclean").then(r => {
           this.groups.forEach(grp => {
             this.$set(this.object_json.Groups['group_' + grp.group_id], 'elements', r.data.Groups['group_' + grp.group_id].elements)
@@ -1118,7 +1118,7 @@ export default {
           this.updating,
           this.update
       );
-      let ellink = this.object.link.replace("fabrik","emundus_onboard");
+      let ellink = this.object.link.replace("fabrik","emundus");
       axios.get(ellink + "&format=vue_jsonclean").then(r => {
         this.object_json = r.data;
         this.$emit("UpdateUxf");

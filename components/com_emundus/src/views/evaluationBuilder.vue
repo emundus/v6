@@ -431,7 +431,7 @@ export default {
     },
 
     async getDataObject() {
-      let ellink = this.link.replace("fabrik","emundus_onboard");
+      let ellink = this.link.replace("fabrik","emundus");
       await axios.get(ellink + "&format=vue_jsonclean")
         .then(response => {
           this.formObjectArray.push({

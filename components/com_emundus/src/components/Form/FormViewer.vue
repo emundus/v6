@@ -100,7 +100,7 @@
 
       getDataObject: _.debounce(function() {
         this.submitted = true;
-        let ellink = this.link.link.replace("fabrik","emundus_onboard");
+        let ellink = this.link.link.replace("fabrik","emundus");
         axios
                 .get(ellink + "&format=vue_jsonclean")
                 .then(response => {

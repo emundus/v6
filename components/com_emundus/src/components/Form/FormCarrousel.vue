@@ -1,29 +1,33 @@
 <template>
-  <div class="container-fluid">
-    <div class="menu-block">
-      <div class="col-md-8 form-viewer-builder" style="padding: 30px">
+  <div>
+    <div class="em-flex-row em-flex-space-between em-align-start">
+      <div>
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
       </div>
-        <ul class="col-md-3 sticky-form-pages">
-          <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><img src="/images/emundus/menus/form.png" class="em-mr-4" :alt="Form">{{ Form }}</h4>
-            <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
-              <a
-                class="MenuFormItem"
-                @click="ChangeIndex(index)"
+      <ul>
+        <div>
+          <p class="em-h4">
+            <span class="material-icons">article</span>
+            {{ Form }}
+          </p>
+          <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
+            <a @click="ChangeIndex(index)"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
                 v-html="value.value"
-              >{{value.value}}</a>
-            </li>
-          </div>
-          <div class="form-pages">
-            <h4 class="ml-10px form-title" style="margin: 0;padding: 0 10px;"><em class="far fa-folder-open em-mr-4" :alt="Documents"></em>{{ Documents }}</h4>
-            <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm">
-              <a class="MenuFormItem"
-              >{{doc.label}}</a>
-            </li>
-          </div>
-        </ul>
+            >{{value.value}}</a>
+          </li>
+        </div>
+        <div>
+          <p class="em-h4">
+            <span class="material-icons">folder</span>
+            {{ Documents }}
+          </p>
+          <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm">
+            <a class="MenuFormItem"
+            >{{doc.label}}</a>
+          </li>
+        </div>
+      </ul>
     </div>
   </div>
 </template>
@@ -69,21 +73,21 @@ export default {
       this.formList.forEach(element => {
         let ellink = element.link.replace("fabrik","emundus");
         axios
-          .get(ellink + "&format=vue_jsonclean")
-          .then(response => {
-            this.formNameArray.push({
-              value: response.data.show_title.value,
-              rgt: element.rgt
+            .get(ellink + "&format=vue_jsonclean")
+            .then(response => {
+              this.formNameArray.push({
+                value: response.data.show_title.value,
+                rgt: element.rgt
+              });
+              this.formLinkArray.push({ link: element.link, rgt: element.rgt });
+            })
+            .then(r => {
+              this.formNameArray.sort((a, b) => a.rgt - b.rgt);
+              this.formLinkArray.sort((a, b) => a.rgt - b.rgt);
+            })
+            .catch(e => {
+              console.log(e);
             });
-            this.formLinkArray.push({ link: element.link, rgt: element.rgt });
-          })
-          .then(r => {
-            this.formNameArray.sort((a, b) => a.rgt - b.rgt);
-            this.formLinkArray.sort((a, b) => a.rgt - b.rgt);
-          })
-          .catch(e => {
-            console.log(e);
-          });
       });
     },
   },

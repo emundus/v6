@@ -16,7 +16,7 @@
             <p v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
             <p v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
             <hr>
-            <div class="em-flex-row em-mb-16">
+            <div class="em-flex-row em-mb-32">
               <p>
                 <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
                 {{translations.From}}

@@ -471,6 +471,9 @@ input:focus + .em-slider {
   width: max-content;
 }
 
+.em-color-white{
+  color: white;
+}
 .em-green-color{
   color: $em-green;
 }
@@ -625,6 +628,9 @@ input:focus + .em-slider {
 .em-mt-80{
   margin-top: $m-80;
 }
+.em-mb-4{
+  margin-bottom: 4px;
+}
 .em-mb-8{
   margin-bottom: $m-8;
 }
@@ -679,6 +685,9 @@ input:focus + .em-slider {
 }
 .em-text-align-left{
   text-align: start;
+}
+.em-align-start{
+  align-items: start;
 }
 
 
