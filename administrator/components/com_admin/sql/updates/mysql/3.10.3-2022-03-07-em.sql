@@ -13,3 +13,11 @@ alter table jos_emundus_setup_dashboard
     add constraint jos_emundus_setup_dashboard_jos_emundus_setup_profiles_id_fk
         foreign key (profile) references jos_emundus_setup_profiles (id)
             on update cascade on delete cascade;
+
+update jos_emundus_setup_tags set request = 'php|require_once (JPATH_SITE.DS.''components''.DS.''com_emundus''.DS.''models''.DS.''messenger.php'');
+$m_messages = new EmundusModelmessenger();
+$fnum = ''[FNUM]'';
+if (!empty($fnum)) {
+    return ''<p class="messenger__notifications_counter">'' . $m_messages->getNotificationsByFnum($fnum) . ''</p>'';
+}
+' where tag = 'MESSENGER_NOTIFY';

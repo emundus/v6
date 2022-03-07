@@ -133,5 +133,12 @@ export default {
   }
 }
 
+.view-campaigns #g-container-main .g-container,
+.view-emails #g-container-main .g-container,
+.view-form #g-container-main .g-container,
+.view-settings #g-container-main .g-container{
+  width: 90%;
+}
+
 
 </style>

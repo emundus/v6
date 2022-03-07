@@ -414,33 +414,5 @@ export default {
 </script>
 
 <style scoped>
-.section-sub-menu{
-  margin-top: 10px;
-  margin-bottom: 30px;
-}
-.w-container{
-  margin-left: 30px;
-  max-width: unset;
-}
-.section-principale{
-  margin-left: 30px;
-}
-.w-container{
-  max-width: unset;
-}
-.topnav  {
-  /*background-color: #333;*/
-  overflow: hidden;
-  margin: 0 auto;
-  border-bottom: 1px solid #ddd
-}
-.w--current{
-  border: 1px solid #ddd;
-  background-color: white;
-  border-bottom-left-radius: unset;
-  border-bottom-right-radius: unset;
-}
-
-
-
+@import "../assets/css/formbuilder.scss";
 </style>
