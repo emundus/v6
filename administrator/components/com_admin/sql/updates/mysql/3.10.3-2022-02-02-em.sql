@@ -701,7 +701,7 @@ if(!empty($fnum)) {
         $query = "select date(start_time_) from jos_emundus_jury as jej left join jos_emundus_candidat_meeting as jecm on jej.id = jecm.session where jecm.fnum like " . $fnum;
         $db->setQuery($query);
         $raw = $db->loadResult();
-        return $raw;
+        return date(''d/m/Y'', strtotime($raw));
     } catch (Exception $e) {
         return '''';
     }
