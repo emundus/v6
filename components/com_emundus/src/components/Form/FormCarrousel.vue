@@ -4,30 +4,34 @@
       <div>
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
       </div>
-      <ul>
-        <div>
+
+      <hr class="vertical-divider">
+
+      <div class="em-flex-column em-align-start">
+        <div class="em-mb-16">
           <p class="em-h4">
             <span class="material-icons">article</span>
             {{ Form }}
           </p>
-          <li v-for="(value, index) in formNameArray" :key="index" class="MenuForm">
+          <div v-for="(value, index) in formNameArray" :key="index" class="MenuForm em-mb-8">
             <a @click="ChangeIndex(index)"
+               class="em-pointer em-text-neutral-900"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
                 v-html="value.value"
             >{{value.value}}</a>
-          </li>
+          </div>
         </div>
+
         <div>
           <p class="em-h4">
             <span class="material-icons">folder</span>
             {{ Documents }}
           </p>
-          <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm">
-            <a class="MenuFormItem"
-            >{{doc.label}}</a>
-          </li>
+          <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm em-mb-8">
+            <a class="em-pointer em-text-neutral-900">{{doc.label}}</a>
+          </div>
         </div>
-      </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -98,20 +102,15 @@ export default {
 </script>
 
 <style scoped>
-.container-fluid {
-  margin-bottom: 5%;
+.MenuFormItem_current{
+  color: #20835F;
 }
-.menu-block{
-  padding: 0;
+.MenuForm a:hover{
+  color: #1C6EF2;
 }
-
-.form-title{
-  display: flex;
-  align-items: center;
-  padding: 1em;
-  color: black !important;
-}
-.form-title img{
-  width: 25px;
+.vertical-divider{
+  height: 50vh;
+  border-right: solid 1px #cecece;
+  margin: 12px 16px !important;
 }
 </style>

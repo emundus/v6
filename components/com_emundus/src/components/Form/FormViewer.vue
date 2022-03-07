@@ -1,20 +1,17 @@
 <template>
-  <div id="FormViewer" class="FormViewer container-fluid">
+  <div id="FormViewer" class="em-mt-16">
     <div
             v-if="object_json.show_page_heading"
             :class="object_json.show_page_heading.class"
             v-html="object_json.show_page_heading.page_heading"
     />
     <div class="em-flex-row em-flex-space-between">
-      <h2 v-if="object_json.show_title" class="page_header" v-html="object_json.show_title.value" />
-      <a @click="formbuilder" class="cta-block pointer">
-        <em class="fas fa-pen"></em>
-      </a>
+      <h2 v-if="object_json.show_title" v-html="object_json.show_title.value" />
     </div>
 
-    <p v-if="object_json.intro_value" class="introP" style="margin-top: 2em" v-html="object_json.intro_value" />
+    <p v-if="object_json.intro_value" class="em-mt-16" v-html="object_json.intro_value" />
 
-    <form method="post" object_json.attribs class="form-page">
+    <form method="post" object_json.attribs>
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
       <div v-for="group in object_json.Groups" v-bind:key="group.index" :class="{'unpublished': group.visibility && visibility != null}" style="padding: 5px">
         <fieldset :class="group.group_class" :id="'group'+group.group_id" :style="group.group_css">
@@ -24,9 +21,9 @@
               <em :class="group.visibility ? 'eye-slash-icon' : 'eye-icon'"></em>
             </button>
           </legend>
-          <div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>
+          <div v-if="group.group_intro" v-html="group.group_intro"></div>
 
-          <div class="elements-block">
+          <div>
             <div
                     v-for="element in group.elements"
                     v-bind:key="element.index"
@@ -182,7 +179,7 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .dropdown-menu {
     width: 0 !important;
   }

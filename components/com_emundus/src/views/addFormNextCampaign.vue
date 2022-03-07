@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="em-w-75rem">
     <ModalWarningFormBuilder
         :pid="getProfileId"
         :cid="campaignId"
