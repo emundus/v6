@@ -72,6 +72,9 @@ class EmundusModelFiles extends JModelLegacy
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();
 
+        $Itemid = @JFactory::getApplication()->input->getInt('Itemid', $current_menu->id);
+        $menu_params = $menu->getParams($Itemid);
+
         $h_files = new EmundusHelperFiles;
         $m_users = new EmundusModelUsers;
 
@@ -80,15 +83,11 @@ class EmundusModelFiles extends JModelLegacy
         $this->code = array_merge($groupAssoc, $progAssoc);
 
         $this->locales = substr(JFactory::getLanguage()->getTag(), 0 , 2);
-        /*
-        ** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
-        */
 
         if (empty($current_menu)) {
             return false;
         }
 
-        $menu_params = $menu->getParams($current_menu->id);
         $em_other_columns = explode(',', $menu_params->get('em_other_columns'));
 
         $session = JFactory::getSession();
@@ -1501,6 +1500,10 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     public function getPageNavigation() : string {
+        if ($this->getPagination()->pagesTotal <= 1) {
+            return '';
+        }
+
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
         $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";

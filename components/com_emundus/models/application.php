@@ -322,7 +322,7 @@ class EmundusModelApplication extends JModelList
         // Get the comment for logs
         $query->select($this->_db->quoteName('reason') . ',' . $this->_db->quoteName('comment_body'))
             ->from($this->_db->quoteName('#__emundus_comments'))
-            ->where($this->_db->quoteName('id') . ' = ' . $id); 
+            ->where($this->_db->quoteName('id') . ' = ' . $id);
         $this->_db->setQuery($query);
         $deleted_comment = $this->_db->loadObject();
 
@@ -359,7 +359,7 @@ class EmundusModelApplication extends JModelList
         // Get the tag for logs
         $query->select($this->_db->quoteName('label'))
             ->from($this->_db->quoteName('#__emundus_setup_action_tag'))
-            ->where($this->_db->quoteName('id') . ' = ' . $id_tag); 
+            ->where($this->_db->quoteName('id') . ' = ' . $id_tag);
         $this->_db->setQuery($query);
         $deleted_tag = $this->_db->loadResult();
 
@@ -584,7 +584,7 @@ class EmundusModelApplication extends JModelList
         }
     }
 
-    public function getFormsProgressWithProfile($fnum, $profile_id) 
+    public function getFormsProgressWithProfile($fnum, $profile_id)
     {
         $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
         $nb = 0;
@@ -744,6 +744,7 @@ class EmundusModelApplication extends JModelList
 
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
         $m_profile = new EmundusModelProfile;
+        $profile_by_status = $m_profile->getProfileByStatus($fnum);
 
         $query = 'SELECT COUNT(profiles.id)
             FROM #__emundus_setup_attachment_profiles AS profiles
@@ -1629,7 +1630,7 @@ class EmundusModelApplication extends JModelList
                                                         $elt = $r_elt;
                                                     }
 
-                                                    $forms .= '<td><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '"> ' . JText::_($elt) . '</div></td>';
+                                                    $forms .= '<td><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '"> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</div></td>';
                                                 }
                                                 $j++;
                                             }
@@ -1836,9 +1837,9 @@ class EmundusModelApplication extends JModelList
 
                                             // modulo for strips css //
                                             if ($modulo % 2) {
-                                                $forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . JText::_($elt) . '</td></tr>';
+                                                $forms .= '<tr class="table-strip-1">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             } else {
-                                                $forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . JText::_($elt) . '</td></tr>';
+                                                $forms .= '<tr class="table-strip-2">' . (!empty(JText::_($element->label)) ? '<td style="padding-right:50px;"><b>' . JText::_($element->label) . '</b></td>' : '') . '<td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
                                             $modulo++;
                                             unset($params);
@@ -2163,7 +2164,7 @@ class EmundusModelApplication extends JModelList
 
                                                 // trick to prevent from blank value in PDF when string is to long without spaces (usually emails)
                                                 $elt = str_replace('@', '<br>@', $elt);
-                                                $forms .= '<td class="background-light" style="border-right: 1px solid black;"><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '">' . JText::_($elt) . '</div></td>';
+                                                $forms .= '<td class="background-light" style="border-right: 1px solid black;"><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '">' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</div></td>';
                                             }
                                             $j++;
                                         }
@@ -2341,7 +2342,7 @@ class EmundusModelApplication extends JModelList
                                                     } elseif ($elements[$j]->plugin == 'textarea') {
                                                         $forms .= '<tr><td colspan="2"><span style="color: #000000;">' .  (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">    ' . JText::_($elt) . '</span></td></tr>';
                                                     } else {
-                                                        $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . JText::_($elt) . '</td></tr>';
+                                                        $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($elements[$j]->label)) ? JText::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                                     }
                                                 }
                                             }
@@ -2534,7 +2535,7 @@ class EmundusModelApplication extends JModelList
                                             } elseif ($element->plugin == 'textarea') {
                                                 $forms .= '<tr><td colspan="2"><span style="color: #000000;">' .  (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '')  . '</span></td></tr><tr><td colspan="2"><span style="color: #000000;">  ' . JText::_($elt) . '</span></td></tr>';
                                             } else {
-                                                $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . JText::_($elt) . '</td></tr>';
+                                                $forms .= '<tr><td colspan="1"><span style="color: #000000;">' . (!empty(JText::_($element->label)) ? JText::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? JText::_($elt) : $elt) . '</td></tr>';
                                             }
                                         }
                                     } elseif (empty($element->content) && $show_empty_fields == 1) {
@@ -3819,54 +3820,51 @@ class EmundusModelApplication extends JModelList
             // sync documents uploaded
             // 1. get list of uploaded documents for previous file defined as duplicated
             if ($copy_attachment) {
-                foreach ($pids as $profile) {
-                    $query = 'SELECT eu.*, esa.nbmax
-											FROM #__emundus_uploads as eu
-											LEFT JOIN #__emundus_setup_attachments as esa on esa.id=eu.attachment_id
-											LEFT JOIN #__emundus_setup_attachment_profiles as esap on esap.attachment_id=eu.attachment_id AND esap.profile_id=' . $profile . '
-											WHERE eu.user_id=' . $fnumInfos['applicant_id'] . '
-											AND eu.fnum like ' . $db->Quote($fnum_from) . '
-											AND esap.duplicate=1';
-                    $db->setQuery($query);
-                    $stored = $db->loadAssocList();
+                $query = $db->getQuery(true);
 
-                    if (count($stored) > 0) {
-                        // 2. copy DB définition and duplicate files in applicant directory
-                        foreach ($stored as $key => $row) {
-                            $src = $row['filename'];
-                            $ext = explode('.', $src);
-                            $ext = $ext[count($ext) - 1];
-                            $cpt = 0 - (int)(strlen($ext) + 1);
-                            $dest = substr($row['filename'], 0, $cpt) . '-' . $row['id'] . '.' . $ext;
-                            $nbmax = $row['nbmax'];
-                            $row['filename'] = $dest;
-                            unset($row['id']);
-                            unset($row['fnum']);
-                            unset($row['nbmax']);
+                $query->select('jeu.*, jsa.lbl')
+                ->from('jos_emundus_uploads AS jeu')
+                ->leftJoin('jos_emundus_setup_attachments AS jsa ON jsa.id=jeu.attachment_id')
+                ->where('jeu.fnum LIKE '. $db->quote($fnum_from));
 
-                            try {
-                                $query = 'SELECT count(id) FROM #__emundus_uploads WHERE user_id=' . $fnumInfos['applicant_id'] . ' AND attachment_id=' . $row['attachment_id'] . ' AND fnum like ' . $db->Quote($fnum_to);
-                                $db->setQuery($query);
-                                $cpt = $db->loadResult();
+                $db->setQuery($query);
 
-                                if ($cpt < $nbmax) {
-                                    $query = 'INSERT INTO #__emundus_uploads (`fnum`, `' . implode('`,`', array_keys($row)) . '`) VALUES(' . $db->Quote($fnum_to) . ', ' . implode(',', $db->Quote($row)) . ')';
-                                    $db->setQuery($query);
-                                    $db->execute();
-                                    $id = $db->insertid();
-                                    $path = EMUNDUS_PATH_ABS . $fnumInfos['applicant_id'] . DS;
+                $documents = [];
+                try {
+                    $documents = $db->loadAssocList();
+                } catch(Exception $e) {
+                    JLog::add('Error getting documents for fnum '.$fnum_from.' in emundus model application at query '.$query, JLog::ERROR, 'com_emundus');
+                }
 
-                                    if (!copy($path . $src, $path . $dest)) {
-                                        $query = 'UPDATE #__emundus_uploads SET filename=' . $src . ' WHERE id=' . $id;
-                                        $db->setQuery($query);
-                                        $db->execute();
-                                    }
-                                }
+                if (!empty($documents)) {
+                    foreach ($documents as $document) {
+                        $file_ext = pathinfo($document['filename'], PATHINFO_EXTENSION);
+			            $new_file = $fnumInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
 
-                            } catch (Exception $e) {
-                                $error = JUri::getInstance() . ' :: USER ID : ' . $fnumInfos['applicant_id'] . ' -> ' . $e->getMessage();
-                                JLog::add($error, JLog::ERROR, 'com_emundus');
-                            }
+                        // try to copy file with new name
+                        $copied = copy(JPATH_BASE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_BASE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $new_file);
+                        if (!$copied) {
+                            JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
+                        }
+
+                        $document['filename'] = $new_file;
+                        $document['fnum'] = $fnum_to;
+                        $document['is_validated'] = empty($document['is_validated']) ? '-2' : $document['is_validated'];
+                        $document['modified_by'] = empty($document['modified_by']) ? $document['user_id'] : $document['modified_by'];
+                        unset($document['id']);
+                        unset($document['lbl']);
+
+                        try {
+                            $query->clear();
+                            $query->insert('jos_emundus_uploads')
+                                ->columns(array_keys($document))
+                                ->values(implode(", ", $db->quote($document)));
+
+                            $db->setQuery($query);
+                            $db->execute();
+
+                        } catch(Exception $e) {
+                            JLog::add('Error inserting document in jos_emundus_uploads table for fnum '.$fnum_to.' : '.$e, JLog::ERROR, 'com_emundus');
                         }
                     }
                 }
@@ -3916,6 +3914,22 @@ class EmundusModelApplication extends JModelList
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$q.' :: '.$query, JLog::ERROR, 'com_emundus');
             return false;
         }
+
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JDispatcher::getInstance();
+		$dispatcher->trigger('callEventHandler', array(
+            'onAfterCopyApplication',
+            array(
+                'fnum_from' => $fnum_from,
+                'fnum_to' => $fnum_to,
+                'pid' => $pid,
+                'copy_attachment' => $copy_attachment,
+                'campaign_id' => $campaign_id,
+                'copy_tag' => $copy_tag,
+                'move_hikashop_command' => $move_hikashop_command,
+                'delete_from_file' => $delete_from_file)
+            )
+        );
 
         return true;
     }
