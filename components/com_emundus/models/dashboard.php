@@ -40,10 +40,13 @@ class EmundusModelDashboard extends JModelList
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
 
+        $current_profile = JFactory::getSession()->get('emundusUser')->profile;
+
         try {
             $query->select('id')
                 ->from($this->_db->quoteName('#__emundus_setup_dashboard'))
-                ->where($this->_db->quoteName('user') . ' = ' . $user_id);
+                ->where($this->_db->quoteName('user') . ' = ' . $user_id)
+                ->andWhere($this->_db->quoteName('profile') . ' = ' . $current_profile);
             $this->_db->setQuery($query);
             return $this->_db->loadResult();
         } catch(Exception $e) {
@@ -55,17 +58,13 @@ class EmundusModelDashboard extends JModelList
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
 
-        try {
-            $query->clear()
-                ->select('profile')
-                ->from($this->_db->quoteName('#__emundus_users'))
-                ->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
-            $this->_db->setQuery($query);
-            $profile = $this->_db->loadResult();
+        $profile = JFactory::getSession()->get('emundusUser')->profile;
 
+        try {
             $query->clear()
                 ->insert($this->_db->quoteName('#__emundus_setup_dashboard'))
                 ->set($this->_db->quoteName('user') . ' = ' . $user_id)
+                ->set($this->_db->quoteName('profile') . ' = ' . $profile)
                 ->set($this->_db->quoteName('updated_by') . ' = ' . $user_id);
             $this->_db->setQuery($query);
             $this->_db->execute();
@@ -115,12 +114,7 @@ class EmundusModelDashboard extends JModelList
         $query = $this->_db->getQuery(true);
 
         try {
-            $query->clear()
-                ->select('profile')
-                ->from($this->_db->quoteName('#__emundus_users'))
-                ->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($user_id));
-            $this->_db->setQuery($query);
-            $profile = $this->_db->loadResult();
+            $profile = JFactory::getSession()->get('emundusUser')->profile;
 
             $query->clear()
                 ->select('ew.id,ew.name,ew.label,ew.size,ew.size_small,ew.type,ew.chart_type,ew.article_id,ew.params')
@@ -151,12 +145,15 @@ class EmundusModelDashboard extends JModelList
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
 
+        $profile = JFactory::getSession()->get('emundusUser')->profile;
+
         try {
             $query->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
                 ->from($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets','esdr'))
                 ->leftJoin($this->_db->quoteName('#__emundus_setup_dashboard','esd').' ON '.$this->_db->quoteName('esd.id').' = '.$this->_db->quoteName('esdr.parent_id'))
                 ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.widget'))
-                ->where($this->_db->quoteName('user') . ' = ' . $this->_db->quote($user_id))
+                ->where($this->_db->quoteName('esd.user') . ' = ' . $this->_db->quote($user_id))
+                ->andWhere($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile))
                 ->order('esdr.position');
             $this->_db->setQuery($query);
             $widgets = $this->_db->loadObjectList();
