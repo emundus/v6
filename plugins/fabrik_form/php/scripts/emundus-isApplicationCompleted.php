@@ -25,59 +25,55 @@ if ($jinput->get('view') == 'form') {
 
 	$user = JFactory::getSession()->get('emundusUser');
 
-	$params 					= JComponentHelper::getParams('com_emundus');
-    $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
-	$application_fee 			= $params->get('application_fee', 0);
+	$params	= JComponentHelper::getParams('com_emundus');
+  $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
+	$application_fee = $params->get('application_fee', 0);
 
-    $m_profile = new EmundusModelProfile;
-    $application_fee  		= (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
+  $m_profile = new EmundusModelProfile;
+  $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
-	$m_application 	= new EmundusModelApplication;
-	$attachments 	= $m_application->getAttachmentsProgress($user->fnum);
-	$forms 			= $m_application->getFormsProgress($user->fnum);
-
-	// If students with a scholarship have a different fee.
-	// The form ID will be appended to the URL, taking him to a different checkout page.
-	if (isset($scholarship_document_id)) {
-
-		$db = JFactory::getDbo();
-
-		// See if applicant has uploaded the required scolarship form.
-		try {
-
-			$query = 'SELECT count(id) FROM #__emundus_uploads
-						WHERE attachment_id = '.$scholarship_document_id.'
-						AND fnum LIKE '.$db->Quote($user->fnum);
-
-			$db->setQuery($query);
-			$uploaded_document = $db->loadResult();
-
-		} catch (Exception $e) {
-			JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
-		}
-
-		$pay_scholarship = $params->get('pay_scholarship', 0);
-
-		// If he hasn't, no discount for him. If he has, exit to regular procedure.
-		if (!empty($uploaded_document) && !$pay_scholarship) {
-			return;
-		}
-
-		if (empty($uploaded_document)) {
-			$scholarship_document_id = null;
-		} else if (!empty($pay_scholarship)) {
-			$scholarship_product = $params->get('scholarship_product', 0);
-			if (!empty($scholarship_product)) {
-				$return_url = $m_application->getHikashopCheckoutUrl($user->profile);
-				$return_url = preg_replace('/&product_id=[0-9]+/', "&product_id=$scholarship_product", $return_url);
-				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
-				$mainframe->redirect($checkout_url);
-			}
-		}
-
-	}
+	$m_application = new EmundusModelApplication;
+	$attachments = $m_application->getAttachmentsProgress($user->fnum);
+	$forms = $m_application->getFormsProgress($user->fnum);
 
 	if ($application_fee) {
+		// If students with a scholarship have a different fee.
+		// The form ID will be appended to the URL, taking him to a different checkout page.
+		if (isset($scholarship_document_id)) {
+			$db = JFactory::getDbo();
+
+			// See if applicant has uploaded the required scolarship form.
+			try {
+				$query = 'SELECT count(id) FROM #__emundus_uploads
+					WHERE attachment_id = '.$scholarship_document_id.'
+					AND fnum LIKE '.$db->Quote($user->fnum);
+
+				$db->setQuery($query);
+				$uploaded_document = $db->loadResult();
+
+			} catch (Exception $e) {
+				JLog::Add('Error in plugin/isApplicationCompleted at SQL query : '.$query, Jlog::ERROR, 'plugins');
+			}
+
+			$pay_scholarship = $params->get('pay_scholarship', 0);
+
+			// If he hasn't, no discount for him. If he has, exit to regular procedure.
+			if (!empty($uploaded_document) && !$pay_scholarship) {
+				return;
+			}
+
+			if (empty($uploaded_document)) {
+				$scholarship_document_id = null;
+			} else if (!empty($pay_scholarship)) {
+				$scholarship_product = $params->get('scholarship_product', 0);
+				if (!empty($scholarship_product)) {
+					$return_url = $m_application->getHikashopCheckoutUrl($user->profile);
+					$return_url = preg_replace('/&product_id=[0-9]+/', "&product_id=$scholarship_product", $return_url);
+					$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($return_url));
+					$mainframe->redirect($checkout_url);
+				}
+			}
+		}
 
 		$m_files = new EmundusModelFiles;
 		$fnumInfos = $m_files->getFnumInfos($user->fnum);
@@ -95,11 +91,11 @@ if ($jinput->get('view') == 'form') {
 		} else {
 			$mainframe->redirect('index.php');
 		}
-
 	}
 
-	if ($attachments < 100 || $forms < 100)
+	if ($attachments < 100 || $forms < 100) {
 		$mainframe->redirect( "index.php?option=com_emundus&view=checklist&Itemid=".$itemid, JText::_('INCOMPLETE_APPLICATION'));
+	}
 }
 
 ?>

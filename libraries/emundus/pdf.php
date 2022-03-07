@@ -850,15 +850,15 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '<table width="100%"><tr>';
 
                 $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3>';
-                if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
                     $htmldata .=
                         '<tr><td>
-                                        <img src="'.EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" />
+                                        <img src="'.EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" />
                                     </td></tr>';
-                } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                } elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
                     $htmldata .=
                         '<tr><td>
-                                        <img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" />
+                                        <img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" />
                                     </td></tr>';
                 }
                 $htmldata .= '<tr><td class="name" colspan="2">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
@@ -985,7 +985,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         //get title
         $title = $config->get('sitename');
         if (is_file($logo)) {
-            $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+            $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
         }
 
         unset($logo);
@@ -1244,7 +1244,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     //get title
     $title = $config->get('sitename');
     if (is_file($logo)) {
-        $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+        $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
     }
 
     unset($logo);
@@ -1310,25 +1310,28 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
         $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+
+        $htmldata .= '<div class="card">
+                                <table width="100%"><tr>';
+
         if (!$anonymize_data) {
             if ($allowed_attachments === true || in_array('10', $allowed_attachments)) {
-                $htmldata .= '<div class="card">
-								<table width="100%"><tr>';
-                if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="left" /></td>';
-                } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="left" /></td>';
+                
+                if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="left" /></td>';
+                } elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar . '" width="100" align="left" /></td>';
                 }
             }
 
-            $htmldata .= '
-			<td width="80%">
-	
+            $htmldata .= '<td width="80%">
 			<div class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . ', ' . @$item->label . ' (' . @$item->cb_schoolyear . ')</div>';
 
             if (isset($item->maiden_name)) {
                 $htmldata .= '<div class="maidename">' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</div>';
             }
+        } else {
+            $htmldata .= '<td width="80%">';
         }
 
         $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')) : JText::_('NOT_SENT');
@@ -1469,12 +1472,12 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
 
     // Generate a random file name in case one isn't supplied.
     if (empty($path)) {
-	    $path = DS.'images'.DS.'emundus'.DS.'pdf'.substr(md5(microtime()), rand(0, 26), 5).'.pdf';
+	    $path = EMUNDUS_PATH_ABS.'pdf'.substr(md5(microtime()), rand(0, 26), 5).'.pdf';
     }
 
-    if (!file_exists(dirname(JPATH_BASE.$path))) {
-        mkdir(dirname(JPATH_BASE.$path), 0755, true);
-        chmod(dirname(JPATH_BASE.$path), 0755);
+    if (!file_exists(dirname($path))) {
+        mkdir(dirname($path), 0755, true);
+        chmod(dirname($path), 0755);
     }
 
     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
