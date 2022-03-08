@@ -135,7 +135,7 @@ export default {
         },
         renderDropdown: function() {
           //add twitter bootstrap dropdown-menu class
-          return '<ul class="rte-autocomplete dropdown-menu"></ul>';
+          return '<ul class="rte-autocomplete em-autocomplete dropdown-menu"></ul>';
         }
       },
       setup: (editor) => {

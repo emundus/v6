@@ -84,16 +84,16 @@ h1 {
 
 .swal2-title {
   color: #000;
-  margin: 10px 0 20px 0;
+  margin: 8px 8px 32px 8px;
 }
 
 button.swal2-styled{
-  padding: 5px 20px;
-  border-radius: 25px !important;
+  padding: 0 16px;
+  border-radius: 4px;
 }
 
 button.swal2-confirm{
-  background: #12DB42 !important;
+  background: $main-500;
 }
 
 h2 {

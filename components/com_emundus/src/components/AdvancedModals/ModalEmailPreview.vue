@@ -1,5 +1,4 @@
 <template>
-  <!-- modalC -->
   <span :id="'modalEmailPreview_' + model">
     <modal
             :name="'modalEmailPreview_' + model"
@@ -10,26 +9,22 @@
             :delay="100"
             :adaptive="true"
             :clickToClose="false"
-            width="70%"
-            @closed="beforeClose"
             @before-open="beforeOpen"
     >
-      <div class="fixed-header-modal">
-        <div class="update-field-header em-flex-row em-flex-space-between">
-          <h2 class="update-title-header" style="margin-bottom: 10px">
-             {{ModelPreview}}
-          </h2>
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click="$modal.hide('modalEmailPreview_' + model)">
-              <em class="fas fa-times"></em>
-            </button>
-          </div>
-        </div>
-        </div>
 
-      <div class="modalC-content">
+      <div class="em-flex-row em-flex-space-between em-mb-16">
+        <span class="em-h4">
+          {{ModelPreview}}
+        </span>
+        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalEmailPreview_' + model)">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="em-mb-16">
           <p v-if="email != null"><span v-html="email.message"></span></p>
       </div>
+
     </modal>
   </span>
 </template>
@@ -47,9 +42,7 @@
       };
     },
     methods: {
-      beforeClose(event) {
-      },
-      beforeOpen(event) {
+      beforeOpen() {
         this.models.forEach(element => {
           if(element.id == this.model){
             this.email = element;
@@ -61,9 +54,4 @@
 </script>
 
 <style scoped>
-.description-block{
-  overflow: auto;
-  white-space: normal;
-  height: 100%;
-}
 </style>

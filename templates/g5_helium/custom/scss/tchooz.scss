@@ -108,6 +108,24 @@ button[class ^= 'em-']{
   }
 }
 
+.em-autocomplete{
+  padding: unset;
+  box-shadow: unset;
+  border-radius: 4px;
+  li{
+    a{
+      padding: 8px !important;
+      &:hover,&:focus{
+        p{
+          color: white !important;
+        }
+        background: $main-500 !important;
+        color: white !important;
+      }
+    }
+  }
+}
+
 
 // TOGGLE BUTTON //
 .em-switch {
@@ -447,6 +465,10 @@ input:focus + .em-slider {
   width: 75rem;
 }
 
+.em-w-90rem{
+  width: 90rem;
+}
+
 .em-w-80{
   width: 80%;
 }
@@ -528,6 +550,10 @@ input:focus + .em-slider {
   background: $main-500;
 }
 
+.em-m-16{
+  margin: 16px;
+}
+
 .em-m-24{
   margin: 24px;
 }
@@ -601,6 +627,9 @@ input:focus + .em-slider {
 }
 .em-ml-24{
   margin-left: $m-24;
+}
+.em-ml-32{
+  margin-left: 32px;
 }
 .em-ml-64{
   margin-left: 64px;
@@ -686,6 +715,9 @@ input:focus + .em-slider {
 
 .em-flex-space-around {
   justify-content: space-around;
+}
+.em-text-align-center{
+  text-align: center;
 }
 .em-text-align-left{
   text-align: start;
@@ -896,30 +928,39 @@ input:focus + .em-slider {
   margin: 8px 8px 32px 8px !important;
 }
 button.em-swal-confirm-button{
-  display: flex;
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: auto !important;
+  padding: 0 $p-16 !important;
+  border-radius: 4px !important;
+  border: unset !important;
+  height: 40px !important;
+  color: white !important;
+  background-color: $main-500 !important;
+}
+.swal2-actions.swal2-loading{
+  border-radius: 25px !important;
+}
+button.em-swal-cancel-button{
+  display: flex !important;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: auto;
-  padding: 0 $p-16;
+  padding: 0 $p-16 !important;
   border-radius: 4px !important;
-  border: unset;
-  height: 40px;
-  color: white;
-  background-color: $main-500 !important;
-}
-.swal2-actions.swal2-loading .swal2-styled.swal2-confirm.em-swal-confirm-button{
-  border-radius: 25px !important;
-}
-button.em-swal-cancel-button{
-  background: unset !important;
-  color: $blue-500 !important;
+  border: solid 1px $neutral-300 !important;
+  height: 40px !important;
+  background: transparent !important;
+  color: $neutral-900 !important;
   &:focus{
     box-shadow: unset !important;
   }
-  &:hover{
-    text-decoration: underline;
-  }
+}
+.swal2-actions{
+  justify-content: space-between !important;
 }
 
 /** Vue Modal - Translation tool **/

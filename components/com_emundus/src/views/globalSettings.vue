@@ -1,6 +1,6 @@
 <template>
-  <div class="w-row em-mt-80">
-    <div class="w-100">
+  <div class="em-w-100 em-mt-80">
+    <div>
 
       <!-- HEADER -->
       <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%" @click="menuHighlight = 0">

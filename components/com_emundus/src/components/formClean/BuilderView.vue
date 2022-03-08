@@ -7,28 +7,21 @@
          :class="object_json.show_page_heading.class"
          v-html="object_json.show_page_heading.page_heading"
     />
-    <div class="em-flex-row header-form-page mb-1" v-if="eval == 0 && !updatePage">
-      <h2 v-if="object_json.show_title" class="page_header em-mr-4" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="cta-block pointer" style="font-size: 16px">
-        <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-      </span>
-    </div>
-    <div style="width: max-content;margin-left: 20px" v-show="updatePage && indexPage == object_json.id">
-      <div class="input-can-translate" style="margin-top: 40px">
-        <input v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]"  class="form__input field-general w-input" style="width: 400px;" :class="translate.label_page ? '' : 'mb-1'" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
-        <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPage(object_json.id)"></button>
-        <div class="em-flex-row actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-          <a @click="updateLabelPage(object_json)" :title="translations.Validate">
-            <em class="fas fa-check em-mr-4" data-toggle="tooltip" data-placement="top"></em>
-          </a>
-        </div>
-      </div>
-      <translation v-if="object_json.show_title && translate.label_page" :label="object_json.show_title.label" :actualLanguage="actualLanguage"></translation>
+    <div class="em-flex-row em-flex-space-between page-header" v-if="eval == 0 && !updatePage">
+      <span v-if="object_json.show_title" class="em-mr-8 em-h3" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
+      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="material-icons-outlined">edit</span>
     </div>
 
-    <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" />
-    <form method="post" v-on:submit.prevent object_json.attribs class="form-page" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">
+    <div v-show="updatePage && indexPage == object_json.id" class="em-flex-row page-header">
+      <input style="margin-bottom: 0" v-if="object_json.show_title" v-model="object_json.show_title.label[actualLanguage]" @keyup.enter="updateLabelPage(object_json)" :id="'update_input_' + object_json.id"/>
+      <span @click="updateLabelPage(object_json)" :title="translations.Validate" class="material-icons-outlined em-pointer">done</span>
+    </div>
+
+    <p v-if="eval == 0 && !updateIntroPage" class="em-mt-16" v-html="object_json.intro_value" />
+
+    <form method="post" v-on:submit.prevent object_json.attribs class="fabrikForm" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
+
       <draggable
           handle=".handle"
           class="groups-block"
@@ -40,23 +33,28 @@
              class="group-item-block"
              @mouseover="enableGroupHover(group.group_id)"
              @mouseleave="disableGroupHover()">
-          <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.hidden_group == -1 ? 'background: #e3e3e3;' : ''" style="background-size: 20px; width: 100%">
-            <div class="hidden-notice em-flex-row" v-if="group.hidden_group == -1"><i class="fas fa-exclamation-circle"></i><span class="ml-10px">{{translations.HiddenGroup}}</span></div>
-            <div class="em-flex-row em-flex-space-between" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''" style="width: 100%">
-              <div class="em-flex-row em-flex-space-between" style="width: 100%">
-                  <span v-show="hoverGroup && indexGroup == group.group_id" class="icon-handle-group">
-                    <em class="fas fa-grip-vertical handle"></em>
-                  </span>
-                <legend
-                    @click="enableUpdatingGroup(group)"
-                    v-if="group.group_showLegend"
-                    class="legend ViewerLegend">
-                  {{group.group_showLegend}}
-                </legend>
+
+          <fieldset :class="[group.group_class]" :id="'group_'+group.group_id" :style="group.hidden_group == -1 ? 'background: #e3e3e3;' : ''" style="background-size: 20px; width: 100%" class="fabrikGroup">
+            <div class="hidden-notice em-flex-row" v-if="group.hidden_group == -1">
+              <span class="material-icons-outlined">warning_amber</span>
+              <span class="em-ml-8">{{translations.HiddenGroup}}</span>
+            </div>
+
+            <div class="em-flex-row em-flex-space-between em-w-100" :class="updateGroup && indexGroup == group.group_id ? 'hidden' : ''">
+              <div class="em-flex-row em-flex-space-between em-w-100">
                 <div class="em-flex-row">
-                  <a :class="group.repeat_group ? 'active-repeat' : ''" class="group-repeat-icon ml-10px pointer" :title="translations.RepeatedGroup" @click="enableRepatedGroup(group)">
-                    <em class="fas fa-clone" data-toggle="tooltip" data-placement="top"></em>
-                  </a>
+                  <span v-show="hoverGroup && indexGroup == group.group_id" class="material-icons-outlined handle em-handle-group">drag_indicator</span>
+
+                  <legend @click="enableUpdatingGroup(group)" v-if="group.group_showLegend" class="legend">
+                    <span class="em-ml-32">{{group.group_showLegend}}</span>
+                  </legend>
+                </div>
+
+                <div class="em-flex-row">
+                  <span :class="group.repeat_group ? 'active-repeat' : ''" class="em-ml-8 em-pointer" :title="translations.RepeatedGroup" @click="enableRepatedGroup(group)">
+                    <span class="material-icons-outlined">table_rows</span>
+                  </span>
+
                   <v-popover :popoverArrowClass="'custom-popover-arrow'">
                     <button class="tooltip-target b3 card-button"></button>
 
@@ -80,6 +78,7 @@
                       </div>
                     </template>
                   </v-popover>
+
                 </div>
               </div>
             </div>
@@ -885,7 +884,12 @@ export default {
           confirmButtonColor: '#de6339',
           confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-          reverseButtons: true
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          },
         }).then(result => {
           if(result.value) {
             axios({
@@ -1329,66 +1333,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../assets/css/variables";
-
-.hidden {
-  display: none;
-}
-.BuilderViewer {
-  padding: 0 1%;
-  background: #F8F8F8;
-  border-radius: 5px;
-}
-.fa-pencil-alt{
-  margin-top: 0.5em;
-  color: #de6339;
-  cursor: pointer;
-}
-.toggle{
-  width: 30px;
-  height: 17px;
-  background-color: #fff;
-  box-shadow: 0 0.9px 9.6px rgba(0, 0, 0, 0.02), 0 3.9px 22.8px rgba(0, 0, 0, 0.028), 0 9.9px 38.4px rgba(0, 0, 0, 0.035), 0 21.6px 54.2px rgba(0, 0, 0, 0.042), 0 45px 68.4px rgba(0, 0, 0, 0.05), 0 100px 80px rgba(0, 0, 0, 0.07);
-}
-.switch{
-  width: 13px;
-  background-color: #12db42;
-}
-.check:checked ~ .switch{
-  left: 15px;
-  background-color: #fff;
-}
-.dropdown-toggle-plugin{
-  width: 30%;
-  margin-left: 2em;
-  height: 33px;
-}
-.icon-handle{
-  color: #cecece;
+.em-handle-group{
   position: absolute;
-  cursor: grab;
-  left: auto;
-  right: 50px;
-  width: 100%;
-  height: 100%;
-}
-.icon-handle-group{
-  color: #cecece;
-  position: absolute;
-  cursor: grab;
-  left: 15px;
-}
-.icon-handle-unpublished{
-  color: #cecece;
-  position: absolute;
-  cursor: grab;
-  margin-bottom: 30px;
-  right: 50px;
-}
-.hidden{
-  display: none;
-}
-.translate-icon-selected{
-  top: -5px;
 }
 </style>

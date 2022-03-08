@@ -11,19 +11,17 @@
             :adaptive="true"
             :clickToClose="false"
     >
-      <div class="fixed-header-modal">
-            <div class="topright">
-              <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalUpdateColors')">
-                <em class="fas fa-times"></em>
-              </button>
-            </div>
-          <div class="update-field-header">
-            <h2 class="update-title-header">
-             {{updateColors}}
-            </h2>
-          </div>
-        </div>
-      <div class="modalC-content">
+
+      <div class="em-flex-row em-flex-space-between em-mb-16">
+        <span class="em-h4">
+          {{updateColors}}
+        </span>
+        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalUpdateColors')">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div>
         <div v-for="(preset) in presets" class="preset-presentation" :style="'background-color:' + preset.primary + ';border-right: 100px solid' + preset.secondary" @click="changeColors(preset)"></div>
       </div>
     </modal>

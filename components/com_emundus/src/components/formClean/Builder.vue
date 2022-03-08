@@ -1,8 +1,7 @@
 <template>
-  <div id="FormBuilder" class="container-fluid">
-    <div class="row">
+  <div id="FormBuilder" class="em-mt-16 applicant-form">
+    <div>
       <BuilderViewer
-        class="col-md-12"
         :object="object"
         :groups="GroupList"
         v-if="object_json"

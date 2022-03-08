@@ -1,94 +1,103 @@
 <template>
-  <div class="container-evaluation">
+  <div>
     <ModalAddTrigger
-            :prog="this.prog"
-            :trigger="this.triggerSelected"
-            :triggerAction="'candidate'"
-            @UpdateTriggers="getTriggers"
-            :key="'candidate' + candidate_trigger"
+        :prog="this.prog"
+        :trigger="this.triggerSelected"
+        :triggerAction="'candidate'"
+        @UpdateTriggers="getTriggers"
+        :key="'candidate' + candidate_trigger"
     />
     <ModalAddTrigger
-      :prog="this.prog"
-      :trigger="this.triggerSelected"
-      :triggerAction="'manual'"
-      @UpdateTriggers="getTriggers"
-      :key="'manual-' + manual_trigger"
+        :prog="this.prog"
+        :trigger="this.triggerSelected"
+        :triggerAction="'manual'"
+        @UpdateTriggers="getTriggers"
+        :key="'manual-' + manual_trigger"
     />
-    <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ CandidateAction }}</h2>
-      <a @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
-        <div class="add-button-div">
-          <em class="fas fa-plus em-mr-4"></em>
-          {{ addTrigger }}
-        </div>
-      </a>
+    <div class="em-flex-row">
+      <span class="em-h4">{{ CandidateAction }}</span>
     </div>
     <p>{{ TheCandidateDescription }}</p>
-    <transition-group :name="'slide-down'" type="transition">
+
+    <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
+      <span class="material-icons em-mr-8 em-color-white">add</span>
+      {{ addTrigger }}
+    </button>
+
+    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 em-m-16" style="margin-left: 0">
       <div
-        v-for="trigger in candidateTriggers"
-        :key="trigger.trigger_id"
-        class="trigger-item"
+          v-for="trigger in candidateTriggers"
+          :key="trigger.trigger_id"
+          class="em-email-card"
       >
-        <div style="max-width: 80%">
-          <p>{{trigger.subject}}</p>
-          <p>
-            <span style="font-weight: bold">{{Target}} : </span>
-            <span
-              v-for="(user, index) in triggerUsersWithProfile(trigger)"
-              :key="'user_' + index"
-            >
-              {{user.firstname}} {{user.lastname}}
-              <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
-            </span>
-            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
-            <span v-if="trigger.profile == 5">{{Administrators}}</span>
-            <span v-if="trigger.profile == 6">{{Evaluators}}</span>
-          </p>
-          <p>{{Status}} {{trigger.status}}</p>
-        </div>
-        <div style="display: grid">
-          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="buttonDeleteDoc" :title="removeTrig"><em class="fas fa-times"></em></button>
-          <a @click="editTrigger(trigger)" class="cta-block pointer">
-            <em class="fas fa-pen"></em>
-          </a>
+        <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
+          <div>
+            <span class="em-mb-8">{{trigger.subject}}</span>
+            <div class="em-mt-8 em-mb-8">
+              <span style="font-weight: bold">{{Target}} : </span>
+              <span v-for="(user, index) in triggerUsersWithProfile(trigger)" :key="'user_' + index">
+                {{user.firstname}} {{user.lastname}}
+                <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
+              </span>
+              <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
+              <span v-if="trigger.profile == 5">{{Administrators}}</span>
+              <span v-if="trigger.profile == 6">{{Evaluators}}</span>
+            </div>
+            <span>{{Status}} {{trigger.status}}</span>
+          </div>
+
+          <div class="em-flex-row em-flex-end">
+            <a class="em-mr-8 em-pointer" @click="editTrigger(trigger)">
+              <span class="material-icons">edit</span>
+            </a>
+            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)":title="removeTrig">
+              <span class="material-icons">close</span>
+            </a>
+          </div>
         </div>
       </div>
     </transition-group>
-    <div class="choices-buttons">
-      <h2 style="margin-bottom: 0">{{ ManagerAction }}</h2>
-      <a @click="$modal.show('modalAddTriggermanual'); triggerSelected = null" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
-        <div class="add-button-div">
-          <em class="fas fa-plus em-mr-4"></em>
-          {{ addTrigger }}
-        </div>
-      </a>
+
+    <div class="em-flex-row">
+      <span class="em-h4 em-mt-16">{{ ManagerAction }}</span>
     </div>
     <p>{{ ManualDescription }}</p>
-    <transition-group :name="'slide-down'" type="transition">
-      <div v-for="trigger in manualTriggers" :key="trigger.trigger_id" class="trigger-item">
-        <div style="max-width: 80%">
-          <p>{{trigger.subject}}</p>
-          <p>
-            <span style="font-weight: bold">{{Target}} : </span>
-            <span
-              v-for="(user, index) in triggerUsersNoProfile(trigger)"
-              :key="'user_manual_' + index"
-            >
+
+    <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
+      <span class="material-icons em-mr-8 em-color-white">add</span>
+      {{ addTrigger }}
+    </button>
+
+    <transition-group :name="'slide-down'" type="transition" class="em-grid-2 em-m-16" style="margin-left: 0">
+      <div v-for="trigger in manualTriggers" :key="trigger.trigger_id" class="em-email-card">
+
+        <div class="em-flex-row em-align-start em-flex-space-between em-w-100">
+          <div>
+            <span class="em-mb-8">{{trigger.subject}}</span>
+            <div class="em-mt-8 em-mb-8">
+              <span style="font-weight: bold">{{Target}} : </span>
+              <span
+                  v-for="(user, index) in triggerUsersNoProfile(trigger)"
+                  :key="'user_manual_' + index"
+              >
               {{user.firstname}} {{user.lastname}}
               <span v-if="index != Object.keys(trigger.users).length - 1">, </span>
             </span>
-            <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
-            <span v-if="trigger.profile == 5">{{Administrators}}</span>
-            <span v-if="trigger.profile == 6">{{Evaluators}}</span>
-          </p>
-          <p>{{Status}} {{trigger.status}}</p>
-        </div>
-        <div style="display: grid">
-          <button type="button" @click="removeTrigger(trigger.trigger_id)" class="buttonDeleteDoc"><em class="fas fa-times"></em></button>
-          <a @click="editTrigger(trigger)" class="cta-block pointer">
-            <em class="fas fa-pen"></em>
-          </a>
+              <span v-if="trigger.users.length == 0 && trigger.profile != 5 && trigger.profile != 6">{{TheCandidate}}</span>
+              <span v-if="trigger.profile == 5">{{Administrators}}</span>
+              <span v-if="trigger.profile == 6">{{Evaluators}}</span>
+            </div>
+            <p>{{Status}} {{trigger.status}}</p>
+          </div>
+
+          <div class="em-flex-row em-flex-end">
+            <a class="em-pointer em-mr-8" @click="editTrigger(trigger)">
+              <span class="material-icons">edit</span>
+            </a>
+            <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)">
+              <span class="material-icons">close</span>
+            </a>
+          </div>
         </div>
       </div>
     </transition-group>
@@ -160,9 +169,9 @@ export default {
     },
     getTriggers() {
       axios.get("index.php?option=com_emundus&controller=email&task=gettriggersbyprogram&pid=" + this.prog)
-      .then(response => {
-        this.triggers = response.data.data;
-      });
+          .then(response => {
+            this.triggers = response.data.data;
+          });
     },
     triggerUsersWithProfile(trigger) {
       if (trigger.profile !== null) {
@@ -193,45 +202,9 @@ export default {
 };
 </script>
 <style scoped>
-  .create-trigger{
-    text-align: center;
-    width: 100%;
-    margin-bottom: 4em;
-  }
-
-  .choices-buttons{
-    display: flex;
-    align-items: center;
-    margin-bottom: 1em;
-  }
-  .choices-buttons h2{
-    margin-right: 1em;
-  }
-  .choices-buttons .bouton-sauvergarder-et-continuer{
-    float: unset;
-  }
-
-  .trigger-item{
-    display: flex;
-    justify-content: space-between;
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 5px;
-    align-items: center;
-    margin: 1em 0;
-    border: solid 2px #ececec;
-  }
-
-  .remove-user{
-    border-radius: 50%;
-    height: 30px;
-    width: 30px;
-    transition: all 0.3s ease-in-out;
-  }
-  .remove-user:hover{
-    background-color: red;
-  }
-  .remove-user:hover > .fa-times {
-    color: white;
-  }
+.em-email-card{
+  background: white;
+  border-radius: 5px;
+  padding: 16px 24px;
+}
 </style>

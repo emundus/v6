@@ -4,7 +4,7 @@
     <modal
       :name="'modalAddTrigger' + triggerAction"
       height="auto"
-      transition="little-move-left"
+      transition="nice-modal-fade"
       :min-width="200"
       :min-height="200"
       :delay="100"
@@ -13,100 +13,94 @@
       @closed="beforeClose"
       @before-open="beforeOpen"
     >
-        <ModalEmailPreview
-                :model="this.form.model"
-                :models="this.models"
-        />
+      <ModalEmailPreview
+          :model="this.form.model"
+          :models="this.models"
+      />
 
-      <div class="fixed-header-modal">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
-              <em class="fas fa-times"></em>
-            </button>
-          </div>
-                        <div class="update-field-header">
-          <h2 class="update-title-header">
-             {{addTrigger}}
-          </h2>
-                        </div>
-        </div>
+      <div class="em-flex-row em-flex-space-between em-mb-16">
+        <span class="em-h4">
+          {{addTrigger}}
+        </span>
+        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
 
-      <div class="modalC-content">
-        <div class="form-group">
+      <div>
+        <div class="em-mb-16">
           <label>{{Model}}* :</label>
-          <div class="input-can-translate">
-            <select v-model="form.model" class="dropdown-toggle" :class="{ 'is-invalid': errors.model}">
+          <div class="em-flex-row">
+            <select v-model="form.model" class="em-w-100" :class="{ 'is-invalid': errors.model}">
               <option v-for="(model, index) in models" :key="index" :value="model.id">{{model.subject}}</option>
             </select>
-            <button class="btnPreview mb-0" type="button" v-if="form.model != -1" @click.prevent="$modal.show('modalEmailPreview_' + form.model)">
-              <em class="fas fa-eye"></em>
-            </button>
           </div>
-          <p v-if="errors.model" class="error col-md-12 mb-2">
-            <span class="error">{{ModelRequired}}</span>
-          </p>
+          <span v-if="errors.model" class="em-red-500-color em-mb-8">
+            <span class="em-red-500-color">{{ModelRequired}}</span>
+          </span>
         </div>
-        <div class="form-group">
+
+        <div class="em-mb-16">
           <label>{{Status}}* :</label>
-          <select v-model="form.status" class="dropdown-toggle" :class="{ 'is-invalid': errors.status}">
+          <select v-model="form.status" class="em-w-100" :class="{ 'is-invalid': errors.status}">
             <option v-for="(statu,index) in status" :key="index" :value="statu.step">{{statu.value}}</option>
           </select>
-          <p v-if="errors.status" class="error">
-            <span class="error">{{StatusRequired}}</span>
-          </p>
+          <span v-if="errors.status" class="em-red-500-color em-mb-8">
+            <span class="em-red-500-color">{{StatusRequired}}</span>
+          </span>
         </div>
-        <div class="form-group">
+
+        <div class="em-mb-16">
           <label>{{Target}}* :</label>
-          <select v-model="form.target" class="dropdown-toggle" :class="{ 'is-invalid': errors.target}">
+          <select v-model="form.target" class="em-w-100" :class="{ 'is-invalid': errors.target}">
             <option value="5">{{Administrators}}</option>
             <option value="6">{{Evaluators}}</option>
             <option value="1000">{{Candidates}}</option>
 <!--            <option value="0">{{DefinedUsers}}</option>-->
           </select>
-          <p v-if="errors.target" class="error">
-            <span class="error">{{TargetRequired}}</span>
-          </p>
+          <span v-if="errors.target" class="em-red-500-color em-mb-8">
+            <span class="em-red-500-color">{{TargetRequired}}</span>
+          </span>
         </div>
-        <div class="form-group" v-if="form.target == 0" style="align-items: baseline">
+
+        <div class="em-mb-16" v-if="form.target == 0" style="align-items: baseline">
           <label>{{ChooseUsers}}* :</label>
-          <div class="wrap">
-               <div class="search">
-                  <input type="text" class="searchTerm" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
-                  <button type="button" class="searchButton" @click="searchUserByTerm">
-                    <em class="fas fa-search"></em>
-                 </button>
-               </div>
-            </div>
-            <div class="select-all">
-              <input type="checkbox" class="form-check-input bigbox" @click="selectAllUsers" v-model="selectall">
-              <label class="mb-0 ml-10px">
-                {{SelectAll}}
-              </label>
-            </div>
-          <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
-            <div v-for="(user, index) in users" :key="index" class="user-item">
-              <input type="checkbox" class="form-check-input bigbox" v-model="selectedUsers[user.id]">
-              <div class="ml-10px">
+          <div class="em-flex-row">
+            <input type="text" class="em-w-100" :placeholder="Search" v-model="searchTerm" @keyup="searchUserByTerm">
+            <button type="button" class="em-transparent-button em-ml-8" @click="searchUserByTerm">
+              <span class="material-icons-outlined">search</span>
+            </button>
+          </div>
+          <div class="em-flex-row">
+            <input type="checkbox" @click="selectAllUsers" v-model="selectall">
+            <label class="em-ml-8">
+              {{SelectAll}}
+            </label>
+          </div>
+
+          <div :class="{ 'is-invalid': errors.selectedUsers}">
+            <div v-for="(user, index) in users" :key="index">
+              <input type="checkbox" v-model="selectedUsers[user.id]">
+              <div class="em-ml-8">
                   <p>{{user.name}}</p>
                   <p>{{user.email}}</p>
               </div>
             </div>
           </div>
-          <p v-if="errors.selectedUsers" class="error">
-            <span class="error">{{UsersRequired}}</span>
-          </p>
+          <span v-if="errors.selectedUsers" class="em-red-500-color em-mb-8">
+            <span class="em-red-500-color">{{UsersRequired}}</span>
+          </span>
         </div>
       </div>
-      <div class="em-flex-row em-flex-space-between mb-1">
-                <button type="button"
-                        class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)"
-                >{{Retour}}</button>
+
+      <div class="em-flex-row em-flex-space-between em-mb-8">
+        <button type="button" class="em-secondary-button em-w-auto" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">{{Retour}}</button>
         <button type="button"
-          class="bouton-sauvergarder-et-continuer"
+          class="em-primary-button em-w-auto"
           @click.prevent="createTrigger()"
         >{{ Continuer }}</button>
       </div>
+
     </modal>
   </span>
 </template>
@@ -286,7 +280,7 @@ export default {
               .then(response => {
                 this.form.model = response.data.data.model;
                 this.form.status = response.data.data.status;
-                if(response.data.data.target == null) {
+                if(response.data.data.target == null && response.data.data.to_current_user === 0 && response.data.data.to_applicant === 0) {
                   this.form.target = 0;
                   response.data.data.users.forEach(element => {
                     this.selectedUsers[element.user_id] = true;
@@ -294,7 +288,11 @@ export default {
                 } else if(response.data.data.target != 5 && response.data.data.target != 6) {
                   this.form.target = 1000;
                 } else {
-                  this.form.target = response.data.data.target;
+                  if(response.data.data.to_current_user === 1){
+                    this.form.target = 1000;
+                  } else {
+                    this.form.target = response.data.data.target;
+                  }
                 }
               });
     },
@@ -313,9 +311,5 @@ export default {
 </script>
 
 <style scoped>
-  .btnPreview{
-    margin-bottom: 10px;
-    position: relative;
-    background: transparent;
-  }
+@import "../../assets/css/modal.scss";
 </style>

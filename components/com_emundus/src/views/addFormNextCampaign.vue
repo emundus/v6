@@ -1,119 +1,98 @@
 <template>
-  <div class="em-w-75rem">
+  <div class="em-w-90rem">
     <ModalWarningFormBuilder
         :pid="getProfileId"
         :cid="campaignId"
     />
     <div>
-      <div>
-        <div>
-          <div>
-            <div class="em-flex-row em-mt-16">
-              <h2 v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
-              <h2 v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
-            </div>
-
-            <p v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
-            <p v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
-            <hr>
-            <div class="em-flex-row em-mb-32">
-              <p>
-                <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
-                {{translations.From}}
-                <strong>{{form.start_date}}</strong>
-                {{translations.To}}
-                <strong>{{form.end_date}}</strong>
-              </p>
-            </div>
-
-            <div v-if="profileId == null && loading == false" style="display: flex;" class="em-flex-row required">
-              <em class="fas fa-exclamation-circle icon-warning-margin"></em>
-              <p>{{translations.chooseProfileWarning}}</p>
-            </div>
-            </div>
-
-
-
-
-
-        </div>
-        <!--- start Menu --->
-        <div class="em-flex-row" >
-          <ul class="nav nav-tabs topnav">
-
-            <li v-for="(formCat, index) in formCategories[langue]" :key="'category-' + index" v-show="closeSubmenu">
-              <a  @click="profileId != null ? changeToCampMenu(index): ''"
-                  class="em-neutral-700-color em-pointer em-hover-blue-500"
-                  :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-                {{ formCat }}
-              </a>
-            </li>
-
-            <li v-for="(formProg, index) in formPrograms[langue]" :key="'program-' + index" v-show="closeSubmenu">
-              <a @click="profileId != null ? changeToProgMenu(index) : ''"
-                 class="em-neutral-700-color em-pointer em-hover-blue-500"
-                 :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-                {{ formProg }}
-              </a>
-
-            </li>
-
-          </ul>
-        </div>
-        <br>
-
-
-        <!-- end Menu -->
-
-        <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
-          <p style="color: #e5283b;"><em class="fas fa-exclamation-triangle mr-1 red"></em>{{translations.ProgramWarning}}</p>
-          <ul v-if="campaignsByProgram.length > 0">
-            <li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
-          </ul>
-        </div>
-        <transition name="slide-right">
-          <add-campaign
-              v-if="menuHighlight == 0 && campaignId !== ''"
-              :campaign="campaignId"
-              :coordinatorAccess="true"
-              :actualLanguage="actualLanguage"
-              :manyLanguages="manyLanguages"
-              @nextSection="menuHighlight++"
-              @getInformations="initInformations"
-          ></add-campaign>
-          <addFormulaire
-              v-if="menuHighlight == 2"
-              :profileId="profileId"
-              :campaignId="campaignId"
-              :profiles="profiles"
-              :key="formReload"
-              @profileId="setProfileId"
-              :visibility="null"
-          ></addFormulaire>
-
-          <add-documents-dropfiles
-              v-if="menuHighlight == 1"
-              :funnelCategorie="formCategories[langue][menuHighlight]"
-              :profileId="getProfileId"
-              :campaignId="campaignId"
-              :menuHighlight="menuHighlight"
-              :langue="actualLanguage"
-              :manyLanguages="manyLanguages"
-          />
-
-          <add-evaluation-grid
-              v-if="menuHighlightProg == 0 && program.id != 0"
-              :funnelCategorie="formPrograms[langue][menuHighlight]"
-              :prog="Number(program.id)"
-          ></add-evaluation-grid>
-
-          <add-email
-              v-if="menuHighlightProg == 1 && program.id != 0"
-              :prog="Number(program.id)"
-          ></add-email>
-        </transition>
+      <div class="em-flex-row em-mt-16">
+        <h2 v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
+        <h2 v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
       </div>
+      <p v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
+      <p v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
+
+      <hr>
+
+      <div class="em-flex-row em-mb-32">
+        <p>
+          <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
+          {{translations.From}}
+          <strong>{{form.start_date}}</strong>
+          {{translations.To}}
+          <strong>{{form.end_date}}</strong>
+        </p>
+      </div>
+
+      <!--- start Menu --->
+      <div class="em-flex-row" >
+        <ul class="nav nav-tabs topnav">
+
+          <li v-for="(formCat, index) in formCategories[langue]" :key="'category-' + index" v-show="closeSubmenu">
+            <a  @click="profileId != null ? changeToCampMenu(index): ''"
+                class="em-neutral-700-color em-pointer"
+                :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+              {{ formCat }}
+            </a>
+          </li>
+
+          <li v-for="(formProg, index) in formPrograms[langue]" :key="'program-' + index" v-show="closeSubmenu">
+            <a @click="profileId != null ? changeToProgMenu(index) : ''"
+               class="em-neutral-700-color em-pointer"
+               :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+              {{ formProg }}
+            </a>
+          </li>
+        </ul>
+      </div>
+      <br>
+
+
+      <!-- end Menu -->
+
+      <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
+        <p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{translations.ProgramWarning}}</p>
+        <ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32">
+          <li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
+        </ul>
+      </div>
+      <transition name="slide-right">
+        <add-campaign
+            v-if="menuHighlight == 0 && campaignId !== ''"
+            :campaign="campaignId"
+            :coordinatorAccess="true"
+            :actualLanguage="actualLanguage"
+            :manyLanguages="manyLanguages"
+            @nextSection="menuHighlight++"
+            @getInformations="initInformations"
+        ></add-campaign>
+        <addFormulaire
+            v-if="menuHighlight == 2"
+            :profileId="profileId"
+            :campaignId="campaignId"
+            :profiles="profiles"
+            :key="formReload"
+            @profileId="setProfileId"
+            :visibility="null"
+        ></addFormulaire>
+
+        <add-documents-dropfiles
+            v-if="menuHighlight == 1"
+            :funnelCategorie="formCategories[langue][menuHighlight]"
+            :profileId="getProfileId"
+            :campaignId="campaignId"
+            :menuHighlight="menuHighlight"
+            :langue="actualLanguage"
+            :manyLanguages="manyLanguages"
+        />
+
+        <add-email
+            v-if="menuHighlightProg == 0 && program.id != 0"
+            :prog="Number(program.id)"
+        ></add-email>
+      </transition>
     </div>
+
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
@@ -202,12 +181,12 @@ export default {
     formPrograms: [
       [
         //"Utilisateurs",
-        "Grille d'évaluation",
+        //"Grille d'évaluation",
         "Emails",
       ],
       [
         //"Users",
-        "Evaluation grid",
+        //"Evaluation grid",
         "Emails",
       ]
     ],
@@ -215,12 +194,12 @@ export default {
     formProgramsDesc: [
       [
         //"Ajoutez des utilisateurs, affectez-les à des rôles qui va leur donner des droits sur les dossiers.",
-        "Définissez une phase d'évaluation en créant une grille avec différents critères.",
+        //"Définissez une phase d'évaluation en créant une grille avec différents critères.",
         "Configurer des envois d'emails automatique aux changements de statuts de vos différents candidats.",
       ],
       [
         //"Users",
-        "Evaluation grid",
+        //"Evaluation grid",
         "Emails",
       ]
     ],
@@ -415,4 +394,9 @@ export default {
 
 <style scoped>
 @import "../assets/css/formbuilder.scss";
+
+.w--current{
+  border: solid 1px #eeeeee;
+  background: #eeeeee;
+}
 </style>

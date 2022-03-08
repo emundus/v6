@@ -229,7 +229,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
 .status-field{
   border-radius: 5px;
   width: 100%;

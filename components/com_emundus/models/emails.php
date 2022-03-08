@@ -2278,7 +2278,7 @@ class EmundusModelEmails extends JModelList {
     function getTriggerById($tid) {
         $query = $this->_db->getQuery(true);
 
-        $query->select(['DISTINCT(et.id) AS trigger_id','et.step AS status','et.email_id AS model','ep.profile_id AS target'])
+        $query->select(['DISTINCT(et.id) AS trigger_id','et.step AS status','et.email_id AS model','ep.profile_id AS target','et.to_current_user','et.to_applicant'])
             ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et'))
             ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'ep')
                 . ' ON ' .
