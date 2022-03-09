@@ -12,82 +12,60 @@
       :clickToClose="true"
       @closed="beforeClose"
       @before-open="beforeOpen">
-      <div class="fixed-header-modal">
-        <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalSide' + ID)">
-              <em class="fas fa-times"></em>
-            </button>
-          </div>
-        <div class="update-field-header">
-          <h2 class="update-title-header">
-             {{translations.editMenu}}
-          </h2>
-        </div>
-      </div>
-      <div class="modalC-content">
 
-        <div class="form-group" :class="{ 'mb-0': can_translate.label}">
-            <label>{{translations.Name}} :</label>
-          <div class="input-can-translate">
-            <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': can_translate.label}" type="button" v-if="manyLanguages !== '0'" @click="can_translate.label = !can_translate.label"></button>
-          </div>
-          <translation :label="label" :actualLanguage="actualLanguage" v-if="can_translate.label"></translation>
+            <div class="em-flex-row em-flex-space-between em-mb-16">
+        <span class="em-h4">
+          {{translations.editMenu}}
+        </span>
+        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalSide' + ID)">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div>
+        <div class="em-mb-16">
+          <label>{{translations.Name}} :</label>
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
         </div>
-        <p v-if="errors" class="error col-md-12 mb-2">
-          <span class="error">{{translations.LabelRequired}}</span>
+        <p v-if="errors" class="em-red-500-color">
+          <span class="em-red-500-color">{{translations.LabelRequired}}</span>
         </p>
 
-        <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
-          <div class="em-flex-row">
-            <label>{{translations.Intro}}</label>
-            <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': can_translate.intro}" type="button" @click="can_translate.intro = !can_translate.intro"></button>
-          </div>
-          <div>
-            <div class="em-flex-row" v-if="can_translate.intro">
-              <span>{{translations.TranslateIn}} : </span>
-              <select v-model="selectedLanguage" v-if="manyLanguages !== '0'" @change="dynamicComponent++" style="margin: 10px 0;">
-                <option v-for="language in languages" :key="language.sef" :value="language.sef">{{language.title_native}}</option>
-              </select>
-            </div>
-            <div class="input-can-translate">
-                <editor
-                  v-if="intro.hasOwnProperty(selectedLanguage)"
-                  :height="'30em'"
-                  :text="intro[selectedLanguage]"
-                  :lang="actualLanguage"
-                  :enable_variables="false"
-                  :id="'editor_' + selectedLanguage"
-                  :key="dynamicComponent"
-                  v-model="intro[selectedLanguage]"></editor>
-            </div>
-          </div>
+        <div class="em-mb-16" :class="{'mb-0': can_translate.intro}">
+          <label>{{translations.Intro}}</label>
+          <editor
+              v-if="intro.hasOwnProperty(selectedLanguage)"
+              :height="'30em'"
+              :text="intro[selectedLanguage]"
+              :lang="actualLanguage"
+              :enable_variables="false"
+              :id="'editor_' + selectedLanguage"
+              :key="dynamicComponent"
+              v-model="intro[selectedLanguage]"></editor>
         </div>
 
-        <div class="form-group em-flex-row mb-1" id="template_checkbox" style="align-items: center">
+        <div class="em-mb-16 em-flex-row" id="template_checkbox">
           <input type="checkbox" v-model="template">
-          <label class="ml-10px mb-0">{{translations.SaveAsTemplate}}</label>
+          <label class="em-ml-8">{{translations.SaveAsTemplate}}</label>
         </div>
 
-        <div class="em-flex-row em-flex-space-between mb-1">
-          <button
-              class="bouton-sauvergarder-et-continuer w-retour"
-              @click.prevent="$modal.hide('modalSide' + ID)">
-            {{translations.Retour}}
-          </button>
+        <div class="em-flex-row em-flex-space-between em-mb-16">
           <div class="em-flex-row">
-          <button
-              class="bouton-sauvergarder-et-continuer"
-              @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
-            {{translations.Continuer}}
-          </button>
+            <button
+                class="em-secondary-button em-w-auto"
+                @click.prevent="$modal.hide('modalSide' + ID)">
+              {{translations.Retour}}
+            </button>
+            <button class="em-tertiary-button em-w-auto"
+                    @click.prevent="deleteMenu()"
+                    v-if="menus.length > 1 && files == 0">
+              {{translations.Delete}}
+            </button>
           </div>
-        </div>
-        <div class="form-group em-flex-row mb-1">
-          <button class="bouton-sauvergarder-et-continuer w-delete"
-                  @click.prevent="deleteMenu()"
-                  v-if="menus.length > 1 && files == 0">
-            {{translations.Delete}}
+          <button
+              class="em-primary-button em-w-auto"
+              @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
+              {{translations.Continuer}}
           </button>
         </div>
       </div>

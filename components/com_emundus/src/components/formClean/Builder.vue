@@ -11,6 +11,7 @@
         @show="show"
         @modalClosed="$emit('modalClosed')"
         @modalOpen="$emit('modalOpen')"
+        @createGroup="$emit('createGroup')"
         :UpdateUx="UpdateUx"
         @UpdateUxf="UpdateUXF"
         :key="builderViewKey"

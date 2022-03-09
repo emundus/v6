@@ -51,76 +51,78 @@
       />
     </div>
     <div class="em-formbuilder-grid-3" v-if="indexHighlight != -1">
-      <div class="em-sidebar-elements">
-        <transition name="move-right">
-          <div>
+      <div style="background: white">
+        <div class="em-sidebar-elements">
+          <transition name="move-right">
             <div>
+              <div>
               <span class="em-body-16-semibold" :title="translations.addItem">
                 {{ translations.addItem }}
               </span>
-              <hr class="em-sidebar-divider">
-            </div>
-            <!--                  <a class="em-flex-row action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
-                                <span class="material-icons">note_add</span>
-                                <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addMenu}}</label>
-                              </a>
-                              &lt;!&ndash;<a class="em-flex-row action-link" @click="createGroup()" :title="translations.addGroup">&ndash;&gt;
-                            <a class="em-flex-row action-link" @click="createGroup([],'')" :title="translations.addGroup">
-                                <span class="material-icons">table_rows</span>
-                                <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addGroup}}</label>
-                              </a>
-                              <a class="em-flex-row action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="translations.addItem">
-                                <span class="material-icons">text_fields</span>
-                                <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
-                              </a>-->
-            <transition :name="'slide-right'" type="transition">
-              <div>
-                <draggable
-                    v-model="plugins"
-                    v-bind="dragOptions"
-                    handle=".handle"
-                    @start="startDragging();dragging = true;draggingIndex = index"
-                    @end="addingNewElement($event)"
-                    drag-class="plugin-drag"
-                    chosen-class="plugin-chosen"
-                    ghost-class="plugin-ghost">
-                  <div class="em-flex-row em-flex-space-between em-plugin" v-for="(plugin,index) in plugins" :key="'plugin_' + index" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
-                    <div class="em-flex-row">
-                      <em :class="plugin.icon"></em>
-                      <span class="em-ml-8">{{plugin.name}}</span>
-                    </div>
-                    <span class="material-icons-outlined handle">drag_indicator</span>
-                  </div>
-                </draggable>
+                <hr class="em-sidebar-divider">
               </div>
-            </transition>
-
-            <!--                <transition :name="'slide-right'" type="transition">
-                              <div class="plugins-list" v-if="addingSection">
-                                <a class="em-flex-row col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingSection = !addingSection" :title="Back">
-                                  <em class="fas fa-arrow-left em-mr-4"></em>
-                                  {{ translations.Back }}
+              <!--                  <a class="em-flex-row action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
+                                  <span class="material-icons">note_add</span>
+                                  <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addMenu}}</label>
                                 </a>
-                                <hr style="width: 80%;margin: 10px auto;">
-                               &lt;!&ndash; <draggable
-                                    v-model="sections"
-                                    v-bind="dragOptions"
-                                    handle=".handle"
-                                    @start="startDragging();dragging = true;draggingIndex = index"
-                                    @end="addingNewElement($event)"
-                                    drag-class="plugin-drag"
-                                    chosen-class="plugin-chosen"
-                                    ghost-class="plugin-ghost"
-                                    style="padding-bottom: 2em;margin-top: 10%">&ndash;&gt;
-                                  <div class="em-flex-row plugin-link col-md-offset-1 col-sm-offset-1 " v-for="(section,index) in sections" :id="'section_' + section.value" @click="createGroup(section.value,section.label)" :title="section.name" style="cursor: default" >
-                                    <em :class="section.icon"></em>
-                                    <span class="ml-10px">{{section.name}}</span>
-                                  </div>
-                               &lt;!&ndash; </draggable>&ndash;&gt;
-                              </div>
-                            </transition>-->
-          </div>
-        </transition>
+                                &lt;!&ndash;<a class="em-flex-row action-link" @click="createGroup()" :title="translations.addGroup">&ndash;&gt;
+                              <a class="em-flex-row action-link" @click="createGroup([],'')" :title="translations.addGroup">
+                                  <span class="material-icons">table_rows</span>
+                                  <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addGroup}}</label>
+                                </a>
+                                <a class="em-flex-row action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="translations.addItem">
+                                  <span class="material-icons">text_fields</span>
+                                  <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
+                                </a>-->
+              <transition :name="'slide-right'" type="transition">
+                <div>
+                  <draggable
+                      v-model="plugins"
+                      v-bind="dragOptions"
+                      handle=".handle"
+                      @start="startDragging();dragging = true;draggingIndex = index"
+                      @end="addingNewElement($event)"
+                      drag-class="plugin-drag"
+                      chosen-class="plugin-chosen"
+                      ghost-class="plugin-ghost">
+                    <div class="em-flex-row em-flex-space-between em-plugin handle em-grab" v-for="(plugin,index) in plugins" :key="'plugin_' + index" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                      <div class="em-flex-row">
+                        <em :class="plugin.icon"></em>
+                        <span class="em-ml-8">{{plugin.name}}</span>
+                      </div>
+                      <span class="material-icons-outlined">drag_indicator</span>
+                    </div>
+                  </draggable>
+                </div>
+              </transition>
+
+              <!--                <transition :name="'slide-right'" type="transition">
+                                <div class="plugins-list" v-if="addingSection">
+                                  <a class="em-flex-row col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingSection = !addingSection" :title="Back">
+                                    <em class="fas fa-arrow-left em-mr-4"></em>
+                                    {{ translations.Back }}
+                                  </a>
+                                  <hr style="width: 80%;margin: 10px auto;">
+                                 &lt;!&ndash; <draggable
+                                      v-model="sections"
+                                      v-bind="dragOptions"
+                                      handle=".handle"
+                                      @start="startDragging();dragging = true;draggingIndex = index"
+                                      @end="addingNewElement($event)"
+                                      drag-class="plugin-drag"
+                                      chosen-class="plugin-chosen"
+                                      ghost-class="plugin-ghost"
+                                      style="padding-bottom: 2em;margin-top: 10%">&ndash;&gt;
+                                    <div class="em-flex-row plugin-link col-md-offset-1 col-sm-offset-1 " v-for="(section,index) in sections" :id="'section_' + section.value" @click="createGroup(section.value,section.label)" :title="section.name" style="cursor: default" >
+                                      <em :class="section.icon"></em>
+                                      <span class="ml-10px">{{section.name}}</span>
+                                    </div>
+                                 &lt;!&ndash; </draggable>&ndash;&gt;
+                                </div>
+                              </transition>-->
+            </div>
+          </transition>
+        </div>
       </div>
 
       <div class="em-sidebar-preview em-mt-32">
@@ -128,14 +130,11 @@
           <div v-show="!updateFormLabel">
             <span class="em-h4" @click="enableUpdatingForm">{{profileLabel}}</span>
           </div>
+
           <div v-show="updateFormLabel">
-            <div>
+            <div class="em-flex-row">
               <input v-model="profileLabel" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
-              <div class="em-flex-row em-ml-8">
-                <a @click="updateLabelForm()" :title="translations.Validate">
-                  <span class="material-icons-outlined em-mr-4">done</span>
-                </a>
-              </div>
+              <span class="material-icons-outlined em-ml-8">done</span>
             </div>
           </div>
         </div>
@@ -148,6 +147,7 @@
                 :UpdateUx="UpdateUx"
                 @show="show"
                 @UpdateFormBuilder="updateFormObjectAndComponent"
+                @createGroup="createGroup"
                 @removeGroup="removeGroup"
                 @modalClosed="optionsModal = false"
                 @modalOpen="optionsModal = true"
@@ -170,6 +170,7 @@
                 :UpdateUx="UpdateUx"
                 @show="show"
                 @UpdateFormBuilder="updateFormObjectAndComponent"
+                @createGroup="createGroup"
                 @removeGroup="removeGroup"
                 @modalClosed="optionsModal = false"
                 @modalOpen="optionsModal = true"
@@ -185,78 +186,80 @@
           </div>
         </div>
       </div>
-      <div>
-        <ul v-if="formObjectArray">
-          <div class="em-flex-row em-flex-space-between em-mb-8">
-            <h3>{{ translations.FormPage }}</h3>
-            <label>{{ translations.Savingat }} {{lastUpdate}}<span class="material-icons-outlined em-ml-8">sync</span></label>
-          </div>
-          <div>
-            <p class="em-h4"><span class="material-icons">article</span>{{ translations.Form }}</p>
-            <draggable
-                handle=".handle"
-                v-model="formList"
-                :class="'draggables-list'"
-                @end="SomethingChange"
-            >
-              <li v-for="(value, index) in formList" :key="index" class="MenuForm" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
-                  <span class="icon-handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
-                    <em class="fas fa-grip-vertical handle"></em>
-                  </span>
-                <a @click="changeGroup(index,value.rgt);menuHighlight = 0"
-                   class="MenuFormItem"
-                   :title="value.label"
-                   :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''" >
-                  {{value.label}}
-                </a>
-              </li>
-            </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalMenu');optionsModal = true" style="margin-left: 30px" :title="translations.addMenuAction">{{translations.addMenuAction}}</button>
-          </div>
-          <div>
-            <p class="em-h4"><span class="material-icons">folder</span>{{ translations.Documents }}</p>
-            <draggable
-                handle=".handle"
-                v-model="documentsList"
-                :class="'draggables-list'"
-                @end="reorderingDocuments"
-            >
-              <li v-for="(doc, index) in documentsList" :key="index" class="MenuForm" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()" v-if="doc.displayed==1">
-                  <span class="icon-handle" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
-                    <em class="fas fa-grip-vertical handle"></em>
-                  </span>
-                <a class="MenuFormItem"
-                   :title="doc.label">
-                  {{doc.label}}<span v-if="doc.mandatory == 1" style="color: red">*</span>
-                </a>
-                <a @click="removeDocument(index,doc.id)" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
-                  <i class="fas fa-times" style="width: 15px;height: 15px;"></i>
-                </a>
-                <a @click="currentDoc = doc.docid;$modal.show('modalAddDocuments');optionsModal = true" :title="translations.Edit" class="cta-block pointer" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">
-                  <em class="fas fa-pen" style="width: 15px;height: 14px;" data-toggle="tooltip" data-placement="top"></em>
-                </a>
-              </li>
-            </draggable>
-            <button class="bouton-sauvergarder-et-continuer" @click="currentDoc = null;$modal.show('modalAddDocuments');optionsModal = true" style="margin-left: 30px" :title="translations.AddNewDocument">{{translations.AddNewDocument}}</button>
 
+      <div style="background: white">
+        <div class="em-sidebar-navigation">
+          <div class="em-flex-row em-mb-8">
+            <span>{{ translations.Savingat }} {{lastUpdate}}</span>
+            <span class="material-icons-outlined em-ml-8 sync-loading">sync</span>
           </div>
-          <div class="form-pages" style="padding-top: 20px" v-if="submittionPages">
-            <h4 class="ml-10px form-title" style="margin-bottom: 10px;padding: 0"><img src="/images/emundus/menus/confirmation.png" class="em-mr-4" :alt="translations.SubmitPage">{{translations.SubmitPage}}</h4>
-            <li v-for="(value, index) in submittionPages" :key="index" class="MenuForm">
-              <a @click="menuHighlight = 1;indexHighlight = index"
-                 class="MenuFormItem"
-                 style="margin-left: 5px"
-                 :title="value.object.show_title.value != '' ? value.object.show_title.value : translations.SubmittionPage"
-                 :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
-                {{value.object.show_title.value ? value.object.show_title.value : translations.SubmittionPage}}
-              </a>
-            </li>
+
+          <div v-if="formObjectArray">
+            <div class="em-mb-44">
+              <div class="em-flex-row em-flex-space-between em-mb-32">
+                <span class="em-h4">{{ translations.FormPage }}</span>
+                <span @click="$modal.show('modalMenu')" :title="translations.addMenuAction" class="material-icons em-pointer">add</span>
+              </div>
+
+              <draggable
+                  handle=".handle"
+                  v-model="formList"
+                  :class="'draggables-list'"
+                  @end="SomethingChange"
+              >
+                <div v-for="(value, index) in formList" :key="index" class="MenuForm em-mb-16 em-flex-row" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+                  <span class="material-icons handle" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">drag_indicator</span>
+                  <span @click="changeGroup(index,value.rgt);menuHighlight = 0"
+                        class="MenuFormItem em-pointer"
+                        :title="value.label"
+                        :class="indexHighlight == index && menuHighlight === 0 ? 'MenuFormItem_current' : ''" >
+                  {{value.label}}
+                </span>
+                </div>
+              </draggable>
+
+              <div v-if="submittionPages">
+                <div v-for="(value, index) in submittionPages" :key="index" class="MenuForm" style="margin-left: 18px">
+                <span @click="menuHighlight = 1;indexHighlight = index"
+                      class="MenuFormItem em-pointer"
+                      :title="value.object.show_title.value != '' ? value.object.show_title.value : translations.SubmittionPage"
+                      :class="indexHighlight == index && menuHighlight === 1 ? 'MenuFormItem_current' : ''">
+                  {{value.object.show_title.value ? value.object.show_title.value : translations.SubmittionPage}}
+                </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="em-mb-44">
+              <div class="em-flex-row em-flex-space-between em-mb-32">
+                <span class="em-h4">{{ translations.Documents }}</span>
+                <span @click="currentDoc = null;$modal.show('modalAddDocuments');" :title="translations.AddNewDocument" class="material-icons em-pointer">add</span>
+              </div>
+
+              <draggable
+                  handle=".handle"
+                  v-model="documentsList"
+                  :class="'draggables-list'"
+                  @end="reorderingDocuments"
+              >
+                <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm em-mb-16 em-flex-row em-flex-space-between" @mouseover="enableGrabDocuments(index)" @mouseleave="disableGrabDocuments()" v-if="doc.displayed==1">
+                  <div class="em-flex-row">
+                    <span class="material-icons handle" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'">drag_indicator</span>
+                    <span class="MenuFormItem em-pointer" :title="doc.label" @click="currentDoc = doc.docid;$modal.show('modalAddDocuments')">
+                    {{doc.label}}<span v-if="doc.mandatory == 1" style="color: red">*</span>
+                  </span>
+                  </div>
+                  <span @click="removeDocument(index,doc.id)" :style="grabDocs && indexGrabDocuments == index ? 'opacity: 1' : 'opacity: 0'" class="material-icons">close</span>
+                </div>
+              </draggable>
+            </div>
+
+            <div class="em-flex-row em-flex-space-between">
+              <button class="em-secondary-button em-w-auto" @click="exitForm" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
+              <button class="em-primary-button em-w-auto" @click="sendForm" :title="translations.Validate">{{translations.Validate}}</button>
+            </div>
           </div>
-          <div class="em-flex-row">
-            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="translations.Validate">{{translations.Validate}}</button>
-            <button class="bouton-sauvergarder-et-continuer mt-1" @click="exitForm" style="margin-left: 10px" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
-          </div>
-        </ul>
+        </div>
       </div>
 
     </div>
@@ -693,17 +696,11 @@ export default {
     addingNewElement: function(evt) {
       this.dragging = false;
       this.draggingIndex = -1;
-      if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined') {
-        document.getElementsByClassName('no-elements-tip')[0].style.background = '#e4e4e9';
-        document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
-        document.getElementsByClassName('no-elements-tip')[0].innerHTML = this.translate("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
-      }
+
       let plugin = evt.clone.id.split(/_(.+)/)[1];
       let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
       if(typeof gid != 'undefined'){
-
         this.createElement(gid, plugin, evt.newIndex);
-
       }
     },
     addingNewElementByDblClick: _.debounce(function(plugin) {
@@ -736,7 +733,7 @@ export default {
 
       })
     },
-    createGroup(plugins,label) {
+    createGroup(plugins = [],label = '') {
       this.loading = true;
       let param = this.formObjectArray[this.indexHighlight].object.id;
       if(this.menuHighlight === 1){
@@ -942,9 +939,9 @@ export default {
         type
       });
       this.lastUpdate = new Date().getHours() + ':' + (new Date().getMinutes()<10?'0':'') + new Date().getMinutes();
-      document.getElementsByClassName('fa-sync')[0].style.transform = 'rotate(360deg)';
+      document.getElementsByClassName('sync-loading')[0].style.transform = 'rotate(360deg)';
       setTimeout(() => {
-        document.getElementsByClassName('fa-sync')[0].style.transform = 'unset';
+        document.getElementsByClassName('sync-loading')[0].style.transform = 'unset';
       },1500);
     },
     showTip(group, text = "", title = "Information") {
@@ -1388,6 +1385,10 @@ export default {
     this.cid = this.$store.getters['global/datas'].cid.value;
     //
 
+    document.querySelector('#g-container-main .g-container').style.width = '100%';
+    document.querySelector('#g-container-main .g-container').style.marginLeft = '55px';
+    document.querySelector('#g-container-main .g-container').style.paddingRight = '75px';
+
     this.getForms();
     this.getDocuments();
     this.getSubmittionPage();
@@ -1419,10 +1420,20 @@ export default {
   grid-template-columns: 20% 60% 20%;
 }
 .em-sidebar-elements{
-  position: relative;
-  left: -16%;
+  position: sticky;
+  left: 0;
+  top: 87px;
   padding: 0 10px;
   background: white;
+  align-self: start;
+}
+.em-sidebar-navigation{
+  background: white;
+  padding: 8px 55px 0 12px;
+  position: sticky;
+  right: -30px;
+  align-self: start;
+  top: 87px;
 }
 .MenuFormItem_current{
   color: #20835F;

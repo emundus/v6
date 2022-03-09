@@ -2,6 +2,25 @@
 span[id*='modalEmailPreview_'] .v--modal,
 #modalUpdateLogo .v--modal,
 #modalUpdateIcon .v--modal,
-#modalUpdateColors .v--modal{
+#modalUpdateColors .v--modal {
   padding: 32px !important;
+}
+
+span[id*='modalEditElement'] .v--modal,
+#modalAddDocuments .v--modal,
+#modalMenu .v--modal,
+#modalSide .v--modal{
+  position: fixed;
+  right: 0;
+  left: unset !important;
+  height: 100% !important;
+  padding: 32px;
+  top: 0 !important;
+}
+
+span[id*='modalEditElement'] .v--modal-overlay,
+#modalAddDocuments .v--modal-overlay,
+#modalMenu .v--modal-overlay,
+#modalSide .v--modal-overlay{
+  background: unset;
 }

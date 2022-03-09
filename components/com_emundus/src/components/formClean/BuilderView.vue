@@ -9,7 +9,7 @@
     />
     <div class="em-flex-row em-flex-space-between page-header" v-if="eval == 0 && !updatePage">
       <span v-if="object_json.show_title" class="em-mr-8 em-h3" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="material-icons-outlined">edit</span>
+      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="material-icons-outlined em-pointer">edit</span>
     </div>
 
     <div v-show="updatePage && indexPage == object_json.id" class="em-flex-row page-header">
@@ -18,6 +18,8 @@
     </div>
 
     <p v-if="eval == 0 && !updateIntroPage" class="em-mt-16" v-html="object_json.intro_value" />
+
+    <button class="em-primary-button em-w-auto em-m-center" @click="$emit('createGroup')">{{ translate('COM_EMUNDUS_ADD_SECTION') }}</button>
 
     <form method="post" v-on:submit.prevent object_json.attribs class="fabrikForm" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
@@ -82,39 +84,31 @@
                 </div>
               </div>
             </div>
-            <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
-              <div class="input-can-translate">
-                <input v-model="group.label[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
-                <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label_group ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationGroup(group.group_id)"></button>
-                <div class="em-flex-row actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label_group ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                  <a @click="updateLabelGroup(group)" :title="translations.Validate">
-                    <em class="fas fa-check em-mr-4" data-toggle="tooltip" data-placement="top"></em>
-                  </a>
-                </div>
-              </div>
-              <translation :label="group.label" :actualLanguage="actualLanguage" v-if="translate.label_group"></translation>
+
+            <div class="em-flex-row em-flex-space-between" v-show="updateGroup && indexGroup == group.group_id">
+              <input v-model="group.label[actualLanguage]" :class="translate.label_group ? '' : 'mb-1'" @keyup.enter="updateLabelGroup(group)" :id="'update_input_' + group.group_id"/>
+              <span @click="updateLabelGroup(group)" :title="translations.Validate" class="material-icons-outlined em-pointer">done</span>
             </div>
             <div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>
 
             <template v-if="group.elts !== undefined">
-              <div v-if="group.elts.length == 0" class="no-elements-tip">{{ translations.NoElementsTips }}</div>
+              <div v-if="group.elts.length == 0" class="em-no-elements-in-group">{{ translations.NoElementsTips }}</div>
             </template>
 
-            <div class="elements-block" v-show="openGroup[group.group_id]">
+            <div v-show="openGroup[group.group_id]" class="em-mt-16">
               <draggable
                   handle=".handle"
                   v-model="group.elts"
                   @start="draggable = true"
                   @end="SomethingChange"
-                  group="items"
-                  class="draggable-span">
-                <transition-group :name="'slide-down'" type="transition">
+                  group="items">
+                <transition-group :name="'slide-down'" type="transition" class="em-list-elements">
                   <div v-for="(element,index) in group.elts"
                        v-bind:key="element.id"
                        v-show="element.hidden === false"
                        @mouseover="enableActionBar(element.id)"
                        @mouseleave="disableActionBar()"
-                       class="builder-item-element">
+                       class="row-fluid">
                     <modalEditElement
                         :elementId="element.id"
                         :gid="element.group_id"
@@ -126,7 +120,6 @@
                         @updateRequireEvent="updateRequireEvent(element)"
                         @modalClosed="$emit('modalClosed')"
                         @show="show"
-                        :id="element.id"
                         :key="keyElements['element' + element.id]"
                         :profileId="prid"
                     />
@@ -140,55 +133,48 @@
                         @modalClosed="$emit('modalClosed')"
                         :key="keyElements['element' + element.id]"
                     />
-                    <div class="em-flex-row builder-item-element__properties" :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
-                      <div class="w-100">
-                        <div class="em-flex-row" style="align-items: baseline" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
+                    <div class="control-group fabrikElementContainer span12">
+                      <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2" @click="openParameters(element)"
+                           :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
+                        <div class="em-flex-row" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
                           <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
-                          <a @click="enableLabelInput(element.id)" :style="hoverUpdating && indexHighlight == element.id && !clickUpdatingLabel ? 'opacity: 1' : 'opacity: 0'" :title="translations.Edit" class="cta-block pointer" style="font-size: 16px">
-                            <em class="fas fa-pen ml-10px" data-toggle="tooltip" data-placement="top"></em>
-                          </a>
                         </div>
-                        <div class="input-can-translate" v-show="clickUpdatingLabel && indexHighlight == element.id">
-                          <input v-model="element.label[actualLanguage]" class="form__input field-general w-input" :class="translate.label ? '' : 'mb-1'" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
-                          <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.label ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationLabel(element.id)"></button>
-                          <div class="em-flex-row actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.label ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-                            <a @click="updateLabelElement(element)" :title="translations.Validate">
-                              <em class="fas fa-check" data-toggle="tooltip" data-placement="top"></em>
-                            </a>
-                          </div>
+
+                        <div v-show="clickUpdatingLabel && indexHighlight == element.id" class="em-flex-row em-flex-space-between">
+                          <input v-model="element.label[actualLanguage]" @keyup.enter="updateLabelElement(element)" :id="'label_' + element.id"/>
+                          <span @click="updateLabelElement(element)" :title="translations.Validate" class="material-icons-outlined em-pointer">done</span>
                         </div>
-                        <translation :label="element.label" :actualLanguage="actualLanguage"v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id"></translation>
-                        <div v-else-if="element.labelsAbove == 0" class="controls">
-                          <div v-if="element.error" class="fabrikElement" v-html="element.error"></div>
+
+                        <div v-if="element.labelsAbove == 0" class="controls">
                           <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
                           <span v-if="element.tipSide" v-html="element.tipSide"></span>
                         </div>
-                        <span v-else class="em-flex-row w-100">
-                          <div v-if="element.element" class="fabrikElement" v-html="element.error"></div>
-                          <div v-if="element.element" :class="element.errorClass" v-html="element.element" class="w-100"></div>
-                          <span v-if="element.tipSide" v-html="element.tipSide"></span>
-                        </span>
+                        <div v-else class="fabrikElement" v-html="element.element"></div>
+                        <span v-if="element.tipSide" v-html="element.tipSide"></span>
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
-                      <div class="actions-item-bar" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                        <a class="em-flex-row mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="translations.Settings">
-                          <em class="fas fa-cog settings-elt"></em>
+
+                      <div class="em-w-90 em-mt-8 em-flex-row em-flex-space-between" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                        <a class="em-flex-row em-mr-8" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
+                          <div class="em-toggle">
+                            <input type="checkbox" class="em-toggle-check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
+                            <strong class="b em-toggle-switch"></strong>
+                            <strong class="b em-toggle-track"></strong>
+                          </div>
+                          <span class="em-ml-8" style="color:black">{{translations.Required}} </span>
                         </a>
-                        <a class="em-flex-row mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0" :title="translations.Delete">
-                          <em class="fas fa-trash-alt delete-icon-elt"></em>
-                        </a>
-                        <a class="em-flex-row mr-2 mt-1" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">
-                          <em class="fas fa-link settings-elt"></em>
-                        </a>
-                      </div>
-                      <a class="em-flex-row mr-2" v-if="element.plugin != 'display'" :style="hoverUpdating && indexHighlight == element.id ? 'opacity: 1' : 'opacity: 0'">
-                        <div class="toggle">
-                          <input type="checkbox" class="check" v-model="element.FRequire" @click="updateRequireElement(element)"/>
-                          <strong class="b switch"></strong>
-                          <strong class="b track"></strong>
+
+                        <div class="em-flex-row">
+                          <div class="em-flex-row em-mr-8 em-pointer" @click="deleteElement(element,index)" :title="translations.Delete">
+                            <span class="material-icons-outlined em-red-500-color">delete</span>
+                          </div>
+                          <a class="em-flex-row em-mr-8 em-pointer" target="_blank" :href="'/administrator/index.php?option=com_fabrik&view=element&layout=edit&id=' + element.id" v-if="sysaccess">
+                            <span class="material-icons-outlined">link</span>
+                          </a>
                         </div>
-                        <span class="ml-10px" style="color:black">{{translations.Required}} </span>
-                      </a>
+                      </div>
+
+
                     </div>
                   </div>
                 </transition-group>
@@ -200,6 +186,8 @@
       </draggable>
       <div v-if="object_json.pluginbottom" v-html="object_json.pluginbottom"></div>
     </form>
+
+    <button class="em-primary-button em-w-auto em-m-center" @click="$emit('createGroup')">{{ translate('COM_EMUNDUS_ADD_SECTION') }}</button>
   </div>
 </template>
 
@@ -528,12 +516,13 @@ export default {
     },
 
     openParameters(element){
-      if(this.clickUpdatingLabel) {
+      /*if(this.clickUpdatingLabel) {
         this.updateLabelElement(element);
-      }
+      }*/
       this.repeat = false;
-      this.$emit('modalOpen')
+      //this.$emit('modalOpen')
       this.$modal.show('modalEditElement' + element.id)
+      console.log('here');
     },
     retrieveAssociateElementDoc(docid){
       axios({
@@ -1335,5 +1324,24 @@ export default {
 <style scoped lang="scss">
 .em-handle-group{
   position: absolute;
+}
+.element-updating{
+  border: solid 2px #20835F !important;
+  border-radius: 4px;
+}
+.em-transparent-border-2{
+  border: solid 2px transparent;
+}
+.em-no-elements-in-group{
+  text-align: center;
+  margin-top: 16px;
+  padding: 24px 0;
+  border: dashed 2px #919191;
+  border-radius: 4px;
+}
+.em-list-elements{
+  min-height: 100px;
+  display: block;
+  width: 100%;
 }
 </style>

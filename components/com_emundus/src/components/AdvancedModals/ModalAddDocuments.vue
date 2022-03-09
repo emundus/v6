@@ -13,86 +13,80 @@
         @closed="beforeClose"
         @before-open="beforeOpen"
     >
-      <div class="fixed-header-modal">
-          <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddDocuments')">
-              <em class="fas fa-times"></em>
-            </button>
-          </div>
-                <div class="update-field-header">
-            <h2 class="update-title-header" v-if="currentDoc ==null">
-               {{ translations.createDocument }}
-            </h2>
-            <h2 class="update-title-header" v-if="currentDoc != null">
-               {{ translations.editDocument }}
-            </h2>
-                </div>
-        </div>
 
-      <div class="modalC-content">
-        <div class="mb-1">
+      <div class="em-flex-row em-flex-space-between em-mb-16">
+        <span class="em-h4" v-if="currentDoc ==null">
+          {{translations.createDocument}}
+        </span>
+        <span class="em-h4" v-if="currentDoc != null">
+          {{translations.createDocument}}
+        </span>
+        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddDocuments')">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
 
-          <a class="em-flex-row tool-icon">
-            <div class="toggle">
-              <input type="checkbox" class="check" v-model="req" @click="updateRequireMandatory()"/>
-              <strong class="b switch"></strong>
-              <strong class="b track"></strong>
+      <div>
+        <div class="em-mb-16">
+          <a class="em-flex-row">
+            <div class="em-toggle">
+              <input type="checkbox" class="em-toggle-check" name="require" v-model="req" @click="updateRequireMandatory()"/>
+              <strong class="b em-toggle-switch"></strong>
+              <strong class="b em-toggle-track"></strong>
             </div>
-            <span class="ml-10px">{{ translations.Required }}</span>
+            <span for="require" class="em-ml-8 em-pointer" @click="updateRequireMandatory()">{{ translations.Required }}</span>
           </a>
         </div>
-        <div class="form-group" v-if="can_be_deleted">
-          <button type="button" class="bouton-sauvergarder-et-continuer w-delete" @click="deleteModel">{{translations.DeleteDocTemplate}}</button>
+
+        <div class="em-mb-16" v-if="can_be_deleted">
+          <button type="button" class="em-tertiary-button" @click="deleteModel">{{translations.DeleteDocTemplate}}</button>
         </div>
-        <div class="form-group" v-if="currentDoc ==null">
+
+        <div class="em-mb-16" v-if="currentDoc ==null">
           <label for="modelName">{{ translations.DocTemplate }} :</label>
-          <select v-model="doc" class="dropdown-toggle" id="modelName" :disabled="Object.keys(models).length <= 0">
+          <select v-model="doc" id="modelName" name="modelName" :disabled="Object.keys(models).length <= 0">
             <option :value="null"></option>
             <option v-for="(modelT, index) in models" :key="'option_' + index" :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
           </select>
         </div>
-        <div class="form-group">
+
+        <div class="em-mb-16">
           <label for="name">{{ translations.Name }}* :</label>
-          <div class="input-can-translate">
-            <input type="text" maxlength="100" class="form__input field-general w-input mb-0"
-                   v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': can_translate.name}"
-                    v-if="manyLanguages !== '0'" type="button" @click="can_translate.name = !can_translate.name"></button>
-          </div>
-          <translation :label="form.name" :actualLanguage="langue" v-if="can_translate.name"></translation>
-          <p v-if="errors.name" class="error col-md-12 mb-2">
-            <span class="error">{{ translations.NameRequired }}</span>
+          <input type="text" maxlength="100" v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}"/>
+          <p v-if="errors.name" class="em-red-500-color">
+            <span class="em-red-500-color">{{ translations.NameRequired }}</span>
           </p>
         </div>
-        <div class="form-group">
+
+        <div class="em-mb-16">
           <label for="description">{{ translations.Description }} :</label>
-          <div class="input-can-translate">
-            <editor :height="'20em'" :text="form.description[langue]" :lang="langue" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.description[langue]"></editor>
-          </div>
+          <editor :height="'20em'" :text="form.description[langue]" :lang="langue" :enable_variables="false" :id="'editor_fr'" :key="dynamicComponent" v-model="form.description[langue]"></editor>
         </div>
-        <div class="form-group">
+        <div class="em-mb-16">
           <label for="nbmax">{{ translations.MaxPerUser }}* :</label>
-          <input type="number" min="1" class="form__input field-general w-input" v-model="form.nbmax" id="nbmax"
+          <input type="number" min="1" v-model="form.nbmax" id="nbmax"
                  :class="{ 'is-invalid': errors.nbmax}"/>
-          <p v-if="errors.nbmax" class="error col-md-12 mb-2">
-            <span class="error">{{ translations.MaxRequired }}</span>
+          <p v-if="errors.nbmax" class="em-red-500-color">
+            <span class="em-red-500-color">{{ translations.MaxRequired }}</span>
           </p>
         </div>
-        <div class="form-group">
+
+        <div class="em-mb-16">
           <label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes}">{{ translations.FileType }}* :</label>
-          <div class="users-block" :class="{ 'is-invalid': errors.selectedUsers}">
-            <div v-for="(type, index) in types" :key="index" class="user-item">
-              <input type="checkbox" class="form-check-input bigbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)">
-              <div class="ml-10px">
+          <div :class="{ 'is-invalid': errors.selectedUsers}">
+            <div v-for="(type, index) in types" :key="index" class="em-flex-row em-mb-8">
+              <input type="checkbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)">
+              <div class="em-ml-8">
                   <p>{{ type.title }} ({{ type.value }})</p>
               </div>
             </div>
           </div>
-          <p v-if="errors.selectedTypes" class="error col-md-12 mb-2">
-            <span class="error">{{ translations.TypeRequired }}</span>
+          <p v-if="errors.selectedTypes" class="em-red-500-color">
+            <span class="em-red-500-color">{{ translations.TypeRequired }}</span>
           </p>
         </div>
       </div>
+
       <!-- image resolution -->
       <div id="imageResolutionZone" v-if="show == true">
           <hr/>
@@ -124,15 +118,15 @@
         </div>
 
       </div>
-      <div class="em-flex-row em-flex-space-between mb-1">
+      <div class="em-flex-row em-flex-space-between em-mb-8">
         <button
             type="button"
-            class="bouton-sauvergarder-et-continuer w-retour"
+            class="em-secondary-button em-w-auto"
             @click.prevent="$modal.hide('modalAddDocuments')">
           {{ translations.Retour }}
         </button>
         <button type="button"
-                class="bouton-sauvergarder-et-continuer"
+                class="em-primary-button em-w-auto"
                 @click.prevent="createNewDocument()">
           {{ translations.Continuer }}
         </button>

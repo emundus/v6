@@ -13,52 +13,34 @@
         @closed="beforeClose"
         @before-open="beforeOpen"
     >
-            <div class="fixed-header-modal">
-              <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalMenu')">
-              <em class="fas fa-times"></em>
-            </button>
-          </div>
-        <div class="update-field-header">
-          <h2 class="update-title-header">
-             {{translations.addMenu}}
-          </h2>
-        </div>
-            </div>
-      <div class="modalC-content">
+      <div class="em-flex-row em-flex-space-between em-mb-16">
+        <span class="em-h4">
+          {{translations.addMenu}}
+        </span>
+        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalMenu')">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
 
-
-        <div class="form-group">
+      <div>
+        <div class="em-mb-16">
           <label>{{translations.ChooseExistingPageModel}} :</label>
-          <select v-model="model_id" class="dropdown-toggle" :disabled="Object.keys(models).length <= 0">
+          <select v-model="model_id" class="em-w-100" :disabled="Object.keys(models).length <= 0">
             <option value="-1"></option>
             <option v-for="model in models" :key="model.form_id" :value="model.form_id"> {{ model.label[actualLanguage] }}</option>
           </select>
         </div>
-        <div class="form-group" :class="{ 'mb-0': can_translate.label}">
+
+        <div class="em-mb-16">
           <label>{{translations.Name}}* :</label>
-          <div class="input-can-translate">
-            <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" id="menu_label" style="margin: 0" :class="{ 'is-invalid': errors}"/>
-            <button class="translate-icon" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': can_translate.label}" type="button" @click="can_translate.label = !can_translate.label"></button>
-          </div>
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" id="menu_label" :class="{ 'is-invalid': errors}"/>
         </div>
-        <translation :label="label" :actualLanguage="actualLanguage" v-if="can_translate.label"></translation>
-        <p v-if="errors && model_id == -1" class="error col-md-12 mb-2">
-          <span class="error">{{translations.LabelRequired}}</span>
+        <p v-if="errors && model_id == -1" class="em-red-500-color">
+          <span class="em-red-500-color">{{translations.LabelRequired}}</span>
         </p>
-        <div class="form-group mt-1" :class="{'mb-0': can_translate.intro}">
-          <div class="em-flex-row">
-            <label>{{translations.Intro}}</label>
-            <button class="translate-icon" style="right: 0" v-if="manyLanguages !== '0'" :class="{'translate-icon-selected': can_translate.intro}" type="button" @click="can_translate.intro = !can_translate.intro"></button>
-          </div>
-          <div>
-            <div class="em-flex-row" v-if="can_translate.intro">
-              <span>{{translations.TranslateIn}} : </span>
-              <select v-model="selectedLanguage" v-if="manyLanguages !== '0'" @change="dynamicComponent++" style="margin: 10px 0;">
-                <option v-for="language in languages" :key="language.sef" :value="language.sef">{{language.title_native}}</option>
-              </select>
-            </div>
-            <div class="input-can-translate">
+
+        <div class="em-mb-16">
+          <label>{{translations.Intro}}</label>
                 <editor v-for="(language,index_group) in languages"
                         v-if="language.sef === selectedLanguage"
                         :height="'30em'"
@@ -67,25 +49,26 @@
                         :enable_variables="false"
                         :id="'editor_' + language.sef"
                         :key="dynamicComponent"
-                        v-model="intro[language.sef]"></editor>
-            </div>
-          </div>
+                        v-model="intro[language.sef]">
+                </editor>
         </div>
       </div>
-      <div class="em-flex-row em-flex-space-between mb-1">
+
+      <div class="em-flex-row em-flex-space-between em-mb-16">
         <button
             type="button"
-            class="bouton-sauvergarder-et-continuer w-retour"
+            class="em-secondary-button em-w-auto"
             @click.prevent="$modal.hide('modalMenu')">
           {{translations.Retour}}
         </button>
         <button
             type="button"
-            class="bouton-sauvergarder-et-continuer"
+            class="em-primary-button em-w-auto"
             @click.prevent="createMenu()">
           {{ translations.Add }}
         </button>
       </div>
+
       <div class="em-page-loader" v-if="loading"></div>
     </modal>
   </span>
