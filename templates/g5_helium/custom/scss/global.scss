@@ -3213,6 +3213,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             padding: 0 !important;
           }
 
+          /* GROUPE REPEAT EN TABLEAU */
+
+          .repeatGroupTable .fabrikSubGroupElements td input {
+            @include input-default;
+          }
+
 
           /* LABEL */
           .fabrikLabel {
@@ -3410,6 +3416,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                     margin-left: 0;
                     border: 1px solid $neutral-300;
                     background: $neutral-300;
+                    margin-left: 0px !important;
                   }
 
                   span {
