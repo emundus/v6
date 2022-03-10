@@ -377,6 +377,17 @@
 		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
 		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
 
+		<field name="spacer8" type="spacer" hr="true"/>
+
+		<field name="external_storage_title" type="note" label="COM_EMUNDUS_EXTERNAL_STORAGE_TITLE"/>
+
+		<field name="external_storage_ged_alfresco" type="note" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_TITLE"/>
+		<field name="external_storage_ged_alfresco_integration" menu="hide" type="list" default="0" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_INTEGRATION" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_INTEGRATION_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="external_storage_ged_alfresco_site" type="text" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_SITE" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_SITE_DESC" />
+
 	</fieldset>
 	<fieldset
 			name="permissions"
