@@ -3321,7 +3321,29 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             /* SELECT */
              select {
               @include select-default;
-            }
+
+
+               .chzn-container-multi {
+                 .chzn-choices {
+                   @include select-default;
+                   box-shadow: none;
+
+                   li.search-choice span {
+                     margin: 0px;
+                     padding: 7px;
+                     border: $neutral-400;
+                     background: $neutral-200;
+                   }
+                 }
+
+                 .chzn-results li {
+                    @include body-16;
+                   &.highlighted {
+                     background: $neutral-200;
+                   }
+                 }
+               }
+             }
 
             .fabrikSubElementContainer {
 
