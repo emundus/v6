@@ -968,66 +968,6 @@ button.em-swal-cancel-button{
   justify-content: space-between !important;
 }
 
-/** Vue Modal - Translation tool **/
-#translationTool,#contentTool,#filesTool {
-  .v--modal-overlay {
-    background: #0000002e !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-  }
-
-  .v--modal {
-    width: 100% !important;
-    height: 100% !important;
-    right: 0 !important;
-    left: auto !important;
-    position: fixed !important;
-    box-shadow: unset !important;
-    overflow-y: auto !important;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    margin-top: unset !important;
-  }
-  .v--modal-box{
-    padding: 0;
-  }
-  .em-modal-header{
-    height: 50px;
-    padding: 12px 24px;
-    box-shadow: inset 0px -1px 0px $neutral-300;
-    background-color: white;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-  .em-modal-content{
-    display: flex;
-  }
-  .em-modal-menu__sidebar{
-    width: 15%;
-    background: #F3F3F3;
-    height: 100%;
-    position: fixed;
-    left: 0;
-    top: 50px;
-    .translation-menu-item:not(.em-modal-menu__current):hover{
-      background-color: $neutral-300;
-    }
-  }
-  .em-modal-menu__current{
-    background-color: $neutral-400;
-  }
-  .em-modal-component{
-    width: 100%;
-    margin: 36px 20%;
-  }
-  textarea{
-    resize: none;
-    height: 100%;
-  }
-}
-/** **/
-
 /**
   MEDIA QUERIES
 **/

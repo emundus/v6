@@ -3,16 +3,16 @@
     <div>
 
       <!-- HEADER -->
-      <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%" @click="menuHighlight = 0">
+      <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight === 1" style="margin-left: 10%" @click="menuHighlight = 0">
         <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
       </div>
       <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0 && !modal_ready" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
-      <h5 class="em-h5 em-m-24" v-else-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
+      <h5 class="em-h5 em-m-24" v-else-if="menuHighlight === 1" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
 
       <!--- MENU --->
       <transition name="slide-right">
         <div class="em-settings-menu" style="margin-left: 10%" v-if="menuHighlight === 0">
-          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3" v-wave @click="menuHighlight = menu.index;currentTitle = menu.title">
+          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" v-if="menu.access === 1" class="em-shadow-cards col-md-3" v-wave @click="menuHighlight = menu.index;currentTitle = menu.title">
             <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
             <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
             <p class="em-font-size-14">{{translate(menu.description)}}</p>
@@ -40,13 +40,21 @@
         />
 
         <TranslationTool
-            v-if="menuHighlight === 9"
+            v-if="menuHighlight === 4"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
             ref="translations"
         />
+
+        <AttachmentStorage
+            v-if="menuHighlight === 5"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        />
       </transition>
     </div>
+
+    <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
@@ -57,6 +65,9 @@ import EditStyle from "../components/Settings/EditStyle";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 import ContentTool from "../components/Settings/Content/ContentTool";
 import FilesTool from "../components/Settings/FilesTool/FilesTool";
+import AttachmentStorage from "../components/Settings/AttachmentStorage/AttachmentStorage";
+
+import settingsService from "com_emundus/src/services/settings";
 
 const qs = require("qs");
 
@@ -64,6 +75,7 @@ export default {
   name: "globalSettings",
 
   components: {
+    AttachmentStorage,
     FilesTool,
     ContentTool,
     TranslationTool,
@@ -81,43 +93,67 @@ export default {
   data: () => ({
     menuHighlight: 0,
     currentTitle: '',
-    langue: 0,
+
     saving: false,
     endSaving: false,
+    loading: false,
 
+    em_params: {},
     menus: [
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE_DESC",
         icon: 'style',
-        index: 1
+        index: 1,
+        access: 0,
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT_DESC",
         icon: 'notes',
-        index: 2
+        index: 2,
+        access: 0,
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL_DESC",
         icon: 'source',
-        index: 3
+        index: 3,
+        access: 0,
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS_DESC",
         icon: 'language',
-        index: 9
+        index: 4,
+        access: 0,
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_ATTACHMENT_STORAGE",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_ATTACHMENT_STORAGE_DESC",
+        icon: 'inventory_2',
+        index: 5,
+        access: 0,
       },
     ],
     modal_ready: false
   }),
 
   created() {
-    if (this.actualLanguage == "en") {
-      this.langue = 1;
-    }
+    this.loading = true;
+    settingsService.getEmundusParams().then((params) => {
+      this.em_params = params.data.config;
+
+      // Give access to modules
+      this.menus[0].access = parseInt(this.em_params.style);
+      this.menus[1].access = parseInt(this.em_params.content);
+      this.menus[2].access = 1;
+      this.menus[3].access = parseInt(this.em_params.translations);
+      this.menus[4].access = parseInt(this.em_params.attachment_storage);
+      //
+
+      this.loading = false;
+    });
   },
 
   methods: {},
@@ -135,8 +171,12 @@ export default {
             this.$modal.show('filesTool');
             this.modal_ready = true;
             break;
-          case 9:
+          case 4:
             this.$modal.show('translationTool');
+            this.modal_ready = true;
+            break;
+          case 5:
+            this.$modal.show('attachmentStorage');
             this.modal_ready = true;
             break;
           default:
@@ -148,5 +188,5 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 </style>

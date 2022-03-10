@@ -395,4 +395,22 @@
 			<option value="1">JYES</option>
 		</field>
 	</fieldset>
+	<fieldset label="COM_EMUNDUS_MODULES" name="modules" description="COM_EMUNDUS_MODULES_DESC">
+		<field name="style" label="COM_EMUNDUS_MODULES_STYLE" type="radio" default="1" description="COM_EMUNDUS_MODULES_STYLE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="content" label="COM_EMUNDUS_MODULES_CONTENT" type="radio" default="1" description="COM_EMUNDUS_MODULES_CONTENT_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="translations" label="COM_EMUNDUS_MODULES_TRANSLATIONS" type="radio" default="1" description="COM_EMUNDUS_MODULES_TRANSLATIONS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="attachment_storage" label="COM_EMUNDUS_MODULES_ATTACHMENT_STORAGE" type="radio" default="0" description="COM_EMUNDUS_MODULES_ATTACHMENT_STORAGE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
 </config>
