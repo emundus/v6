@@ -12,6 +12,8 @@ define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/');
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_joomlaupdate/models/default.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/install.php';
+require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/discover.php';
+
 
 class UpdateCli extends JApplicationCli
 {
@@ -76,9 +78,9 @@ class UpdateCli extends JApplicationCli
             Operations
               -l, --list                  Liste les composants avec une mise à jour disponible
               -h, --help                  Help
-              
+              -i --install
             Update Filters
-              -i, --id                    Met à jour l'extension qui correspond à l'id en etnrée
+              -x, --extension                    Met à jour l'extension qui correspond à l'id en etnrée
               -e, --extensions            Toutes les extensions avec une mise à jour disponible
               -c, --core                  Composants Joomla
               -s, --sql                   Mise à jour de la base de données
@@ -123,6 +125,7 @@ class UpdateCli extends JApplicationCli
 
             echo 'Update : ' . $u . "\n";
             $u = array($u);
+            // For gantry canChmod() fail -> comment lines 124 to 127 in File.php
             $model->update($u, $minimum_stability);
         }
     }
@@ -195,74 +198,172 @@ class UpdateCli extends JApplicationCli
     {
         $this->out('INSTALL ' . $name);
         $app = JFactory::getApplication();
+        $discover = InstallerModel::getInstance('InstallerModelDiscover');
 
-        $app->input->set('installtype', 'url');
+//        $params = JComponentHelper::getParams('com_dpcalendar');
+//        #trim($params->set('downloadid', 'aaaa'));
+//        $dlid = trim($params->get('downloadid', ''));
+
+
+//        $app->input->set('installtype', 'url');
         $app->input->set('install_directory', JPATH_BASE . '/tmp');
         $app->input->set('max_upload_size', '10485760');
-        $version = '1.0.0';
+        # $version = '1.0.0';
+
         if ($name == 'com_emundus') {
             $app->input->set('install_url', 'http://localhost:81/emundus-updates/packages/com_emundus/com_emundus_1.0.0.zip');
             $this->getInstall();
 
-        } elseif ($name == 'com_fabrik') {
-            $fabrik = "http://fabrikar.com/update/fabrik31/package_list.xml";
-            $data = simplexml_load_file($fabrik);
-            foreach ($data->extension as $ext) {
-                $name = (string)$ext['name'];
-                $this->out($name);
-                if (!strpos($name, "zoom")) {
-                    $url = (string)$ext["detailsurl"];
-                    $app->input->set('install_url', $url);
-                    $this->getInstall($name);
-                } else
-                    $this->out("Fabrik Form Zoom missing files : no install");
-
-            }
-
-        } elseif ($name == 'hikashop') {
-            $hikashop = "http://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-Starter/file-extension.xml";
-            $data = simplexml_load_file($hikashop);
-            foreach ($data->update as $ext) {
-                $version = (string)$ext->targetplatform['version'];
-                #$this->out($name);
-            }
-            if (!strpos($version, "3")) {
-                $url = (string)$ext->downloads->downloadurl[1];
-                $app->input->set('install_url', $url);
-                $app->input->set('installtype', 'url');
-                $input = JFactory::getApplication()->input;
-                $this->getInstall($name);
-                $updateHelper = hikashop_get('helper.update');
-                $updateHelper->installExtensions();
-            }
-
-        } elseif ($name == 'dpcalendar') {
-            $url = "https://joomla.digital-peak.com/download/dpcalendar/dpcalendar-8.2.2/dpcalendar-free-8-2-2.zip?format=zip";
-            $name = "dpcalendar";
-            $app->input->set('install_url', $url);
-            $this->getInstall($name);
-
-        } elseif ($name == "dropfiles") {
-            $dropfiles = "https://www.joomunited.com/juupdater_files/dropfiles-update.xml";
-            $data = simplexml_load_file($dropfiles);
-            foreach ($data->update as $ext) {
-                $version = (string)$ext->targetplatform['version'];
-                $name = (string)$ext->name;
-                $this->out($name);
-                if (strpos($version, "3")) {
-                    $url = $ext->detailsurl;
-                    $app->input->set('install_url', $url);
-                    $this->getInstall($name);
-                }
-            }
-
-        } elseif ($name == 'gantry'){
-            $gantry = "https://github.com/gantry/gantry5/releases/download/5.5.5/joomla-pkg_gantry5_v5.5.5.zip";
-            $name = "gantry";
-            $app->input->set('install_url', $gantry);
-            $this->getInstall($name);
         }
-    }
+
+        switch ($name) {
+            case 'fabrik':
+                $url = "https://github.com/Fabrik/fabrik/archive/master.zip";
+                break;
+            case 'gantry':
+                $url = "https://github.com/gantry/gantry5/releases/download/5.5.5/joomla-pkg_gantry5_v5.5.5.zip";
+                break;
+            case 'hikashop':
+                $url = "";
+                break;
+            case 'extplorer':
+                $url = "";
+                break;
+            case 'eventbooking':
+                $url = "";
+                break;
+            case 'scp':
+                $url = "https://securitycheck.protegetuordenador.com/component/ars/?task=download&view=Item&id=327&format=zip";
+                break;
+            case 'falang':
+                $url = "";
+                break;
+            case 'jumi':
+                $url = "";
+                break;
+            case 'dropfiles':
+                $url = "https://www.joomunited.com/index.php?option=com_juupdater&task=download.download&extension=dropfiles.zip&infosite=joomunited&version=6.0.1&token=d6bbea49-24be-4fda-91c8-f64f0e44cf87&siteurl=https://vanilla.emundus.io/";
+                break;
+            case 'dpcalendar':
+                $url = "https://joomla.digital-peak.com/download/dpcalendar/dpcalendar-8.2.2/dpcalendar-free-8-2-2.zip?format=zip";
+                break;
+            case 'jce':
+                $url = "";
+                break;
+            case 'miniorange':
+                $url = "";
+                break;
+            case 'externallogin':
+                $url = "";
+                break;
+
+        }
+        try {
+            $p_file = JInstallerHelper::downloadPackage($url);
+            if (!$p_file) {
+                JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_INVALID_URL'));
+                return false;
+            }
+
+            $config = JFactory::getConfig();
+            $tmp_dest = $config->get('tmp_path');
+            $p_src = $tmp_dest . '/' . $p_file . '/';
+
+            // Unpack the downloaded package file.
+            $package = JInstallerHelper::unpack($tmp_dest . '/' . $p_file, true);
+
+            $this->custom_copy($package['dir'] . '/administrator/', JPATH_ADMINISTRATOR);
+            $this->custom_copy($package['dir'] . '/components/', JPATH_BASE . '/components');
+            $this->custom_copy($package['dir'] . '/libraries/', JPATH_BASE . '/libraries');
+            $this->custom_copy($package['dir'] . '/media/', JPATH_BASE . '/media');
+            $this->custom_copy($package['dir'] . '/modules/', JPATH_BASE . '/modules');
+            $this->custom_copy($package['dir'] . '/plugins/', JPATH_BASE . '/plugins');
+
+            $discover->discover();
+
+
+            # Select all extensions not installed (where state = -1)
+            $query = $this->db->getQuery(true);
+            $query->select('extension_id')
+                ->from('#__' . 'extensions')
+                ->where($this->db->quoteName('state') . '= -1');
+            $this->db->setQuery($query);
+            $results = $this->db->loadRowList();
+
+            foreach ($results as $res) {
+                $cid[] = $res[0];
+            }
+
+            $app->input->set('cid', $cid);
+            $discover->discover_install();
+
+        } catch (Exception $e) {
+            echo $e;
+        }
+
+        }
+//
+//        elseif ($name == 'hikashop') {
+//            $hikashop = "http://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-Starter/file-extension.xml";
+//            $data = simplexml_load_file($hikashop);
+//            foreach ($data->update as $ext) {
+//                $version = (string)$ext->targetplatform['version'];
+//                #$this->out($name);
+//            }
+//            if (!strpos($version, "3")) {
+//                $url = (string)$ext->downloads->downloadurl[1];
+//                $app->input->set('install_url', $url);
+//                $app->input->set('installtype', 'url');
+//                $input = JFactory::getApplication()->input;
+//                $this->getInstall($name);
+//                $updateHelper = hikashop_get('helper.update');
+//                $updateHelper->installExtensions();
+//            }
+//        }
+//
+//        elseif ($name == "dropfiles") {
+//            $dropfiles = "https://www.joomunited.com/juupdater_files/dropfiles-update.xml";
+//            $data = simplexml_load_file($dropfiles);
+//            foreach ($data->update as $ext) {
+//                $version = (string)$ext->targetplatform['version'];
+//                $name = (string)$ext->name;
+//                $this->out($name);
+//                if (strpos($version, "3")) {
+//                    $url = $ext->detailsurl;
+//                    $app->input->set('install_url', $url);
+//                    $this->getInstall($name);
+//                }
+//            }
+//        }
+//
+//        elseif ($name == 'dpcalendar') {
+//            $url = "https://joomla.digital-peak.com/download/dpcalendar/dpcalendar-8.2.2/dpcalendar-free-8-2-2.zip?format=zip";
+//            $name = "dpcalendar";
+//            $app->input->set('install_url', $url);
+//            $this->getInstall($name);
+//        }
+//
+//        elseif ($name == 'gantry'){
+//            $url = "https://github.com/gantry/gantry5/releases/download/5.5.5/joomla-pkg_gantry5_v5.5.5.zip";
+//            $name = "gantry";
+//            $app->input->set('install_url', $url);
+//            $this->getInstall($name);
+//        }
+//
+//        elseif ($name == 'scp') {
+//            $url = "https://securitycheck.protegetuordenador.com/component/ars/?task=download&view=Item&id=327&format=zip";
+//            $name = "scp";
+//            $app->input->set('install_url', $url);
+//            $this->getInstall($name);
+//        }
+
+//        elseif ($name == 'dropfile') {
+//            $url = "https://www.joomunited.com/index.php?option=com_juupdater&task=download.download&extension=dropfiles.zip&infosite=joomunited&version=6.0.1&token=d6bbea49-24be-4fda-91c8-f64f0e44cf87&siteurl=https://vanilla.emundus.io/";
+//            $name = "dropfiles";
+//            $app->input->set('install_url', $url);
+//            $this->getInstall($name);
+//        }
+   // }
 
 
     public function getInstall($extension_name){
@@ -275,10 +376,40 @@ class UpdateCli extends JApplicationCli
     }
 
 
+    public function custom_copy($src, $dst)
+    {
+        // open the source directory
+        $dir        = opendir($src);
+        $copy_count = 0;
+        // Make the destination directory if not exist
+        @mkdir($dst, 0777, true);
+
+        // Loop through the files in source directory
+        while ($file = readdir($dir)) {
+            if (($file != '.') && ($file != '..')) {
+                if (is_dir($src . '/' . $file)) {
+
+                    // Recursively calling custom copy function
+                    // for sub directory
+                    $this->custom_copy($src . '/' . $file, $dst . '/' . $file);
+
+                }
+                else {
+                    copy($src . '/' . $file, $dst . '/' . $file);
+                }
+            }
+            $copy_count++;
+        }
+        closedir($dir);
+        return $copy_count != null;
+    }
+
+
+
     public function doExecute()
     {
 
-        JLog::addLogger(array('text_file' => 'update_cli.log.php'), JLog::ALL, array('jerror, error'));
+        JLog::addLogger(array('text_file' => 'update_cli.log.php'), JLog::ALL, array('jerror'));
 
         $app = JFactory::getApplication('site');
         $app->initialise();
