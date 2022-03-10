@@ -152,7 +152,7 @@ class EmundusModelEvaluation extends JModelList {
                                 FROM '.$t.'
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
-                              ) AS `'.$t.'`';
+                              ) AS `'.$t.'___'.$def_elmt->element_name.'`';
                         } else {
                             $query = '(
                                 select DISTINCT '.$join_val_column.'
