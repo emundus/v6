@@ -3339,6 +3339,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 @include select-default;
                 box-shadow: none;
                 width: 100%;
+                margin-top: 12px;
+                padding-left: 8px;
 
                 li.search-choice  {
                   border: $neutral-400;
@@ -3418,6 +3420,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                     border: 1px solid $neutral-300;
                     background: $neutral-300;
                     margin-left: 0 !important;
+                    span, input {
+                      margin-left: 0 !important;
+                    }
                   }
 
                   span {
@@ -3546,7 +3551,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
         .fabrikSubGroupElements,
         .fabrikSubGroup {
 
-          .group-repeat-intro {
+          div[data-role="group-repeat-intro"] {
             margin-top: 48px;
           }
 
