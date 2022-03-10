@@ -970,11 +970,31 @@ class EmundusControllerEvaluation extends JControllerLegacy
             $eval =   $m_evaluation->getEvaluationById($id);
             if(EmundusHelperAccess::asAccessAction(5 ,'d', JFactory::getUser()->id, $fnum)){
                 $m_evaluation->delevaluation($id);
+
+                # get logged user id    JFactory::getUser()->id
+                # get fnum              $fnum
+                # get applicant id      $applicant_id
+                $applicant_id = $jinput->getString('applicant', null);
+
+                // TRACK THE LOGS
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
+
                 $res->status = true;
             }else{
                 $eval =   $m_evaluation->getEvaluationById($id);
                 if($eval->user == JFactory::getUser()->id){
                     $m_evaluation->delevaluation($id);
+
+                    # get logged user id    JFactory::getUser()->id
+                    # get fnum              $fnum
+                    # get applicant id      $applicant_id
+                    $applicant_id = $jinput->getString('applicant', null);
+
+                    // TRACK THE LOGS
+                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                    EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
+                    
                     $res->status = true;
                 }else{
                     $res->status = false;
