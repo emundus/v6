@@ -435,8 +435,13 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
             # get the fnum				$user->fnum
             # get the applicant id		$user->id
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-            $user = JFactory::getSession()->get('emundusUser');
-            EmundusModelLogs::log($user->id, $user->id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE');
+            $user = JFactory::getSession()->get('emundusUser');			# logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($user->fnum))['applicant_id'];
+
+            EmundusModelLogs::log($user->id, $applicant_id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_APPLICANT');
 
 		} else {
 
@@ -477,8 +482,13 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
             // TRACK THE LOGS (1 | u | COM_EMUNDUS_ACCESS_FILE_UPDATE)
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-            $user = JFactory::getSession()->get('emundusUser');
-            EmundusModelLogs::log($user->id, $sid, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE');
+            $user = JFactory::getSession()->get('emundusUser');		# logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
 
 			echo "<hr>";
 			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
