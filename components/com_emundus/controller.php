@@ -583,6 +583,17 @@ class EmundusController extends JControllerLegacy {
                 $redirect = $m_application->getConfirmUrl();
             }
         }
+
+        # get the fnum          $fnum
+        # get the logged user   $aid->id
+        # get FNUM INFO
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
+        
         $app->redirect($redirect);
     }
 
