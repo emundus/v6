@@ -3386,7 +3386,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   }
                 }
 
-                label.btn-default.btn:not(.active)[href~="1"]  {
+                label.btn-default.btn[class~="1"]:not(.active)  {
                   @include yes-no;
                   border: 1px solid $neutral-400;
                   background: $neutral-400;
