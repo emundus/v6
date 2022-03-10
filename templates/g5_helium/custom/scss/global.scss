@@ -3329,17 +3329,31 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
               .chzn-choices {
                 @include select-default;
                 box-shadow: none;
+                width: 100%;
 
-                li.search-choice span {
-                  margin: 0;
-                  padding: 7px;
+                li.search-choice  {
                   border: $neutral-400;
                   background: $neutral-200;
+                  display: flex;
+                  justify-content: flex-start;
+                  align-items: center;
+                  height: 100%;
+                  @include body-14;
+                  width: 100%;
+
+                  input  {
+                    width: 100%;
+                  }
+
+                  span {
+                    margin: 0;
+                    padding: 7px;
+                  }
                 }
               }
 
              .chzn-drop .chzn-results li {
-                @include body-16;
+                @include body-14;
                 &.highlighted {
                   background: $neutral-200;
                 }
@@ -3389,14 +3403,13 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
                 label.btn-default.btn:not(.active)  {
                   @include yes-no;
-                  border: 1px solid $neutral-400;
-                  background: $neutral-400;
-                  border-radius: 0 4px 4px 0 !important;
+                  border: 1px solid $neutral-200;
+                  background: $neutral-200;
 
                   &:hover {
                     margin-left: 0;
-                    border: 1px solid $neutral-500;
-                    background: $neutral-500;
+                    border: 1px solid $neutral-300;
+                    background: $neutral-300;
                   }
 
                   span {
@@ -3405,32 +3418,12 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                     color: $neutral-900 ;
                   }
                 }
-                /*
-                label.btn-default.btn:not(.active)  {
-                  @include yes-no;
-                  border: 1px solid $neutral-400;
-                  background: $neutral-400;
-                  border-radius: 4px 0 0 4px !important;
-
-                  &:hover {
-                    margin-right: 0;
-                    border: 1px solid $neutral-500;
-                    background: $neutral-500;
-                  }
-
-                  span {
-                    @include body-16-medium;
-                    margin-top: 0;
-                    color: $neutral-900 ;
-                  }
-                }*/
               }
 
               /* BIRTHDAY */
               select.inputbox {
                  @include multiple-select;
                  @include body-16;
-
               }
 
 
