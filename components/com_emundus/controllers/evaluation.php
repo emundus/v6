@@ -974,11 +974,16 @@ class EmundusControllerEvaluation extends JControllerLegacy
                 # get logged user id    JFactory::getUser()->id
                 # get fnum              $fnum
                 # get applicant id      $applicant_id
-                $applicant_id = $jinput->getString('applicant', null);
 
                 // TRACK THE LOGS
                 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
+                $user = JFactory::getUser();    # logged user
+
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                $mFile = new EmundusModelFiles();
+                $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                EmundusModelLogs::log($user->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
 
                 $res->status = true;
             }else{
@@ -989,12 +994,17 @@ class EmundusControllerEvaluation extends JControllerLegacy
                     # get logged user id    JFactory::getUser()->id
                     # get fnum              $fnum
                     # get applicant id      $applicant_id
-                    $applicant_id = $jinput->getString('applicant', null);
 
                     // TRACK THE LOGS
                     require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                    $user = JFactory::getUser();    # logged user
+
+                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                    $mFile = new EmundusModelFiles();
+                    $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
                     EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
-                    
+
                     $res->status = true;
                 }else{
                     $res->status = false;
