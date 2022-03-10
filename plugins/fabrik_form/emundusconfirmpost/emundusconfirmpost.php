@@ -290,6 +290,11 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 				copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
 			}
 		}
+
+        // track the LOGS (FILE_UPDATE)
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $user = JFactory::getSession()->get('emundusUser');
+        EmundusModelLogs::log($user->id, $user->id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE');
 	}
 
 	/**

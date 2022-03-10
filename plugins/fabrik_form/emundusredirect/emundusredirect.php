@@ -430,6 +430,14 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 				}
 			}
 
+            // track the LOGS (1 | u | COM_EMUNDUS_ACCESS_FILE_UPDATE)
+            # get the logged user id	$user->id
+            # get the fnum				$user->fnum
+            # get the applicant id		$user->id
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');
+            EmundusModelLogs::log($user->id, $user->id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE');
+
 		} else {
 
 			try {
@@ -462,6 +470,15 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 			}
 
 			$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
+
+            # get logged user_id 	$user->id
+            # get candidat user_id	$sid
+            # get the fnum			$fnum
+
+            // TRACK THE LOGS (1 | u | COM_EMUNDUS_ACCESS_FILE_UPDATE)
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');
+            EmundusModelLogs::log($user->id, $sid, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE');
 
 			echo "<hr>";
 			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
