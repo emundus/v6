@@ -3321,29 +3321,30 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             /* SELECT */
              select {
               @include select-default;
-
-
-               .chzn-container-multi {
-                 .chzn-choices {
-                   @include select-default;
-                   box-shadow: none;
-
-                   li.search-choice span {
-                     margin: 0px;
-                     padding: 7px;
-                     border: $neutral-400;
-                     background: $neutral-200;
-                   }
-                 }
-
-                 .chzn-results li {
-                    @include body-16;
-                   &.highlighted {
-                     background: $neutral-200;
-                   }
-                 }
-               }
              }
+
+            /* SELECTION MULTIPLE */
+
+            .chzn-container-multi.chzn-container {
+              .chzn-choices {
+                @include select-default;
+                box-shadow: none;
+
+                li.search-choice span {
+                  margin: 0;
+                  padding: 7px;
+                  border: $neutral-400;
+                  background: $neutral-200;
+                }
+              }
+
+             .chzn-drop .chzn-results li {
+                @include body-16;
+                &.highlighted {
+                  background: $neutral-200;
+                }
+              }
+            }
 
             .fabrikSubElementContainer {
 
@@ -3386,7 +3387,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   }
                 }
 
-                label.btn-default.btn[class~="1"]:not(.active)  {
+                label.btn-default.btn:not(.active)  {
                   @include yes-no;
                   border: 1px solid $neutral-400;
                   background: $neutral-400;
@@ -3404,8 +3405,8 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                     color: $neutral-900 ;
                   }
                 }
-
-                label.btn-default.btn:not(.active)[href~="0"]  {
+                /*
+                label.btn-default.btn:not(.active)  {
                   @include yes-no;
                   border: 1px solid $neutral-400;
                   background: $neutral-400;
@@ -3422,7 +3423,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                     margin-top: 0;
                     color: $neutral-900 ;
                   }
-                }
+                }*/
               }
 
               /* BIRTHDAY */
@@ -3578,9 +3579,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
               i {
                 font-size: 12px;
-                color: $neutral-600;
+                color: $main-500;
                 &:hover {
-                  color: $neutral-800;
+                  color: $main-600;
                 }
               }
 
@@ -3602,9 +3603,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
               i {
                 font-size: 12px;
-                color: $neutral-600;
+                color: $red-500;
                 &:hover {
-                  color: $neutral-800;
+                  color: $red-600;
                 }
               }
 
