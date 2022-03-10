@@ -3201,8 +3201,18 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
           margin-top: 8px;
         }
 
+        /* GROUPE REPEAT EN TABLEAU */
+
+        .repeatGroupTable {
+          margin-top: 48px;
+          .fabrikSubGroupElements td input {
+            @include input-default;
+          }
+        }
+
+
         /* BLOC ELEMENT */
-        .row-fluid .fabrikElementContainer.control-group {
+        .row-fluid .fabrikElementContainer.control-group[class*="fabrikRepeatGroup"] {
           margin: 48px 0 48px 0;
           flex-direction: column;
 
@@ -3212,13 +3222,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
             border: none !important;
             padding: 0 !important;
           }
-
-          /* GROUPE REPEAT EN TABLEAU */
-
-          .repeatGroupTable .fabrikSubGroupElements td input {
-            @include input-default;
-          }
-
 
           /* LABEL */
           .fabrikLabel {
@@ -3340,20 +3343,19 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                 li.search-choice  {
                   border: $neutral-400;
                   background: $neutral-200;
-                  display: flex;
-                  justify-content: flex-start;
-                  align-items: center;
-                  height: 100%;
                   @include body-14;
-                  width: 100%;
-
-                  input  {
-                    width: 100%;
-                  }
 
                   span {
                     margin: 0;
                     padding: 7px;
+                  }
+                }
+
+                li.search-field {
+                  input  {
+                    margin-top: 6px;
+                    @include body-14;
+                    font-size: 13px !important;
                   }
                 }
               }
@@ -3413,10 +3415,9 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
                   background: $neutral-200;
 
                   &:hover {
-                    margin-left: 0;
                     border: 1px solid $neutral-300;
                     background: $neutral-300;
-                    margin-left: 0px !important;
+                    margin-left: 0 !important;
                   }
 
                   span {
@@ -3544,6 +3545,10 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
 
         .fabrikSubGroupElements,
         .fabrikSubGroup {
+
+          .group-repeat-intro {
+            margin-top: 48px;
+          }
 
           /* TABLEAU */
            td,
