@@ -245,6 +245,16 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
+
+                        # ADD 5C HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION_READ');
                     } else {
                         echo JText::_("RESTRICTED_ACCESS");
                         exit();
