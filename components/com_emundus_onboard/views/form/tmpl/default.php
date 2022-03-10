@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package     Joomla
  * @subpackage  com_emundus_onboard
@@ -80,10 +79,28 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 ## END ##
 
+JText::script('COM_EMUNDUS_ONBOARD_NAME');
+JText::script('COM_EMUNDUS_ONBOARD_START_DATE');
+JText::script('COM_EMUNDUS_ONBOARD_END_DATE');
+JText::script('COM_EMUNDUS_ONBOARD_STATE');
+JText::script('COM_EMUNDUS_ONBOARD_NB_FILES');
+JText::script('COM_EMUNDUS_ONBOARD_SUBJECT');
+JText::script('COM_EMUNDUS_ONBOARD_TYPE');
+JText::script('COM_EMUNDUS_ONBOARD_STATUS');
+
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0, 2);
+$languages = JLanguageHelper::getLanguages();
+if (count($languages) > 1) {
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
+
 $user = JFactory::getUser();
 $coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
 ?>
 
-<list id="em-list-vue" type="form" actualLanguage="<?= $actualLanguage ?>" coordinatorAccess="<?= $coordinator_access ?>" />
+<list id="em-component-vue" component="list" type="form" coordinatorAccess="<?= $coordinator_access ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>"></list>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

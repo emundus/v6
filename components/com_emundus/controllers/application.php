@@ -644,22 +644,26 @@ class EmundusControllerApplication extends JControllerLegacy
     public function getattachmentsbyfnum()
     {
         $m_application = $this->getModel('Application');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+        $m_files = new EmundusModelFiles;
 
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getVar('fnum', null);
 
+        $fnumInfos = $m_files->getFnumInfos($fnum);
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
 
         foreach($attachments as $key => $attachment)
         {
             // check if file is in server
-            if (!file_exists(EMUNDUS_PATH_ABS.$attachment->user_id.DS.$attachment->filename)) {
+            if (!file_exists(EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS.$attachment->filename)) {
                 $attachment->existsOnServer = false;
             } else {
                 $attachment->existsOnServer = true;
             }
 
-            // do not display files that are printed by applicant 
+            // do not display files that are printed by applicant
             if ($attachment->lbl === '_application_form') {
                 unset($attachments[$key]);
             }
@@ -671,7 +675,7 @@ class EmundusControllerApplication extends JControllerLegacy
             $attachments = array_values($attachments);
         }
 
-        echo json_encode($attachments);
+        echo json_encode(['status' => $attachments !== false ? true : false, 'attachments' => $attachments]);
         exit;
     }
 
@@ -686,11 +690,11 @@ class EmundusControllerApplication extends JControllerLegacy
 
         if (EmundusHelperAccess::asAccessAction(4, 'u', JFactory::getUser()->id, $data['fnum'])) {
             $m_application = $this->getModel('Application');
-    
+
             if ($jinput->files->get('file')) {
                 $data['file'] = $jinput->files->get('file');
             }
-    
+
             if ($data['fnum'] && $data['user']) {
                 $update = $m_application->updateAttachment($data);
             } else {
@@ -718,13 +722,13 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function getfilters() 
+    public function getfilters()
     {
         $filters = [];
         $jinput = JFactory::getApplication()->input;
         $type = $jinput->getS('type', null);
         $id = $jinput->getVar('id', null);
-        
+
         $m_application = $this->getModel('Application');
         $filters = $m_application->getFilters($type, $id);
 
@@ -732,13 +736,13 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
-    public function mountquery() 
+    public function mountquery()
     {
         $jinput = JFactory::getApplication()->input;
         $filters = $jinput->getVar('filters', null);
         $listId = $jinput->getVar('id', null);
         $filters = json_decode($filters, true);
-        
+
         $m_application = $this->getModel('Application');
         $res = $m_application->mountQuery($listId, $filters);
 

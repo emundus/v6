@@ -190,6 +190,10 @@ JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY');
 JText::script('COM_EMUNDUS_ONBOARD_BUILDER_HIDDEN_GROUP');
+JText::script('COM_EMUNDUS_ONBOARD_PERSONAL_INFORMATIONS');
+JText::script('COM_EMUNDUS_ONBOARD_ADRESSE');
+JText::script('COM_EMUNDUS_ONBOARD_WORK_EXPERIENCE');
+JText::script('COM_EMUNDUS_ONBOARD_EMPTY_SECTION');
 ## END ##
 
 ## TUTORIAL ##
@@ -247,8 +251,22 @@ if(count($languages) > 1){
     $many_languages = '0';
 }
 
+$user = JFactory::getUser();
+$coordinator_access = EmundusonboardHelperAccess::isCoordinator($user->id);
+
+$component = JFactory::getApplication()->input->get('evaluation') ? 'evaluationbuilder' : 'formbuilder';
+
 ?>
 
-<div id="<?= $vue; ?>" prid="<?= $this->prid; ?>" index="<?= $this->index; ?>" cid="<?= $this->cid; ?>" eval="<?= $this->eval; ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>"></div>
+<div id="em-component-vue"
+     component="<?= $component ?>"
+     prid="<?= JFactory::getApplication()->input->get('prid') ?>"
+     index="<?= JFactory::getApplication()->input->get('index') ?>"
+     cid="<?= JFactory::getApplication()->input->get('cid') ?>"
+     eval="<?= JFactory::getApplication()->input->get('evaluation') ?>"
+     actualLanguage="<?= $actualLanguage ?>"
+     manyLanguages="<?= $many_languages ?>"
+     coordinatorAccess="<?= $coordinator_access ?>"
+></div>
 
 <script src="media/com_emundus_onboard/app_onboard.js"></script>

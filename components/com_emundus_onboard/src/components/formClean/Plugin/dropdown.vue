@@ -116,6 +116,12 @@ export default {
       if (this.element.plugin === 'databasejoin') {
         this.databasejoin = 1;
 
+        if(this.element.params.database_join_show_please_select=="1"){
+          this.no_default_value=true;
+        } else {
+          this.no_default_value=false;
+        }
+
 
         this.databases.forEach((db, index) => {
           if (db.database_name == this.element.params.join_db_name) {
@@ -241,6 +247,7 @@ export default {
           this.element.params.join_val_column = this.databases[this.databasejoin_data].join_column_val;
           this.element.params.join_val_column_concat = '';
         }
+
       } else {
         this.element.plugin = 'dropdown';
         delete this.element.params.join_db_name;

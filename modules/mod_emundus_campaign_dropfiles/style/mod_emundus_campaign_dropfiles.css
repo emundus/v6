@@ -1,10 +1,12 @@
-.em-infoComp {
+.view-form .em-infoComp {
     padding: 20px;
     display: flex;
     flex-direction: column;
+    background: #fafafa;
     font-weight: 300;
     font-style: normal;
     line-height: normal;
+    font-size : 14px;
 }
 
 .em-infoComp ul {
@@ -13,6 +15,11 @@
 
 .em-infoComp li {
     padding: 10px 1.5rem;
+}
+
+.em-infoComp li i {
+    margin-left: 10px;
+    color:#de6339;
 }
 
 .em-infoComp li {

@@ -70,7 +70,12 @@
   export default {
     name: "FormViewer",
     props: {
-      link: String,
+      link: {
+        type: Object,
+        default: {
+          link: "",
+        }
+      },
       visibility: Number
     },
     components: {
