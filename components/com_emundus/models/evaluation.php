@@ -192,7 +192,7 @@ class EmundusModelEvaluation extends JModelList {
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton' || $def_elmt->element_plugin == 'checkbox') {
 
                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -205,7 +205,7 @@ class EmundusModelEvaluation extends JModelList {
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                $element_attribs->sub_options->sub_labels[$key] . '")';
+                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
