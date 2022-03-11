@@ -416,6 +416,11 @@ input:focus + .em-slider {
     color: $blue-500;
   }
 }
+.em-hover-background-neutral-300{
+  &:hover{
+    background: $neutral-300;
+  }
+}
 
 .em-z-index-10{
   z-index: 10;

@@ -914,6 +914,7 @@ export default {
 <style lang='scss' scoped>
 #em-attachments {
   font-size: 14px;
+  width: 100%;
 
   .head {
     width: 100%;

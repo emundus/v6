@@ -5281,6 +5281,7 @@ fieldset[disabled] .multiselect {
   left: 2% !important;
   box-shadow: unset;
   border-radius: 4px;
+  padding: 0;
   .tooltip-arrow {
     border-width: 0 5px 5px 5px;
     border-left-color: transparent !important;
@@ -5322,7 +5323,7 @@ fieldset[disabled] .multiselect {
   .popover-inner {
     background: #f9f9f9;
     color: black;
-    padding: 16px;
+    padding: 0;
     border-radius: 5px;
     box-shadow: 0 5px 30px rgba(black, .1);
   }
