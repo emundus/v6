@@ -164,8 +164,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         // track the LOGS (ATTACHMENT_CREATE)
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        $user = JFactory::getSession()->get('emundusUser');
-        EmundusModelLogs::log($user->id, (int)substr($fnum, -7), $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE');
+        $user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE');
 
         echo json_encode($result);
         return true;
@@ -292,8 +297,13 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         // track the LOGS (ATTACHMENT_DELETE)
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        $user = JFactory::getSession()->get('emundusUser');
-        EmundusModelLogs::log($user->id, (int)substr($fnum, -7), $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
+        $user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
 
         echo json_encode(['status' => $status]);
         return true;
