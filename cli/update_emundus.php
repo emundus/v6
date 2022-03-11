@@ -14,6 +14,8 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/install.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/discover.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_emundus/script.com_emundus.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_hikashop/install.hikashop.php';
+
 
 class UpdateEmundus extends JApplicationCli
 {
@@ -77,7 +79,7 @@ class UpdateEmundus extends JApplicationCli
 
                 $this->out("\nCall update function...");
                 $script_emundus = new com_emundusInstallerScript();
-                $script_emundus->update();
+                $script_emundus->updateSQL();
             }
         }
 
