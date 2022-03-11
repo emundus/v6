@@ -463,10 +463,15 @@ class EmundusControllerApplication extends JControllerLegacy
             # get fnum                  $fnum
             # get the logged user id    JFactory::getUser()->id
             # get the applicant id      $applicant_id
-            $applicant_id = $jinput->getString('student_id', null);
+            # $applicant_id = $jinput->getString('student_id', null);
 
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-            $user = JFactory::getSession()->get('emundusUser');
+            $user = JFactory::getSession()->get('emundusUser');     # logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
             EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
 
             $res->status = true;
