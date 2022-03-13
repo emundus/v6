@@ -7,6 +7,9 @@ var mixin = {
 		formattedDate: function (date) {
 			return moment(date).format('LLLL');
 		},
+		strippedHtml: function (html) {
+			return html.replace(/<(?:.|\n)*?>/gm, '');
+		},
 		getUserNameById: function (id) {
 			let completeName = '';
 			// id to int 
