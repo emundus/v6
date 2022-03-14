@@ -458,6 +458,22 @@ class EmundusControllerApplication extends JControllerLegacy
             {
                 $m_application->deleteAttachment($id);
             }
+
+            // TRACK THE LOGS
+            # get fnum                  $fnum
+            # get the logged user id    JFactory::getUser()->id
+            # get the applicant id      $applicant_id
+            # $applicant_id = $jinput->getString('student_id', null);
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');     # logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+            EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
+
             $res->status = true;
         }
         else
@@ -697,6 +713,20 @@ class EmundusControllerApplication extends JControllerLegacy
 
             if ($data['fnum'] && $data['user']) {
                 $update = $m_application->updateAttachment($data);
+
+                # get logged user id
+                # get application id
+                # get fnum
+
+                # GET FNUM INFO
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                $mFile = new EmundusModelFiles();
+                $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
+
+                # TRACK THE LOGS
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE');
+
             } else {
                 $msg = JText::_('INVALID_PARAMETERS');
             }
