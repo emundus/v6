@@ -22,7 +22,7 @@
 
 <script>
 import settingsService from "../../../services/settings";
-import IntegrationGED from "./IntegrationGED";
+import IntegrationGED from "./GED/IntegrationGED";
 
 export default {
   name: "Configuration",

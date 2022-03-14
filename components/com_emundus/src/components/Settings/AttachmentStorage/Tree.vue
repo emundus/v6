@@ -4,14 +4,9 @@
       <span class="material-icons" v-if="node.type !== 0">folder</span>
       <span class="material-icons-outlined" v-else>folder</span>
 
-      <select class="em-ml-8 em-mr-8 em-clear-dropdown" v-model="node.type" v-if="node.level === 1">
+      <select class="em-ml-8 em-mr-8 em-clear-dropdown" v-model="node.type">
         <option value="0" selected>/{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SELECT_TYPE') }}</option>
-        <option value="campaign">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_CAMPAIGN_TYPE') }}</option>
-      </select>
-
-      <select class="em-ml-8 em-mr-8 em-clear-dropdown" v-model="node.type" v-else>
-        <option value="0" selected>/{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SELECT_TYPE') }}</option>
-        <option value="form">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_FORM_TYPE') }}</option>
+        <option :value="field.value" v-for="field in fieldsData">{{ translate(field.label) }}</option>
       </select>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
@@ -30,10 +25,20 @@
 </template>
 
 <script>
+import fields from '../../../data/ged/fieldsType'
+
 export default {
   name: "Tree",
   props:{
     node: Object
+  },
+  data() {
+    return 		{
+      fieldsData: [],
+    }
+  },
+  mounted() {
+    this.fieldsData = typeof fields['level_' + this.node.level] !== undefined ? fields['level_' + this.node.level] : [];
   },
 }
 </script>
