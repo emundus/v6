@@ -30,6 +30,13 @@ class UpdateEmundus extends JApplicationCli
             EOHELP;
     }
 
+    public function getExtensionId() {
+        $db = JFactory::getDbo();
+        $res = $db->setQuery("select * from #__schemas where extension_id in (select extension_id from #__extensions where element = 'com_emundus')")->loadRow();
+        return $res[0];
+    }
+
+
     public function emundusToSchemas($version)
     {
         if (!empty($version)) {
@@ -48,7 +55,7 @@ class UpdateEmundus extends JApplicationCli
                 $db->execute();
             }
         }
-        return $db->setQuery("select * from #__schemas where extension_id in (select extension_id from #__extensions where element = 'com_emundus')")->loadRow();
+        return $res;
     }
 
 
@@ -59,28 +66,34 @@ class UpdateEmundus extends JApplicationCli
 
         $app = JFactory::getApplication('site');
         $app->initialise();
-        // Set direct download mode
-        $app->input->set('method', 'direct');
         $executionStartTime = microtime(true);
-        $this->db = JFactory::getDbo();
+
 
         echo "Emundus Update Tool \n\n";
-        if ($name = $this->input->get('e', $this->input->get('emundus'))) {
 
-            $path = JPATH_ADMINISTRATOR . '/components/com_emundus/emundus.xml';
-            $version = null;
-            if (file_exists($path)) {
-                $manifest = simplexml_load_file($path);
-                $version = (string)$manifest->version;
+        $path = JPATH_ADMINISTRATOR . '/components/com_emundus/emundus.xml';
+        $version = null;
+        if (file_exists($path)) {
 
-                $this->out("Adding com_emundus to __schemas table...");
-                $res = $this->emundusToSchemas($version);
-                $this->out("-> extension_id : " . $res[0] . " with version : " . $res[1]);
+            $manifest = simplexml_load_file($path);
+            $version = (string)$manifest->version;
 
-                $this->out("\nCall update function...");
-                $script_emundus = new com_emundusInstallerScript();
-                $script_emundus->updateSQL();
-            }
+            $installer = JInstaller::getInstance();
+            $result = 0;
+            $this->out("Refreshing manifest cache...");
+            $result |= $installer->refreshManifestCache($this->getExtensionId());
+            if (!$result) {
+                $this->out("-> Failed");
+                exit();
+            } else { $this->out("-> OK");}
+
+            $this->out("\nAdding com_emundus to __schemas table...");
+            $res = $this->emundusToSchemas($version);
+            $this->out("-> extension_id : " . $res[0] . " with version : " . $res[1]);
+
+            $this->out("\nCall update function...");
+            $script_emundus = new com_emundusInstallerScript();
+            $script_emundus->updateSQL();
         }
 
         $executionEndTime = microtime(true);
