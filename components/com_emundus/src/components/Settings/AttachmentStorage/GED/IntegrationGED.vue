@@ -49,7 +49,6 @@ export default {
 
   methods: {
     addNode(node_parent){
-      console.log(node_parent);
       if(node_parent === null) {
         let node = {
           id: 1,
@@ -78,7 +77,7 @@ export default {
           return true;
       });
 
-      this.nodes.slice(node_found,1);
+      this.nodes.splice(node_found,1);
     }
   }
 }

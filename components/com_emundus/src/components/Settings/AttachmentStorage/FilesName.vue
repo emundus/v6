@@ -1,6 +1,11 @@
 <template>
   <div class="em-mt-16">
-    <div class="em-name-preview em-mb-16">FNUM-DOCUMENT_TYPE-APPLICANT_NAME</div>
+    <div class="em-name-preview em-mb-16 em-flex-row">
+      <div v-for="(tag,index) in selectedTags" class="em-flex-row">
+        <span>{{tag.label}}</span>
+        <div v-if="(index + 1) !== selectedTags.length">{{selectedSeparator}}</div>
+      </div>
+    </div>
 
     <div class="em-flex-row">
       <multiselect
@@ -18,8 +23,9 @@
           :placeholder="'Ajouter une balise'"
       ></multiselect>
 
-      <div v-for="tag in selectedTags">
-        <span class="em-tag-preview em-ml-16">{{tag.label}}</span>
+      <div v-for="tag in selectedTags" class="em-ml-16 em-flex-row em-tag-preview">
+        <span>{{tag.label}}</span>
+        <span class="material-icons em-pointer em-ml-8" @click="removeTag(tag.value)">close</span>
       </div>
     </div>
 
@@ -50,6 +56,14 @@ export default {
           {
             label: 'FNUM',
             value: 'fnum'
+          },
+          {
+            label: 'APPLICANT_NAME',
+            value: 'applicant_name'
+          },
+          {
+            label: 'DOCUMENT_TYPE',
+            value: 'document_type'
           }
       ],
       separators: [
@@ -57,10 +71,26 @@ export default {
           '_'
       ],
       selectedTags: [],
-      selectedSeparator: '-'
+      selectedSeparator: ''
     }
   },
-  created() {},
+  created() {
+    if(this.selectedTags.length === 0){
+      this.selectedTags.push(
+          {
+            label: 'FNUM',
+            value: 'fnum'
+          },
+          {
+            label: 'DOCUMENT_TYPE',
+            value: 'document_type'
+          }
+      );
+    }
+    if(this.selectedSeparator === ''){
+      this.selectedSeparator = '-';
+    }
+  },
   methods: {
     addTag(newTag){
       const tag = {
@@ -69,6 +99,15 @@ export default {
       }
       this.tags.push(tag);
       this.selectedTags.push(tag);
+    },
+
+    removeTag(tag){
+      let tag_found = this.selectedTags.findIndex(function(element, index) {
+        if(element.value === tag)
+          return true;
+      });
+
+      this.selectedTags.splice(tag_found,1);
     }
   },
 
