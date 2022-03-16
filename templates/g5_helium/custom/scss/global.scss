@@ -3154,8 +3154,8 @@ button.swal2-confirm.save-btn.sauvegarder.save_continue {
   color: #fff !important;
   font-weight: inherit;
   &:hover {
-    background: $base-primary-color !important;
-    border: 1px solid $base-primary-color !important;
+    background: darken($base-primary-color, 8%) !important;
+    border: 1px solid darken($base-primary-color, 8%) !important;
     border-radius: 4px;
     color: #fff !important;
   }
@@ -3168,8 +3168,8 @@ button.swal2-cancel.goback-btn {
   border-radius: 4px !important;
   color: #fff !important;
   &:hover {
-    background: $base-secondary-color !important;
-    border: 1px solid $base-secondary-color !important;
+    background: darken($base-primary-color, 8%) !important;
+    border: 1px solid darken($base-primary-color, 8%) !important;
     border-radius: 4px;
     color: #fff !important;
   }
