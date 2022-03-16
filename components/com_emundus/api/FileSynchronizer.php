@@ -49,9 +49,9 @@ class FileSynchronizer
     /**
      * @param $client GuzzleClient
      */
-    var $client = null;
+    private var $client = null;
 
-    function __construct($type = 'alfresco')
+    public function __construct($type = 'alfresco')
     {
         $this->type = $type;
 
@@ -65,21 +65,21 @@ class FileSynchronizer
         $this->client = $client;
     }
 
-    function setAuth()
+    private function setAuth()
     {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
         switch ($this->type) {
             case 'alfresco':
-                $this->auth['consumer_key'] = 'eMundus';
-                $this->auth['consumer_secret'] = 'eMundus';
-                $this->auth['token'] = 'eMundus';
-                $this->auth['token_secret'] = 'eMundus';
+                $this->auth['consumer_key'] = $eMConfig->get('external_storage_ged_alfresco_user');
+                $this->auth['consumer_secret'] = $eMConfig->get('external_storage_ged_alfresco_password');
                 break;
             default:
                 break;
         }
     }
 
-    function setHeaders()
+    private function setHeaders()
     {
         $this->headers = array(
             'Accept' => 'application/json',
@@ -87,25 +87,33 @@ class FileSynchronizer
         );
     }
 
-    function getHeaders()
+    private function getHeaders()
     {
         return $this->headers;
     }
 
-    function setBaseUrl($baseUrl)
+    private function setBaseUrl()
     {
-        $this->baseUrl = $baseUrl;
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        switch ($this->type) {
+            case 'alfresco':
+                $this->baseUrl = $eMConfig->get('external_storage_ged_alfresco_site');
+                break;
+            default:
+                break;
+        }
     }
 
-    function getBaseUrl()
+    private function getBaseUrl()
     {
         return $this->baseUrl;
     }
 
-    function post($url, $params)
+    private function post($url, $params)
     {
         try {
-            $response = $this->client->post($this->getBaseUrl() . $url, [
+            $response = $this->client->post($url, [
                 'headers' => $this->getHeaders(),
                 'json' => $params
             ]);
@@ -116,22 +124,22 @@ class FileSynchronizer
         }
     }
 
-    function get($url, $params)
+    private function get($url, $params)
     {
 
     }
 
-    function put($url, $params)
+    private function put($url, $params)
     {
 
     }
 
-    function delete($url, $params)
+    private function delete($url, $params)
     {
 
     }
 
-    function setToken()
+    private function setToken()
     {
         $params = array();
 
@@ -162,18 +170,23 @@ class FileSynchronizer
         }
     }
 
-    function checkToken()
-    {
 
+    private function checkToken()
+    {
+        if (empty($this->auth['token'])) {
+            $this->setToken();
+        } else {
+            $this->auth['token'] = $this->auth['token'];
+        }
     }
 
-    function createFolder()
+    public function createFolder()
     {
-
+        $this->checkToken();
     }
 
-    function createFile()
+    public function createFile()
     {
-
+        $this->checkToken();
     }
 }
