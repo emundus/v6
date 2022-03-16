@@ -3146,31 +3146,32 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   font-family: $font;
 }
 
-button.swal2-confirm{
+button.swal2-confirm.save-btn.sauvegarder.save_continue {
   font-family: $font;
   background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
   border-radius: 4px;
-  color: #fff;
+  color: #fff !important;
+  font-weight: inherit;
   &:hover {
     background: $base-primary-color !important;
     border: 1px solid $base-primary-color !important;
     border-radius: 4px;
-    color: #fff;
+    color: #fff !important;
   }
 }
 
-button.swal2-styled{
+button.swal2-cancel.goback-btn {
   font-family: $font;
   background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
   border-radius: 4px !important;
-  color: #fff;
+  color: #fff !important;
   &:hover {
     background: $base-secondary-color !important;
     border: 1px solid $base-secondary-color !important;
     border-radius: 4px;
-    color: #fff;
+    color: #fff !important;
   }
 }
 
