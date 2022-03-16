@@ -389,6 +389,7 @@
 		<field name="external_storage_ged_alfresco_site" type="text" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_SITE" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_SITE_DESC" />
 		<field name="external_storage_ged_alfresco_user" type="text" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_USER" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_USER_DESC" />
 		<field name="external_storage_ged_alfresco_password" type="password" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_PASSWORD" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_PASSWORD_DESC" />
+		<field name="external_storage_ged_alfresco_max_level" type="text" default="3" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL_DESC" />
 	</fieldset>
 	<fieldset
 			name="permissions"

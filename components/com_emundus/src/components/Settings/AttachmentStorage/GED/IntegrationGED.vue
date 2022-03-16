@@ -17,12 +17,10 @@
     </div>
 
     <div v-for="node in nodes">
-      <Tree :node="node" @addNode="addNode" @deleteNode="deleteNode" />
+      <Tree :node="node" @addNode="addNode" @deleteNode="deleteNode" :level_max="level_max" />
     </div>
 
     <hr/>
-
-    <div class="em-h4 em-mb-16">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_WRITING') }}</div>
 
     <FilesName />
   </div>
@@ -36,7 +34,8 @@ export default {
   name: "IntegrationGED",
   components: {FilesName, Tree},
   props:{
-    site: String
+    site: String,
+    level_max: Number
   },
   data() {
     return {
@@ -50,20 +49,33 @@ export default {
   methods: {
     addNode(node_parent){
       if(node_parent === null) {
+        let id = 1;
+        if(typeof this.nodes[this.nodes.length - 1] !== 'undefined') {
+          id = this.nodes[this.nodes.length - 1].id++
+        }
+
         let node = {
-          id: 1,
+          id: id,
           level: 1,
           type: 0,
+          parent: 0,
           childrens: []
         };
 
         this.nodes.push(node);
       } else {
         let level = node_parent.level + 1;
+        let id = node_parent.id + '_1';
+        if(typeof node_parent.childrens[node_parent.childrens.length - 1] !== 'undefined') {
+          let increment = node_parent.childrens.length + 1;
+          id = node_parent.id + '_' + increment;
+        }
+
         let node = {
-          id: 2,
+          id: id,
           level: level,
           type: 0,
+          parent: node_parent.id,
           childrens: []
         };
 

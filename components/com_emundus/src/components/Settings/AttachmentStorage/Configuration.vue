@@ -14,7 +14,7 @@
       </ul>
     </div>
 
-    <IntegrationGED v-if="currentIntegration === 0" :site="site"/>
+    <IntegrationGED v-if="currentIntegration === 0" :site="site" :level_max="level_max"/>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -36,17 +36,22 @@ export default {
       currentIntegration: 0,
 
       // GED
-      site: null
+      site: null,
+      level_max: null
     }
   },
   created() {
+    this.loading = true;
     settingsService.getEmundusParams().then((params) => {
       this.em_params = params.data.config;
 
       if(parseInt(this.em_params.external_storage_ged_alfresco_integration) === 1){
         this.integrations.push('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO');
         this.site = this.em_params.external_storage_ged_alfresco_site;
+        this.level_max = parseInt(this.em_params.external_storage_ged_alfresco_max_level);
       }
+
+      this.loading = false;
     });
   }
 }
