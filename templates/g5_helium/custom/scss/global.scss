@@ -64,20 +64,6 @@ h1 {
   display: none !important;
 }
 
-.swal2-title {
-  color: #000;
-  margin: 10px 0 20px 0;
-}
-
-button.swal2-styled{
-  padding: 5px 20px;
-  border-radius: 25px !important;
-}
-
-button.swal2-confirm{
-  background: #12DB42 !important;
-}
-
 h2 {
   font-size: 1.5rem;
 }
@@ -3151,6 +3137,46 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
       }
     }
   }
+
+/******************************* SWEET ALERT ***********************************/
+
+.swal2-title {
+  color: #000;
+  margin: 10px 0 20px 0;
+  font-family: $font;
+}
+
+button.swal2-confirm{
+  font-family: $font;
+  background: $base-primary-color !important;
+  border: 1px solid $base-primary-color !important;
+  border-radius: 4px;
+  color: #fff;
+  &:hover {
+    background: $base-primary-color !important;
+    border: 1px solid $base-primary-color !important;
+    border-radius: 4px;
+    color: #fff;
+  }
+}
+
+button.swal2-styled{
+  font-family: $font;
+  background: $base-secondary-color !important;
+  border: 1px solid $base-secondary-color !important;
+  border-radius: 4px !important;
+  color: #fff;
+  &:hover {
+    background: $base-secondary-color !important;
+    border: 1px solid $base-secondary-color !important;
+    border-radius: 4px;
+    color: #fff;
+  }
+}
+
+.swal2-content {
+  font-family: $font;
+}
 
 /******************************* FORMULAIRE ***********************************/
 
