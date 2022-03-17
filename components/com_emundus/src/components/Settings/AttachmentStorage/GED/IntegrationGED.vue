@@ -11,18 +11,17 @@
         <span class="tooltip-target b3 material-icons">more_horiz</span>
         <template slot="popover">
           <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300" @click="addNode(null)">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}</div>
-<!--          <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}</div>-->
         </template>
       </v-popover>
     </div>
 
     <div v-for="node in nodes">
-      <Tree :node="node" @addNode="addNode" @deleteNode="deleteNode" :level_max="level_max" />
+      <Tree :node="node" @addNode="addNode" @deleteNode="deleteNode" @saveConfig="saveConfig" :level_max="level_max" />
     </div>
 
     <hr/>
 
-    <FilesName />
+    <FilesName @updateName="updateName" />
   </div>
 </template>
 
@@ -30,9 +29,13 @@
 import Tree from "../Tree";
 import FilesName from "../FilesName";
 
+import storageService from "com_emundus/src/services/storage";
+import mixin from "../../../../mixins/mixin";
+
 export default {
   name: "IntegrationGED",
   components: {FilesName, Tree},
+  mixins: [mixin],
   props:{
     site: String,
     level_max: Number
@@ -42,9 +45,16 @@ export default {
       loading: false,
 
       nodes: [],
+      name: '',
     }
   },
-  created() {},
+  created() {
+    storageService.getConfig('ged').then((response) => {
+      if(response.data.data !== null) {
+        this.nodes = response.data.data.tree;
+      }
+    })
+  },
 
   methods: {
     addNode(node_parent){
@@ -81,6 +91,8 @@ export default {
 
         node_parent.childrens.push(node);
       }
+
+      this.saveConfig();
     },
 
     deleteNode(id){
@@ -90,6 +102,26 @@ export default {
       });
 
       this.nodes.splice(node_found,1);
+    },
+
+    updateName(name){
+      this.name = name;
+
+      if(this.nodes.length > 0) {
+        this.saveConfig();
+      }
+    },
+
+    saveConfig(){
+      this.$emit('updateSaving',true)
+      let config = {
+        tree: this.nodes,
+        name: this.name
+      }
+      storageService.saveConfig(config,'ged').then(() => {
+        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+        this.$emit('updateSaving',false);
+      })
     }
   }
 }

@@ -84,11 +84,12 @@ export default {
     }
   },
   created() {
-    if(this.selectedTags.length === 0){
-      this.resetName();
-    }
     if(this.selectedSeparator === ''){
       this.selectedSeparator = '-';
+    }
+
+    if(this.selectedTags.length === 0){
+      this.resetName();
     }
   },
   methods: {
@@ -99,6 +100,8 @@ export default {
       }
       this.tags.push(tag);
       this.selectedTags.push(tag);
+
+      this.updateName();
     },
 
     removeTag(tag){
@@ -108,6 +111,8 @@ export default {
       });
 
       this.selectedTags.splice(tag_found,1);
+
+      this.updateName();
     },
 
     resetName(){
@@ -122,6 +127,20 @@ export default {
             value: '[DOCUMENT_TYPE]'
           }
       );
+
+      this.updateName();
+    },
+
+    updateName(){
+      let name = '';
+      this.selectedTags.forEach((tag,index) => {
+        if(index != (this.selectedTags.length - 1)) {
+          name = name + tag.value + this.selectedSeparator;
+        } else {
+          name += tag.value;
+          this.$emit('updateName',name);
+        }
+      })
     }
   },
 
@@ -130,9 +149,15 @@ export default {
       if(value !== '') {
         const tag = value[0];
         this.selectedTags.push(tag);
+
+        this.updateName();
       }
 
       this.new_tag = '';
+    },
+
+    selectedSeparator: function(){
+      this.updateName();
     }
   }
 }

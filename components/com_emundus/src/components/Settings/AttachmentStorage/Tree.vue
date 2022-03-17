@@ -19,7 +19,7 @@
     </div>
 
     <div v-for="children in node.childrens" class="em-flex-row" :class="'em-level-' + children.level">
-      <Tree :node="children" @addNode="addNode" @deleteNode="deleteNode" :level_max="level_max" />
+      <Tree :node="children" @addNode="addNode" @deleteNode="deleteNode" @saveConfig="$emit('saveConfig')" :level_max="level_max" />
     </div>
   </div>
 </template>
@@ -56,6 +56,12 @@ export default {
       } else {
         this.$emit('deleteNode',id);
       }
+    }
+  },
+
+  watch: {
+    'node.type': function(){
+      this.$emit('saveConfig');
     }
   }
 }
