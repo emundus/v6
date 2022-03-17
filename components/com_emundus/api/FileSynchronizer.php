@@ -1,61 +1,68 @@
 <?php
-
 /**
- *Use Guzzle client
+ * @package     com_emundus
+ * @subpackage  api
+ * @author	eMundus.fr
+ * @copyright (C) 2022 eMundus SOFTWARE. All rights reserved.
+ * @license	GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
-
-namespace apis;
 
 use GuzzleHttp\Client as GuzzleClient;
 
+defined( '_JEXEC' ) or die( 'Restricted access' );
 
 class FileSynchronizer
 {
     /**
      * @var string $type of api used
      */
-    var $type = 'alfresco';
+    public $type = 'alfresco';
 
     /**
      * @var array $auth
      */
-    private var $auth = array();
+    private $auth = array();
 
     /**
      * @var array $headers
      */
-    private var $headers = array();
+    private $headers = array();
 
     /**
      * @var string $baseUrl
      */
-    private var $baseUrl = '';
+    private $baseUrl = '';
 
     /**
      * @var string $authenticationUrl
      */
-    var $authenticationUrl = '';
+    private $authenticationUrl = '';
 
 
     /**
      * @var string $coreUrl
      */
-    var $coreUrl = '';
+    private $coreUrl = '';
 
     /**
      * @var string $modelUrl
      */
-    var $modelUrl = '';
+    private $modelUrl = '';
 
     /**
      * @var string $searchUrl
      */
-    var $searchUrl = '';
+    private $searchUrl = '';
+
+    /**
+     * @var string $emundusRootDirectory
+     */
+    private $emundusRootDirectory = '';
 
     /**
      * @param $client GuzzleClient
      */
-    private var $client = null;
+    private $client = null;
 
     public function __construct($type = 'alfresco')
     {
@@ -63,22 +70,25 @@ class FileSynchronizer
 
         $this->setAuth();
         $this->setHeaders();
-
+        $this->setBaseUrl();
+        $this->setUrls();
         $client = new GuzzleClient([
             'base_uri' => $this->getBaseUrl(),
             'headers' => $this->getHeaders()
         ]);
         $this->client = $client;
+
+        $this->setEmundusRootDirectory();
     }
 
     private function setAuth()
     {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $config = JComponentHelper::getParams('com_emundus');
 
         switch ($this->type) {
             case 'alfresco':
-                $this->auth['consumer_key'] = $eMConfig->get('external_storage_ged_alfresco_user');
-                $this->auth['consumer_secret'] = $eMConfig->get('external_storage_ged_alfresco_password');
+                $this->auth['consumer_key'] = $config->get('external_storage_ged_alfresco_user');
+                $this->auth['consumer_secret'] = $config->get('external_storage_ged_alfresco_password');
                 break;
             default:
                 break;
@@ -100,11 +110,11 @@ class FileSynchronizer
 
     private function setBaseUrl()
     {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $config = JComponentHelper::getParams('com_emundus');
 
         switch ($this->type) {
             case 'alfresco':
-                $this->baseUrl = $eMConfig->get('external_storage_ged_alfresco_site');
+                $this->baseUrl = $config->get('external_storage_ged_alfresco_base_url');
                 break;
             default:
                 break;
@@ -116,7 +126,49 @@ class FileSynchronizer
         return $this->baseUrl;
     }
 
-    private function post($url, $params)
+    private function setUrls()
+    {
+        switch ($this->type) {
+            case 'alfresco':
+                $this->authenticationUrl = 'alfresco/api/-default-/public/authentication/versions/1';
+                $this->coreUrl = 'alfresco/api/-default-/public/alfresco/versions/1';
+                $this->modelUrl = 'alfresco/api/-default-/public/alfresco/versions/1';
+                $this->searchUrl = 'alfresco/api/-default-/public/search/versions/1';
+                break;
+            default:
+                break;
+        }
+    }
+
+    private function setEmundusRootDirectory()
+    {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        switch ($this->type) {
+            case 'alfresco':
+                $site = $eMConfig->get('external_storage_ged_alfresco_site');
+                $response = $this->get($this->coreUrl . "/sites/$site/containers");
+
+                if (!empty($response->list) && !empty($response->list->entries)) {
+                    foreach ($response->list->entries as $entry) {
+                        if ($entry->entry->folderId == 'documentLibrary') {
+                            $documentLibrary = $entry->entry->id;
+                            $this->emundusRootDirectory = $documentLibrary;
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public function getEmundusRootDirectory()
+    {
+        return $this->emundusRootDirectory;
+    }
+
+    private function post($url, $params = array())
     {
         try {
             // post to alfresco api with authentication and form data
@@ -132,60 +184,30 @@ class FileSynchronizer
         }
     }
 
-    private function get($url, $params)
+    private function get($url, $params = array())
     {
+        try {
+            // get from alfresco api with authentication and form data
+            $response = $this->client->get($url, [
+                'auth' => [$this->auth['consumer_key'], $this->auth['consumer_secret']],
+                'query' => $params
+            ]);
 
-    }
-
-    private function put($url, $params)
-    {
-
-    }
-
-    private function delete($url, $params)
-    {
-
-    }
-
-    private function setToken()
-    {
-        $params = array();
-
-        switch ($this->type) {
-            case 'alfresco':
-                $this->authenticationUrl = '/alfresco/api/-default-/public/authentication/versions/1/tickets';
-
-                $params['userId'] = $this->auth['consumer_key'];
-                $params['password'] = $this->auth['consumer_secret'];
-                break;
-            default:
-                break;
-        }
-
-        if (!empty($this->authenticationUrl)) {
-            $response = $this->post($this->authenticationUrl, $params);
-
-            switch ($this->type) {
-                case 'alfresco':
-                    if (isset($response->entry->id)) {
-                        $this->auth['token'] = $response->data->ticket;
-                    }
-
-                    break;
-                default:
-                    break;
-            }
+            // return response
+            return json_decode($response->getBody());
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
     }
 
-
-    private function checkToken()
+    private function put($url, $params = array())
     {
-        if (empty($this->auth['token'])) {
-            $this->setToken();
-        } else {
-            $this->auth['token'] = $this->auth['token'];
-        }
+
+    }
+
+    private function delete($url, $params = array())
+    {
+
     }
 
     public function addFile($fnum, $file)

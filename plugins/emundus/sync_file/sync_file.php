@@ -8,7 +8,9 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class PlgEmundusSyncFile extends JPlugin {
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'api'.DS.'FileSynchronizer.php');
+
+class plgEmundusSync_file extends JPlugin {
 
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);
@@ -16,19 +18,22 @@ class PlgEmundusSyncFile extends JPlugin {
         JLog::addLogger(array('text_file' => 'com_emundus.sync_file.php'), JLog::ALL, array('com_emundus_sync_file'));
     }
 
-    function onAfterUploadFile($args): void {
+    function onAfterUploadFile($args) {;
         if (!isset($args['fnums']) || !isset($args['files'])) {
-            JLog::add('[SYNC_FILE_PLUGIN] Missing fnums or files in args', JLog::ERROR, 'com_emundus');
-            return;
+            return false;
         }
 
-
+        $fileSynchronizer = new FileSynchronizer('alfresco');
     }
 
-    function onDeleteFile($args): void {
-        if (!isset($args['fnum']) || !isset($args['file'])) {
-            JLog::add('[SYNC_FILE_PLUGIN] Missing fnums or files in args', JLog::ERROR, 'com_emundus');
-            return;
+    function onDeleteFile($args) {
+        // app enqueue the file to be deleted
+        $app = JFactory::getApplication();
+        $app->enqueueMessage('[SYNC_FILE_PLUGIN] File to be deleted: '.$args['fnum']);
+
+        if (!isset($args['fnum'])) {
+            JLog::add('[SYNC_FILE_PLUGIN] Missing fnum in args', JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 }
