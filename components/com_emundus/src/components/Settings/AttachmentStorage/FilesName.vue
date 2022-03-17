@@ -8,12 +8,13 @@
       </div>
     </div>
 
-    <div class="em-name-preview em-mb-16 em-flex-row">
+    <div class="em-name-preview em-mb-16 em-flex-row" :class="selectedTags.length === 0 ? 'em-name-preview-error' : ''">
       <div v-for="(tag,index) in selectedTags" class="em-flex-row">
         <span>{{tag.value}}</span>
         <div v-if="(index + 1) !== selectedTags.length">{{selectedSeparator}}</div>
       </div>
     </div>
+    <div class="em-red-500-color em-mb-16" v-if="selectedTags.length === 0">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_SELECT_A_TAG') }}</div>
 
     <div class="em-flex-row">
       <multiselect
@@ -142,6 +143,9 @@ export default {
   background: rgba(121, 182, 251, 0.25);
   padding: 16px 8px;
   border-radius: 4px;
+}
+.em-name-preview-error{
+  background: rgba(255, 121, 121, 0.25);
 }
 .multiselect{
   width: 20%;
