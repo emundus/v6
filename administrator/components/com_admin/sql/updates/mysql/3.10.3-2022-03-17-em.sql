@@ -27,4 +27,6 @@ create table jos_emundus_uploads_sync
 );
 
 alter table jos_emundus_setup_attachments
-    add sync tinyint(1) default 0 null;
+    add sync int default 0 null;
+alter table jos_emundus_setup_attachments
+    add sync_method varchar(50) null;
