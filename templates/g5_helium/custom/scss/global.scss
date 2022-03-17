@@ -3185,14 +3185,9 @@ button.swal2-cancel.goback-btn {
 .view-reset,
 .view-login,
 .view-form.view-registration {
-
-  /* PARTIE GESTIONNAIRE */
-  .groups-setup-page .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer.control-group {
-    margin: 48px 0 0 0;
-  }
-
+  
   /* BLOC FORMULAIRE */
-  .applicant-form, .groups-setup-page {
+  .span12 > div {
     margin-top: 48px;
 
     /* TITRE FORMULAIRE */
@@ -3368,7 +3363,7 @@ button.swal2-cancel.goback-btn {
             /* SELECTION MULTIPLE */
 
             .chzn-container-multi.chzn-container {
-              width: 100%;
+              width: 100% !important;
               .chzn-choices {
                 @include select-default;
                 box-shadow: none;
@@ -3544,6 +3539,10 @@ button.swal2-cancel.goback-btn {
               margin-top: 12px;
               min-height: auto;
 
+              &.span2 {
+                margin-left: 80px;
+              }
+
               label.checkbox {
                 padding: 0;
                 margin: 0;
@@ -3561,6 +3560,7 @@ button.swal2-cancel.goback-btn {
 
                 input[type="radio"] {
                   @include radio;
+                  margin-left: 0px !important;
 
                   &:checked {
                     background-color: initial;
