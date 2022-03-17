@@ -386,10 +386,12 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="external_storage_ged_alfresco_base_url" type="text" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_BASE_URL" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_BASE_URL_DESC" />
 		<field name="external_storage_ged_alfresco_site" type="text" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_SITE" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_SITE_DESC" />
 		<field name="external_storage_ged_alfresco_user" type="text" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_USER" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_USER_DESC" />
 		<field name="external_storage_ged_alfresco_password" type="password" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_PASSWORD" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_PASSWORD_DESC" />
 		<field name="external_storage_ged_alfresco_max_level" type="text" default="3" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL_DESC" />
+		<field name="external_storage_ged_alfresco_max_folders_by_level" type="text" default="1" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_FOLDERS_BY_LEVEL" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_FOLDERS_BY_LEVEL_DESC" />
 	</fieldset>
 	<fieldset
 			name="permissions"
