@@ -68,4 +68,51 @@ class EmundusModelSync extends JModelList {
         }
     }
 
+    function getDocuments(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id,lbl,value,sync,sync_method')
+                ->from($db->quoteName('#__emundus_setup_attachments'));
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/sync | Cannot get documents synced config  : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
+    function updateDocumentSync($did,$sync){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__emundus_setup_attachments'))
+                ->set($db->quoteName('sync') . ' = ' . $db->quote($sync))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function updateDocumentSyncMethod($did,$sync_method){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update($db->quoteName('#__emundus_setup_attachments'))
+                ->set($db->quoteName('sync_method') . ' = ' . $db->quote($sync_method))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($did));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync method : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
 }
