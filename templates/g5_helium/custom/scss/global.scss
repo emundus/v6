@@ -3186,6 +3186,11 @@ button.swal2-cancel.goback-btn {
 .view-login,
 .view-form.view-registration {
 
+  /* PARTIE GESTIONNAIRE */
+  .groups-setup-page .fabrikForm .fabrikGroup .row-fluid .fabrikElementContainer.control-group {
+    margin: 48px 0 0 0;
+  }
+
   /* BLOC FORMULAIRE */
   .applicant-form, .groups-setup-page {
     margin-top: 48px;
@@ -3255,6 +3260,7 @@ button.swal2-cancel.goback-btn {
             @include body-16-medium;
             color: $neutral-800;
             margin-bottom: 0;
+            padding-top: 0;
 
               /* ETOILE */
               .icon-star.small {
@@ -3362,6 +3368,7 @@ button.swal2-cancel.goback-btn {
             /* SELECTION MULTIPLE */
 
             .chzn-container-multi.chzn-container {
+              width: 100%;
               .chzn-choices {
                 @include select-default;
                 box-shadow: none;
@@ -3393,6 +3400,7 @@ button.swal2-cancel.goback-btn {
                 @include body-14;
                 &.highlighted {
                   background: $neutral-200;
+                  color: $neutral-900;
                 }
               }
             }
