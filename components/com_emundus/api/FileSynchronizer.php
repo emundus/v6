@@ -16,7 +16,7 @@ class FileSynchronizer
     /**
      * @var string $type of api used
      */
-    public $type = 'alfresco';
+    public $type = 'ged';
 
     /**
      * @var array $auth
@@ -64,7 +64,7 @@ class FileSynchronizer
      */
     private $client = null;
 
-    public function __construct($type = 'alfresco')
+    public function __construct($type = 'ged')
     {
         $this->type = $type;
 
@@ -86,7 +86,7 @@ class FileSynchronizer
         $config = JComponentHelper::getParams('com_emundus');
 
         switch ($this->type) {
-            case 'alfresco':
+            case 'ged':
                 $this->auth['consumer_key'] = $config->get('external_storage_ged_alfresco_user');
                 $this->auth['consumer_secret'] = $config->get('external_storage_ged_alfresco_password');
                 break;
@@ -113,7 +113,7 @@ class FileSynchronizer
         $config = JComponentHelper::getParams('com_emundus');
 
         switch ($this->type) {
-            case 'alfresco':
+            case 'ged':
                 $this->baseUrl = $config->get('external_storage_ged_alfresco_base_url');
                 break;
             default:
@@ -129,7 +129,7 @@ class FileSynchronizer
     private function setUrls()
     {
         switch ($this->type) {
-            case 'alfresco':
+            case 'ged':
                 $this->authenticationUrl = 'alfresco/api/-default-/public/authentication/versions/1';
                 $this->coreUrl = 'alfresco/api/-default-/public/alfresco/versions/1';
                 $this->modelUrl = 'alfresco/api/-default-/public/alfresco/versions/1';
@@ -140,41 +140,125 @@ class FileSynchronizer
         }
     }
 
+    public function getEmundusRootDirectory()
+    {
+        if (empty($this->emundusRootDirectory)) {
+            // search emundus root directory in bdd
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('params')
+                ->from('#__emundus_setup_sync')
+                ->where('type = '.$db->quote($this->type));
+            $db->setQuery($query);
+            $params = $db->loadResult();
+            $params = json_decode($params, true);
+            $this->emundusRootDirectory = !empty($params['emundus_root_directory']) ? $params['emundus_root_directory'] : '';
+        }
+
+        return $this->emundusRootDirectory;
+    }
+
     private function setEmundusRootDirectory()
     {
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $this->getEmundusRootDirectory();
 
-        switch ($this->type) {
-            case 'alfresco':
-                $site = $eMConfig->get('external_storage_ged_alfresco_site');
-                $response = $this->get($this->coreUrl . "/sites/$site/containers");
+        if (empty($this->emundusRootDirectory)) {
+            switch ($this->type) {
+                case 'ged':
+                    $documentLibrary = $this->getGEDDocumentLibrary();
+                    if (!empty($documentLibrary)) {
+                        $found = $this->getGEDEmundusRootDirectory($documentLibrary);
 
-                if (!empty($response->list) && !empty($response->list->entries)) {
-                    foreach ($response->list->entries as $entry) {
-                        if ($entry->entry->folderId == 'documentLibrary') {
-                            $documentLibrary = $entry->entry->id;
-                            $this->emundusRootDirectory = $documentLibrary;
+                        if (!$found) {
+                            $response = $this->createFolder($documentLibrary, array(
+                                'name'=> 'EMUNDUS',
+                                'nodeType' => 'cm:folder',
+                            ));
+
+                            if (!empty($response)) {
+                                $this->emundusRootDirectory = $response->entry->id;
+                                $this->saveEmundusRootDirectory();
+                            }
                         }
                     }
-                }
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
-    public function getEmundusRootDirectory()
+    private function getGEDDocumentLibrary()
     {
-        return $this->emundusRootDirectory;
+        $documentLibrary = '';
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        $site = $eMConfig->get('external_storage_ged_alfresco_site');
+        $response = $this->get($this->coreUrl . "/sites/$site/containers");
+
+        if (!empty($response->list) && !empty($response->list->entries)) {
+            foreach ($response->list->entries as $entry) {
+                if ($entry->entry->folderId == 'documentLibrary') {
+                    $documentLibrary = $entry->entry->id;
+                }
+            }
+        }
+
+        return $documentLibrary;
+    }
+
+    private function getGEDEmundusRootDirectory($parentId)
+    {
+        $found = false;
+
+        // get children
+        $response = $this->get($this->coreUrl . "/nodes/$parentId/children");
+        if (!empty($response->list) && !empty($response->list->entries)) {
+
+            foreach ($response->list->entries as $entry) {
+                // check if properties custom:author is EMUNDUS
+
+                if ($entry->entry->name == 'EMUNDUS') {
+                    $this->emundusRootDirectory = $entry->entry->id;
+                    $this->saveEmundusRootDirectory();
+                    $found = true;
+                    break;
+                }
+            }
+        }
+
+        return $found;
+    }
+
+    private function saveEmundusRootDirectory()
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('params')
+            ->from('#__emundus_setup_sync')
+            ->where("type = " . $db->quote($this->type));
+        $db->setQuery($query);
+        $params = $db->loadResult();
+        $params = json_decode($params);
+
+        $params->emundus_root_directory = $this->emundusRootDirectory;
+        $params = json_encode($params);
+
+        $query = $db->getQuery(true);
+        $query->update('#__emundus_setup_sync')
+            ->set('params = ' . $db->quote($params))
+            ->where("type = " . $db->quote($this->type));
+        $db->setQuery($query);
+
+        $db->execute();
     }
 
     private function post($url, $params = array())
     {
         try {
-            // post to alfresco api with authentication and form data
             $response = $this->client->post($url, [
                 'auth' => [$this->auth['consumer_key'], $this->auth['consumer_secret']],
-                'form_params' => $params
+                'json' => $params
             ]);
 
             // return response
@@ -187,7 +271,6 @@ class FileSynchronizer
     private function get($url, $params = array())
     {
         try {
-            // get from alfresco api with authentication and form data
             $response = $this->client->get($url, [
                 'auth' => [$this->auth['consumer_key'], $this->auth['consumer_secret']],
                 'query' => $params
@@ -238,6 +321,11 @@ class FileSynchronizer
             )
         );
 
-        $this->post($this->coreUrl . "/nodes/$this->parentNodeId/children", $params);
+        $this->post($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
+    }
+
+    public function createFolder($parentNodeId, $params)
+    {
+        return $this->post($this->coreUrl . "/nodes/$parentNodeId/children", $params);
     }
 }

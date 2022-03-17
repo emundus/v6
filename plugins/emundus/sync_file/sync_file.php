@@ -23,7 +23,7 @@ class plgEmundusSync_file extends JPlugin {
             return false;
         }
 
-        $fileSynchronizer = new FileSynchronizer('alfresco');
+        $fileSynchronizer = new FileSynchronizer('ged');
     }
 
     function onDeleteFile($args) {
