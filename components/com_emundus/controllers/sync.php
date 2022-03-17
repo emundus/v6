@@ -1,0 +1,65 @@
+<?php
+/**
+ * @package     Joomla
+ * @subpackage  eMundus
+ * @link       http://www.emundus.fr
+ *
+ * @license     GNU/GPL
+ * @author      HUBINET Brice
+ */
+
+// No direct access
+
+defined( '_JEXEC' ) or die( 'Restricted access' );
+
+jimport('joomla.application.component.controller');
+
+class EmundusControllerSync extends JControllerLegacy {
+    private $_user = null;
+    private $_db = null;
+    private $m_sync = null;
+
+    public function __construct($config = array()) {
+        parent::__construct($config);
+
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'sync.php');
+        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+
+        $this->_user  = JFactory::getSession()->get('emundusUser');
+        $this->_db    = JFactory::getDBO();
+        $this->m_sync = new EmundusModelSync();
+    }
+
+    public function getconfig(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $type = $jinput->getString('type', null);
+
+            $config = $this->m_sync->getConfig($type);
+
+            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => json_decode($config));
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function saveconfig(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $config = $jinput->getString('config', null);
+            $type = $jinput->getString('type', null);
+
+            $saved = $this->m_sync->saveConfig($config,$type);
+
+            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $saved);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+}

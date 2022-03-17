@@ -2,7 +2,7 @@ export default {
     level_1:[
         {
             label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_CAMPAIGN_TYPE",
-            value: '[CAMPAIGN_LABEL]',
+            value: '[CAMPAIGN]',
             field: 'none'
         },
     ],
@@ -19,7 +19,7 @@ export default {
         },
         {
             label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_YEAR_TYPE",
-            value: '[CAMPAIGN_YEAR]',
+            value: '[YEAR]',
             field: 'none'
         },
         {
@@ -41,7 +41,7 @@ export default {
         },
         {
             label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_YEAR_TYPE",
-            value: '[CAMPAIGN_YEAR]',
+            value: '[YEAR]',
             field: 'none'
         },
         {
