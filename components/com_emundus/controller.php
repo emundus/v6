@@ -305,6 +305,11 @@ class EmundusController extends JControllerLegacy {
 
         unset($current_user->fnums[$fnum]);
 
+        // dispatch delete file event
+        $dispatcher = JDispatcher::getInstance();
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher->trigger('onBeforeDeleteFile', array('user' => $user, 'fnum' => $fnum));
+
         if (in_array($user->fnum, array_keys($user->fnums))) {
             $app->redirect($redirect);
         } else {
@@ -1198,6 +1203,11 @@ class EmundusController extends JControllerLegacy {
                 }
             }
         }
+
+
+        $dispatcher = JEventDispatcher::getInstance();
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher->trigger('onAfterUploadFile', array($fnums, $files, $user->id));
 
         return true;
     }
