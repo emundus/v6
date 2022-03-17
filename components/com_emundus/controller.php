@@ -1183,9 +1183,7 @@ class EmundusController extends JControllerLegacy {
                 $id = $db->insertid();
 
                 $data = array(
-                    'fnums' => $fnums,
-                    'files' => $files,
-                    'id' => $id,
+                    'upload_id' => $id,
                 );
 
                 $dispatcher = JEventDispatcher::getInstance();

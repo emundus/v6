@@ -19,11 +19,13 @@ class plgEmundusSync_file extends JPlugin {
     }
 
     function onAfterUploadFile($args) {;
-        if (!isset($args['fnums']) || !isset($args['files'])) {
+        if(!isset($args['upload_id'])) {
+            JLog::add('Missing parameters', JLog::ERROR, 'com_emundus_sync_file');
             return false;
         }
 
         $fileSynchronizer = new FileSynchronizer('ged');
+        $fileSynchronizer->addFile($args['upload_id']);
     }
 
     function onDeleteFile($args) {
