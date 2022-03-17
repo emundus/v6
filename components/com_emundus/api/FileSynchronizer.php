@@ -324,7 +324,10 @@ class FileSynchronizer
 
             foreach ($relativePaths as $relativePath) {
                 $path = $this->replaceTypes($relativePath, $upload_id);
-                $path = substr($path, 0, -1);
+                // if last character is a /, remove it
+                if (substr($path, -1) == '/') {
+                    $path = substr($path, 0, -1);
+                }
                 $filepath = $this->getFilePath($upload_id);
 
                 $params = array(
@@ -347,6 +350,10 @@ class FileSynchronizer
                 );
 
                 $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
+
+                if (!empty($response->entry)) {
+                    $this->saveNodeId($upload_id, $response->entry->id, $path);
+                }
             }
         }
     }
@@ -421,6 +428,48 @@ class FileSynchronizer
     public function createFolder($parentNodeId, $params)
     {
         return $this->post($this->coreUrl . "/nodes/$parentNodeId/children", $params);
+    }
+
+    private function saveNodeId($upload_id, $node_id, $path)
+    {
+        // insert row inside #__emundus_uploads_sync
+        $sync_id = $this->getSyncId();
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->insert('#__emundus_uploads_sync')
+            ->columns('upload_id, sync_id, state, relative_path, node_id')
+            ->values($upload_id . ', ' . $sync_id . ', ' . $db->quote('1') . ', ' . $db->quote($path) . ', ' . $db->quote($node_id));
+
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            // enqueue message errror
+            $app = JFactory::getApplication();
+            $app->enqueueMessage($e->getMessage(), 'error');
+            JLog::add('Error inserting into #__emundus_uploads_sync: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        }
+    }
+
+    private function getSyncId()
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from('#__emundus_setup_sync')
+            ->where("type = " . $db->quote($this->type));
+        $db->setQuery($query);
+
+        try {
+            $sync_id = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting sync_id: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $sync_id;
     }
 
     private function getFileName($upload_id)
