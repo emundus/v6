@@ -36,6 +36,12 @@ class FileSynchronizer
      */
     var $authenticationUrl = '';
 
+
+    /**
+     * @var string $coreUrl
+     */
+    var $coreUrl = '';
+
     /**
      * @var string $modelUrl
      */
@@ -113,11 +119,13 @@ class FileSynchronizer
     private function post($url, $params)
     {
         try {
+            // post to alfresco api with authentication and form data
             $response = $this->client->post($url, [
-                'headers' => $this->getHeaders(),
-                'json' => $params
+                'auth' => [$this->auth['consumer_key'], $this->auth['consumer_secret']],
+                'form_params' => $params
             ]);
 
+            // return response
             return json_decode($response->getBody());
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -180,13 +188,34 @@ class FileSynchronizer
         }
     }
 
-    public function createFolder()
+    public function addFile($fnum, $file)
     {
-        $this->checkToken();
+        $paths = $this->getRelativePaths($file);
+
+        foreach ($paths as $path) {
+            // replace shortcodes
+            $this->createFile($path, $file);
+        }
     }
 
-    public function createFile()
+    private function getRelativePaths($file)
     {
-        $this->checkToken();
+
+    }
+
+    public function createFile($relativePath, $file)
+    {
+        $params = array(
+            "filedata" => $file,
+            "name" => basename($file),
+            "nodeType" => "cm:content",
+            "relativePath" => $relativePath,
+            "properties" => array(
+                "cm:title" => basename($file),
+                "cm:description" => "",
+            )
+        );
+
+        $this->post($this->coreUrl . "/nodes/$this->parentNodeId/children", $params);
     }
 }
