@@ -24,10 +24,8 @@
 form#user-registration.form-validate.form-horizontal.well,
 .view-reset .reset-confirm form.form-validate.form-horizontal.well,
 .view-reset .reset-complete form.form-validate.form-horizontal.well {
-    width: 59%;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding: 0px;
+    padding: 0px 64px;
+    margin-top: 0px
 }
 
 form#user-registration.form-validate.form-horizontal.well,
@@ -35,8 +33,7 @@ form#user-registration.form-validate.form-horizontal.well,
 .view-reset .reset-complete form.form-validate.form-horizontal.well {
     background: #fff;
     border: none;
-    margin-top: 20px !important;
-    padding-bottom: 15px;
+    margin-bottom: 0px;
 }
 
 form#user-registration.form-validate.form-horizontal.well label,
@@ -62,6 +59,13 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     font-size: 14px;
 }
 
+
+form#user-registration.form-validate.form-horizontal.well .control-group ,
+.view-reset  .form-validate.form-horizontal.well .control-group,
+.reset-complete .form-validate.form-horizontal.well .control-group  {
+  margin-bottom: 0px;
+}
+
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls input {
@@ -84,11 +88,12 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     flex-direction: column;
     align-items: center;
     background: #fff;
-    width: 60%;
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
     margin-bottom: 50px;
+    border-radius: 16px;
 }
 
 

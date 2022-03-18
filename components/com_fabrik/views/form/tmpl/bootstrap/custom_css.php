@@ -503,16 +503,15 @@ form#member-profile .form-horizontal .control-label {
 /* Inscription */
 
   .view-registration .login.em-formRegistrationCenter,  .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
-     display: flex !important;
+    display: flex !important;
     flex-direction: column;
     align-items: center;
     background: #fff;
-    width: 60%;
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
     margin-top: 150px;
-    padding-bottom: 50px;
-    margin-bottom: 50px;
+    border-radius: 16px;
 }
 
   .view-registration .login.em-formRegistrationCenter .row-fluid {
@@ -545,9 +544,8 @@ form#member-profile .form-horizontal .control-label {
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 57%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    padding: 80px 64px 0px 64px;
 }
 .view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
       background-image: url(../../../../../../media/com_emundus/images/register.svg);
@@ -576,16 +574,13 @@ button.register {
 }
 
 .view-registration form.fabrikForm , .view-form .em-formRegistrationCenter form.fabrikForm {
-  border: none;
-    margin-bottom: 0 !important;
+    border: none;
     border-radius: 0;
     background: #fff;
-    border-radius: 0;
-    padding: 0px;
     box-shadow: none;
-    width: 59%;
-    margin-left: auto;
-    margin-right: auto;
+    padding: 0px 64px 80px 64px;
+    margin-top: 0px !important;
+    border-radius: 0 0 16px 16px;
   }
 
 .view-registration fieldset {
@@ -1052,9 +1047,10 @@ footer#g-footer {
 
 
 ol {
-    width: 59%;
+    padding: 0px 83px;
     text-align: justify;
     margin-left: 0px !important;
+    margin-bottom: 0px !important;
 }
 
 ol li {
