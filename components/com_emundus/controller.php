@@ -305,10 +305,6 @@ class EmundusController extends JControllerLegacy {
 
         unset($current_user->fnums[$fnum]);
 
-        $dispatcher = JDispatcher::getInstance();
-        JPluginHelper::importPlugin('emundus', 'sync_file');
-        $dispatcher->trigger('onBeforeDeleteFile', array('user' => $user, 'fnum' => $fnum));
-
         if (in_array($user->fnum, array_keys($user->fnums))) {
             $app->redirect($redirect);
         } else {
@@ -454,6 +450,10 @@ class EmundusController extends JControllerLegacy {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
             return false;
         }
+
+        $dispatcher = JDispatcher::getInstance();
+        JPluginHelper::importPlugin('emundus', 'sync_file');
+        $dispatcher->trigger('onDeleteFile', array(array('upload_id' => $upload_id)));
 
         if (isset($layout))
             $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid;

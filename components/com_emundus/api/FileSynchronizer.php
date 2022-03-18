@@ -304,7 +304,16 @@ class FileSynchronizer
 
     private function delete($url, $params = array())
     {
+        try {
+            $response = $this->client->delete($url, [
+                'auth' => [$this->auth['consumer_key'], $this->auth['consumer_secret']],
+                'query' => $params
+            ]);
 
+            return json_decode($response->getBody());
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
 
@@ -356,6 +365,17 @@ class FileSynchronizer
                 }
             }
         }
+    }
+
+    public function deleteFile($upload_id) {
+        $nodeId = $this->getNodeId($upload_id);
+
+        if (!empty($nodeId)) {
+            $response = $this->delete($this->coreUrl . "/nodes/$nodeId");
+            return $response;
+        }
+
+        return false;
     }
 
     private function getRelativePaths()
@@ -428,6 +448,19 @@ class FileSynchronizer
     public function createFolder($parentNodeId, $params)
     {
         return $this->post($this->coreUrl . "/nodes/$parentNodeId/children", $params);
+    }
+
+    private function getNodeId($upload_id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('node_id')
+            ->from('#__emundus_uploads_sync')
+            ->where("upload_id = " . $db->quote($upload_id));
+        $db->setQuery($query);
+
+        return $db->loadResult();
     }
 
     private function saveNodeId($upload_id, $node_id, $path)

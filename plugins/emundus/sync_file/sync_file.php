@@ -29,13 +29,12 @@ class plgEmundusSync_file extends JPlugin {
     }
 
     function onDeleteFile($args) {
-        // app enqueue the file to be deleted
-        $app = JFactory::getApplication();
-        $app->enqueueMessage('[SYNC_FILE_PLUGIN] File to be deleted: '.$args['fnum']);
-
-        if (!isset($args['fnum'])) {
-            JLog::add('[SYNC_FILE_PLUGIN] Missing fnum in args', JLog::ERROR, 'com_emundus');
+        if (!isset($args['upload_id'])) {
+            JLog::add('[SYNC_FILE_PLUGIN] Missing upload_id in args', JLog::ERROR, 'com_emundus');
             return false;
         }
+
+        $fileSynchronizer = new FileSynchronizer('ged');
+        $response = $fileSynchronizer->deleteFile($args['upload_id']);
     }
 }
