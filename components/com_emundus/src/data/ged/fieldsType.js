@@ -2,7 +2,7 @@ export default {
     level_1:[
         {
             label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_CAMPAIGN_TYPE",
-            value: '[CAMPAIGN]',
+            value: '[CAMPAIGN_LABEL]',
             field: 'none'
         },
     ],
@@ -19,12 +19,12 @@ export default {
         },
         {
             label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_YEAR_TYPE",
-            value: '[YEAR]',
+            value: '[CAMPAIGN_YEAR]',
             field: 'none'
         },
         {
-            label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_FORM_TYPE",
-            value: 'fabrik_element',
+            label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_OTHER",
+            value: '',
             field: 'text'
         },
     ],
@@ -41,12 +41,12 @@ export default {
         },
         {
             label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_YEAR_TYPE",
-            value: '[YEAR]',
+            value: '[CAMPAIGN_YEAR]',
             field: 'none'
         },
         {
-            label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_FORM_TYPE",
-            value: 'fabrik_element',
+            label: "COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_OTHER",
+            value: '',
             field: 'text'
         },
     ],

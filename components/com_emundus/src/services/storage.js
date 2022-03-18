@@ -49,6 +49,17 @@ export default {
         }
     },
 
+    async getEmundusTags(){
+        try {
+            return await client().get(`index.php?option=com_emundus&controller=sync&task=getemundustags`);
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
     async updateSync(did,sync) {
         try {
             const formData = new FormData();

@@ -16,7 +16,7 @@
     </div>
 
     <div v-for="node in nodes">
-      <Tree :node="node" @addNode="addNode" @deleteNode="deleteNode" @saveConfig="saveConfig" :level_max="level_max" />
+      <Tree :node="node" @addNode="addNode" @deleteNode="deleteNode" @saveConfig="saveConfig" :level_max="level_max" :emundus_tags="emundus_tags" />
     </div>
 
     <hr/>
@@ -44,6 +44,7 @@ export default {
     return {
       loading: false,
 
+      emundus_tags: [],
       nodes: [],
       name: '',
     }
@@ -53,7 +54,10 @@ export default {
       if(response.data.data !== null) {
         this.nodes = response.data.data.tree;
       }
-    })
+    });
+    /*storageService.getEmundusTags().then((response) => {
+      this.emundus_tags = response.data.data;
+    })*/
   },
 
   methods: {

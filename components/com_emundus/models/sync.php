@@ -83,6 +83,22 @@ class EmundusModelSync extends JModelList {
         }
     }
 
+    function getEmundusTags(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('tag')
+                ->from($db->quoteName('#__emundus_setup_tags'))
+                ->where($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            return $db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/sync | Cannot get emundus tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
     function updateDocumentSync($did,$sync){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
