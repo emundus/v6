@@ -439,7 +439,7 @@ class FileSynchronizer
 
         try {
             $config = $db->loadResult();
-            $paths = json_decode($config);
+            $config = json_decode($config);
 
             $tree = $config->tree;
 
@@ -479,12 +479,19 @@ class FileSynchronizer
             if (class_exists('EmundusModelEmails')) {
                 $post = [
                     'FNUM' => $fnum,
-                    'DOCUMENT_TYPE' => $this->getDocumentType($upload_id)
+                    'DOCUMENT_TYPE' => $this->getDocumentType($upload_id),
+                    'CAMPAIGN_LABEL' => $this->getCampaignLabel($upload_id),
+                    'CAMPAIGN_YEAR' => $this->getCampaignYear($upload_id),
                 ];
 
                 $m_emails = new EmundusModelEmails();
                 $tags = $m_emails->setTags($userId, $post, $fnum, '', $path);
-                $path = str_replace($tags[0], $tags[1], $path);
+
+                foreach ($tags['patterns'] as $key => $pattern) {
+                    $tags['patterns'][$key] = str_replace(array('/', '\\'), '', $pattern);
+                }
+
+                $path = str_replace($tags['patterns'], $tags['replacements'], $path);
             } else {
                 JLog::add('EmundusModelEmails class not found', JLog::ERROR, 'com_emundus');
             }
@@ -671,6 +678,38 @@ class FileSynchronizer
         $applicant_id = $db->loadResult();
 
         return trim($applicant_id);
+    }
+
+    private function getCampaignLabel($upload_id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('#__emundus_setup_campaigns.label')
+            ->from('#__emundus_setup_campaigns')
+            ->leftJoin('#__emundus_campaign_candidature ON #__emundus_setup_campaigns.id = #__emundus_campaign_candidature.campaign_id')
+            ->leftJoin('#__emundus_uploads ON #__emundus_campaign_candidature.fnum = #__emundus_uploads.fnum')
+            ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
+
+        $db->setQuery($query);
+        $campaign_label = $db->loadResult();
+
+        return trim($campaign_label);
+    }
+
+    private function getCampaignYear($upload_id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('#__emundus_setup_campaigns.year')
+            ->from('#__emundus_setup_campaigns')
+            ->leftJoin('#__emundus_campaign_candidature ON #__emundus_setup_campaigns.id = #__emundus_campaign_candidature.campaign_id')
+            ->leftJoin('#__emundus_uploads ON #__emundus_campaign_candidature.fnum = #__emundus_uploads.fnum')
+            ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
+
+        $db->setQuery($query);
+        $year = $db->loadResult();
+
+        return trim($year);
     }
 
     private function getDocumentType($upload_id)
