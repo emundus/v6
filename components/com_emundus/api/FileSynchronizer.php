@@ -153,6 +153,15 @@ class FileSynchronizer
             $params = $db->loadResult();
             $params = json_decode($params, true);
             $this->emundusRootDirectory = !empty($params['emundus_root_directory']) ? $params['emundus_root_directory'] : '';
+
+            if (!empty($this->emundusRootDirectory)) {
+                // check if emundus root directory exists
+                $exists = $this->checkEmundusRootDirectoryExists($this->emundusRootDirectory);
+
+                if (!$exists) {
+                    $this->emundusRootDirectory = '';
+                }
+            }
         }
 
         return $this->emundusRootDirectory;
@@ -186,6 +195,21 @@ class FileSynchronizer
                     break;
             }
         }
+    }
+
+    private function checkEmundusRootDirectoryExists($id)
+    {
+        $exists = false;
+        switch ($this->type) {
+            case 'ged':
+                $response = $this->get($this->coreUrl . "/nodes/" . $id);
+                $exists = !empty($response->entry->id);
+                break;
+            default:
+                break;
+        }
+
+        return $exists;
     }
 
     private function getGEDDocumentLibrary()
