@@ -18,22 +18,58 @@ class plgEmundusSync_file extends JPlugin {
         JLog::addLogger(array('text_file' => 'com_emundus.sync_file.php'), JLog::ALL, array('com_emundus_sync_file'));
     }
 
-    function onAfterUploadFile($args) {;
-        if (!isset($args['fnums']) || !isset($args['files'])) {
-            return false;
+    function onAfterUploadFile($args): void
+    {
+        if (!isset($args['upload_id'])) {
+            JLog::add('Missing parameters', JLog::ERROR, 'com_emundus_sync_file');
+            return;
         }
 
-        $fileSynchronizer = new FileSynchronizer('ged');
+        $type = $this->getSyncType($args['upload_id']);
+
+        if (!empty($type)) {
+            $fileSynchronizer = new FileSynchronizer($type);
+            $fileSynchronizer->addFile($args['upload_id']);
+        }
     }
 
-    function onDeleteFile($args) {
-        // app enqueue the file to be deleted
-        $app = JFactory::getApplication();
-        $app->enqueueMessage('[SYNC_FILE_PLUGIN] File to be deleted: '.$args['fnum']);
-
-        if (!isset($args['fnum'])) {
-            JLog::add('[SYNC_FILE_PLUGIN] Missing fnum in args', JLog::ERROR, 'com_emundus');
-            return false;
+    function onDeleteFile($args): void
+    {
+        if (!isset($args['upload_id'])) {
+            JLog::add('[SYNC_FILE_PLUGIN] Missing upload_id in args', JLog::ERROR, 'com_emundus');
+            return;
         }
+
+        $type = $this->getSyncType($args['upload_id']);
+        if (!empty($type)) {
+            $fileSynchronizer = new FileSynchronizer($type);
+            $fileSynchronizer->deleteFile($args['upload_id']);
+        }
+    }
+
+    /**
+     * @param $upload_id
+     * @return string
+     */
+    private function getSyncType($upload_id): string
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('type')
+            ->from('#__emundus_setup_sync')
+            ->leftJoin('#__emundus_setup_attachments ON #__emundus_setup_sync.id = #__emundus_setup_attachments.sync')
+            ->leftJoin('#__emundus_uploads ON #__emundus_uploads.attachment_id = #__emundus_setup_attachments.id')
+            ->where('#__emundus_uploads.id = '.$db->quote($upload_id));
+
+        $db->setQuery($query);
+
+        try {
+            $type = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
+            return '';
+        }
+
+        return $type;
     }
 }
