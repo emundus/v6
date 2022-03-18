@@ -18,10 +18,11 @@ class plgEmundusSync_file extends JPlugin {
         JLog::addLogger(array('text_file' => 'com_emundus.sync_file.php'), JLog::ALL, array('com_emundus_sync_file'));
     }
 
-    function onAfterUploadFile($args) {;
+    function onAfterUploadFile($args): void
+    {
         if (!isset($args['upload_id'])) {
             JLog::add('Missing parameters', JLog::ERROR, 'com_emundus_sync_file');
-            return false;
+            return;
         }
 
         $type = $this->getSyncType($args['upload_id']);
@@ -32,10 +33,11 @@ class plgEmundusSync_file extends JPlugin {
         }
     }
 
-    function onDeleteFile($args) {
+    function onDeleteFile($args): void
+    {
         if (!isset($args['upload_id'])) {
             JLog::add('[SYNC_FILE_PLUGIN] Missing upload_id in args', JLog::ERROR, 'com_emundus');
-            return false;
+            return;
         }
 
         $type = $this->getSyncType($args['upload_id']);
@@ -47,9 +49,10 @@ class plgEmundusSync_file extends JPlugin {
 
     /**
      * @param $upload_id
-     * @return bool|string
+     * @return string
      */
-    private function getSyncType($upload_id) {
+    private function getSyncType($upload_id): string
+    {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('type')
@@ -64,7 +67,7 @@ class plgEmundusSync_file extends JPlugin {
             $type = $db->loadResult();
         } catch (Exception $e) {
             JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
-            return false;
+            return '';
         }
 
         return $type;
