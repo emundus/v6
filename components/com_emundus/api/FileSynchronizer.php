@@ -447,6 +447,10 @@ class FileSynchronizer
             $path = str_replace('[APPLICANT_ID]', $this->getApplicantId($upload_id), $path);
         }
 
+        if (strpos($path, '[APPLICANT_NAME]') !== false) {
+            $path = str_replace('[APPLICANT_NAME]', $this->getApplicantName($upload_id), $path);
+        }
+
         return $path;
     }
 
@@ -630,6 +634,22 @@ class FileSynchronizer
         $applicant_id = $db->loadResult();
 
         return trim($applicant_id);
+    }
+
+    private function getApplicantName($upload_id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('name')
+            ->from("#__users")
+            ->leftJoin('#__emundus_campaign_candidature ON #__emundus_campaign_candidature.applicant_id = #__users.id')
+            ->leftJoin('#__emundus_uploads ON #__emundus_campaign_candidature.fnum = #__emundus_uploads.fnum')
+            ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
+
+        $db->setQuery($query);
+        $applicant_name = $db->loadResult();
+
+        return trim($applicant_name);
     }
 
     private function getFilePath($upload_id)
