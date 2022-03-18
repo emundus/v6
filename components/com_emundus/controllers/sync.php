@@ -76,6 +76,19 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
+    public function getemundustags(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $tags = $this->m_sync->getEmundusTags();
+
+            $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $tags);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function updatedocumentsync(){
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;

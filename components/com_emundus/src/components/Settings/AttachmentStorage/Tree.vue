@@ -4,10 +4,12 @@
       <span class="material-icons" v-if="node.type !== 0">folder</span>
       <span class="material-icons-outlined" v-else>folder</span>
 
-      <select class="em-ml-8 em-mr-8 em-clear-dropdown" v-model="node.type">
+      <select class="em-ml-8 em-mr-8 em-clear-dropdown" v-model="node.type" v-if="(other_tags.includes(node.type) || node.type === 0) && node.type !== ''">
         <option value="0" selected>/{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SELECT_TYPE') }}</option>
         <option :value="field.value" v-for="field in fieldsData">{{ translate(field.label) }}</option>
       </select>
+
+      <input type="text" class="em-ml-8 em-mr-8 em-xs-input em-w-auto" :value="node.type" v-else @focusout="updateNodeType($event)"/>
 
       <v-popover :popoverArrowClass="'custom-popover-arrow'">
         <span class="tooltip-target b3 material-icons">more_horiz</span>
@@ -19,7 +21,7 @@
     </div>
 
     <div v-for="children in node.childrens" class="em-flex-row" :class="'em-level-' + children.level">
-      <Tree :node="children" @addNode="addNode" @deleteNode="deleteNode" @saveConfig="$emit('saveConfig')" :level_max="level_max" />
+      <Tree :node="children" @addNode="addNode" @deleteNode="deleteNode" @saveConfig="$emit('saveConfig')" :level_max="level_max" :emundus_tags="emundus_tags" />
     </div>
   </div>
 </template>
@@ -31,15 +33,20 @@ export default {
   name: "Tree",
   props:{
     node: Object,
-    level_max: Number
+    level_max: Number,
+    emundus_tags: Array,
   },
   data() {
     return 		{
       fieldsData: [],
+      other_tags: []
     }
   },
   mounted() {
     this.fieldsData = typeof fields['level_' + this.node.level] != 'undefined' ? fields['level_' + this.node.level] : fields['default'];
+    this.fieldsData.forEach((field) => {
+      this.other_tags.push(field.value);
+    })
   },
   methods: {
     addNode(node){
@@ -56,6 +63,9 @@ export default {
       } else {
         this.$emit('deleteNode',id);
       }
+    },
+    updateNodeType(event){
+      this.node.type = event.target.value;
     }
   },
 
@@ -90,5 +100,13 @@ export default {
 .em-clear-dropdown:focus{
   outline: unset;
   background: #E3E5E8;
+}
+.em-xs-input{
+  height: 25px;
+  border-width: 0;
+  width: auto;
+}
+.em-xs-input:focus{
+  border-width: 1px;
 }
 </style>
