@@ -264,6 +264,7 @@ class FileSynchronizer
             // return response
             return json_decode($response->getBody());
         } catch (\Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
             return $e->getMessage();
         }
     }
@@ -278,6 +279,7 @@ class FileSynchronizer
 
             return json_decode($response->getBody());
         } catch (\Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
             return $e->getMessage();
         }
     }
@@ -293,6 +295,7 @@ class FileSynchronizer
             // return response
             return json_decode($response->getBody());
         } catch (\Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
             return $e->getMessage();
         }
     }
@@ -312,6 +315,7 @@ class FileSynchronizer
 
             return json_decode($response->getBody());
         } catch (\Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
             return $e->getMessage();
         }
     }
@@ -338,11 +342,12 @@ class FileSynchronizer
                     $path = substr($path, 0, -1);
                 }
                 $filepath = $this->getFilePath($upload_id);
+                $filename = $this->getFileName($upload_id, $path);
 
                 $params = array(
                     array(
                         'name' => 'name',
-                        'contents' => $this->getFileName($upload_id)
+                        'contents' => $filename
                     ),
                     array(
                         'name' => 'nodeType',
@@ -361,7 +366,7 @@ class FileSynchronizer
                 $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
 
                 if (!empty($response->entry)) {
-                    $this->saveNodeId($upload_id, $response->entry->id, $path);
+                    $this->saveNodeId($upload_id, $response->entry->id, $path . '/' . $filename);
                 }
             }
         }
@@ -505,7 +510,7 @@ class FileSynchronizer
         return $sync_id;
     }
 
-    private function getFileName($upload_id)
+    private function getFileName($upload_id, $path)
     {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -517,7 +522,38 @@ class FileSynchronizer
         $config = $db->loadResult();
         $config = json_decode($config);
 
-        return $this->replaceTypes($config->name, $upload_id);
+        $filename = $this->replaceTypes($config->name, $upload_id);
+
+        // check if filename already exists
+        $query->clear()
+            ->select('relative_path')
+            ->from('#__emundus_uploads_sync')
+            ->where("relative_path LIKE " . $db->quote($path . '/'. $filename . '%'));
+
+        $db->setQuery($query);
+
+        try {
+            $existing_files = $db->loadColumn();
+
+            if (in_array($path . '/' . $filename, $existing_files)) {
+                $filename = $this->getUniqueFileName($filename, $path, $existing_files);
+            }
+        } catch (Exception $e) {
+            JLog::add('Error getting existing files: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $filename;
+    }
+
+    private function getUniqueFileName($filename, $path, $existing_files)
+    {
+        $i = 1;
+        $name = $filename;
+        while (in_array($path . '/' . $filename, $existing_files)) {
+            $filename = $name . '_' . $i;
+            $i++;
+        }
+        return $filename;
     }
 
     private function getCampaign($upload_id)
