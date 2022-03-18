@@ -3185,11 +3185,11 @@ button.swal2-cancel.goback-btn {
 .view-reset,
 .view-login,
 .view-form.view-registration {
-  
-  /* BLOC FORMULAIRE */
-  .span12 > div {
-    margin-top: 48px;
 
+  /* BLOC FORMULAIRE */
+  .span12  {
+    margin-top: 48px;
+    
     /* TITRE FORMULAIRE */
     .page-header h1 {
       @include headline-4;
@@ -3408,8 +3408,8 @@ button.swal2-cancel.goback-btn {
                 label.btn-default.btn.btn-success.active {
                     @include yes-no;
                     border: 1px solid $main-500;
-                   background: $main-500;
-                    border-radius: 0 4px 4px 0 !important;
+                    background: $main-500;
+                    border-radius: 4px !important;
 
                     &:hover {
                       border: 1px solid $main-600;
@@ -3427,7 +3427,7 @@ button.swal2-cancel.goback-btn {
                   @include yes-no;
                   border: 1px solid $red-500;
                   background: $red-500;
-                  border-radius: 4px 0 0 4px !important;
+                  border-radius: 4px !important;
 
                   &:hover {
                     border: 1px solid $red-600;
@@ -3540,7 +3540,7 @@ button.swal2-cancel.goback-btn {
               min-height: auto;
 
               &.span2 {
-                margin-left: 80px;
+                margin-right: 80px;
               }
 
               label.checkbox {
