@@ -109,6 +109,7 @@ echo <<<EOT
 
 .view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
     padding: 0;
+    margin-bottom: 0;
 }
 
 
@@ -502,7 +503,17 @@ form#member-profile .form-horizontal .control-label {
 
 /* Inscription */
 
-  .view-registration .login.em-formRegistrationCenter,  .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
+.view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
+.view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
+    margin-top: 0px !important;    
+}
+
+.view-form.view-registration .span12. .login.em-formRegistrationCenter  p:first-of-type, 
+.view-form.em-formRegistrationCenter  .span12 .em-formRegistrationCenter:not(.componentheading) p:first-of-type {
+    margin-top: 0 !important; 
+}
+
+.view-registration .login.em-formRegistrationCenter,  .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -514,9 +525,9 @@ form#member-profile .form-horizontal .control-label {
     border-radius: 16px;
 }
 
-  .view-registration .login.em-formRegistrationCenter .row-fluid {
+.view-registration .login.em-formRegistrationCenter .row-fluid {
     background: #fff;
-  }
+}
  .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .span4 .btn-group {
         width: 100% !important; 
 }
@@ -528,6 +539,7 @@ form#member-profile .form-horizontal .control-label {
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
         width: 100% !important;
         height: 50px !important;
+        margin-bottom: 0px;
 }
 
 
@@ -1047,7 +1059,14 @@ footer#g-footer {
 
 
 ol {
-    padding: 0px 83px;
+   width: 59%;
+    text-align: justify;
+    margin-left: 0px !important;
+}
+
+.view-registration .login.em-formRegistrationCenter ol,
+.view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) ol {
+    padding: 0px 64px 0px 83px !important;
     text-align: justify;
     margin-left: 0px !important;
     margin-bottom: 0px !important;
