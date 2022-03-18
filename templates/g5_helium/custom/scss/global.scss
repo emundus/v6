@@ -3189,7 +3189,7 @@ button.swal2-cancel.goback-btn {
   /* BLOC FORMULAIRE */
   .span12  {
     margin-top: 48px;
-    
+
     /* TITRE FORMULAIRE */
     .page-header h1 {
       @include headline-4;
@@ -3337,6 +3337,7 @@ button.swal2-cancel.goback-btn {
             /* TEXTAREA */
             textarea {
               margin-top: 12px !important;
+              resize: both;
 
               &:hover {
                 @include input-hover;
@@ -3409,7 +3410,7 @@ button.swal2-cancel.goback-btn {
                     @include yes-no;
                     border: 1px solid $main-500;
                     background: $main-500;
-                    border-radius: 4px !important;
+                  border-radius: 4px 0 0 4px !important;
 
                     &:hover {
                       border: 1px solid $main-600;
@@ -3427,7 +3428,7 @@ button.swal2-cancel.goback-btn {
                   @include yes-no;
                   border: 1px solid $red-500;
                   background: $red-500;
-                  border-radius: 4px !important;
+                  border-radius: 0 4px 4px 0 !important;
 
                   &:hover {
                     border: 1px solid $red-600;
@@ -3445,11 +3446,14 @@ button.swal2-cancel.goback-btn {
                   @include yes-no;
                   border: 1px solid $neutral-200;
                   background: $neutral-200;
+                  border-radius: 4px !important;
+                  margin-left: -5px;
+                  z-index: 0;
 
                   &:hover {
                     border: 1px solid $neutral-300;
                     background: $neutral-300;
-                    margin-left: 0 !important;
+                    margin-left: -5px;
                     span, input {
                       margin-left: 0 !important;
                     }
@@ -3474,6 +3478,7 @@ button.swal2-cancel.goback-btn {
               .input-append {
                 display: flex;
                 flex-direction: row-reverse;
+                justify-content: flex-end;
                 input {
                   border-radius: 0 4px 4px 0;
                 }
