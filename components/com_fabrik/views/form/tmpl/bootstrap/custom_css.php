@@ -113,7 +113,7 @@ echo <<<EOT
 
 
 .view-form.view-registration .fabrikGroup {
-    padding: 0px;
+    padding: 0px !important;
 }
 
 .view-form p.select-program + form .fabrikGroup {
