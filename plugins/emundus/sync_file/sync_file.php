@@ -19,13 +19,17 @@ class plgEmundusSync_file extends JPlugin {
     }
 
     function onAfterUploadFile($args) {;
-        if(!isset($args['upload_id'])) {
+        if (!isset($args['upload_id'])) {
             JLog::add('Missing parameters', JLog::ERROR, 'com_emundus_sync_file');
             return false;
         }
 
-        $fileSynchronizer = new FileSynchronizer('ged');
-        $fileSynchronizer->addFile($args['upload_id']);
+        $type = $this->getSyncType($args['upload_id']);
+
+        if (!empty($type)) {
+            $fileSynchronizer = new FileSynchronizer($type);
+            $fileSynchronizer->addFile($args['upload_id']);
+        }
     }
 
     function onDeleteFile($args) {
@@ -34,7 +38,35 @@ class plgEmundusSync_file extends JPlugin {
             return false;
         }
 
-        $fileSynchronizer = new FileSynchronizer('ged');
-        $response = $fileSynchronizer->deleteFile($args['upload_id']);
+        $type = $this->getSyncType($args['upload_id']);
+        if (!empty($type)) {
+            $fileSynchronizer = new FileSynchronizer($type);
+            $fileSynchronizer->deleteFile($args['upload_id']);
+        }
+    }
+
+    /**
+     * @param $upload_id
+     * @return bool|string
+     */
+    private function getSyncType($upload_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('type')
+            ->from('#__emundus_setup_sync')
+            ->leftJoin('#__emundus_setup_attachments ON #__emundus_setup_sync.id = #__emundus_setup_attachments.sync')
+            ->leftJoin('#__emundus_uploads ON #__emundus_uploads.attachment_id = #__emundus_setup_attachments.id')
+            ->where('#__emundus_uploads.id = '.$db->quote($upload_id));
+
+        $db->setQuery($query);
+
+        try {
+            $type = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return $type;
     }
 }
