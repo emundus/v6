@@ -381,10 +381,18 @@ class FileSynchronizer
                 $filepath = $this->getFilePath($upload_id);
                 $filename = $this->getFileName($upload_id, $path);
 
+                if (empty($filepath) || empty($filename)) {
+                    JLog::add('Could not get filepath or filename for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+                    continue;
+                }
+
+                // get ext from filepath
+                $ext = pathinfo($filepath, PATHINFO_EXTENSION);
+
                 $params = array(
                     array(
                         'name' => 'name',
-                        'contents' => $filename
+                        'contents' => $filename . '.' . $ext
                     ),
                     array(
                         'name' => 'nodeType',
