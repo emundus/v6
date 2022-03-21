@@ -8,6 +8,10 @@ var mixin = {
 			return moment(date).format('LLLL');
 		},
 		strippedHtml: function (html) {
+			if (html === null || html === undefined) {
+				return '';
+			}
+
 			return html.replace(/<(?:.|\n)*?>/gm, '');
 		},
 		getUserNameById: function (id) {
