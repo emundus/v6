@@ -21,7 +21,7 @@
 
     <hr/>
 
-    <FilesName @updateName="updateName" />
+    <FilesName @updateName="updateName" :name="name" v-if="buildedComponent" />
   </div>
 </template>
 
@@ -43,6 +43,7 @@ export default {
   data() {
     return {
       loading: false,
+      buildedComponent: false,
 
       emundus_tags: [],
       nodes: [],
@@ -53,7 +54,9 @@ export default {
     storageService.getConfig('ged').then((response) => {
       if(response.data.data !== null) {
         this.nodes = response.data.data.tree;
+        this.name = response.data.data.name;
       }
+      this.buildedComponent = true;
     });
     /*storageService.getEmundusTags().then((response) => {
       this.emundus_tags = response.data.data;

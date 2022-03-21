@@ -35,9 +35,11 @@
 <script>
 import storageService from "com_emundus/src/services/storage";
 import syncs from '../../../data/ged/syncType'
+import mixin from "../../../mixins/mixin";
 
 export default {
   name: "Storage",
+  mixins: [mixin],
   data() {
     return {
       loading: false,
@@ -56,10 +58,18 @@ export default {
   },
   methods:{
     updateSync(did,sync){
-      storageService.updateSync(did,sync);
+      this.$emit('updateSaving',true);
+      storageService.updateSync(did,sync).then(() => {
+        this.$emit('updateSaving',false);
+        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+      })
     },
     updateSyncMethod(did,sync_method){
-      storageService.updateSyncMethod(did,sync_method);
+      this.$emit('updateSaving',true);
+      storageService.updateSyncMethod(did,sync_method).then(() => {
+        this.$emit('updateSaving',false);
+        this.$emit('updateLastSaving',this.formattedDate('','LT'));
+      })
     }
   }
 }

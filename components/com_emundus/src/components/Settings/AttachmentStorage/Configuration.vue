@@ -14,7 +14,7 @@
       </ul>
     </div>
 
-    <IntegrationGED v-if="currentIntegration === 0" :site="site" :level_max="level_max"/>
+    <IntegrationGED v-if="currentIntegration === 0" :site="site" :level_max="level_max" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"/>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -53,6 +53,16 @@ export default {
 
       this.loading = false;
     });
+  },
+
+  methods:{
+    updateSaving(saving){
+      this.$emit('updateSaving',saving);
+    },
+
+    updateLastSaving(date){
+      this.$emit('updateLastSaving',date);
+    }
   }
 }
 </script>
