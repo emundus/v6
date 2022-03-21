@@ -1,9 +1,10 @@
 <template>
   <div class="em-mt-16">
+
     <div class="em-flex-row em-flex-space-between">
       <div class="em-h4 em-mb-16">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_WRITING') }}</div>
       <div class="em-flex-row">
-        <div class="em-mr-16">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_TAGS_LIST') }}</div>
+        <a class="em-mr-16 em-pointer em-blue-500-color em-hover-blue-500" href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" target="_blank">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_TAGS_LIST') }}</a>
         <div class="em-pointer em-blue-500-color" @click="resetName">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_RESET') }}</div>
       </div>
     </div>

@@ -1,7 +1,10 @@
 /* view export select columns */
 .view-export_select_columns .panel-info > .panel-heading label{
-    color:#fff!important;
+    color:#fff;
     margin:0!important;
+}
+.panel{
+    box-shadow: unset;
 }
 .component-content legend {
     border: 0px;
@@ -21,7 +24,7 @@
     min-height: inherit!important;
 }
 .panel-primary {
-    border-color: #00316b;
+    border-color: #E3E5E8;
 }
 .panel-primary.excel>.panel-heading {
     background-color: #00316b;
@@ -48,8 +51,6 @@
 }
 
 #program-categories-group {
-    display: flex;
-    justify-content: space-around;
 }
 
 .em-element-id {
@@ -74,8 +75,7 @@
     margin: 10px 0;
 }
 
-#em-select-program,
-#em-select-campaign {
+#em-select-program {
     margin-bottom: 40px;
 }
 
@@ -84,4 +84,24 @@
 #result h1,
 #other-result h1 {
     font-size: 20px;
+}
+
+.panel-primary > .panel-heading{
+    background-color: #20835F !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+legend{
+    margin: unset !important;
+}
+legend label{
+    color: white;
+}
+.panel-info > .panel-heading{
+    background-color: #E3E5E8;
+}
+label[for ^='emundus_checkall_grp_']{
+    color: black;
 }
