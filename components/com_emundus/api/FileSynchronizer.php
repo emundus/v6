@@ -374,7 +374,6 @@ class FileSynchronizer
                     continue;
                 }
 
-                // if last character is a /, remove it
                 if (substr($path, -1) == '/') {
                     $path = substr($path, 0, -1);
                 }
@@ -386,41 +385,53 @@ class FileSynchronizer
                     continue;
                 }
 
-                // get ext from filepath
-                $ext = pathinfo($filepath, PATHINFO_EXTENSION);
-
-                $params = array(
-                    array(
-                        'name' => 'name',
-                        'contents' => $filename . '.' . $ext
-                    ),
-                    array(
-                        'name' => 'nodeType',
-                        'contents' => 'cm:content',
-                    ),
-                    array(
-                        'name' => 'relativePath',
-                        'contents' => $path,
-                    ),
-                    array(
-                        'name' => 'filedata',
-                        'contents' => fopen($filepath, 'r'),
-                    )
-                );
-
-                $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
-
-                if (!empty($response->entry)) {
-                    $saved = $this->saveNodeId($upload_id, $response->entry->id, $path . '/' . $filename);
-
-                    if (!$saved) {
-                        JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
-                    }
-                } else {
-                    JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+                switch ($this->type) {
+                    case 'ged':
+                        $this->addGEDFile($upload_id, $filename, $filepath, $path);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
+    }
+
+    public function addGEDFile($upload_id, $filename, $filepath, $relativePath) {
+        $saved = false;
+        $ext = pathinfo($filepath, PATHINFO_EXTENSION);
+
+        $params = array(
+            array(
+                'name' => 'name',
+                'contents' => $filename . '.' . $ext
+            ),
+            array(
+                'name' => 'nodeType',
+                'contents' => 'cm:content',
+            ),
+            array(
+                'name' => 'relativePath',
+                'contents' => $relativePath,
+            ),
+            array(
+                'name' => 'filedata',
+                'contents' => fopen($filepath, 'r'),
+            )
+        );
+
+        $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
+
+        if (!empty($response->entry)) {
+            $saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);
+
+            if (!$saved) {
+                JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+            }
+        } else {
+            JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+        }
+
+        return $saved;
     }
 
     public function deleteFile($upload_id) {
