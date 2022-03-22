@@ -385,8 +385,6 @@ class FileSynchronizer
                     continue;
                 }
 
-                $filename = str_replace(' ', '', $filename);
-
                 switch ($this->type) {
                     case 'ged':
                         $this->addGEDFile($upload_id, $filename, $filepath, $path);
@@ -609,6 +607,8 @@ class FileSynchronizer
         if (empty($filename)) {
             return false;
         }
+
+        $filename = str_replace(' ', '', $filename);
 
         // check if filename already exists
         $query->clear()
