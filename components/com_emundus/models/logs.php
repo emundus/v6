@@ -61,14 +61,14 @@ class EmundusModelLogs extends JModelList {
 	
 					$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params'];
 					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params)];
-	
-					$query->insert($db->quoteName('#__emundus_logs'))
-						->columns($db->quoteName($columns))
-						->values(implode(',', $values));
-	
-					$db->setQuery($query);
-	
+
 					try {
+
+                        $query->insert($db->quoteName('#__emundus_logs'))
+                            ->columns($db->quoteName($columns))
+                            ->values(implode(',', $values));
+
+                        $db->setQuery($query);
 						$db->execute();
 					} catch (Exception $e) {
 						JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
