@@ -41,6 +41,8 @@ JLog::addLogger(
     array('com_emundus.webhook')
 );
 // translation for javacript
+JText::script('PLEASE_SELECT');
+
 JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
 JText::script('COM_EMUNDUS_ACCESS_FILE');
