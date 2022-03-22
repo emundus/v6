@@ -608,6 +608,8 @@ class FileSynchronizer
             return false;
         }
 
+        $filename = str_replace(' ', '', $filename);
+
         // check if filename already exists
         $query->clear()
             ->select('relative_path')
