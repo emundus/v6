@@ -122,4 +122,38 @@ class EmundusControllerSync extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function issyncmoduleactive()
+    {
+        $sync_active = $this->m_sync->isSyncModuleActive();
+
+        $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $sync_active);
+        echo json_encode((object)$tab);
+    }
+
+    public function getsynctype(): string
+    {
+        $upload_id = JFactory::getApplication()->input->getInt('upload_id', null);
+        $tab = array(
+            'status' => 1,
+            'msg' => JText::_('SYNC_TYPE_FOUND'),
+        );
+
+        if (!empty($upload_id)) {
+            $sync_type = $this->m_sync->getSyncType($upload_id);
+
+            if (!empty($sync_type)) {
+                $tab['data'] = $sync_type;
+            } else {
+                $tab['status'] = 0;
+                $tab['msg'] = JText::_('SYNC_TYPE_NOT_FOUND');
+            }
+        } else {
+            $tab['status'] = 0;
+            $tab['msg'] = JText::_('MISSING_UPLOAD_ID');
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

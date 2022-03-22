@@ -131,4 +131,57 @@ class EmundusModelSync extends JModelList {
         }
     }
 
+    function isSyncModuleActive()
+    {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        return $eMConfig->get('attachment_storage', 0);
+    }
+
+    function getSyncType($upload_id) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('type')
+            ->from('#__emundus_setup_sync')
+            ->leftJoin('#__emundus_setup_attachments ON #__emundus_setup_sync.id = #__emundus_setup_attachments.sync')
+            ->leftJoin('#__emundus_uploads ON #__emundus_uploads.attachment_id = #__emundus_setup_attachments.id')
+            ->where('#__emundus_uploads.id = '.$db->quote($upload_id));
+
+        $db->setQuery($query);
+
+        try {
+            $type = $db->loadResult();
+
+            if (empty($type)) {
+                return false;
+            } else {
+                $is_active = $this->checkIfTypeIsActive($type);
+
+                if ($is_active) {
+                    return $type;
+                } else {
+                    return false;
+                }
+            }
+        } catch (Exception $e) {
+            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    function checkIfTypeIsActive($type)
+    {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        switch ($type) {
+            case 'ged':
+                $is_active = $eMConfig->get('external_storage_ged_alfresco_integration', 0);
+                break;
+            default:
+                $is_active = false;
+                break;
+        }
+
+        return $is_active;
+    }
 }

@@ -215,6 +215,7 @@
               :attachment="attachment"
               :checkedAttachmentsProp="checkedAttachments"
               :canUpdate="canUpdate"
+              :sync="sync"
               @open-modal="openModal(attachment)"
               @update-checked-attachments="updateCheckedAttachments"
               @update-status="updateStatus"
@@ -306,6 +307,7 @@ import AttachmentRow from "../components/Attachments/AttachmentRow.vue";
 import attachmentService from "../services/attachment.js";
 import userService from "../services/user.js";
 import fileService from "../services/file.js";
+import syncService from "../services/sync.js";
 import mixin from "../mixins/mixin.js";
 import Swal from "sweetalert2";
 
@@ -351,10 +353,17 @@ export default {
       modalLoading: false,
       slideTransition: "slide-fade",
       changeFileEvent: null,
+      sync: false,
     };
   },
   created() {
     this.changeFileEvent = new Event("changeFile");
+
+    syncService.isSyncModuleActive().then((response) => {
+      this.sync = response.data;
+    }).catch((error) => {
+      this.sync = false;
+    });
   },
   mounted() {
     this.loading = true;

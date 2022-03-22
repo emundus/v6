@@ -98,6 +98,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+    sync: {
+      type: Boolean,
+      default: false,
+    },
 	},
 	mixins: [mixin],
 	data() {
