@@ -57,6 +57,9 @@ export default {
   components: {
     Multiselect
   },
+  props:{
+    name: String
+  },
   data() {
     return {
       loading: false,
@@ -85,12 +88,34 @@ export default {
     }
   },
   created() {
-    if(this.selectedSeparator === ''){
-      this.selectedSeparator = '-';
-    }
+    if(this.$props.name !== ''){
+      let regex = /(?<=[^\w-]|^)(?!-)([a-z_]+)(?<!-)(?=[^\w-]|$)/gi;
+      let tags_regex = this.$props.name.match(regex);
 
-    if(this.selectedTags.length === 0){
-      this.resetName();
+      this.selectedSeparator = '-';
+
+      tags_regex.forEach((tag,index) => {
+        if(tag !== '_'){
+          tags_regex[index] = '[' + tag + ']';
+
+          let tag_found = this.tags.findIndex(function(element, key) {
+            if(element.value === '[' + tag + ']')
+              return true;
+          });
+
+          if(tag_found !== -1) {
+            this.selectedTags.push(this.tags[tag_found]);
+          }
+        } else {
+          this.selectedSeparator = '_';
+        }
+      });
+    } else {
+      this.selectedSeparator = '-';
+
+      if(this.selectedTags.length === 0){
+        this.resetName();
+      }
     }
   },
   methods: {
