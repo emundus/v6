@@ -100,6 +100,20 @@ if ($attachment_params->lbl=="_photo") {
     $student->avatar = $nom;
 }
 
+# get fnum                $fnum
+# get logged user id      JFactory::getUser()->id
+# get applicant id        $upload->user_id
+
+// TRACK THE LOGS
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+$user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+$mFile = new EmundusModelFiles();
+$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', 'FILE_CREATED_BY_COORDINATOR');
+
 // Pour tous les mails
 $user = JFactory::getUser();
 $fnumInfos = $m_files->getFnumInfos($fnum);

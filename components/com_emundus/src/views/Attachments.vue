@@ -250,7 +250,7 @@
               v-if="canDownload"
           >
             <span class="material-icons"> file_download </span>
-            <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
+            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD") }}</span>
           </a>
           <div class="prev-next-attachments">
             <div
@@ -911,7 +911,7 @@ export default {
 };
 </script>
 
-<style lang='scss' scoped>
+<style lang='scss'>
 #em-attachments {
   font-size: 14px;
 
