@@ -349,8 +349,8 @@ export default {
     paginationNumber(index) {
       if (this.countPages > 10) {
         return index < 4 || index > this.countPages - 3 || (index > pages - 3 && index < pages + 3) ? index : "...";
-      } 
-      
+      }
+
       return index;
     },
     allFilters() {

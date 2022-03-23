@@ -1,10 +1,10 @@
 <template>
 	<div id="list-head">
 		<div class="list-head-container">
-			<h2> {{ translations.title[data.type] }}</h2>
+			<h2> {{ translations['title_' + data.type] }}</h2>
 			<a @click="redirectToAddElement">
-    	  <div class="em-primary-button">	
-					{{ translations.add[data.type] }}
+    	  <div class="em-primary-button">
+					{{ translations['add_' + data.type] }}
 				</div>
 			</a>
 		</div>
@@ -30,20 +30,16 @@ export default {
 			title: 'List',
 			loading: false,
 			translations: {
-				title: {
-					campaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_CAMPAIGNS"),
-					email: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAILS"),
-					formulaire: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMS"),
-					grilleEval: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMS"),
-					form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMS"),
-				},
-				add: {
-					campaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
-					email: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_EMAIL"),
-					formulaire: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-					grilleEval: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-					form: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
-				}
+				title_campaign: "COM_EMUNDUS_ONBOARD_CAMPAIGNS",
+				title_email: "COM_EMUNDUS_ONBOARD_EMAILS",
+				title_formulaire: "COM_EMUNDUS_ONBOARD_FORMS",
+				title_grilleEval: "COM_EMUNDUS_ONBOARD_FORMS",
+				title_form: "COM_EMUNDUS_ONBOARD_FORMS",
+				add_campaign: "COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN",
+				add_email: "COM_EMUNDUS_ONBOARD_ADD_EMAIL",
+				add_formulaire: "COM_EMUNDUS_ONBOARD_ADD_FORM",
+				add_grilleEval: "COM_EMUNDUS_ONBOARD_ADD_FORM",
+				add_form: "COM_EMUNDUS_ONBOARD_ADD_FORM"
 			}
 		}
 	},
@@ -97,7 +93,7 @@ export default {
           }
         }).then(response => {
           window.location.href = window.location.pathname + response.data.data;
-        });		
+        });
 		},
 	}
 }

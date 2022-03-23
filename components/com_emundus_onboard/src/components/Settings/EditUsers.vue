@@ -1,10 +1,10 @@
 <template>
-    <div class="container-evaluation">
+    <div class="em-settings-menu em-flex-center">
         <ModalAddUser
-                :group="this.group"
-                :coordinatorAccess="1"
-                :userManage="1"
-                @UpdateUsers="getUsers"
+            :group="this.group"
+            :coordinatorAccess="1"
+            :userManage="1"
+            @UpdateUsers="getUsers"
         />
         <button class="create-user-admin__button bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalAddUser')">{{ addUser }}</button>
         <div class="mt-1" id="blocked_filter">
@@ -17,7 +17,7 @@
                 <p class="mb-0 mr-1" style="white-space: nowrap">{{Program}} : </p>
                 <select class="dropdown-toggle" style="min-width: 80%" v-model="searchProgram">
                     <option selected value="-1"></option>
-                    <option v-for="program in programs" :value="program.id">{{program.label}}</option>
+                    <option v-for="program in programs" :key="program.id" :value="program.id"> {{ program.label }} </option>
                 </select>
             </div>
             <div class="d-flex" style="margin-left: 5em">
@@ -31,14 +31,14 @@
           </div>
         </div>
         <table-component
-                :data="fetchData"
-                sort-by="name"
-                sort-order="asc"
-                show-caption="false"
-                :filter-placeholder="Search + '...'"
-                :filter-no-results="NoResultsFound"
-                ref="table"
-                :key="table_users"
+            :data="fetchData"
+            sort-by="name"
+            sort-order="asc"
+            show-caption="false"
+            :filter-placeholder="Search + '...'"
+            :filter-no-results="NoResultsFound"
+            ref="table"
+            :key="table_users"
         >
             <table-column show="id" label="ID" data-type="numeric" hidden></table-column>
             <table-column show="name" :label="Name"></table-column>
@@ -51,7 +51,6 @@
                     <a @click="lockUser(row.id)" v-if="row.block == 0" :title="LockUser"><i class="fas fa-unlock user-unlock__icon"></i></a>
                     <a @click="unlockUser(row.id)" v-if="row.block == 1" :title="UnlockUser"><i class="fas fa-lock user-lock__icon"></i></a>
                     <a @click="resetPassword(row.id, row.name)" :title="ResetPassword"><i class="fas fa-redo"></i></a>
-                    <!--<a @click="showInfos(row.id)" :title="ShowInformations"><i class="fas fa-info-circle user-infos__icon"></i></a>-->
                 </template>
             </table-column>
         </table-component>
@@ -69,7 +68,7 @@
     const qs = require("qs");
 
     export default {
-        name: "editUsers",
+        name: "EditUsers",
 
         components: {
             ModalAddUser
@@ -99,24 +98,24 @@
                 searchProgram: -1,
                 searchRole: -1,
                 table_users: 0,
-                Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
-                Email: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL"),
-                LastConnected: Joomla.JText._("COM_EMUNDUS_ONBOARD_LAST_CONNECTED"),
-                Status: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOSSIERS_STATUS"),
-                Search: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEARCH"),
-                Activated: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIVATED"),
-                Blocked: Joomla.JText._("COM_EMUNDUS_ONBOARD_BLOCKED"),
-                NoResultsFound: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_RESULTS_FOUND"),
-                Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
-                addUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER"),
-                LockUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_LOCK_USER"),
-                UnlockUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_UNLOCK_USER"),
-                ResetPassword: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
-                BlockedUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_BLOCKED_USERS"),
-                Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-                Role: Joomla.JText._("COM_EMUNDUS_ONBOARD_ROLE"),
-                Administrator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATOR"),
-                Evaluator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATOR"),
+                Name: this.translate("COM_EMUNDUS_ONBOARD_LASTNAME"),
+                Email: this.translate("COM_EMUNDUS_ONBOARD_EMAIL"),
+                LastConnected: this.translate("COM_EMUNDUS_ONBOARD_LAST_CONNECTED"),
+                Status: this.translate("COM_EMUNDUS_ONBOARD_DOSSIERS_STATUS"),
+                Search: this.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
+                Activated: this.translate("COM_EMUNDUS_ONBOARD_ACTIVATED"),
+                Blocked: this.translate("COM_EMUNDUS_ONBOARD_BLOCKED"),
+                NoResultsFound: this.translate("COM_EMUNDUS_ONBOARD_NO_RESULTS_FOUND"),
+                Actions: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS"),
+                addUser: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER"),
+                LockUser: this.translate("COM_EMUNDUS_ONBOARD_LOCK_USER"),
+                UnlockUser: this.translate("COM_EMUNDUS_ONBOARD_UNLOCK_USER"),
+                ResetPassword: this.translate("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
+                BlockedUsers: this.translate("COM_EMUNDUS_ONBOARD_BLOCKED_USERS"),
+                Program: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+                Role: this.translate("COM_EMUNDUS_ONBOARD_ROLE"),
+                Administrator: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATOR"),
+                Evaluator: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATOR"),
             };
         },
 
@@ -218,13 +217,13 @@
             },
             resetPassword(id, name){
                 Swal.fire({
-                    title: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
-                    text: Joomla.JText._("COM_EMUNDUS_ONBOARD_RESET_PASSWORD_MESSAGE") + name,
+                    title: this.translate("COM_EMUNDUS_ONBOARD_RESET_PASSWORD"),
+                    text: this.translate("COM_EMUNDUS_ONBOARD_RESET_PASSWORD_MESSAGE") + name,
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: '#de6339',
-                    confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-                    cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+                    confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+                    cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
                     reverseButtons: true
                 }).then(result => {
                         if (result.value) {

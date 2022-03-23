@@ -38,13 +38,13 @@ export default {
   data() {
     return {
       datepicker: null,
-      birthdaySelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_BIRTHDAY"),
-      yearSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_YEAR"),
-      dateSelect: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR"),
-      Format: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMATTING"),
-      birthday_forward: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_FUTURE_YEARS"),    //FUTURE_YEARS_SELECTED
-      yearrange: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_YEAR_RANGE"),
-      yeararrangetip: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_TIP_YEARS_FUTURE"),
+      birthdaySelect: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_BIRTHDAY"),
+      yearSelect: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMAT_YEAR"),
+      dateSelect: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_CALENDAR"),
+      Format: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DATE_FORMATTING"),
+      birthday_forward: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_FUTURE_YEARS"),    //FUTURE_YEARS_SELECTED
+      yearrange: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_YEAR_RANGE"),
+      yeararrangetip: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_TIP_YEARS_FUTURE"),
     }
   },
 

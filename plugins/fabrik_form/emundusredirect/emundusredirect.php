@@ -491,7 +491,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
             EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
 
 			echo "<hr>";
-			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>';
 			echo "<hr>";
 			exit;
 		}

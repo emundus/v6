@@ -18,7 +18,7 @@ export default {
   },
 
   data: () => ({
-    REWINDTUTORIAL: Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND"),
+    REWINDTUTORIAL: this.translate("COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND"),
   }),
 
   methods: {
@@ -32,8 +32,8 @@ export default {
       }).then((result) => {
         Swal.fire({
           backdrop: true,
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND"),
-          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND_SUCCESS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND"),
+          text: this.translate("COM_EMUNDUS_ONBOARD_TUTORIAL_REWIND_SUCCESS"),
           showConfirmButton: true,
           timer: 5000
         })

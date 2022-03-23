@@ -50,9 +50,9 @@ export default {
       formNameArray: [],
       formLinkArray: [],
       formArray: [],
-      FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
-      Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
-      Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
+      FormPage: this.translate("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
+      Form: this.translate("COM_EMUNDUS_ONBOARD_FORM"),
+      Documents: this.translate("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
     };
   },
   methods: {

@@ -69,10 +69,10 @@ export default {
       users: [],
       affectedUsers: [],
       searchTerm: '',
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      affectUsers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_AFFECTUSERS"),
-      usersEmpty: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_USERSEMPTY"),
+      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      affectUsers: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_AFFECTUSERS"),
+      usersEmpty: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_USERSEMPTY"),
     };
   },
   methods: {

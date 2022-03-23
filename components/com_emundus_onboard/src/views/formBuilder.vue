@@ -373,74 +373,74 @@
             id: 0,
             value: 'field',
             icon: 'fas fa-font',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
           },
           nom: {
             id: 8,
             value: 'nom',
             icon: 'fas fa-font',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_LASTNAME")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_LASTNAME")
           },
           prenom: {
             id: 9,
             value: 'prenom',
             icon: 'fas fa-font',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME")
           },
           email:{
             id:10,
             value: 'email',
             icon: 'fas fa-at',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_EMAIL")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_EMAIL")
           },
           yesno:{
             id:12,
             value: 'yesno',
             icon: 'fas fa-toggle-on',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
           },
           textarea: {
             id: 5,
             value: 'textarea',
             icon: 'far fa-square',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
           },
           checkbox: {
             id: 2,
             value: 'checkbox',
             icon: 'far fa-check-square',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
           },
           radiobutton: {
             id: 4,
             value: 'radiobutton',
             icon: 'fas fa-list-ul',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
           },
           dropdown: {
             id: 3,
             value: 'dropdown',
             icon: 'fas fa-th-list',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
           },
           birthday: {
             id: 1,
             value: 'birthday',
             icon: 'far fa-calendar-alt',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
           },
           display: {
             id: 6,
             value: 'display',
             icon: 'fas fa-paragraph',
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
           },
           /*fileupload: {
             id: 7,
             value: 'emundus_fileupload',
             icon: 'fas fa-file-upload',
-            //name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
-            name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FILE")
+            //name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+            name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_FILE")
           },*/
         },
         sections: {
@@ -502,29 +502,29 @@
           },
         },
         translations:{
-          addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
-          addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
-          addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
-          addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
-          Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
-          sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
-          Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-          FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
-          SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
-          testingForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
-          Form: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM"),
-          Documents: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
-          AddNewDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT"),
-          Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-          Savingat: Joomla.JText._("COM_EMUNDUS_ONBOARD_SAVING_AT"),
-          Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-          update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-          updating: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
-          updateSuccess: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
-          updateFailed: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
-          ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
-          BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
-          SubmittionPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_SUBMITTION_PAGE"),
+          addMenu: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
+          addMenuAction: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
+          addGroup: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
+          addItem: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
+          Actions: this.translate("COM_EMUNDUS_ONBOARD_ACTIONS"),
+          sendFormButton: this.translate("COM_EMUNDUS_ONBOARD_SEND_FORM"),
+          Edit: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
+          FormPage: this.translate("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
+          SubmitPage: this.translate("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
+          testingForm: this.translate("COM_EMUNDUS_ONBOARD_TESTING_FORM"),
+          Form: this.translate("COM_EMUNDUS_ONBOARD_FORM"),
+          Documents: this.translate("COM_EMUNDUS_ONBOARD_DOCUMENTS"),
+          AddNewDocument: this.translate("COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT"),
+          Back: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+          Savingat: this.translate("COM_EMUNDUS_ONBOARD_SAVING_AT"),
+          Validate: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          update: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+          updating: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATING"),
+          updateSuccess: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATESUCESS"),
+          updateFailed: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATEFAILED"),
+          ExitFormbuilder: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
+          BuildYourForm: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
+          SubmittionPage: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_SUBMITTION_PAGE"),
         },
       };
     },
@@ -535,7 +535,7 @@
       },
       showModal () {
         Swal.fire({
-          text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_NOFORMPAGEWARNING"),
+          text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_NOFORMPAGEWARNING"),
           type: "warning",
         })
       },
@@ -702,7 +702,7 @@
         if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined') {
           document.getElementsByClassName('no-elements-tip')[0].style.background = '#e4e4e9';
           document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
-          document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
+          document.getElementsByClassName('no-elements-tip')[0].innerHTML = this.translate("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
         }
         let plugin = evt.clone.id.split(/_(.+)/)[1];
         let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
@@ -935,8 +935,8 @@
       tip(){
         this.showTip(
                 "foo-velocity",
-                Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP1") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP2"),
-                Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+                this.translate("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP") + '<br/>' + this.translate("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP1") + '<br/>' + this.translate("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP2"),
+                this.translate("COM_EMUNDUS_ONBOARD_TIP"),
         );
       },
 

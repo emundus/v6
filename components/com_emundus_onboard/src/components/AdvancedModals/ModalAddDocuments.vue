@@ -56,10 +56,10 @@
           <div class="input-can-translate">
             <input type="text" maxlength="100" class="form__input field-general w-input mb-0"
                    v-model="form.name[langue]" id="name" :class="{ 'is-invalid': errors.name}"/>
-            <button class="translate-icon" :class="{'translate-icon-selected': translate.name}"
-                    v-if="manyLanguages !== '0'" type="button" @click="translate.name = !translate.name"></button>
+            <button class="translate-icon" :class="{'translate-icon-selected': can_translate.name}"
+                    v-if="manyLanguages !== '0'" type="button" @click="can_translate.name = !can_translate.name"></button>
           </div>
-          <translation :label="form.name" :actualLanguage="langue" v-if="translate.name"></translation>
+          <translation :label="form.name" :actualLanguage="langue" v-if="can_translate.name"></translation>
           <p v-if="errors.name" class="error col-md-12 mb-2">
             <span class="error">{{ translations.NameRequired }}</span>
           </p>
@@ -237,7 +237,7 @@ export default {
           height: null,
         },
       },
-      translate: {
+      can_translate: {
         name: false,
         description: false
       },
@@ -249,19 +249,19 @@ export default {
       },
       types: [
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS"),
           value: 'pdf'
         },
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
           value: 'jpeg;jpg;png;gif'
         },
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
           value: 'doc;docx;odt;ppt;pptx'
         },
         {
-          title: Joomla.JText._("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
+          title: this.translate("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
 
@@ -272,31 +272,31 @@ export default {
       models: [],
       can_be_deleted: false,
       translations: {
-        DeleteDocTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_TEMPLATE_DOC"),
-        createDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT"),
-        editDocument: Joomla.JText._("COM_EMUNDUS_ONBOARD_EDIT_DOCUMENT"),
-        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        DocTemplate: Joomla.JText._("COM_EMUNDUS_ONBOARD_TEMPLATE_DOC"),
-        Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
-        Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDDOC_DESCRIPTION"),
-        MaxPerUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER"),
-        FileType: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED"),
-        NameRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL"),
-        MaxRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
-        TypeRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED"),
-        TranslateEnglish: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        Required: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED"),
-        ImageWidth: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_WIDTH"),
-        ImageHeight: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT"),
-        ImageResolutionTooltips: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_RESOLUTION_TOOLTIPS"),
-        MinResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER"),
-        MaxResolutionPlaceholder: Joomla.JText._("COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER"),
-        ErrorResolution: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION"),
-        ErrorResolutionNegative: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE"),
-        ErrorResolutionTooSmall: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_TOO_SMALL"),
-        ErrorResolutionNotNumber: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NOT_NUMBER"),
-        ImageDimensionsTitle: Joomla.JText._("COM_EMUNDUS_ONBOARD_IMAGE_DIMENSION_TITLE"),
+        DeleteDocTemplate: "COM_EMUNDUS_ONBOARD_DELETE_TEMPLATE_DOC",
+        createDocument: "COM_EMUNDUS_ONBOARD_CREATE_DOCUMENT",
+        editDocument: "COM_EMUNDUS_ONBOARD_EDIT_DOCUMENT",
+        Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+        Continuer: "COM_EMUNDUS_ONBOARD_OK",
+        DocTemplate: "COM_EMUNDUS_ONBOARD_TEMPLATE_DOC",
+        Name: "COM_EMUNDUS_ONBOARD_LASTNAME",
+        Description: "COM_EMUNDUS_ONBOARD_ADDDOC_DESCRIPTION",
+        MaxPerUser: "COM_EMUNDUS_ONBOARD_MAXPERUSER",
+        FileType: "COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED",
+        NameRequired: "COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL",
+        MaxRequired: "COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED",
+        TypeRequired: "COM_EMUNDUS_ONBOARD_FILETYPE_ACCEPTED_REQUIRED",
+        TranslateEnglish: "COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH",
+        Required: "COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED",
+        ImageWidth: "COM_EMUNDUS_ONBOARD_IMAGE_WIDTH",
+        ImageHeight: "COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT",
+        ImageResolutionTooltips: "COM_EMUNDUS_ONBOARD_IMAGE_RESOLUTION_TOOLTIPS",
+        MinResolutionPlaceholder: "COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER",
+        MaxResolutionPlaceholder: "COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER",
+        ErrorResolution: "COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION",
+        ErrorResolutionNegative: "COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NEGATIVE",
+        ErrorResolutionTooSmall: "COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_TOO_SMALL",
+        ErrorResolutionNotNumber: "COM_EMUNDUS_ONBOARD_ERROR_RESOLUTION_NOT_NUMBER",
+        ImageDimensionsTitle: "COM_EMUNDUS_ONBOARD_IMAGE_DIMENSION_TITLE",
       }
     };
   },
@@ -364,7 +364,7 @@ export default {
           return 0;
         }
 
-        if (this.translate.name === false) {
+        if (this.can_translate.name === false) {
 
           if (this.manyLanguages == 0 && this.langue == "en") {
             this.form.name.fr = this.form.name.en
@@ -374,7 +374,7 @@ export default {
           }
         }
 
-        if (this.translate.description === false) {
+        if (this.can_translate.description === false) {
 
           if (this.manyLanguages == 0 && this.langue == "en") {
 
@@ -573,12 +573,12 @@ export default {
 
     deleteModel(){
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_DELETE_TEMPLATE_DOC"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_DELETE_TEMPLATE_DOC"),
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#12db42',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if(result.value){
@@ -596,8 +596,8 @@ export default {
             if(response.data.allowed){
               Swal.fire({
                 backdrop: true,
-                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODEL_DELETED"),
-                text: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODEL_DELETED_TEXT"),
+                title: this.translate("COM_EMUNDUS_ONBOARD_MODEL_DELETED"),
+                text: this.translate("COM_EMUNDUS_ONBOARD_MODEL_DELETED_TEXT"),
                 showConfirmButton: true,
                 timer: 5000
               }).then(() => {
@@ -606,8 +606,8 @@ export default {
             } else {
               Swal.fire({
                 backdrop: true,
-                title: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANNOT_DELETE"),
-                text: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANNOT_DELETE_TEXT"),
+                title: this.translate("COM_EMUNDUS_ONBOARD_CANNOT_DELETE"),
+                text: this.translate("COM_EMUNDUS_ONBOARD_CANNOT_DELETE_TEXT"),
                 showConfirmButton: true,
                 timer: 5000
               })

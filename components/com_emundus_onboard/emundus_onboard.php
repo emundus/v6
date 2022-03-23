@@ -38,6 +38,8 @@ if (!EmundusonboardHelperAccess::asPartnerAccessLevel($current_user->id)) {
     die( JText::_('RESTRICTED_ACCESS') );
 }
 
+JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
+
 $app = JFactory::getApplication();
 
 // Require specific controller if requested

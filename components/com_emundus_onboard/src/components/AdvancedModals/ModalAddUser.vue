@@ -133,21 +133,21 @@ export default {
       selectall: false,
       changes: false,
       loading: false,
-      addUser: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER"),
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-      Firstname: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIRSTNAME"),
-      FirstnameRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_FIRSTNAME_REQUIRED"),
-      Lastname: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
-      LastnameRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME_REQUIRED"),
-      Email: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL"),
-      EmailRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_EMAIL_REQUIRED"),
-      Role: Joomla.JText._("COM_EMUNDUS_ONBOARD_ROLE"),
-      RoleRequired: Joomla.JText._("COM_EMUNDUS_ONBOARD_ROLE_REQUIRED"),
-      Administrator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATOR"),
-      Evaluator: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATOR"),
-      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      SelectAll: Joomla.JText._("COM_EMUNDUS_ONBOARD_SELECT_ALL"),
+      addUser: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADDUSER"),
+      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+      Firstname: this.translate("COM_EMUNDUS_ONBOARD_FIRSTNAME"),
+      FirstnameRequired: this.translate("COM_EMUNDUS_ONBOARD_FIRSTNAME_REQUIRED"),
+      Lastname: this.translate("COM_EMUNDUS_ONBOARD_LASTNAME"),
+      LastnameRequired: this.translate("COM_EMUNDUS_ONBOARD_LASTNAME_REQUIRED"),
+      Email: this.translate("COM_EMUNDUS_ONBOARD_EMAIL"),
+      EmailRequired: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_REQUIRED"),
+      Role: this.translate("COM_EMUNDUS_ONBOARD_ROLE"),
+      RoleRequired: this.translate("COM_EMUNDUS_ONBOARD_ROLE_REQUIRED"),
+      Administrator: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATOR"),
+      Evaluator: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATOR"),
+      Program: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      SelectAll: this.translate("COM_EMUNDUS_ONBOARD_SELECT_ALL"),
     };
   },
   methods: {
@@ -246,12 +246,12 @@ export default {
         } else {
           this.loading = false;
           Swal.fire({
-            title: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+            title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
             text: response.data.msg,
             type: "error",
             showCancelButton: false,
             confirmButtonColor: '#de6339',
-            confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
+            confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           });
         }
       }).catch((error) =>  {

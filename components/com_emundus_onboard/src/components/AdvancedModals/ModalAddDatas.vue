@@ -48,8 +48,8 @@
         </div>
       </div>
       <div class="d-flex justify-content-between mb-1">
-        <button 
-          type="button" 
+        <button
+          type="button"
           class="bouton-sauvergarder-et-continuer w-retour"
           @click.prevent="$modal.hide('modalAddDatas')"
         >
@@ -91,13 +91,13 @@
         errors: {
           label: false,
         },
-        Name: Joomla.JText._("COM_EMUNDUS_ONBOARD_LASTNAME"),
-        Translate: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
-        Values: Joomla.JText._("COM_EMUNDUS_ONBOARD_VALUES"),
-        Description: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
-        CreateDatasTable: Joomla.JText._("COM_EMUNDUS_ONBOARD_CREATE_DATAS"),
-        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        Name: this.translate("COM_EMUNDUS_ONBOARD_LASTNAME"),
+        Translate: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH"),
+        Values: this.translate("COM_EMUNDUS_ONBOARD_VALUES"),
+        Description: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION"),
+        CreateDatasTable: this.translate("COM_EMUNDUS_ONBOARD_CREATE_DATAS"),
+        Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
       };
     },
     methods: {

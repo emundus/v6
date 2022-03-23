@@ -142,6 +142,9 @@ export default {
         editor.on('keyup', () => {
           this.$emit("input", tinymce.activeEditor.getContent());
         });
+        editor.on('blur', () => {
+          this.$emit("focusout", tinymce.activeEditor.getContent());
+        });
         editor.on('init', () => {
           tinymce.activeEditor.setContent(this.text);
         });

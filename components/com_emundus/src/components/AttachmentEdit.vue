@@ -14,7 +14,7 @@
 					</textarea>
         </div>
 
-        <div 
+        <div
           class="input-group valid-state"
           :class="{
 			    	success: attachmentIsValidated == 1,
@@ -242,7 +242,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #attachment-edit {
   padding: 16px 16px 16px 10px;
   height: 100%;

@@ -4,7 +4,7 @@
       <div class="inlineflex" style="margin: 25px">
         <label class="translate-label">{{TranslateIn}}</label>
         <select v-model="currentLangTranslation" class="dropdown-toggle ml-10px">
-          <option v-for="language in languages" :value="language.sef">{{language.title_native}}</option>
+          <option v-for="language in languages" :key="language.sef" :value="language.sef">{{language.title_native}}</option>
         </select>
       </div>
     </transition>
@@ -33,7 +33,7 @@ export default {
     return {
       currentLangTranslation: 'en',
       languages: [],
-      TranslateIn: Joomla.JText._("COM_EMUNDUS_ONBOARD_TRANSLATE_IN")
+      TranslateIn: this.translate("COM_EMUNDUS_ONBOARD_TRANSLATE_IN")
     };
   },
 

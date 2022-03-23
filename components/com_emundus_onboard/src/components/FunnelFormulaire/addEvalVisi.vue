@@ -55,11 +55,11 @@ export default {
       profile: null,
       profiles: [],
       campaigns: [],
-      EnableVisibility: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISIBILITY_ENABLE"),
-      ChooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
-      chooseCampaignWarning: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN_WARNING"),
-      chooseCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN"),
-      NoFormAffectedToThisCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_AFFECTED_FORM"),
+      EnableVisibility: this.translate("COM_EMUNDUS_ONBOARD_VISIBILITY_ENABLE"),
+      ChooseForm: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
+      chooseCampaignWarning: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN_WARNING"),
+      chooseCampaign: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_CAMPAIGN"),
+      NoFormAffectedToThisCampaign: this.translate("COM_EMUNDUS_ONBOARD_NO_AFFECTED_FORM"),
     };
   },
 

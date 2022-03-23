@@ -19,9 +19,9 @@ if ($s == '') {
 	<h3>
 		<?php
 			if ($this->edit == 1) {
-				echo JText::_('EDIT_USER');
+				echo JText::_('COM_EMUNDUS_ACTIONS_EDIT_USER');
 			} else {
-				echo JText::_('ADD_USER');
+				echo JText::_('COM_EMUNDUS_ACTIONS_ADD_USER');
 			}
 		?>
 	</h3>
@@ -35,42 +35,42 @@ if ($s == '') {
 		<?php endif; ?>
 		<div id="user-information" class="em-addUser-detail-info">
 			<div class="form-group em-addUser-detail-info-firstname">
-				<label class="control-label" for="fname"><?= JText::_('FIRSTNAME_FORM'); ?></label>
+				<label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
 				<input type="text" class="form-control" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-lastname">
-				<label class="control-label" for="lname"><?= JText::_('LASTNAME_FORM'); ?></label>
+				<label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
 				<input type="text" class="form-control" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-mail">
-				<label class="control-label" for="mail"><?= JText::_('EMAIL_FORM'); ?></label>
+				<label class="control-label" for="mail"><?= JText::_('COM_EMUNDUS_EMAIL'); ?></label>
 				<input type="text" class="form-control" id="mail" name="email" <?= $this->edit == 1?'value="'.$this->user['email'].'"':''; ?>/>
 			</div>
             <div class="form-group em-addUser-detail-info-same-login">
                 <input type="checkbox" id="same_login_email" name="same_login_email" <?= ($this->user['email'] == $this->user['login'])?"checked":''; ?> style="margin-bottom: 5px; width: 20px !important">
-                <label for="same_login_email"><?= JText::_('LOGIN_SAME_EMAIL'); ?></label>
+                <label for="same_login_email"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_SAME_EMAIL'); ?></label>
             </div>
             <div class="form-group em-addUser-detail-info-id" id="login_field">
-                <label class="control-label" for="login"><?= JText::_('LOGIN_FORM'); ?></label>
+                <label class="control-label" for="login"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_FORM'); ?></label>
                 <input type="text" class="form-control"  id="login" name="login" <?= ($this->edit == 1)?'value="'.$this->user['login'].'"':''; ?> />
             </div>
 		</div>
 	</fieldset>
 	<fieldset class="em-addUser-profil">
 		<div class="form-group em-addUser-profil-selectProfil">
-			<label class="control-label" for="profiles"><?php echo JText::_('PROFILE_FORM'); ?></label>
+			<label class="control-label" for="profiles"><?php echo JText::_('COM_EMUNDUS_PROFILE'); ?></label>
 			<br/>
 			<select id="profiles" name="profiles" class="em-chosen">
-				<option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<option value="0"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->profiles as $profile) :?>
 					<option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && ($profile->id == $this->user['profile'])){echo 'selected="true"';}?>><?= trim($profile->label); ?></option>
 				<?php endforeach; ?>
 			</select>
 			<br/><br/>
 			<div class="em-addUser-profil-selectProfil-multiple">
-				<label class="control-label" for="oprofiles"><?= JText::_('ALL_PROFILES'); ?></label><br/>
+				<label class="control-label" for="oprofiles"><?= JText::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label><br/>
 				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
-					<option value="0" disabled="disabled"><?= JText::_('PLEASE_SELECT'); ?></option>
+					<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 					<?php foreach ($this->profiles as $otherprofile) :?>
 						<option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>" <?= (($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles)))?'selected="true"':''; ?>><?= trim($otherprofile->label); ?></option>
 					<?php endforeach;?>
@@ -78,20 +78,20 @@ if ($s == '') {
 			</div>
 		</div>
 		<div class="form-group em-hidden-nonapli-fields em-addUser-university" <?= (($this->edit != 1) || ($this->user['university_id'] == 0))?'style="display:none;"':''; ?>>
-			<label for="univ"><?= JText::_('UNIVERSITY_FROM'); ?></label>
+			<label for="univ"><?= JText::_('COM_EMUNDUS_USERS_UNIVERSITY_FROM'); ?></label>
 			<br/>
 			<select name="university_id" class="em-chosen" id="univ">
-				<option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<option value="0"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->universities as $university) :?>
 					<option value="<?= $university->id; ?>" <?= (($this->edit == 1) && ($university->id == $this->user['university_id']))?'selected="true"':''; ?>><?= trim($university->title); ?></option>
 				<?php endforeach;?>
 			</select>
 		</div>
 		<div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?= (($this->edit != 1) || (empty($this->uGroups)))?'style="display:none;"':''; ?>>
-			<label for="groups"><?= JText::_('GROUPS'); ?></label>
+			<label for="groups"><?= JText::_('COM_EMUNDUS_GROUPS'); ?></label>
 			<br/>
 			<select class = "em-chosen" name="groups" id="groups" multiple="multiple">
-				<option value="0" disabled="disabled"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->groups as $group) :?>
 					<option value="<?= $group->id; ?>" <?= (($this->edit == 1) && (array_key_exists($group->id, $this->uGroups)))?'selected="true"':''; ?>><?= trim($group->label); ?></option>
 				<?php endforeach;?>
@@ -99,23 +99,23 @@ if ($s == '') {
 		</div>
 
 		<div class="form-group em-hidden-appli-fields em-addUser-campaign" <?= (($this->edit != 1) || (empty($this->uCamps)))?'style="display:none;"':''; ?>>
-			<label for="campaigns"><?= JText::_('CAMPAIGN'); ?></label>
+			<label for="campaigns"><?= JText::_('COM_EMUNDUS_CAMPAIGN'); ?></label>
 			<br/>
 			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen">
-				<option value="0"><?= JText::_('PLEASE_SELECT'); ?></option>
+				<option value="0"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->campaigns as $campaign) :?>
 				    <option value="<?= $campaign->id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date);?></option>
 				<?php endforeach;?>
 			</select>
 		</div>
 		<!--<input type="checkbox" id="news" name="news" <?/*= (($this->edit == 1) && ($this->user['newsletter']== '"1"'))?"checked":''; */?> style="margin-bottom: 5px; width: 20px !important">
-		<label for="news"><?/*= JText::_('NEWSLETTER'); */?></label>-->
+		<label for="news"><?/*= JText::_('COM_EMUNDUS_USERS_NEWSLETTER'); */?></label>-->
 
 		<!-- LDAP registration will go inside the div -->
 		<div id="ldap-form" class="em-addUser-searchLdap" style="display : none;">
 			<div id="ldap-errors"></div>
 			<label for="s"><strong><?= JText::_( 'COM_EMUNDUS_SEARCH_IN_LDAP'); ?> </strong></label><br/>
-			<input type="text" class="input-xxlarge" name="s" id="s" value="<?= $s; ?>" /><div id="sldap" type="button" class="button" style="margin-bottom:10px;"> <?= JText::_('SEARCH'); ?></div>
+			<input type="text" class="input-xxlarge" name="s" id="s" value="<?= $s; ?>" /><div id="sldap" type="button" class="button" style="margin-bottom:10px;"> <?= JText::_('COM_EMUNDUS_ACTIONS_SEARCH'); ?></div>
 		</div>
 		<div id="ldapresult"></div>
 	</fieldset>
@@ -189,16 +189,16 @@ if ($s == '') {
 						url:'index.php?option=com_emundus&controller=users&task=ldapsearch&search='+$('#s')[0].value,
 						dataType: 'html',
 						beforeSend: function() {
-							ldapResult.text('<?= Jtext::_('SEARCHING'); ?> ['+$('#s')[0].value+']');
+							ldapResult.text('<?= Jtext::_('COM_EMUNDUS_FILTERS_SEARCHING'); ?> ['+$('#s')[0].value+']');
 						},
 						success: function(result) {
 
 							result = JSON.parse(result);
 
 							if (!result.status) {
-                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('AN_ERROR_OCCURED'); ?> </span>")
+                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?> </span>")
                             } else if (result.count == 0) {
-                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('LDAP_NO_RESULT'); ?> </span>")
+                                ldapResult.html("<span class='alert alert-error'> <?php echo JText::_('COM_EMUNDUS_LDAP_NO_RESULT'); ?> </span>")
                             } else {
 								ldapResult.html("");
 								// Foreach user
@@ -248,13 +248,13 @@ if ($s == '') {
                                         addUser = '';
 									if (user.exists) {
 										cardColor = 'alert-success';
-                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_EXISTS'); ?>">'+
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('COM_EMUNDUS_LDAP_USER_EXISTS'); ?>">'+
                                                         '<div class="hide uid">'+username.value+'</div>'+
                                                         '<span class="glyphicon glyphicon-ok" style="font-size:30px; padding-top:60px;"></span>'+
                                                     '</div>';
                                     } else {
                                         cardColor = 'ldap-card';
-                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('LDAP_USER_NEW'); ?>">'+
+                                        cardInfo = '<div data-toggle="tooltip" data-placement="top" title="<?php echo JText::_('COM_EMUNDUS_LDAP_USER_NEW'); ?>">'+
                                                         '<div class="hide uid">'+username.value+'</div>'+
                                                         '<span class="glyphicon glyphicon-plus" style="font-size:30px; padding-top:60px;"></span>'+
                                                     '</div>';
@@ -321,7 +321,7 @@ if ($s == '') {
 							}
 						},
                         error: function() {
-                            ldapResult.text("<?= JText::_('AN_ERROR_OCCURED'); ?>");
+                            ldapResult.text("<?= JText::_('COM_EMUNDUS_ERROR_OCCURED'); ?>");
                         }
 					});
 				}
@@ -386,7 +386,7 @@ if ($s == '') {
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
 			if ($(this).val().length == 0 || !re.test($(this).val())) {
 				$(this).parent('.form-group').addClass('has-error');
-				$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_EMAIL')+'</span>');
+				$(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')+'</span>');
 			}
 		});
 
@@ -400,7 +400,7 @@ if ($s == '') {
 			if (!re.test($('#login').val())) {
 				if (!$(this).parent('.form-group').hasClass('has-error')) {
 					$(this).parent('.form-group').addClass('has-error');
-					$(this).after('<span class="help-block">'+Joomla.JText._('NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
+					$(this).after('<span class="help-block">'+Joomla.JText._('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_LOGIN_MUST_NOT_CONTAIN_SPECIAL_CHARACTER')+'</span>');
 				}
 			} else {
 				$(this).parent('.form-group').removeClass('has-error');

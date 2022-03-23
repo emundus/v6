@@ -1,5 +1,5 @@
 <template>
-  <div class="container-evaluation">
+  <div class="em-flex-column">
     <notifications
         group="foo-velocity"
         animation-type="velocity"
@@ -16,35 +16,55 @@
     <ModalUpdateColors
         @UpdateColors="updateColors"
     />
-    <div class="section-sub-menu col-lg-5 mr-2 col-sm-12">
-      <h2 style="margin: 0">Logo</h2>
-      <div class="d-flex"></div>
-      <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
-      <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateLogo')">
-        <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-      </a>
-    </div>
 
-    <div class="section-sub-menu col-lg-5 col-sm-12">
-      <h2 style="margin: 0">{{Icon}}</h2>
-      <div class="d-flex"></div>
-      <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
-      <a class="settings-edit-icon cta-block pointer" style="top: 20px" @click="removeIcon">
-        <em class="fas fa-times" data-toggle="tooltip" data-placement="top"></em>
-      </a>
-      <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateIcon')">
-        <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-      </a>
-    </div>
-    <div class="section-sub-menu col-lg-5 col-sm-12 mt-2">
-      <h2 style="margin: 0">{{Colors}}</h2>
-      <div class="d-flex">
-        <div class="color-preset" :style="'background-color:' + primary + ';border-right: 30px solid' + secondary">
+    <div class="em-w-80" style="display:flex; flex-direction: column">
+
+      <!-- LOGO -->
+      <div class="em-h-auto em-flex-row col-md-4 em-mb-32" style="align-items: start">
+        <div class="em-logo-box pointer" @click="$modal.show('modalUpdateLogo')">
+          <img class="logo-settings" :src="imageLink" :srcset="'/'+imageLink" :alt="InsertLogo">
         </div>
-        <a class="settings-edit-icon cta-block pointer" @click="$modal.show('modalUpdateColors')">
-          <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-        </a>
+        <div class="w-100 em-ml-24">
+          <div class="em-flex-row em-flex-space-between">
+            <h2 style="margin: 0">Logo</h2>
+            <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateLogo')">
+              {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
+            </a>
+          </div>
+        </div>
       </div>
+
+      <!-- FAVICON -->
+      <div class="em-h-auto em-flex-row col-md-4 em-mb-32" style="align-items: start">
+        <div class="em-logo-box pointer" @click="$modal.show('modalUpdateIcon')">
+          <img class="logo-settings" :src="iconLink" :srcset="'/'+iconLink" :alt="InsertIcon">
+        </div>
+        <div class="w-100 em-ml-24">
+          <div class="em-flex-row em-flex-space-between">
+            <h2 style="margin: 0">{{Icon}}</h2>
+            <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateIcon')">
+              {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLORS -->
+      <div class="em-h-auto em-flex-row col-md-4 em-mb-32" style="align-items: start">
+        <div class="em-logo-box pointer" @click="$modal.show('modalUpdateColors')">
+          <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
+          </div>
+        </div>
+        <div class="w-100 em-ml-24">
+          <div class="em-flex-row em-flex-space-between">
+            <h2 style="margin: 0">{{Colors}}</h2>
+            <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateColors')">
+              {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -58,10 +78,8 @@ import ModalUpdateIcon from "@/components/AdvancedModals/ModalUpdateIcon";
 import ModalUpdateLogo from "@/components/AdvancedModals/ModalUpdateLogo";
 import ModalUpdateColors from "@/components/AdvancedModals/ModalUpdateColors";
 
-const qs = require("qs");
-
 export default {
-  name: "editStyle",
+  name: "EditStyle",
 
   components: {
     ModalUpdateColors,
@@ -86,12 +104,12 @@ export default {
         '#DB0A5B', '#999999'
       ],
       changes: false,
-      PrimaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR"),
-      SecondaryColor: Joomla.JText._("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR"),
-      Colors: Joomla.JText._("COM_EMUNDUS_ONBOARD_COLORS"),
-      Icon: Joomla.JText._("COM_EMUNDUS_ONBOARD_ICON"),
-      InsertLogo: Joomla.JText._("COM_EMUNDUS_ONBOARD_INSERT_LOGO"),
-      InsertIcon: Joomla.JText._("COM_EMUNDUS_ONBOARD_INSERT_ICON"),
+      PrimaryColor: this.translate("COM_EMUNDUS_ONBOARD_PRIMARY_COLOR"),
+      SecondaryColor: this.translate("COM_EMUNDUS_ONBOARD_SECONDARY_COLOR"),
+      Colors: this.translate("COM_EMUNDUS_ONBOARD_COLORS"),
+      Icon: this.translate("COM_EMUNDUS_ONBOARD_ICON"),
+      InsertLogo: this.translate("COM_EMUNDUS_ONBOARD_INSERT_LOGO"),
+      InsertIcon: this.translate("COM_EMUNDUS_ONBOARD_INSERT_ICON"),
     };
   },
 
@@ -110,13 +128,13 @@ export default {
     },
     removeIcon() {
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_ICON"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_REMOVE_ICON_TEXT"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_REMOVE_ICON_TEXT"),
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#12db42',
-        confirmButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-        cancelButtonText: Joomla.JText._("COM_EMUNDUS_ONBOARD_CANCEL"),
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
         reverseButtons: true
       }).then(result => {
         if (result.value) {
@@ -133,6 +151,13 @@ export default {
           });
         }
       });
+    },
+
+    imageExists(url, callback) {
+      var img = new Image();
+      img.onload = function() { callback(true); };
+      img.onerror = function() { callback(false); };
+      img.src = url;
     },
 
     /*updateColor(type,color) {
@@ -158,8 +183,8 @@ export default {
     tip(){
       this.show(
           "foo-velocity",
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-          Joomla.JText._("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
+          this.translate("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
+          this.translate("COM_EMUNDUS_ONBOARD_COLOR_SUCCESS"),
       );
     },
     show(group, text = "", title = "Information") {
@@ -177,6 +202,13 @@ export default {
 
   created() {
     this.changes = false;
+
+    this.imageExists(this.imageLink, (exists) => {
+      if(!exists){
+        this.imageLink = 'images/custom/logo.png';
+      }
+    });
+
     axios({
       method: "get",
       url: 'index.php?option=com_emundus_onboard&controller=settings&task=getappcolors',
@@ -221,9 +253,8 @@ export default {
   bottom: 15px;
 }
 .color-preset{
-  height: 100px;
-  margin: 30px;
+  height: 50px;
   border-radius: 50%;
-  width: 100px;
+  width: 50px;
 }
 </style>

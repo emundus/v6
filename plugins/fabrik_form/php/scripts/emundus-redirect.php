@@ -148,7 +148,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 	$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
 
 	echo "<hr>";
-	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>';
 	echo "<hr>";
 
 	# get the logged user 	$user->id

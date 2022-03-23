@@ -63,13 +63,13 @@ export default {
   data() {
     return {
       selectedData: [],
-      publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-      passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-      Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
-      AdvancedSettings: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
-      CampaignNumbers: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_CAMPAIGN_NUMBERS"),
+      publishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+      unpublishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+      passeeTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
+      Modify: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
+      Visualize: this.translate("COM_EMUNDUS_ONBOARD_VISUALIZE"),
+      AdvancedSettings: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
+      CampaignNumbers: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_CAMPAIGN_NUMBERS"),
     };
   },
 

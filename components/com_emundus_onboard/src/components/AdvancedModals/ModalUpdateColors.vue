@@ -48,10 +48,10 @@
           {primary:'#000000',secondary:'#5AA6DC'},
           {primary:'#A0BD51',secondary:'#204382'},
         ],
-        updateColors: Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATE_COLORS"),
-        Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-        Error: Joomla.JText._("COM_EMUNDUS_ONBOARD_ERROR"),
+        updateColors: this.translate("COM_EMUNDUS_ONBOARD_UPDATE_COLORS"),
+        Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+        Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        Error: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
       };
     },
     methods: {

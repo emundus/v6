@@ -81,11 +81,11 @@ export default {
       affectedCampaigns: [],
       searchTerm: '',
       translations:{
-        Continuer: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
-        affectCampaigns: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_AFFECTCAMPAIGNS"),
-        campaignsEmpty: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_CAMPAIGNSEMPTY"),
-        addCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
-        BackWithoutAssociation: Joomla.JText._("COM_EMUNDUS_ONBOARD_BACK_WITHOUT_ASSOCIATION"),
+        Continuer: this.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER"),
+        affectCampaigns: this.translate("COM_EMUNDUS_ONBOARD_FORM_AFFECTCAMPAIGNS"),
+        campaignsEmpty: this.translate("COM_EMUNDUS_ONBOARD_FORM_CAMPAIGNSEMPTY"),
+        addCampaign: this.translate("COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN"),
+        BackWithoutAssociation: this.translate("COM_EMUNDUS_ONBOARD_BACK_WITHOUT_ASSOCIATION"),
       }
     };
   },

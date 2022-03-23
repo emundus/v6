@@ -57,11 +57,11 @@ export default {
       changedGroup: "",
       update: false,
       builderViewKey: 0,
-      addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
-      addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
-      editGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EDITGROUP"),
-      deleteGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUP"),
-      deleteMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
+      addGroup: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
+      addItem: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
+      editGroup: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_EDITGROUP"),
+      deleteGroup: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUP"),
+      deleteMenu: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
     };
   },
   methods: {
@@ -93,8 +93,8 @@ export default {
     },
     deleteAMenu(mid){
       Swal.fire({
-        title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
-        text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENUWARNING"),
+        title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENUWARNING"),
         type: "warning",
         showCancelButton: true
       }).then(result => {
@@ -112,7 +112,7 @@ export default {
           }).then(() => {
             this.$modal.hide('modalSide' + this.ID)
             Swal.fire({
-              title: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_MENUDELETED"),
+              title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_MENUDELETED"),
               type: "success",
               showConfirmButton: false,
               timer: 2000

@@ -73,18 +73,18 @@ if (!empty($this->custom_title)) :?>
 <?php endif; ?>
 <?php if ($this->show_info_panel) :?>
     <fieldset>
-        <legend><?= $this->need<2?JText::_('CHECKLIST'):JText::_('RESULTS'); ?></legend>
+        <legend><?= $this->need<2?JText::_('COM_EMUNDUS_ATTACHMENTS_CHECKLIST'):JText::_('COM_EMUNDUS_ATTACHMENTS_RESULTS'); ?></legend>
         <div class = "<?= $this->need?'checklist'.$this->need:'checklist'.'0'; ?>" id="info_checklist">
             <h3><?= $this->title; ?></h3>
             <?php
                 if ($this->sent && count($this->result) == 0) {
-	                echo '<h3>' . JText::_('APPLICATION_SENT') . '</h3>';
+	                echo '<h3>' . JText::_('COM_EMUNDUS_ATTACHMENTS_APPLICATION_SENT') . '</h3>';
                 } else {
 	                echo $this->text;
                 }
 
             if (!$this->need) { ?>
-                    <h3><a href="<?= $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?= $this->sent?'appsent':'sent'; ?>" target="<?= $this->sent?'_blank':''; ?>"><?= $this->sent?JText::_('PRINT_APPLICATION'):JText::_('SEND_APPLICATION'); ?></a></h3>
+                    <h3><a href="<?= $this->sent?'index.php?option=com_emundus&task=pdf':$this->confirm_form_url; ?>" class="<?= $this->sent?'appsent':'sent'; ?>" target="<?= $this->sent?'_blank':''; ?>"><?= $this->sent?JText::_('COM_EMUNDUS_APPLICATION_PRINT_APPLICATION'):JText::_('COM_EMUNDUS_APPLICATION_SEND_APPLICATION'); ?></a></h3>
             <?php } ?>
         </div>
     </fieldset>
@@ -103,12 +103,12 @@ if (!empty($this->custom_title)) :?>
 <?php if (count($this->attachments) > 0) :?>
 
     <div id="attachment_list" class="em-attachmentList">
-        <p><?= JText::_('UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('BYTES'); ?> </p>
+        <p><?= JText::_('COM_EMUNDUS_ATTACHMENTS_INFO_UPLOAD_MAX_FILESIZE') . ' = ' . ini_get("upload_max_filesize") . ' '. JText::_('COM_EMUNDUS_ATTACHMENTS_BYTES'); ?> </p>
     <?php if ($this->show_info_legend) :?>
         <div id="legend" class="em-attachmentList-legend">
-            <div class="need_missing"><?= JText::_('MISSING_DOC'); ?></div>,
-            <div class="need_ok"><?= JText::_('SENT_DOC'); ?></div>,
-            <div class="need_missing_fac"><?= JText::_('MISSING_DOC_FAC'); ?></div>
+            <div class="need_missing"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC'); ?></div>,
+            <div class="need_ok"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENT_DOC'); ?></div>,
+            <div class="need_missing_fac"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_MISSING_DOC_FAC'); ?></div>
         </div>
     <?php endif; ?>
     <?php
@@ -134,21 +134,21 @@ if (!empty($this->custom_title)) :?>
                     $div .= '<tr class="em-added-files">
                     <td>';
                     if ($item->can_be_viewed == 1) {
-                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('VIEW').'</a>';
+                        $div .= '<a class="btn btn-success btn-xs" href="'.$chemin.$this->user->id .'/'.$item->filename .'" target="_blank"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> '.JText::_('COM_EMUNDUS_ATTACHMENTS_VIEW').'</a>';
                     } else {
-                        $div .= JText::_('CANT_VIEW');
+                        $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW');
                     }
                     $div .= '&nbsp;-&nbsp;' ;
                     if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons">delete_outline</span> '.JText::_('DELETE').'</a>';
+                        $div .= '<a class="btn btn-danger btn-xs" href="'.JRoute::_('index.php?option=com_emundus&task=delete&uid='.$item->id.'&aid='.$item->attachment_id.'&duplicate='.$attachment->duplicate.'&nb='.$attachment->nb.'&Itemid='.$itemid.'#a'.$attachment->id).'"><span class="material-icons">delete_outline</span> '.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'</a>';
                     } else {
-                        $div .= JText::_('CANT_DELETE');
+                        $div .= JText::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE');
                     }
                     $div .= ' | ';
                     $div .= JString::ucfirst(JHTML::Date(strtotime($item->timedate), "DATE_FORMAT_LC2"));
                     $div .= ' | ';
                     if ($this->show_shortdesc_input) {
-                        $div .= empty($item->description)?JText::_('NO_DESC'):$item->description;
+                        $div .= empty($item->description)?JText::_('COM_EMUNDUS_ATTACHMENTS_NO_DESC'):$item->description;
                     }
                     $div .= '</td></tr>';
                 }
@@ -329,14 +329,14 @@ if (!empty($this->custom_title)) :?>
                 <input type="hidden" name="required_desc" value="'.$this->required_desc.'"/>
                 <div class="input-group em-fieldset-attachment-table-upload">';
                 if ($this->show_shortdesc_input) {
-                    $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span>'.JText::_('SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
+                    $div .= '<div class="row"><div class="col-sm-12 em-description"><label><span>'.JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC').'</span></label><input type="text" class="form-control" name="description" placeholder="'.(($this->required_desc != 0)?JText::_('EMUNDUS_REQUIRED_FIELD'):'').'" /></div></div>';
                 }
                 if ($this->show_browse_button) {
                     $div .= '<div class="row" id="upload-files-'.$file_upload.'"><div class="col-sm-12"><label for="file" class="custom-file-upload"><input class="em-send-attachment" id="em-send-attachment-'.$file_upload.'" type="file" name="file" multiple onchange="processSelectedFiles(this)"/><span style="display: none;" >'.JText::_("COM_EMUNDUS_SELECT_UPLOAD_FILE").'</span></label>';
                 }
                     $div .= '<input type="hidden" class="form-control" readonly="">';
                 if ($this->show_browse_button) {
-                    $div .= '<input class="btn btn-success em_send_uploaded_file" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('SEND_ATTACHMENT').'"/></div></div>';
+                    $div .= '<input class="btn btn-success em_send_uploaded_file" name="sendAttachment" type="submit" onclick="document.pressed=this.name" value="'.JText::_('COM_EMUNDUS_ATTACHMENTS_SEND_ATTACHMENT').'"/></div></div>';
                 }
                 $div .= '</div>';
 
@@ -346,7 +346,7 @@ if (!empty($this->custom_title)) :?>
     Dropzone.options.formA'.$attachment->id.' =  {
         maxFiles: '.$attachment->nbmax .',
         maxFilesize: maxFilesize.substr(0, maxFilesize.length-1), // MB
-        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_UPLOAD_DROP_FILE_OR_CLICK').'",
+        dictDefaultMessage: "'.JText::_('COM_EMUNDUS_ATTACHMENTS_UPLOAD_DROP_FILE_OR_CLICK').'",
         dictInvalidFileType: "'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'",
         url: "index.php?option=com_emundus&task=upload&duplicate='.$attachment->duplicate.'&Itemid='.$itemid.'&format=raw",
 
@@ -397,7 +397,7 @@ if (!empty($this->custom_title)) :?>
 
           this.on("maxfilesexceeded", function(file) {
             this.removeFile(file);
-            alert("'. JText::_('NO_MORE').' : '.$attachment->value .'. '.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'");
+            alert("'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' : '.$attachment->value .'. '.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'");
           });
 
           this.on("success", function(file, responseText) {
@@ -450,7 +450,7 @@ if (!empty($this->custom_title)) :?>
                             // Change icon on fieldset
                             document.getElementById("l'.$attachment->id.'").className = "";
                             document.getElementById("'.$attachment->id.'").className = "";
-                            alert("'.JText::_('ATTACHMENT_DELETED').'");
+                            alert("'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').'");
                         }
     
                     },
@@ -489,7 +489,7 @@ if (!empty($this->custom_title)) :?>
                     $div .= '
                 <tr class="em-no-more-files">
                     <td>
-                    <p>'. JText::_('NO_MORE').' '.$attachment->value .'<br />'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</p>
+                    <p>'. JText::_('COM_EMUNDUS_ATTACHMENTS_NO_MORE').' '.$attachment->value .'<br />'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</p>
                     </td>
                 </tr>';
 
@@ -499,7 +499,7 @@ if (!empty($this->custom_title)) :?>
                 if ($this->isLimitObtained === true) {
                     $div .= JError::raiseNotice(401, JText::_('LIMIT_OBTAINED'));
                 } else {
-                    $div .= JError::raiseNotice(401, JText::sprintf('PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
+                    $div .= JError::raiseNotice(401, JText::sprintf('COM_EMUNDUS_PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
                 }
             }
             $div .= '</table></div></fieldset>';
@@ -518,7 +518,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_mand != '') {
-           echo '<div id="attachment_list_mand" class="em-container-attachments"><h1 class="em-titleDocMand">'.JText::_('MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
+           echo '<div id="attachment_list_mand" class="em-container-attachments"><h1 class="em-titleDocMand">'.JText::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS').'</h1>'.$attachment_list_mand.'</div>';
         }
     ?>
       </div>
@@ -530,7 +530,7 @@ if (!empty($this->custom_title)) :?>
       <div class="col-md-<?= (int)(12/$this->show_nb_column); ?>">
     <?php
         if ($attachment_list_opt != '') {
-           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt"><h1 class="em-titleDocOpt">'.JText::_('OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
+           echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt"><h1 class="em-titleDocOpt">'.JText::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS').'</h1>'.$attachment_list_opt.'</div>';
         }
     ?>
       </div>
@@ -589,7 +589,7 @@ function OnSubmitForm() {
     var btn = document.getElementsByName(document.pressed);
     for(i=0 ; i<btn.length ; i++) {
         btn[i].disabled="disabled";
-        btn[i].value="<?= JText::_('SENDING_ATTACHMENT'); ?>";
+        btn[i].value="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
     }
     switch(document.pressed) {
         case 'sendAttachment':
@@ -606,7 +606,7 @@ function OnSubmitForm() {
 
     for(i=0 ; i<btn.length ; i++) {
         btn[i].disabled="disabled";
-        btn[i].value="<?= JText::_('SENDING_ATTACHMENT'); ?>";
+        btn[i].value="<?= JText::_('COM_EMUNDUS_ATTACHMENTS_SENDING_ATTACHMENT'); ?>";
     }
 
     switch(document.pressed) {
@@ -651,11 +651,11 @@ function processSelectedFiles(fileInput) {
         $(rowId).find( ".em_send_uploaded_file" ).removeAttr("disabled");
     } else {
         if ($(rowId).find('.em-added-file').length > 0) {
-            $(rowId).find('.em-added-file')[0].innerHTML = "<?= JText::_('FILE_TOO_BIG')?>";
+            $(rowId).find('.em-added-file')[0].innerHTML = "<?= JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG')?>";
         } else {
             var fileParagraphe = document.createElement("p");
             fileParagraphe.className = "em-added-file em-added-file-error";
-            fileParagraphe.innerHTML = "<?= JText::_('FILE_TOO_BIG')?>";
+            fileParagraphe.innerHTML = "<?= JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG')?>";
             rowId.append(fileParagraphe);
         }
         $(rowId).find( ".em_send_uploaded_file" ).attr("disabled","disabled");
@@ -670,7 +670,7 @@ function processSelectedFiles(fileInput) {
             title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
             confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
             showCancelButton: true,
-            cancelButtonText: '<?= JText::_('EM_CONTINUE'); ?>'
+            cancelButtonText: '<?= JText::_('COM_EMUNDUS_ATTACHMENTS_EM_CONTINUE'); ?>'
         })
         .then(confirm => {
             if (confirm.value) {

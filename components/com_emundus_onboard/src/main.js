@@ -9,6 +9,8 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import { TableComponent, TableColumn } from 'vue-table-component';
 import Notifications from 'vue-notification';
 import velocity from 'velocity-animate';
+import translate from './mixins/translate.js';
+import VWave from 'v-wave';
 
 /** Import Mixins **/
 import mixin_errors from '../../../media/com_emundus/js/mixins/errors.js';
@@ -22,9 +24,11 @@ Vue.component('table-column', TableColumn);
 Vue.use(Notifications, { velocity });
 Vue.use(VueJsModal);
 Vue.use(VueSpinnersCss);
+Vue.use(VWave);
 
 /** Use Mixins **/
 Vue.mixin(mixin_errors);
+Vue.mixin(translate);
 
 import App from "./App";
 

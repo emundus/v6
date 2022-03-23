@@ -86,19 +86,19 @@ export default {
   data() {
     return {
       selectedData: [],
-      publishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
-      unpublishedTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
-      passeeTag: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
-      Modify: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      Visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
-      Programme: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
-      From: Joomla.JText._("COM_EMUNDUS_ONBOARD_FROM"),
-      To: Joomla.JText._("COM_EMUNDUS_ONBOARD_TO"),
-      Since: Joomla.JText._("COM_EMUNDUS_ONBOARD_SINCE"),
-      AdvancedSettings: Joomla.JText._("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
-      Program: Joomla.JText._("COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM"),
-      Files: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILES"),
-      File: Joomla.JText._("COM_EMUNDUS_ONBOARD_FILE")
+      publishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
+      unpublishedTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+      passeeTag: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
+      Modify: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
+      Visualize: this.translate("COM_EMUNDUS_ONBOARD_VISUALIZE"),
+      Programme: this.translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM"),
+      From: this.translate("COM_EMUNDUS_ONBOARD_FROM"),
+      To: this.translate("COM_EMUNDUS_ONBOARD_TO"),
+      Since: this.translate("COM_EMUNDUS_ONBOARD_SINCE"),
+      AdvancedSettings: this.translate("COM_EMUNDUS_ONBOARD_PROGRAM_ADVANCED_SETTINGS"),
+      Program: this.translate("COM_EMUNDUS_ONBOARD_DOSSIERS_PROGRAM"),
+      Files: this.translate("COM_EMUNDUS_ONBOARD_FILES"),
+      File: this.translate("COM_EMUNDUS_ONBOARD_FILE")
     };
   },
   methods: {

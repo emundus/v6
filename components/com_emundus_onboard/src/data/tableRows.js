@@ -32,10 +32,6 @@ export default {
 			value: 'subject',
 			redirect: true
 		},
-		// {
-		// 	label: "COM_EMUNDUS_ONBOARD_TYPE",
-		// 	value: 'type',
-		// },
 		{
 			label: "COM_EMUNDUS_ONBOARD_CATEGORY",
 			value: 'category',

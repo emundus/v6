@@ -11,29 +11,29 @@
       <div class="sidebar-formbuilder" :style="actions_menu ? 'width: 250px' : ''">
         <transition name="move-right">
           <div class="actions-menu menu-block">
-            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="Back">
-              {{ BuildYourForm }}
+            <a class="d-flex back-button-action pointer" style="padding: 0 15px" :title="translations.Back">
+              {{ translations.BuildYourForm }}
             </a>
             <hr style="width: 80%;margin: 10px auto;">
             <div>
               <div class="action-links">
-                <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="addMenu">
+                <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
                   <em class="add-page-icon"></em>
-                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu">{{addMenu}}</label>
+                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu">{{translations.addMenu}}</label>
                 </a>
-                <a class="d-flex action-link" @click="createGroup()" :title="addGroup">
+                <a class="d-flex action-link" @click="createGroup()" :title="translations.addGroup">
                   <em class="add-group-icon"></em>
-                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu">{{addGroup}}</label>
+                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu">{{translations.addGroup}}</label>
                 </a>
-                <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="addItem">
+                <a class="d-flex action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="translations.addItem">
                   <em class="add-element-icon"></em>
-                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{addItem}}</label>
+                  <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
                 </a>
                 <transition :name="'slide-right'" type="transition">
                   <div class="plugins-list" v-if="addingElement">
-                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="Back">
+                    <a class="d-flex col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingElement = !addingElement" :title="translations.Back">
                       <em class="fas fa-arrow-left mr-1"></em>
-                      {{ Back }}
+                      {{ translations.Back }}
                     </a>
                     <hr style="width: 80%;margin: 10px auto;">
                     <draggable
@@ -46,7 +46,7 @@
                         chosen-class="plugin-chosen"
                         ghost-class="plugin-ghost"
                         style="padding-bottom: 2em;margin-top: 10%">
-                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="(plugin,index) in plugins" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
+                      <div class="d-flex plugin-link col-md-offset-1 col-sm-offset-1 handle" v-for="plugin in plugins" :key="plugin.value" :id="'plugin_' + plugin.value" @dblclick="addingNewElementByDblClick(plugin.value)" :title="plugin.name">
                         <em :class="plugin.icon"></em>
                         <span class="ml-10px">{{plugin.name}}</span>
                       </div>
@@ -55,23 +55,17 @@
                 </transition>
               </div>
             </div>
-            <!--<a class="send-form-button" @click="sendForm">
-              <label style="cursor: pointer" class="mb-0">{{sendFormButton}}</label>
-              <em class="fas fa-paper-plane" style="font-size: 20px"></em>
-            </a>
-            <a class="send-form-button test-form-button" style="margin-top: 1em" @click="testForm">
-              <label style="cursor: pointer">{{testingForm}}</label>
-              <em class="fas fa-vial" style="font-size: 20px"></em>
-            </a>-->
           </div>
         </transition>
       </div>
       <div :class="actions_menu ? 'col-md-8 col-md-offset-4 col-sm-9 col-sm-offset-3' : ''" class="menu-block">
         <div class="heading-block" :class="addingElement || actions_menu ? 'col-md-offset-2 col-md-9' : 'col-md-12'">
-          <h2 class="form-title" style="padding: 0; margin: 0"><img src="/images/emundus/menus/form.png" class="mr-1">Evaluation</h2>
+          <h2 class="form-title" style="padding: 0; margin: 0">
+            <img src="/images/emundus/menus/form.png" alt="Formulaire" class="mr-1"> Evaluation
+          </h2>
           <div class="d-flex">
-            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{Validate}}</button>
-            <button class="bouton-sauvergarder-et-continuer mt-1" @click="sendForm" style="margin-left: 10px" :title="Validate">{{ExitFormbuilder}}</button>
+            <button class="bouton-sauvergarder-et-continuer bouton-sauvergarder-et-continuer-green mt-1" @click="sendForm" style="margin-left: 10px" :title="translations.Validate">{{translations.Validate}}</button>
+            <button class="bouton-sauvergarder-et-continuer mt-1" @click="sendForm" style="margin-left: 10px" :title="translations.ExitFormbuilder">{{translations.ExitFormbuilder}}</button>
           </div>
         </div>
         <div class="form-viewer-builder" :class="[addingElement || actions_menu ? 'col-sm-offset-5 col-md-offset-4 col-lg-offset-1 col-sm-7' : 'col-md-10',optionsModal ? 'col-sm-5 col-md-6' : 'col-md-10']">
@@ -182,63 +176,68 @@ export default {
           id: 0,
           value: 'field',
           icon: 'fas fa-font',
-          name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_FIELD")
         },
         textarea: {
           id: 5,
           value: 'textarea',
           icon: 'far fa-square',
-          name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA")
         },
         checkbox: {
           id: 2,
           value: 'checkbox',
           icon: 'far fa-check-square',
-          name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX")
         },
         radiobutton: {
           id: 4,
           value: 'radiobutton',
           icon: 'fas fa-list-ul',
-          name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON")
         },
         dropdown: {
           id: 3,
           value: 'dropdown',
           icon: 'fas fa-th-list',
-          name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN")
         },
         birthday: {
           id: 1,
           value: 'birthday',
           icon: 'far fa-calendar-alt',
-          name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY")
         },
         display: {
           id: 6,
           value: 'display',
           icon: 'fas fa-paragraph',
-          name: Joomla.JText._("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
+          name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
         },
       },
-      addMenu: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU"),
-      addMenuAction: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU_ACTION"),
-      addGroup: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP"),
-      addItem: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM"),
-      Actions: Joomla.JText._("COM_EMUNDUS_ONBOARD_ACTIONS"),
-      sendFormButton: Joomla.JText._("COM_EMUNDUS_ONBOARD_SEND_FORM"),
-      Edit: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
-      FormPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_PAGE"),
-      SubmitPage: Joomla.JText._("COM_EMUNDUS_ONBOARD_SUBMIT_PAGE"),
-      groupCreated: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_CREATEDGROUPSUCCES"),
-      update: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_UPDATE"),
-      Back: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Validate: Joomla.JText._("COM_EMUNDUS_ONBOARD_OK"),
-      ExitFormbuilder: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER"),
-      BuildYourForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM"),
+      translations: {
+        addMenu: "COM_EMUNDUS_ONBOARD_BUILDER_ADDMENU",
+        addGroup: "COM_EMUNDUS_ONBOARD_BUILDER_ADDGROUP",
+        addItem: "COM_EMUNDUS_ONBOARD_BUILDER_ADDITEM",
+        groupCreated: "COM_EMUNDUS_ONBOARD_BUILDER_CREATEDGROUPSUCCES",
+        update: "COM_EMUNDUS_ONBOARD_BUILDER_UPDATE",
+        Back: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
+        Validate: "COM_EMUNDUS_ONBOARD_OK",
+        ExitFormbuilder: "COM_EMUNDUS_ONBOARD_BUILDER_EXIT_FORMBUILDER",
+        BuildYourForm: "COM_EMUNDUS_ONBOARD_BUILDER_BUILD_YOUR_FORM",
+      }
     };
   },
-
+  created() {
+    this.$props.actualLanguage = global.getters.actualLanguage;
+    this.$props.manyLanguages = global.getters.manyLanguages;
+    this.$props.index = global.getters.datas.index.value;
+    this.$props.prid = global.getters.datas.prid.value;
+    this.$props.cid = global.getters.datas.cid.value;
+    this.$props.eval = global.getters.datas.eval.value;
+    this.link = 'index.php?option=com_fabrik&view=form&formid=' + this.eval;
+    this.getDataObject();
+  },
   methods: {
     createElement(gid,plugin,order) {
       if(!_.isEmpty(this.formObjectArray[this.indexHighlight].object.Groups)){
@@ -283,7 +282,7 @@ export default {
       if(typeof document.getElementsByClassName('no-elements-tip')[0] != 'undefined') {
         document.getElementsByClassName('no-elements-tip')[0].style.background = '#e4e4e9';
         document.getElementsByClassName('no-elements-tip')[0].style.border = '2px dashed #c3c3ce';
-        document.getElementsByClassName('no-elements-tip')[0].innerHTML = Joomla.JText._("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
+        document.getElementsByClassName('no-elements-tip')[0].innerHTML = this.translate("COM_EMUNDUS_ONBOARD_NO_ELEMENTS_TIPS");
       }
       let plugin = evt.clone.id.split('_')[1];
       let gid = evt.to.parentElement.parentElement.parentElement.id.split('_')[1];
@@ -334,8 +333,8 @@ export default {
           }).then((result) => {
             this.show("foo-velocity",
               "success",
-              this.groupCreated,
-              this.update
+              this.translations.groupCreated,
+              this.translations.update
             );
           });
           this.loading = false;
@@ -409,8 +408,8 @@ export default {
     tip(){
       this.showTip(
         "foo-velocity",
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP1") + '<br/>' + Joomla.JText._("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP2"),
-        Joomla.JText._("COM_EMUNDUS_ONBOARD_TIP"),
+        this.translate("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP") + '<br/>' + this.translate("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP1") + '<br/>' + this.translate("COM_EMUNDUS_ONBOARD_UPDATEFORMTIP2"),
+        this.translate("COM_EMUNDUS_ONBOARD_TIP"),
       );
     },
 
@@ -483,18 +482,6 @@ export default {
       }
     }
     //
-  },
-  created() {
-    this.$props.actualLanguage = global.getters.actualLanguage;
-    this.$props.manyLanguages = global.getters.manyLanguages;
-    this.$props.index = global.getters.datas.index.value;
-    this.$props.prid = global.getters.datas.prid.value;
-    this.$props.cid = global.getters.datas.cid.value;
-    this.$props.eval = global.getters.datas.eval.value;
-    this.link = 'index.php?option=com_fabrik&view=form&formid=' + this.eval;
-    //jQuery("#g-navigation .g-main-nav .tchooz-vertical-toplevel > li").css("transform", "translateX(-100px)")
-    //jQuery(".tchooz-vertical-toplevel hr").css("transform", "translateX(-100px)")
-    this.getDataObject();
   },
 
   computed: {

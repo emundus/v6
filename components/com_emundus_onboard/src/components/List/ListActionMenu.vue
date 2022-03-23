@@ -1,11 +1,11 @@
 <template>
 	<div class="list-actions-menu">
-		<button 
+		<button
 			v-if="type == 'email'"
-			class="cta-block" 
-			style="height: unset" 
-			type="button" 
-			:title="translations.visualize" 
+			class="cta-block"
+			style="height: unset"
+			type="button"
+			:title="translations.visualize"
 			@click="showModalPreview"
 		>
       <em class="fas fa-eye"></em>
@@ -54,7 +54,7 @@ export default {
 	data() {
 		return {
 			translations: {
-				visualize: Joomla.JText._("COM_EMUNDUS_ONBOARD_VISUALIZE"),
+				visualize: this.translate("COM_EMUNDUS_ONBOARD_VISUALIZE"),
 			}
 		}
 	},

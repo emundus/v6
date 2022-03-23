@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      Text: Joomla.JText._("COM_EMUNDUS_ONBOARD_BUILDER_TEXT"),
+      Text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_TEXT"),
       dynamicComponent: false,
     };
   },

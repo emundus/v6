@@ -14,14 +14,14 @@
         </div>
       </a>
     </div>
-    <FormCarrousel 
-      v-if="formList" 
-      :formList="formList" 
-      :documentsList="documentsList" 
-      :visibility="visibility" 
-      :key="formListReload" 
-      @getEmitIndex="getEmitIndex" 
-      @formbuilder="formbuilder" 
+    <FormCarrousel
+      v-if="formList"
+      :formList="formList"
+      :documentsList="documentsList"
+      :visibility="visibility"
+      :key="formListReload"
+      @getEmitIndex="getEmitIndex"
+      @formbuilder="formbuilder"
     />
   </div>
 </template>
@@ -51,8 +51,8 @@ export default {
 
   data() {
     return {
-      ChooseForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
-      AddForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_FORM"),
+      ChooseForm: this.translate("COM_EMUNDUS_ONBOARD_CHOOSE_FORM"),
+      AddForm: this.translate("COM_EMUNDUS_ONBOARD_ADD_FORM"),
       EmitIndex: "0",
       formList: [],
       documentsList: [],
@@ -64,7 +64,7 @@ export default {
         published: 1
       },
 
-      formdescription: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION")
+      formdescription: this.translate("COM_EMUNDUS_ONBOARD_FORMDESCRIPTION")
     };
   },
   methods: {

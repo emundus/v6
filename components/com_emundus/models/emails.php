@@ -269,7 +269,7 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from' => $from_id,
                             'user_id_to' => $to_id,
                             'subject' => $subject,
-                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
+                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
                         );
                         $this->logEmail($message);
                     }
@@ -907,8 +907,8 @@ class EmundusModelEmails extends JModelList {
                     $row = [
                         'applicant_id'  => $student_id,
                         'user_id'       => $this->_user->id,
-                        'reason'        => JText::_( 'INFORM_EXPERTS' ),
-                        'comment_body'  => JText::_('ERROR').' '.JText::_('MESSAGE').' '.JText::_('NOT_SENT').' '.JText::_('TO').' '.$m_to,
+                        'reason'        => JText::_( 'COM_EMUNDUS_EXPERTS_INFORM_EXPERTS' ),
+                        'comment_body'  => JText::_('ERROR').' '.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_NOT_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to,
                         'fnum'          => $fnum
                     ];
                     $print_message .= '<hr>Error sending email: ' . $send->__toString();
@@ -918,8 +918,8 @@ class EmundusModelEmails extends JModelList {
                     $row = [
                         'applicant_id'  => $student_id,
                         'user_id'       => $this->_user->id,
-                        'reason'        => JText::_( 'INFORM_EXPERTS' ),
-                        'comment_body'  => JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$m_to,
+                        'reason'        => JText::_( 'COM_EMUNDUS_EXPERTS_INFORM_EXPERTS' ),
+                        'comment_body'  => JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to,
                         'fnum'          =>  $fnum
                     ];
 
@@ -932,13 +932,13 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from'  => $this->_user->id,
                             'user_id_to'    => $user_id_to,
                             'subject'       => $mail_subject,
-                            'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$m_to.'</i><br>'.$body
+                            'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to.'</i><br>'.$body
                         ];
                         $this->logEmail($message);
                     }
 
-                    $print_message .= '<hr>'.JText::_('EMAIL_SENT').' : '.$m_to;
-                    $print_message .= '<hr>'.JText::_('SUBJECT').' : '.$mail_subject;
+                    $print_message .= '<hr>'.JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$m_to;
+                    $print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
                     $print_message .= '<hr>'.$body;
                 }
 
@@ -973,7 +973,7 @@ class EmundusModelEmails extends JModelList {
         	return false;
         }
 
-        JFactory::getApplication()->enqueueMessage(JText::_('EMAIL_SENT'), 'message');
+        JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT'), 'message');
         return true;
     }
 
@@ -1158,7 +1158,7 @@ class EmundusModelEmails extends JModelList {
 							'user_id_from'  => $this->_user->id,
 							'user_id_to'    => $user_id_to,
 							'subject'       => $mail_subject,
-							'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$m_to.'</i><br>'.$body
+							'message'       => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$m_to.'</i><br>'.$body
 						];
 						$this->logEmail($message);
 					}
@@ -1166,8 +1166,8 @@ class EmundusModelEmails extends JModelList {
 					JLog::add('Could not get user by email : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 				}
 
-				$print_message .= '<hr>'.JText::_('EMAIL_SENT').' : '.$m_to;
-				$print_message .= '<hr>'.JText::_('SUBJECT').' : '.$mail_subject;
+				$print_message .= '<hr>'.JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$m_to;
+				$print_message .= '<hr>'.JText::_('COM_EMUNDUS_EMAILS_SUBJECT').' : '.$mail_subject;
 				$print_message .= '<hr>'.$body;
 			}
 		}
@@ -1381,7 +1381,7 @@ class EmundusModelEmails extends JModelList {
                 'user_id_from' => $current_user->id,
                 'user_id_to' => $user->id,
                 'subject' => $subject,
-                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $user->email . '</i><br>' . $body . $files,
+                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $user->email . '</i><br>' . $body . $files,
                 'type' => !empty($template)?$template->type:''
             ];
             $this->logEmail($log);

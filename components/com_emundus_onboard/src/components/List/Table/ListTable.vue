@@ -3,7 +3,7 @@
 		<table :aria-describedby="'Table of ' + type" v-if="!isEmptyRowsData">
 		<thead class="list-table-head">
 			<tr>
-				<th v-for="th in rowsData" :key="th.value" :id="th.value"> 
+				<th v-for="th in rowsData" :key="th.value" :id="th.value">
 					{{ translate(th.label) }}
 				</th>
 			</tr>
@@ -27,7 +27,7 @@ import rows from '../../../data/tableRows'
 
 export default {
 	components: {
-		ListTableBody 
+		ListTableBody
 	},
 	props: {
 		type: {
@@ -52,9 +52,9 @@ export default {
 		this.rowsData = typeof rows[this.type] !== undefined ? rows[this.type] : [];
 	},
 	methods: {
-		translate(label) {
-			return label ? Joomla.JText._(label) : '';
-		},
+		/*translate(label) {
+			return label ? this.translate(label) : '';
+		},*/
 		validateFilters() {
       this.$emit('validateFilters');
     },

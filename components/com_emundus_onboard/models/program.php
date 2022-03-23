@@ -191,7 +191,7 @@ class EmundusonboardModelprogram extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($prog_id));
                 $db->setQuery($query);
                 $programme = $db->loadObject();
-                
+
                 // Create user group
                 $query->clear()
                     ->insert($db->quoteName('#__emundus_setup_groups'))
@@ -1182,8 +1182,8 @@ class EmundusonboardModelprogram extends JModelList {
             $query->clear();
             $query->update($db->quoteName('#__fabrik_forms'));
 
-            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label);
-            $formbuilder->translate('FORM_' . $pid . '_INTRO_' . $formid,$intro);
+            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label,'fabrik_forms',$formid,'label');
+            $formbuilder->translate('FORM_' . $pid . '_INTRO_' . $formid,$intro,'fabrik_forms',$formid,'intro');
             //
 
             $query->set('label = ' . $db->quote('FORM_' . $pid . '_' . $formid));
@@ -1261,7 +1261,7 @@ class EmundusonboardModelprogram extends JModelList {
                         'en' => $group_model->label
                     );
                 }
-                $formbuilder->translate('GROUP_' . $formid . '_' . $newgroupid,$labels_to_duplicate);
+                $formbuilder->translate('GROUP_' . $formid . '_' . $newgroupid,$labels_to_duplicate,'fabrik_groups',$newgroupid,'label');
 
                 $query->set('label = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
                 $query->set('name = ' . $db->quote('GROUP_' . $formid . '_' . $newgroupid));
@@ -1318,7 +1318,7 @@ class EmundusonboardModelprogram extends JModelList {
                                         'en' => $sub_label
                                     );
                                 }
-                                $formbuilder->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate);
+                                $formbuilder->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate,'fabrik_elements',$newelementid,'sub_labels');
                                 $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
                             }
                             $el_params->sub_options->sub_labels = $sub_labels;
@@ -1336,7 +1336,7 @@ class EmundusonboardModelprogram extends JModelList {
                                 'en' => $element->element->label
                             );
                         }
-                        $formbuilder->translate('ELEMENT_' . $newgroupid . '_' . $newelementid,$labels_to_duplicate);
+                        $formbuilder->translate('ELEMENT_' . $newgroupid . '_' . $newelementid,$labels_to_duplicate,'fabrik_elements',$newelementid,'label');
                         //
 
                         $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
@@ -1446,8 +1446,8 @@ class EmundusonboardModelprogram extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
-            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label);
-            $formbuilder->translate('FORM_' . $pid. '_INTRO_' . $formid,$intro);
+            $formbuilder->translate('FORM_' . $pid. '_' . $formid,$label,'fabrik_forms',$formid,'label');
+            $formbuilder->translate('FORM_' . $pid. '_INTRO_' . $formid,$intro,'fabrik_forms',$formid,'intro');
             //
 
             // INSERT FABRIK LIST

@@ -885,7 +885,7 @@ function generate_pdf(json,pdf_elements= null) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ 'tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
                 }, error: function (jqXHR) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
@@ -917,7 +917,7 @@ function generate_pdf(json,pdf_elements= null) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                     $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +result.json.path+ '/tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                    $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ '/tmp/' + result.json.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
                 }, error: function (jqXHR) {
                     $('#loadingimg').empty();
                     $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
@@ -937,11 +937,11 @@ function generate_pdf(json,pdf_elements= null) {
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</div>' );
         $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
-        $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +result.json.path+ '/tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+        $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +result.json.path+ '/tmp/' + file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
 
     } else {
         $('#loadingimg').empty();
-        $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_PDF')+'</div><a class="btn btn-link" title="'+Joomla.JText._('DOWNLOAD_PDF')+'" href="' +result.json.path+ '/tmp/'+file+'" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('DOWNLOAD_PDF')+'</span></a>');
+        $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_PDF')+'</div><a class="btn btn-link" title="'+Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF')+'" href="' +result.json.path+ '/tmp/'+file+'" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF')+'</span></a>');
         $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
     }
 }
@@ -1852,7 +1852,7 @@ $(document).ready(function() {
             //export excel
             case 6:
                 $('#can-val').empty();
-                $('#can-val').append('<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_EXCEL')+'</button>');
+                $('#can-val').append('<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL')+'</button>');
                 $('#can-val').show();
 
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
@@ -1873,22 +1873,22 @@ $(document).ready(function() {
                                 '<div class="panel panel-default xclsform xclsform-filters">' +
                                 '<div class="panel-body">' +
                                 '<select class="chzn-select" id="filt_save" name="filt_save" >'+
-                                '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
+                                '<option value="0">'+Joomla.JText._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
                                 '</select>'+
-                                '<button class="w3-button w3-tiny btn-success" id="savefilter" title="'+Joomla.JText._('SAVE_FILTER')+'">'+Joomla.JText._('SAVE_FILTER')+'</button>'+
-                                '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'">'+Joomla.JText._('DELETE')+'</button></div></div>'+
+                                '<button class="w3-button w3-tiny btn-success" id="savefilter" title="'+Joomla.JText._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.JText._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
+                                '<button class="w3-button w3-tiny" id="delfilter" style="border-radius: 4px;" title="'+Joomla.JText._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_DELETE')+'</button></div></div>'+
 
                                 '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
                                 '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                                '<strong>'+Joomla.JText._('FILTER_SAVED')+'</strong>'+
+                                '<strong>'+Joomla.JText._('COM_EMUNDUS_FILTERS_FILTER_SAVED')+'</strong>'+
                                 '</div>'+
                                 '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
                                 '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                                '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                                '<strong>'+Joomla.JText._('COM_EMUNDUS_FILTERS_FILTER_DELETED')+'</strong>'+
                                 '</div>'+
                                 '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
                                 '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                                '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                                '<strong>'+Joomla.JText._('COM_EMUNDUS_ERROR_SQL_ERROR')+'</strong>'+
                                 '</div>');
 
                             $('#data').append('' +
@@ -3171,14 +3171,14 @@ $(document).ready(function() {
                     '<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms" checked />' +
-                    '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_FORMS_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '<div class="panel-body" id="felts" style="overflow:auto;display:none;"></div>'+
                     '</div>'+
                     '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
-                    '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
                     '</div>'+
@@ -3186,38 +3186,38 @@ $(document).ready(function() {
                     '<div class="panel panel-default pdform" id="eval-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                    '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '</div>'+
 
                     '<div class="panel panel-default pdform" id="dec-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                    '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_DECISION_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '</div>'+
 
                     '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ADMISSION_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '</div><br/>');
 
                 $('#data').append('<div style="padding-left:30px" id="exp-options">'+
                     '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked/>&ensp;' +
-                    '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
+                    '<label for="em-add-header"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ADD_HEADER')+'</font></label><br/>'+
                     '<div style="padding-left:30px;" id="exp-opt">'+
-                    '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
+                    '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
                     '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple>'+
-                    '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
-                    '<option  value="afnum" selected>'+Joomla.JText._('FNUM')+'</option>' +
-                    '<option  value="aemail" selected>'+Joomla.JText._('EMAIL')+'</option>' +
-                    '<option  value="aapp-sent" selected>'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
-                    '<option  value="adoc-print" selected>'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
-                    '<option  value="tags"  disabled>'+Joomla.JText._('PDF_TAGS')+'</option>' +
-                    '<option  value="status" selected>'+Joomla.JText._('PDF_STATUS')+'</option>' +
-                    '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
+                    '<option  value="aid" selected>'+Joomla.JText._('COM_EMUNDUS_APPLICATION_APPLICANT')+'</option>' +
+                    '<option  value="afnum" selected>'+Joomla.JText._('COM_EMUNDUS_FNUM')+'</option>' +
+                    '<option  value="aemail" selected>'+Joomla.JText._('COM_EMUNDUS_EMAIL')+'</option>' +
+                    '<option  value="aapp-sent" selected>'+Joomla.JText._('COM_EMUNDUS_APPLICATION_SENT_ON')+'</option>' +
+                    '<option  value="adoc-print" selected>'+Joomla.JText._('COM_EMUNDUS_APPLICATION_DOCUMENT_PRINTED_ON')+'</option>' +
+                    '<option  value="tags"  disabled>'+Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_TAGS')+'</option>' +
+                    '<option  value="status" selected>'+Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_STATUS')+'</option>' +
+                    '<option  value="upload" selected>'+Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED')+'</option>' +
                     '</select>'+
                     '</div><br/>' );
 
@@ -3613,7 +3613,7 @@ $(document).ready(function() {
 
                 //$('#em-modal-actions .modal-footer ').hide();
                 $('#can-val').empty();
-                $('#can-val').append('<a class="btn-large btn-success btn-attach" id="em_zip" href="'+url+'">'+Joomla.JText._('GENERATE_ZIP')+'</a><div id="attachement_res"></div>');
+                $('#can-val').append('<a class="btn-large btn-success btn-attach" id="em_zip" href="'+url+'">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_ZIP')+'</a><div id="attachement_res"></div>');
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
@@ -3633,11 +3633,11 @@ $(document).ready(function() {
                     '<div class="panel panel-default pdform pdform-filters">' +
                     '<div class="panel-body"> ' +
                     '<select class="chzn-select" id="filt_save_pdf" name="filt_save_pdf" >'+
-                    '<option value="0">'+Joomla.JText._('PLEASE_SELECT_FILTER')+'</option>' +
+                    '<option value="0">'+Joomla.JText._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
                     '</select>'+
 
-                    '<button class="w3-button w3-tiny btn-success" id="savePDFfilter" title="'+Joomla.JText._('SAVE_FILTER')+'">'+Joomla.JText._('SAVE_FILTER')+'</button>'+
-                    '<button class="w3-button w3-tiny" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.JText._('DELETE')+'">'+Joomla.JText._('DELETE')+'</button></div></div>'+
+                    '<button class="w3-button w3-tiny btn-success" id="savePDFfilter" title="'+Joomla.JText._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.JText._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
+                    '<button class="w3-button w3-tiny" id="delPDFfilter" style="border-radius: 4px;" title="'+Joomla.JText._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_DELETE')+'</button></div></div>'+
 
                     '<div class="alert alert-dismissable alert-success em-alert-filter" id="sav-filter">'+
                     '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
@@ -3646,12 +3646,12 @@ $(document).ready(function() {
 
                     '<div class="alert alert-dismissable alert-success em-alert-filter" id="del-filter">'+
                     '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                    '<strong>'+Joomla.JText._('FILTER_DELETED')+'</strong>'+
+                    '<strong>'+Joomla.JText._('COM_EMUNDUS_FILTERS_FILTER_DELETED')+'</strong>'+
                     '</div>'+
 
                     '<div class="alert alert-dismissable alert-danger em-alert-filter" id="err-filter">'+
                     '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'+
-                    '<strong>'+Joomla.JText._('SQL_ERROR')+'</strong>'+
+                    '<strong>'+Joomla.JText._('COM_EMUNDUS_ERROR_SQL_ERROR')+'</strong>'+
                     '</div>'+
                     '</div>');
                 $('#data').append(
@@ -3678,7 +3678,7 @@ $(document).ready(function() {
                     '<div class="panel panel-default pdform" id="form-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox" value="forms" name="forms" id="em-ex-forms"/>' +
-                    '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('FORMS_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-forms"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_FORMS_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
 
                     '<div id="form-element" style="overflow:auto"></div>' +
@@ -3689,7 +3689,7 @@ $(document).ready(function() {
                     '<div class="panel panel-default pdform" id="att-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox" value="attachment" name="attachment" id="em-ex-attachment"/>' +
-                    '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-attachment"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ATTACHMENT_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '<div class="panel-body" id="aelts" style="overflow:auto;display:none;"></div>'+
                     '</div>'+
@@ -3697,21 +3697,21 @@ $(document).ready(function() {
                     '<div class="panel panel-default pdform" id="eval-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox"  value="assessment" name="assessment" id="em-ex-assessment"/>' +
-                    '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-assessment"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ASSESSMENT_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '</div>'+
 
                     '<div class="panel panel-default pdform" id="dec-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox"  value="decision" name="decision" id="em-ex-decision"/>' +
-                    '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('DECISION_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-decision"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_DECISION_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '</div>'+
 
                     '<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ADMISSION_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '</div>' +
                     '<br/>'
@@ -3720,24 +3720,24 @@ $(document).ready(function() {
                 $('#data').append('<div class="panel panel-default pdform" id="adm-exists" style="display:none;">'+
                     '<div class="panel-heading">'+
                     '<input class="em-ex-check" type="checkbox"  value="admission" name="admission" id="em-ex-admission"/>' +
-                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('ADMISSION_PDF').toUpperCase()+'</font></label>'+
+                    '<label for="em-ex-admission"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ADMISSION_PDF').toUpperCase()+'</font></label>'+
                     '</div>'+
                     '</div><br/>');
 
                 $('#data').append('<div style="padding-left:30px" id="em-options">'+
                     '<input class="em-ex-check" type="checkbox"  value="header" name="em-add-header" id="em-add-header" checked />&ensp;' +
-                    '<label for="em-add-header"><font color="black">'+Joomla.JText._('ADD_HEADER')+'</font></label><br/>'+
+                    '<label for="em-add-header"><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_ADD_HEADER')+'</font></label><br/>'+
                     '<div style="padding-left:30px;" id="exp-opt">'+
-                    '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
+                    '&ensp;&ensp;&ensp;<label ><font color="black">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_OPTIONS')+'</font></label>&ensp;&ensp;'+
                     '<select class="chzn-select" name="em-export-opt" id="em-export-opt" multiple >'+
-                    '<option  value="aid" selected>'+Joomla.JText._('ID_CANDIDAT')+'</option>' +
-                    '<option  value="afnum" selected>'+Joomla.JText._('FNUM')+'</option>' +
-                    '<option  value="aemail" selected>'+Joomla.JText._('EMAIL')+'</option>' +
-                    '<option  value="aapp-sent" selected>'+Joomla.JText._('APPLICATION_SENT_ON')+'</option>' +
-                    '<option  value="adoc-print" selected>'+Joomla.JText._('DOCUMENT_PRINTED_ON')+'</option>' +
-                    '<option  value="tags" disabled>'+Joomla.JText._('PDF_TAGS')+'</option>' +
-                    '<option  value="status" selected>'+Joomla.JText._('PDF_STATUS')+'</option>' +
-                    '<option  value="upload" selected>'+Joomla.JText._('FILES_UPLOADED')+'</option>' +
+                    '<option  value="aid" selected>'+Joomla.JText._('COM_EMUNDUS_APPLICATION_APPLICANT')+'</option>' +
+                    '<option  value="afnum" selected>'+Joomla.JText._('COM_EMUNDUS_FNUM')+'</option>' +
+                    '<option  value="aemail" selected>'+Joomla.JText._('COM_EMUNDUS_EMAIL')+'</option>' +
+                    '<option  value="aapp-sent" selected>'+Joomla.JText._('COM_EMUNDUS_APPLICATION_SENT_ON')+'</option>' +
+                    '<option  value="adoc-print" selected>'+Joomla.JText._('COM_EMUNDUS_APPLICATION_DOCUMENT_PRINTED_ON')+'</option>' +
+                    '<option  value="tags" disabled>'+Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_TAGS')+'</option>' +
+                    '<option  value="status" selected>'+Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_STATUS')+'</option>' +
+                    '<option  value="upload" selected>'+Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED')+'</option>' +
                     '</select>'+
                     '</div></div><br/>' );
 
@@ -4530,7 +4530,7 @@ $(document).ready(function() {
                 $('.pdform').css({width: "95%", 'margin': "auto", 'margin-top': "15px", 'border-radius':"4px"});
 
                 $('#can-val').empty();
-                $('#can-val').append('<a class="btn-large btn-success btn-attach"  id="em_generate" href="'+url+'">'+Joomla.JText._('GENERATE_PDF')+'</a><div id="attachement_res"></div>');
+                $('#can-val').append('<a class="btn-large btn-success btn-attach"  id="em_generate" href="'+url+'">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_PDF')+'</a><div id="attachement_res"></div>');
                 $('#can-val').show();
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                 $('#em-modal-actions .modal').show();
@@ -4541,8 +4541,8 @@ $(document).ready(function() {
             case 33 :
                 $('#can-val').empty();
 
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
 
                 $('.modal-body').append(
@@ -4659,7 +4659,7 @@ $(document).ready(function() {
             case 9:
                 // Display the button on the top of the modal.
                 $('#can-val').empty();
-                $('#can-val').append('<a class="btn btn-success btn-large" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
+                $('#can-val').append('<a class="btn btn-success btn-large" name="applicant_email">'+Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
                 $('#can-val').show();
 
                 fnums = getUserCheckArray();
@@ -4686,8 +4686,8 @@ $(document).ready(function() {
             // Comment
             case 10:
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
                 var textArea = '<form>' +
                     '<input placeholder="'+Joomla.JText._('TITLE')+'" class="form-control" id="comment-title" type="text" value="" name="comment-title"/>' +
@@ -4700,8 +4700,8 @@ $(document).ready(function() {
             // Access
             case 11:
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
@@ -4729,8 +4729,8 @@ $(document).ready(function() {
             // Status
             case 13:
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>'+
+                    '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
 
                 $('.modal-body').append('<div>' +
@@ -4765,8 +4765,8 @@ $(document).ready(function() {
             // tags
             case 14:
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>'+
-                    '<button id="success-ok" style="margin-left:5px;" type="button" class="btn btn-success" disabled="disabled">'+Joomla.JText._('OK')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>'+
+                    '<button id="success-ok" style="margin-left:5px;" type="button" class="btn btn-success" disabled="disabled">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
 
                 $('.modal-body').append('<div>' +
@@ -4782,15 +4782,15 @@ $(document).ready(function() {
                         $('.modal-body').empty();
 
                         var tags = '<br/><div class="form-group" style="color:black !important">'+
-                            '<div style="padding-left: 15.5%;"><form style="margin-left:15px; margin-bottom:6px">'+
-                            '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('ADD_TAGS')+
-                            '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('DELETE_TAGS')+ '<br>'+
+                            '<div><form class="em-flex-row">'+
+                            '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_APPLICATION_ADD_TAGS')+
+                            '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('COM_EMUNDUS_TAGS_DELETE_TAGS')+ '<br>'+
                             '</form></div></div>'+
 
-                            '<label class="col-lg-2 control-label">' +Joomla.JText._('TAG_CATEGORIES')+ '</label>' +
+                            '<label class="col-lg-2 control-label">' +Joomla.JText._('COM_EMUNDUS_TAGS_CATEGORIES')+ '</label>' +
                             '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>' +
 
-                            '<label class="col-lg-2 control-label">'+result.tag+'</label>' +
+                            '<label class="col-lg-2 control-label em-mt-16">'+result.tag+'</label>' +
                             '<select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple"></select>' +
                             '</div>';
 
@@ -4921,7 +4921,7 @@ $(document).ready(function() {
             // generate DOCX
             case 27:
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>');
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-body').empty();
@@ -5027,7 +5027,7 @@ $(document).ready(function() {
                                 $('#loadingimg').empty();
                                 $('#extractstep').replaceWith('<div class="alert alert-success" role="alert">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED') + '</div>');
                                 //$('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.JText._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('DOWNLOAD_PDF') + '" href="' +data.path+ '/tmp/' + data.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('DOWNLOAD_PDF') + '</span></a>');
+                                $('#chargement').append('<a class="btn btn-link" title="' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '" href="' +data.path+ '/tmp/' + data.file + '" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF') + '</span></a>');
                             }, error: function (jqXHR) {
                                 $('#loadingimg').empty();
                                 $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">!!' + jqXHR.responseText + '</div>');
@@ -5078,7 +5078,7 @@ $(document).ready(function() {
             '</div>');
 
         $('#can-val').empty();
-        $('#can-val').append('<a id="send-email" class="btn btn-success" name="applicant_email">'+Joomla.JText._('SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
+        $('#can-val').append('<a id="send-email" class="btn btn-success" name="applicant_email">'+Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL').replace(/\\/g, '')+'</a>');
         $('#can-val').show();
 
         $('.modal-body').css('display', 'flex');
@@ -6029,12 +6029,13 @@ $(document).ready(function() {
                             Swal.fire({
                                 position: 'center',
                                 type: 'info',
-                                title: Joomla.JText._('EMAIL_PREVIEW'),
+                                title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAIL_PREVIEW'),
                                 html: '<div id="email-recap">'+result.html+'</div>',
                                 width: 1000,
                                 showCancelButton: true,
-                                cancelButtonText: Joomla.JText._('CANCEL_EMAIL'),
-                                confirmButtonText: Joomla.JText._('SEND_CUSTOM_EMAIL')
+                                cancelButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_CANCEL_EMAIL'),
+                                confirmButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL'),
+                                reverseButtons: true
                             }).then(function(confirm) {
 
                                 if (confirm.value) {
@@ -6079,7 +6080,7 @@ $(document).ready(function() {
 
                                                             Swal.fire({
                                                                 type: 'success',
-                                                                title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
+                                                                title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
                                                                 html: sent_to + '</ul>'
                                                             });
                                                         }, error: function(jqXHR) {
@@ -6091,13 +6092,13 @@ $(document).ready(function() {
                                                     $('#em-modal-sending-emails').css('display', 'none');
                                                     Swal.fire({
                                                         type: 'error',
-                                                        title: Joomla.JText._('NO_EMAILS_SENT')
+                                                        title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT')
                                                     })
                                                 }
 
                                                 if (result.failed.length > 0) {
                                                     // Block containing the email adresses of the failed emails.
-                                                    $("#em-email-messages").append('<div class="alert alert-danger">' + Joomla.JText._('EMAILS_FAILED') + '<span class="badge">' + result.failed.length + '</span>' +
+                                                    $("#em-email-messages").append('<div class="alert alert-danger">' + Joomla.JText._('COM_EMUNDUS_EMAILS_FAILED') + '<span class="badge">' + result.failed.length + '</span>' +
                                                         '<ul class="list-group" id="em-mails-failed"></ul>');
 
                                                     result.failed.forEach(function (element) {
@@ -6115,7 +6116,7 @@ $(document).ready(function() {
                                             if(textStatus == 'timeout') {
                                                 $('#em-modal-sending-emails').css('display', 'none');
 
-                                                var sent_to = '<p>' + Joomla.JText._('EMAIL_SENDING') + '</p>';
+                                                var sent_to = '<p>' + Joomla.JText._('COM_EMUNDUS_MAILS_EMAIL_SENDING') + '</p>';
 
                                                 $.ajax({
                                                     type: 'post',
@@ -6135,7 +6136,7 @@ $(document).ready(function() {
 
                                                         Swal.fire({
                                                             type: 'success',
-                                                            title: Joomla.JText._('EMAILS_SENT'),
+                                                            title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
                                                             html: sent_to
                                                         });
                                                     }, error: function(jqXHR) {
@@ -6358,8 +6359,8 @@ $(document).ready(function() {
                                 text: result.msg,
                                 type: "warning",
                                 showCancelButton: true,
-                                confirmButtonText: Joomla.JText._('VALIDATE_CHANGE_STATUT'),
-                                cancelButtonText: Joomla.JText._('CANCEL_CHANGE_STATUT')
+                                confirmButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'),
+                                cancelButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT')
                             }).then(function(result) {
                                 if (result.value) {
                                     $.ajax({
@@ -6521,7 +6522,7 @@ $(document).ready(function() {
                 // $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
 
                 $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('CANCEL')+'</button>');
+                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>');
                 $('#can-val').show();
 
                 var fnums = $('input:hidden[name="em-doc-fnums"]').val();

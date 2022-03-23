@@ -60,11 +60,11 @@ export default {
   },
   data() {
     return {
-      Warning: Joomla.JText._("COM_EMUNDUS_ONBOARD_WARNING"),
-      FormAffectedToFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_FORM_AFFECTEDFILES"),
-      Retour: Joomla.JText._("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
-      Duplicate: Joomla.JText._("COM_EMUNDUS_ONBOARD_DUPLICATE"),
-      Update: Joomla.JText._("COM_EMUNDUS_ONBOARD_MODIFY"),
+      Warning: this.translate("COM_EMUNDUS_ONBOARD_WARNING"),
+      FormAffectedToFiles: this.translate("COM_EMUNDUS_ONBOARD_FORM_AFFECTEDFILES"),
+      Retour: this.translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR"),
+      Duplicate: this.translate("COM_EMUNDUS_ONBOARD_DUPLICATE"),
+      Update: this.translate("COM_EMUNDUS_ONBOARD_MODIFY"),
     };
   },
   methods: {
