@@ -1,55 +1,50 @@
 <template>
   <div id="radiobtnF">
     <div class="row rowmodal">
-      <div class="form-group">
+      <div class="em-mb-32">
         <label>{{ helptext }} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover"/>
+        <input type="text" v-model="element.params.rollover"/>
       </div>
-      <div class="em-flex-row mb-1">
+      <div class="em-flex-row em-mb-16">
         <label class="require col-md-3">{{ suboptions }} :</label>
       </div>
-      <div class="col-md-10 form-group flex">
-        <div class="toggle">
+      <div class="col-md-10 em-flex-row em-mb-8">
+        <div class="em-toggle">
           <input type="checkbox"
                  true-value="1"
                  false-value="0"
-                 class="check"
+                 class="em-toggle-check"
                  id="databasejoin_check"
                  name="'databasejoin_check'"
                  v-model="databasejoin"
           />
-          <strong class="b switch"></strong>
-          <strong class="b track"></strong>
+          <strong class="b em-toggle-switch"></strong>
+          <strong class="b em-toggle-track"></strong>
         </div>
-        <label for="databasejoin_check" class="ml-10px mb-0">{{ translations.DataTables  }}</label>
+        <label for="databasejoin_check" class="ml-10px em-ml-8 em-mb-0">{{ translations.DataTables  }}</label>
       </div>
       <div class="col-md-10">
         <draggable
             v-model="arraySubValues"
             @end="needtoemit()"
             v-if="databasejoin != 1"
-            handle=".handle"
-            style="padding-bottom: 2em">
-          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="em-flex-row mb-1">
+            handle=".handle">
+          <div v-for="(sub_values, i) in arraySubValues" :key="i" class="em-flex-row em-mb-16">
             <span class="icon-handle">
-              <em class="fas fa-grip-vertical handle"></em>
+              <span class="material-icons handle">drag_indicator</span>
             </span>
-            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()"
-                   class="form__input field-general w-input mb-0" style="height: 35px" :id="'suboption_' + i"
-
-                   @keyup.enter="add"/>
-            <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
+            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" :id="'suboption_' + i" @keyup.enter="add"/>
+            <button @click.prevent="leave(i)" type="button" class="em-transparent-button em-pointer"><span class="material-icons">remove_circle_outline</span></button>
           </div>
         </draggable>
-        <button @click.prevent="add" type="button" class="bouton-sauvergarder-et-continuer-3 button-add-option"
-                style="margin-bottom: 2em" v-if="databasejoin != 1">{{ AddOption }}
+        <button @click.prevent="add" type="button" class="em-secondary-button em-w-auto em-ml-32" v-if="databasejoin != 1">{{ AddOption }}
         </button>
-        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;" @change="retrieveDataBaseJoinColumns()">
+        <select v-if="databasejoin == 1" v-model="databasejoin_data" @change="retrieveDataBaseJoinColumns()">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
-        <div v-if="databasejoin == 1">
-          <label>{{translations.OrderBy}}</label>
-          <select class="dropdown-toggle" v-model="databasejoin_data_order" style="margin: 20px 0 30px 0;">
+        <div v-if="databasejoin == 1" class="em-mt-16">
+          <label class="em-w-100">{{translations.OrderBy}}</label>
+          <select v-model="databasejoin_data_order" class="em-mt-8 em-w-100">
             <option v-for="val in databases_colums" :value="val.COLUMN_NAME">{{val.COLUMN_NAME}}</option>
           </select>
         </div>
@@ -275,13 +270,9 @@ export default {
 };
 </script>
 <style scoped>
-.flex {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1em;
-  height: 30px;
+.em-mb-0{
+  margin-bottom: 0 !important;
 }
-
 .rowmodal {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
@@ -294,6 +285,6 @@ export default {
 .icon-handle {
   color: #cecece;
   cursor: grab;
-  margin-right: 10px;
+  margin-right: 18px;
 }
 </style>
