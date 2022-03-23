@@ -129,6 +129,7 @@ class EmundusControllerSync extends JControllerLegacy {
 
         $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $sync_active);
         echo json_encode((object)$tab);
+        exit;
     }
 
     public function getsynctype(): string
@@ -151,6 +152,26 @@ class EmundusControllerSync extends JControllerLegacy {
         } else {
             $tab['status'] = 0;
             $tab['msg'] = JText::_('MISSING_UPLOAD_ID');
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getsynchronizestate()
+    {
+        $upload_id = JFactory::getApplication()->input->getInt('upload_id', null);
+        $tab = array(
+            'status' => 0,
+            'msg' => JText::_('SYNC_STATE_NOT_FOUND'),
+        );
+
+        if (!empty($upload_id)) {
+            $sync_state = $this->m_sync->getUploadSyncState($upload_id);
+
+            $tab['status'] = 1;
+            $tab['msg'] = JText::_('SYNC_STATE_FOUND');
+            $tab['data'] = $sync_state;
         }
 
         echo json_encode((object)$tab);

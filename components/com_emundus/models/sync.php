@@ -133,8 +133,14 @@ class EmundusModelSync extends JModelList {
 
     function isSyncModuleActive()
     {
+        $active = false;
         $eMConfig = JComponentHelper::getParams('com_emundus');
-        return $eMConfig->get('attachment_storage', 0);
+
+        if ($eMConfig->get('attachment_storage') == 1) {
+            $active = true;
+        }
+
+       return $active;
     }
 
     function getSyncType($upload_id) {
@@ -183,5 +189,24 @@ class EmundusModelSync extends JModelList {
         }
 
         return $is_active;
+    }
+
+    function getUploadSyncState($upload_id)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('state')
+            ->from('#__emundus_uploads_sync')
+            ->where('upload_id = '.$db->quote($upload_id));
+
+        $db->setQuery($query);
+
+        try {
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync state for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
+            return false;
+        }
     }
 }

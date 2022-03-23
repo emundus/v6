@@ -77,11 +77,40 @@
 				>delete_outlined</span
 			>
 		</td>
+    <td v-if="sync">
+      <div v-if="attachment.sync > 0">
+        <span
+            v-if="attachment.sync_method == 'write'"
+            class="material-icons sync"
+            :class="{
+              success: synchronizeState == 1,
+              error: synchronizeState != 1,
+            }"
+            :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
+            @click="syncAttachment(attachment.aid)"
+        >
+          cloud_upload
+        </span>
+        <span
+            v-else-if="attachment.sync_method == 'read'"
+            class="material-icons sync"
+            :class="{
+              success: synchronizeState == 1,
+              error: synchronizeState != 1,
+            }"
+            :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_READ')"
+            @click="syncAttachment(attachment.aid)"
+        >
+          cloud_download
+        </span>
+      </div>
+    </td>
 	</tr>
 </template>
 
 <script>
 import mixin from "../../mixins/mixin.js";
+import syncService from "../../services/sync.js";
 
 export default {
 	name: "AttachmentRow",
@@ -109,6 +138,7 @@ export default {
 			categories: {},
 			category: "",
 			checkedAttachments: [],
+      synchronizeState: false,
 		};
 	},
 	mounted() {
@@ -131,7 +161,15 @@ export default {
 		}
 
 		this.checkedAttachments = this.checkedAttachmentsProp;
-	},
+
+    if (this.sync) {
+      this.getSynchronizeState(this.attachment.aid).then((response) => {
+        this.synchronizeState = response;
+      }).catch((error) => {
+        this.synchronizeState = false;
+      });
+    }
+  },
 	methods: {
 		updateCheckedAttachments(aid) {
 			if (this.checkedAttachments.includes(aid)) {
@@ -155,6 +193,18 @@ export default {
 				this.$emit("change-permission", permission, attachment);
 			}
 		},
+    async getSynchronizeState(aid) {
+      const response = await syncService.getSynchronizeState(aid);
+
+      if (response.status) {
+        return response.data;
+      }
+
+      return false;
+    },
+    syncAttachment(aid) {
+      this.$emit("sync-attachment", aid);
+    },
 	},
 	watch: {
 		"$store.state.attachment.checkedAttachments": function () {
@@ -222,6 +272,16 @@ export default {
 			}
 		}
 	}
+
+  .material-icons {
+    &.success {
+      color: var(--success-color);
+    }
+
+    &.error {
+      color: var(--error-color);
+    }
+  }
 
 	.td-document {
 		max-width: 250px;

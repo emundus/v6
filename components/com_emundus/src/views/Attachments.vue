@@ -67,6 +67,20 @@
             <span class="material-icons export">file_upload</span>
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
+          <div
+              v-if="sync"
+              class="btn-icon-text"
+              @click="synchronizeAttachments"
+              :class="{ disabled: checkedAttachments.length < 1 }"
+          >
+            <span
+                class="material-icons cloud_sync"
+                :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE')"
+            >
+              cloud_sync
+            </span>
+            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE") }}</span>
+          </div>
           <span
               class="material-icons refresh"
               @click="refreshAttachments(true)"
@@ -100,7 +114,7 @@
               />
             </th>
             <th id="name" @click="orderBy('value')">
-              {{ translate("NAME") }}
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_FILE_NAME") }}
               <span
                   v-if="sort.orderBy == 'value' && sort.order == 'asc'"
                   class="material-icons"
@@ -126,7 +140,7 @@
               >
             </th>
             <th id="desc" class="desc" @click="orderBy('description')">
-              {{ translate("DESCRIPTION") }}
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}
               <span
                   v-if="sort.orderBy == 'description' && sort.order == 'asc'"
                   class="material-icons"
@@ -206,6 +220,9 @@
             <th id="permissions" class="permissions">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}
             </th>
+            <th v-if="sync" id="sync" class="sync">
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
+            </th>
           </tr>
           </thead>
           <tbody>
@@ -251,7 +268,7 @@
               v-if="canDownload"
           >
             <span class="material-icons"> file_download </span>
-            <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
+            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD") }}</span>
           </a>
           <div class="prev-next-attachments">
             <div
@@ -640,6 +657,9 @@ export default {
             this.translate("YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS")
         );
       }
+    },
+    async synchronizeAttachments() {
+
     },
     async deleteAttachments() {
       if (this.canDelete) {
