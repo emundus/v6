@@ -20,4 +20,6 @@ if(is_file($git_file)) {
 
 $confluence_link = $params->get('emundus_panel_confluence', '');
 
+$features = ModEmunduspanelHelper::getFeaturesList();
+
 require JModuleHelper::getLayoutPath('mod_emundus_panel', $params->get('layout', 'default'));

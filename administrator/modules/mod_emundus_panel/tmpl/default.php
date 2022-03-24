@@ -8,6 +8,8 @@
 defined('_JEXEC') or die;
 
 JHtml::_('bootstrap.tooltip');
+
+JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 ?>
 <div class="em-p-8-12">
     <h3><?= $sitename ?> - <?= $version ?></h3>
@@ -27,9 +29,28 @@ JHtml::_('bootstrap.tooltip');
     <h4><?= JText::_('MOD_EMUNDUS_PANEL_FEATURES') ?></h4>
     <table border="1" cellpadding="10">
         <tr>
-            <th><?= JText::_('MOD_EMUNDUS_PANEL_FEATURE') ?></th>
+            <th class="em-text-align-left"><?= JText::_('MOD_EMUNDUS_PANEL_FEATURE') ?></th>
             <th><?= JText::_('MOD_EMUNDUS_PANEL_ENABLED') ?></th>
-            <th><?= JText::_('MOD_EMUNDUS_PANEL_HELP') ?></th>
+            <th class="em-text-align-left"><?= JText::_('MOD_EMUNDUS_PANEL_HELP') ?></th>
         </tr>
+        <?php foreach ($features as $feature) :?>
+        <tr>
+            <td>
+                <?php if($feature->id != 0) : ?>
+                    <a href="index.php?option=com_plugins&view=plugin&layout=edit&extension_id=<?= $feature->id ?>"><?= JText::_($feature->label) ?></a>
+                <?php else : ?>
+                    <?= JText::_($feature->label) ?>
+                <?php endif ?>
+            </td>
+            <td class="em-text-center">
+                <?php if($feature->enabled) : ?>
+                <span class="material-icons em-green">done</span>
+                <?php else : ?>
+                <span class="material-icons em-red">block</span>
+                <?php endif ?>
+            </td>
+            <td><a href="<?= $feature->help ?>" target="_blank"><?= $feature->help ?></a></td>
+        </tr>
+        <?php endforeach; ?>
     </table>
 </div>
