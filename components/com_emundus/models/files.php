@@ -1871,13 +1871,16 @@ class EmundusModelFiles extends JModelLegacy
                     $db->setQuery($query_associated_tags);
                     $tags_already_associated = $db->loadColumn();
 
-                    // Log the tag in the eMundus logging system.
-                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
-
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if(!in_array($tag,$tags_already_associated)) {
                             $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                            $query_log = 'SELECT label
+                                FROM #__emundus_setup_action_tag
+                                WHERE id =' . $tag;
+                            $db->setQuery($query_log);
+                            $log_tag = $db->loadResult();
+                            array_push($logsParams['created'], $log_tag);
                         }
                     }
                     // Log the tags in the eMundus logging system.
