@@ -18,6 +18,11 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
+				<field name="emundus_panel_confluence"
+						type="text"
+						label="Lien Confluence"
+						default="">
+				</field>
 			</fieldset>
 		</fields>
 	</config>
