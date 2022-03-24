@@ -32,6 +32,18 @@ class EmundusControllerDashboard extends JControllerLegacy
         $this->model = $this->getModel('dashboard');
     }
 
+    public function getallwidgets(){
+        try {
+            $widgets = $this->model->getAllWidgets();
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $widgets);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getallwidgetsbysize(){
         try {
             $user = JFactory::getUser();

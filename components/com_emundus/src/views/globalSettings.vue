@@ -51,6 +51,12 @@
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
+
+        <DashboardTool
+            v-if="menuHighlight === 6"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+          />
       </transition>
     </div>
 
@@ -68,6 +74,7 @@ import FilesTool from "../components/Settings/FilesTool/FilesTool";
 import AttachmentStorage from "../components/Settings/AttachmentStorage/AttachmentStorage";
 
 import settingsService from "com_emundus/src/services/settings";
+import DashboardTool from "../components/Settings/DashboardTool/DashboardTool";
 
 const qs = require("qs");
 
@@ -75,6 +82,7 @@ export default {
   name: "globalSettings",
 
   components: {
+    DashboardTool,
     AttachmentStorage,
     FilesTool,
     ContentTool,
@@ -135,6 +143,13 @@ export default {
         index: 5,
         access: 0,
       },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DASHBOARD",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DASHBOARD_DESC",
+        icon: 'table_chart',
+        index: 6,
+        access: 0,
+      },
     ],
     modal_ready: false
   }),
@@ -150,6 +165,7 @@ export default {
       this.menus[2].access = 1;
       this.menus[3].access = parseInt(this.em_params.translations);
       this.menus[4].access = parseInt(this.em_params.attachment_storage);
+      this.menus[5].access = parseInt(this.em_params.dashboard_settings);
       //
 
       this.loading = false;
@@ -177,6 +193,10 @@ export default {
             break;
           case 5:
             this.$modal.show('attachmentStorage');
+            this.modal_ready = true;
+            break;
+          case 6:
+            this.$modal.show('dashboardTool');
             this.modal_ready = true;
             break;
           default:

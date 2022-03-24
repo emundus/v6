@@ -427,5 +427,9 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="dashboard_settings" label="COM_EMUNDUS_MODULES_DASHBOARD_SETTINGS" type="radio" default="0" description="COM_EMUNDUS_MODULES_DASHBOARD_SETTINGS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 </config>

@@ -36,6 +36,22 @@ class EmundusModelDashboard extends JModelList
         }
     }
 
+    public function getAllWidgets(){
+        $this->_db = JFactory::getDbo();
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($this->_db->quoteName('#__emundus_widgets'))
+                ->where($this->_db->quoteName('type') . ' IS NOT NULL');
+            $this->_db->setQuery($query);
+            return $this->_db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error at getting all widgets : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
     public function getDashboard($user_id){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
