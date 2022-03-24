@@ -129,8 +129,17 @@ class EmundusModelMessenger extends JModelList
             if($fnum_detail['applicant_id'] != $user->id){
                 $notify_applicant = 1;
             }
-            $this->notifyByMail($fnum,$notify_applicant);
-            return $this->getMessageById($new_message);
+
+            $message = $this->getMessageById($new_message);
+
+            try {
+                $this->notifyByMail($fnum,$notify_applicant);
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus_messages/models/messages | Error when try to notify by mail : '. $user->id . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+                return $message;
+            }
+
+            return $message;
         } catch (Exception $e){
             JLog::add('component/com_emundus_messages/models/messages | Error when try to get messages associated to user : '. $user->id . ' with query : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
@@ -426,52 +435,54 @@ class EmundusModelMessenger extends JModelList
                 $users_to_send = $db->loadColumn();
             }
 
-            $query->clear()
-                ->select('count(m.message_id)')
-                ->from($db->quoteName('#__messages', 'm'))
-                ->leftJoin($db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('m.page'))
-                ->where($db->quoteName('c.fnum') . ' LIKE ' . $db->quote($applicant_fnum))
-                ->andWhere($db->quoteName('m.user_id_from') . ' NOT IN (' . implode(',', $users_to_send) . ')')
-                ->andWhere($db->quoteName('m.state') . ' = 0');
+            if (!empty($users_to_send)) {
+                $query->clear()
+                    ->select('count(m.message_id)')
+                    ->from($db->quoteName('#__messages', 'm'))
+                    ->leftJoin($db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $db->quoteName('c.id') . ' = ' . $db->quoteName('m.page'))
+                    ->where($db->quoteName('c.fnum') . ' LIKE ' . $db->quote($applicant_fnum))
+                    ->andWhere($db->quoteName('m.user_id_from') . ' NOT IN (' . implode(',', $users_to_send) . ')')
+                    ->andWhere($db->quoteName('m.state') . ' = 0');
 
-            $db->setQuery($query);
-            $messages_not_read = $db->loadResult();
+                $db->setQuery($query);
+                $messages_not_read = $db->loadResult();
 
-            if ($messages_not_read > 0) {
-                if (!in_array($applicant_fnum, $fnums_no_readed)) {
-                    $fnums_no_readed[] = $applicant_fnum;
-                }
-            }
-
-            if (!empty($fnums_no_readed)) {
-                foreach ($users_to_send as $user_to_send) {
-                    $query->clear()
-                        ->select('id, email, name')
-                        ->from($db->quoteName('#__users'))
-                        ->where($db->quoteName('id') . ' = ' . $user_to_send);
-                    $db->setQuery($query);
-                    $user_info = $db->loadObject();
-
-                    $to = $user_info->email;
-
-                    $fnumList = '<ul>';
-                    foreach ($fnums_no_readed as $fnum) {
-                        $fnumList .= '
-                            <li>
-                                <a href="'.JURI::base().'/dossiers#' . $fnum . '">' . $fnum . '</a>
-                            </li>';
+                if ($messages_not_read > 0) {
+                    if (!in_array($applicant_fnum, $fnums_no_readed)) {
+                        $fnums_no_readed[] = $applicant_fnum;
                     }
-                    $fnumList .= '</ul>';
+                }
 
-                    $post = array(
-                        'FNUMS' => $fnumList,
-                        'NAME' => $user_info->name,
-                        'SITE_URL' => JURI::base(),
-                    );
+                if (!empty($fnums_no_readed)) {
+                    foreach ($users_to_send as $user_to_send) {
+                        $query->clear()
+                            ->select('id, email, name')
+                            ->from($db->quoteName('#__users'))
+                            ->where($db->quoteName('id') . ' = ' . $user_to_send);
+                        $db->setQuery($query);
+                        $user_info = $db->loadObject();
 
-                    $c_messages->sendEmailNoFnum($to, $email_tmpl, $post, $user_info->id);
-                    // to avoid been considered as a spam process or DDoS
-                    sleep(0.1);
+                        $to = $user_info->email;
+
+                        $fnumList = '<ul>';
+                        foreach ($fnums_no_readed as $fnum) {
+                            $fnumList .= '
+                            <li>
+                                <a href="' . JURI::base() . '/dossiers#' . $fnum . '">' . $fnum . '</a>
+                            </li>';
+                        }
+                        $fnumList .= '</ul>';
+
+                        $post = array(
+                            'FNUMS' => $fnumList,
+                            'NAME' => $user_info->name,
+                            'SITE_URL' => JURI::base(),
+                        );
+
+                        $c_messages->sendEmailNoFnum($to, $email_tmpl, $post, $user_info->id);
+                        // to avoid been considered as a spam process or DDoS
+                        sleep(0.1);
+                    }
                 }
             }
         }

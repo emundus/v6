@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusmessengerViewMessages extends JViewLegacy {
+class EmundusViewMessenger extends JViewLegacy {
     /**
      * Display the Settings view
      *
@@ -26,9 +26,9 @@ class EmundusmessengerViewMessages extends JViewLegacy {
     function display($tpl = null) {
         $jinput = JFactory::getApplication()->input;
 
-        JHTML::script( 'media/com_emundus_messenger/app_messenger.js');
-        JHTML::script( 'media/com_emundus_messenger/chunk-vendors_messenger.js');
-        JHtml::stylesheet( 'media/com_emundus_messenger/app_messenger.css');
+        JHTML::script( 'media/com_emundus_vue/app_emundus.js');
+        JHTML::script( 'media/com_emundus_vue/chunk-vendors_emundus.js');
+        JHtml::stylesheet( 'media/com_emundus_vue/app_emundus.css');
 
         // Display the template
         $layout = $jinput->getString('layout', null);

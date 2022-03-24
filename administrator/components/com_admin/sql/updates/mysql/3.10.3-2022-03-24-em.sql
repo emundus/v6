@@ -33,6 +33,14 @@ update jos_falang_content
 set value = 'index.php?option=com_emundus&view=settings'
 where value LIKE 'index.php?option=com_emundus_onboard&view=settings';
 
+update jos_menu
+set link = 'index.php?option=com_emundus&view=messenger&format=raw&layout=coordinator'
+where link LIKE 'index.php?option=com_emundus_messenger&view=messages&format=raw&layout=coordinator';
+
+update jos_falang_content
+set value = 'index.php?option=com_emundus&view=messenger&format=raw&layout=coordinator'
+where value LIKE 'index.php?option=com_emundus_messenger&view=messages&format=raw&layout=coordinator';
+
 INSERT INTO jos_extensions (package_id, name, type, element, folder, client_id, enabled, access, protected, manifest_cache, params, custom_data, system_data, checked_out, checked_out_time, ordering, state)
 VALUES (0, 'mod_emundus_panel', 'module', 'mod_emundus_panel', '', 1, 1, 1, 0, '{"name":"mod_emundus_panel","type":"module","creationDate":"March 2022","author":"eMundus","copyright":"","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.30.0","description":"MOD_EMUNDUS_PANEL_XML_DESCRIPTION","group":"","filename":"mod_emundus_panel"}', '{}', '', '', 0, '2022-02-22 16:28:57', 0, 0);
 INSERT INTO jos_modules_menu (moduleid, menuid) VALUES (LAST_INSERT_ID(),0);
