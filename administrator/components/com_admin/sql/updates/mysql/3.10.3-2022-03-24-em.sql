@@ -35,8 +35,10 @@ where value LIKE 'index.php?option=com_emundus_onboard&view=settings';
 
 INSERT INTO jos_extensions (package_id, name, type, element, folder, client_id, enabled, access, protected, manifest_cache, params, custom_data, system_data, checked_out, checked_out_time, ordering, state)
 VALUES (0, 'mod_emundus_panel', 'module', 'mod_emundus_panel', '', 1, 1, 1, 0, '{"name":"mod_emundus_panel","type":"module","creationDate":"March 2022","author":"eMundus","copyright":"","authorEmail":"brice.hubinet@emundus.fr","authorUrl":"www.emundus.fr","version":"1.30.0","description":"MOD_EMUNDUS_PANEL_XML_DESCRIPTION","group":"","filename":"mod_emundus_panel"}', '{}', '', '', 0, '2022-02-22 16:28:57', 0, 0);
+INSERT INTO jos_modules_menu (moduleid, menuid) VALUES (LAST_INSERT_ID(),0);
 INSERT INTO jos_modules (asset_id, title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language)
 VALUES (0, 'Informations eMundus', '', null, 1, 'cpanel', 0, '2022-02-22 16:28:57', '2022-02-22 16:28:57', '2099-02-22 16:28:57', 1, 'mod_emundus_panel', 3, 1, '{"module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 1, '*');
+INSERT INTO jos_modules_menu (moduleid, menuid) VALUES (LAST_INSERT_ID(),0);
 
 UPDATE jos_modules SET published = 0
 WHERE `module` LIKE 'mod_logged' and client_id = 1
