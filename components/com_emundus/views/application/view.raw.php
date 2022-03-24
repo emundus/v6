@@ -245,6 +245,16 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
+
+                        # ADD 5R HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 5, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION_READ');
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
                         exit();
@@ -293,6 +303,16 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('fnum', $fnum);
                         $this->assignRef('url_form', $url_form);
                         $this->assignRef('$formid', $formid);
+
+                        # ADD 29R HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 29, 'r', 'COM_EMUNDUS_DECISION_READ');
 
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
@@ -518,6 +538,16 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('html_form',$html_form);
                         $this->assignRef('url_form', $url_form);
                         $this->assignRef('$formid', $admission_form->form_id);
+
+                        # ADD 32R HERE
+                        # get FNUM INFO
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+                        $mFile = new EmundusModelFiles();
+                        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+                        // TRACK THE LOGS
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 32, 'r', 'COM_EMUNDUS_ADMISSION_READ');
 
                     } else {
                         echo JText::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");

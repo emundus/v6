@@ -41,6 +41,8 @@ JLog::addLogger(
     array('com_emundus.webhook')
 );
 // translation for javacript
+JText::script('PLEASE_SELECT');
+
 JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
 JText::script('COM_EMUNDUS_ACCESS_FILE');
@@ -150,6 +152,7 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_AGGREGATIONS');
 JText::script('COM_EMUNDUS_LETTERS_FILES_GENERATED');
 JText::script('FILE_NAME');
 JText::script('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD');
+JText::script('LINK_TO_DOWNLOAD');
 JText::script('COM_EMUNDUS_ATTACHMENTS_ALL_IN_ONE_DOC');
 JText::script('COM_EMUNDUS_EXPORTS_PDF_TAGS');
 JText::script('COM_EMUNDUS_EXPORTS_PDF_STATUS');

@@ -1,5 +1,5 @@
 <template>
-  <div class="messages__coordinator_vue">
+  <div class="messages__coordinator_vue em-w-100">
     <div class="messages__list col-md-12">
       <label class="text-center" style="width: 100%">{{translations.messages}}</label>
       <div class="messages__list-block" id="messages__list">
@@ -41,24 +41,23 @@
 import axios from "axios";
 import moment from 'moment';
 
-import "../assets/css/bootstrap.css";
-import "../assets/css/messenger.scss";
+import "../../assets/css/messenger.scss";
 
-import AttachDocument from "../modals/AttachDocument";
+import AttachDocument from "./modals/AttachDocument";
 
 const qs = require("qs");
 
 export default {
   name: "MessagesCoordinator",
-  props: {
-    fnum: String,
-    user: Number,
-  },
+  props: {},
   components: {
     AttachDocument
   },
   data() {
     return {
+      fnum: String,
+      user: Number,
+
       dates: [],
       messages: [],
       fileSelected: 0,
@@ -193,6 +192,9 @@ export default {
   },
 
   created(){
+    this.fnum = this.$store.getters['global/datas'].fnum.value;
+    this.user = this.$store.getters['global/datas'].user.value;
+
     if(typeof this.fnum != 'undefined'){
       this.fileSelected = this.fnum;
       this.getMessagesByFnum();

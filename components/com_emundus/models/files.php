@@ -1871,26 +1871,20 @@ class EmundusModelFiles extends JModelLegacy
                     $db->setQuery($query_associated_tags);
                     $tags_already_associated = $db->loadColumn();
 
-                    // Log the tag in the eMundus logging system.
-                    try{
-                        EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_LOGS_ADD_TAG');
-                    } catch (Exception $e) {
-                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    }
-
                     // Insert valid tags
                     foreach ($tags as $tag) {
                         if(!in_array($tag,$tags_already_associated)) {
                             $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
+                            $query_log = 'SELECT label
+                                FROM #__emundus_setup_action_tag
+                                WHERE id =' . $tag;
+                            $db->setQuery($query_log);
+                            $log_tag = $db->loadResult();
+                            array_push($logsParams['created'], $log_tag);
                         }
                     }
-
                     // Log the tags in the eMundus logging system.
-                    try {
-                        EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-                    } catch (Exception $e){
-                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-                    }
+                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
 
                 $query = substr_replace($query, ";", -1);

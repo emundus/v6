@@ -23,7 +23,7 @@ JFactory::getSession()->set('application_layout', 'logs');
 
                 <h3 class="panel-title">
                 	<span class="glyphicon glyphicon-list"></span>
-                	<?php echo JText::_('LOGS'); ?>
+                	<?php echo JText::_('COM_EMUNDUS_ACCESS_LOGS'); ?>
                 </h3>
 
                 <div class="btn-group pull-right">
@@ -44,7 +44,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                             <th id="action_category"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
                             <th id="action_name"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
                             <th id="action_details"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS'); ?></th>
-                        </tr>       
+                        </tr>
                     </thead>
                     <tbody id="logs_list">
                         <?php
@@ -59,10 +59,10 @@ JFactory::getSession()->set('application_layout', 'logs');
                         <?php } ?>
                     </tbody>
                 </table>
-                <?php 
+                <?php
                 if (count($this->fileLogs) >= 100) { ?>
                 <div class="log-info show-more"><button type="button" class="btn btn-info btn-xs" id="show-more">Afficher plus</button></div>
-                <?php } ?> 
+                <?php } ?>
                 <?php } else { ?>
                 <div class="log-info"><?= JText::_('NO_LOGS'); ?></div>
                 <?php } ?>
@@ -78,7 +78,7 @@ $(document).on('click', '#show-more', function(e)
         if(e.handle === true) {
             e.handle = false;
             var fnum = "<?php echo $this->fnum; ?>";
-        
+
             url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum';
             $.ajax(
                 {
@@ -103,7 +103,7 @@ $(document).on('click', '#show-more', function(e)
                                 $('#logs_list').append(tr);
                             }
                             offset += 100;
-                        } 
+                        }
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         console.log(jqXHR.responseText);

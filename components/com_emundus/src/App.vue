@@ -24,6 +24,8 @@ import addformnextcampaign from "./views/addFormNextCampaign"
 import formbuilder from "./views/formBuilder"
 import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
+import messagescoordinator from "./components/Messages/MessagesCoordinator";
+import messages from "./components/Messages/Messages";
 
 export default {
 	props: {
@@ -50,6 +52,8 @@ export default {
     formbuilder,
     evaluationbuilder,
     settings,
+    messagescoordinator,
+    messages,
 	},
 
   created() {

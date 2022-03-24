@@ -19,6 +19,6 @@ JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 
 $user = JFactory::getUser()->id;
 ?>
-<div id="em-messages-vue" user="<?= $user ?>" modal="false"></div>
+<div id="em-component-vue" component="messages" user="<?= $user ?>" modal="false"></div>
 
 <script src="media/com_emundus_vue/app_emundus.js"></script>

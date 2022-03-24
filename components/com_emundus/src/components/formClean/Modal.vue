@@ -59,7 +59,9 @@
           <radiobtnF v-if="plugin == 'radiobutton'" :element="element" :databases="databases"  @subOptions="subOptions"></radiobtnF>
           <textareaF v-if="plugin =='textarea'" :element="element"></textareaF>
           <displayF v-if="plugin =='display'" :element="element"></displayF>
+<!--
           <fileF v-if="plugin =='emundus_fileupload'" :element="element" :prid="profileId"></fileF>
+-->
           <yesnoF v-if="plugin=='yesno'" :element="element"></yesnoF>
         </div>
       </div>
@@ -162,13 +164,13 @@ export default {
           value: 'display',
           name: this.translate("COM_EMUNDUS_ONBOARD_TYPE_DISPLAY")
         },
-        fileupload: {
+/*        fileupload: {
           value: 'emundus_fileupload',
           name:  this.translate("COM_EMUNDUS_ONBOARD_TYPE_FILE")
-        },
+        },*/
         yesno: {
           value: 'yesno',
-          name:  'yesno'
+          name:  this.translate("COM_EMUNDUS_ONBOARD_TYPE_YESNO")
           /*this.translate("COM_EMUNDUS_ONBOARD_TYPE_YESNO")*/
         }
       },
