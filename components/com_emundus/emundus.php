@@ -489,6 +489,9 @@ JHTML::script('https://code.highcharts.com/modules/exporting.js');
 JHTML::script('https://code.highcharts.com/modules/export-data.js');
 JHTML::script('https://code.highcharts.com/modules/accessibility.js');
 
+JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js');
+JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js');
+
 JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHtml::styleSheet('media/com_emundus/css/reset.css');
