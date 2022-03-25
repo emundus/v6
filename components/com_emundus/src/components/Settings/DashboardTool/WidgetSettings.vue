@@ -107,7 +107,6 @@ import "vue-prism-editor/dist/prismeditor.min.css"; // import the styles somewhe
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
-import "prismjs/themes/prism-tomorrow.css"; // import syntax highlighting styles
 
 export default {
   name: "WidgetSettings",
@@ -204,6 +203,7 @@ export default {
 
 <style>
 @import "../../../assets/css/modal.scss";
+@import "../../../assets/css/code_editor/prism-emundus.scss";
 
 .code-editor{
   padding: 16px;
