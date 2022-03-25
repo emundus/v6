@@ -9,18 +9,21 @@ span[id*='modalEmailPreview_'] .v--modal,
 span[id*='modalEditElement'] .v--modal,
 #modalAddDocuments .v--modal,
 #modalMenu .v--modal,
-#modalSide .v--modal{
-  position: fixed;
-  right: 0;
+#modalSide .v--modal,
+#dashboardTool span[id*='modalWidgetSettings'] .v--modal{
+  position: fixed !important;
+  right: 0 !important;
   left: unset !important;
   height: 100% !important;
   padding: 32px;
   top: 0 !important;
+  width: 25% !important;
 }
 
 span[id*='modalEditElement'] .v--modal-overlay,
 #modalAddDocuments .v--modal-overlay,
 #modalMenu .v--modal-overlay,
-#modalSide .v--modal-overlay{
+#modalSide .v--modal-overlay,
+span[id*='modalWidgetSettings'] .v--modal-overlay,{
   background: unset;
 }

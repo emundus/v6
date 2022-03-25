@@ -484,11 +484,6 @@ JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
-JHTML::script('https://code.highcharts.com/highcharts.js');
-JHTML::script('https://code.highcharts.com/modules/exporting.js');
-JHTML::script('https://code.highcharts.com/modules/export-data.js');
-JHTML::script('https://code.highcharts.com/modules/accessibility.js');
-
 JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js');
 JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js');
 

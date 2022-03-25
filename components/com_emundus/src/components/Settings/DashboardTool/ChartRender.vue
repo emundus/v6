@@ -14,12 +14,6 @@
 			"
     >
       <div v-if="selectedWidget.type === 'chart'">
-        <div v-if="loading" class="lds-ring">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
         <div :id="'chartobject-' + selectedWidget.id"></div>
       </div>
       <div v-else :class="selectedWidget.class">
@@ -46,7 +40,6 @@ export default {
 
   data: () => ({
     selectedWidget: null,
-    loading: false,
 
     datas: null,
   }),
@@ -69,8 +62,6 @@ export default {
     },
 
     renderChart() {
-      this.loading = true;
-
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=dashboard&task=renderchartbytag",
@@ -80,7 +71,7 @@ export default {
         }),
       }).then((response) => {
         this.datas = response.data.dataset;
-        //Highcharts.chart('chartobject-' + this.index, this.datas);
+
         const chartConfig = {
           type: this.selectedWidget.chart_type,
           renderAt: 'chartobject-' + this.selectedWidget.id,
@@ -93,11 +84,9 @@ export default {
           let fusioncharts = new FusionCharts(chartConfig);
           fusioncharts.render();
         });
-        this.loading = false;
         //
       }).catch((error) => {
         // TODO: handle error
-        this.loading = false;
       });
     },
 
