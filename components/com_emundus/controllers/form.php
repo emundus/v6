@@ -546,8 +546,8 @@ class EmundusControllerForm extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $documents = $jinput->getRaw('documents');
-
+            $documents = $jinput->getString('documents');
+            $documents = json_decode($documents, true);
             $documents = $this->m_form->reorderDocuments($documents);
 
             if (!empty($documents)) {

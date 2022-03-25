@@ -96,7 +96,8 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $element = $jinput->getRaw('element');
+            $element = $jinput->getString('element');
+            $element = json_decode($element, true);
 
             $changeresponse = $this->m_formbuilder->UpdateParams($element,  $user->id);
         }
