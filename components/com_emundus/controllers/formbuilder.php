@@ -434,30 +434,36 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
     public function createsimpleelement() {
         $user = JFactory::getUser();
+        $response = array(
+            'status' => false,
+            'msg' => JText::_("ACCESS_DENIED")
+        );
 
-
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $gid = $jinput->getInt('gid');
             $plugin = $jinput->getString('plugin');
-            if ($jinput->getString('attachementId')){
-                $attachementId = $jinput->getString('attachementId');
-            }
 
-            if($attachementId) {
-                $changeresponse = $this->m_formbuilder->createSimpleElement($gid, $plugin, $attachementId);
+            if (empty($plugin) || empty($gid)){
+                $response['msg'] = JText::_("MISSING_PLUGIN_OR_GROUP");
             } else {
-                $changeresponse = $this->m_formbuilder->createSimpleElement($gid, $plugin,0);
+                if ($jinput->getString('attachmentId')){
+                    $attachmentId = $jinput->getString('attachmentId');
+                }
 
+                if (isset($attachmentId)) {
+                    $response = $this->m_formbuilder->createSimpleElement($gid, $plugin, $attachmentId);
+                } else {
+                    $response = $this->m_formbuilder->createSimpleElement($gid, $plugin, 0);
+                }
             }
         }
-        echo json_encode((object)$changeresponse);
+
+        echo json_encode((object)$response);
         exit;
     }
+
     public function createsectionsimpleelements() {
         $user = JFactory::getUser();
 

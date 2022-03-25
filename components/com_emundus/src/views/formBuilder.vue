@@ -61,19 +61,6 @@
               </span>
                 <hr class="em-sidebar-divider">
               </div>
-              <!--                  <a class="em-flex-row action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
-                                  <span class="material-icons">note_add</span>
-                                  <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addMenu}}</label>
-                                </a>
-                                &lt;!&ndash;<a class="em-flex-row action-link" @click="createGroup()" :title="translations.addGroup">&ndash;&gt;
-                              <a class="em-flex-row action-link" @click="createGroup([],'')" :title="translations.addGroup">
-                                  <span class="material-icons">table_rows</span>
-                                  <label class="action-label col-md-offset-1 col-sm-offset-1">{{translations.addGroup}}</label>
-                                </a>
-                                <a class="em-flex-row action-link" :class="{ 'disable-element': elementDisabled}" @click="showElements" :title="translations.addItem">
-                                  <span class="material-icons">text_fields</span>
-                                  <label class="action-label col-md-offset-1 col-sm-offset-1" :class="[{'disable-element': elementDisabled}, addingElement ? 'down-arrow' : 'right-arrow']">{{translations.addItem}}</label>
-                                </a>-->
               <transition :name="'slide-right'" type="transition">
                 <div>
                   <draggable
@@ -95,31 +82,6 @@
                   </draggable>
                 </div>
               </transition>
-
-              <!--                <transition :name="'slide-right'" type="transition">
-                                <div class="plugins-list" v-if="addingSection">
-                                  <a class="em-flex-row col-md-offset-1 back-button-action pointer" style="padding: 0 15px" @click="addingSection = !addingSection" :title="Back">
-                                    <em class="fas fa-arrow-left em-mr-4"></em>
-                                    {{ translations.Back }}
-                                  </a>
-                                  <hr style="width: 80%;margin: 10px auto;">
-                                 &lt;!&ndash; <draggable
-                                      v-model="sections"
-                                      v-bind="dragOptions"
-                                      handle=".handle"
-                                      @start="startDragging();dragging = true;draggingIndex = index"
-                                      @end="addingNewElement($event)"
-                                      drag-class="plugin-drag"
-                                      chosen-class="plugin-chosen"
-                                      ghost-class="plugin-ghost"
-                                      style="padding-bottom: 2em;margin-top: 10%">&ndash;&gt;
-                                    <div class="em-flex-row plugin-link col-md-offset-1 col-sm-offset-1 " v-for="(section,index) in sections" :id="'section_' + section.value" @click="createGroup(section.value,section.label)" :title="section.name" style="cursor: default" >
-                                      <em :class="section.icon"></em>
-                                      <span class="ml-10px">{{section.name}}</span>
-                                    </div>
-                                 &lt;!&ndash; </draggable>&ndash;&gt;
-                                </div>
-                              </transition>-->
             </div>
           </transition>
         </div>
@@ -280,6 +242,9 @@ import draggable from "vuedraggable";
 import Builder from "../components/formClean/Builder";
 import ModalSide from "../components/formClean/ModalSide";
 import ModalMenu from "../components/formClean/ModalMenu";
+
+import formbuilderService from "../services/formbuilder";
+import campaignService from "../services/campaign";
 
 import _ from 'lodash';
 import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
@@ -566,110 +531,60 @@ export default {
           }
           this.createElementEMundusFileUpload(params,gid,plugin,order);
         } else {
-
-          axios({
-            method: "post",
-            url:
-                "index.php?option=com_emundus&controller=formbuilder&task=createsimpleelement",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              gid: gid,
-              plugin: plugin
-            })
+          formbuilderService.createSimpleElement({
+            'gid': Number(gid),
+            'plugin': plugin
           }).then((result) => {
-
-            this.getSimpleElement(gid,result.data.scalar,order,plugin);
+            if (result.status !== false) {
+              this.getSimpleElement(gid,result.data.scalar,order,plugin);
+            } else {
+              console.log(result);
+            }
             this.loading = false;
           });
-
         }
-
-
       }
 
     },
 
     getSimpleElement(gid,element,order,plugin){
       this.loading=true;
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
-        params: {
-          element: element,
-          gid: gid
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
 
-
-        if (plugin=="email") {
-          response.data.params.password = 3;
+      formbuilderService.getElement(gid, element).then((response) => {
+        if (response.status === false) {
+          this.loading = false;
         } else {
-          response.data.params.password=0;
+          if (plugin == "email") {
+            response.data.params.password = 3;
+          } else {
+            response.data.params.password=0;
+          }
+
+          formbuilderService.updateParams(response.data);
+
+          this.menuHighlightCustumisation(response,gid,order);
+          this.loading=false;
         }
-        axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus&controller=formbuilder&task=updateparams",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            element: response.data,
-          })
-        })
-
-        this.menuHighlightCustumisation(response,gid,order);
-        this.loading=false;
-
       });
     },
 
-    createElementEMundusFileUpload(params,gid,plugin,order){
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=campaign&task=updatedocument",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify(params)
-      }).then((rep) => {
-
+    createElementEMundusFileUpload(params,gid,plugin,order) {
+      campaignService.updateDocument(params).then((rep) => {
         this.$emit("UpdateDocuments");
-        axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus&controller=formbuilder&task=createsimpleelement",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            gid: gid,
-            plugin: plugin,
-            attachementId: rep.data.data
-          })
+        formbuilderService.createSimpleElement({
+          gid: Number(gid),
+          plugin: plugin,
+          attachmentId: rep.data.data
         }).then((result) => {
-
-          axios({
-            method: "get",
-            url: "index.php?option=com_emundus&controller=formbuilder&task=getElement",
-            params: {
-              element: result.data.scalar,
-              gid: gid
-            },
-            paramsSerializer: params => {
-              return qs.stringify(params);
-            }
-          }).then(response => {
-
-            this.menuHighlightCustumisation(response,gid,order);
-            this.getDocuments();
+          if (result.status !== false) {
+            formbuilderService.getElement(gid, result.data.scalar).then(response => {
+              this.menuHighlightCustumisation(response,gid,order);
+              this.getDocuments();
+              this.loading = false;
+            });
+          } else {
             this.loading = false;
-          });
+          }
         });
 
       });
