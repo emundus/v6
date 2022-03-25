@@ -80,29 +80,30 @@
     <td v-if="sync">
       <div v-if="attachment.sync > 0">
         <span
-            v-if="attachment.sync_method == 'write'"
+            v-if="attachment.sync_method == 'write' && !syncLoading"
             class="material-icons sync"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
             }"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
-            @click="syncAttachment(attachment.aid)"
+            @click="synchronizeAttachments(attachment.aid)"
         >
           cloud_upload
         </span>
         <span
-            v-else-if="attachment.sync_method == 'read'"
+            v-else-if="attachment.sync_method == 'read' && !syncLoading"
             class="material-icons sync"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
             }"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_READ')"
-            @click="syncAttachment(attachment.aid)"
+            @click="synchronizeAttachments(attachment.aid)"
         >
           cloud_download
         </span>
+        <div v-if="syncLoading" class="sync-loader em-loader"></div>
       </div>
     </td>
 	</tr>
@@ -139,22 +140,12 @@ export default {
 			category: "",
 			checkedAttachments: [],
       synchronizeState: false,
+      syncLoading: false,
 		};
 	},
 	mounted() {
 		this.categories = this.$store.state.attachment.categories;
-		if (Object.entries(this.categories).length < 1) {
-			this.getAttachmentCategories()
-				.then((response) => {
-					this.categories = response;
-					this.category = this.categories[this.attachment.category]
-						? this.categories[this.attachment.category]
-						: "";
-				})
-				.catch((error) => {
-					this.categories = {};
-				});
-		} else {
+		if (Object.entries(this.categories).length > 0) {
 			this.category = this.categories[this.attachment.category]
 				? this.categories[this.attachment.category]
 				: "";
@@ -202,8 +193,24 @@ export default {
 
       return false;
     },
-    syncAttachment(aid) {
-      this.$emit("sync-attachment", [aid]);
+    synchronizeAttachments(aid)
+    {
+      if (aid.length > 0) {
+        this.syncLoading = true;
+        syncService.synchronizeAttachments([aid]).then((response) => {
+          if (response && response.status === false) {
+            //
+          } else {
+            this.getSynchronizeState(aid).then((response) => {
+              this.synchronizeState = response;
+              this.syncLoading = false;
+            }).catch((error) => {
+              this.synchronizeState = false;
+              this.syncLoading = false;
+            });
+          }
+        });
+      }
     },
 	},
 	watch: {
@@ -264,7 +271,6 @@ export default {
 	.permissions {
 		.material-icons {
 			margin: 0 10px;
-			cursor: pointer;
 			opacity: 0.3;
 
 			&.active {
@@ -274,6 +280,8 @@ export default {
 	}
 
   .material-icons {
+    cursor: pointer;
+
     &.success {
       color: var(--success-color);
     }
@@ -295,5 +303,10 @@ export default {
 			transform: translate(10px, 3px);
 		}
 	}
+
+  .sync-loader {
+    width: 30px !important;
+    height: 30px !important;
+  }
 }
 </style>

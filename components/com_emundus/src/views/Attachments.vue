@@ -68,7 +68,7 @@
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <div
-              v-if="sync"
+              v-if="sync && canSync"
               class="btn-icon-text"
               @click="synchronizeAttachments(checkedAttachments)"
               :class="{ disabled: checkedAttachments.length < 1 }"
@@ -368,6 +368,7 @@ export default {
       canDelete: false,
       canDownload: true,
       canUpdate: false,
+      canSync: false,
       modalLoading: false,
       slideTransition: "slide-fade",
       changeFileEvent: null,
@@ -376,7 +377,7 @@ export default {
   },
   created() {
     this.changeFileEvent = new Event("changeFile");
-
+    this.getAttachmentCategories();
     syncService.isSyncModuleActive().then((response) => {
       this.sync = response.data;
     }).catch((error) => {
@@ -515,6 +516,7 @@ export default {
       this.getAttachments();
       this.$modal.hide("edit");
       this.selectedAttachment = {};
+      this.checkedAttachments = [];
     },
     updateStatus($event, selectedAttachment) {
       if (this.canUpdate) {
