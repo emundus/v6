@@ -209,4 +209,43 @@ class EmundusModelSync extends JModelList {
             return false;
         }
     }
+
+    function synchronizeAttachments($upload_ids)
+    {
+        $states = array();
+
+        $upload_ids_by_type = array();
+        foreach ($upload_ids as $upload_id) {
+            $type = $this->getSyncType($upload_id);
+
+            if (!empty($type)) {
+                if (!isset($upload_ids_by_type[$type])) {
+                    $upload_ids_by_type[$type] = array();
+                }
+
+                $upload_ids_by_type[$type][] = $upload_id;
+            }
+        }
+
+        foreach ($upload_ids_by_type as $type => $upload_ids) {
+            $states = array_merge($this->synchronizeAttachmentsByType($type, $upload_ids), $states);
+        }
+
+        return $states;
+    }
+
+    private function synchronizeAttachmentsByType($type, $upload_ids)
+    {
+        $states = array();
+
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'api' . DS . 'FileSynchronizer.php');
+        if (class_exists('FileSynchronizer')) {
+            $synchronizer = new FileSynchronizer($type);
+            foreach($upload_ids as $upload_id) {
+                $states[$upload_id] = $synchronizer->updateFile($upload_id);
+            }
+        }
+
+        return $states;
+    }
 }

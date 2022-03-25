@@ -203,7 +203,7 @@ export default {
       return false;
     },
     syncAttachment(aid) {
-      this.$emit("sync-attachment", aid);
+      this.$emit("sync-attachment", [aid]);
     },
 	},
 	watch: {

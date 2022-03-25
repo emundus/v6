@@ -345,15 +345,18 @@ class FileSynchronizer
                 'query' => $params
             ]);
 
-            return json_decode($response->getBody());
+            return $response->getStatusCode();
         } catch (\Exception $e) {
             JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
-            return $e->getMessage();
+
+            return $e->getCode();
         }
     }
 
 
     public function addFile($upload_id) {
+        $saved = false;
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('sync')
@@ -387,13 +390,15 @@ class FileSynchronizer
 
                 switch ($this->type) {
                     case 'ged':
-                        $this->addGEDFile($upload_id, $filename, $filepath, $path);
+                        $saved = $this->addGEDFile($upload_id, $filename, $filepath, $path);
                         break;
                     default:
                         break;
                 }
             }
         }
+
+        return $saved;
     }
 
     public function addGEDFile($upload_id, $filename, $filepath, $relativePath) {
@@ -434,11 +439,43 @@ class FileSynchronizer
         return $saved;
     }
 
+    public function updateFile($upload_id)
+    {
+        $updated = false;
+        $deleted = false;
+        $nodeId = $this->getNodeId($upload_id);
+
+        if (!empty($nodeId)) {
+            $deleted = $this->deleteFile($upload_id);
+        }
+
+        if (empty($nodeId) || $deleted) {
+            $updated = $this->addFile($upload_id);
+        }
+
+        return $updated;
+    }
+
     public function deleteFile($upload_id) {
         $nodeId = $this->getNodeId($upload_id);
 
         if (!empty($nodeId)) {
-            return $this->delete($this->coreUrl . "/nodes/$nodeId");
+            $response_code = $this->delete($this->coreUrl . "/nodes/$nodeId");
+
+            // 404 means the node doesn't exist
+            if ($response_code == 204 || $response_code == 404) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->delete('#__emundus_uploads_sync')
+                    ->where('node_id = ' . $db->quote($nodeId));
+                $db->setQuery($query);
+                $db->execute();
+
+                return true;
+            } else {
+                JLog::add('Could not delete file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+            }
         }
 
         return false;

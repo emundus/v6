@@ -70,7 +70,7 @@
           <div
               v-if="sync"
               class="btn-icon-text"
-              @click="synchronizeAttachments"
+              @click="synchronizeAttachments(checkedAttachments)"
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
             <span
@@ -220,7 +220,7 @@
             <th id="permissions" class="permissions">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}
             </th>
-            <th v-if="sync" id="sync" class="sync">
+            <th v-if="sync" id="sync" class="sync" @click="orderBy('sync')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
             </th>
           </tr>
@@ -237,6 +237,7 @@
               @update-checked-attachments="updateCheckedAttachments"
               @update-status="updateStatus"
               @change-permission="changePermission"
+              @sync-attachment="syncAttachment"
           >
           </AttachmentRow>
           </tbody>
@@ -573,7 +574,18 @@ export default {
         );
       }
     },
-
+    synchronizeAttachments(aids)
+    {
+      if (aids.length > 0) {
+        syncService.synchronizeAttachments(aids).then((response) => {
+          if (response && response.status === false) {
+            this.displayErrorMessage(response.msg);
+          } else {
+            this.refreshAttachments(true);
+          }
+        });
+      }
+    },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
         const response = await userService.getAccessRights(
@@ -657,9 +669,6 @@ export default {
             this.translate("YOU_NOT_HAVE_PERMISSION_TO_DELETE_ATTACHMENTS")
         );
       }
-    },
-    async synchronizeAttachments() {
-
     },
     async deleteAttachments() {
       if (this.canDelete) {
