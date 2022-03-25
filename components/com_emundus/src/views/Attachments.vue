@@ -237,7 +237,6 @@
               @update-checked-attachments="updateCheckedAttachments"
               @update-status="updateStatus"
               @change-permission="changePermission"
-              @sync-attachment="syncAttachment"
           >
           </AttachmentRow>
           </tbody>
