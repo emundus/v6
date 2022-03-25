@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class EmundusmessengerViewMessages extends JViewLegacy {
+class EmundusViewMessenger extends JViewLegacy {
     /**
      * Display the Settings view
      *

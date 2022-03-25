@@ -19,8 +19,20 @@ JText::script('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE');
 
 $jinput = JFactory::getApplication()->input;
 $fnum 	= $jinput->getString('fnum', null);
-$user = JFactory::getUser()->id;
+$user = JFactory::getUser();
+
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0, 2);
+$languages = JLanguageHelper::getLanguages();
+if (count($languages) > 1) {
+    $many_languages = '1';
+} else {
+    $many_languages = '0';
+}
+
+$coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
+
 ?>
-<div id="em-messages-coordinator-vue" fnum="<?= $fnum ?>" user="<?= $user ?>"></div>
+<div id="em-component-vue" component="messagescoordinator" coordinatorAccess="<?= $coordinator_access ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" fnum="<?= $fnum ?>" user="<?= $user->id ?>"></div>
 
 <script src="media/com_emundus_vue/app_emundus.js"></script>

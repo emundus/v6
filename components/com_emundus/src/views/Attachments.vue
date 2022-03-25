@@ -949,7 +949,7 @@ export default {
 };
 </script>
 
-<style lang='scss' scoped>
+<style lang='scss'>
 #em-attachments {
   font-size: 14px;
   width: 100%;

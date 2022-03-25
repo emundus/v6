@@ -175,7 +175,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #em-attachment-preview {
 	width: 60%;
 	height: 100%;

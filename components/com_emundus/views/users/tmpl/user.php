@@ -71,11 +71,11 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                 <?php else :?>
                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>
                                 <?php endif; ?>
-                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
                                 </p>
                         <?php else :?>
                             <p class="em-cell">
-                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
                             </p>
                         <?php endif; ?>
                         </th>

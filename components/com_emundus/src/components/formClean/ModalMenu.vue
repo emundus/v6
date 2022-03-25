@@ -24,7 +24,7 @@
 
       <div>
         <div class="em-mb-16">
-          <label>{{translations.ChooseExistingPageModel}} :</label>
+          <label class="em-w-100">{{translations.ChooseExistingPageModel}} :</label>
           <select v-model="model_id" class="em-w-100" :disabled="Object.keys(models).length <= 0">
             <option value="-1"></option>
             <option v-for="model in models" :key="model.form_id" :value="model.form_id"> {{ model.label[actualLanguage] }}</option>

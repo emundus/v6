@@ -1,11 +1,11 @@
 <template>
   <div id="checkboxF">
     <div class="row rowmodal">
-      <div class="form-group">
+      <div class="em-mb-32">
         <label>{{helptext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
+        <input type="text" v-model="element.params.rollover" />
       </div>
-      <div class="em-flex-row mb-1">
+      <div class="em-flex-row em-mb-16">
         <label class="require col-md-3">{{suboptions}} :</label>
       </div>
       <!--<div class="col-md-10 form-group flex">
@@ -29,16 +29,16 @@
                 v-if="databasejoin != 1"
                 @end="needtoemit()"
                 handle=".handle">
-        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="em-flex-row mb-1">
+        <div v-for="(sub_values, i) in arraySubValues" :key="i" class="em-flex-row em-mb-16">
           <span class="icon-handle">
-            <em class="fas fa-grip-vertical handle"></em>
+            <span class="material-icons handle">drag_indicator</span>
           </span>
-          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" class="form__input field-general w-input mb-0" style="height: 35px" :id="'suboption_' + i" @keyup.enter="add"/>
-          <button @click.prevent="leave(i)" type="button" class="remove-option">-</button>
+          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" :id="'suboption_' + i" @keyup.enter="add"/>
+          <button @click.prevent="leave(i)" type="button" class="em-transparent-button em-pointer"><span class="material-icons">remove_circle_outline</span></button>
         </div>
         </draggable>
-        <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="bouton-sauvergarder-et-continuer-3 button-add-option" style="margin-bottom: 2em">{{AddOption}}</button>
-        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" style="margin: 20px 0 30px 0;">
+        <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="em-secondary-button em-w-auto em-ml-32">{{AddOption}}</button>
+        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" class="em-mt-16">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
       </div>
@@ -206,12 +206,6 @@ export default {
 };
 </script>
 <style scoped>
-  .flex {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1em;
-    height: 30px;
-  }
   .rowmodal {
     margin-top: 0.5em;
     margin-bottom: 0.5em;
@@ -222,6 +216,6 @@ export default {
 .icon-handle{
   color: #cecece;
   cursor: grab;
-  margin-right: 10px;
+  margin-right: 18px;
 }
 </style>

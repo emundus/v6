@@ -67,8 +67,7 @@
 import axios from "axios";
 import vueDropzone from 'vue2-dropzone'
 
-import "../assets/css/bootstrap.css";
-import "../assets/css/messenger.scss";
+import "../../../assets/css/messenger.scss";
 import Swal from "sweetalert2";
 
 const qs = require("qs");

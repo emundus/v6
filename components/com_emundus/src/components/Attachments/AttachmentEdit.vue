@@ -242,7 +242,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #attachment-edit {
   padding: 16px 16px 16px 10px;
   height: 100%;

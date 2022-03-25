@@ -11,6 +11,13 @@ var mixin = {
 				return moment().format(format);
 			}
 		},
+		strippedHtml: function (html) {
+			if (html === null || html === undefined) {
+				return '';
+			}
+
+			return html.replace(/<(?:.|\n)*?>/gm, '');
+		},
 		getUserNameById: function (id) {
 			let completeName = '';
 			// id to int

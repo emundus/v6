@@ -43,8 +43,8 @@
         </div>
 
         <div class="em-mb-16" v-if="currentDoc ==null">
-          <label for="modelName">{{ translations.DocTemplate }} :</label>
-          <select v-model="doc" id="modelName" name="modelName" :disabled="Object.keys(models).length <= 0">
+          <label for="modelName" class="em-w-100">{{ translations.DocTemplate }} :</label>
+          <select v-model="doc" id="modelName" class="em-w-100" name="modelName" :disabled="Object.keys(models).length <= 0">
             <option :value="null"></option>
             <option v-for="(modelT, index) in models" :key="'option_' + index" :value="modelT.id">{{ modelT.name[langue] }}  ({{ modelT.allowed_types }})</option>
           </select>

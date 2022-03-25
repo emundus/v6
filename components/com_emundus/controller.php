@@ -303,6 +303,11 @@ class EmundusController extends JControllerLegacy {
             return false;
         }
 
+        // track the LOGS (ATTACHMENT_DELETE)
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $user = JFactory::getSession()->get('emundusUser');     # logged user #
+        EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FILE_DELETE', 'COM_EMUNDUS_ACCESS_FILE_DELETED_BY_APPLICANT');
+
         unset($current_user->fnums[$fnum]);
 
         if (in_array($user->fnum, array_keys($user->fnums))) {
@@ -520,6 +525,17 @@ class EmundusController extends JControllerLegacy {
                     return false;
                 }
             }
+            # get the logged user id    $user->id
+            # get the fnum              $fnum
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');     # logged user #
+
+            # get FNUM INFO
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
         } catch(Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -577,6 +593,17 @@ class EmundusController extends JControllerLegacy {
                 $redirect = $m_application->getConfirmUrl();
             }
         }
+
+        # get the fnum          $fnum
+        # get the logged user   $aid->id
+        # get FNUM INFO
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
+
         $app->redirect($redirect);
     }
 
@@ -1211,6 +1238,14 @@ class EmundusController extends JControllerLegacy {
             }
         }
 
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $user = JFactory::getSession()->get('emundusUser');     # looged user #
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE');
         return true;
     }
 

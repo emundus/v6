@@ -35,7 +35,6 @@
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
             </div>
             <div class="messages__list-block" id="messages__list">
-<!--              <infinite-loading direction="top" @infinite="infiniteHandler"></infinite-loading>-->
               <div v-for="date in dates">
                 <div class="messages__date-section">
                   <hr>
@@ -81,13 +80,11 @@
 
 <script>
 import axios from "axios";
-import InfiniteLoading from 'vue-infinite-loading';
 import moment from 'moment';
 
-import "../assets/css/bootstrap.css";
-import "../assets/css/messenger.scss";
+import "../../assets/css/messenger.scss";
 
-import AttachDocument from "../modals/AttachDocument";
+import AttachDocument from "./modals/AttachDocument";
 
 const qs = require("qs");
 
@@ -99,7 +96,6 @@ export default {
     notifications: Object,
   },
   components: {
-    InfiniteLoading,
     AttachDocument
   },
   data() {

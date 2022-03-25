@@ -645,32 +645,7 @@ function getUserCheck() {
 function getUserCheckArray() {
 
     if ($('#em-check-all-all').is(':checked')) {
-        var fnums = [];
-
-        if ($('.em-check:checked').length === 0) {
-            var hash = $(location).attr('hash');
-            var fnum = hash.replace("#", "");
-            fnum = fnum.replace("|open", "");
-
-            if (fnum == "") {
-                return null;
-            } else {
-                let cid = parseInt(fnum.substr(14, 7));
-                let sid = parseInt(fnum.substr(21, 7));
-                fnums.push({fnum: fnum, cid: cid, sid:sid});
-            }
-        } else {
-            let cid = ''
-            let sid = ''
-            $('.em-check:checked').each(function() {
-                fnum = $(this).attr('id').split('_')[0];
-                cid = parseInt(fnum.substr(14, 7));
-                sid = parseInt(fnum.substr(21, 7));
-                fnums.push({fnum: fnum, cid: cid, sid:sid});
-            });
-        }
-
-        // return 'all';
+        return 'all';
     } else {
         var fnums = [];
 
@@ -1877,7 +1852,7 @@ $(document).ready(function() {
             //export excel
             case 6:
                 $('#can-val').empty();
-                $('#can-val').append('<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_EXCEL')+'</button>');
+                $('#can-val').append('<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL')+'</button>');
                 $('#can-val').show();
 
                 $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
@@ -3638,7 +3613,7 @@ $(document).ready(function() {
 
                 //$('#em-modal-actions .modal-footer ').hide();
                 $('#can-val').empty();
-                $('#can-val').append('<a class="btn-large btn-success btn-attach" id="em_zip" href="'+url+'">'+Joomla.JText._('GENERATE_ZIP')+'</a><div id="attachement_res"></div>');
+                $('#can-val').append('<a class="btn-large btn-success btn-attach" id="em_zip" href="'+url+'">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_ZIP')+'</a><div id="attachement_res"></div>');
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
@@ -4807,7 +4782,7 @@ $(document).ready(function() {
                         $('.modal-body').empty();
 
                         var tags = '<br/><div class="form-group" style="color:black !important">'+
-                            '<div style="padding-left: 15.5%;"><form style="margin-left:15px; margin-bottom:6px">'+
+                            '<div><form class="em-flex-row">'+
                             '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_APPLICATION_ADD_TAGS')+
                             '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('COM_EMUNDUS_TAGS_DELETE_TAGS')+ '<br>'+
                             '</form></div></div>'+
@@ -4815,7 +4790,7 @@ $(document).ready(function() {
                             '<label class="col-lg-2 control-label">' +Joomla.JText._('COM_EMUNDUS_TAGS_CATEGORIES')+ '</label>' +
                             '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>' +
 
-                            '<label class="col-lg-2 control-label">'+result.tag+'</label>' +
+                            '<label class="col-lg-2 control-label em-mt-16">'+result.tag+'</label>' +
                             '<select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple"></select>' +
                             '</div>';
 
@@ -6059,7 +6034,8 @@ $(document).ready(function() {
                                 width: 1000,
                                 showCancelButton: true,
                                 cancelButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_CANCEL_EMAIL'),
-                                confirmButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL')
+                                confirmButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL'),
+                                reverseButtons: true
                             }).then(function(confirm) {
 
                                 if (confirm.value) {

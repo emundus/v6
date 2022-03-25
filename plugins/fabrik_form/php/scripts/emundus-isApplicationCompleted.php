@@ -26,17 +26,20 @@ if ($jinput->get('view') == 'form') {
 	$user = JFactory::getSession()->get('emundusUser');
 
 	$params	= JComponentHelper::getParams('com_emundus');
-  $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
+    $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
 	$application_fee = $params->get('application_fee', 0);
 
-  $m_profile = new EmundusModelProfile;
-  $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
+    $m_profile = new EmundusModelProfile;
+    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 	$m_application = new EmundusModelApplication;
 	$attachments = $m_application->getAttachmentsProgress($user->fnum);
 	$forms = $m_application->getFormsProgress($user->fnum);
 
 	if ($application_fee) {
+        $m_files = new EmundusModelFiles;
+        $fnumInfos = $m_files->getFnumInfos($user->fnum);
+
 		// If students with a scholarship have a different fee.
 		// The form ID will be appended to the URL, taking him to a different checkout page.
 		if (isset($scholarship_document_id)) {
@@ -64,7 +67,7 @@ if ($jinput->get('view') == 'form') {
 
 			if (empty($uploaded_document)) {
 				$scholarship_document_id = null;
-			} else if (!empty($pay_scholarship)) {
+            } else if (!empty($pay_scholarship)  && empty($m_application->getHikashopOrder($fnumInfos))) {
 				$scholarship_product = $params->get('scholarship_product', 0);
 				if (!empty($scholarship_product)) {
 					$return_url = $m_application->getHikashopCheckoutUrl($user->profile);
@@ -74,9 +77,6 @@ if ($jinput->get('view') == 'form') {
 				}
 			}
 		}
-
-		$m_files = new EmundusModelFiles;
-		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 
 		// This allows users who have started a bank transfer or cheque to go through even if it has not been marked as received yet.
 		$accept_other_payments = $params->get('accept_other_payments', 0);
