@@ -2198,4 +2198,21 @@ class EmundusModelUsers extends JModelList {
 		$return->status = true;
 		return $return;
 	}
+
+    public function getNoApplicantProfiles(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_setup_profiles'))
+                ->where($db->quoteName('published') . ' = 0')
+                ->andWhere($db->quoteName('status') . ' = 1');
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('Error on getting no applicant profiles : '.$e->getMessage().' at query -> '.$query->__toString(), JLog::ERROR, 'com_emundus');
+            return null;
+        }
+    }
 }

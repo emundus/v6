@@ -866,7 +866,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 	}
 
-	public function getusers() 
+	public function getusers()
 	{
 		$m_users = new EmundusModelUsers();
 		$users_list = $m_users->getUsers();
@@ -875,7 +875,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function getuserbyid() 
+	public function getuserbyid()
 	{
 		$id = JFactory::getApplication()->input->getInt('id', null);
 		$m_users = new EmundusModelUsers();
@@ -885,7 +885,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function getattachmentaccessrights() 
+	public function getattachmentaccessrights()
 	{
 		$rights = [
 			'canDelete' => false,
@@ -902,4 +902,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo json_encode(array('status' => true, 'rights' => $rights));
 		exit;
 	}
+
+    public function getnoapplicantprofiles(){
+        $m_users = new EmundusModelUsers();
+        $users_list = $m_users->getNoApplicantProfiles();
+
+        echo json_encode($users_list);
+        exit;
+    }
 }

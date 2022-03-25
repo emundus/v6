@@ -48,5 +48,17 @@ export default {
                 msg: e.message
             }
         }
+    },
+    async getNoApplicantProfiles(){
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=users&task=getnoapplicantprofiles');
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            }
+        }
     }
 }

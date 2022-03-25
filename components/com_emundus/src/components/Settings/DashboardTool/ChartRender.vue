@@ -14,7 +14,7 @@
 			"
     >
       <div v-if="selectedWidget.type === 'chart'">
-        <div :id="'chartobject-' + selectedWidget.id"></div>
+        <div :id="id"></div>
       </div>
       <div v-else :class="selectedWidget.class">
         <div v-html="datas"></div>
@@ -40,10 +40,19 @@ export default {
 
   data: () => ({
     selectedWidget: null,
+    id: null,
 
     datas: null,
   }),
   methods: {
+    create_UUID(){
+      var dt = new Date().getTime();
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        var r = (dt + Math.random()*16)%16 | 0;
+        dt = Math.floor(dt/16);
+        return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+      });
+    },
 
     render() {
       switch (this.selectedWidget.type) {
@@ -74,7 +83,7 @@ export default {
 
         const chartConfig = {
           type: this.selectedWidget.chart_type,
-          renderAt: 'chartobject-' + this.selectedWidget.id,
+          renderAt: this.id,
           width: '100%',
           height: '250',
           dataFormat: 'json',
@@ -134,6 +143,7 @@ export default {
 
   created() {
     this.selectedWidget = this.widget;
+    this.id = 'chartobject-' + this.create_UUID();
     this.render();
   },
 

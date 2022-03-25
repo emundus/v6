@@ -41,9 +41,11 @@ class EmundusModelDashboard extends JModelList
         $query = $this->_db->getQuery(true);
 
         try {
-            $query->select('*')
-                ->from($this->_db->quoteName('#__emundus_widgets'))
-                ->where($this->_db->quoteName('type') . ' IS NOT NULL');
+            $query->select('ew.*,GROUP_CONCAT(ewr.profile) as profiles')
+                ->from($this->_db->quoteName('#__emundus_widgets','ew'))
+                ->leftJoin($this->_db->quoteName('#__emundus_widgets_repeat_access','ewr').' ON '.$this->_db->quoteName('ewr.parent_id').' = '.$this->_db->quoteName('ew.id'))
+                ->where($this->_db->quoteName('ew.type') . ' IS NOT NULL')
+                ->group('ew.id');
             $this->_db->setQuery($query);
             return $this->_db->loadObjectList();
         } catch(Exception $e) {
