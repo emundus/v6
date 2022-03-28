@@ -154,6 +154,32 @@ class EmundusModelDashboard extends JModelList
         }
     }
 
+    public function getDefaultDashboard($profile){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
+                ->from($this->_db->quoteName('#__emundus_widgets_repeat_access','esdr'))
+                ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.parent_id'))
+                ->where($this->_db->quoteName('esdr.default') . ' = ' . $this->_db->quote(1))
+                ->andWhere($this->_db->quoteName('esdr.profile') . ' = ' . $this->_db->quote($profile))
+                ->order('esdr.position');
+            $this->_db->setQuery($query);
+            $widgets = $this->_db->loadObjectList();
+
+            if (!empty($widgets)) {
+                foreach ($widgets as $key => $widget) {
+                    $widgets[$key]->label = JText::_($widget->label);
+                }
+            }
+
+            return $widgets;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
     public function getDashboard($user_id){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);

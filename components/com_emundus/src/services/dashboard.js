@@ -67,6 +67,21 @@ export default {
         }
     },
 
+    async getDefaultDashboard(profile){
+        try {
+            return await client().get(`index.php?option=com_emundus&controller=dashboard&task=getdefaultdashboard`, {
+                params: {
+                    profile: profile
+                }
+            });
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
     create_UUID(){
         var dt = new Date().getTime();
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
