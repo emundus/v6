@@ -32,6 +32,7 @@
 
         <transition name="fade">
           <Widgets v-if="currentMenu === 1" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
+          <Configuration v-if="currentMenu === 2" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
         </transition>
       </div>
 
@@ -43,10 +44,11 @@
 <script>
 
 import Widgets from "./Widgets";
+import Configuration from "./Configuration";
 export default {
   name: "dashboardTool",
   props: { },
-  components: {Widgets},
+  components: {Configuration, Widgets},
   data() {
     return {
       currentMenu: 1,
