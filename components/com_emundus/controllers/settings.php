@@ -288,7 +288,7 @@ class EmundusControllersettings extends JControllerLegacy {
 
                 if (move_uploaded_file($image["tmp_name"], $target_file)) {
                     $new_content = str_replace('logo.png','logo_custom.png',$logo_module->content);
-                    $this->model->updateLogo($new_content);
+                    $this->m_settings->updateLogo($new_content);
                     $tab = array('status' => 1, 'msg' => JText::_('LOGO_UPDATED'));
                 } else {
                     $tab = array('status' => 0, 'msg' => JText::_('LOGO_NOT_UPDATED'));
