@@ -8,8 +8,14 @@
     <WidgetSettings :profiles="profiles" />
 
     <div class="em-grid-2">
-      <div v-for="(widget,index) in widgets" class="em-shadow-cards" @click="openWidgetParameters(widget.id)" @mouseover="show_title = widget.id" @mouseleave="show_title = 0" :key="'widget_' + widget.id">
-        <span class="em-widget-title" v-show="show_title == widget.id">{{ translate(widget.label) }}</span>
+      <div v-for="(widget,index) in widgets" class="em-shadow-cards" @mouseover="show_title = widget.id" @mouseleave="show_title = 0" :key="'widget_' + widget.id">
+        <div class="em-flex-row em-widget-actions" v-show="show_title == widget.id">
+          <span class="em-widget-title">{{ translate(widget.label) }}</span>
+          <div>
+            <span class="material-icons-outlined em-mr-16" :title="translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_EDIT')" @click="openWidgetParameters(widget.id)">edit</span>
+            <span class="material-icons em-red-500-color" :title="translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_DELETE')" @click="deleteWidget(widget.id)">delete_outline</span>
+          </div>
+        </div>
         <div class="em-hover-blur">
           <ChartRender :widget="widget" :index="index" />
         </div>
@@ -26,6 +32,7 @@ import dashboardService from "../../../services/dashboard";
 import ChartRender from "./ChartRender";
 import WidgetSettings from "./WidgetSettings";
 import userService from 'com_emundus/src/services/user.js';
+import Swal from "sweetalert2";
 
 export default {
   name: "Widgets",
@@ -63,6 +70,32 @@ export default {
       userService.getNoApplicantProfiles().then((response) => {
         this.profiles = response;
       })
+    },
+    deleteWidget(widget_id){
+      Swal.fire({
+        title: this.translate("COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_DELETE"),
+        text: this.translate("COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_CONFIRM_DELETE"),
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
+      }).then(result => {
+        if (result.value) {
+          dashboardService.deleteWidget(widget_id).then((response) => {
+            let widget_found = this.widgets.findIndex((widget, index) => {
+              if(widget.id === widget_id)
+                return true;
+            });
+            this.widgets.splice(widget_found,1);
+          });
+        }
+      });
     }
   }
 }
@@ -82,16 +115,16 @@ export default {
 }
 .em-hover-blur:hover {
   filter: blur(2px);
-  box-shadow: inset 0 0 10px 1px #E3E5E8;
 }
 .em-widget-title{
-  position: absolute;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 24px;
-  height: 100%;
-  transition: all 0.3s ease-in-out;
   font-size: 24px;
+}
+.em-widget-actions{
+  position: absolute;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px;
+  transition: all 0.3s ease-in-out;
+  z-index: 10;
 }
 </style>

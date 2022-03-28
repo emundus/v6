@@ -37,7 +37,6 @@ class EmundusModelDashboard extends JModelList
     }
 
     public function getAllWidgets(){
-        $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);
 
         try {
@@ -51,6 +50,107 @@ class EmundusModelDashboard extends JModelList
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/dashboard | Error at getting all widgets : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return [];
+        }
+    }
+
+    public function saveWidget($widget){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            if(!empty($widget['id']) && $widget['id'] != 'null'){
+                // Delete old profiles access
+                $query->clear()
+                    ->select('id')
+                    ->from($this->_db->quoteName('#__emundus_widgets_repeat_access'))
+                    ->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($widget['id']))
+                    ->andWhere($this->_db->quoteName('profile') . ' NOT IN (' . $this->_db->quote($widget['profile']) . ')');
+                $this->_db->setQuery($query);
+                $old_profiles = $this->_db->loadColumn();
+                foreach ($old_profiles as $old_profile){
+                    $query->clear()
+                        ->delete('#__emundus_widgets_repeat_access')
+                        ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($old_profile));
+                    $this->_db->setQuery($query);
+                    $this->_db->execute();
+                }
+
+                // Insert new profiles
+                $profiles_widget = explode(',',$widget['profile']);
+                foreach ($profiles_widget as $profile){
+                    $query->clear()
+                        ->select('id')
+                        ->from($this->_db->quoteName('#__emundus_widgets_repeat_access'))
+                        ->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($widget['id']))
+                        ->andWhere($this->_db->quoteName('profile') . ' = ' . $this->_db->quote($profile));
+                    $this->_db->setQuery($query);
+                    $access_existing = $this->_db->loadResult();
+
+                    if(empty($access_existing)) {
+                        $query->clear()
+                            ->insert('#__emundus_widgets_repeat_access')
+                            ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($widget['id']))
+                            ->set($this->_db->quoteName('profile') . ' = ' . $this->_db->quote($profile));
+                        $this->_db->setQuery($query);
+                        $this->_db->execute();
+                    }
+                }
+                unset($widget['profiles']);
+                $widget['profile'] = null;
+
+                // Update widget
+                $query->clear()
+                    ->update('#__emundus_widgets');
+                foreach ($widget as $key => $value){
+                    $query->set($this->_db->quoteName($key) . ' = ' . $this->_db->quote($value));
+                }
+                $query->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($widget['id']));
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+            } else {
+                $profiles_widget = explode(',',$widget['profile']);
+                unset($widget['id']);
+                unset($widget['profiles']);
+                unset($widget['params']);
+                $widget['profile'] = null;
+
+                // Insert widget
+                $query->clear()
+                    ->insert('#__emundus_widgets')
+                    ->columns(array_keys($widget))
+                    ->values(implode(',',array_values($this->_db->quote($widget))));
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+                $new_widget = $this->_db->insertid();
+
+                // Insert new profiles
+                foreach ($profiles_widget as $profile){
+                    $query->clear()
+                        ->insert('#__emundus_widgets_repeat_access')
+                        ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($new_widget))
+                        ->set($this->_db->quoteName('profile') . ' = ' . $this->_db->quote($profile));
+                    $this->_db->setQuery($query);
+                    $this->_db->execute();
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error at save widget : ' . $e->getMessage() . ' : ' . $query->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function deleteWidget($widget){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->delete($this->_db->quoteName('#__emundus_widgets'))
+                ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($widget));
+            $this->_db->setQuery($query);
+            return $this->_db->execute();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error at delete widget ' . $widget . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 
@@ -251,6 +351,17 @@ class EmundusModelDashboard extends JModelList
             JLog::add('component/com_emundus/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
             return array('dataset' => '');
         }
+    }
+
+    public function evalCode($code){
+        try {
+            $request = explode('|', $code);
+            return eval("$request[1]");
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error when get eval : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return array('dataset' => '');
+        }
+
     }
 
     public function getarticle($id,$article){

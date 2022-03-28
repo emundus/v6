@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import dashboardService from "../../../services/dashboard";
 import axios from "axios";
 const qs = require("qs");
 
@@ -143,7 +144,7 @@ export default {
 
   created() {
     this.selectedWidget = this.widget;
-    this.id = 'chartobject-' + this.create_UUID();
+    this.id = 'chartobject-' + dashboardService.create_UUID();
     this.render();
   },
 

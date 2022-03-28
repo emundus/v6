@@ -16,7 +16,7 @@
         <span class="em-h4">
           {{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_EDIT') }}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="typeof widget !== 'undefined' ? $modal.hide('modalWidgetSettings' + widget.id) : $modal.hide('modalWidgetSettings')">
+        <button class="em-pointer em-transparent-button" @click.prevent="closeModal()">
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -50,12 +50,30 @@
 
         <div class="em-mb-16" v-show="selectedWidget.type === 'chart' || selectedWidget.type === 'other'">
           <div class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_CODE') }} : </div>
-          <button class="em-secondary-button em-w-auto" @click="displayCode = true;" v-if="!displayCode">
-            {{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_DISPLAY_CODE') }}
-          </button>
-          <button class="em-secondary-button em-w-auto" @click="displayCode = false" v-if="displayCode">
-            {{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_HIDE_CODE') }}
-          </button>
+          <div class="em-flex-row">
+            <div>
+              <button class="em-secondary-button em-w-auto" @click="displayCode = true;" v-if="!displayCode">
+                {{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_DISPLAY_CODE') }}
+              </button>
+              <button class="em-secondary-button em-w-auto" @click="displayCode = false" v-if="displayCode">
+                {{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_HIDE_CODE') }}
+              </button>
+            </div>
+            <div class="em-ml-8">
+              <button class="em-secondary-button em-w-auto" v-if="!displayPreview" @click="displayPreview = true;">
+                {{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_PREVIEW') }}
+              </button>
+              <button class="em-secondary-button em-w-auto" v-if="displayPreview" @click="displayPreview = false;">
+                {{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_PREVIEW_HIDE') }}
+              </button>
+            </div>
+            <div class="em-ml-8" v-if="displayPreview">
+              <span class="material-icons-outlined" @click="preview">replay</span>
+            </div>
+          </div>
+
+          <div v-if="displayPreview" :id="uid" class="em-chart-object"></div>
+
           <prism-editor
               v-show="displayCode"
               class="my-editor em-mt-8"
@@ -82,12 +100,12 @@
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <button type="button"
                 class="em-secondary-button em-w-auto"
-                @click.prevent="typeof widget !== 'undefined' ? $modal.hide('modalWidgetSettings' + widget.id) : $modal.hide('modalWidgetSettings')">
+                @click.prevent="closeModal()">
           {{ translate("COM_EMUNDUS_ONBOARD_ADD_RETOUR") }}
         </button>
         <button type="button"
                 class="em-primary-button em-w-auto"
-                @click.prevent="saveWidget"
+                @click="saveWidget"
         >{{ translate("COM_EMUNDUS_ONBOARD_SAVE") }}</button>
       </div>
 
@@ -97,6 +115,7 @@
 </template>
 
 <script>
+import dashboardService from "../../../services/dashboard";
 import types from '../../../data/dashboard/typeRows'
 import Multiselect from 'vue-multiselect';
 
@@ -107,6 +126,7 @@ import "vue-prism-editor/dist/prismeditor.min.css"; // import the styles somewhe
 import { highlight, languages } from "prismjs/components/prism-core";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
+import ChartRender from "./ChartRender";
 
 export default {
   name: "WidgetSettings",
@@ -115,6 +135,7 @@ export default {
     profiles: Array
   },
   components: {
+    ChartRender,
     Multiselect,
     PrismEditor
   },
@@ -140,10 +161,25 @@ export default {
 
       loading: false,
       displayCode: false,
+      displayPreview: false,
+      uid: null,
     };
   },
   methods: {
-    saveWidget(){},
+    saveWidget(){
+      this.selectedWidget.chart_type = this.selectedWidget.chart_type.value;
+
+      let profiles = [];
+      for(const value of this.selectedWidget.profile) {
+        profiles.push(value.id)
+      }
+      profiles.join(',');
+      this.selectedWidget.profile = profiles;
+
+      dashboardService.saveWidget(this.selectedWidget).then((response) => {
+        this.closeModal();
+      });
+    },
 
     buildWidget() {
       this.chart_types = types['types'];
@@ -191,13 +227,43 @@ export default {
         }
         this.displayCode = true;
       }
+
+      this.uid = 'chartobject-' + dashboardService.create_UUID();
     },
 
     highlighter(code) {
       return highlight(code, languages.js, 'js'); //returns html
     },
+
+    closeModal(){
+      typeof this.widget !== 'undefined' ? this.$modal.hide('modalWidgetSettings' + this.widget.id) : this.$modal.hide('modalWidgetSettings');
+    },
+
+    preview(){
+      dashboardService.renderPreview(this.selectedWidget.eval).then((response) => {
+        console.log(response);
+        const chartConfig = {
+          type: this.selectedWidget.chart_type.value,
+          renderAt: this.uid,
+          width: '100%',
+          height: '250',
+          dataFormat: 'json',
+          dataSource: response.data.data
+        };
+        FusionCharts.ready(function () {
+          let fusioncharts = new FusionCharts(chartConfig);
+          fusioncharts.render();
+        });
+      });
+    }
   },
-  watch: {},
+  watch: {
+    displayPreview: function(value){
+      if(value) {
+        this.preview();
+      }
+    }
+  },
 };
 </script>
 
@@ -232,7 +298,7 @@ export default {
 }
 
 .prism-editor__editor{
-  opacity: 0 !important;
+  display: none;
 }
 
 .prism-editor__line-numbers{
@@ -243,5 +309,11 @@ export default {
 
 .prism-editor__container{
   width: 100% !important;
+  min-height: 300px;
+}
+.em-chart-object{
+  border: solid 1px #E3E5E8;
+  border-radius: 4px;
+  margin-top: 16px;
 }
 </style>

@@ -1,13 +1,11 @@
 import client from './axiosClient';
 
 export default {
-    async saveWidget(config,type) {
+    async saveWidget(widget) {
         try {
-            const formData = new FormData();
-            formData.append('config', JSON.stringify(config));
-            formData.append('type', type);
+            const formData = this.getObjectFormData(widget);
 
-            return await client().post(`index.php?option=com_emundus&controller=sync&task=saveconfig`,
+            return await client().post(`index.php?option=com_emundus&controller=dashboard&task=savewidget`,
                 formData,
                 {
                     headers: {
@@ -15,6 +13,21 @@ export default {
                     }
                 }
             );
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
+    async deleteWidget(widget){
+        try {
+            return await client().delete(`index.php?option=com_emundus&controller=dashboard&task=deletewidget`, {
+                params: {
+                    id: widget
+                }
+            });
         } catch (e) {
             return {
                 status: false,
@@ -33,4 +46,39 @@ export default {
             };
         }
     },
+
+    async renderPreview(code) {
+        try {
+            const formData = new FormData();
+
+            formData.append('code', code);
+            return await client().post(`index.php?option=com_emundus&controller=dashboard&task=getevalcode`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
+    create_UUID(){
+        var dt = new Date().getTime();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            var r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+        });
+    },
+
+    getObjectFormData(object) {
+        const formData = new FormData();
+        Object.keys(object).forEach(key => formData.append(key, object[key]));
+        return formData;
+    }
 };

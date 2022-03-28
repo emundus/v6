@@ -44,6 +44,38 @@ class EmundusControllerDashboard extends JControllerLegacy
         exit;
     }
 
+    public function savewidget(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+
+            $widget = $jinput->post->getArray();
+
+            $result = $this->model->saveWidget($widget);
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function deletewidget(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+
+            $widget = $jinput->get('id');
+
+            $result = $this->model->deleteWidget($widget);
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getallwidgetsbysize(){
         try {
             $user = JFactory::getUser();
@@ -257,6 +289,24 @@ class EmundusControllerDashboard extends JControllerLegacy
         exit;
     }
 
+    public function getevalcode(){
+        try {
+            if (!EmundusHelperAccess::asCoordinatorAccessLevel(JFactory::getUser()->id)) {
+                $result = 0;
+                $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            } else {
+                $jinput = JFactory::getApplication()->input;
+                $code = $jinput->post->getArray();
+                $results = $this->model->evalCode($code['code']);
+
+                $tab = array('msg' => 'success', 'data' => $results);
+            }
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 
     /** Sciences PO */
     public function getfilescountbystatusgroupbydate(){
