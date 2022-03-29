@@ -80,4 +80,28 @@ export default {
             };
         }
     },
+
+    async deleteAttachments(uploadIds) {
+        try {
+            const formData = new FormData();
+            formData.append('upload_ids', JSON.stringify(uploadIds));
+
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=sync&task=deleteattachments',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
 };

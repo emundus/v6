@@ -469,6 +469,8 @@ class FileSynchronizer
         if (!empty($nodeId)) {
             $response_code = $this->delete($this->coreUrl . "/nodes/$nodeId");
 
+            echo json_encode(array('status' => $response_code));
+            exit;
             // 404 means the node doesn't exist
             if ($response_code == 204 || $response_code == 404) {
                 $db = JFactory::getDbo();
@@ -483,6 +485,8 @@ class FileSynchronizer
             } else {
                 JLog::add('Could not delete file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
             }
+        } else {
+            JLog::add('Could not get node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
         }
 
         return false;
@@ -584,7 +588,12 @@ class FileSynchronizer
             ->where("upload_id = " . $db->quote($upload_id));
         $db->setQuery($query);
 
-        return $db->loadResult();
+        try {
+            return $db->loadResult();
+        } catch (\Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            return '';
+        }
     }
 
     private function saveNodeId($upload_id, $node_id, $path)

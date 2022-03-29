@@ -678,12 +678,22 @@ export default {
             (attachment) => !this.checkedAttachments.includes(attachment.aid)
         );
 
-        // delete all checkedAttachments
-        const response = await attachmentService.deleteAttachments(
-            this.displayedFnum,
-            this.displayedUser.id,
-            this.checkedAttachments
-        );
+        let response = null;
+        if (this.sync) {
+          syncService.deleteAttachments(this.checkedAttachments).then(async (response) => {
+            response = await attachmentService.deleteAttachments(
+                this.displayedFnum,
+                this.displayedUser.id,
+                this.checkedAttachments
+            );
+          });
+        } else {
+          response = await attachmentService.deleteAttachments(
+              this.displayedFnum,
+              this.displayedUser.id,
+              this.checkedAttachments
+          );
+        }
 
         if (response.status === true) {
           // Display tooltip deleted succesfully

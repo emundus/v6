@@ -194,4 +194,20 @@ class EmundusControllerSync extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function deleteattachments()
+    {
+        $upload_ids = JFactory::getApplication()->input->get('upload_ids', array(), 'array');
+        $upload_ids = json_decode($upload_ids[0]);
+
+        if (!empty($upload_ids) && is_array($upload_ids)) {
+            $updated = $this->m_sync->deleteAttachments($upload_ids);
+            $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENTS_SYNC_DELETED'), 'data' => $updated);
+        } else {
+            $tab = array('status' => 0, 'msg' => JText::_('MISSING_UPLOAD_IDS'));
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

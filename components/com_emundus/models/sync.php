@@ -214,6 +214,30 @@ class EmundusModelSync extends JModelList {
     {
         $states = array();
 
+        $upload_ids_by_type = $this->getUploadIdsByType($upload_ids);
+
+        foreach ($upload_ids_by_type as $type => $upload_ids) {
+            $states = array_merge($this->synchronizeAttachmentsByType($type, $upload_ids), $states);
+        }
+
+        return $states;
+    }
+
+    function deleteAttachments($upload_ids)
+    {
+        $states = array();
+
+        $upload_ids_by_type = $this->getUploadIdsByType($upload_ids);
+
+        foreach ($upload_ids_by_type as $type => $upload_ids) {
+            $states = array_merge($this->deleteAttachmentsByType($type, $upload_ids), $states);
+        }
+
+        return $states;
+    }
+
+    private function getUploadIdsByType($upload_ids)
+    {
         $upload_ids_by_type = array();
         foreach ($upload_ids as $upload_id) {
             $type = $this->getSyncType($upload_id);
@@ -227,11 +251,7 @@ class EmundusModelSync extends JModelList {
             }
         }
 
-        foreach ($upload_ids_by_type as $type => $upload_ids) {
-            $states = array_merge($this->synchronizeAttachmentsByType($type, $upload_ids), $states);
-        }
-
-        return $states;
+        return $upload_ids_by_type;
     }
 
     private function synchronizeAttachmentsByType($type, $upload_ids)
@@ -241,8 +261,23 @@ class EmundusModelSync extends JModelList {
         require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'api' . DS . 'FileSynchronizer.php');
         if (class_exists('FileSynchronizer')) {
             $synchronizer = new FileSynchronizer($type);
-            foreach($upload_ids as $upload_id) {
+            foreach ($upload_ids as $upload_id) {
                 $states[$upload_id] = $synchronizer->updateFile($upload_id);
+            }
+        }
+
+        return $states;
+    }
+
+    private function deleteAttachmentsByType($type, $upload_ids)
+    {
+        $states = array();
+
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'api' . DS . 'FileSynchronizer.php');
+        if (class_exists('FileSynchronizer')) {
+            $synchronizer = new FileSynchronizer($type);
+            foreach ($upload_ids as $upload_id) {
+                $states[$upload_id] = $synchronizer->deleteFile($upload_id);
             }
         }
 
