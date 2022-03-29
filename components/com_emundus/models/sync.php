@@ -236,6 +236,19 @@ class EmundusModelSync extends JModelList {
         return $states;
     }
 
+    function checkAttachmentsExists($upload_ids)
+    {
+        $states = array();
+
+        $upload_ids_by_type = $this->getUploadIdsByType($upload_ids);
+
+        foreach ($upload_ids_by_type as $type => $upload_ids) {
+            $states = array_merge($this->checkAttachmentsExistsByType($type, $upload_ids), $states);
+        }
+
+        return $states;
+    }
+
     private function getUploadIdsByType($upload_ids)
     {
         $upload_ids_by_type = array();
@@ -278,6 +291,21 @@ class EmundusModelSync extends JModelList {
             $synchronizer = new FileSynchronizer($type);
             foreach ($upload_ids as $upload_id) {
                 $states[$upload_id] = $synchronizer->deleteFile($upload_id);
+            }
+        }
+
+        return $states;
+    }
+
+    private function checkAttachmentsExistsByType($type, $upload_ids)
+    {
+        $states = array();
+
+        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'api' . DS . 'FileSynchronizer.php');
+        if (class_exists('FileSynchronizer')) {
+            $synchronizer = new FileSynchronizer($type);
+            foreach ($upload_ids as $upload_id) {
+                $states[$upload_id] = $synchronizer->checkFileExists($upload_id);
             }
         }
 

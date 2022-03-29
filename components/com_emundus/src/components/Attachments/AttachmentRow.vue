@@ -146,9 +146,7 @@ export default {
 	mounted() {
 		this.categories = this.$store.state.attachment.categories;
 		if (Object.entries(this.categories).length > 0) {
-			this.category = this.categories[this.attachment.category]
-				? this.categories[this.attachment.category]
-				: "";
+			this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
 		}
 
 		this.checkedAttachments = this.checkedAttachmentsProp;
@@ -185,10 +183,10 @@ export default {
 			}
 		},
     async getSynchronizeState(aid) {
-      const response = await syncService.getSynchronizeState(aid);
+      const response = await syncService.checkAttachmentsExists([aid]);
 
       if (response.status) {
-        return response.data;
+        return response.data[0];
       }
 
       return false;

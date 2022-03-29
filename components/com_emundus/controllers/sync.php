@@ -210,4 +210,21 @@ class EmundusControllerSync extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function checkattachmentsexists()
+    {
+        $upload_ids = JFactory::getApplication()->input->get('upload_ids', array(), 'array');
+        $upload_ids = json_decode($upload_ids[0]);
+
+        if (!empty($upload_ids)) {
+            $attachments_exists = $this->m_sync->checkAttachmentsExists($upload_ids);
+
+            $tab['status'] = 1;
+            $tab['msg'] = JText::_('ATTACHMENT_FOUND');
+            $tab['data'] = $attachments_exists;
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

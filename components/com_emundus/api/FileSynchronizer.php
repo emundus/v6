@@ -469,8 +469,6 @@ class FileSynchronizer
         if (!empty($nodeId)) {
             $response_code = $this->delete($this->coreUrl . "/nodes/$nodeId");
 
-            echo json_encode(array('status' => $response_code));
-            exit;
             // 404 means the node doesn't exist
             if ($response_code == 204 || $response_code == 404) {
                 $db = JFactory::getDbo();
@@ -490,6 +488,41 @@ class FileSynchronizer
         }
 
         return false;
+    }
+
+    public function checkFileExists($upload_id) {
+        $exists = false;
+
+        switch ($this->type) {
+            case 'ged':
+                $nodeId = $this->getNodeId($upload_id);
+                if (!empty($nodeId)) {
+                    $response = $this->get($this->coreUrl . "/nodes/$nodeId");
+                    $exists = !empty($response->entry->id);
+                }
+                break;
+            default:
+                break;
+        }
+
+        // update upload sync state
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $state = $exists ? 1 : 0;
+        $query->update('#__emundus_uploads_sync')
+            ->set('state = ' . $db->quote($state))
+            ->where('upload_id = ' . $db->quote($upload_id));
+
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Could not update upload sync state for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+        }
+
+        return $exists;
     }
 
     private function getRelativePaths(): array
