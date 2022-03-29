@@ -246,6 +246,7 @@ import ModalMenu from "../components/formClean/ModalMenu";
 import formbuilderService from "../services/formbuilder";
 import formService from "../services/form";
 import campaignService from "../services/campaign";
+import settingsService from "../services/settings";
 
 import _ from 'lodash';
 import ModalAffectCampaign from "../components/formClean/ModalAffectCampaign";
@@ -956,8 +957,10 @@ export default {
      * Récupère le nom du formulaire
      */
     getProfileLabel(profile_id) {
-         formService.getProfileLabel(profile_id).then(response => {
-            this.profileLabel = response.data.data.label;
+         formService.getProfileLabelByProfileId(profile_id).then(response => {
+           if (status !== false) {
+             this.profileLabel = response.data.data.label;
+           }
          }).catch(e => {
             console.log(e);
          });
@@ -1065,17 +1068,9 @@ export default {
     // Draggable pages
     reorderItems(){
       this.formList.forEach(item => {
-        axios({
-          method: "post",
-          url:
-              "index.php?option=com_emundus&controller=formbuilder&task=reordermenu",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({
-            rgt: item.rgt,
-            link: item.link
-          })
+        formbuilderService.reorderMenu({
+          rgt: item.rgt,
+          link: item.link
         }).catch(e => {
           console.log(e);
         });
@@ -1126,14 +1121,12 @@ export default {
 
     // Get languages
     getLanguages(){
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages",
-      }).then(response => {
-        this.languages = response.data.data;
+      settingsService.getActiveLanguages().then(response => {
+        if (response.status !== false) {
+          this.languages = response.data.data;
+        }
       });
     }
-    //
   },
   created() {
     // Get datas that we need with store
