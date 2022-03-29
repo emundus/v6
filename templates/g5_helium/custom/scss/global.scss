@@ -5525,5 +5525,9 @@ fieldset[disabled] .multiselect {
     height: 100%;
   }
 }
+
+.em-grab .fusioncharts-container svg{
+  cursor: grabbing !important;
+}
 /** **/
 

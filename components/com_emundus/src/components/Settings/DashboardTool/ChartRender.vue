@@ -200,10 +200,6 @@ export default {
     background: white;
   }
 
-  .fusioncharts-container svg{
-    cursor: pointer !important;
-  }
-
   /** Loader **/
   .lds-ring {
     display: inline-block;

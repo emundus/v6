@@ -180,6 +180,74 @@ class EmundusModelDashboard extends JModelList
         }
     }
 
+    public function getWidgetsByProfile($profile){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('ew.id,ew.label')
+                ->from($this->_db->quoteName('#__emundus_widgets_repeat_access','esdr'))
+                ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.parent_id'))
+                ->where($this->_db->quoteName('esdr.default') . ' = ' . $this->_db->quote(0))
+                ->andWhere($this->_db->quoteName('esdr.profile') . ' = ' . $this->_db->quote($profile))
+                ->order('esdr.position');
+            $this->_db->setQuery($query);
+            $widgets = $this->_db->loadObjectList();
+
+            if (!empty($widgets)) {
+                foreach ($widgets as $key => $widget) {
+                    $widgets[$key]->label = JText::_($widget->label);
+                }
+            }
+
+            return $widgets;
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets by profile : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
+    public function addDefaultWidget($widget,$profile){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('max(position)')
+                ->from($this->_db->quoteName('#__emundus_widgets_repeat_access'))
+                ->where($this->_db->quoteName('profile') . ' = ' . $this->_db->quote($profile));
+            $this->_db->setQuery($query);
+            $position = $this->_db->loadResult() + 1;
+
+            $query->clear()
+                ->select('id')
+                ->from($this->_db->quoteName('#__emundus_widgets_repeat_access'))
+                ->where($this->_db->quoteName('profile') . ' = ' . $this->_db->quote($profile))
+                ->andWhere($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($widget));
+            $this->_db->setQuery($query);
+            $widget_access = $this->_db->loadResult();
+
+            if(empty($widget_access)) {
+                $query->clear()
+                    ->insert('#__emundus_widgets_repeat_access')
+                    ->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($widget))
+                    ->set($this->_db->quoteName('profile') . ' = ' . $this->_db->quote($profile))
+                    ->set($this->_db->quoteName('default') . ' = ' . $this->_db->quote(1))
+                    ->set($this->_db->quoteName('position') . ' = ' . $this->_db->quote($position));
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            } else {
+                $query->clear()
+                    ->update($this->_db->quoteName('#__emundus_widgets_repeat_access'))
+                    ->set($this->_db->quoteName('default') . ' = 1')
+                    ->set($this->_db->quoteName('position') . ' = ' . $this->_db->quote($position))
+                    ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($widget_access));
+                $this->_db->setQuery($query);
+                return $this->_db->execute();
+            }
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets by profile : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return [];
+        }
+    }
+
     public function getDashboard($user_id){
         $this->_db = JFactory::getDbo();
         $query = $this->_db->getQuery(true);

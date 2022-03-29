@@ -82,6 +82,42 @@ export default {
         }
     },
 
+    async getWidgetsByProfile(profile){
+        try {
+            return await client().get(`index.php?option=com_emundus&controller=dashboard&task=getwidgetsbyprofile`, {
+                params: {
+                    profile: profile
+                }
+            });
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
+    async addDefaultWidget(widget,profile){
+        try {
+            const formData = new FormData();
+
+            formData.append('widget', widget);
+            formData.append('profile', profile);
+            return await client().post(`index.php?option=com_emundus&controller=dashboard&task=adddefaultwidget`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
     create_UUID(){
         var dt = new Date().getTime();
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
