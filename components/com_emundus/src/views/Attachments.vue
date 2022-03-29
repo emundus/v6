@@ -355,6 +355,11 @@ export default {
   },
   created() {
     this.changeFileEvent = new Event("changeFile");
+    window.addEventListener('message', function (e) {
+      if (e.data == 'addFileToFnum') {
+        this.refreshAttachments(true);
+      }
+    }.bind(this));
   },
   mounted() {
     this.loading = true;
