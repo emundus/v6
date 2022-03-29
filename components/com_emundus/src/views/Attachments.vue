@@ -565,7 +565,6 @@ export default {
           });
         }
       }
-
       this.canExport = this.$store.state.user.rights[this.displayedFnum]
           ? this.$store.state.user.rights[this.displayedFnum].canExport
           : false;
