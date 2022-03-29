@@ -11,6 +11,7 @@
 <script>
 import moment from "moment";
 import Attachments from "./views/Attachments.vue";
+import fileService from "./services/file.js";
 
 export default {
 	props: {
@@ -26,7 +27,14 @@ export default {
 	components: {
 		Attachments,
 	},
-	mounted() {
+  beforeCreate() {
+    fileService.isDataAnonymized().then(response => {
+      if (response.status !== false) {
+        this.$store.dispatch("global/setAnonyme", response.anonyme);
+      }
+    });
+  },
+  mounted() {
 		if (this.data.lang) {
 			this.$store.dispatch("global/setLang", this.data.lang.split("-")[0]);
 		} else {
@@ -35,7 +43,6 @@ export default {
 
 		moment.locale(this.$store.state.global.lang);
 
-		// baseUrl
 		if (this.data.base) {
 			this.$store.dispatch(
 				"attachment/setAttachmentPath",
