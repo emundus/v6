@@ -168,5 +168,17 @@ export default {
                 error:error
             };
         }
-    }
+    },
+    async getPageObject(formId)
+    {
+        try {
+            const response = await client().get('index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean');
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
+    },
 };
