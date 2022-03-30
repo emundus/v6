@@ -1265,7 +1265,8 @@ export default {
 
     // Draggable trigger
     SomethingChange: function(evt) {
-      let elt_id = evt.item.childNodes[0].id
+      console.log(evt);
+      let elt_id = evt.item.childNodes[1].id
       this.groups.forEach(group => {
         group.elts.forEach(element => {
           if(element.id == elt_id){
