@@ -1207,38 +1207,43 @@ export default {
 -->
 
 <template>
-  <div id="form-builder">
-    <header class="em-flex-row em-flex-space-between">
-      <div class="right-actions">
-        <span class="material-icons">
-          navigate_before
-        </span>
-      </div>
-      <span class="em-h4">{{ title }}</span>
-      <div class="left-actions em-flex-row em-flex-space-between">
-        <span class="material-icons">
-          save
-        </span>
-        <span class="material-icons">
-          visibility
-        </span>
-        <button class="em-primary-button">Publier</button>
-      </div>
-    </header>
-    <div class="body em-flex-row em-flex-space-between">
+  <div :id="'formBuilder'">
+    <modal
+        :name="'formBuilder'"
+        height="auto"
+        transition="fade"
+        :delay="100"
+        :adaptive="true"
+        :clickToClose="false"
+    >
+      <header class="em-flex-row em-flex-space-between">
+        <div class="right-actions">
+          <span class="material-icons">
+            navigate_before
+          </span>
+        </div>
+        <span class="em-h4">{{ title }}</span>
+        <div class="left-actions em-flex-row em-flex-space-between">
+          <span class="material-icons">
+            save
+          </span>
+          <span class="material-icons">
+            visibility
+          </span>
+          <button class="em-primary-button">Publier</button>
+        </div>
+      </header>
+      <div class="body em-flex-row em-flex-space-between">
       <aside class="left-panel">
-        <form-builder-elements>
-        </form-builder-elements>
-      </aside>
-      <section>
-
-      </section>
-      <aside class="right-panel">
-        <span class="material-icons">
-
-        </span>
-      </aside>
-    </div>
+        <form-builder-elements></form-builder-elements>
+        </aside>
+        <section>
+        </section>
+        <aside class="right-panel">
+          <span class="material-icons"></span>
+        </aside>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -1266,6 +1271,9 @@ export default {
     this.campaign_id = this.$store.state.global.datas.cid.value;
     this.getFormTitle();
   },
+  mounted() {
+    this.$modal.show('formBuilder');
+  },
   methods: {
     getFormTitle() {
       formService.getProfileLabelByProfileId(this.profile_id).then(response => {
@@ -1279,7 +1287,7 @@ export default {
 </script>
 
 <style lang="scss">
-#form-builder {
+#formBuilder {
   width: 100%;
   background: white;
 
