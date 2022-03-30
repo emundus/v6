@@ -170,6 +170,8 @@ class EmundusModelFormbuilder extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($page));
                 $db->setQuery($query);
                 $db->execute();
+            } else {
+                $this->updateTranslation($labelTofind,$NewSubLabel);
             }
             return $new_key;
         }  catch(Exception $e) {
