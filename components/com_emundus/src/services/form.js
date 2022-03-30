@@ -73,14 +73,13 @@ export default {
     },
     async getProfileLabelByProfileId(id)
     {
+        const formData = new FormData();
+        formData.append('profile_id', id);
+
         try {
-            const response = await client().get(
+            const response = await client().post(
                 'index.php?option=com_emundus&controller=form&task=getProfileLabelByProfileId',
-                {
-                    params: {
-                        profile_id: id
-                    }
-                }
+                formData
             );
 
             return response;

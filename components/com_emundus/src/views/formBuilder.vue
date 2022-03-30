@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="em-w-100">
     <notifications
         group="foo-velocity"
@@ -1202,5 +1202,89 @@ export default {
 .em-sidebar-divider{
   border-color: black;
   margin: 8px 0;
+}
+</style>
+-->
+
+<template>
+  <div id="form-builder">
+    <header class="em-flex-row em-flex-space-between">
+      <div class="right-actions">
+        <span class="material-icons">
+          navigate_before
+        </span>
+      </div>
+      <span class="em-h4">{{ title }}</span>
+      <div class="left-actions em-flex-row em-flex-space-between">
+        <span class="material-icons">
+          save
+        </span>
+        <span class="material-icons">
+          visibility
+        </span>
+        <button class="em-primary-button">Publier</button>
+      </div>
+    </header>
+    <div class="body em-flex-row em-flex-space-between">
+      <aside class="left-panel">
+        <form-builder-elements>
+        </form-builder-elements>
+      </aside>
+      <section>
+
+      </section>
+      <aside class="right-panel">
+        <span class="material-icons">
+
+        </span>
+      </aside>
+    </div>
+  </div>
+</template>
+
+<script>
+// components
+import FormBuilderElements  from "../components/FormBuilder/FormBuilderElements";
+
+// services
+import formService from '../services/form.js';
+
+export default {
+  name: 'FormBuilder',
+  components: {
+    FormBuilderElements
+  },
+  data() {
+    return {
+      profile_id: 0,
+      campaign_id: 0,
+      title: '',
+    }
+  },
+  created() {
+    this.profile_id = this.$store.state.global.datas.prid.value;
+    this.campaign_id = this.$store.state.global.datas.cid.value;
+    this.getFormTitle();
+  },
+  methods: {
+    getFormTitle() {
+      formService.getProfileLabelByProfileId(this.profile_id).then(response => {
+        if (response.status !== false) {
+          this.title = response.data.data.label;
+        }
+      });
+    }
+  },
+}
+</script>
+
+<style lang="scss">
+#form-builder {
+  width: 100%;
+  background: white;
+
+  section {
+    background: #f8f8f8;
+  }
 }
 </style>

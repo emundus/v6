@@ -617,7 +617,7 @@ class EmundusControllerForm extends JControllerLegacy {
 	        $jinput = JFactory::getApplication()->input;
 
 	        $profile_id = $jinput->getInt('profile_id');
-
+            
             $form = $this->m_form->getProfileLabelByProfileId($profile_id);
 
             if (!empty($form)) {
