@@ -2,20 +2,23 @@
   <div id="form-builder-elements">
     <span class="em-h5 em-text-align-center"> Éléments </span>
     <draggable
-        :list="elements"
+        v-model="elements"
         group="form-builder-elements"
         class="draggables-list"
+        @start="onDragStart"
         @end="onDragEnd"
     >
-      <div
-          v-for="element in publishedElements"
-          :key="element.id"
-          class="form-builder-element em-flex-row em-flex-space-between"
-      >
-        <span class="material-icons">{{ element.icon }}</span>
-        <span>{{ translate(element.name) }}</span>
-        <span class="material-icons"> drag_indicator</span>
-      </div>
+      <transition-group>
+        <div
+            v-for="element in publishedElements"
+            :key="element.id"
+            class="form-builder-element em-flex-row em-flex-space-between"
+        >
+          <span class="material-icons">{{ element.icon }}</span>
+          <span>{{ translate(element.name) }}</span>
+          <span class="material-icons"> drag_indicator</span>
+        </div>
+      </transition-group>
     </draggable>
   </div>
 </template>
@@ -25,6 +28,9 @@
 import draggable from "vuedraggable";
 
 export default {
+  components: {
+    draggable
+  },
   data() {
     return {
       elements: [],
@@ -38,8 +44,7 @@ export default {
       return require('@/data/form-builder-elements.json');
     },
     onDragEnd(event) {
-      console.log(event);
-      this.$emit('dragged', event);
+      this.$emit('drag-end', event);
     }
   },
   computed: {
@@ -71,5 +76,6 @@ export default {
   margin: 8px 0px;
   background-color: #FAFAFA;
   border: 1px solid #F2F2F3;
+  cursor: grab;
 }
 </style>

@@ -28,7 +28,9 @@
       </header>
       <div class="body em-flex-row em-flex-space-between">
         <aside class="left-panel em-flex-column">
-          <form-builder-elements></form-builder-elements>
+          <form-builder-elements
+            @drag-end="onDragElementEnd"
+          ></form-builder-elements>
         </aside>
         <section class="em-flex-column">
           <form-builder-page
@@ -105,6 +107,9 @@ export default {
         this.selectedPage = this.pages[0].id;
       });
     },
+    onDragElementEnd(event) {
+      console.log(event);
+    }
   },
   computed: {
     currentPage() {

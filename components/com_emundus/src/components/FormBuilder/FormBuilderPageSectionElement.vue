@@ -1,38 +1,37 @@
 <template>
-  <Component
-      :is="element.plugin"
-      :element="element"
-  ></Component>
+  <div class="form-builder-page-section-element">
+    <span
+        v-if="element.label_value && element.labelsAbove != 2"
+        v-html="element.label_value"
+    ></span>
+    <div class="element-field">
+      <date-picker
+          v-if="element.plugin == 'birthday'"
+          :config="{
+            format: 'DD/MM/YYYY',
+            useCurrent: false
+          }"
+          :v-model="element.value"
+      ></date-picker>
+    </div>
+  </div>
 </template>
 
 <script>
-import field from "../formClean/Plugin/field";
-import birthday from "../formClean/Plugin/birthday";
-import checkbox from "../formClean/Plugin/checkbox";
-import dropdown from "../formClean/Plugin/dropdown";
-import radiobtn from "../formClean/Plugin/radiobtn";
-import textarea from "../formClean/Plugin/textarea";
-import display from "../formClean/Plugin/display";
-import file from "../formClean/Plugin/fileupload";
-import yesno from '../formClean/Plugin/yesno';
+import DatePicker from "vue-bootstrap-datetimepicker";
 
 export default {
   components: {
-    field,
-    birthday,
-    checkbox,
-    dropdown,
-    radiobtn,
-    textarea,
-    display,
-    file,
-    yesno
+    DatePicker
   },
   props: {
     element: {
       type: Object,
       default: () => ({})
     },
+  },
+  mounted() {
+    console.log(this.element.plugin);
   },
 }
 </script>
