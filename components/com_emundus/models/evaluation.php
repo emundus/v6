@@ -3635,11 +3635,17 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     private function deleteAll($dir) {
-        foreach(glob($dir . '/*') as $file) {
-            if(is_dir($file)) { deleteAll($file); }
-            else { unlink($file); }
+        if(!empty($dir) && strpos(JPATH_BASE . DS . 'tmp/',$dir) !== false) {
+            foreach (glob($dir . '/*') as $file) {
+                if (is_dir($file)) {
+                    $this->deleteAll($file);
+                } else {
+                    unlink($file);
+                }
+            }
+            rmdir($dir);
+            return 0;
         }
-        rmdir($dir);
         return 0;
     }
 }
