@@ -182,7 +182,7 @@ export default {
     },
 
     removeStatus(status, index) {
-      if(statu.edit == 1 && statu.step != 0 && statu.step != 1) {
+      if(status.edit == 1 && status.step != 0 && status.step != 1) {
         this.$emit('updateSaving',true);
 
         axios({
