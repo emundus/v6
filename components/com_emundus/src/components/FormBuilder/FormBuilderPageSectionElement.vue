@@ -1,5 +1,5 @@
 <template>
-  <div class="form-builder-page-section-element">
+  <div class="form-builder-page-section-element" @click="$emit('open-element-properties')">
     <p
         v-if="element.label_value && element.labelsAbove != 2"
         class="element-title"

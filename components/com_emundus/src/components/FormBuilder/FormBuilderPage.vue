@@ -12,6 +12,7 @@
           :section="section"
           :index="index+1"
           :totalSections="sections.length"
+          @open-element-properties="$emit('open-element-properties', $event)"
       >
       </form-builder-page-section>
     </div>

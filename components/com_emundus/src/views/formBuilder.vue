@@ -57,10 +57,12 @@
               :key="currentPage.id"
               :profile_id="profile_id"
               :page="currentPage"
+              @open-element-properties="onOpenElementProperties"
           ></form-builder-page>
         </section>
         <aside class="right-panel em-flex-column">
           <form-builder-pages
+              v-if="!showElementProperties"
               :pages="pages"
               :selected="selectedPage"
               :profile_id="profile_id"
@@ -69,9 +71,15 @@
           ></form-builder-pages>
           <hr>
           <form-builder-documents
+              v-if="!showElementProperties"
               :profile_id="profile_id"
               :campaign_id="campaign_id"
           ></form-builder-documents>
+          <form-builder-element-properties
+              v-if="showElementProperties"
+              @close="showElementProperties = false"
+              :element="selectedElement"
+          ></form-builder-element-properties>
         </aside>
       </div>
     </modal>
@@ -81,6 +89,7 @@
 <script>
 // components
 import FormBuilderElements  from "../components/FormBuilder/FormBuilderElements";
+import FormBuilderElementProperties  from "../components/FormBuilder/FormBuilderElementProperties";
 import FormBuilderPage      from "../components/FormBuilder/FormBuilderPage";
 import FormBuilderPages     from "../components/FormBuilder/FormBuilderPages";
 import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
@@ -92,6 +101,7 @@ export default {
   name: 'FormBuilder',
   components: {
     FormBuilderElements,
+    FormBuilderElementProperties,
     FormBuilderPage,
     FormBuilderPages,
     FormBuilderDocuments
@@ -103,6 +113,8 @@ export default {
       title: '',
       pages: [],
       selectedPage: 0,
+      selectedElement: null,
+      showElementProperties: false,
       leftPanel: {
         tabs: [
           {
@@ -149,6 +161,11 @@ export default {
       // refresh form-builder-page sub component
 
       this.$refs.formBuilderPage.getSections();
+    },
+    onOpenElementProperties(event)
+    {
+      console.log(event);
+      this.showElementProperties = true;
     },
     selectTab(index) {
       // unset selected tab

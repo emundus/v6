@@ -20,6 +20,7 @@
               v-for="element in sectionElementsAsArray"
               :key="element.id"
               :element="element"
+              @open-element-properties="$emit('open-element-properties', element)"
             >
             </form-builder-page-section-element>
           </transition-group>
@@ -69,7 +70,7 @@ export  default {
   methods: {
     onDragEnd(event) {
       // get new order of elements
-    }
+    },
   },
   computed: {
     sectionElementsAsArray() {
