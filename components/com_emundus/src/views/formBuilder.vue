@@ -11,7 +11,8 @@
       <header class="em-flex-row em-flex-space-between">
         <div class="right-actions">
           <span
-              class="material-icons"
+              id="go-back"
+              class="material-icons em-p-12-16"
               @click="goTo('/formulaires')"
           >
             navigate_before
@@ -30,10 +31,23 @@
         </div>
       </header>
       <div class="body em-flex-row em-flex-space-between">
-        <aside class="left-panel em-flex-column">
-          <form-builder-elements
-            @drag-end="onDragElementEnd"
-          ></form-builder-elements>
+        <aside class="left-panel em-flex-row em-flex-start">
+          <div class="tabs em-flex-column em-flex-start">
+            <div class="tab" v-for="(tab, index) in leftPanel.tabs" :key="index" :class="{ active: tab.active }">
+              <span
+
+                  class="material-icons"
+                  @click="tab.url ? goTo(tab.url, 'blank') : selectTab(index)">
+                {{ tab.icon }}
+              </span>
+            </div>
+          </div>
+          <div class="tab-content em-flex-start">
+            <form-builder-elements
+                v-if="leftPanelActiveTab === 'Elements'"
+                @drag-end="onDragElementEnd"
+            ></form-builder-elements>
+          </div>
         </aside>
         <section class="em-flex-column">
           <form-builder-page
@@ -85,6 +99,21 @@ export default {
       title: '',
       pages: [],
       selectedPage: 0,
+      leftPanel: {
+        tabs: [
+          {
+            title: 'Elements',
+            icon: 'edit_note',
+            active: true
+          },
+          {
+            title: 'Translations',
+            icon: 'translate',
+            active: false,
+            url: '/parametres-globaux'
+          },
+        ],
+      },
     }
   },
   created() {
@@ -113,14 +142,32 @@ export default {
     onDragElementEnd(event) {
       console.log(event);
     },
-    goTo(url) {
+    selectTab(index) {
+      // unset selected tab
+      this.leftPanel.tabs.forEach(tab => {
+        tab.active = false;
+      });
+      // set selected tab
+      this.leftPanel.tabs.forEach((tab, i) => {
+        tab.active = (i === index);
+      });
+    },
+    goTo(url, blank = false) {
       const baseUrl = window.location.origin;
-      window.location.href = baseUrl + url;
+
+      if(blank) {
+        window.open(baseUrl + url, '_blank');
+      } else {
+        window.location.href = baseUrl + url;
+      }
     }
   },
   computed: {
     currentPage() {
       return this.pages.find(page => page.id === this.selectedPage);
+    },
+    leftPanelActiveTab() {
+      return this.leftPanel.tabs.find(tab => tab.active).title;
     }
   }
 }
@@ -134,6 +181,10 @@ export default {
 
   header {
     box-shadow: inset 0px -1px 0px #E3E5E8;
+
+    #go-back {
+      cursor: pointer;
+    }
 
     button {
       margin: 8px 16px;
@@ -165,9 +216,33 @@ export default {
     }
 
     .left-panel {
-      width: 336px;
-      padding: 16px;
+      padding: 0;
       border-right: solid 1px #E3E5E8;
+      align-self: flex-start;
+
+      .tabs {
+        align-items: flex-start;
+        border-right: solid 1px #E3E5E8;
+
+        .tab {
+          cursor: pointer;
+
+          &.active {
+            background-color: #f8f8f8;
+          }
+
+          .material-icons {
+            padding: 16px;
+            font-size: 22px !important;
+          }
+        }
+      }
+
+      .tab-content {
+        align-items: flex-start;
+        padding: 0 16px;
+        height: 100%;
+      }
     }
 
     section {

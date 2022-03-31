@@ -71,8 +71,8 @@ export  default {
 
 <style lang="scss">
 #form-builder-page-section {
-  margin-bottom: 16px;
-
+  margin: 32px 0;
+  
   .section-card {
     .section-identifier {
       color: white;

@@ -1,6 +1,6 @@
 <template>
   <div id="form-builder-elements">
-    <span class="em-h5 em-text-align-center"> Éléments </span>
+    <p id="form-builder-elements-title" class="em-text-align-center em-w-100 em-p-16"> Éléments </p>
     <draggable
         v-model="elements"
         group="form-builder-elements"
@@ -77,5 +77,9 @@ export default {
   background-color: #FAFAFA;
   border: 1px solid #F2F2F3;
   cursor: grab;
+}
+
+#form-builder-elements-title {
+  border-bottom: 1px solid black;
 }
 </style>
