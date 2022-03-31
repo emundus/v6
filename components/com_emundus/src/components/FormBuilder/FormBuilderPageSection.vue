@@ -3,14 +3,23 @@
     <div class="section-card em-flex-column">
       <div class="section-identifier em-bg-main-500">Section {{ index }} / {{ totalSections }}</div>
       <div class="section-content">
-        <p>{{ section.label.fr }}</p>
-        <form-builder-page-section-element
-          v-for="(element, index) in section.elements"
-          :key="element.id"
-          :element="element"
+        <p class="section-title">{{ section.label.fr }}</p>
+        <draggable
+          v-model="sectionElementsAsArray"
+          group="form-builder-elements"
+          class="draggables-list"
+          @end="onDragEnd"
         >
-
-        </form-builder-page-section-element>
+          <transition-group>
+            <form-builder-page-section-element
+              v-for="element in sectionElementsAsArray"
+              :key="element.id"
+              :element="element"
+            >
+            </form-builder-page-section-element>
+            <
+          </transition-group>
+        </draggable>
       </div>
     </div>
   </div>
@@ -18,9 +27,12 @@
 
 <script>
 import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement";
+import draggable from "vuedraggable";
+
 export  default {
   components: {
-    FormBuilderPageSectionElement
+    FormBuilderPageSectionElement,
+    draggable
   },
   props: {
     section: {
@@ -39,6 +51,19 @@ export  default {
   mounted() {
     console.log(this.section);
   },
+  methods: {
+    onDragEnd(event) {
+      console.log('drag end');
+      // get new order of elements
+
+
+    }
+  },
+  computed: {
+    sectionElementsAsArray() {
+      return Object.values(this.section.elements);
+    }
+  }
 }
 </script>
 
@@ -61,6 +86,12 @@ export  default {
       background-color: white;
       width: 100%;
       min-height: 340px;
+
+      .section-title {
+        font-weight: 800;
+        font-size: 20px;
+        line-height: 25px;
+      }
     }
   }
 }

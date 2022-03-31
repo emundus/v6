@@ -10,7 +10,10 @@
     >
       <header class="em-flex-row em-flex-space-between">
         <div class="right-actions">
-          <span class="material-icons">
+          <span
+              class="material-icons"
+              @click="goTo('/formulaires')"
+          >
             navigate_before
           </span>
         </div>
@@ -109,6 +112,10 @@ export default {
     },
     onDragElementEnd(event) {
       console.log(event);
+    },
+    goTo(url) {
+      const baseUrl = window.location.origin;
+      window.location.href = baseUrl + url;
     }
   },
   computed: {

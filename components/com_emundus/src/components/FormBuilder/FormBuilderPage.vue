@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-page">
     <span class="em-h3"> {{ title }} </span>
-    <p> {{ description }} </p>
+    <span v-html="description"></span>
 
     <div class="form-builder-page-sections">
       <form-builder-page-section
@@ -13,12 +13,16 @@
       >
       </form-builder-page-section>
     </div>
-    <button class="em-secondary-button"> Ajouter une section </button>
+    <button
+        class="em-secondary-button"
+        @click="addSection()"
+    > Ajouter une section </button>
   </div>
 </template>
 
 <script>
 import formService from '../../services/form';
+import formBuilderService from '../../services/formbuilder';
 
 import FormBuilderPageSection from "./FormBuilderPageSection";
 
@@ -54,12 +58,16 @@ export default {
       formService.getPageObject(this.page.id).then(response => {
         if (response.status) {
           this.description = response.data.intro.fr;
-          console.log(response.data);
           this.sections = Object.values(response.data.Groups);
         }
       });
     },
     addSection() {
+      formBuilderService.createSimpleGroup(this.page.id, 'Nouvelle section').then(response => {
+        if (response.status) {
+          this.getSections();
+        }
+      });
     },
   },
 }
