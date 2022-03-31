@@ -61,7 +61,9 @@
           <form-builder-pages
               :pages="pages"
               :selected="selectedPage"
+              :profile_id="profile_id"
               @select-page="selectedPage = $event"
+              @add-page="getPages"
           ></form-builder-pages>
           <hr>
           <form-builder-documents

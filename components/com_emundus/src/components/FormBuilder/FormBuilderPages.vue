@@ -1,6 +1,14 @@
 <template>
   <div id="form-builder-pages">
-    <span class="form-builder-title">Toutes les pages</span>
+    <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between">
+      <span>Toutes les pages</span>
+      <span
+          class="material-icons"
+          @click="addPage"
+      >
+        add
+      </span>
+    </p>
     <div
         v-for="page in pages"
         :key="page.id"
@@ -18,6 +26,7 @@
 </template>
 
 <script>
+import formBuilderService from '../../services/formbuilder';
 
 export default {
   name: 'FormBuilderPages',
@@ -29,11 +38,26 @@ export default {
     selected: {
       type: Number,
       default: 0
+    },
+    profile_id: {
+      type: Number,
+      required: true
     }
   },
   methods: {
     selectPage(id) {
       this.$emit('select-page', id);
+    },
+    addPage() {
+      formBuilderService.addPage({
+        label: 'Nouvelle page',
+        intro: '',
+        prid: this.profile_id,
+        modelid: -1,
+        template: 0
+      }).then(response => {
+        this.$emit('add-page');
+      });
     }
   }
 }

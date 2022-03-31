@@ -56,8 +56,6 @@ export  default {
   methods: {
     onDragEnd(event) {
       // get new order of elements
-
-
     }
   },
   computed: {
@@ -72,7 +70,7 @@ export  default {
 <style lang="scss">
 #form-builder-page-section {
   margin: 32px 0;
-  
+
   .section-card {
     .section-identifier {
       color: white;
