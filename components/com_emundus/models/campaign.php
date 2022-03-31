@@ -1187,11 +1187,9 @@ class EmundusModelCampaign extends JModelList {
      * @since version 1.0
      */
     public function createCampaign($data) {
-        $query = $this->_db->getQuery(true);
-
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'email.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
         $m_falang = new EmundusModelFalang;
         $m_settings = new EmundusModelSettings;
@@ -1206,11 +1204,17 @@ class EmundusModelCampaign extends JModelList {
         $limit_status = [];
 
         if (!empty($data)) {
+            $query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'jos_emundus_setup_campaigns'";
+            $this->_db->setQuery($query);
+            $campaign_columns = $this->_db->loadColumn($query);
+
+            $data['label'] = json_decode($data['label'],true);
 
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('onBeforeCampaignCreate', $data);
             $dispatcher->trigger('callEventHandler', ['onBeforeCampaignCreate', ['campaign' => $data]]);
 
+            $query = $this->_db->getQuery(true);
             foreach ($data as $key => $val) {
                 if ($key == 'profileLabel') {
                     array_splice($data, $i, 1);
@@ -1235,6 +1239,9 @@ class EmundusModelCampaign extends JModelList {
                         unset($data['profile_id']);
                         $data['published'] = 0;
                     }
+                }
+                if (!in_array($key,$campaign_columns)){
+                    unset($data[$key]);
                 }
                 $i++;
             }

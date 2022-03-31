@@ -2200,7 +2200,7 @@ class EmundusModelProgramme extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $date = new Date();
+        $date = date('Y-m-d H:i:s');
         $glabel = 'Evaluateurs_' . $label;
         $class = 'label-default';
         if($parent == 3){

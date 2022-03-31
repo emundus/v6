@@ -281,13 +281,13 @@ export default {
           this.profileId = this.form.profile_id;
         }
         this.loading = false;
-      });
-      setTimeout(() => {
-        //this.menuHighlight = this.getCookie('campaign_'+this.campaignId+'_menu')
-        if(typeof this.menuHighlight == 'undefined'){
-          this.menuHighlight = 0;
+
+        let cookie = this.getCookie('campaign_'+this.campaignId+'_menu');
+        if(cookie){
+          this.menuHighlight = cookie;
+          document.cookie = 'campaign_'+this.campaignId+'_menu =; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
-      },500);
+      });
     },
 
     changeToProgMenu(index) {
