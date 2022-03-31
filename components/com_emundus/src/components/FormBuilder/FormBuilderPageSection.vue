@@ -17,8 +17,13 @@
               :element="element"
             >
             </form-builder-page-section-element>
-            <
           </transition-group>
+          <div
+              v-if="sectionElementsAsArray.length < 1"
+              class="empty-section-element"
+          >
+            <p class="em-w-100 em-text-align-center">{{ translate("COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION") }}</p>
+          </div>
         </draggable>
       </div>
     </div>
@@ -48,12 +53,8 @@ export  default {
       default: 0
     },
   },
-  mounted() {
-    console.log(this.section);
-  },
   methods: {
     onDragEnd(event) {
-      console.log('drag end');
       // get new order of elements
 
 
@@ -61,7 +62,8 @@ export  default {
   },
   computed: {
     sectionElementsAsArray() {
-      return Object.values(this.section.elements);
+      const elements = Object.values(this.section.elements);
+      return elements.length > 0 ? elements : [];
     }
   }
 }
@@ -85,12 +87,18 @@ export  default {
       border-top: 4px solid #20835F;
       background-color: white;
       width: 100%;
-      min-height: 340px;
 
       .section-title {
         font-weight: 800;
         font-size: 20px;
         line-height: 25px;
+      }
+
+      .empty-section-element {
+        border: 1px dashed;
+        opacity: 0.2;
+        padding: 11px;
+        margin: 32px 0 0 0;
       }
     }
   }

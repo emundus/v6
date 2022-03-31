@@ -14,6 +14,7 @@
       </form-builder-page-section>
     </div>
     <button
+        id="add-section"
         class="em-secondary-button"
         @click="addSection()"
     > Ajouter une section </button>
@@ -78,6 +79,13 @@ export default {
 #form-builder-page {
   width: calc(100% - 80px);
   margin: 40px 40px;
+
+  #add-section {
+    width: fit-content;
+    padding: 24px;
+    margin: auto;
+    background-color: white;
+  }
 }
 
 </style>
