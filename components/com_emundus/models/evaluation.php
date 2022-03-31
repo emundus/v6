@@ -3635,7 +3635,7 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     private function deleteAll($dir) {
-        if(!empty($dir) && strpos(JPATH_BASE . DS . 'tmp/',$dir) !== false) {
+        if(!empty($dir) && strpos($dir,JPATH_BASE . DS . 'tmp/') !== false) {
             foreach (glob($dir . '/*') as $file) {
                 if (is_dir($file)) {
                     $this->deleteAll($file);
