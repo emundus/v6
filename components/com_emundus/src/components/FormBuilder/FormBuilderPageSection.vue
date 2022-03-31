@@ -6,11 +6,16 @@
         <p class="section-title">{{ section.label.fr }}</p>
         <draggable
           v-model="sectionElementsAsArray"
-          group="form-builder-elements"
+          group="form-builder-section-elements"
+          :sort="true"
           class="draggables-list"
           @end="onDragEnd"
         >
-          <transition-group>
+          <transition-group
+              :data-prid="profile_id"
+              :data-page="page_id"
+              :data-sid="section.group_id"
+          >
             <form-builder-page-section-element
               v-for="element in sectionElementsAsArray"
               :key="element.id"
@@ -18,13 +23,10 @@
             >
             </form-builder-page-section-element>
           </transition-group>
-          <div
-              v-if="sectionElementsAsArray.length < 1"
-              class="empty-section-element"
-          >
-            <p class="em-w-100 em-text-align-center">{{ translate("COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION") }}</p>
-          </div>
         </draggable>
+        <div v-if="sectionElementsAsArray.length < 1" class="empty-section-element">
+          <p class="em-w-100 em-text-align-center">{{ translate("COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION") }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -40,6 +42,14 @@ export  default {
     draggable
   },
   props: {
+    profile_id: {
+      type: Number,
+      required: true
+    },
+    page_id: {
+      type: Number,
+      required: true
+    },
     section: {
       type: Object,
       required: true
@@ -52,6 +62,9 @@ export  default {
       type: Number,
       default: 0
     },
+  },
+  mounted() {
+    console.log(this.section);
   },
   methods: {
     onDragEnd(event) {

@@ -46,11 +46,13 @@
             <form-builder-elements
                 v-if="leftPanelActiveTab === 'Elements'"
                 @drag-end="onDragElementEnd"
+                @element-created="onElementCreated"
             ></form-builder-elements>
           </div>
         </aside>
         <section class="em-flex-column">
           <form-builder-page
+              ref="formBuilderPage"
               v-if="currentPage"
               :key="currentPage.id"
               :profile_id="profile_id"
@@ -142,7 +144,11 @@ export default {
       });
     },
     onDragElementEnd(event) {
-      console.log(event);
+    },
+    onElementCreated() {
+      // refresh form-builder-page sub component
+
+      this.$refs.formBuilderPage.getSections();
     },
     selectTab(index) {
       // unset selected tab

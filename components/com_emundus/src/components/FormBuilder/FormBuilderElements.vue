@@ -3,9 +3,10 @@
     <p id="form-builder-elements-title" class="em-text-align-center em-w-100 em-p-16"> Éléments </p>
     <draggable
         v-model="elements"
-        group="form-builder-elements"
         class="draggables-list"
-        @start="onDragStart"
+        :group="{ name: 'form-builder-section-elements', pull: 'clone', put: false }"
+        :sort="false"
+        :clone="setCloneElement"
         @end="onDragEnd"
     >
       <transition-group>
@@ -27,6 +28,8 @@
 // external libraries
 import draggable from "vuedraggable";
 
+import formBuilderService from "../../services/formbuilder";
+
 export default {
   components: {
     draggable
@@ -34,6 +37,7 @@ export default {
   data() {
     return {
       elements: [],
+      cloneElement: {},
     }
   },
   created() {
@@ -43,9 +47,27 @@ export default {
     getElements() {
       return require('@/data/form-builder-elements.json');
     },
+    setCloneElement(element) {
+      this.cloneElement = element;
+    },
     onDragEnd(event) {
-      this.$emit('drag-end', event);
-    }
+      const to = event.to;
+      if (to === null) {
+        return;
+      }
+
+      const group_id = to.dataset.sid;
+      if (!group_id) {
+        return;
+      }
+
+      formBuilderService.createSimpleElement({
+        gid: group_id,
+        plugin: this.cloneElement.value,
+      }).then(response => {
+        this.$emit('element-created');
+      });
+    },
   },
   computed: {
     publishedElements() {
