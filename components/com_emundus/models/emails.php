@@ -59,7 +59,7 @@ class EmundusModelEmails extends JModelList {
      */
     public function getEmailById($id)
     {
-        $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$this->_db->Quote($id);
+        $query = 'SELECT ese.*, et.Template FROM #__emundus_setup_emails ese LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl WHERE ese.id='.$this->_db->Quote($id);
         $this->_db->setQuery( $query );
         return $this->_db->loadObject();
     }
