@@ -61,20 +61,23 @@
           ></form-builder-page>
         </section>
         <aside class="right-panel em-flex-column">
-          <form-builder-pages
+          <div
+              id="form-hierarchy"
               v-if="!showElementProperties"
-              :pages="pages"
-              :selected="selectedPage"
-              :profile_id="profile_id"
-              @select-page="selectedPage = $event"
-              @add-page="getPages"
-          ></form-builder-pages>
-          <hr>
-          <form-builder-documents
-              v-if="!showElementProperties"
-              :profile_id="profile_id"
-              :campaign_id="campaign_id"
-          ></form-builder-documents>
+          >
+            <form-builder-pages
+                :pages="pages"
+                :selected="selectedPage"
+                :profile_id="profile_id"
+                @select-page="selectedPage = $event"
+                @add-page="getPages"
+            ></form-builder-pages>
+            <hr>
+            <form-builder-documents
+                :profile_id="profile_id"
+                :campaign_id="campaign_id"
+            ></form-builder-documents>
+          </div>
           <form-builder-element-properties
               v-if="showElementProperties"
               @close="showElementProperties = false"
@@ -158,8 +161,6 @@ export default {
     onDragElementEnd(event) {
     },
     onElementCreated() {
-      // refresh form-builder-page sub component
-
       this.$refs.formBuilderPage.getSections();
     },
     onOpenElementProperties(event)
@@ -231,7 +232,7 @@ export default {
     }
 
     .right-panel {
-      width: 288px;
+      min-width: 288px;
       padding: 16px;
       border-left: solid 1px #E3E5E8;
 

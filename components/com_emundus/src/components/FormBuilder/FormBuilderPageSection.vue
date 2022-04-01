@@ -25,8 +25,30 @@
             </form-builder-page-section-element>
           </transition-group>
         </draggable>
-        <div v-if="sectionElementsAsArray.length < 1" class="empty-section-element">
-          <p class="em-w-100 em-text-align-center">{{ translate("COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION") }}</p>
+        <div
+            v-if="sectionElementsAsArray.length < 1"
+            class="empty-section-element"
+        >
+          <draggable
+              :list="emptySection"
+              group="form-builder-section-elements"
+              :sort="false"
+              class="draggables-list"
+          >
+            <transition-group
+                :data-prid="profile_id"
+                :data-page="page_id"
+                :data-sid="section.group_id"
+            >
+              <p
+                  class="em-w-100 em-text-align-center"
+                  v-for="(item, index) in emptySection"
+                  :key="index"
+              >
+                {{ translate(item.text) }}
+              </p>
+            </transition-group>
+          </draggable>
         </div>
       </div>
     </div>
@@ -64,8 +86,17 @@ export  default {
       default: 0
     },
   },
+  data() {
+    return {
+      emptySection: [
+        {
+          "text": "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION",
+        }
+      ]
+    };
+  },
   mounted() {
-    console.log(this.section);
+    console.log(this.emptySection);
   },
   methods: {
     onDragEnd(event) {
