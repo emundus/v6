@@ -585,7 +585,7 @@ export default {
             selectedTags: this.selectedTags
           })
         }).then(() => {
-          this.redirectJRoute('index.php?option=com_emundus&view=email');
+          this.redirectJRoute('index.php?option=com_emundus&view=emails');
         }).catch(error => {
           console.log(error);
         });
@@ -616,7 +616,7 @@ export default {
               users: this.selectedUsers
             })
           }).then(() => {
-            this.redirectJRoute('index.php?option=com_emundus&view=email');
+            this.redirectJRoute('index.php?option=com_emundus&view=emails');
           });
         }).catch(error => {
           console.log(error);
