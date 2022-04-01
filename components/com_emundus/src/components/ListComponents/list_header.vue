@@ -89,6 +89,7 @@
 
     methods: {
       redirectToAdd() {
+        console.log(this.data.add_url)
         if(this.data.add_url == 'index.php?option=com_emundus&view=form&layout=add'){
           this.createForm();
         } else {

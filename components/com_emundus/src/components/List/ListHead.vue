@@ -2,7 +2,7 @@
 	<div id="list-head">
 		<div class="list-head-container">
 			<h2> {{ translations['title_' + data.type] }}</h2>
-			<a :href="data.add_url" v-if="data.type !== 'form'">
+			<a :href="data.add_url" v-if="data.type !== 'form' && data.type !== 'formulaire'">
     	  <div class="em-primary-button">
 					{{ translations['add_' + data.type] }}
 				</div>
