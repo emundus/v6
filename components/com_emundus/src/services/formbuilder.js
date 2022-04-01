@@ -242,9 +242,12 @@ export default {
             };
         }
     },
-    async updateTranslation(element, tag, value) {
+    async updateTranslation(item, tag, value) {
         const formData = new FormData();
-        formData.append('element', element);
+
+        if (item !== null) {
+            formData.append(item.key, item.value);
+        }
         formData.append('labelTofind', tag);
         Object.keys(value).forEach(key => {
             formData.append('NewSubLabel[' + key + ']', value[key]);

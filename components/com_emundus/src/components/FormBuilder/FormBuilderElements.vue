@@ -1,6 +1,6 @@
 <template>
   <div id="form-builder-elements">
-    <p id="form-builder-elements-title" class="em-text-align-center em-w-100 em-p-16"> Éléments </p>
+    <p id="form-builder-elements-title" class="em-text-align-center em-w-100 em-p-16"> {{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENTS') }} </p>
     <draggable
         v-model="elements"
         class="draggables-list"

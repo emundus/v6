@@ -27,7 +27,7 @@
           <span class="material-icons">
             visibility
           </span>
-          <button class="em-primary-button publish">Publier</button>
+          <button class="em-primary-button publish">{{ translate("COM_EMUNDUS_FORM_BUILDER_PUBLISH") }}</button>
         </div>
       </header>
       <div class="body em-flex-row em-flex-space-between">
@@ -58,6 +58,7 @@
               :profile_id="profile_id"
               :page="currentPage"
               @open-element-properties="onOpenElementProperties"
+              @update-page-title="getPages(currentPage.id)"
           ></form-builder-page>
         </section>
         <aside class="right-panel em-flex-column">
@@ -70,7 +71,7 @@
                 :selected="selectedPage"
                 :profile_id="profile_id"
                 @select-page="selectedPage = $event"
-                @add-page="getPages"
+                @add-page="getPages(currentPage.id)"
             ></form-builder-pages>
             <hr>
             <form-builder-documents
@@ -153,10 +154,15 @@ export default {
         }
       });
     },
-    getPages() {
+    getPages(page_id = 0) {
       formService.getFormsByProfileId(this.profile_id).then(response => {
         this.pages = response.data.data;
-        this.selectedPage = this.pages[0].id;
+
+        if (page_id === 0) {
+          this.selectedPage = this.pages[0].id;
+        } else {
+          this.selectedPage = page_id;
+        }
       });
     },
     onElementCreated() {
@@ -238,7 +244,6 @@ export default {
 
     .right-panel {
       min-width: 288px;
-      padding: 16px;
       border-left: solid 1px #E3E5E8;
 
       > div {

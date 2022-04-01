@@ -1,7 +1,14 @@
 <template>
   <div id="form-builder-page">
-    <span class="em-h3"> {{ title }} </span>
-    <span v-html="description"></span>
+    <p
+        class="em-h3"
+        ref="pageTitle"
+        @focusout="updateTitle"
+        contenteditable="true"
+    >
+      {{ title }}
+    </p>
+    <p><span v-html="description"></span></p>
 
     <div class="form-builder-page-sections">
       <form-builder-page-section
@@ -46,6 +53,7 @@ export default {
   },
   data() {
     return {
+      fabrikPage: {},
       title: 'Nouvelle Page',
       description: 'Ajouter une description',
       sections: [],
@@ -61,6 +69,8 @@ export default {
     getSections() {
       formService.getPageObject(this.page.id).then(response => {
         if (response.status) {
+          this.fabrikPage = response.data;
+          this.title = this.fabrikPage.show_title.label.fr;
           this.description = response.data.intro.fr;
           this.sections = Object.values(response.data.Groups);
         }
@@ -73,6 +83,18 @@ export default {
         }
       });
     },
+    updateTitle()
+    {
+      this.fabrikPage.show_title.label.fr = this.$refs.pageTitle.innerText;
+      formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
+        if (response.status) {
+          this.$emit('update-page-title', {
+            page: this.page.id,
+            new_title: this.$refs.pageTitle.innerText
+          });
+        }
+      });
+    }
   },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div id="form-builder-element-properties">
+  <div id="form-builder-element-properties" class="em-p-16">
     <div class="em-flex-row em-flex-space-between">
       <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
       <span
@@ -10,6 +10,7 @@
       </span>
     </div>
     <div id="properties">
+      <p>{{ element.label.fr }}</p>
       <component
           :is="componentType"
           :element="element"
@@ -71,7 +72,8 @@ export default {
       elementsNeedingDb: [
           "dropdown",
           "checkbox",
-          "radiobutton"
+          "radiobutton",
+          "databasejoin"
       ],
     };
   },
@@ -80,13 +82,11 @@ export default {
   },
   methods: {
     getDatabases(){
-      if (this.elementsNeedingDb.indexOf(this.element.plugin) > -1) {
-        formBuilderService.getDatabases().then(response => {
-          if (response.status) {
-            this.databases = response.data.data;
-          }
-        });
-      }
+      formBuilderService.getDatabases().then(response => {
+        if (response.status) {
+          this.databases = response.data.data;
+        }
+      });
     },
     setElementSubOptions(subOptions) {
       if (typeof this.element.params.sub_options !== 'undefined') {

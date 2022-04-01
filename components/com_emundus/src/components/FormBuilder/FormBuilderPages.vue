@@ -1,5 +1,5 @@
 <template>
-  <div id="form-builder-pages">
+  <div id="form-builder-pages" class="em-p-16">
     <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between">
       <span>Toutes les pages</span>
       <span
@@ -67,7 +67,7 @@ export default {
 #form-builder-pages {
   p {
     cursor: pointer;
-    margin: 15px 0;
+    margin-bottom: 15px !important;
     font-weight: 400;
     font-size: 14px;
     line-height: 18px;

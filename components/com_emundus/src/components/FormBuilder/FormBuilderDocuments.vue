@@ -1,5 +1,5 @@
 <template>
-  <div id="form-builder-documents">
+  <div id="form-builder-documents" class="em-p-16">
     <span class="form-builder-title">Tous les documents</span>
     <div
         v-for="document in documents"

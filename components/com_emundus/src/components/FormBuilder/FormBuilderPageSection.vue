@@ -11,7 +11,14 @@
             'closed': closedSection,
           }"
       >
-        <p class="section-title">{{ section.label.fr }}</p>
+        <p
+            class="section-title"
+            ref="sectionTitle"
+            contenteditable="true"
+            @focusout="updateTitle"
+        >
+          {{ section.label.fr }}
+        </p>
         <draggable
           v-model="sectionElementsAsArray"
           group="form-builder-section-elements"
@@ -64,6 +71,8 @@
 </template>
 
 <script>
+import formBuilderService from '../../services/formbuilder';
+
 import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement";
 import draggable from "vuedraggable";
 
@@ -105,9 +114,13 @@ export  default {
     };
   },
   methods: {
-    onDragEnd(event) {
-      // get new order of elements
-    },
+    updateTitle() {
+      this.section.label.fr = this.$refs.sectionTitle.innerText;
+      formBuilderService.updateTranslation({
+        value: this.section.group_id,
+        key: 'group'
+      }, this.section.group_tag, this.section.label);
+    }
   },
   computed: {
     sectionElementsAsArray() {
@@ -139,7 +152,7 @@ export  default {
       transition: all 0.3s ease-in-out;
 
       &.closed {
-        max-height: 100px;
+        max-height: 93px;
         overflow: hidden;
       }
 

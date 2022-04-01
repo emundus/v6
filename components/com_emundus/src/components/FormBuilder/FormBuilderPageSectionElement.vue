@@ -34,7 +34,7 @@ export default {
     updateLabel()
     {
         this.element.label.fr = this.$refs.label.innerText;
-        formBuilderService.updateTranslation(this.element.id, this.element.label_tag, this.element.label);
+        formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
     },
     updateElement()
     {
