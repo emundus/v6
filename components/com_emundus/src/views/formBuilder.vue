@@ -80,7 +80,7 @@
           </div>
           <form-builder-element-properties
               v-if="showElementProperties"
-              @close="showElementProperties = false"
+              @close="onCloseElementProperties"
               :element="selectedElement"
               :profile_id="profile_id"
           ></form-builder-element-properties>
@@ -166,6 +166,12 @@ export default {
     {
       this.selectedElement = event;
       this.showElementProperties = true;
+    },
+    onCloseElementProperties()
+    {
+      this.selectedElement = null;
+      this.showElementProperties = false;
+      this.$refs.formBuilderPage.getSections();
     },
     selectTab(index) {
       // unset selected tab

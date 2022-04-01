@@ -15,7 +15,16 @@
           :element="element"
           :prid="profile_id"
           :databases="databases"
+          @subOptions="setElementSubOptions"
       ></component>
+    </div>
+    <div class="em-flex-row em-flex-space-between actions">
+      <button
+        class="em-primary-button"
+        @click="saveProperties()"
+      >
+        {{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE") }}
+      </button>
     </div>
   </div>
 </template>
@@ -63,7 +72,7 @@ export default {
           "dropdown",
           "checkbox",
           "radiobutton"
-      ]
+      ],
     };
   },
   mounted() {
@@ -79,6 +88,20 @@ export default {
         });
       }
     },
+    setElementSubOptions(subLabel) {
+      if (typeof this.element.params.sub_options !== 'undefined') {
+        this.element.params.sub_options.sub_labels = subLabel.map(value => value.sub_label);
+        this.element.params.sub_options.sub_values = subLabel.map(value => value.sub_value);
+      }
+    },
+    saveProperties()
+    {
+      formBuilderService.updateParams(this.element).then(response => {
+        if (response.status) {
+          this.$emit('close');
+        }
+      });
+    }
   }
 }
 </script>

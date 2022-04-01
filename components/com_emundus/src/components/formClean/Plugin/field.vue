@@ -1,15 +1,6 @@
 <template>
   <div id="fieldF">
     <div class="row rowmodal">
-      <!--<div class="form-group">
-        <label>{{fieldtype}} :</label>
-        <select v-model="element.params.password" id='selectIdTest' class="dropdown-toggle" :disabled="files != 0 && element.params.password == 6">
-          <option value="0">{{textfield}}</option>
-          <option value="2">{{phonefield}}</option>
-          <option value="3">{{emailfield}}</option>
-          <option value="6" v-if="files == 0 || (files != 0 && element.params.password == 6)">{{numberfield}}</option>
-        </select>
-      </div>-->
       <div class="form-group">
         <label>{{placeholdertext}} :</label>
         <input type="text" class="form__input field-general w-input" v-model="element.params.placeholder" />
@@ -34,8 +25,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
   name: "fieldF",
   props: { element: Object, files: Number },

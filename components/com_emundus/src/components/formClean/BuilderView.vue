@@ -713,11 +713,6 @@ export default {
           this.repeat = true;
           this.reloadElement(element);
         }
-            // //
-            // else if(response.data.plugin === 'date' && this.repeat === false) {
-            //   this.repeat = true;
-            //   this.reloadElement(element);
-        // }
 
         else{
           this.$set(element,'element',response.data.element);
