@@ -1,8 +1,16 @@
 <template>
   <div id="form-builder-page-section">
     <div class="section-card em-flex-column">
-      <div class="section-identifier em-bg-main-500">Section {{ index }} / {{ totalSections }}</div>
-      <div class="section-content">
+      <div
+          class="section-identifier em-bg-main-500 em-pointer"
+          @click="closedSection = !closedSection"
+      >Section {{ index }} / {{ totalSections }}</div>
+      <div
+          class="section-content"
+          :class="{
+            'closed': closedSection,
+          }"
+      >
         <p class="section-title">{{ section.label.fr }}</p>
         <draggable
           v-model="sectionElementsAsArray"
@@ -88,15 +96,13 @@ export  default {
   },
   data() {
     return {
+      closedSection: false,
       emptySection: [
         {
           "text": "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION",
         }
       ]
     };
-  },
-  mounted() {
-    console.log(this.emptySection);
   },
   methods: {
     onDragEnd(event) {
@@ -130,6 +136,12 @@ export  default {
       border-top: 4px solid #20835F;
       background-color: white;
       width: 100%;
+      transition: all 0.3s ease-in-out;
+
+      &.closed {
+        max-height: 100px;
+        overflow: hidden;
+      }
 
       .section-title {
         font-weight: 800;
