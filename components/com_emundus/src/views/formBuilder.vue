@@ -82,6 +82,7 @@
               v-if="showElementProperties"
               @close="showElementProperties = false"
               :element="selectedElement"
+              :profile_id="profile_id"
           ></form-builder-element-properties>
         </aside>
       </div>
@@ -165,7 +166,7 @@ export default {
     },
     onOpenElementProperties(event)
     {
-      console.log(event);
+      this.selectedElement = event;
       this.showElementProperties = true;
     },
     selectTab(index) {

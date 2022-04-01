@@ -1,12 +1,64 @@
 <template>
   <div id="form-builder-element-properties">
-    <div>
+    <div class="em-flex-row">
       <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
-      <span class="material-icons" @click="$emit('close')">close</span>
+      <span
+          class="material-icons em-pointer"
+          @click="$emit('close')"
+      >
+        close
+      </span>
+    </div>
+    <div id="properties">
+      <component
+          :is="element.plugin"
+          :element="element"
+          :prid="profile_id"
+      ></component>
     </div>
   </div>
 </template>
 
 <script>
+import birthday from '../formClean/Plugin/birthday.vue';
+import checkbox from '../formClean/Plugin/checkbox.vue';
+import display from '../formClean/Plugin/display.vue';
+import dropdown from '../formClean/Plugin/dropdown.vue';
+import field from '../formClean/Plugin/field.vue';
+import fileupload from '../formClean/Plugin/fileupload.vue';
+import radiobtn from '../formClean/Plugin/radiobtn.vue';
+import textarea from '../formClean/Plugin/textarea.vue';
+import yesno from '../formClean/Plugin/yesno.vue';
 
+export default {
+  name: 'FormBuilderElementProperties',
+  components: {
+    birthday,
+    checkbox,
+    display,
+    dropdown,
+    field,
+    fileupload,
+    radiobtn,
+    textarea,
+    yesno,
+  },
+  props: {
+    element: {
+      type: Object,
+      required: true
+    },
+    profile_id: {
+      type: Number,
+      required: true
+    },
+  },
+  created() {
+    console.log(this.element);
+  },
+}
 </script>
+
+<style lang="scss">
+
+</style>
