@@ -18,7 +18,14 @@
             navigate_before
           </span>
         </div>
-        <span class="em-h4">{{ title }}</span>
+        <span
+            class="em-h4"
+            contenteditable="true"
+            ref="formTitle"
+            @focusout="updateFormTitle"
+        >
+          {{ title }}
+        </span>
         <div class="left-actions em-flex-row em-flex-space-between">
           <span class="material-icons">
             save
@@ -152,6 +159,14 @@ export default {
         if (response.status !== false) {
           this.title = response.data.data.label;
         }
+      });
+    },
+    updateFormTitle()
+    {
+      this.title = this.$refs.formTitle.innerText;
+      formService.updateFormLabel({
+        label: this.title,
+        prid: this.profile_id,
       });
     },
     getPages(page_id = 0) {
