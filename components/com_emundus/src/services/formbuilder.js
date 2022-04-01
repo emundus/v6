@@ -159,6 +159,21 @@ export default {
             };
         }
     },
+    async getDatabases()
+    {
+        try {
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoin'
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     async updateParams(element)
     {
         const formData = new FormData();

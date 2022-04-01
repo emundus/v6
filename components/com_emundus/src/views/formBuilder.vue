@@ -159,8 +159,6 @@ export default {
         this.selectedPage = this.pages[0].id;
       });
     },
-    onDragElementEnd(event) {
-    },
     onElementCreated() {
       this.$refs.formBuilderPage.getSections();
     },
@@ -237,7 +235,7 @@ export default {
       padding: 16px;
       border-left: solid 1px #E3E5E8;
 
-      div {
+      > div {
         width: 100%;
       }
     }
