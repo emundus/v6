@@ -11,7 +11,7 @@
     </div>
     <div id="properties">
       <component
-          :is="element.plugin"
+          :is="componentType"
           :element="element"
           :prid="profile_id"
           :databases="databases"
@@ -88,10 +88,10 @@ export default {
         });
       }
     },
-    setElementSubOptions(subLabel) {
+    setElementSubOptions(subOptions) {
       if (typeof this.element.params.sub_options !== 'undefined') {
-        this.element.params.sub_options.sub_labels = subLabel.map(value => value.sub_label);
-        this.element.params.sub_options.sub_values = subLabel.map(value => value.sub_value);
+        this.element.params.sub_options.sub_labels = subOptions.map(value => value.sub_label);
+        this.element.params.sub_options.sub_values = subOptions.map(value => value.sub_value);
       }
     },
     saveProperties()
@@ -102,6 +102,20 @@ export default {
         }
       });
     }
+  },
+  computed: {
+    componentType() {
+      let type = '';
+      switch (this.element.plugin) {
+        case 'databasejoin':
+          type = this.element.params.database_join_display_type =='radio' ?  'radiobutton' : this.element.params.database_join_display_type;
+          break;
+        default:
+          type = this.element.plugin;
+      }
+
+      return type;
+    },
   }
 }
 </script>

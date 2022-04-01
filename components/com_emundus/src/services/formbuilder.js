@@ -241,5 +241,27 @@ export default {
                 message: e.message
             };
         }
-    }
+    },
+    async updateTranslation(element, tag, value) {
+        const formData = new FormData();
+        formData.append('element', element);
+        formData.append('labelTofind', tag);
+        Object.keys(value).forEach(key => {
+            formData.append('NewSubLabel[' + key + ']', value[key]);
+        });
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=formsTrad',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
 };

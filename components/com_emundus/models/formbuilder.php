@@ -53,10 +53,10 @@ class EmundusModelFormbuilder extends JModelList {
         return $key;
     }
 
-    public function updateTranslation($key,$values,$reference_table = '',$reference_id = 0){
+    public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0){
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-            $this->m_translations->updateTranslation($key,$values[$language->sef],$language->lang_code,'override',$reference_table,$reference_id);
+            $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code,'override', $reference_table, $reference_id);
         }
         return $key;
     }
@@ -150,7 +150,7 @@ class EmundusModelFormbuilder extends JModelList {
             $query = $db->getQuery(true);
 
             if($element != null){
-                $new_key = $this->updateTranslation($labelTofind,$NewSubLabel,'fabrik_elements',$element);
+                $new_key = $this->updateTranslation($labelTofind, $NewSubLabel,'fabrik_elements', $element);
                 $query->update($db->quoteName('#__fabrik_elements'))
                     ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                     ->where($db->quoteName('id') . ' = ' . $db->quote($element));

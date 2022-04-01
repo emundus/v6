@@ -2,15 +2,18 @@
   <div class="form-builder-page-section-element" @click="$emit('open-element-properties')">
     <p
         v-if="element.label_value && element.labelsAbove != 2"
+        ref="label"
         class="element-title"
+        contenteditable="true"
+        @focusout="updateLabel"
     >
       {{ element.label.fr }}
     </p>
     <div class="element-field">
       <span v-html="element.element" :id="element.id">
       </span>
-      <label class="element-required em-switch" @click="element.FRequire = !element.FRequire">
-        <input type="checkbox" v-model="element.FRequire"/>
+      <label class="element-required em-switch">
+        <input type="checkbox" v-model="element.FRequire" @click="element.FRequire = !element.FRequire; updateElement()"/>
         <span class="em-slider em-round"></span>
       </label>
     </div>
@@ -18,18 +21,26 @@
 </template>
 
 <script>
-import DatePicker from "vue-bootstrap-datetimepicker";
+import formBuilderService from '../../services/formbuilder';
 
 export default {
-  components: {
-    DatePicker
-  },
   props: {
     element: {
       type: Object,
-      default: () => ({})
+      default: {}
     },
   },
+  methods: {
+    updateLabel()
+    {
+        this.element.label.fr = this.$refs.label.innerText;
+        formBuilderService.updateTranslation(this.element.id, this.element.label_tag, this.element.label);
+    },
+    updateElement()
+    {
+      formBuilderService.updateParams(this.element);
+    }
+  }
 }
 </script>
 
