@@ -24,7 +24,7 @@
             </span>
             <div class="status-field">
               <div>
-                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="updateStatus(statu)">{{statu.label[actualLanguage]}}</p>
+                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)">{{statu.label[actualLanguage]}}</p>
               </div>
               <input type="hidden" :class="'label-' + statu.class">
             </div>
@@ -202,6 +202,11 @@ export default {
           this.$emit('updateLastSaving',this.formattedDate('','LT'));
         });
       }
+    },
+
+    manageKeyup(status){
+      document.getElementById(('status_label_' + status.step)).textContent = document.getElementById(('status_label_' + status.step)).textContent.trim();
+      document.activeElement.blur();
     },
 
     getHexColors(element) {
