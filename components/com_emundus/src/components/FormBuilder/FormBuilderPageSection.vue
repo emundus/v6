@@ -11,14 +11,14 @@
             'closed': closedSection,
           }"
       >
-        <p
-            class="section-title"
+        <span
+            class="section-title editable-data"
             ref="sectionTitle"
             contenteditable="true"
             @focusout="updateTitle"
         >
           {{ section.label.fr }}
-        </p>
+        </span>
         <draggable
           v-model="sectionElementsAsArray"
           group="form-builder-section-elements"

@@ -1,14 +1,14 @@
 <template>
   <div class="form-builder-page-section-element" @click="$emit('open-element-properties')">
-    <p
+    <span
         v-if="element.label_value && element.labelsAbove != 2"
         ref="label"
-        class="element-title"
+        class="element-title editable-data"
         contenteditable="true"
         @focusout="updateLabel"
     >
       {{ element.label.fr }}
-    </p>
+    </span>
     <div class="element-field">
       <span v-html="element.element" :id="element.id">
       </span>

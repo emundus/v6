@@ -19,7 +19,7 @@
           </span>
         </div>
         <span
-            class="em-h4"
+            class="em-h4 editable-data"
             contenteditable="true"
             ref="formTitle"
             @focusout="updateFormTitle"
@@ -69,29 +69,31 @@
           ></form-builder-page>
         </section>
         <aside class="right-panel em-flex-column">
-          <div
-              id="form-hierarchy"
-              v-if="!showElementProperties"
-          >
-            <form-builder-pages
-                :pages="pages"
-                :selected="selectedPage"
+          <transition name="fade" mode="out-in">
+            <div
+                id="form-hierarchy"
+                v-if="!showElementProperties"
+            >
+              <form-builder-pages
+                  :pages="pages"
+                  :selected="selectedPage"
+                  :profile_id="profile_id"
+                  @select-page="selectedPage = $event"
+                  @add-page="getPages(currentPage.id)"
+              ></form-builder-pages>
+              <hr>
+              <form-builder-documents
+                  :profile_id="profile_id"
+                  :campaign_id="campaign_id"
+              ></form-builder-documents>
+            </div>
+            <form-builder-element-properties
+                v-if="showElementProperties"
+                @close="onCloseElementProperties"
+                :element="selectedElement"
                 :profile_id="profile_id"
-                @select-page="selectedPage = $event"
-                @add-page="getPages(currentPage.id)"
-            ></form-builder-pages>
-            <hr>
-            <form-builder-documents
-                :profile_id="profile_id"
-                :campaign_id="campaign_id"
-            ></form-builder-documents>
-          </div>
-          <form-builder-element-properties
-              v-if="showElementProperties"
-              @close="onCloseElementProperties"
-              :element="selectedElement"
-              :profile_id="profile_id"
-          ></form-builder-element-properties>
+            ></form-builder-element-properties>
+          </transition>
         </aside>
       </div>
     </modal>
@@ -258,7 +260,8 @@ export default {
     }
 
     .right-panel {
-      min-width: 288px;
+      min-width: 366px;
+      width: 366px;
       border-left: solid 1px #E3E5E8;
 
       > div {
@@ -308,5 +311,24 @@ export default {
       color: #080C12;
     }
   }
+
+  .editable-data {
+    padding: 4px;
+    border-radius: 4px;
+
+    &:focus {
+      background-color: #DFF5E9;
+    }
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

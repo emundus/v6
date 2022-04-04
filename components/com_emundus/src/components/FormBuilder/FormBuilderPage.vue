@@ -1,14 +1,21 @@
 <template>
   <div id="form-builder-page">
-    <p
-        class="em-h3"
+    <span
+        class="em-h3 editable-data"
         ref="pageTitle"
         @focusout="updateTitle"
         contenteditable="true"
     >
       {{ title }}
-    </p>
-    <p><span v-html="description"></span></p>
+    </span>
+    <span
+        class="description editable-data"
+        ref="pageDescription"
+        v-html="description"
+        @focusout="updateDescription"
+        contenteditable="true"
+      >
+    </span>
 
     <div class="form-builder-page-sections">
       <form-builder-page-section
@@ -94,7 +101,12 @@ export default {
           });
         }
       });
-    }
+    },
+    updateDescription()
+    {
+      this.fabrikPage.intro.fr = this.$refs.pageDescription.innerText;
+      formBuilderService.updateTranslation(null, this.fabrikPage.introraw, this.fabrikPage.intro);
+    },
   },
 }
 </script>
@@ -104,6 +116,10 @@ export default {
 #form-builder-page {
   width: calc(100% - 80px);
   margin: 40px 40px;
+
+  .description {
+    display: block;
+  }
 
   #add-section {
     width: fit-content;
