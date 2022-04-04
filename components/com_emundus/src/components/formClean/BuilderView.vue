@@ -134,7 +134,7 @@
                         :key="keyElements['element' + element.id]"
                     />
                     <div class="control-group fabrikElementContainer span12">
-                      <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2" @click="openParameters(element)"
+                      <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2"
                            :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
                         <div class="em-flex-row" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
                           <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
@@ -165,6 +165,9 @@
                         </a>
 
                         <div class="em-flex-row">
+                          <div class="em-flex-row em-mr-8 em-pointer" @click="openParameters(element)" :title="translations.Edit">
+                            <span class="material-icons">edit</span>
+                          </div>
                           <div class="em-flex-row em-mr-8 em-pointer" @click="deleteElement(element,index)" :title="translations.Delete">
                             <span class="material-icons-outlined em-red-500-color">delete</span>
                           </div>

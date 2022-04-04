@@ -2,7 +2,10 @@
   <div>
     <h2 class="em-h4 em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h2>
     <p class="em-font-size-14 em-mb-24 em-h-25">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}</p>
-    <div class="em-grid-4">
+
+    <p class="em-font-size-14 em-mb-24 em-h-25" v-if="availableLanguages.length === 0 && !loading">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}</p>
+
+    <div class="em-grid-4" v-else>
       <!-- Languages -->
       <div>
         <multiselect
@@ -156,13 +159,18 @@ export default {
       try {
         const response = await client().get('index.php?option=com_emundus&controller=translations&task=getlanguages');
         this.allLanguages = response.data;
-        this.allLanguages.forEach((lang) => {
+        for(const lang of this.allLanguages){
           if(lang.lang_code !== this.defaultLang.lang_code) {
             if (lang.published == 1) {
               this.availableLanguages.push(lang);
             }
           }
-        })
+        }
+
+        if(this.availableLanguages.length === 1){
+          this.lang = this.availableLanguages[0];
+          await this.getObjects();
+        }
       } catch (e) {
         return false;
       }

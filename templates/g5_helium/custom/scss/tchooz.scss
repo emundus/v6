@@ -859,10 +859,12 @@ input:focus + .em-slider {
   font-weight: bold;
 }
 
-.em-gradient-icons{
-  background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+@supports (background-clip: text) {
+  .em-gradient-icons {
+    background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 /**
