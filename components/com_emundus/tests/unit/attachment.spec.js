@@ -239,3 +239,39 @@ describe('Attachments.vue delete Methods', () => {
     expect(wrapper.vm.attachments.length).toBe(1);
   });
 });
+
+describe('Attachments.vue anonyme', () => {
+  const wrapper = shallowMount(Attachments, {
+    propsData: {
+      user: "123",
+      fnum: "2021061714501700000010000123"
+    },
+    store: store,
+    localVue
+  });
+
+  // set attachments data
+  wrapper.vm.users = mockAttachment.users;
+  wrapper.vm.displayedUser = mockAttachment.users.find(user => user.id === "123");
+  wrapper.vm.attachments = mockAttachment.attachments;
+  wrapper.vm.fnums = mockAttachment.fnums;
+
+  it('store global anonyme value should exists', () => {
+    expect(store.state.global).toHaveProperty('anonyme');
+  });
+
+  it('if anonyme store value changes, canSee should be updated', () => {
+    const newValue = !store.state.global.anonyme;
+    store.dispatch('global/setAnonyme', newValue).then(() => {
+      expect(wrapper.vm.canSee).toBe(!newValue);
+    });
+  });
+
+
+  it('Expect .name to display fnum if anonyme to true', () => {
+    store.dispatch('global/setAnonyme', true).then(() => {
+      const name = wrapper.find('.displayed-user .name');
+      expect(name.text()).toBe(wrapper.vm.displayedFnum);
+    });
+  });
+});

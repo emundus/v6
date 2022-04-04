@@ -3,7 +3,7 @@
     <div class="head">
       <div class="displayed-user">
         <p class="name">
-          {{ displayedUser.firstname }} {{ displayedUser.lastname }}
+          {{ canSee ? displayedUser.firstname + " " + displayedUser.lastname : displayedFnum}}
         </p>
         <p class="email">{{ displayedUser.email }} </p>
 
@@ -164,7 +164,7 @@
               >arrow_downward</span
               >
             </th>
-            <th id="user" @click="orderBy('user_id')">
+            <th v-if="canSee" id="user" @click="orderBy('user_id')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
               <span
                   v-if="sort.orderBy == 'user_id' && sort.order == 'asc'"
@@ -177,7 +177,7 @@
               >arrow_downward</span
               >
             </th>
-            <th id="modified_by" @click="orderBy('modified_by')">
+            <th v-if="canSee" id="modified_by" @click="orderBy('modified_by')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
               <span
                   v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'"
@@ -215,6 +215,7 @@
               :attachment="attachment"
               :checkedAttachmentsProp="checkedAttachments"
               :canUpdate="canUpdate"
+              :canSee="canSee"
               @open-modal="openModal(attachment)"
               @update-checked-attachments="updateCheckedAttachments"
               @update-status="updateStatus"
@@ -344,6 +345,7 @@ export default {
         order: "",
         orderBy: "",
       },
+      canSee: true,
       canExport: false,
       canDelete: false,
       canDownload: true,
@@ -355,6 +357,7 @@ export default {
   },
   created() {
     this.changeFileEvent = new Event("changeFile");
+    this.canSee = !this.$store.state.global.anonyme;
   },
   mounted() {
     this.loading = true;
@@ -562,7 +565,6 @@ export default {
           });
         }
       }
-
       this.canExport = this.$store.state.user.rights[this.displayedFnum]
           ? this.$store.state.user.rights[this.displayedFnum].canExport
           : false;
@@ -908,6 +910,11 @@ export default {
       return displayedCategories;
     },
   },
+  watch: {
+    "$store.state.global.anonyme": function () {
+      this.canSee = !this.$store.state.global.anonyme;
+    }
+  }
 };
 </script>
 
