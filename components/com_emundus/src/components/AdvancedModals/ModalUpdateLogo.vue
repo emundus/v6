@@ -65,7 +65,6 @@ const getTemplate = () => `
   </div>
   <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
   <div class="dz-error-message"><span data-dz-errormessage></span></div>
-  <div class="dz-success-mark"><i class="fa fa-check"></i></div>
   <div class="dz-error-mark"><i class="fa fa-close"></i></div>
 </div>
 `;
@@ -156,55 +155,3 @@ export default {
   }
 };
 </script>
-
-<style scoped lang="scss">
-/**** CUSTOM VUE DROPZONE ****/
-#customdropzone {
-  letter-spacing: 0.2px;
-  background: #fff;
-  color: #777;
-  transition: background-color .2s linear;
-  height: 200px;
-  padding: 40px;
-  border: dashed;
-  border-radius: 5px;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  cursor: pointer;
-.dz-preview {
-  width: 100%;
-  display: inline-block;
-  text-align: center;
-.dz-image {
-  width: auto;
-  height: 100px;
->div {
-  width: inherit;
-  height: inherit;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
->img {
-  width: 100%;
-}
-}
-.dz-details {
-  color: black;
-  transition: opacity .2s linear;
-  text-align: center;
-}
-}
-.dz-success-mark {
-  display: none;
-}
-}
-.dz-default.dz-message {
-  text-align: center !important;
-}
-.dz-error-mark {
-  display: none;
-}
-/**** END ****/
-</style>
