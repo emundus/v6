@@ -19,6 +19,14 @@
         >
           {{ section.label.fr }}
         </span>
+        <span
+          class="section-intro editable-data"
+          ref="sectionIntro"
+          contenteditable="true"
+          @focusout="updateIntro"
+          v-html="section.group_intro"
+        >
+        </span>
         <draggable
           v-model="sectionElementsAsArray"
           group="form-builder-section-elements"
@@ -113,6 +121,9 @@ export  default {
       ]
     };
   },
+  mounted() {
+    console.log(this.section);
+  },
   methods: {
     updateTitle() {
       this.section.label.fr = this.$refs.sectionTitle.innerText;
@@ -120,6 +131,9 @@ export  default {
         value: this.section.group_id,
         key: 'group'
       }, this.section.group_tag, this.section.label);
+    },
+    updateIntro() {
+
     }
   },
   computed: {

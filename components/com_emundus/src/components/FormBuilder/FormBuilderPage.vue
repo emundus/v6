@@ -105,7 +105,7 @@ export default {
     updateDescription()
     {
       this.fabrikPage.intro.fr = this.$refs.pageDescription.innerText;
-      formBuilderService.updateTranslation(null, this.fabrikPage.introraw, this.fabrikPage.intro);
+      formBuilderService.updateTranslation(null, this.fabrikPage.intro_raw, this.fabrikPage.intro);
     },
   },
 }
