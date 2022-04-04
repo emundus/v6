@@ -65,6 +65,7 @@
             :manyLanguages="manyLanguages"
             @nextSection="menuHighlight++"
             @getInformations="initInformations"
+            @updateHeader="updateHeader"
         ></add-campaign>
         <addFormulaire
             v-if="menuHighlight == 2"
@@ -255,16 +256,7 @@ export default {
       this.form.profile_id = campaign.profile_id;
       this.form.program_id = campaign.progid;
 
-      this.form.start_date = campaign.start_date;
-      this.form.end_date = campaign.end_date;
-      this.form.start_date = moment(this.form.start_date).format(
-          this.translations.DATE_FORMAT
-      );
-      if (this.form.end_date === "0000-00-00 00:00:00") {
-        this.form.end_date = null;
-      } else {
-        this.form.end_date = moment(this.form.end_date).format(this.translations.DATE_FORMAT);
-      }
+      this.initDates(campaign);
 
       axios.get(
           `index.php?option=com_emundus&controller=form&task=getallformpublished`
@@ -288,6 +280,24 @@ export default {
           document.cookie = 'campaign_'+this.campaignId+'_menu =; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
       });
+    },
+
+    updateHeader(value){
+      this.form.label = value.label[this.actualLanguage];
+      this.initDates(value);
+    },
+
+    initDates(campaign){
+      this.form.start_date = campaign.start_date;
+      this.form.end_date = campaign.end_date;
+      this.form.start_date = moment(this.form.start_date).format(
+          this.translations.DATE_FORMAT
+      );
+      if (this.form.end_date === "0000-00-00 00:00:00") {
+        this.form.end_date = null;
+      } else {
+        this.form.end_date = moment(this.form.end_date).format(this.translations.DATE_FORMAT);
+      }
     },
 
     changeToProgMenu(index) {

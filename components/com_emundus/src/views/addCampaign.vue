@@ -547,6 +547,7 @@ export default {
             data: qs.stringify({ body: this.form, cid: this.campaignId })
           }).then(() => {
             this.$emit('nextSection');
+            this.$emit('updateHeader',this.form);
           }).catch(error => {
             console.log(error);
           });
