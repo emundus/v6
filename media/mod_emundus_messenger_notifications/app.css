@@ -344,7 +344,7 @@ hr {
 }
 
 /**** CUSTOM VUE DROPZONE ****/
-#customdropzone {
+#customdropzone_messenger {
   letter-spacing: 0.2px;
   background: #ececec;
   color: #777;
@@ -365,32 +365,32 @@ hr {
   display: flex;
   cursor: pointer;
 }
-#customdropzone .dz-preview {
+#customdropzone_messenger .dz-preview {
   width: 100%;
   display: inline-block;
   text-align: center;
 }
-#customdropzone .dz-preview .dz-image {
+#customdropzone_messenger .dz-preview .dz-image {
   width: auto;
   height: 100px;
 }
-#customdropzone .dz-preview .dz-image > div {
+#customdropzone_messenger .dz-preview .dz-image > div {
   width: inherit;
   height: inherit;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
-#customdropzone .dz-preview .dz-image > img {
+#customdropzone_messenger .dz-preview .dz-image > img {
   width: 100%;
 }
-#customdropzone .dz-preview .dz-details {
+#customdropzone_messenger .dz-preview .dz-details {
   color: black;
   -webkit-transition: opacity 0.2s linear;
   transition: opacity 0.2s linear;
   text-align: center;
 }
-#customdropzone .dz-success-mark {
+#customdropzone_messenger .dz-success-mark {
   display: none;
 }
 
@@ -797,7 +797,7 @@ label{
 }
 
 /**** CUSTOM VUE DROPZONE ****/
-#customdropzone {
+#customdropzone_messenger {
     letter-spacing: 0.2px;
     background: #ececec;
     color: #777;

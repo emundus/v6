@@ -14,7 +14,7 @@
           @closed="beforeClose"
           @opened="getFilesByUser"
       >
-        <div class="drag-window">
+        <div class="drag-window em-grid-2-20-80">
           <div class="col-md-5 messages__campaigns-list">
             <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
               <div class="messages__campaign-block">

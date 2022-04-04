@@ -128,6 +128,7 @@ JText::script('FIRST_NAME_Q');
 JText::script('FNUM_Q');
 JText::script('EMAIL_Q');
 
+JText::script('BACK');
 
 JText::script('COM_EMUNDUS_LOADING');
 JText::script('TITLE');
