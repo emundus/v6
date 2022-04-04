@@ -106,3 +106,41 @@ describe('AttachmentRow.vue but user can not update', () => {
 		expect(wrapper.emitted('change-permission')).toBeFalsy();
 	});
 });
+
+describe('Attachment-row anonyme', () => {
+	const wrapper = mount(AttachmentRow, {
+		propsData: {
+			attachment: mockAttachment.attachments[1],
+			checkedAttachmentsProp: [mockAttachment.attachments[1].aid],
+			canUpdate: true,
+		},
+		mixins: [translate, mixin],
+		global: {
+			plugins: ['vue-js-modal']
+		},
+		store
+	});
+
+	it('store global anonyme value should exists', () => {
+		expect(store.state.global).toHaveProperty('anonyme');
+	});
+
+	if (store.state.global.anonyme) {
+		it('if anonyme equals true canSee should be false', () => {
+			expect(wrapper.vm.canSee).toBe(false);
+		});
+
+
+	} else {
+		it('if anonyme equals false canSee should be true', () => {
+			expect(wrapper.vm.canSee).toBe(true);
+		});
+	}
+
+	it('if anonyme store value changes, canSee should be updated', () => {
+		const newValue = !store.state.global.anonyme;
+		store.dispatch('global/setAnonyme', newValue).then(() => {
+			expect(wrapper.vm.canSee).toBe(!newValue);
+		});
+	});
+});
