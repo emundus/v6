@@ -35,14 +35,14 @@
         <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
       </select>
 
-      <select
+<!--      <select
           class="list-vue-select"
           v-if="type === 'formulaire' || type === 'grilleEval'"
           v-model="type"
       >
         <option value="formulaire">{{ translations.candidature }}</option>
         <option value="grilleEval">{{ translations.evaluations }}</option>
-      </select>
+      </select>-->
 
       <div class="search-container">
         <div class="search em-flex-row">
