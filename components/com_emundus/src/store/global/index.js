@@ -4,6 +4,7 @@ const state = {
     actualLanguage: '',
     manyLanguages: '',
     coordinatorAccess: '',
+    anonyme: false,
 };
 
 const getters = {
@@ -16,7 +17,10 @@ const getters = {
 const actions = {
     setLang({ commit }, lang) {
         commit('setLang', lang);
-    }
+    },
+    setAnonyme({ commit }, anonyme) {
+        commit('setAnonyme', anonyme);
+    },
 };
 
 const mutations = {
@@ -42,6 +46,10 @@ const mutations = {
     initCoordinatorAccess(state, access){
         state.coordinatorAccess = access;
         return state.coordinatorAccess;
+    },
+
+    setAnonyme(state, anonyme) {
+        state.anonyme = anonyme;
     }
 };
 

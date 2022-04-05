@@ -62,3 +62,29 @@ describe('App.vue', () => {
 		expect(wrapper.find('#em-attachments').exists()).toBe(true);
 	});
 });
+
+describe('App.vue anonyme', () => {
+	// on beforeCreate hook, expect dispatch store global/setAnonyme to be called
+	const localVue = createLocalVue();
+	localVue.use(Vuex);
+	localVue.mixin(translate);
+	localVue.use(VModal);
+
+	const wrapper = mount(App, {
+		propsData: {
+			componentName: 'attachments',
+			data: {
+				lang: 'fr',
+				fnum: '123456789',
+				user: '95'
+			}
+		},
+		store: store,
+	localVue
+	});
+
+	it('store global anonyme value should exists', () => {
+		expect(store.state.global).toHaveProperty('anonyme');
+	});
+
+});
