@@ -358,6 +358,11 @@ export default {
   created() {
     this.changeFileEvent = new Event("changeFile");
     this.canSee = !this.$store.state.global.anonyme;
+    window.addEventListener('message', function (e) {
+      if (e.data == 'addFileToFnum') {
+        this.refreshAttachments(true);
+      }
+    }.bind(this));
   },
   mounted() {
     this.loading = true;
