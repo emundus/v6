@@ -4415,4 +4415,20 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((array('status' => false, 'msg' => 'missing fnum')));
         exit;
     }
+
+    public function isdataanonymized()
+    {
+        $user = JFactory::getSession()->get('emundusUser');
+        $status = false;
+        $anonyme = false;
+        $msg = '';
+
+        if (!empty($user)) {
+            $anonyme = EmundusHelperAccess::isDataAnonymized($user->id);
+            $status = true;
+        }
+
+        echo json_encode((array('status' => $status, 'anonyme' => $anonyme, 'msg' => $msg)));
+        exit;
+    }
 }
