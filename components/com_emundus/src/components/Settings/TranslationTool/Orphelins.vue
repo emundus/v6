@@ -93,9 +93,7 @@ export default {
   created() {
     translationsService.getDefaultLanguage().then((response) => {
       this.defaultLang = response;
-      this.getAllLanguages().then(() => {
-        this.loading = false;
-      })
+      this.getAllLanguages();
     });
   },
 
@@ -114,6 +112,8 @@ export default {
         }
         if(this.availableLanguages.length === 1){
           this.lang = this.availableLanguages[0];
+        } else {
+          this.loading = false;
         }
       } catch (e) {
         this.loading = false;

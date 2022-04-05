@@ -149,8 +149,9 @@ export default {
     this.loading = true;
     translationsService.getDefaultLanguage().then((response) => {
       this.defaultLang = response;
-      this.getAllLanguages();
-      this.loading = false;
+      this.getAllLanguages().then(() => {
+        this.loading = false;
+      })
     });
   },
 
@@ -172,6 +173,7 @@ export default {
           await this.getObjects();
         }
       } catch (e) {
+        this.loading = false;
         return false;
       }
     },
