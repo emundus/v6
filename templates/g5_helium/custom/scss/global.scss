@@ -2422,15 +2422,16 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   }
 
   .em-actions {
-    padding: 5px;
+    padding: 0;
 
     a {
-      padding: 5px !important;
-      color: #fff;
+      padding: 8px !important;
+      color: $neutral-900;
 
       &:hover, &:focus, &:active {
-        border-radius: 4px;
-        background: $dark-grey !important;
+        border: unset !important;
+        background: $main-200 !important;
+        color: $neutral-900 !important;
       }
     }
   }

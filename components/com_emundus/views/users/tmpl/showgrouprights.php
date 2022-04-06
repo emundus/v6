@@ -113,7 +113,7 @@ span:hover {
 			</ul>
 		<?php endif;?>
         <div class="modal-footer">
-            <button type="button" class="btn btn-success"><a href="index.php" style="color: unset"><?php echo JText::_('COM_EMUNDUS_OK');?></a></button>
+            <button type="button" class="btn btn-success" onclick="history.go(-1)"><?php echo JText::_('COM_EMUNDUS_OK');?></button>
         </div>
 	</fieldset>
 <?php endforeach;?>
