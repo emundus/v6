@@ -1143,39 +1143,40 @@ class EmundusHelperFiles
 
         // User filter
         $research_filters = $h_files->getEmundusFilters();
-        $filters .='<fieldset id="em_select_filter" class="em-user-personal-filter">
-                        <label for="select_filter" class="control-label em-user-personal-filter-label">'.JText::_('COM_EMUNDUS_FILTERS_SELECT_FILTER').'</label>
-                        <div class="em_select_filter_rapid_search">
-                            <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" >
-                                <option value="0" selected="true" style="font-style: italic;">'.JText::_('COM_EMUNDUS_FILTERS_CHOOSE_FILTER').'</option>';
         if (!empty($research_filters)) {
+            $filters .= '<fieldset id="em_select_filter" class="em-user-personal-filter">
+                            <label for="select_filter" class="control-label em-user-personal-filter-label">' . JText::_('COM_EMUNDUS_FILTERS_SELECT_FILTER') . '</label>
+                            <div class="em_select_filter_rapid_search">
+                                <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" >
+                                    <option value="0" selected="true" style="font-style: italic;">' . JText::_('COM_EMUNDUS_FILTERS_CHOOSE_FILTER') . '</option>';
+
             foreach ($research_filters as $filter) {
                 if ($select_id == $filter->id) {
-                    $filters .= '<option value="'.$filter->id.'" selected="true" >'.$filter->name.'</option>';
+                    $filters .= '<option value="' . $filter->id . '" selected="true" >' . $filter->name . '</option>';
                 } else {
-                    $filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+                    $filters .= '<option value="' . $filter->id . '">' . $filter->name . '</option>';
                 }
             }
-        }
-        $filters .= '</select>
+            $filters .= '</select>
 
-						<button class="btn btn-xs" id="del-filter" title="'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"><span class="material-icons">delete_outline</span></button></div>
+						<button class="btn btn-xs" id="del-filter" title="' . JText::_('COM_EMUNDUS_ACTIONS_DELETE') . '"><span class="material-icons">delete_outline</span></button></div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <strong>'.JText::_('COM_EMUNDUS_FILTERS_FILTER_SAVED').'</strong>
+                                <strong>' . JText::_('COM_EMUNDUS_FILTERS_FILTER_SAVED') . '</strong>
                             </div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="deleted-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <strong>'.JText::_('COM_EMUNDUS_FILTERS_FILTER_DELETED').'</strong>
+                                <strong>' . JText::_('COM_EMUNDUS_FILTERS_FILTER_DELETED') . '</strong>
                             </div>
                             <div class="alert alert-dismissable alert-danger em-alert-filter" id="error-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <strong>'.JText::_('COM_EMUNDUS_ERROR_SQL_ERROR').'</strong>
+                                <strong>' . JText::_('COM_EMUNDUS_ERROR_SQL_ERROR') . '</strong>
                             </div>
                         </fieldset>
-                		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().EmundusHelperJavascript::clearAdvanceFilter().'</script>
-                    </fieldset>
-                    <script>
+                		<script type="text/javascript" >' . EmundusHelperJavascript::getPreferenceFilters() . EmundusHelperJavascript::clearAdvanceFilter() . '</script>
+                    </fieldset>';
+        }
+        $filters .= '<script>
                         $(document).ready(function() {
 
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('COM_EMUNDUS_FILES_ENTER_HERE').'"});
@@ -1976,7 +1977,7 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
-                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
+                    $adv_filter .= '<button class="em-transparent-button" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
