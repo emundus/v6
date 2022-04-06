@@ -5,3 +5,18 @@ INSERT INTO jos_modules (asset_id, title, note, content, ordering, position, che
 VALUES (0, 'Release notes', '', null, 1, 'content-top-a', 0, '2022-02-22 16:28:57', '2022-02-22 16:28:57', '2099-02-22 16:28:57', 1, 'mod_emundus_version', 7, 0, '{"module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
 
 INSERT INTO jos_modules_menu (moduleid, menuid) VALUES (284, 0);
+
+create table jos_emundus_setup_status_repeat_tags
+(
+    id        int auto_increment
+        primary key,
+    parent_id int  null,
+    tags      int  null,
+    params    text null
+);
+
+create index fb_parent_fk_parent_id_INDEX
+    on jos_emundus_setup_status_repeat_tags (parent_id);
+
+create index fb_repeat_el_tags_INDEX
+    on jos_emundus_setup_status_repeat_tags (tags);
