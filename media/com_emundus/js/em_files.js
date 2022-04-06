@@ -6142,7 +6142,11 @@ $(document).ready(function() {
                                                         Swal.fire({
                                                             type: 'success',
                                                             title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
-                                                            html: sent_to
+                                                            html: sent_to,
+                                                            customClass: {
+                                                                title: 'em-swal-title',
+                                                                confirmButton: 'em-swal-confirm-button',
+                                                            },
                                                         });
                                                     }, error: function(jqXHR) {
                                                         console.log(jqXHR.responseText);
