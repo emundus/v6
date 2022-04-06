@@ -850,6 +850,16 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
 
+                $row = array('applicant_id' => $fnum['applicant_id'],
+                    'user_id' => $this->_user->id,
+                    'reason' => JText::_('STATUS'),
+                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
+                    'fnum' => $fnum['fnum'],
+                    'status_from' => $fnum['step'],
+                    'status_to' => $state
+                );
+                $m_application->addComment($row);
+
                 // Log the update
                 $logsParams = array('updated' => []);
                 array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
