@@ -786,7 +786,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_onboard' . DS . 'models' . DS . 'form.php');
+    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -802,7 +802,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
     $m_files = new EmundusModelFiles;
-    $m_form = new EmundusonboardModelform;
+    $m_form = new EmundusModelform;
 
     $db = JFactory::getDBO();
     $app = JFactory::getApplication();
@@ -1316,7 +1316,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 
         if (!$anonymize_data) {
             if ($allowed_attachments === true || in_array('10', $allowed_attachments)) {
-                
+
                 if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
                     $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="left" /></td>';
                 } elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
