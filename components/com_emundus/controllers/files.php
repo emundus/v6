@@ -852,7 +852,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 $row = array('applicant_id' => $fnum['applicant_id'],
                     'user_id' => $this->_user->id,
-                    'reason' => JText::_('STATUS'),
+                    'reason' => JText::_('COM_EMUNDUS_STATUS'),
                     'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
                     'fnum' => $fnum['fnum'],
                     'status_from' => $fnum['step'],

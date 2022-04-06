@@ -190,8 +190,11 @@ export default {
             showCancelButton: false,
             showCloseButton: true,
             allowOutsideClick: false,
-            confirmButtonColor: '#de6339',
             confirmButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_OK'),
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+            },
           }).then((result) => {
             if (result.value) {
               axios({

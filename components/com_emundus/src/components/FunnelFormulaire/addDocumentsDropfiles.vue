@@ -164,11 +164,11 @@ export default {
         html: '<div class="form-group campaign-label">' +
             '<label for="campLabel">' + this.DocumentName + '</label><input type="text" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
             '</div>',
-        confirmButtonColor: '#de6339',
         showCloseButton: true,
         allowOutsideClick: false,
         customClass: {
-          popup: 'swal-popup-custom',
+          title: 'em-swal-title',
+          confirmButton: 'em-swal-confirm-button',
         }
       }).then((value) => {
         if(value){

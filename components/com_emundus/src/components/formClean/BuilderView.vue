@@ -474,10 +474,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
 
@@ -796,10 +800,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUPWARNING"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
           axios({
@@ -873,7 +881,6 @@ export default {
           text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
           type: "info",
           showCancelButton: true,
-          confirmButtonColor: '#de6339',
           confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
           reverseButtons: true,
@@ -916,10 +923,14 @@ export default {
           text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE"),
           type: "info",
           showCancelButton: true,
-          confirmButtonColor: '#de6339',
           confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-          reverseButtons: true
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          },
         }).then(result => {
           if(result.value) {
             axios({
@@ -959,10 +970,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE"),
         type: "info",
         showCancelButton: true,
-        confirmButtonColor: '#12db42',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if(result.value) {
           axios({

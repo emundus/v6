@@ -573,7 +573,12 @@ export default {
         confirmButtonColor: '#12db42',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if(result.value){
           axios({
@@ -593,7 +598,11 @@ export default {
                 title: this.translate("COM_EMUNDUS_ONBOARD_MODEL_DELETED"),
                 text: this.translate("COM_EMUNDUS_ONBOARD_MODEL_DELETED_TEXT"),
                 showConfirmButton: true,
-                timer: 5000
+                timer: 5000,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                },
               }).then(() => {
                 this.$modal.hide('modalAddDocuments')
               });
@@ -603,7 +612,11 @@ export default {
                 title: this.translate("COM_EMUNDUS_ONBOARD_CANNOT_DELETE"),
                 text: this.translate("COM_EMUNDUS_ONBOARD_CANNOT_DELETE_TEXT"),
                 showConfirmButton: true,
-                timer: 5000
+                timer: 5000,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                },
               })
             }
           });
