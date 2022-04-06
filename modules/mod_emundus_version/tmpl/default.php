@@ -17,12 +17,13 @@ defined('_JEXEC') or die;
     }
     .em-version-swal-container li{
         margin-bottom: 8px;
+        margin-top: 8px;
     }
     .em-version-swal-container h2{
         margin-bottom: 12px;
     }
     .em-version-swal-container .swal2-modal{
-        width: 50%;
+        width: 75%;
     }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
