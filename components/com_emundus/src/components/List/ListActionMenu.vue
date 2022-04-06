@@ -11,6 +11,7 @@
     </button>
 		<v-popover
 			v-if="showTootlip === true"
+      class="em-pointer"
 			:popoverArrowClass="'custom-popover-arrow'"
 		>
       <span class="tooltip-target b3 material-icons">more_vert</span>
