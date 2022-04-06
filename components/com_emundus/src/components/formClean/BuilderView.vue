@@ -1363,4 +1363,8 @@ export default {
   display: block;
   width: 100%;
 }
+.unpublished {
+  background: #C5C8CE;
+  border-radius: 5px;
+}
 </style>
