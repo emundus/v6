@@ -470,8 +470,6 @@ JText::script('COM_EMUNDUS_EXPORT_FAILED');
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
-JHTML::script('media/com_emundus_messenger/app_messenger.js');
-JHTML::script('media/com_emundus_messenger/chunk-vendors_messenger.js');
 JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
@@ -479,7 +477,6 @@ JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
-JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHtml::styleSheet('media/com_emundus/css/reset.css');
 JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
