@@ -19,7 +19,6 @@ describe('App.vue', () => {
 		mixins: [translate],
 		store
 	});
-
 	it('should render the app', () => {
 		expect(wrapper.find('.com_emundus_vue').exists()).toBe(true);
 	});

@@ -144,26 +144,30 @@ switch ($order) {
             </div>
         <?php endif; ?>
     </div><!-- Close campaign-content -->
-    <div id="faq">
-        <?php foreach ($faq_articles as $article) :?>
-            <h2> <?php echo $article->title ?></h2>
-            <p> <?php echo $article->introtext ?></p>
-            <hr>
-        <?php endforeach; ?>
-    </div>
-    <div id="documents">
-        <div class="em-campaign-dropfiles">
-        <ul>
-            <?php foreach($files as $file) { ?>
-                <a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >
-                    <li class="em-campaign-dropfiles__btn">
-                        <?php echo $file->title_file.".".$file->ext; ?><span><i class="fas fa-arrow-circle-down"></i></span>
-                    </li>
-                </a>
-            <?php } ?>
-        </ul>
+    <?php if (in_array('faq', $modules_tabs) && !empty($files)) : ?>
+        <div id="faq">
+            <?php foreach ($faq_articles as $article) :?>
+                <h2> <?php echo $article->title ?></h2>
+                <p> <?php echo $article->introtext ?></p>
+                <hr>
+            <?php endforeach; ?>
         </div>
-    </div>
+    <?php endif ?>
+    <?php if (in_array('documents', $modules_tabs) && !empty($files)) : ?>
+        <div id="documents">
+            <div class="em-campaign-dropfiles">
+            <ul>
+                <?php foreach($files as $file) { ?>
+                    <a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >
+                        <li class="em-campaign-dropfiles__btn">
+                            <?php echo $file->title_file.".".$file->ext; ?><span><i class="fas fa-arrow-circle-down"></i></span>
+                        </li>
+                    </a>
+                <?php } ?>
+            </ul>
+            </div>
+        </div>
+    <?php endif ?>
 
 </div>
 
@@ -214,6 +218,10 @@ switch ($order) {
                     }
                     break;
                 default:
+                    document.getElementById('faq').style.display = 'none';
+                    document.getElementById('faq_tab').classList.remove('current-tab');
+                    document.getElementById('documents').style.display = 'none';
+                    document.getElementById('documents_tab').classList.remove('current-tab');
                     break;
             }
             current_tab = tab;

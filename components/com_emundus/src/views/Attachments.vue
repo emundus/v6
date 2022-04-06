@@ -301,9 +301,9 @@
 </template>
 
 <script>
-import AttachmentPreview from "../components/AttachmentPreview.vue";
-import AttachmentEdit from "../components/AttachmentEdit.vue";
-import AttachmentRow from "../components/AttachmentRow.vue";
+import AttachmentPreview from "../components/Attachments/AttachmentPreview.vue";
+import AttachmentEdit from "../components/Attachments/AttachmentEdit.vue";
+import AttachmentRow from "../components/Attachments/AttachmentRow.vue";
 import attachmentService from "../services/attachment.js";
 import userService from "../services/user.js";
 import fileService from "../services/file.js";
@@ -623,11 +623,14 @@ export default {
           html: html,
           type: "warning",
           showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
           confirmButtonText: this.translate("JYES"),
           cancelButtonText: this.translate("JNO"),
           reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          },
         }).then((result) => {
           if (result.value) {
             this.deleteAttachments();
@@ -1300,5 +1303,9 @@ export default {
     display: flex;
     padding: 0;
   }
+}
+
+#em-attachments{
+  width: 100%;
 }
 </style>

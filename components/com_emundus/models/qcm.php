@@ -25,7 +25,7 @@ class EmundusModelQcm extends JModelList {
             $db->setQuery($query);
             return $db->loadObject();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/qcm | Error when try to get qcm associated to form : ' . $formid . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/qcm | Error when try to get qcm associated to form : ' . $formid . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -55,7 +55,7 @@ class EmundusModelQcm extends JModelList {
             }
             return $applicant;
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/qcm | Error when try to get qcm associated to applicant : ' . $fnum . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/qcm | Error when try to get qcm associated to applicant : ' . $fnum . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -112,7 +112,7 @@ class EmundusModelQcm extends JModelList {
 
             return $db->insertid();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/qcm | Error when try to init qcm for applicant : ' . $fnum . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/qcm | Error when try to init qcm for applicant : ' . $fnum . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -132,7 +132,7 @@ class EmundusModelQcm extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/qcm | Error when try to get questions : ' . $questions . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/qcm | Error when try to get questions : ' . $questions . ' with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -285,7 +285,7 @@ class EmundusModelQcm extends JModelList {
 
             return true;
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/qcm | Error when try to save answer : with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/qcm | Error when try to save answer : with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -334,7 +334,7 @@ class EmundusModelQcm extends JModelList {
 
             return $points;
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/qcm | Error when try to check qcm points with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/qcm | Error when try to check qcm points with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }
@@ -356,7 +356,7 @@ class EmundusModelQcm extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e){
-            JLog::add('component/com_emundus_onboard/models/qcm | Error when try to update qcm pending with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/qcm | Error when try to update qcm pending with query ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return new stdClass();
         }
     }

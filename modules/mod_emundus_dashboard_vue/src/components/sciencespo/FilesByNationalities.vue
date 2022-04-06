@@ -47,7 +47,7 @@ export default {
     renderFiles(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilescountbynationalities",
+        url: "index.php?option=com_emundus&controller=dashboard&task=getfilescountbynationalities",
         params: {
           program: this.program,
         },

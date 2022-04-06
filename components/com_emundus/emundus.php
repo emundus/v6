@@ -128,6 +128,7 @@ JText::script('FIRST_NAME_Q');
 JText::script('FNUM_Q');
 JText::script('EMAIL_Q');
 
+JText::script('BACK');
 
 JText::script('COM_EMUNDUS_LOADING');
 JText::script('TITLE');
@@ -163,8 +164,8 @@ JText::script('COM_EMUNDUS_TAGS_DELETE_SUCCESS');
 JText::script('COM_EMUNDUS_FILTERS_CONFIRM_DELETE_FILTER');
 JText::script('COM_EMUNDUS_APPLICATION_ADD_TAGS');
 JText::script('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
-JText::script('COM_EMUNDUS_ATTACHMENTS_VALID');
-JText::script('COM_EMUNDUS_ATTACHMENTS_INVALID');
+JText::script('VALID');
+JText::script('INVALID');
 JText::script('COM_EMUNDUS_ATTACHMENTS_UNCHECKED');
 JText::script('COM_EMUNDUS_EXPORTS_SELECT_AT_LEAST_ONE_FILE');
 JText::script('COM_EMUNDUS_EXPORTS_INFORMATION');
@@ -464,20 +465,18 @@ JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
 
+// ONBOARD
+
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
 JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
 JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
-JHTML::script('media/com_emundus_messenger/app_messenger.js');
-JHTML::script('media/com_emundus_messenger/chunk-vendors_messenger.js');
 JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
 JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
 JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
 JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
-JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
 
-JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
 JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
 JHtml::styleSheet('media/com_emundus/css/reset.css');
 JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
@@ -487,9 +486,7 @@ JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
 JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
 JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
-JHTML::styleSheet('https://fonts.googleapis.com/icon?family=Material+Icons');
-
-
+JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 $app = JFactory::getApplication();
 
@@ -514,6 +511,11 @@ $name = $app->input->get('view', '', 'CMD');
 $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token = $app->input->get('token', '', 'ALNUM');
+
+if(!in_array($name,['settings','campaigns','emails','form'])) {
+    JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+}
+
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf') {

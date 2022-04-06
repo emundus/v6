@@ -381,14 +381,14 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
         // If the email sender has the same domain as the system sender address.
-        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
             $mail_from_address = $mail_from;
-        } else {
-            $mail_from_address = $mail_from_sys;
-            if (!empty($mail_from_name) && !empty($mail_from)) {
-                $reply_to = $mail_from_name . ' &lt;' . $mail_from . '&gt;';
-            }
+        } else {*/
+        $mail_from_address = $mail_from_sys;
+        if (!empty($mail_from_name) && !empty($mail_from)) {
+            $reply_to = $mail_from_name . ' &lt;' . $mail_from . '&gt;';
         }
+        //}
 
         $sender = $mail_from_name.' &lt;'.$mail_from_address.'&gt;';
 
@@ -646,11 +646,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
 	        // If the email sender has the same domain as the system sender address.
-	        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+	        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 		        $mail_from_address = $mail_from;
-	        } else {
-		        $mail_from_address = $mail_from_sys;
-	        }
+	        } else {*/
+            $mail_from_address = $mail_from_sys;
+	        //}
 
 	        // Set sender
 	        $sender = [
@@ -925,11 +925,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
 			// If the email sender has the same domain as the system sender address.
-			if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+			/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 				$mail_from_address = $mail_from;
-			} else {
-				$mail_from_address = $mail_from_sys;
-			}
+			} else {*/
+            $mail_from_address = $mail_from_sys;
+			//}
 
 			// Set sender
 			$sender = [
@@ -1056,12 +1056,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
 
 	    // If the email sender has the same domain as the system sender address.
-	    if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+	    /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 		    $mail_from_address = $mail_from;
-	    } else {
-		    $mail_from_address = $mail_from_sys;
-		    $mail_from_name = $mail_from_sys_name;
-	    }
+	    } else {*/
+        $mail_from_address = $mail_from_sys;
+        if(empty($mail_from_name)) {
+            $mail_from_name = $mail_from_sys_name;
+        }
+	    //}
 
 	    // Set sender
 	    $sender = [
@@ -1234,12 +1236,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mail_from      = $template->emailfrom;
 
 		// If the email sender has the same domain as the system sender address.
-		if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
 			$mail_from_address = $mail_from;
-		else {
-			$mail_from_address = $mail_from_sys;
-			$mail_from_name = $mail_from_sys_name;
-		}
+		else {*/
+        $mail_from_address = $mail_from_sys;
+        if(empty($mail_from_name)) {
+            $mail_from_name = $mail_from_sys_name;
+        }
+		//}
 
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
@@ -1517,8 +1521,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 
         /// call to com_emundus_onbooard/settings
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'settings.php');
-        $_mSettings = new EmundusonboardModelsettings;
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
+        $_mSettings = new EmundusModelSettings;
 
         echo json_encode((object)['status' => true, 'recap' => $_recap, 'color' => $_mSettings->getColorClasses()[$_recap['class']]]);
         exit;
@@ -1642,11 +1646,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
         // If the email sender has the same domain as the system sender address.
-        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
             $mail_from_address = $mail_from;
-        } else {
-            $mail_from_address = $mail_from_sys;
-        }
+        } else {*/
+        $mail_from_address = $mail_from_sys;
+        //}
 
         // Set sender
         $sender = [

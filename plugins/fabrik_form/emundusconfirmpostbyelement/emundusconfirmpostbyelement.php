@@ -193,7 +193,7 @@ class PlgFabrik_FormEmundusconfirmpostbyelement extends plgFabrik_Form
 		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
         $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
-		$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$this->getParam('emundusconfirmpost_status', '1').' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
+		$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$step.' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 		$db->setQuery($query);
 
 		try {

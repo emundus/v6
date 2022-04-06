@@ -15,8 +15,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
-JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus_onboard/models');        // call com_emundus_onboard model
+JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // call com_emundus model
 
 use Joomla\CMS\Filesystem\File;
 
@@ -1873,11 +1872,6 @@ class EmundusModelApplication extends JModelList
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
         $em_breaker = $eMConfig->get('export_application_pdf_breaker', '0');
-
-        $cTitle = $eMConfig->get('export_application_pdf_title_color', '#ee1c25');
-
-        $_profile_model = JModelLegacy::getInstance('profile', 'EmundusModel');
-        $_formbuilder_model = JModelLegacy::getInstance('formbuilder', 'EmundusonboardModel');         // call formbuilder model
 
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
         $h_list = new EmundusHelperList;

@@ -806,7 +806,6 @@ class EmundusControllerFiles extends JControllerLegacy
         $state  = $jinput->getInt('state', null);
 
         $h_files    = new EmundusHelperFiles();
-        $m_messages = new EmundusModelMessages();
         $m_files = $this->getModel('Files');
 
         $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
@@ -853,7 +852,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
                 $row = array('applicant_id' => $fnum['applicant_id'],
                     'user_id' => $this->_user->id,
-                    'reason' => JText::_('STATUS'),
+                    'reason' => JText::_('COM_EMUNDUS_STATUS'),
                     'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
                     'fnum' => $fnum['fnum'],
                     'status_from' => $fnum['step'],
@@ -4345,9 +4344,9 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $fabrikIds = $jinput->post->getRaw('elements', null);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'email.php');
+        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'email.php');
 
-        $m_emails = new EmundusonboardModelemail;
+        $m_emails = new EmundusModel;
         $m_files = $this->getModel('Files');
 
         $tag_ids = [];

@@ -140,7 +140,7 @@ export default {
 			this.loading = true;
 			axios({
 				method: "post",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=renderchartbytag",
+				url: "index.php?option=com_emundus&controller=dashboard&task=renderchartbytag",
 				data: qs.stringify({
 					widget: this.selectedWidget.id,
 					filters: this.selectedFilters,
@@ -166,7 +166,7 @@ export default {
 		getArticle() {
 			axios({
 				method: "get",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getarticle",
+				url: "index.php?option=com_emundus&controller=dashboard&task=getarticle",
 				params: {
 					widget: this.selectedWidget.id,
 					article: this.selectedWidget.article_id,
@@ -187,7 +187,7 @@ export default {
 		getEval() {
 			axios({
 				method: "get",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=geteval",
+				url: "index.php?option=com_emundus&controller=dashboard&task=geteval",
 				params: {
 					widget: this.selectedWidget.id,
 				},
@@ -207,7 +207,7 @@ export default {
 		getWidgets() {
 			axios({
 				method: "get",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getallwidgetsbysize",
+				url: "index.php?option=com_emundus&controller=dashboard&task=getallwidgetsbysize",
 				params: {
 					size: this.selectedWidget.size,
 				},
@@ -231,7 +231,7 @@ export default {
 		updateDashboard() {
 			axios({
 				method: "post",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=updatemydashboard",
+				url: "index.php?option=com_emundus&controller=dashboard&task=updatemydashboard",
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
 				},
@@ -252,7 +252,7 @@ export default {
 			return new Promise((resolve, reject) => {
 				axios({
 					method: "get",
-					url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilters",
+					url: "index.php?option=com_emundus&controller=dashboard&task=getfilters",
           params: {
             widget: this.selectedWidget.id,
           },
