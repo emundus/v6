@@ -20,3 +20,5 @@ create index fb_parent_fk_parent_id_INDEX
 
 create index fb_repeat_el_tags_INDEX
     on jos_emundus_setup_status_repeat_tags (tags);
+
+update jos_menu set published = 0 where link LIKE 'https://www.emundus.fr/ressources/centre-aide';
