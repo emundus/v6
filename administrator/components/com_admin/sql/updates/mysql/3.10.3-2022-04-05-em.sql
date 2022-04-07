@@ -4,7 +4,7 @@ VALUES (0, 'MOD_EMUNDUS_VERSION_SYS_XML', 'module', 'mod_emundus_version', '', 0
 INSERT INTO jos_modules (asset_id, title, note, content, ordering, position, checked_out, checked_out_time, publish_up, publish_down, published, module, access, showtitle, params, client_id, language)
 VALUES (0, 'Release notes', '', null, 1, 'content-top-a', 0, '2022-02-22 16:28:57', '2022-02-22 16:28:57', '2099-02-22 16:28:57', 1, 'mod_emundus_version', 7, 0, '{"module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}', 0, '*');
 
-INSERT INTO jos_modules_menu (moduleid, menuid) VALUES (284, 0);
+INSERT INTO jos_modules_menu (moduleid, menuid) VALUES (LAST_INSERT_ID(), 0);
 
 create table jos_emundus_setup_status_repeat_tags
 (
