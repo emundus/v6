@@ -24,7 +24,7 @@
             style="margin: 0"
             handle=".handle"
             class="em-flex-row"
-            chosen-class="em-grab"
+            chosen-class="em-grabbing"
             v-bind="dragOptions"
             @end="updateDocumentsOrder"
         >
@@ -32,12 +32,12 @@
             <div :id="'itemDoc' + document.id"
                  v-for="document in documents"
                  :key="document.id"
-                 class="em-document-dropzone-card">
+                 class="em-document-dropzone-card em-grab">
               <button type="button" class="em-float-right em-transparent-button" @click="deleteDoc(indexDoc,document.id)">
                 <span class="material-icons">close</span>
               </button>
               <div class="em-flex-row em-w-100 em-flex-center">
-                <div class="em-flex-column">
+                <div class="em-flex-column em-edit-cursor" @click="editName(document)">
                   <img v-if="document.ext === 'pdf'" src="media/com_emundus/images/icones/filetype/pdf.png" class="em-filetype-icon" alt="filetype">
                   <img v-else-if="['docx','doc','odf'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/doc.png" class="em-filetype-icon" alt="filetype">
                   <img v-else-if="['xls','xlsx','csv'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/excel.png" class="em-filetype-icon" alt="filetype">
@@ -45,7 +45,7 @@
                   <img v-else-if="['zip','rar'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/zip.png" class="em-filetype-icon" alt="filetype">
                   <img v-else-if="['svg'].includes(document.ext)" src="media/com_emundus/images/icones/filetype/svg.png" class="em-filetype-icon" alt="filetype">
                   <div class="em-mt-8">
-                    <span class="em-overflow-ellipsis em-max-width-250 em-mr-4" @click="editName(document)">{{ document.title }}</span>
+                    <span class="em-overflow-ellipsis em-max-width-250 em-mr-4">{{ document.title }}</span>
                   </div>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export default {
       Swal.fire({
         title: '',
         html: '<div class="form-group campaign-label">' +
-            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
+            '<label for="campLabel">' + this.DocumentName + '</label><input type="text" max="100" id="label_' + doc.id + '" value="' + doc.title + '"/>' +
             '</div>',
         showCloseButton: true,
         allowOutsideClick: false,

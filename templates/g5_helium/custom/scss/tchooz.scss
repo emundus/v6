@@ -413,7 +413,14 @@ input:focus + .em-slider {
 }
 
 .em-grab{
+  cursor: grab;
+}
+
+.em-grabbing{
   cursor: grabbing;
+}
+.em-edit-cursor{
+  cursor: url('/images/emundus/icons/edit_black_24dp.svg') 2 2, pointer;
 }
 
 /** HOVER **/
