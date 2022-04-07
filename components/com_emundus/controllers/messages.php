@@ -1052,7 +1052,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $mail_from_sys_name = $config->get('fromname');
 
 	    // If no mail sender info is provided, we use the system global config.
-	    $mail_from_name = $user->name;
+        if($user->name != $fnum['name']) {
+            $mail_from_name = $user->name;
+        } else {
+            $mail_from_name = $mail_from_sys_name;
+        }
 	    $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
 
 	    // If the email sender has the same domain as the system sender address.
@@ -1060,9 +1064,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 		    $mail_from_address = $mail_from;
 	    } else {*/
         $mail_from_address = $mail_from_sys;
-        if(empty($mail_from_name)) {
-            $mail_from_name = $mail_from_sys_name;
-        }
 	    //}
 
 	    // Set sender
