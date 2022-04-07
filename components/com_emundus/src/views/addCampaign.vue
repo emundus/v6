@@ -10,7 +10,7 @@
     </div>
 
     <div>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" v-if="ready">
         <div>
           <div class="em-red-500-color em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
@@ -287,7 +287,8 @@ export default {
       limit_status: false
     },
 
-    submitted: false
+    submitted: false,
+    ready: false,
   }),
 
   created() {
@@ -349,9 +350,12 @@ export default {
           } else {
             this.form.limit_status = [];
           }
+          this.ready = true;
         }).catch(e => {
           console.log(e);
         });
+      } else {
+        this.ready = true;
       }
       this.getAllPrograms();
     },
