@@ -6146,6 +6146,7 @@ $(document).ready(function() {
                                                             customClass: {
                                                                 title: 'em-swal-title',
                                                                 confirmButton: 'em-swal-confirm-button',
+                                                                actions: "em-swal-single-action",
                                                             },
                                                         });
                                                     }, error: function(jqXHR) {

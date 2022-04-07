@@ -975,6 +975,9 @@ button.em-swal-cancel-button{
 .swal2-actions{
   justify-content: space-between !important;
 }
+.em-swal-single-action{
+  justify-content: right !important;
+}
 
 /** Vue Modal - Translation tool **/
 #translationTool,#contentTool,#filesTool {

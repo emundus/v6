@@ -591,7 +591,6 @@ export default {
               did: this.doc,
             })
           }).then((response) => {
-            console.log(response);
             if(response.data.allowed){
               Swal.fire({
                 backdrop: true,
@@ -602,6 +601,7 @@ export default {
                 customClass: {
                   title: 'em-swal-title',
                   confirmButton: 'em-swal-confirm-button',
+                  actions: "em-swal-single-action",
                 },
               }).then(() => {
                 this.$modal.hide('modalAddDocuments')
@@ -616,6 +616,7 @@ export default {
                 customClass: {
                   title: 'em-swal-title',
                   confirmButton: 'em-swal-confirm-button',
+                  actions: "em-swal-single-action",
                 },
               })
             }
