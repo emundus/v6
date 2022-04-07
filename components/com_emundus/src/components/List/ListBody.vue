@@ -107,7 +107,9 @@ export default {
 		},
 		showModalPreview(itemId) {
 			this.email.emailToPreview = itemId;
-			this.$modal.show('modalEmailPreview_' + itemId);
+      setTimeout(() => {
+        this.$modal.show('modalEmailPreview_' + itemId);
+      },200)
 		}
 	},
 	computed: {
