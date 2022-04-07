@@ -30,7 +30,7 @@
         >
           <transition-group type="transition" :value="!drag ? 'flip-list' : null" class="em-grid-3 em-w-100 handle">
             <div :id="'itemDoc' + document.id"
-                 v-for="document in documents"
+                 v-for="(document,indexDoc) in documents"
                  :key="document.id"
                  class="em-document-dropzone-card em-grab">
               <button type="button" class="em-float-right em-transparent-button" @click="deleteDoc(indexDoc,document.id)">
