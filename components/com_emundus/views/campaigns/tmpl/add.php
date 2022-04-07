@@ -60,6 +60,7 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+JText::script('BACK');
 ## END ##
 
 $lang = JFactory::getLanguage();

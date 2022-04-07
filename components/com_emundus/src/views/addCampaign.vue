@@ -1,6 +1,11 @@
 <template>
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined'">
+      <div class="em-flex-row em-mt-16 em-pointer" onclick="history.back()">
+        <span class="material-icons">arrow_back</span>
+        <p class="em-ml-8">{{ translate('BACK') }}</p>
+      </div>
+
       <div class="em-flex-row em-mt-16">
         <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
       </div>
@@ -642,7 +647,7 @@ export default {
       if (this.form.end_date == "") {
         this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
       }
-    }
+    },
   }
 };
 </script>
