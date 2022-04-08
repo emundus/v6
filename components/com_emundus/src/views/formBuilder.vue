@@ -932,6 +932,8 @@ export default {
     },
 
     show(group, type = "", text = "", title = "Information") {
+      text = this.translate(text);
+      type = this.translate(type);
       this.$notify({
         group,
         title: `${title}`,
