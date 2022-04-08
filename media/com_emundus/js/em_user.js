@@ -1367,14 +1367,24 @@ $(document).ready(function () {
 
 								Swal.fire({
 									type: 'success',
-									title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-									html:  sent_to + '</ul>'
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+									html:  sent_to + '</ul>',
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								});
 
 							} else {
 								Swal.fire({
 									type: 'error',
-									title: Joomla.JText._('NO_EMAILS_SENT')
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								})
 							}
 
