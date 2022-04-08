@@ -22,3 +22,7 @@ create index fb_repeat_el_tags_INDEX
     on jos_emundus_setup_status_repeat_tags (tags);
 
 update jos_menu set published = 0 where link LIKE 'https://www.emundus.fr/ressources/centre-aide';
+
+update jos_content set title = 'Indicateurs' where alias = 'tableau-de-bord';
+
+update jos_content set introtext = '' where alias = 'tableau-de-bord';
