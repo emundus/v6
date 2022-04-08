@@ -1093,6 +1093,7 @@ $(document).ready(function() {
                             success: function(result) {
 
                                 if (result.status) {
+                                    document.getElementById('em_select_filter').style.display = 'block'
                                     $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
                                     $("#select_filter").trigger("chosen:updated");
                                     $('#saved-filter').show();
@@ -6086,7 +6087,12 @@ $(document).ready(function() {
                                                             Swal.fire({
                                                                 type: 'success',
                                                                 title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                                                                html: sent_to + '</ul>'
+                                                                html: sent_to + '</ul>',
+                                                                customClass: {
+                                                                    title: 'em-swal-title',
+                                                                    confirmButton: 'em-swal-confirm-button',
+                                                                    actions: "em-swal-single-action",
+                                                                },
                                                             });
                                                         }, error: function(jqXHR) {
                                                             console.log(jqXHR.responseText);

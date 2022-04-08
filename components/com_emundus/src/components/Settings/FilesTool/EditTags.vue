@@ -15,7 +15,7 @@
         <div class="em-flex-row em-flex-row-start em-w-100">
           <div class="status-field">
             <div style="width: 100%">
-              <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="updateTag(tag)">{{tag.label}}</p>
+              <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'tag_label_' + tag.id" @focusout="updateTag(tag)" @keyup.enter="manageKeyup(tag)" @keydown="checkMaxlength">{{tag.label}}</p>
             </div>
             <input type="hidden" :class="tag.class">
           </div>
@@ -165,6 +165,11 @@ export default {
       });
     },
 
+    manageKeyup(tag){
+      document.getElementById(('tag_label_' + tag.id)).textContent = document.getElementById(('tag_label_' + tag.id)).textContent.trim();
+      document.activeElement.blur();
+    },
+
     getHexColors(element) {
       let tags_class = document.querySelector('.' + element.class);
       let style = getComputedStyle(tags_class);
@@ -174,6 +179,12 @@ export default {
 
     rgbToHex(r, g, b) {
       return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    },
+
+    checkMaxlength(event) {
+      if(event.target.textContent.length === 50 && event.keyCode != 8) {
+        event.preventDefault();
+      }
     },
 
     enableGrab(index){

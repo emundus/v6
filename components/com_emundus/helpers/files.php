@@ -1143,8 +1143,12 @@ class EmundusHelperFiles
 
         // User filter
         $research_filters = $h_files->getEmundusFilters();
-        if (!empty($research_filters)) {
-            $filters .= '<fieldset id="em_select_filter" class="em-user-personal-filter">
+        if (empty($research_filters)) {
+            $display = 'style = "display: none"';
+        } else {
+            $display = '';
+        }
+            $filters .= '<fieldset id="em_select_filter" class="em-user-personal-filter" ' . $display . '>
                             <label for="select_filter" class="control-label em-user-personal-filter-label">' . JText::_('COM_EMUNDUS_FILTERS_SELECT_FILTER') . '</label>
                             <div class="em_select_filter_rapid_search">
                                 <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" >
@@ -1175,7 +1179,6 @@ class EmundusHelperFiles
                         </fieldset>
                 		<script type="text/javascript" >' . EmundusHelperJavascript::getPreferenceFilters() . EmundusHelperJavascript::clearAdvanceFilter() . '</script>
                     </fieldset>';
-        }
         $filters .= '<script>
                         $(document).ready(function() {
 
