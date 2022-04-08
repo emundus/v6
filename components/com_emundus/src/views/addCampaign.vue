@@ -1,7 +1,21 @@
 <template>
   <div class="campaigns__add-campaign">
+    <div v-if="typeof campaignId == 'undefined'">
+      <div class="em-flex-row em-mt-16 em-pointer" onclick="history.back()">
+        <span class="material-icons">arrow_back</span>
+        <p class="em-ml-8">{{ translate('BACK') }}</p>
+      </div>
+
+      <div class="em-flex-row em-mt-16">
+        <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
+      </div>
+      <p style="margin-top: 20px">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+
+      <hr>
+    </div>
+
     <div>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" v-if="ready">
         <div>
           <div class="em-red-500-color em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
@@ -278,7 +292,8 @@ export default {
       limit_status: false
     },
 
-    submitted: false
+    submitted: false,
+    ready: false,
   }),
 
   created() {
@@ -340,9 +355,12 @@ export default {
           } else {
             this.form.limit_status = [];
           }
+          this.ready = true;
         }).catch(e => {
           console.log(e);
         });
+      } else {
+        this.ready = true;
       }
       this.getAllPrograms();
     },
@@ -629,7 +647,7 @@ export default {
       if (this.form.end_date == "") {
         this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
       }
-    }
+    },
   }
 };
 </script>

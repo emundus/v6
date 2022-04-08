@@ -372,7 +372,12 @@ if (!empty($this->custom_title)) :?>
                             type: "warning",
                             title: "'.JText::_("COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED").'",
                             confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                            showCancelButton: false
+                            showCancelButton: false,
+                            customClass: {
+                              title: "em-swal-title",
+                              confirmButton: "em-swal-confirm-button",
+                              actions: "em-swal-single-action",
+                            },
                         });
                         done("'.JText::_('COM_EMUNDUS_ERROR_DESCRIPTION_REQUIRED').'");
                         this.removeFile(file);
@@ -385,7 +390,12 @@ if (!empty($this->custom_title)) :?>
                             type: "warning",
                             title: "'. JText::_("COM_EMUNDUS_WRONG_FORMAT").' '.$attachment->allowed_types.'",
                             confirmButtonText: "'. JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                            showCancelButton: false
+                            showCancelButton: false,
+                            customClass: {
+                              title: "em-swal-title",
+                              confirmButton: "em-swal-confirm-button",
+                              actions: "em-swal-single-action",
+                            },
                         });
                     done("'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'");
                     this.removeFile(file);
@@ -413,7 +423,12 @@ if (!empty($this->custom_title)) :?>
                     type: "warning",
                     title: response["message"],
                     confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                    showCancelButton: false
+                    showCancelButton: false,
+                    customClass: {
+                       title: "em-swal-title",
+                       confirmButton: "em-swal-confirm-button",
+                       actions: "em-swal-single-action",
+                    },
                 });
             } else {
                 document.location.reload(true);
@@ -470,7 +485,12 @@ if (!empty($this->custom_title)) :?>
                     type: "warning",
                     text: responseText,
                     confirmButtonText: "'.JText::_("COM_EMUNDUS_SWAL_OK_BUTTON").'",
-                    showCancelButton: false
+                    showCancelButton: false,
+                    customClass: {
+                       title: "em-swal-title",
+                       confirmButton: "em-swal-confirm-button",
+                       actions: "em-swal-single-action",
+                    },
                 });
           });
         }

@@ -31,6 +31,7 @@ JText::script('CREATE');
 JText::script('RETRIEVE');
 JText::script('UPDATE');
 JText::script('DELETE');
+JText::script('BACK');
 JText::script('COM_EMUNDUS_ONBOARD_CHOOSE_PROFILE_WARNING');
 JText::script('COM_EMUNDUS_ONBOARD_WARNING');
 JText::script('COM_EMUNDUS_ONBOARD_FORM_AFFECTEDFILES');
@@ -202,6 +203,15 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 ## END ##
 
 JText::script('DATE_FORMAT_JS_LC2');
+
+JText::script('COM_EMUNDUS_FORM_CAMPAIGN');
+JText::script('COM_EMUNDUS_DOCUMENTS_CAMPAIGNS');
+JText::script('COM_EMUNDUS_GLOBAL_INFORMATIONS');
+JText::script('COM_EMUNDUS_FORM_CAMPAIGN_DESC');
+JText::script('COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC');
+JText::script('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC');
+JText::script('COM_EMUNDUS_EMAILS');
+JText::script('COM_EMUNDUS_EMAILS_DESC');
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);
