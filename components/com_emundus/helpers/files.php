@@ -1888,7 +1888,7 @@ class EmundusHelperFiles
             $filters .= $institution;
         }
 
-        if (@$params['spam_suspect'] !== NULL) {
+        if (!empty(@$params['spam_suspect'])) {
             $hidden = $types['spam_suspect'] == 'hidden';
 
             $filters.= '<div class="em_filters" id="spam_suspect">
