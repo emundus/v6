@@ -95,9 +95,18 @@ export default {
 			}
 		};
 	},
-	methods: {
+  created() {
+    this.viewType = localStorage.getItem('tchooz_view_type/' + document.location.hostname)
+    if(this.viewType === null || typeof this.viewType === 'undefined' || (this.viewType !== 'blocs' && this.viewType !== 'table')){
+      this.viewType = 'blocs';
+      localStorage.setItem('tchooz_view_type/' + document.location.hostname,'blocs');
+    }
+  },
+
+  methods: {
 		changeViewType(viewType) {
 			this.viewType = viewType.value;
+      localStorage.setItem('tchooz_view_type/' + document.location.hostname,viewType.value);
 		},
 		validateFilters() {
 			this.$emit('validateFilters');
