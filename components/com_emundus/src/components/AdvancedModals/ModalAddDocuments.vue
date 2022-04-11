@@ -214,7 +214,7 @@ export default {
         nbmax: 1,
         selectedTypes: {
           pdf: false,
-          'jpeg;jpg;png;gif': false,
+          'jpeg;jpg;png': false,
           'doc;docx;odt;ppt;pptx': false,
           'xls;xlsx;odf': false,
 
@@ -248,7 +248,7 @@ export default {
         },
         {
           title: this.translate("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
-          value: 'jpeg;jpg;png;gif'
+          value: 'jpeg;jpg;png'
         },
         {
           title: this.translate("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),

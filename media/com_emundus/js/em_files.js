@@ -1093,6 +1093,7 @@ $(document).ready(function() {
                             success: function(result) {
 
                                 if (result.status) {
+                                    document.getElementById('em_select_filter').style.display = 'block'
                                     $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
                                     $("#select_filter").trigger("chosen:updated");
                                     $('#saved-filter').show();
@@ -5262,14 +5263,24 @@ $(document).ready(function() {
 
                                                 Swal.fire({
                                                     type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT'),
-                                                    html: dest
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
+                                                    html: dest,
+                                                    customClass: {
+                                                        title: 'em-swal-title',
+                                                        confirmButton: 'em-swal-confirm-button',
+                                                        actions: "em-swal-single-action",
+                                                    },
                                                 });
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 Swal.fire({
                                                     type: 'error',
-                                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+                                                    customClass: {
+                                                        title: 'em-swal-title',
+                                                        confirmButton: 'em-swal-confirm-button',
+                                                        actions: "em-swal-single-action",
+                                                    },
                                                 })
                                             }
 
@@ -5297,14 +5308,14 @@ $(document).ready(function() {
 
                                                 Swal.fire({
                                                     type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT'),
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
                                                     html: dest
                                                 });
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 Swal.fire({
                                                     type: 'error',
-                                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT')
                                                 })
                                             }
 
@@ -6086,7 +6097,12 @@ $(document).ready(function() {
                                                             Swal.fire({
                                                                 type: 'success',
                                                                 title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                                                                html: sent_to + '</ul>'
+                                                                html: sent_to + '</ul>',
+                                                                customClass: {
+                                                                    title: 'em-swal-title',
+                                                                    confirmButton: 'em-swal-confirm-button',
+                                                                    actions: "em-swal-single-action",
+                                                                },
                                                             });
                                                         }, error: function(jqXHR) {
                                                             console.log(jqXHR.responseText);

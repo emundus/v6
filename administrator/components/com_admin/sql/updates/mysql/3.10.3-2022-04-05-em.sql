@@ -22,3 +22,14 @@ create index fb_repeat_el_tags_INDEX
     on jos_emundus_setup_status_repeat_tags (tags);
 
 update jos_menu set published = 0 where link LIKE 'https://www.emundus.fr/ressources/centre-aide';
+
+update jos_content set title = 'Indicateurs' where alias = 'tableau-de-bord';
+
+update jos_content set introtext = '' where alias = 'tableau-de-bord';
+
+SELECT @menu_id:=id
+FROM jos_menu
+WHERE link LIKE 'index.php?option=com_fabrik&view=form&formid=150&rowid=&jos_emundus_campaign_candidature___applicant_id={applicant_id}&jos_emundus_campaign_candidature___copied=1&jos_emundus_campaign_candidature___fnum={fnum}&jos_emundus_campaign_candidature___status=2&tmpl=component&iframe=1';
+
+update jos_menu set title = 'Copier/Déplacer le dossier' WHERE id = @menu_id;
+update jos_falang_content set value = 'Copy/Move the file' WHERE reference_field LIKE 'title' and reference_id = @menu_id;

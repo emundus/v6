@@ -793,7 +793,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							}).then(function() {
 								window.location.replace('/user');
 							});
@@ -970,7 +975,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 						}
 					},
@@ -1044,7 +1054,7 @@ $(document).ready(function () {
 								type: 'success',
 								title: result.msg,
 								showConfirmButton: false,
-								timer: 1500
+								timer: 1500,
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1061,7 +1071,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1122,7 +1137,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1218,7 +1238,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1270,7 +1295,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1367,14 +1397,24 @@ $(document).ready(function () {
 
 								Swal.fire({
 									type: 'success',
-									title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-									html:  sent_to + '</ul>'
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+									html:  sent_to + '</ul>',
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								});
 
 							} else {
 								Swal.fire({
 									type: 'error',
-									title: Joomla.JText._('NO_EMAILS_SENT')
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								})
 							}
 

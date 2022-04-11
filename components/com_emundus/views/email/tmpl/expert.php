@@ -232,7 +232,12 @@ document.getElementById("adminForm").addEventListener("submit", event => {
                         Swal.fire({
                             type: 'success',
                             title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                            html: sent_to+'</ul>'
+                            html: sent_to+'</ul>',
+                            customClass: {
+                                title: 'em-swal-title',
+                                confirmButton: 'em-swal-confirm-button',
+                                actions: "em-swal-single-action",
+                            },
                         });
 
                     } else {
