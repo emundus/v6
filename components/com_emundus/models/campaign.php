@@ -764,15 +764,26 @@ class EmundusModelCampaign extends JModelList {
         if (empty($recherche)) {
             $fullRecherche = 1;
         } else {
-            $fullRecherche =
+            $fullRecherche = '(' .
                 $this->_db->quoteName('sc.label') .
                 ' LIKE ' .
-                $this->_db->quote('%' . $recherche . '%');
+                $this->_db->quote('%' . $recherche . '%') . ' OR ' .
+                $this->_db->quoteName('fc.value') .
+                ' LIKE ' .
+                $this->_db->quote('%' . $recherche . '%')
+                . ')';
         }
 
         $query
             ->select('COUNT(sc.id)')
             ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
+            ->leftJoin(
+                $this->_db->quoteName('#__falang_content', 'fc') .
+                ' ON ' .
+                $this->_db->quoteName('fc.reference_id') .
+                ' LIKE ' .
+                $this->_db->quoteName('sc.id') . ' AND reference_table LIKE ' . $this->_db->quote('emundus_setup_campaigns')
+            )
             ->where($filterCount)
             ->andWhere($fullRecherche)
             ->andWhere($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
@@ -876,10 +887,14 @@ class EmundusModelCampaign extends JModelList {
         if (empty($recherche)) {
             $fullRecherche = 1;
         } else {
-            $fullRecherche =
+            $fullRecherche = '(' .
                 $this->_db->quoteName('sc.label') .
                 ' LIKE ' .
-                $this->_db->quote('%' . $recherche . '%');
+                $this->_db->quote('%' . $recherche . '%') . ' OR ' .
+                $this->_db->quoteName('fc.value') .
+                ' LIKE ' .
+                $this->_db->quote('%' . $recherche . '%')
+            . ')';
         }
 
         $query
@@ -904,6 +919,13 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quoteName('sp.code') .
                 ' LIKE ' .
                 $this->_db->quoteName('sc.training')
+            )
+            ->leftJoin(
+                $this->_db->quoteName('#__falang_content', 'fc') .
+                ' ON ' .
+                $this->_db->quoteName('fc.reference_id') .
+                ' LIKE ' .
+                $this->_db->quoteName('sc.id') . ' AND reference_table LIKE ' . $this->_db->quote('emundus_setup_campaigns')
             )
             ->where($filterDate)
             ->andWhere($fullRecherche)
