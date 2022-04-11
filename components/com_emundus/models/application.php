@@ -1318,6 +1318,7 @@ class EmundusModelApplication extends JModelList
             if (isset($tableuser)) {
 
                 $allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
+                $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 
                 $allowEmbed = $this->allowEmbed(JURI::base() . 'index.php?lang=en');
 
@@ -1844,9 +1845,11 @@ class EmundusModelApplication extends JModelList
                                                     $this->_db->setQuery($query);
                                                     $attachment_upload = $this->_db->loadObject();
 
-                                                    if(!empty($attachment_upload->filename)) {
+                                                    if(!empty($attachment_upload->filename) && (in_array($params->attachmentId,$allowed_attachments) || $allowed_attachments === true)) {
                                                         $path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
                                                         $elt = '<a href="'.$path.'" target="_blank">' . $attachment_upload->attachment_name . '</a>';
+                                                    } else {
+                                                        $elt = '';
                                                     }
                                                 } catch (Exception $e) {
                                                     JLog::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
