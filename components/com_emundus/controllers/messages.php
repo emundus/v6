@@ -637,7 +637,19 @@ class EmundusControllerMessages extends JControllerLegacy {
                 $db->setQuery($query);
 
                 $template->Template = $db->loadResult();
-            }
+            } /*else {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                /// get associated tags
+                $query->select('#__emundus_setup_action_tag.*')
+                    ->from($db->quoteName('#__emundus_setup_action_tag'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
+                    ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' = ' . (int)$template_id);
+
+                $db->setQuery($query);
+                $tags_to_link = $db->loadObjectList();
+            }*/
 
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
