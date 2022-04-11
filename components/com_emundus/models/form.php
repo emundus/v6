@@ -736,6 +736,10 @@ class EmundusModelForm extends JModelList {
 
                         $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile);
                     }
+
+                    // Create checklist menu
+                    $this->addChecklistMenu($newprofile);
+                    //
                 }
 
                 return $newprofile;

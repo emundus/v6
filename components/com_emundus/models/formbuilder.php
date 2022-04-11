@@ -3279,6 +3279,7 @@ this.set(words.join(&quot; &quot;));
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
                 ->andWhere($db->quoteName('path') . ' LIKE ' . $db->quote($profile->menutype . '%'))
+                ->andWhere($db->quoteName('published') . ' = 1')
                 ->order('rgt');
             $db->setQuery($query);
             $menus = $db->loadObjectList();
