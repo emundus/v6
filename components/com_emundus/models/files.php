@@ -3574,12 +3574,13 @@ class EmundusModelFiles extends JModelLegacy
         if (!is_array($fnums))
             $fnums = [$fnums];
 
-        $dbo = $this->getDbo();
+        $dbo = JFactory::getDbo();
+
         if ($dateFormat !== null) {
             $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         } else {
-            $query = "select fnum, {$name} as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+            $query = "select fnum, ".$dbo->quoteName($name)." as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
 
         try {
