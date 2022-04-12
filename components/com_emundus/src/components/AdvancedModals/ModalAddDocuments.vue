@@ -258,8 +258,10 @@ export default {
           title: this.translate("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
-
-
+        {
+          title: this.translate("COM_EMUNDUS_ONBOARD_AUDIO"),
+          value: 'mp3;wav;aac;flac'
+        },
       ],
 
       selectedTypes: [],
