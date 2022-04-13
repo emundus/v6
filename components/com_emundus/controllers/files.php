@@ -850,7 +850,7 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
 
-                $row = array('applicant_id' => $fnum['applicant_id'],
+                /*$row = array('applicant_id' => $fnum['applicant_id'],
                     'user_id' => $this->_user->id,
                     'reason' => JText::_('COM_EMUNDUS_STATUS'),
                     'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
@@ -858,12 +858,12 @@ class EmundusControllerFiles extends JControllerLegacy
                     'status_from' => $fnum['step'],
                     'status_to' => $state
                 );
-                $m_application->addComment($row);
+                $m_application->addComment($row);*/
 
                 // Log the update
                 $logsParams = array('updated' => []);
                 array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
-                EmundusModelLogs::log($this->_user->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             //*********************************************************************
