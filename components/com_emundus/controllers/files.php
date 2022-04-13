@@ -996,6 +996,29 @@ class EmundusControllerFiles extends JControllerLegacy
                                     $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
                                     JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                                 } else {
+                                    // Assoc tags if email has been sent
+                                    if(!empty($trigger['tmpl']['tags'])){
+                                        $db = JFactory::getDBO();
+                                        $query = $db->getQuery(true);
+
+                                        $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
+
+                                        foreach($tags as $tag){
+                                            try{
+                                                $query->clear()
+                                                    ->insert($db->quoteName('#__emundus_tag_assoc'));
+                                                $query->set($db->quoteName('fnum') . ' = ' . $db->quote($file['fnum']))
+                                                    ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
+                                                    ->set($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
+
+                                                $db->setQuery($query);
+                                                $db->execute();
+                                            }  catch (Exception $e) {
+                                                JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                                            }
+                                        }
+                                    }
+
                                     $message = array(
                                         'user_id_from' => $from_id,
                                         'user_id_to' => $file['applicant_id'],
@@ -1049,6 +1072,29 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$to.' '.$send->__toString().'</div>';
                                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus.email');
                             } else {
+                                // Assoc tags if email has been sent
+                                if(!empty($trigger['tmpl']['tags'])){
+                                    $db = JFactory::getDBO();
+                                    $query = $db->getQuery(true);
+
+                                    $tags = array_filter(explode(',',$trigger['tmpl']['tags']));
+
+                                    foreach($tags as $tag){
+                                        try{
+                                            $query->clear()
+                                                ->insert($db->quoteName('#__emundus_tag_assoc'));
+                                            $query->set($db->quoteName('fnum') . ' = ' . $db->quote($file['fnum']))
+                                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
+                                                ->set($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
+
+                                            $db->setQuery($query);
+                                            $db->execute();
+                                        }  catch (Exception $e) {
+                                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                                        }
+                                    }
+                                }
+
                                 $message = array(
                                     'user_id_from' => $from_id,
                                     'user_id_to' => $recipient['id'],

@@ -6076,38 +6076,26 @@ $(document).ready(function() {
                                                         sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
                                                     });
 
-                                                    /* add tags to fnums */
-                                                    $.ajax({
-                                                        type: 'post',
-                                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
-                                                        dataType: 'json',
-                                                        data: { data: data },
-                                                        success: function(tags) {
-                                                            console.log(tags);
-                                                            $('#em-modal-sending-emails').css('display', 'none');
+                                                    $('#em-modal-sending-emails').css('display', 'none');
 
-                                                            $('#em-modal-actions').modal('hide');
-                                                            addDimmer();
+                                                    $('#em-modal-actions').modal('hide');
+                                                    addDimmer();
 
-                                                            reloadData();
-                                                            reloadActions($('#view').val(), undefined, false);
-                                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                                            $('body').removeClass('modal-open');
+                                                    reloadData();
+                                                    reloadActions($('#view').val(), undefined, false);
+                                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                                    $('body').removeClass('modal-open');
 
-                                                            Swal.fire({
-                                                                type: 'success',
-                                                                title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                                                                html: sent_to + '</ul>',
-                                                                customClass: {
-                                                                    title: 'em-swal-title',
-                                                                    confirmButton: 'em-swal-confirm-button',
-                                                                    actions: "em-swal-single-action",
-                                                                },
-                                                            });
-                                                        }, error: function(jqXHR) {
-                                                            console.log(jqXHR.responseText);
-                                                        }
-                                                    })
+                                                    Swal.fire({
+                                                        type: 'success',
+                                                        title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+                                                        html: sent_to + '</ul>',
+                                                        customClass: {
+                                                            title: 'em-swal-title',
+                                                            confirmButton: 'em-swal-confirm-button',
+                                                            actions: "em-swal-single-action",
+                                                        },
+                                                    });
 
                                                 } else {
                                                     $('#em-modal-sending-emails').css('display', 'none');

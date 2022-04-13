@@ -582,29 +582,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         $template = $m_messages->getEmail($template_id);
 
         foreach ($fnums as $fnum) {
-            if($tags_str != null){
-                $db = JFactory::getDBO();
-                $query = $db->getQuery(true);
-
-                $tags = explode(',',$tags_str);
-
-
-                foreach($tags as $tag){
-                    try{
-                        $query->clear()
-                            ->insert($db->quoteName('#__emundus_tag_assoc'));
-                        $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
-                            ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                            ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
-
-                        $db->setQuery($query);
-                        $db->execute();
-                    }  catch (Exception $e) {
-                        JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                    }
-                }
-            }
-
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
             $toAttach = [];
@@ -637,19 +614,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 $db->setQuery($query);
 
                 $template->Template = $db->loadResult();
-            } /*else {
-                $db = JFactory::getDbo();
-                $query = $db->getQuery(true);
-
-                /// get associated tags
-                $query->select('#__emundus_setup_action_tag.*')
-                    ->from($db->quoteName('#__emundus_setup_action_tag'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags') . ' ON ' . $db->quoteName('#__emundus_setup_action_tag.id') . ' = ' . $db->quoteName('#__emundus_setup_emails_repeat_tags.tags'))
-                    ->where($db->quoteName('#__emundus_setup_emails_repeat_tags.parent_id') . ' = ' . (int)$template_id);
-
-                $db->setQuery($query);
-                $tags_to_link = $db->loadObjectList();
-            }*/
+            }
 
             $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
@@ -838,6 +803,30 @@ class EmundusControllerMessages extends JControllerLegacy {
                 echo 'Error sending email: ' . $send->__toString();
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
             } else {
+                // Assoc tags if email has been sent
+                if($tags_str != null || !empty($template->tags)){
+                    $db = JFactory::getDBO();
+                    $query = $db->getQuery(true);
+
+                    $tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
+
+                    foreach($tags as $tag){
+                        try{
+                            $query->clear()
+                                ->insert($db->quoteName('#__emundus_tag_assoc'));
+                            $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
+                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
+                                ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
+
+                            $db->setQuery($query);
+                            $db->execute();
+                        }  catch (Exception $e) {
+                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                        }
+                    }
+                }
+
+                // Log email
                 $sent[] = $fnum->email;
                 $log = [
                     'user_id_from' => $user->id,
