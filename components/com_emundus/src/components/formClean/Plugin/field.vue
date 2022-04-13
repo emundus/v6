@@ -31,8 +31,6 @@ export default {
   data() {
 
     return {
-      msg: '',
-      path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
       helptext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       placeholdertext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER"),
       sizetext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_SIZE"),
@@ -53,9 +51,6 @@ export default {
 
   },
   created(){
-    this.msg =
-            '<p style="color: white">' + this.placeholderHelp + '</p>' +
-            '<img src="' + this.path + 'placeholder.gif" />';
     if(typeof this.element.params.password == 'undefined'){
       this.element.params.password = 0;
     }

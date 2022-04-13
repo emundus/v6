@@ -28,6 +28,7 @@ class EmundusModelEmails extends JModelList {
     public function __construct() {
         parent::__construct();
 
+        $this->_db = JFactory::getDBO();
         $this->_em_user = JFactory::getSession()->get('emundusUser');
         $this->_user = JFactory::getUser();
 
@@ -61,8 +62,9 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version v6
      */
-    public function getEmailById($id) {
-        $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$this->_db->Quote($id);
+    public function getEmailById($id)
+    {
+        $query = 'SELECT ese.*, et.Template FROM #__emundus_setup_emails ese LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl WHERE ese.id='.$this->_db->Quote($id);
         $this->_db->setQuery( $query );
         return $this->_db->loadObject();
     }
@@ -417,7 +419,7 @@ class EmundusModelEmails extends JModelList {
             '/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[LOGO\]/'
         );
         $replacements = array(
-            $user->id, $user->name, $user->email, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
+            $user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
             JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), "index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(), $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );

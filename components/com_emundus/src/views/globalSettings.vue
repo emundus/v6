@@ -12,7 +12,7 @@
       <!--- MENU --->
       <transition name="slide-right">
         <div class="em-settings-menu" style="margin-left: 10%" v-if="menuHighlight === 0">
-          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3" v-wave @click="menuHighlight = menu.index;currentTitle = menu.title">
+          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
             <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
             <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
             <p class="em-font-size-14">{{translate(menu.description)}}</p>
@@ -120,7 +120,14 @@ export default {
     }
   },
 
-  methods: {},
+  methods: {
+    changeMenu(menu){
+      setTimeout(() => {
+        this.menuHighlight = menu.index;
+        this.currentTitle = menu.title;
+      },200);
+    }
+  },
 
   watch: {
     menuHighlight: function(value){
@@ -149,4 +156,10 @@ export default {
 </script>
 
 <style scoped>
+.em-hover-s-scale{
+  transition: transform 0.2s ease-in-out;
+}
+.em-hover-s-scale:hover{
+  transform: scale(1.03);
+}
 </style>

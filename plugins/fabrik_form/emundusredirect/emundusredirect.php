@@ -490,10 +490,22 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
             EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
 
-			echo "<hr>";
-			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>';
-			echo "<hr>";
-			exit;
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+            echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
+            die("<script>
+              $(document).ready(function () {
+                Swal.fire({
+                  position: 'top',
+                  type: 'success',
+                  title: '".JText::_('SAVED')."',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  onClose: () => {
+                    window.close();
+                  }
+                })
+              });
+            </script>");
 		}
 
 

@@ -6035,7 +6035,12 @@ $(document).ready(function() {
                                 showCancelButton: true,
                                 cancelButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_CANCEL_EMAIL'),
                                 confirmButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL'),
-                                reverseButtons: true
+                                reverseButtons: true,
+                                customClass: {
+                                    title: 'em-swal-title',
+                                    cancelButton: 'em-swal-cancel-button',
+                                    confirmButton: 'em-swal-confirm-button',
+                                },
                             }).then(function(confirm) {
 
                                 if (confirm.value) {
@@ -6137,7 +6142,11 @@ $(document).ready(function() {
                                                         Swal.fire({
                                                             type: 'success',
                                                             title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
-                                                            html: sent_to
+                                                            html: sent_to,
+                                                            customClass: {
+                                                                title: 'em-swal-title',
+                                                                confirmButton: 'em-swal-confirm-button',
+                                                            },
                                                         });
                                                     }, error: function(jqXHR) {
                                                         console.log(jqXHR.responseText);
@@ -6360,7 +6369,13 @@ $(document).ready(function() {
                                 type: "warning",
                                 showCancelButton: true,
                                 confirmButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'),
-                                cancelButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT')
+                                cancelButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT'),
+                                reverseButtons: true,
+                                customClass: {
+                                    title: 'em-swal-title',
+                                    cancelButton: 'em-swal-cancel-button',
+                                    confirmButton: 'em-swal-confirm-button',
+                                },
                             }).then(function(result) {
                                 if (result.value) {
                                     $.ajax({

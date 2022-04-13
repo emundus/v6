@@ -58,8 +58,8 @@
 				</option>
 			</select>
 		</td>
-		<td>{{ getUserNameById(attachment.user_id) }}</td>
-		<td>{{ getUserNameById(attachment.modified_by) }}</td>
+		<td v-if="canSee">{{ getUserNameById(attachment.user_id) }}</td>
+		<td v-if="canSee">{{ getUserNameById(attachment.modified_by) }}</td>
 		<td class="date">{{ formattedDate(attachment.modified) }}</td>
 		<td class="permissions">
 			<span
@@ -98,6 +98,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+    canSee: {
+      type: Boolean,
+      default: true,
+    },
 	},
 	mixins: [mixin],
 	data() {

@@ -80,7 +80,7 @@
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
           <span>{{ formattedDate(attachment.timedate) }}</span>
         </div>
-        <div v-if="attachment.user_id">
+        <div v-if="attachment.user_id && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
           <span>{{ getUserNameById(attachment.user_id) }}</span>
         </div>
@@ -88,7 +88,7 @@
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
           <span>{{ this.categories[attachment.category] }}</span>
         </div>
-        <div v-if="attachment.modified_by">
+        <div v-if="attachment.modified_by && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
           <span>{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
@@ -130,6 +130,7 @@ export default {
       categories: {},
       file: null,
       canUpdate: false,
+      canSee: true,
       error: false,
       errorMessage: "",
       attachmentIsValidated: "-2",
@@ -142,6 +143,7 @@ export default {
     this.canUpdate = this.$store.state.user.rights[this.fnum]
         ? this.$store.state.user.rights[this.fnum].canUpdate
         : false;
+    this.canSee = !this.$store.state.global.anonyme;
     this.attachment = this.$store.state.attachment.selectedAttachment;
     this.categories = this.$store.state.attachment.categories;
 

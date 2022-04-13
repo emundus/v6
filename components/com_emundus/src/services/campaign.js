@@ -12,13 +12,67 @@ export default {
                 'index.php?option=com_emundus&controller=campaign&task=updatedocument',
                 formData
             );
+            
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+    
+    async getAllCampaigns(filter = '',sort = 'DESC',recherche = '',lim = 9999,page = 0,program = 'all') {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=campaign&task=getallcampaign', {
+                params: {
+                    filter: filter,
+                    sort: sort,
+                    recherche: recherche,
+                    lim: lim,
+                    page: page,
+                    program: program,
+                }
+            });
 
             return response.data;
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },
-};
+
+    async createCampaign(form){
+        try {
+            const formData = new FormData();
+            formData.append('label', JSON.stringify(form.label));
+            formData.append('start_date', form.start_date);
+            formData.append('end_date', form.end_date);
+            formData.append('short_description', form.short_description);
+            formData.append('description', form.description);
+            formData.append('training', form.training);
+            formData.append('year', form.year);
+            formData.append('published', form.published);
+            formData.append('is_limited', form.is_limited);
+            formData.append('profile_id', form.profile_id);
+            formData.append('limit', form.limit);
+            formData.append('limit_status', form.limit_status);
+
+            return await client().post(`index.php?option=com_emundus&controller=campaign&task=createcampaign`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+}

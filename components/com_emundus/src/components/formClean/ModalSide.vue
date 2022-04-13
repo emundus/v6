@@ -243,10 +243,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
           axios({

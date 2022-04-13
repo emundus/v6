@@ -134,7 +134,7 @@
                         :key="keyElements['element' + element.id]"
                     />
                     <div class="control-group fabrikElementContainer span12">
-                      <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2" @click="openParameters(element)"
+                      <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2"
                            :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
                         <div class="em-flex-row" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
                           <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
@@ -165,6 +165,9 @@
                         </a>
 
                         <div class="em-flex-row">
+                          <div class="em-flex-row em-mr-8 em-pointer" @click="openParameters(element)" :title="translations.Edit">
+                            <span class="material-icons">edit</span>
+                          </div>
                           <div class="em-flex-row em-mr-8 em-pointer" @click="deleteElement(element,index)" :title="translations.Delete">
                             <span class="material-icons-outlined em-red-500-color">delete</span>
                           </div>
@@ -471,10 +474,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
 
@@ -788,10 +795,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUPWARNING"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
           axios({
@@ -865,7 +876,6 @@ export default {
           text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
           type: "info",
           showCancelButton: true,
-          confirmButtonColor: '#de6339',
           confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
           reverseButtons: true,
@@ -908,10 +918,14 @@ export default {
           text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE"),
           type: "info",
           showCancelButton: true,
-          confirmButtonColor: '#de6339',
           confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-          reverseButtons: true
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          },
         }).then(result => {
           if(result.value) {
             axios({
@@ -951,10 +965,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE"),
         type: "info",
         showCancelButton: true,
-        confirmButtonColor: '#12db42',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if(result.value) {
           axios({
@@ -1339,5 +1357,9 @@ export default {
   min-height: 100px;
   display: block;
   width: 100%;
+}
+.unpublished {
+  background: #C5C8CE;
+  border-radius: 5px;
 }
 </style>

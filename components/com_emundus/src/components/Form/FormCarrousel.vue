@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="em-flex-row em-flex-space-between em-align-start">
-      <div>
+      <div class="em-w-100">
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
       </div>
 

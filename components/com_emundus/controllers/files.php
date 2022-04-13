@@ -850,6 +850,16 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
 
+                $row = array('applicant_id' => $fnum['applicant_id'],
+                    'user_id' => $this->_user->id,
+                    'reason' => JText::_('COM_EMUNDUS_STATUS'),
+                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
+                    'fnum' => $fnum['fnum'],
+                    'status_from' => $fnum['step'],
+                    'status_to' => $state
+                );
+                $m_application->addComment($row);
+
                 // Log the update
                 $logsParams = array('updated' => []);
                 array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
@@ -4412,6 +4422,22 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         echo json_encode((array('status' => false, 'msg' => 'missing fnum')));
+        exit;
+    }
+
+    public function isdataanonymized()
+    {
+        $user = JFactory::getSession()->get('emundusUser');
+        $status = false;
+        $anonyme = false;
+        $msg = '';
+
+        if (!empty($user)) {
+            $anonyme = EmundusHelperAccess::isDataAnonymized($user->id);
+            $status = true;
+        }
+
+        echo json_encode((array('status' => $status, 'anonyme' => $anonyme, 'msg' => $msg)));
         exit;
     }
 }

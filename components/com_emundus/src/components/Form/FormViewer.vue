@@ -23,6 +23,7 @@
                v-bind:key="element.index"
                v-show="element.hidden === false"
                class="row-fluid"
+               :class="{'unpublished': !element.publish}"
           >
             <div class="control-group fabrikElementContainer span12" :class="'plg-' + element.plugin">
               <span v-html="element.label_value"></span>
@@ -189,5 +190,9 @@ export default {
 
 .eye-button{
   background: transparent;
+}
+.unpublished {
+  background: #C5C8CE;
+  border-radius: 5px;
 }
 </style>
