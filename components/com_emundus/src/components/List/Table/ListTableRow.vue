@@ -13,15 +13,16 @@
 					@showModalPreview="showModalPreview"
 				></list-action-menu>
 			</span>
-			<span
-				v-else-if="td.value == 'message'"
+			<div
+				v-else-if="td.value == 'message' || td.value == 'status'"
 				:class="classFromTd(td)"
 				v-html="formattedDataFromTd(td)"
 			>
-			</span>
+			</div>
 			<span
-				@click="redirectToEditItem(td)"
-				:class="classFromTd(td)"
+          v-else
+          @click="redirectToEditItem(td)"
+				  :class="classFromTd(td)"
 			>
 				{{ formattedDataFromTd(td) }}
 			</span>
@@ -82,13 +83,19 @@ export default {
 		formattedCampaignData(td) {
 			switch(td.value) {
 				case 'status':
-					if(this.isFinished) {
-						return this.translations.finished;
-					} else if(this.isPublished) {
-						return this.translations.published;
-					} else {
-						return this.translations.unpublished;
+          let html = '';
+
+          if (this.isPublished) {
+            html += '<span class="tag published">' + this.translations.published + '</span>';
+          } else {
+            html += '<span class="tag unpublished">' + this.translations.unpublished + '</span>';
+          }
+
+					if (this.isFinished) {
+						html += '<span class="tag finished">' + this.translations.finished + '</span>';
 					}
+
+          return html;
 				case 'start_date':
 				case 'end_date':
 					return moment(this.data[td.value]).format('DD/MM/YYYY');
@@ -135,6 +142,8 @@ export default {
 			let classes;
 			switch(td.value) {
 				case 'status':
+          classes = '';
+          break;
 				case 'published':
 					if (this.isFinished) {
 						classes = "tag finished";
@@ -195,16 +204,8 @@ export default {
 	},
 	computed: {
 		isPublished() {
-			if (this.type == "campaign") {
-				return (
-      	  this.data.published == 1 &&
-      	  moment(this.data.start_date) <= moment() &&
-      	  (moment(this.data.end_date) >= moment() ||
-      	    this.data.end_date == null ||
-      	    this.data.end_date == "0000-00-00 00:00:00")
-      	);
-			} else if (this.type == "email") {
-				return this.data.published == 1 ? true : false;
+			if (this.type == "campaign" || this.type == "email") {
+				return this.data.published == 1;
 			}
 
 			return false;
@@ -249,48 +250,49 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.list-row {
+
+  span.tag {
+    margin: 0 8px 8px 0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #080C12;
+    height: fit-content;
+    background: #F2F2F3;
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
+    0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+
+    &.published {
+      background: #DFF5E9;
+    }
+
+    &.unpublished {
+      color: #ACB1B9;
+    }
+
+    &.finished {
+      color: #FFFFFF;
+      background: #080C12;
+    }
+  }
+
+  span.list-td-label,
+  span.list-td-subject {
+    cursor: pointer;
+    transition: all .3s;
+
+    &:hover {
+      color: #20835F;
+    }
+  }
+}
+
 tr.list-row td {
 	border-left: 0;
   border-right: 0;
 	font-size: 12px;
 	padding: 0.85rem 0.5rem;
-
-	span {
-		&.tag {
-			margin: 0 8px 8px 0;
-			padding: 4px 8px;
-			border-radius: 4px;
-			color: #080C12;
-			height: fit-content;
-			background: #F2F2F3;
-			box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
-    		0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
-
-			&.published {
-				background: #DFF5E9;
-			}
-
-			&.unpublished {
-				color: #ACB1B9;
-			}
-
-			&.finished {
-				color: #FFFFFF;
-				background: #080C12;
-			}
-		}
-
-		&.list-td-label,
-		&.list-td-subject {
-			cursor: pointer;
-			transition: all .3s;
-
-			&:hover {
-				color: #20835F;
-			}
-		}
-	}
 }
 
 .list-row:hover {

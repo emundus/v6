@@ -28,7 +28,7 @@
 
 			<div class="tags">
 				<div
-					v-if="!isFinished && isPublished !== null"
+					v-if="isPublished !== null"
 					:class="{
 						published: isPublished,
 						unpublished: !isPublished
@@ -210,16 +210,8 @@ export default {
 	},
 	computed: {
 		isPublished() {
-			if (this.type == "campaign") {
-				return (
-      	  this.data.published == 1 &&
-      	  moment(this.data.start_date) <= moment() &&
-      	  (moment(this.data.end_date) >= moment() ||
-      	    this.data.end_date == null ||
-      	    this.data.end_date == "0000-00-00 00:00:00")
-      	);
-			} else if (this.type == "email") {
-				return this.data.published == 1 ? true : false;
+			if (this.type == "campaign" || this.type == "email") {
+				return this.data.published == 1;
 			}
 
 			return null;
