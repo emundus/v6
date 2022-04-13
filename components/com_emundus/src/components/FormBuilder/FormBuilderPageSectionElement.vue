@@ -12,10 +12,6 @@
     <div class="element-field">
       <span v-html="element.element" :id="element.id">
       </span>
-      <label class="element-required em-switch">
-        <input type="checkbox" v-model="element.FRequire" @click="element.FRequire = !element.FRequire; updateElement()"/>
-        <span class="em-slider em-round"></span>
-      </label>
     </div>
   </div>
 </template>

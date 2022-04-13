@@ -1,6 +1,6 @@
 <template>
-  <div id="form-builder-element-properties" class="em-p-16">
-    <div class="em-flex-row em-flex-space-between">
+  <div id="form-builder-element-properties">
+    <div class="em-flex-row em-flex-space-between em-p-16">
       <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
       <span
           class="material-icons em-pointer"
@@ -10,16 +10,43 @@
       </span>
     </div>
     <div id="properties">
-      <p>{{ element.label.fr }}</p>
-      <component
-          :is="componentType"
-          :element="element"
-          :prid="profile_id"
-          :databases="databases"
-          @subOptions="setElementSubOptions"
-      ></component>
+      <p class="em-p-16">{{ element.label.fr }}</p>
+      <div id="element-parameters" class="em-p-16">
+        <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_PARAMETERS") }}</p>
+
+        <div class="em-flex-row em-flex-space-between em-w-100">
+          <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
+          <label class="element-published em-switch">
+            <div>
+              <input type="checkbox" v-model="!element.publish" @click="element.publish = !element.publish;"/>
+              <span class="em-slider em-round"></span>
+            </div>
+          </label>
+        </div>
+
+        <div class="em-flex-row em-flex-space-between em-w-100">
+          <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
+          <label class="element-required em-switch">
+            <div>
+              <input type="checkbox" v-model="element.FRequire" @click="element.FRequire = !element.FRequire;"/>
+              <span class="em-slider em-round"></span>
+            </div>
+          </label>
+        </div>
+
+      </div>
+      <hr/>
+      <div class="em-p-16">
+        <component
+            :is="componentType"
+            :element="element"
+            :prid="profile_id"
+            :databases="databases"
+            @subOptions="setElementSubOptions"
+        ></component>
+      </div>
     </div>
-    <div class="em-flex-row em-flex-space-between actions">
+    <div class="em-flex-row em-flex-space-between actions em-m-16">
       <button
         class="em-primary-button"
         @click="saveProperties()"

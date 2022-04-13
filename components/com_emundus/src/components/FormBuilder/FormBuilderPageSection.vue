@@ -121,9 +121,6 @@ export  default {
       ]
     };
   },
-  mounted() {
-    console.log(this.section);
-  },
   methods: {
     updateTitle() {
       this.section.label.fr = this.$refs.sectionTitle.innerText;
