@@ -740,7 +740,7 @@ class EmundusControllerUsers extends JControllerLegacy {
                     $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');
 
                 } else {
-                    $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT');
+                    $msg = JText::_('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
                 }
             }
         }

@@ -1319,6 +1319,8 @@ $(document).ready(function () {
 				var usersData = getUserCheck();/*get objectJson with id et uid*/
 				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
 
+				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=regeneratepassword',
@@ -1328,20 +1330,29 @@ $(document).ready(function () {
 
 					dataType: 'json',
 					success: function (result) {
+						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							setTimeout(function() {
-								$('#system-message-container').prepend('<div class="alert alert-dismissable alert-success" style="width: 70%;margin: 0 auto 10px auto;display: flex;">' +
-									'<button type="button" class="close" data-dismiss="alert">×</button>' +
-									'<strong>' + result.msg + '</strong>' +
-									'</div>');
-							},500);
+							Swal.fire({
+								text: result.msg,
+								type: "success",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 							$('.close').click();
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+							Swal.fire({
+								text: result.msg,
+								type: "error",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
