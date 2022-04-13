@@ -48,6 +48,7 @@ class UpdateEmundus extends JApplicationCli
     public function getExtensionId() {
         $db = JFactory::getDbo();
         $res = $db->setQuery("select extension_id from #__extensions where element = 'com_emundus'")->loadRow();
+
         return $res[0];
     }
 
