@@ -194,6 +194,60 @@ class UpdateCli extends JApplicationCli
         }
     }
 
+    public function packageComponent($component)
+    {
+        // Set path for component's folders
+        $name       = preg_split("/[_]+/", $component, 2);
+        $admin_path = JPATH_ADMINISTRATOR . "/components/" . $component . "/";
+        $site_path  = JPATH_BASE . "/components/" . $component . "/";
+        if (is_dir($admin_path . 'language')) {
+            $fr_path    = $admin_path . 'language/fr-FR/fr-FR.' . $component . '.ini';
+            $en_path    = $admin_path . 'language/en-GB/en-GB.' . $component . '.ini';
+        } else {
+            $fr_path = JPATH_BASE . '/language/fr-FR/fr-FR.' . $component . '.ini';
+            $en_path = JPATH_BASE . '/language/en-GB/en-GB.' . $component . '.ini';
+        }
+
+        $media_path = JPATH_BASE . "/media/" . $component;
+        $xml_path   = $admin_path . $name[1] . '.xml';
+        // Set destination path
+        $dest = JPATH_ROOT . '/tmp/' . $component;
+        mkdir($dest);
+
+        // Copy files in tmp folder
+        $succes = array();
+        if ($component != 'com_emundus_messenger')
+        {
+            $succes[] = $this->custom_copy($admin_path, $dest . '/admin');
+        }
+        $succes[] = $this->custom_copy($site_path, $dest . '/site');
+        $succes[] = $this->custom_copy($media_path, $dest . '/media/' . $component);
+        foreach ($succes as $row)
+        {
+            if (!$row)
+            {
+                echo "-> Custom copy failed";
+                exit();
+            }
+        }
+        mkdir($dest . '/language');
+        #mkdir($dest . '/language/fr-FR/');
+        #mkdir($dest . '/language/en-GB/');
+        if ((!copy($fr_path, $dest . '/language/fr-FR.' . $component . '.ini')) || (!copy($en_path, $dest . '/language/en-GB.' . $component . '.ini')))
+        {
+            echo "-> Language copy failed\n";
+        }
+        if (!copy($xml_path, $dest . '/' . $name[1] . '.xml'))
+        {
+            $xml_path = $site_path . $name[1] . '.xml';
+            if (!copy($xml_path, $dest . '/' . $name[1] . '.xml'))
+            {
+                echo '-> Xml copy failed';
+                exit();
+            }
+        }
+    }
+
     public function installExtension($app, $name)
     {
         $this->out('INSTALL ' . $name);
