@@ -178,11 +178,31 @@ export default {
     {
         const formData = new FormData();
         const postData = JSON.stringify(element);
+        console.log(postData);
         formData.append('element', postData);
 
         try {
             const response = await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=updateparams',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
+    async toggleElementPublishValue(element)
+    {
+        const formData = new FormData();
+        formData.append('element', element);
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=publishunpublishelement',
                 formData
             );
 

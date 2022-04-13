@@ -1,5 +1,11 @@
 <template>
-  <div class="form-builder-page-section-element" @click="$emit('open-element-properties')">
+  <div
+      class="form-builder-page-section-element"
+      :class="{
+        'unpublished': !element.publish,
+      }"
+      @click="$emit('open-element-properties')"
+  >
     <span
         v-if="element.label_value && element.labelsAbove != 2"
         ref="label"
@@ -51,6 +57,10 @@ export default {
   border-radius: 4px;
   transition: 0.3s all;
   border: 1px solid white;
+
+  &.unpublished {
+    opacity: 0.5;
+  }
 
   &:hover {
     border: 1px solid black;

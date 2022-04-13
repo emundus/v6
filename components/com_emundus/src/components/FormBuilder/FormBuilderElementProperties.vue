@@ -18,7 +18,7 @@
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <label class="element-published em-switch">
             <div>
-              <input type="checkbox" v-model="!element.publish" @click="element.publish = !element.publish;"/>
+              <input type="checkbox" v-model="isPublished" @click="togglePublish"/>
               <span class="em-slider em-round"></span>
             </div>
           </label>
@@ -128,7 +128,16 @@ export default {
           this.$emit('close');
         }
       });
-    }
+    },
+    togglePublish() {
+      this.element.publish = !this.element.publish;
+      formBuilderService.toggleElementPublishValue(this.element.id).then(response => {
+        if (!response.status) {
+          this.element.publish = !this.element.publish;
+          // TODO: show error
+        }
+      });
+    },
   },
   computed: {
     componentType() {
@@ -142,6 +151,9 @@ export default {
       }
 
       return type;
+    },
+    isPublished() {
+      return !(this.element.publish);
     },
   }
 }
