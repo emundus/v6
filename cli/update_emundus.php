@@ -14,15 +14,20 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/install.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/discover.php';
 
+JLog::addLogger(array('text_file' => 'update_emundus.log.php'), JLog::ALL, array('jerror'));
+JLog::addLogger(array('text_file' => 'sql_emundus.log.php'), JLog::INFO, array('Update'));
+
 $emundusScript = JPATH_COMPONENT_ADMINISTRATOR . 'com_emundus/script.com_emundus.php';
 try {
     if (file_exists($emundusScript) && is_readable($emundusScript)) {
         require_once $emundusScript;
     } else {
-        throw new Exception('Emundus script file does not exists or is not readable.');
+        throw new Exception('script.com_emundus.php does not exists or is not readable.');
     }
 } catch(Exception $e) {
     echo $e->getMessage();
+    \JLog::add(\JText::sprintf($e->getMessage()), \JLog::WARNING, 'jerror');
+
     exit();
 }
 
@@ -111,7 +116,7 @@ class UpdateEmundus extends JApplicationCli
                 // Graceful exit and rollback if read not successful
                 if ($buffer === false)
                 {
-                    \JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_SQL_READBUFFER'), \JLog::WARNING, 'jerror');
+                    \JLog::add(\JText::sprintf('Error SQL Read buffer'), \JLog::WARNING, 'jerror');
                     return false;
                 }
 
@@ -133,14 +138,14 @@ class UpdateEmundus extends JApplicationCli
                     }
                     catch (\JDatabaseExceptionExecuting $e)
                     {
-                        \JLog::add(\JText::sprintf('JLIB_INSTALLER_ERROR_SQL_ERROR', $e->getMessage()), \JLog::WARNING, 'jerror');
+                        \JLog::add(\JText::sprintf($e->getMessage()), \JLog::WARNING, 'jerror');
 
                         return false;
                     }
 
                     $queryString = (string) $query;
                     $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 80));
-                    \JLog::add(\JText::sprintf('JLIB_INSTALLER_UPDATE_LOG_QUERY', $file, $queryString), \JLog::INFO, 'Update');
+                    \JLog::add(\JText::sprintf($file . ".sql executed"), \JLog::INFO, 'Update');
                     $update_count++;
                 }
             }
@@ -168,7 +173,6 @@ class UpdateEmundus extends JApplicationCli
     public function doExecute()
     {
 
-        JLog::addLogger(array('text_file' => 'update_emundus.log.php'), JLog::ALL, array('jerror'));
 
         $app = JFactory::getApplication('site');
         $app->initialise();
@@ -206,7 +210,8 @@ class UpdateEmundus extends JApplicationCli
             $this->out("-> extension_id : " . $res[0] . " with version : " . $res[1]);
 
             // Execute SQL files for update
-            $this->parseSchemaUpdates($res[0]);
+            $update_count = $this->parseSchemaUpdates($res[0]);
+            $this->out("\n" . $update_count . " sql queries executed" );
 
             // Check if there is custom updates
             $this->out("\nCall update function...");
