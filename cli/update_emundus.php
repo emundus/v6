@@ -52,6 +52,47 @@ class UpdateEmundus extends JApplicationCli
         return $res[0];
     }
 
+    public function getSchemaVersion($eid)
+    {
+        $db = \JFactory::getDbo();
+        $query = $db->getQuery(true)
+            ->select('version_id')
+            ->from('#__schemas')
+            ->where('extension_id = ' . $eid);
+        $db->setQuery($query);
+        return $db->loadResult();
+    }
+
+    private function updateSchema($eid, $files, $method)
+    {
+        $db = \JFactory::getDbo();
+        $query = $db->getQuery(true)
+            ->delete('#__schemas')
+            ->where('extension_id = ' . $eid);
+        $db->setQuery($query);
+
+        if ($db->execute())
+        {
+            $query->clear()
+                ->insert($db->quoteName('#__schemas'))
+                ->columns(array($db->quoteName('extension_id'), $db->quoteName('version_id')))
+                ->values($eid . ', ' . $db->quote($method($files)));
+            $db->setQuery($query);
+            $db->execute();
+
+        }
+    }
+
+    private function refreshManifestCache(){
+        $this->out("\nRefresh manifest cache...");
+        $installer = JInstaller::getInstance();
+        $result = 0;
+        $result |= $installer->refreshManifestCache($this->getExtensionId());
+        if ($result != 1) {
+            $this->out("-> Failed");
+            exit();
+        } else { $this->out("-> OK");}
+    }
 
     public function emundusToSchemas($version)
     {
@@ -59,7 +100,6 @@ class UpdateEmundus extends JApplicationCli
             $db = JFactory::getDbo();
             $emundusIdInfos = $db->setQuery("select * from #__schemas where extension_id in (select extension_id from #__extensions where element = 'com_emundus')")->loadRow();
             if (!$emundusIdInfos[0]){
-                #Verif
                 $emundusIdInfos[0] == '11369';
             }
             if (!$emundusIdInfos[0] AND !$emundusIdInfos[1]){ #!$db->loadAssoc()) {
@@ -87,6 +127,9 @@ class UpdateEmundus extends JApplicationCli
         if (is_dir($sqlpath)) {
             $files = JFolder::files($sqlpath, '\.sql$');
         }
+        $version = $this->getSchemaVersion($eid);
+        // No version - use initial version.
+
 
         if (empty($files)) {
             return $update_count;
@@ -95,17 +138,17 @@ class UpdateEmundus extends JApplicationCli
         $files = str_replace('.sql', '', $files);
         usort($files, 'version_compare');
 
-        $query = $db->getQuery(true)
-            ->select('version_id')
-            ->from('#__schemas')
-            ->where('extension_id = ' . $eid);
-        $db->setQuery($query);
-        $version = $db->loadResult();
+        if (!$version) {
+            $version = "0.0.0";
+            $this->manifest->version = reset($files);
+            //$this->refreshManifestCache();
+        }
 
-        // No version - use initial version.
-        if (!$version)
-        {
-            $version = '0.0.0';
+        $key = array_search($version, $files);
+        if ($key > 0){
+            $this->manifest->version = $files[$key-1];
+        } else {
+            $this->manifest->version = reset($files);
         }
 
         foreach ($files as $file)
@@ -118,7 +161,7 @@ class UpdateEmundus extends JApplicationCli
                 if ($buffer === false)
                 {
                     \JLog::add(\JText::sprintf('Error SQL Read buffer'), \JLog::WARNING, 'jerror');
-                    return false;
+                    return $update_count;
                 }
 
                 // Create an array of queries from the sql file
@@ -140,85 +183,67 @@ class UpdateEmundus extends JApplicationCli
                     catch (\JDatabaseExceptionExecuting $e)
                     {
                         \JLog::add(\JText::sprintf($e->getMessage()), \JLog::WARNING, 'jerror');
-
-                        return false;
+                        $this->out("-> Error : " . $e->getMessage());
+                        exit();
                     }
-
-                    $queryString = (string) $query;
-                    $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 80));
+                    # queryString for query log details
+                    //$queryString = (string) $query;
+                    //$queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 80));
                     \JLog::add(\JText::sprintf($file . ".sql executed"), \JLog::INFO, 'Update');
                     $update_count++;
                 }
             }
         }
-
         // Update the database
-        $query = $db->getQuery(true)
-            ->delete('#__schemas')
-            ->where('extension_id = ' . $eid);
-        $db->setQuery($query);
-
-        if ($db->execute())
-        {
-            $query->clear()
-                ->insert($db->quoteName('#__schemas'))
-                ->columns(array($db->quoteName('extension_id'), $db->quoteName('version_id')))
-                ->values($eid . ', ' . $db->quote(end($files)));
-            $db->setQuery($query);
-            $db->execute();
-        }
-        return $update_count;
+        $this->updateSchema($eid, $files, 'end');
+        return array($update_count, $files);
     }
 
 
     public function doExecute()
     {
-
-
         $app = JFactory::getApplication('site');
         $app->initialise();
         $executionStartTime = microtime(true);
 
-
         echo "Emundus Update Tool \n\n";
 
         $xml_path = JPATH_ADMINISTRATOR . '/components/com_emundus/emundus.xml';
-        $version = null;
+        $this->refreshManifestCache();
+        $this->manifest = simplexml_load_file($xml_path);
+
+        #$version = null;
 
         // Refresh manifest cache
         if (file_exists($xml_path)) {
-            $installer = JInstaller::getInstance();
-            $result = 0;
-            $this->out("Refreshing manifest cache...");
-            $result |= $installer->refreshManifestCache($this->getExtensionId());
-            if ($result != 1) {
-                $this->out("-> Failed");
-                exit();
-            } else { $this->out("-> OK");}
 
-            // Get version from xml
-            $manifest = simplexml_load_file($xml_path);
-            if (property_exists($manifest, 'version')) {
-                $version = (string)$manifest->version;
-            } else {
-                $this->out("-> 'version' property doesn't exist in xml component");
-                exit();
-            }
+        // Add or update extension in schema table
+        #$this->out("\nCheck row com_emundus in __schemas table...");
+        #$res = $this->emundusToSchemas($version);
+        #$this->out("-> extension_id : " . $res[0] . " with version : " . $res[1]);
 
-            // Add or update extension in schema table
-            $this->out("\nCheck row com_emundus in __schemas table...");
-            $res = $this->emundusToSchemas($version);
-            $this->out("-> extension_id : " . $res[0] . " with version : " . $res[1]);
+        // Execute SQL files for update
+        $this->out("\nSQL Updates...");
+        $sql_update = $this->parseSchemaUpdates($this->getExtensionId());
+        $this->out("-> " . $sql_update[0] . " sql queries executed" );
 
-            // Execute SQL files for update
-            $update_count = $this->parseSchemaUpdates($res[0]);
-            $this->out("\n" . $update_count . " sql queries executed" );
-
-            // Check if there is custom updates
-            $this->out("\nCall update function...");
+            // Check custom updates
+            $this->out("\nCustom updates...");
             try {
+                $this->manifest->asXML(JPATH_ADMINISTRATOR . '/components/com_emundus/emundus.xml');
+                $this->refreshManifestCache();
+
                 $script_emundus = new com_emundusInstallerScript();
-                $script_emundus->updateSQL();
+                $version = $script_emundus->updateSQL();
+
+                if($version != null) {
+                    $this->manifest->version = $version;
+                    $this->manifest->asXML(JPATH_ADMINISTRATOR . '/components/com_emundus/emundus.xml');
+                }
+                $this->refreshManifestCache();
+                $this->out("\nSchema : " . $this->getSchemaVersion($this->getExtensionId()));
+                $this->out("Extension : " . $this->manifest->version);
+
             } catch (\Throwable $e) {echo $e->getMessage();}
 
         } else { $this->out("-> Manifest path not exists");}

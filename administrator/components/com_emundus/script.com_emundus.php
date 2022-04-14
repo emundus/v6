@@ -29,14 +29,26 @@ class com_emundusInstallerScript
 
     public function updateSQL()
     {
-        $res = $this->db->loadObject();
-        $manifest = json_decode($res->manifest_cache);
-
+        $manifest = json_decode($this->db->loadObject()->manifest_cache);
+        $version = null;
         if ($manifest) {
-            if (version_compare($manifest->version, '1.29.0', '>=')) {
-                echo '--> Update function from script.com_emundus';
+            // First run condition
+            if (version_compare($manifest->version, '6.9.0', '=')) {
+                echo "\n--> Update function from script.com_emundus : 6.9.0";
+                $version = '6.9.0';
             }
-        }
+            if (version_compare($manifest->version, '6.9.1', '<')) {
+                echo "\n--> Update function from script.com_emundus : 6.9.1";
+                $version = '6.9.1';
+            }
+            if (version_compare($manifest->version, '6.9.2', '<')) {
+                echo "\n--> Update function from script.com_emundus : 6.9.2";
+                $version = '6.9.2';
+            }
+        } if ($version == null) {
+            echo "--> Nothing to update";
+    }
+        return $version;
     }
 
 
