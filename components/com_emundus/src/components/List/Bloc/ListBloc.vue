@@ -47,8 +47,8 @@
 					{{ isActive ? translations.active : translations.inactive }}
 				</div>
 
-				<div v-if="isFinished" class="finished">
-					{{ translations.isFinished }}
+				<div v-if="type == 'campaign'" :class="campaignStateClass">
+					{{ campaignState }}
 				</div>
 
 				<div v-if="data.nb_files">
@@ -230,6 +230,36 @@ export default {
 
 			return false;
 		},
+    campaignState() {
+      if (this.type == "campaign") {
+        let message = "";
+
+        if (moment(this.data.end_date) < moment()) {
+          message = this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE");
+        } else if (moment(this.data.start_date) > moment()) {
+          message = this.translate("COM_EMUNDUS_CAMPAIGN_YET_TO_COME");
+        } else {
+          message = this.translate("COM_EMUNDUS_CAMPAIGN_ONGOING");
+        }
+
+        return message;
+      }
+
+      return false;
+    },
+    campaignStateClass() {
+      if (this.type == "campaign") {
+        let classe = "";
+
+        if (moment(this.data.end_date) < moment()) {
+          classe = "finished";
+        }
+
+        return classe;
+      }
+
+      return false;
+    },
 		hasActionMenu() {
 			let hasActionMenu = true;
 
