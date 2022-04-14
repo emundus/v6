@@ -42,6 +42,10 @@ JLog::addLogger(
 );
 // translation for javacript
 JText::script('PLEASE_SELECT');
+JText::script('IN');
+JText::script('ALL');
+JText::script('USERNAME');
+JText::script('EMAIL');
 
 JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
