@@ -61,7 +61,7 @@
           <transition name="fade" mode="out-in">
             <form-builder-page
               ref="formBuilderPage"
-              v-if="currentPage && sectionShown == 'page'"
+              v-if="currentPage && showInSection == 'page'"
               :key="currentPage.id"
               :profile_id="profile_id"
               :page="currentPage"
@@ -69,7 +69,7 @@
               @update-page-title="getPages(currentPage.id)"
             ></form-builder-page>
             <form-builder-document-list
-              v-if="sectionShown == 'documents'"
+              v-if="showInSection == 'documents'"
               :profile_id="profile_id"
               :campaign_id="campaign_id"
             >
@@ -80,7 +80,7 @@
           <transition name="fade" mode="out-in">
             <div
                 id="form-hierarchy"
-                v-if="!showElementProperties"
+                v-if="showInRightPanel == 'hierarchy'"
             >
               <form-builder-pages
                   :pages="pages"
@@ -94,14 +94,17 @@
                   :profile_id="profile_id"
                   :campaign_id="campaign_id"
                   @show-documents="setSectionShown('documents')"
+                  @open-create-document="onOpenCreateDocument"
               ></form-builder-documents>
             </div>
             <form-builder-element-properties
-                v-if="showElementProperties"
+                v-if="showInRightPanel == 'element-properties'"
                 @close="onCloseElementProperties"
                 :element="selectedElement"
                 :profile_id="profile_id"
             ></form-builder-element-properties>
+            <form-builder-create-document v-if="showInRightPanel == 'create-document'">
+            </form-builder-create-document>
           </transition>
         </aside>
       </div>
@@ -117,6 +120,7 @@ import FormBuilderPage      from "../components/FormBuilder/FormBuilderPage";
 import FormBuilderPages     from "../components/FormBuilder/FormBuilderPages";
 import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
 import FormBuilderDocumentList from "../components/FormBuilder/FormBuilderDocumentList";
+import FormBuilderCreateDocument from "../components/FormBuilder/FormBuilderCreateDocument";
 
 // services
 import formService from '../services/form.js';
@@ -130,6 +134,7 @@ export default {
     FormBuilderPages,
     FormBuilderDocuments,
     FormBuilderDocumentList,
+    FormBuilderCreateDocument,
   },
   data() {
     return {
@@ -137,10 +142,10 @@ export default {
       campaign_id: 0,
       title: '',
       pages: [],
-      sectionShown: 'page',
+      showInSection: 'page',
       selectedPage: 0,
       selectedElement: null,
-      showElementProperties: false,
+      showInRightPanel: 'hierarchy',
       leftPanel: {
         tabs: [
           {
@@ -200,13 +205,19 @@ export default {
     onOpenElementProperties(event)
     {
       this.selectedElement = event;
-      this.showElementProperties = true;
+      this.showInRightPanel = 'element-properties';
     },
     onCloseElementProperties()
     {
       this.selectedElement = null;
-      this.showElementProperties = false;
+      this.showInRightPanel = 'hierarchy';
       this.$refs.formBuilderPage.getSections();
+    },
+    onOpenCreateDocument()
+    {
+      console.log('open create document');
+      this.showInRightPanel = 'create-document';
+      this.setSectionShown('document');
     },
     selectTab(index) {
       // unset selected tab
@@ -223,7 +234,7 @@ export default {
       this.setSectionShown('page');
     },
     setSectionShown(section) {
-      this.sectionShown = section;
+      this.showInSection = section;
     },
     goTo(url, blank = false) {
       const baseUrl = window.location.origin;

@@ -12,21 +12,22 @@
           }"
       >
         <span
-            class="section-title editable-data"
+            id="section-title"
+            class="editable-data"
             ref="sectionTitle"
             contenteditable="true"
             @focusout="updateTitle"
         >
           {{ section.label.fr }}
         </span>
-        <span
-          class="section-intro editable-data"
+        <p id="section-intro"
+          class="editable-data"
           ref="sectionIntro"
           contenteditable="true"
           @focusout="updateIntro"
           v-html="section.group_intro"
         >
-        </span>
+        </p>
         <draggable
           v-model="sectionElementsAsArray"
           group="form-builder-section-elements"
@@ -167,7 +168,7 @@ export  default {
         overflow: hidden;
       }
 
-      .section-title {
+      #section-title {
         font-weight: 800;
         font-size: 20px;
         line-height: 25px;

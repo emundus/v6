@@ -1,14 +1,14 @@
 <template>
   <div id="form-builder-documents" class="em-p-16">
-    <p id="form-builder-title" class="em-flex-row em-flex-space-between">
+    <div id="form-builder-title" class="em-flex-row em-flex-space-between">
       <span>Tous les documents</span>
       <span
            class="material-icons"
-          @click="addDocument"
+          @click="createDocument"
       >
         add
       </span>
-    </p>
+    </div>
     <div
         v-for="document in documents"
         :key="document.id"
@@ -48,15 +48,9 @@ export default {
         this.documents = response.data.data;
       });
     },
-    addDocument(document_id) {
-      formService.addDocument({
-        did: document_id,
-        prid: this.profile_id,
-        cid: this.campaign_id
-      }).then(response => {
-        this.documents.push(response.data.data);
-      });
-    }
+    createDocument() {
+      this.$emit('open-create-document');
+    },
   }
 }
 </script>
