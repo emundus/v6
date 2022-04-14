@@ -52,7 +52,3 @@ WHERE id = 1171;
 UPDATE jos_fabrik_joins
 SET table_join = 'jos_emundus_users',table_join_key = 'user_id', params = '{"join-label":"name","type":"element","pk":"`jos_emundus_users`.`id`"}'
 WHERE element_id = 1171;
-
-UPDATE jos_securitycheckpro_storage
-SET storage_value = JSON_REPLACE(storage_value, '$.custom_code', '<h1 style=\"text-align: center;\">The application''s firewall has been triggered by your use of the platform.<br \/>You no longer have access to the platform.<br \/>Please contact the platform manager so that he can unblock your account.<\/h1>\r\n<hr \/>\r\n<h1 style=\"text-align: center;\">Le pare-feu de l''application vient de se d\u00e9clencher suite \u00e0 votre utilisation de la plateforme.<br \/>Vous n''avez plus acc\u00e8s \u00e0 la plateforme.<br \/>Merci de prendre contact avec le gestionnaire de cette plateforme afin qu''il d\u00e9bloque votre compte.<\/h1>')
-WHERE storage_key LIKE 'pro_plugin'
