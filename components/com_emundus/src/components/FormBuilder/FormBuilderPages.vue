@@ -9,19 +9,16 @@
         add
       </span>
     </p>
-    <div
+    <p
         v-for="page in pages"
         :key="page.id"
+        :class="{
+          selected: page.id === selected,
+        }"
+        @click="selectPage(page.id)"
     >
-      <p
-          :class="{
-            selected: page.id === selected,
-          }"
-          @click="selectPage(page.id)"
-      >
-        {{ page.label }}
-      </p>
-    </div>
+      {{ page.label }}
+    </p>
   </div>
 </template>
 
@@ -71,6 +68,10 @@ export default {
     font-weight: 400;
     font-size: 14px;
     line-height: 18px;
+
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
   }
 
   p.selected {

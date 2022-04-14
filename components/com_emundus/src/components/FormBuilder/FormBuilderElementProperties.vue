@@ -10,28 +10,26 @@
       </span>
     </div>
     <div id="properties">
-      <p class="em-p-16">{{ element.label.fr }}</p>
+      <!--<p class="em-p-16">{{ element.label.fr }}</p>-->
       <div id="element-parameters" class="em-p-16">
         <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_PARAMETERS") }}</p>
 
-        <div class="em-flex-row em-flex-space-between em-w-100">
+        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
-          <label class="element-published em-switch">
-            <div>
-              <input type="checkbox" v-model="isPublished" @click="togglePublish"/>
-              <span class="em-slider em-round"></span>
-            </div>
-          </label>
+          <div class="em-toggle">
+            <input type="checkbox" class="em-toggle-check" v-model="isPublished" @click="togglePublish">
+            <strong class="b em-toggle-switch"></strong>
+            <strong class="b em-toggle-track"></strong>
+          </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100">
+        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
-          <label class="element-required em-switch">
-            <div>
-              <input type="checkbox" v-model="element.FRequire" @click="element.FRequire = !element.FRequire;"/>
-              <span class="em-slider em-round"></span>
-            </div>
-          </label>
+          <div class="em-toggle">
+            <input type="checkbox" class="em-toggle-check" v-model="element.FRequire" @click="element.FRequire = !element.FRequire;">
+            <strong class="b em-toggle-switch"></strong>
+            <strong class="b em-toggle-track"></strong>
+          </div>
         </div>
 
       </div>

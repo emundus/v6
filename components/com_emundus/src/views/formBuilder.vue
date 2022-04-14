@@ -58,15 +58,23 @@
           </div>
         </aside>
         <section class="em-flex-column">
-          <form-builder-page
+          <transition name="fade" mode="out-in">
+            <form-builder-page
               ref="formBuilderPage"
-              v-if="currentPage"
+              v-if="currentPage && sectionShown == 'page'"
               :key="currentPage.id"
               :profile_id="profile_id"
               :page="currentPage"
               @open-element-properties="onOpenElementProperties"
               @update-page-title="getPages(currentPage.id)"
-          ></form-builder-page>
+            ></form-builder-page>
+            <form-builder-document-list
+              v-if="sectionShown == 'documents'"
+              :profile_id="profile_id"
+              :campaign_id="campaign_id"
+            >
+            </form-builder-document-list>
+          </transition>
         </section>
         <aside class="right-panel em-flex-column">
           <transition name="fade" mode="out-in">
@@ -78,13 +86,14 @@
                   :pages="pages"
                   :selected="selectedPage"
                   :profile_id="profile_id"
-                  @select-page="selectedPage = $event"
+                  @select-page="selectPage($event)"
                   @add-page="getPages(currentPage.id)"
               ></form-builder-pages>
               <hr>
               <form-builder-documents
                   :profile_id="profile_id"
                   :campaign_id="campaign_id"
+                  @show-documents="setSectionShown('documents')"
               ></form-builder-documents>
             </div>
             <form-builder-element-properties
@@ -107,6 +116,7 @@ import FormBuilderElementProperties  from "../components/FormBuilder/FormBuilder
 import FormBuilderPage      from "../components/FormBuilder/FormBuilderPage";
 import FormBuilderPages     from "../components/FormBuilder/FormBuilderPages";
 import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
+import FormBuilderDocumentList from "../components/FormBuilder/FormBuilderDocumentList";
 
 // services
 import formService from '../services/form.js';
@@ -118,7 +128,8 @@ export default {
     FormBuilderElementProperties,
     FormBuilderPage,
     FormBuilderPages,
-    FormBuilderDocuments
+    FormBuilderDocuments,
+    FormBuilderDocumentList,
   },
   data() {
     return {
@@ -126,6 +137,7 @@ export default {
       campaign_id: 0,
       title: '',
       pages: [],
+      sectionShown: 'page',
       selectedPage: 0,
       selectedElement: null,
       showElementProperties: false,
@@ -205,6 +217,13 @@ export default {
       this.leftPanel.tabs.forEach((tab, i) => {
         tab.active = (i === index);
       });
+    },
+    selectPage(page_id) {
+      this.selectedPage = page_id;
+      this.setSectionShown('page');
+    },
+    setSectionShown(section) {
+      this.sectionShown = section;
     },
     goTo(url, blank = false) {
       const baseUrl = window.location.origin;

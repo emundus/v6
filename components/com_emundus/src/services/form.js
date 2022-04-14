@@ -110,6 +110,43 @@ export default {
             };
         }
     },
+    async getDocumentModels(documentId = null) {
+        try {
+            let data = {
+                status: false,
+            };
+
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=form&task=getundocuments'
+            );
+
+            if (response.data.status) {
+                if (documentId !== null) {
+                    const document = response.data.data.filter(document => document.id === documentId);
+                    if (document.length > 0) {
+                        data = {
+                            status: true,
+                            data: document[0]
+                        };
+                    } else {
+                        data = {
+                            status: false,
+                            error: 'Document not found'
+                        };
+                    }
+                } else {
+                    data = response.data;
+                }
+            }
+
+            return data;
+        } catch (error) {
+            return {
+                status: false,
+                error: error
+            };
+        }
+    },
     async reorderDocuments(documents)
     {
         try {
@@ -119,6 +156,25 @@ export default {
             const response = await client().post(
                 'index.php?option=com_emundus&controller=form&task=reorderDocuments',
                 documents
+            );
+
+            return response;
+        } catch (error) {
+            return {
+                status: false,
+                error:error
+            };
+        }
+    },
+    async addDocument(params)
+    {
+        const formData = new FormData();
+        Object.keys(params).forEach(key => formData.append(key, params[key]));
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=form&task=addDocument',
+                formData
             );
 
             return response;

@@ -1,9 +1,18 @@
 <template>
   <div id="form-builder-documents" class="em-p-16">
-    <span class="form-builder-title">Tous les documents</span>
+    <p id="form-builder-title" class="em-flex-row em-flex-space-between">
+      <span>Tous les documents</span>
+      <span
+           class="material-icons"
+          @click="addDocument"
+      >
+        add
+      </span>
+    </p>
     <div
         v-for="document in documents"
         :key="document.id"
+        @click="$emit('show-documents')"
     >
       <p>{{ document.label }}</p>
     </div>
@@ -38,6 +47,15 @@ export default {
       formService.getDocuments(this.profile_id).then(response => {
         this.documents = response.data.data;
       });
+    },
+    addDocument(document_id) {
+      formService.addDocument({
+        did: document_id,
+        prid: this.profile_id,
+        cid: this.campaign_id
+      }).then(response => {
+        this.documents.push(response.data.data);
+      });
     }
   }
 }
@@ -45,6 +63,15 @@ export default {
 
 <style lang="scss">
 #form-builder-documents {
+  #form-builder-title {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    letter-spacing: .0015em;
+    color: #080c12;
+  }
+
   p {
     cursor: pointer;
     margin: 15px 0;
