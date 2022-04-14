@@ -830,8 +830,8 @@ class EmundusModelCampaign extends JModelList {
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
 
-        if($program !="all"){
-            $programs=array_filter($programs,function($value) use ($program) {
+        if ($program != "all") {
+            $programs= array_filter($programs,function($value) use ($program) {
                 return $value == $program;
             });
         }
@@ -870,7 +870,7 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quote($date) .
                 ' OR end_date = "0000-00-00 00:00:00")';
         } else {
-            $filterDate = '1';
+            $filterDate = $this->_db->quoteName('sc.published') . ' = 1';
         }
 
         if (empty($recherche)) {
