@@ -56,6 +56,8 @@ export default {
 			lang: 'fr',
 			translations: {
 				finished: "COM_EMUNDUS_ONBOARD_FILTER_CLOSE",
+        yettocome: "COM_EMUNDUS_CAMPAIGN_YET_TO_COME",
+        ongoing: "COM_EMUNDUS_CAMPAIGN_ONGOING",
 				published: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH",
 				unpublished: "COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH",
 				active: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH_FORM",
@@ -93,7 +95,11 @@ export default {
 
 					if (this.isFinished) {
 						html += '<span class="tag finished">' + this.translations.finished + '</span>';
-					}
+					} else if (this.isYetToCome) {
+            html += '<span class="tag">' + this.translations.yettocome + '</span>';
+          } else {
+            html += '<span class="tag">' + this.translations.ongoing + '</span>';
+          }
 
           return html;
 				case 'start_date':
@@ -224,6 +230,13 @@ export default {
 
 			return false;
 		},
+    isYetToCome() {
+      if (this.type == "campaign") {
+        return moment(this.data.start_date) > moment();
+      }
+
+      return false;
+    },
 		hasActionMenu() {
 			let hasActionMenu = true;
 
