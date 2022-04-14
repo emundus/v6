@@ -1605,11 +1605,6 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Borramos los logs no necesarios
             $this->delete_logs();
             
-            // Chequeamos el estado de las subscripciones
-            include_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
-            $model = new SecuritycheckproModel();
-            $model->get_subscriptions_status();
-                        
             if ($email_on_admin_login) {            
                 // Extraemos los datos que se mandarán por correo
                 $ip = $this->get_ip();                               
@@ -2486,12 +2481,31 @@ class plgSystemSecuritycheckpro extends JPlugin
                     }
                 }
                 
-                // Decodificamos el array, que vendrá en formato json_decode
+                // Decodificamos el array, que vendrá en formato json
                 $previous_admins = json_decode($previous_admins, true);
-            
-                // Extraemos el id del nuevo usuario creado
-                $new_user_added = array_diff($actual_admins, $previous_admins);
-                                
+				
+				if (!is_null($previous_admins)) {
+					// Extraemos el id del nuevo usuario creado
+					$new_user_added = array_diff($actual_admins, $previous_admins);
+				} else {
+					// Something went wrong decoding the json to extract previous admins. Let's create an empty array
+					$new_user_added = array();
+					// Instanciamos un objeto para almacenar los datos que serán sobreescritos
+					$object = new StdClass();                    
+					$object->id = 1;
+					$object->users = json_encode($actual_admins);
+					$object->contador = count($actual_admins);
+					
+					try 
+					{
+						// Añadimos los datos a la BBDD
+						$db->updateObject('#__securitycheckpro_users_control', $object, 'id');    
+							
+					} catch (Exception $e) {    
+						return;
+					}
+				}
+                                            
                 foreach ($new_user_added as $new_user)
                 {                        
                     // Creamos una instancia del usuario
