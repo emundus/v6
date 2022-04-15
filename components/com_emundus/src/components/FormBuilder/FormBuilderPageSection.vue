@@ -25,6 +25,7 @@
           ref="sectionIntro"
           contenteditable="true"
           @focusout="updateIntro"
+
           v-html="section.group_intro"
         >
         </p>
@@ -131,7 +132,10 @@ export  default {
       }, this.section.group_tag, this.section.label);
     },
     updateIntro() {
-
+      this.section.group_intro = this.$refs.sectionIntro.innerHTML;
+      formBuilderService.updateGroupParams(this.section.group_id, {
+        'intro': this.section.group_intro
+      });
     }
   },
   computed: {

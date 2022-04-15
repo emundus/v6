@@ -195,6 +195,25 @@ export default {
             };
         }
     },
+    async updateGroupParams(group_id, params) {
+        const formData = new FormData();
+        formData.append('group_id', group_id);
+        formData.append('params', JSON.stringify(params));
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=updategroupparams',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     async toggleElementPublishValue(element)
     {
         const formData = new FormData();

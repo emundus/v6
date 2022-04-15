@@ -51,6 +51,36 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         exit;
     }
 
+    public function updategroupparams() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $update = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+
+            $group_id = $jinput->getInt('group_id');
+            $params = $jinput->getString('params');
+            $params = json_decode($params, true);
+
+            if (!empty($params)) {
+                $update = array(
+                    'status' => 1,
+                    'data' => $this->m_formbuilder->updateGroupParams($group_id, $params)
+                );
+            } else {
+                $update = array(
+                    'status' => 0,
+                    'msg' => JText::_('MISSING_PARAMS')
+                );
+                JLog::add("Nothing to update in group params", JLog::WARNING, 'com_emundus');
+            }
+        }
+        echo json_encode($update);
+        exit;
+    }
+
     public function changerequire() {
         $user = JFactory::getUser();
 

@@ -52,7 +52,7 @@ export default {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  margin: 32px 0;
+  margin: 12px 0;
   padding: 12px;
   border-radius: 4px;
   transition: 0.3s all;

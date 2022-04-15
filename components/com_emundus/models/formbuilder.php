@@ -2560,6 +2560,48 @@ this.set(words.join(&quot; &quot;));
         }
     }
 
+    function updateGroupParams($group_id, $params)
+    {
+        $updated = false;
+        $group_params = array();
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('params')
+            ->from('#__fabrik_groups')
+            ->where('id = ' . $db->quote($group_id));
+
+        $db->setQuery($query);
+
+        try {
+            $group_params = json_decode($db->loadResult(), true);
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus/models/formbuilder | Error at getting group params : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        if (!empty($group_params)) {
+            foreach($params as $param => $value) {
+                $group_params[$param] = $value;
+            }
+        }
+
+        $query->clear()
+            ->update('#__fabrik_groups')
+            ->set('params = ' . $db->quote(json_encode($group_params)))
+            ->where('id = ' . $db->quote($group_id));
+
+        try {
+            $db->setQuery($query);
+            $updated = $db->execute();
+        } catch(Exception $e) {
+            JLog::add('component/com_emundus/models/formbuilder | Error at updating group params : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+
+        return $updated;
+    }
+
     function duplicateElement($eid,$group,$old_group,$form_id){
         $db = $this->getDbo();
         $query = $db->getQuery(true);
