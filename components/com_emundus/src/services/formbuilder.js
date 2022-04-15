@@ -220,7 +220,7 @@ export default {
         formData.append('group_id', groupId);
         formData.append('moved_el', JSON.stringify(movedElement));
 
-        if (elements.length == 0 || movedElement.length == 0) {
+        if (movedElement.length == 0) {
             return {
                 status: false,
                 message: 'No elements to update'

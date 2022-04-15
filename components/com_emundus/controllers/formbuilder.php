@@ -47,7 +47,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $moved_el = $jinput->getString('moved_el');
             $moved_el = json_decode($moved_el, true);
 
-            if (empty($elements) || empty($moved_el)) {
+            if (empty($moved_el)) {
                 $update = array('status' => 0, 'msg' => JText::_("INVALID_PARAMETERS"));
             } else {
                 $update = $this->m_formbuilder->updateOrder($elements, $group_id, $user->id, $moved_el);

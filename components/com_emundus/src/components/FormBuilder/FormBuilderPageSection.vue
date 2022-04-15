@@ -147,7 +147,6 @@ export  default {
       });
     },
     onDragEnd(e) {
-
       const toGroup = e.to.getAttribute('data-sid');
 
       if (toGroup == this.section.group_id) {
@@ -161,6 +160,14 @@ export  default {
       }
     },
   },
+  watch: {
+    section: {
+      handler() {
+        this.getElements();
+      },
+      deep: true
+    }
+  }
 }
 </script>
 
