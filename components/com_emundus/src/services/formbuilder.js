@@ -333,4 +333,23 @@ export default {
             };
         }
     },
+
+    deleteElement(elementId) {
+        const formData = new FormData();
+        formData.append('element', elementId);
+
+        try {
+            const response = client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=deleteElement',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    }
 };

@@ -46,6 +46,7 @@
               :key="element.id"
               :element="element"
               @open-element-properties="$emit('open-element-properties', element)"
+              @delete-element="deleteElement"
             >
             </form-builder-page-section-element>
           </transition-group>
@@ -159,6 +160,10 @@ export  default {
         this.$emit('move-element', e, this.section.group_id, toGroup);
       }
     },
+    deleteElement(elementId) {
+      delete this.section.elements[elementId];
+      this.elements = this.elements.filter(element => element.id !== elementId);
+    }
   },
   watch: {
     section: {

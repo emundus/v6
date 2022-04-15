@@ -6,15 +6,18 @@
       }"
       @click="$emit('open-element-properties')"
   >
-    <span
-        v-if="element.label_value && element.labelsAbove != 2"
-        ref="label"
-        class="element-title editable-data"
-        contenteditable="true"
-        @focusout="updateLabel"
-    >
-      {{ element.label.fr }}
-    </span>
+    <div class="em-flex-row em-flex-space-between em-w-100 em-mb-16">
+      <span
+          v-if="element.label_value && element.labelsAbove != 2"
+          ref="label"
+          class="element-title editable-data"
+          contenteditable="true"
+          @focusout="updateLabel"
+      >
+        {{ element.label.fr }}
+      </span>
+      <span class="material-icons em-red-500-color em-pointer delete" @click="deleteElement">delete</span>
+    </div>
     <div class="element-field">
       <span v-html="element.element" :id="element.id">
       </span>
@@ -41,7 +44,11 @@ export default {
     updateElement()
     {
       formBuilderService.updateParams(this.element);
-    }
+    },
+    deleteElement() {
+      formBuilderService.deleteElement(this.element.id);
+      this.$emit('delete-element', this.element.id);
+    },
   }
 }
 </script>
@@ -58,17 +65,21 @@ export default {
   transition: 0.3s all;
   border: 1px solid white;
 
+  .delete {
+    display: none;
+    transition: 0.3s all;
+  }
+
   &.unpublished {
     opacity: 0.5;
   }
 
   &:hover {
     border: 1px solid black;
-  }
 
-
-  .element-title {
-    margin-bottom: 24px !important;
+    .delete {
+      display: block;
+    }
   }
 
   .element-field {
