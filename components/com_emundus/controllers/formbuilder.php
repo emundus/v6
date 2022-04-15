@@ -41,11 +41,17 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $elements = $jinput->getRaw('elements');
+            $elements = $jinput->getString('elements');
+            $elements = json_decode($elements, true);
             $group_id = $jinput->getInt('group_id');
-            $moved_el= $jinput->getRaw('moved_el');
+            $moved_el = $jinput->getString('moved_el');
+            $moved_el = json_decode($moved_el, true);
 
-            $update = $this->m_formbuilder->updateOrder($elements, $group_id, $user->id, $moved_el);
+            if (empty($elements) || empty($moved_el)) {
+                $update = array('status' => 0, 'msg' => JText::_("INVALID_PARAMETERS"));
+            } else {
+                $update = $this->m_formbuilder->updateOrder($elements, $group_id, $user->id, $moved_el);
+            }
         }
         echo json_encode((object)$update);
         exit;

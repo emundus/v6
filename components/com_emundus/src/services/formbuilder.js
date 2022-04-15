@@ -214,6 +214,33 @@ export default {
             };
         }
     },
+    async updateOrder(elements, groupId, movedElement) {
+        const formData = new FormData();
+        formData.append('elements', JSON.stringify(elements));
+        formData.append('group_id', groupId);
+        formData.append('moved_el', JSON.stringify(movedElement));
+
+        if (elements.length == 0 || movedElement.length == 0) {
+            return {
+                status: false,
+                message: 'No elements to update'
+            };
+        }
+
+        try {
+            const response = await client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=updateOrder',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     async toggleElementPublishValue(element)
     {
         const formData = new FormData();

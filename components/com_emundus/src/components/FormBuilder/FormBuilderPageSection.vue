@@ -30,7 +30,7 @@
         >
         </p>
         <draggable
-          v-model="sectionElementsAsArray"
+          v-model="elements"
           group="form-builder-section-elements"
           :sort="true"
           class="draggables-list"
@@ -42,7 +42,7 @@
               :data-sid="section.group_id"
           >
             <form-builder-page-section-element
-              v-for="element in sectionElementsAsArray"
+              v-for="element in elements"
               :key="element.id"
               :element="element"
               @open-element-properties="$emit('open-element-properties', element)"
@@ -51,7 +51,7 @@
           </transition-group>
         </draggable>
         <div
-            v-if="sectionElementsAsArray.length < 1"
+            v-if="elements.length < 1"
             class="empty-section-element"
         >
           <draggable
@@ -116,14 +116,23 @@ export  default {
   data() {
     return {
       closedSection: false,
+      elements: [],
       emptySection: [
         {
           "text": "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION",
         }
-      ]
+      ],
     };
   },
+
+  created() {
+    this.getElements();
+  },
   methods: {
+    getElements() {
+      const elements = Object.values(this.section.elements);
+      this.elements = elements.length > 0 ? elements : [];
+    },
     updateTitle() {
       this.section.label.fr = this.$refs.sectionTitle.innerText;
       formBuilderService.updateTranslation({
@@ -136,14 +145,22 @@ export  default {
       formBuilderService.updateGroupParams(this.section.group_id, {
         'intro': this.section.group_intro
       });
-    }
+    },
+    onDragEnd(e) {
+
+      const toGroup = e.to.getAttribute('data-sid');
+
+      if (toGroup == this.section.group_id) {
+        const elements = this.elements.map((element, index) => {
+          return { id: element.id, order: index + 1 };
+        });
+        const movedElement = this.elements[e.newIndex];
+        formBuilderService.updateOrder(elements, this.section.group_id, movedElement);
+      } else {
+        this.$emit('move-element', e, this.section.group_id, toGroup);
+      }
+    },
   },
-  computed: {
-    sectionElementsAsArray() {
-      const elements = Object.values(this.section.elements);
-      return elements.length > 0 ? elements : [];
-    }
-  }
 }
 </script>
 

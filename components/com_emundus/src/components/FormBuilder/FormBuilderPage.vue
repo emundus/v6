@@ -26,7 +26,9 @@
           :section="section"
           :index="index+1"
           :totalSections="sections.length"
+          :ref="'section-'+section.group_id"
           @open-element-properties="$emit('open-element-properties', $event)"
+          @move-element="updateElementsOrder"
       >
       </form-builder-page-section>
     </div>
@@ -107,6 +109,18 @@ export default {
       this.fabrikPage.intro.fr = this.$refs.pageDescription.innerText;
       formBuilderService.updateTranslation(null, this.fabrikPage.intro_raw, this.fabrikPage.intro);
     },
+    updateElementsOrder(event, fromGroup, toGroup) {
+      const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
+      const fromElements = Object.values(sectionFrom.elements);
+      const movedElement = fromElements[event.oldIndex];
+      const toElements = this.$refs['section-'+toGroup][0].elements.map((element, index) => {
+        return { id: element.id, order: index + 1 };
+      });
+
+      if (movedElement.id) {
+        formBuilderService.updateOrder(toElements, toGroup, movedElement);
+      }
+    }
   },
 }
 </script>
