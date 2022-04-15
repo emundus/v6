@@ -248,31 +248,25 @@ class UpdateCli extends JApplicationCli
         }
     }
 
-    public function installExtension($app, $name)
+    public function installExtension($app, $name, $token='')
     {
         $this->out('INSTALL ' . $name);
         $app = JFactory::getApplication();
-        $discover = InstallerModel::getInstance('InstallerModelDiscover');
-
-//        $params = JComponentHelper::getParams('com_dpcalendar');
-//        #trim($params->set('downloadid', 'aaaa'));
-//        $dlid = trim($params->get('downloadid', ''));
-
 
         $app->input->set('installtype', 'url');
         $app->input->set('install_directory', JPATH_BASE . '/tmp');
         $app->input->set('max_upload_size', '10485760');
-        # $version = '1.0.0';
-
-//        if ($name == 'emundus') {
-//            $app->input->set('install_url', 'https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=i7VTEXny8EjpNjasHN28');
-//            $this->getInstall('com_emundus');
-//
-//        }
+        if ($name == 'emundus') {
+            $app->input->set('install_url', "https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=" . $token);
+            $this->getInstall('com_emundus');
+        }
 
         switch ($name) {
             case 'emundus':
-                $url = "https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=i7VTEXny8EjpNjasHN28";
+                if (!$token) {
+                    $this->out('Need to pass an authentication token as argument');
+                    exit();}
+                $url = "https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=" . $token;
                 break;
             case 'fabrik':
                 $url = "https://github.com/Fabrik/fabrik/archive/master.zip";
@@ -313,8 +307,8 @@ class UpdateCli extends JApplicationCli
             case 'externallogin':
                 $url = "";
                 break;
-
         }
+
         try {
             $p_file = JInstallerHelper::downloadPackage($url);
             if (!$p_file) {
@@ -324,123 +318,51 @@ class UpdateCli extends JApplicationCli
 
             $config = JFactory::getConfig();
             $tmp_dest = $config->get('tmp_path');
-            $p_src = $tmp_dest . '/' . $p_file . '/';
+            $src_dir =  basename($p_file, '.zip');
+
 
             // Unpack the downloaded package file.
             $package = JInstallerHelper::unpack($tmp_dest . '/' . $p_file, true);
 
+            $extractdir = $package['extractdir'] . '/'. $src_dir.'/';
+            foreach (new DirectoryIterator($extractdir) as $file) {
+                if ($file->isDot()) continue;
+                if ((strpos($file, '.txt')) || (strpos($file, '.md'))) continue;
 
-            switch ($name) {
-                case 'emundus':
-                    $this->custom_copy($package['dir'] . '/administrator/', JPATH_ADMINISTRATOR);
-                    $this->custom_copy($package['dir'] . '/cli/', JPATH_BASE . '/cli');
-                    $this->custom_copy($package['dir'] . '/components/', JPATH_BASE . '/components');
-                    $this->custom_copy($package['dir'] . '/images/', JPATH_BASE . '/images');
-                    $this->custom_copy($package['dir'] . '/libraries/', JPATH_BASE . '/libraries');
-                    $this->custom_copy($package['dir'] . '/media/', JPATH_BASE . '/media');
-                    $this->custom_copy($package['dir'] . '/modules/', JPATH_BASE . '/modules');
-                    $this->custom_copy($package['dir'] . '/plugins/', JPATH_BASE . '/plugins');
-                    $this->custom_copy($package['dir'] . '/templates/', JPATH_BASE . '/templates');
-                    $this->custom_copy($package['dir'] . '/version.txt/', JPATH_ADMINISTRATOR . '/components/com_emundus' . '/version.txt');
-
-
-                    break;
-                case 'fabrik':
-                    $this->custom_copy($package['dir'] . '/administrator/', JPATH_ADMINISTRATOR);
-                    $this->custom_copy($package['dir'] . '/components/', JPATH_BASE . '/components');
-                    $this->custom_copy($package['dir'] . '/libraries/', JPATH_BASE . '/libraries');
-                    $this->custom_copy($package['dir'] . '/media/', JPATH_BASE . '/media');
-                    $this->custom_copy($package['dir'] . '/modules/', JPATH_BASE . '/modules');
-                    $this->custom_copy($package['dir'] . '/plugins/', JPATH_BASE . '/plugins');
-                    break;
+                $filename = $file->getFilename();
+                $this->custom_copy($package['dir'] . '/' . $filename . '/', JPATH_BASE . '/' . $filename);
+                echo "\n" . JPATH_BASE . '/' . $filename;
             }
-
-
-            $discover->discover();
-
-
-            # Select all extensions not installed (where state = -1)
-            $query = $this->db->getQuery(true);
-            $query->select('extension_id')
-                ->from('#__' . 'extensions')
-                ->where($this->db->quoteName('state') . '= -1');
-            $this->db->setQuery($query);
-            $results = $this->db->loadRowList();
-
-            foreach ($results as $res) {
-                $cid[] = $res[0];
-            }
-
-            $app->input->set('cid', $cid);
-            $discover->discover_install();
-
         } catch (Exception $e) {
             echo $e;
         }
+    }
 
+    public function discover() {
+
+        $discover = InstallerModel::getInstance('InstallerModelDiscover');
+        $discover->discover();
+        $app = JFactory::getApplication();
+
+        $app->input->set('installtype', 'url');
+        $app->input->set('install_directory', JPATH_BASE . '/tmp');
+        $app->input->set('max_upload_size', '10485760');
+
+        # Select all extensions not installed (where state = -1)
+        $query = $this->db->getQuery(true);
+        $query->select('extension_id')
+            ->from('#__' . 'extensions')
+            ->where($this->db->quoteName('state') . '= -1');
+        $this->db->setQuery($query);
+        $results = $this->db->loadRowList();
+
+        foreach ($results as $res) {
+            $cid[] = $res[0];
         }
-//
-//        elseif ($name == 'hikashop') {
-//            $hikashop = "http://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-Starter/file-extension.xml";
-//            $data = simplexml_load_file($hikashop);
-//            foreach ($data->update as $ext) {
-//                $version = (string)$ext->targetplatform['version'];
-//                #$this->out($name);
-//            }
-//            if (!strpos($version, "3")) {
-//                $url = (string)$ext->downloads->downloadurl[1];
-//                $app->input->set('install_url', $url);
-//                $app->input->set('installtype', 'url');
-//                $input = JFactory::getApplication()->input;
-//                $this->getInstall($name);
-//                $updateHelper = hikashop_get('helper.update');
-//                $updateHelper->installExtensions();
-//            }
-//        }
-//
-//        elseif ($name == "dropfiles") {
-//            $dropfiles = "https://www.joomunited.com/juupdater_files/dropfiles-update.xml";
-//            $data = simplexml_load_file($dropfiles);
-//            foreach ($data->update as $ext) {
-//                $version = (string)$ext->targetplatform['version'];
-//                $name = (string)$ext->name;
-//                $this->out($name);
-//                if (strpos($version, "3")) {
-//                    $url = $ext->detailsurl;
-//                    $app->input->set('install_url', $url);
-//                    $this->getInstall($name);
-//                }
-//            }
-//        }
-//
-//        elseif ($name == 'dpcalendar') {
-//            $url = "https://joomla.digital-peak.com/download/dpcalendar/dpcalendar-8.2.2/dpcalendar-free-8-2-2.zip?format=zip";
-//            $name = "dpcalendar";
-//            $app->input->set('install_url', $url);
-//            $this->getInstall($name);
-//        }
-//
-//        elseif ($name == 'gantry'){
-//            $url = "https://github.com/gantry/gantry5/releases/download/5.5.5/joomla-pkg_gantry5_v5.5.5.zip";
-//            $name = "gantry";
-//            $app->input->set('install_url', $url);
-//            $this->getInstall($name);
-//        }
-//
-//        elseif ($name == 'scp') {
-//            $url = "https://securitycheck.protegetuordenador.com/component/ars/?task=download&view=Item&id=327&format=zip";
-//            $name = "scp";
-//            $app->input->set('install_url', $url);
-//            $this->getInstall($name);
-//        }
 
-//        elseif ($name == 'dropfile') {
-//            $url = "https://www.joomunited.com/index.php?option=com_juupdater&task=download.download&extension=dropfiles.zip&infosite=joomunited&version=6.0.1&token=d6bbea49-24be-4fda-91c8-f64f0e44cf87&siteurl=https://vanilla.emundus.io/";
-//            $name = "dropfiles";
-//            $app->input->set('install_url', $url);
-//            $this->getInstall($name);
-//        }
-   // }
+        $app->input->set('cid', $cid);
+        $discover->discover_install();
+    }
 
 
     public function getInstall($extension_name){
@@ -482,10 +404,8 @@ class UpdateCli extends JApplicationCli
     }
 
 
-
     public function doExecute()
     {
-
         JLog::addLogger(array('text_file' => 'update_cli.log.php'), JLog::ALL, array('jerror'));
 
         $app = JFactory::getApplication('site');
@@ -494,11 +414,19 @@ class UpdateCli extends JApplicationCli
         $app->input->set('method', 'direct');
         $executionStartTime = microtime(true);
         $this->db = JFactory::getDbo();
+        $args = (array) $GLOBALS['argv'];
 
         echo "Emundus Update Tool \n\n";
+
+
         if ($name = $this->input->get('i', $this->input->get('install'))) {
-            $this->installExtension($app, $name);
+            if ($name=='emundus' && sizeof($args) > 2) {
+                $this->installExtension($app, $name, $args[2]);
+            } else {
+                $this->installExtension($app, $name);
+            }
         }
+
         if ($this->input->get('c', $this->input->get('core'))) {
             $this->updateJoomla();
         }
