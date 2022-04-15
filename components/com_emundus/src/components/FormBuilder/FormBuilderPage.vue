@@ -29,6 +29,7 @@
           :ref="'section-'+section.group_id"
           @open-element-properties="$emit('open-element-properties', $event)"
           @move-element="updateElementsOrder"
+          @delete-section="deleteSection"
       >
       </form-builder-page-section>
     </div>
@@ -120,6 +121,9 @@ export default {
       if (movedElement.id) {
         formBuilderService.updateOrder(toElements, toGroup, movedElement);
       }
+    },
+    deleteSection(sectionId) {
+      this.sections = this.sections.filter(section => section.group_id !== sectionId);
     }
   },
 }

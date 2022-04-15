@@ -11,15 +11,18 @@
             'closed': closedSection,
           }"
       >
-        <span
-            id="section-title"
-            class="editable-data"
-            ref="sectionTitle"
-            contenteditable="true"
-            @focusout="updateTitle"
-        >
-          {{ section.label.fr }}
-        </span>
+        <div class="em-flex-row em-flex-space-between em-w-100 ">
+          <span
+              id="section-title"
+              class="editable-data"
+              ref="sectionTitle"
+              contenteditable="true"
+              @focusout="updateTitle"
+          >
+            {{ section.label.fr }}
+          </span>
+          <span class="material-icons em-red-500-color em-pointer delete" @click="deleteSection">delete</span>
+        </div>
         <p id="section-intro"
           class="editable-data"
           ref="sectionIntro"
@@ -163,7 +166,11 @@ export  default {
     deleteElement(elementId) {
       delete this.section.elements[elementId];
       this.elements = this.elements.filter(element => element.id !== elementId);
-    }
+    },
+    deleteSection() {
+      formBuilderService.deleteGroup(this.section.group_id);
+      this.$emit('delete-section', this.section.group_id);
+    },
   },
   watch: {
     section: {

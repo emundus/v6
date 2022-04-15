@@ -16,7 +16,7 @@
       >
         {{ element.label.fr }}
       </span>
-      <span class="material-icons em-red-500-color em-pointer delete" @click="deleteElement">delete</span>
+      <span id="delete-element" class="material-icons em-red-500-color em-pointer" @click="deleteElement">delete</span>
     </div>
     <div class="element-field">
       <span v-html="element.element" :id="element.id">
@@ -38,8 +38,8 @@ export default {
   methods: {
     updateLabel()
     {
-        this.element.label.fr = this.$refs.label.innerText;
-        formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
+      this.element.label.fr = this.$refs.label.innerText;
+      formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
     },
     updateElement()
     {
@@ -65,11 +65,6 @@ export default {
   transition: 0.3s all;
   border: 1px solid white;
 
-  .delete {
-    display: none;
-    transition: 0.3s all;
-  }
-
   &.unpublished {
     opacity: 0.5;
   }
@@ -77,9 +72,14 @@ export default {
   &:hover {
     border: 1px solid black;
 
-    .delete {
+    #delete-element {
       display: block;
     }
+  }
+
+  #delete-element {
+    transition: 0.3s all;
+    display: none;
   }
 
   .element-field {

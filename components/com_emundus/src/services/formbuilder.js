@@ -351,5 +351,23 @@ export default {
                 message: e.message
             };
         }
+    },
+    deleteGroup(groupId) {
+        const formData = new FormData();
+        formData.append('gid', groupId);
+
+        try {
+            const response = client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=deleteGroup',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
     }
 };
