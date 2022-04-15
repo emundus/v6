@@ -21,7 +21,7 @@
           >
             {{ section.label.fr }}
           </span>
-          <span class="material-icons em-red-500-color em-pointer delete" @click="deleteSection">delete</span>
+          <span id="delete-section" class="material-icons em-red-500-color em-pointer delete" @click="deleteSection">delete</span>
         </div>
         <p id="section-intro"
           class="editable-data"
@@ -203,9 +203,26 @@ export  default {
       width: 100%;
       transition: all 0.3s ease-in-out;
 
+      &:hover {
+        #delete-section {
+          opacity: 1;
+          pointer-events: all;
+        }
+      }
+
       &.closed {
         max-height: 93px;
         overflow: hidden;
+
+        #section-intro {
+          display: none;
+        }
+      }
+
+      #delete-section {
+        opacity: 0;
+        pointer-events: none;
+        transition: all .3s;
       }
 
       #section-title {

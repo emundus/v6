@@ -74,12 +74,15 @@ export default {
 
     #delete-element {
       display: block;
+      opacity: 1;
+      pointer-events: all;
     }
   }
 
   #delete-element {
     transition: 0.3s all;
-    display: none;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .element-field {
