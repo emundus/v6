@@ -259,18 +259,21 @@ class UpdateCli extends JApplicationCli
 //        $dlid = trim($params->get('downloadid', ''));
 
 
-//        $app->input->set('installtype', 'url');
+        $app->input->set('installtype', 'url');
         $app->input->set('install_directory', JPATH_BASE . '/tmp');
         $app->input->set('max_upload_size', '10485760');
         # $version = '1.0.0';
 
-        if ($name == 'com_emundus') {
-            $app->input->set('install_url', 'http://localhost:81/emundus-updates/packages/com_emundus/com_emundus_1.0.0.zip');
-            $this->getInstall();
-
-        }
+//        if ($name == 'emundus') {
+//            $app->input->set('install_url', 'https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=i7VTEXny8EjpNjasHN28');
+//            $this->getInstall('com_emundus');
+//
+//        }
 
         switch ($name) {
+            case 'emundus':
+                $url = "https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=i7VTEXny8EjpNjasHN28";
+                break;
             case 'fabrik':
                 $url = "https://github.com/Fabrik/fabrik/archive/master.zip";
                 break;
@@ -326,12 +329,32 @@ class UpdateCli extends JApplicationCli
             // Unpack the downloaded package file.
             $package = JInstallerHelper::unpack($tmp_dest . '/' . $p_file, true);
 
-            $this->custom_copy($package['dir'] . '/administrator/', JPATH_ADMINISTRATOR);
-            $this->custom_copy($package['dir'] . '/components/', JPATH_BASE . '/components');
-            $this->custom_copy($package['dir'] . '/libraries/', JPATH_BASE . '/libraries');
-            $this->custom_copy($package['dir'] . '/media/', JPATH_BASE . '/media');
-            $this->custom_copy($package['dir'] . '/modules/', JPATH_BASE . '/modules');
-            $this->custom_copy($package['dir'] . '/plugins/', JPATH_BASE . '/plugins');
+
+            switch ($name) {
+                case 'emundus':
+                    $this->custom_copy($package['dir'] . '/administrator/', JPATH_ADMINISTRATOR);
+                    $this->custom_copy($package['dir'] . '/cli/', JPATH_BASE . '/cli');
+                    $this->custom_copy($package['dir'] . '/components/', JPATH_BASE . '/components');
+                    $this->custom_copy($package['dir'] . '/images/', JPATH_BASE . '/images');
+                    $this->custom_copy($package['dir'] . '/libraries/', JPATH_BASE . '/libraries');
+                    $this->custom_copy($package['dir'] . '/media/', JPATH_BASE . '/media');
+                    $this->custom_copy($package['dir'] . '/modules/', JPATH_BASE . '/modules');
+                    $this->custom_copy($package['dir'] . '/plugins/', JPATH_BASE . '/plugins');
+                    $this->custom_copy($package['dir'] . '/templates/', JPATH_BASE . '/templates');
+                    $this->custom_copy($package['dir'] . '/version.txt/', JPATH_ADMINISTRATOR . '/components/com_emundus' . '/version.txt');
+
+
+                    break;
+                case 'fabrik':
+                    $this->custom_copy($package['dir'] . '/administrator/', JPATH_ADMINISTRATOR);
+                    $this->custom_copy($package['dir'] . '/components/', JPATH_BASE . '/components');
+                    $this->custom_copy($package['dir'] . '/libraries/', JPATH_BASE . '/libraries');
+                    $this->custom_copy($package['dir'] . '/media/', JPATH_BASE . '/media');
+                    $this->custom_copy($package['dir'] . '/modules/', JPATH_BASE . '/modules');
+                    $this->custom_copy($package['dir'] . '/plugins/', JPATH_BASE . '/plugins');
+                    break;
+            }
+
 
             $discover->discover();
 
