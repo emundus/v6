@@ -9,11 +9,22 @@
         close
       </span>
     </div>
+    <ul id="properties-tabs" class="em-flex-row em-p-16">
+      <li
+          v-for="tab in tabs"
+          :key="tab.id"
+          :class="{ 'is-active': tab.active }"
+          @click="selectTab(tab)"
+      >
+        {{ translate(tab.label) }}
+      </li>
+    </ul>
     <div id="properties">
-      <!--<p class="em-p-16">{{ element.label.fr }}</p>-->
-      <div id="element-parameters" class="em-p-16">
-        <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_PARAMETERS") }}</p>
-
+      <div
+          v-if="tabs[0].active"
+          id="element-parameters"
+          class="em-p-16"
+      >
         <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <div class="em-toggle">
@@ -33,8 +44,10 @@
         </div>
 
       </div>
-      <hr/>
-      <div class="em-p-16">
+      <div
+          v-if="tabs[1].active"
+          class="em-p-16"
+      >
         <component
             :is="componentType"
             :element="element"
@@ -100,6 +113,18 @@ export default {
           "radiobutton",
           "databasejoin"
       ],
+      tabs: [
+        {
+          id: 0,
+          label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
+          active: true,
+        },
+        {
+          id: 1,
+          label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_PARAMETERS",
+          active: false,
+        }
+      ]
     };
   },
   mounted() {
@@ -136,6 +161,12 @@ export default {
         }
       });
     },
+    selectTab(tab) {
+      this.tabs.forEach(t => {
+        t.active = false;
+      });
+      tab.active = true;
+    },
   },
   computed: {
     componentType() {
@@ -158,5 +189,14 @@ export default {
 </script>
 
 <style lang="scss">
+#properties-tabs {
+  list-style-type: none;
+  margin: 0;
+  align-items: center;
+  justify-content: space-evenly;
 
+  .is-active {
+    border-bottom: 2px solid black;
+  }
+}
 </style>

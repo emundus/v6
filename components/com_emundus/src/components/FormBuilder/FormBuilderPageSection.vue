@@ -1,5 +1,5 @@
 <template>
-  <div id="form-builder-page-section">
+  <div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section">
     <div class="section-card em-flex-column">
       <div
           class="section-identifier em-bg-main-500 em-pointer"
@@ -184,7 +184,7 @@ export  default {
 </script>
 
 <style lang="scss">
-#form-builder-page-section {
+.form-builder-page-section {
   margin: 32px 0;
 
   .section-card {

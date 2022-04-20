@@ -1,6 +1,6 @@
 <template>
-  <div id="form-builder-documents" class="em-p-16">
-    <div id="form-builder-title" class="em-flex-row em-flex-space-between">
+  <div id="form-builder-documents">
+    <div id="form-builder-title" class="em-flex-row em-flex-space-between em-p-16">
       <span>Tous les documents</span>
       <span
            class="material-icons"
@@ -13,6 +13,7 @@
         v-for="document in documents"
         :key="document.id"
         @click="$emit('show-documents')"
+        class="em-p-16"
     >
       <p>{{ document.label }}</p>
     </div>
@@ -68,7 +69,6 @@ export default {
 
   p {
     cursor: pointer;
-    margin: 15px 0;
     font-weight: 400;
     font-size: 14px;
     line-height: 18px;
