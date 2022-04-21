@@ -38,6 +38,7 @@
 
 <script>
 import formBuilderService from '../../services/formbuilder';
+import formBuilderMixin from '../../mixins/formbuilder';
 import formService from '../../services/form';
 
 export default {
@@ -56,6 +57,7 @@ export default {
       required: true
     }
   },
+  mixins: [formBuilderMixin],
   data() {
     return {
       selectedPageSections: [],
@@ -82,6 +84,7 @@ export default {
         template: 0
       }).then(response => {
         this.$emit('add-page');
+        this.updateLastSave();
       });
     }
   },

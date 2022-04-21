@@ -27,13 +27,7 @@
           {{ title }}
         </span>
         <div class="left-actions em-flex-row em-flex-space-between">
-          <span class="material-icons">
-            save
-          </span>
-          <span>&#124;</span>
-          <span class="material-icons">
-            visibility
-          </span>
+          <p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">{{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}</p>
           <button class="em-primary-button publish">{{ translate("COM_EMUNDUS_FORM_BUILDER_PUBLISH") }}</button>
         </div>
       </header>
@@ -52,7 +46,6 @@
           <div class="tab-content em-flex-start">
             <form-builder-elements
                 v-if="leftPanelActiveTab === 'Elements'"
-                @drag-end="onDragElementEnd"
                 @element-created="onElementCreated"
             ></form-builder-elements>
           </div>
@@ -146,6 +139,7 @@ export default {
       selectedPage: 0,
       selectedElement: null,
       showInRightPanel: 'hierarchy',
+      lastSave: null,
       leftPanel: {
         tabs: [
           {
@@ -253,6 +247,14 @@ export default {
     leftPanelActiveTab() {
       return this.leftPanel.tabs.find(tab => tab.active).title;
     }
+  },
+  watch: {
+    "$store.state.formBuilder.lastSave": {
+      handler(newValue) {
+        this.lastSave = newValue;
+      },
+      deep: true
+    },
   }
 }
 </script>
@@ -273,6 +275,10 @@ export default {
     button {
       margin: 8px 16px;
       height: 32px;
+    }
+
+    #saved-at {
+      white-space: nowrap;
     }
   }
 

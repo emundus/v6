@@ -29,11 +29,13 @@
 import draggable from "vuedraggable";
 
 import formBuilderService from "../../services/formbuilder";
+import formBuilderMixin from "../../mixins/formbuilder";
 
 export default {
   components: {
     draggable
   },
+  mixins: [formBuilderMixin],
   data() {
     return {
       elements: [],
@@ -66,6 +68,7 @@ export default {
         plugin: this.cloneElement.value,
       }).then(response => {
         this.$emit('element-created');
+        this.updateLastSave();
       });
     },
   },

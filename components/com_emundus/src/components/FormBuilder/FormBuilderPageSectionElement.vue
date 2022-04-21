@@ -27,6 +27,7 @@
 
 <script>
 import formBuilderService from '../../services/formbuilder';
+import formBuilderMixin from "../../mixins/formbuilder";
 
 export default {
   props: {
@@ -35,19 +36,23 @@ export default {
       default: {}
     },
   },
+  mixins: [formBuilderMixin],
   methods: {
     updateLabel()
     {
       this.element.label.fr = this.$refs.label.innerText;
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
+      this.updateLastSave();
     },
     updateElement()
     {
       formBuilderService.updateParams(this.element);
+      this.updateLastSave();
     },
     deleteElement() {
       formBuilderService.deleteElement(this.element.id);
       this.$emit('delete-element', this.element.id);
+      this.updateLastSave();
     },
   }
 }

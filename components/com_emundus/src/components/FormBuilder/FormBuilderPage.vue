@@ -46,6 +46,7 @@ import formService from '../../services/form';
 import formBuilderService from '../../services/formbuilder';
 
 import FormBuilderPageSection from "./FormBuilderPageSection";
+import formBuilderMixin from "../../mixins/formbuilder";
 
 export default {
   components: {
@@ -61,6 +62,7 @@ export default {
       default: {}
     },
   },
+  mixins: [formBuilderMixin],
   data() {
     return {
       fabrikPage: {},
@@ -90,6 +92,7 @@ export default {
       formBuilderService.createSimpleGroup(this.page.id, 'Nouvelle section').then(response => {
         if (response.status) {
           this.getSections();
+          this.updateLastSave();
         }
       });
     },
@@ -102,6 +105,7 @@ export default {
             page: this.page.id,
             new_title: this.$refs.pageTitle.innerText
           });
+          this.updateLastSave();
         }
       });
     },
@@ -109,6 +113,7 @@ export default {
     {
       this.fabrikPage.intro.fr = this.$refs.pageDescription.innerText;
       formBuilderService.updateTranslation(null, this.fabrikPage.intro_raw, this.fabrikPage.intro);
+      this.updateLastSave();
     },
     updateElementsOrder(event, fromGroup, toGroup) {
       const sectionFrom = this.sections.find(section => section.group_id === fromGroup);
@@ -120,10 +125,12 @@ export default {
 
       if (movedElement.id) {
         formBuilderService.updateOrder(toElements, toGroup, movedElement);
+        this.updateLastSave();
       }
     },
     deleteSection(sectionId) {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);
+      this.updateLastSave();
     }
   },
 }

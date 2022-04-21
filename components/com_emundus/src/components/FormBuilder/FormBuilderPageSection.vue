@@ -86,6 +86,7 @@
 
 <script>
 import formBuilderService from '../../services/formbuilder';
+import formBuilderMixin from "../../mixins/formbuilder";
 
 import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement";
 import draggable from "vuedraggable";
@@ -117,6 +118,7 @@ export  default {
       default: 0
     },
   },
+  mixins: [formBuilderMixin],
   data() {
     return {
       closedSection: false,
@@ -143,12 +145,14 @@ export  default {
         value: this.section.group_id,
         key: 'group'
       }, this.section.group_tag, this.section.label);
+      this.updateLastSave();
     },
     updateIntro() {
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
       formBuilderService.updateGroupParams(this.section.group_id, {
         'intro': this.section.group_intro
       });
+      this.updateLastSave();
     },
     onDragEnd(e) {
       const toGroup = e.to.getAttribute('data-sid');
@@ -159,6 +163,7 @@ export  default {
         });
         const movedElement = this.elements[e.newIndex];
         formBuilderService.updateOrder(elements, this.section.group_id, movedElement);
+        this.updateLastSave();
       } else {
         this.$emit('move-element', e, this.section.group_id, toGroup);
       }
@@ -166,10 +171,12 @@ export  default {
     deleteElement(elementId) {
       delete this.section.elements[elementId];
       this.elements = this.elements.filter(element => element.id !== elementId);
+      this.updateLastSave();
     },
     deleteSection() {
       formBuilderService.deleteGroup(this.section.group_id);
       this.$emit('delete-section', this.section.group_id);
+      this.updateLastSave();
     },
   },
   watch: {
