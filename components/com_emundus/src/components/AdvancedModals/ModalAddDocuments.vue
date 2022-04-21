@@ -258,8 +258,6 @@ export default {
           title: this.translate("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
-
-
       ],
 
       selectedTypes: [],

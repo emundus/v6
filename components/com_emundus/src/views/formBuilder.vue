@@ -96,7 +96,11 @@
                 :element="selectedElement"
                 :profile_id="profile_id"
             ></form-builder-element-properties>
-            <form-builder-create-document v-if="showInRightPanel == 'create-document'">
+            <form-builder-create-document
+                @close="onCloseCreateDocument"
+                v-if="showInRightPanel == 'create-document'"
+                :profile_id="profile_id"
+            >
             </form-builder-create-document>
           </transition>
         </aside>
@@ -201,6 +205,10 @@ export default {
       this.selectedElement = event;
       this.showInRightPanel = 'element-properties';
     },
+    onCloseCreateDocument()
+    {
+      this.showInRightPanel = 'hierarchy';
+    },
     onCloseElementProperties()
     {
       this.selectedElement = null;
@@ -211,7 +219,7 @@ export default {
     {
       console.log('open create document');
       this.showInRightPanel = 'create-document';
-      this.setSectionShown('document');
+      this.setSectionShown('documents');
     },
     selectTab(index) {
       // unset selected tab
