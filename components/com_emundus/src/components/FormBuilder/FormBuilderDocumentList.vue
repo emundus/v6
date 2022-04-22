@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-document-list">
     <div id="required-documents" class="em-w-100 em-mb-32 em-mt-32">
-      <p>{{ translate('REQUIRED_DOCUMENTS') }}</p>
+      <p class="em-font-size-24 em-font-weight-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_REQUIRED_DOCUMENTS') }}</p>
       <form-builder-document-list-element
           v-for="(document, index) in requiredDocuments"
           :key="'required-' + document.id"
@@ -13,7 +13,7 @@
       </form-builder-document-list-element>
     </div>
     <div id="optional-documents" class="em-w-100 em-mb-32 em-mt-32">
-      <p>{{ translate('OPTIONAL_DOCUMENTS') }}</p>
+      <p class="em-font-size-24 em-font-weight-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
       <form-builder-document-list-element
           v-for="(document, index) in optionalDocuments"
           :key="'optional-' + document.id"
@@ -24,7 +24,7 @@
       >
       </form-builder-document-list-element>
     </div>
-    <button class="em-secondary-button" @click="addDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT') }}</button>
+    <button id="add-document" class="em-secondary-button" @click="addDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT') }}</button>
   </div>
 </template>
 
@@ -85,5 +85,12 @@ export default {
 #form-builder-document-list {
   width: calc(100% - 80px);
   margin: 40px 40px;
+
+  #add-document {
+    width: fit-content;
+    padding: 24px;
+    margin: auto;
+    background-color: #fff;
+  }
 }
 </style>

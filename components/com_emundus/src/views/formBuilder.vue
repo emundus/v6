@@ -18,16 +18,22 @@
             navigate_before
           </span>
         </div>
-        <span
-            class="em-h4 editable-data"
-            contenteditable="true"
-            ref="formTitle"
-            @focusout="updateFormTitle"
-        >
-          {{ title }}
-        </span>
+          <span
+              class="em-font-size-14  em-font-weight-600 editable-data"
+              contenteditable="true"
+              ref="formTitle"
+              @focusout="updateFormTitle"
+          >
+            {{ title }}
+          </span>
         <div class="left-actions em-flex-row em-flex-space-between">
-          <p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">{{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}</p>
+          <p
+              v-if="lastSave"
+              id="saved-at"
+              class="em-font-size-14 em-main-500-color"
+          >
+            {{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}
+          </p>
           <button class="em-primary-button publish">{{ translate("COM_EMUNDUS_FORM_BUILDER_PUBLISH") }}</button>
         </div>
       </header>

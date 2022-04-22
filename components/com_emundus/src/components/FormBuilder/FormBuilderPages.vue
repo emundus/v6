@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-pages">
     <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between em-p-16">
-      <span>Toutes les pages</span>
+      <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
       <span
           class="material-icons"
           @click="addPage"
@@ -10,7 +10,7 @@
       </span>
     </p>
     <div
-        class="em-p-16"
+        class="em-p-16 em-font-weight-500"
         v-for="page in pages"
         :key="page.id"
         :class="{
@@ -110,8 +110,11 @@ export default {
     }
   }
 
-  p.selected {
-    color: var(--success-color);
+  .selected {
+    background: #f8f8f8;
+    p {
+      font-weight: 600;
+    }
   }
 
   #form-builder-pages-sections-list {

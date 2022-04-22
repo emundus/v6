@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-page">
     <span
-        class="em-h3 editable-data"
+        class="em-font-size-24 em-font-weight-800 editable-data"
         ref="pageTitle"
         @focusout="updateTitle"
         contenteditable="true"
@@ -37,7 +37,7 @@
         id="add-section"
         class="em-secondary-button"
         @click="addSection()"
-    > Ajouter une section </button>
+    > {{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }} </button>
   </div>
 </template>
 

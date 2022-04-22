@@ -865,6 +865,18 @@ input:focus + .em-slider {
   font-weight: bold;
 }
 
+.em-font-weight-500 {
+  font-weight: 500;
+}
+
+.em-font-weight-600 {
+  font-weight: 600;
+}
+
+.em-font-weight-800{
+  font-weight: 800;
+}
+
 @supports (background-clip: text) {
   .em-gradient-icons {
     background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
