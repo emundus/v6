@@ -9,6 +9,7 @@
           :documentIndex="index + 1"
           :totalDocuments="requiredDocuments.length"
           @edit-document="editDocument(document)"
+          @delete-document="getDocuments"
       >
       </form-builder-document-list-element>
     </div>
@@ -21,6 +22,7 @@
           :documentIndex="index + 1"
           :totalDocuments="optionalDocuments.length"
           @edit-document="editDocument(document)"
+          @delete-document="getDocuments"
       >
       </form-builder-document-list-element>
     </div>

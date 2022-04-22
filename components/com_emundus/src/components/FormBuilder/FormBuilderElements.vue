@@ -16,7 +16,7 @@
             class="form-builder-element em-flex-row em-flex-space-between"
         >
           <span class="material-icons">{{ element.icon }}</span>
-          <span>{{ translate(element.name) }}</span>
+          <span class="em-w-100 em-p-16">{{ translate(element.name) }}</span>
           <span class="material-icons"> drag_indicator</span>
         </div>
       </transition-group>

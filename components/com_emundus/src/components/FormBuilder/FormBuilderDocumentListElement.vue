@@ -1,6 +1,6 @@
 <template>
   <div id="form-builder-document-list-element"
-    @click="$emit('edit-document')"
+    @click="editDocument"
   >
     <div class="section-card em-mt-32 em-mb-32 em-w-100 em-flex-column">
       <div class="section-identifier em-bg-main-500 em-pointer">
@@ -13,7 +13,10 @@
           }"
       >
         <div v-if="documentData.id">
-          <span class="section-title">{{ documentData.name.fr }}</span>
+          <div class="em-w-100 em-flex-row em-flex-space-between">
+            <span class="section-title">{{ documentData.name.fr }}</span>
+            <span id="delete-section" class="material-icons em-red-500-color em-pointer delete" @click="deleteDocument">delete</span>
+          </div>
           <p> {{ documentData.description.fr }} </p>
           <p>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_TYPES') }} : {{ documentData.allowed_types }}</p>
           <p>{{ translate('COM_EMUNDUS_FORM_BUILDER_MAX_DOCUMENTS') }} : {{ documentData.nbmax }}</p>
@@ -69,6 +72,20 @@ export default {
           }
         });
       }
+    },
+    editDocument(event) {
+      if (event.target.id === 'delete-section') {
+        return;
+      }
+
+      this.$emit('edit-document');
+    },
+    deleteDocument(event) {
+      event.preventDefault();
+      formService.removeDocumentFromProfile(this.document.id).then(response => {
+        this.$emit('delete-document', this.document.id);
+        this.$destroy();
+      });
     },
   },
 }
