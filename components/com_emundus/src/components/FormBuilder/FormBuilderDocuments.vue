@@ -42,11 +42,19 @@ export default {
   },
   created () {
     this.getDocuments();
+    if (this.$store.getters['formBuilder/getDocumentModels'].length === 0) {
+      this.getDocumentModels();
+    }
   },
   methods: {
     getDocuments () {
       formService.getDocuments(this.profile_id).then(response => {
         this.documents = response.data.data;
+      });
+    },
+    getDocumentModels () {
+      formService.getDocumentModels().then(response => {
+        this.$store.dispatch('formBuilder/updateDocumentModels', response.data);
       });
     },
     createDocument() {

@@ -56,13 +56,19 @@ export default {
   },
   methods: {
     getDocumentModel(documentId = null) {
-      formService.getDocumentModels(documentId).then(response => {
-        if (response.status) {
-          this.documentData = response.data;
-        } else {
-          this.documentData = {};
-        }
-      });
+      this.models = this.$store.getters['formBuilder/getDocumentModels'];
+
+      if (this.models.length > 0) {
+        this.documentData = this.models.find(model => model.id === documentId);
+      } else {
+        formService.getDocumentModels(documentId).then(response => {
+          if (response.status) {
+            this.documentData = response.data;
+          } else {
+            this.documentData = {};
+          }
+        });
+      }
     },
   },
 }
