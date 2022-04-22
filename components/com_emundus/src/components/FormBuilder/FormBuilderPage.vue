@@ -85,6 +85,15 @@ export default {
           this.title = this.fabrikPage.show_title.label.fr;
           this.description = response.data.intro.fr;
           this.sections = Object.values(response.data.Groups);
+
+          this.getDescription();
+        }
+      });
+    },
+    getDescription() {
+      formBuilderService.getAllTranslations(this.fabrikPage.intro_raw).then(response => {
+        if (response.status) {
+          this.description = response.data.fr;
         }
       });
     },

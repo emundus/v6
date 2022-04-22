@@ -9,11 +9,12 @@
         close
       </span>
     </div>
-    <ul id="properties-tabs" class="em-flex-row em-p-16">
+    <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">
       <li
           v-for="tab in tabs"
           :key="tab.id"
           :class="{ 'is-active': tab.active }"
+          class="em-p-16 em-pointer"
           @click="selectTab(tab)"
       >
         {{ translate(tab.label) }}
@@ -191,12 +192,19 @@ export default {
 <style lang="scss">
 #properties-tabs {
   list-style-type: none;
-  margin: 0;
+  margin: auto;
   align-items: center;
-  justify-content: space-evenly;
 
-  .is-active {
-    border-bottom: 2px solid black;
+  li {
+    text-align: center;
+    width: 50%;
+    border-bottom: 2px solid transparent;
+    transition: all .3s;
+
+    &.is-active {
+      border-bottom: 2px solid black;
+    }
   }
+
 }
 </style>
