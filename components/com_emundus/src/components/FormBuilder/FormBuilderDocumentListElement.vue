@@ -1,5 +1,7 @@
 <template>
-  <div id="form-builder-document-list-element">
+  <div id="form-builder-document-list-element"
+    @click="$emit('edit-document')"
+  >
     <div class="section-card em-mt-32 em-mb-32 em-w-100 em-flex-column">
       <div class="section-identifier em-bg-main-500 em-pointer">
         Document {{ documentIndex }} / {{ totalDocuments }}

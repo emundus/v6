@@ -9,26 +9,27 @@
         close
       </span>
     </div>
-    <form class="em-p-16">
+    <div class="em-p-16">
       <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_MODEL") }}</label>
-      <select id="document-model" @select="selectModel">
-        <option v-for="(document, index) in models" :value="document.id">{{ document.name.fr }}</option>
+      <select id="document-model" @change="selectModel" v-if="current_document === null">
+        <option value="none"></option>
+        <option v-for="(model, index) in models" :value="model.id">{{ model.name.fr }}</option>
       </select>
 
       <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_REQUIRED") }}</label>
       <div class="em-toggle">
-        <input type="checkbox" class="em-toggle-check" v-model="selectedDocument.mandatory" @click="selectedDocument.mandatory != selectedDocument.mandatory">
+        <input type="checkbox" class="em-toggle-check" v-model="document.mandatory" @click="document.mandatory != document.mandatory">
         <strong class="b em-toggle-switch"></strong>
         <strong class="b em-toggle-track"></strong>
       </div>
 
       <label for="title">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
-      <input type="text" id="title" v-model="selectedDocument.name.fr">
+      <input type="text" id="title" v-model="document.name.fr">
 
       <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION") }}</label>
       <editor
-          v-model="selectedDocument.description.fr"
-          :text="selectedDocument.description.fr"
+          v-model="document.description.fr"
+          :text="document.description.fr"
           :lang="'fr'"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION_PLACEHOLDER')"
           :id="'editor'"
@@ -36,7 +37,7 @@
       ></editor>
 
       <label for="nbmax">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NBMAX") }}</label>
-      <input type="number" id="nbmax" v-model="selectedDocument.nbmax">
+      <input type="number" id="nbmax" v-model="document.nbmax">
 
       <label>{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
       <!-- checkboxes from filetypes -->
@@ -49,14 +50,12 @@
             name="filetypes"
             :id="filetype.value"
             :value="filetype.value"
-            v-model="selectedDocument.selectedTypes"
+            @change="checkFileType"
         >
-        <label :for="filetype.value"> {{ translate(filetype.title) }} </label>
-
+        <label :for="filetype.value"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
       </div>
-
-      <input type="submit" @submit="updateDocument">
-    </form>
+      <button class="em-primary-button"  @click="updateDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT') }}</button>
+    </div>
   </div>
 </template>
 
@@ -72,22 +71,37 @@ export default {
       type: Number,
       required: true
     },
+    current_document: {
+      type: Object,
+      default: null
+    }
   },
   components: {
     editor
   },
   data() {
     return {
-      selectedDocument: {
+      models: [],
+      document: {
         mandatory: true,
         nbmax: 1,
         description: {
-          fr: ''
+          fr: '',
+          en: ''
         },
         name: {
-          fr: ''
+          fr: '',
+          en: ''
         },
-        selectedTypes: [],
+        selectedTypes: {},
+        minResolution: {
+          width: 0,
+          height: 0
+        },
+        maxResolution: {
+          width: 0,
+          height: 0
+        }
       },
       fileTypes: [],
     };
@@ -101,37 +115,74 @@ export default {
       formService.getDocumentModels().then(response => {
         if (response.status) {
           this.models = response.data;
+
+          if (this.current_document) {
+            this.selectModel({
+              target: {
+                value: this.current_document.docid
+              }
+            });
+          }
         }
       });
     },
     getFileTypes() {
       this.fileTypes = require('../../data/form-builder-filetypes.json');
       this.fileTypes.forEach(filetype => {
-        this.selectedDocument.selectedTypes[filetype.value] = false;
+        this.document.selectedTypes[filetype.value] = false;
       });
     },
+    checkFileType(event) {
+      this.document.selectedTypes[event.target.value] = event.target.checked;
+    },
     selectModel(event) {
-      let model = this.models.find(model => model.id == event.target.value);
-      this.title = model.name.fr;
-      this.description = model.description.fr;
-      this.maxFiles = model.nbmax;
-      this.required = model.required;
+      if (event.target.value !== 'none') {
+        const model = this.models.find(model => model.id == event.target.value);
+        this.document.mandatory = model.mandatory;
+        this.document.nbmax = model.nbmax;
+        this.document.description = model.description;
+        this.document.name = model.name;
+      }
     },
     updateDocument()
     {
-      const data = {
-        document: this.selectedDocument,
-        types: this.selectedFileTypes,
-        pid: this.profile_id,
-        did: 1,
-        isModeleAndUpdate: false
-      };
-
-      campaignService.updateDocument(data).then(response => {
-        if (response.status) {
-
+      const create = this.current_document ? false : true;
+      const types = [];
+      Object.entries(this.document.selectedTypes).forEach(([key, value]) => {
+        if (value) {
+          types.push(key);
         }
       });
+
+      const data = {
+        document: JSON.stringify(this.document),
+        types: JSON.stringify(types),
+        pid: this.profile_id,
+        isModeleAndUpdate: true
+      };
+
+      if (this.current_document !== null) {
+        data.did = this.current_document.docid;
+      }
+
+      campaignService.updateDocument(data, create).then(response => {
+        if (response.status) {
+          this.$emit('documents-updated');
+        } else {
+          this.$emit('close');
+        }
+      });
+    }
+  },
+  watch: {
+    current_document(newValue) {
+      if (newValue) {
+        this.selectModel({
+          target: {
+            value: newValue.docid
+          }
+        });
+      }
     }
   }
 }

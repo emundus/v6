@@ -8,6 +8,7 @@
           :document="document"
           :documentIndex="index + 1"
           :totalDocuments="requiredDocuments.length"
+          @edit-document="editDocument(document)"
       >
       </form-builder-document-list-element>
     </div>
@@ -19,9 +20,11 @@
           :document="document"
           :documentIndex="index + 1"
           :totalDocuments="optionalDocuments.length"
+          @edit-document="editDocument(document)"
       >
       </form-builder-document-list-element>
     </div>
+    <button class="em-secondary-button" @click="addDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT') }}</button>
   </div>
 </template>
 
@@ -59,6 +62,12 @@ export default {
       formService.getDocuments(this.profile_id).then(response => {
         this.documents = response.data.data;
       });
+    },
+    addDocument () {
+      this.$emit('add-document');
+    },
+    editDocument (document) {
+      this.$emit('edit-document', document);
     },
   },
   computed: {

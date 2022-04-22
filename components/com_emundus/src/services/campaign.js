@@ -1,15 +1,17 @@
 import client from './axiosClient';
 
 export default {
-    async updateDocument(params) {
+    async updateDocument(params, create = false) {
         const formData = new FormData();
         Object.keys(params).forEach(key => {
             formData.append(key, params[key]);
         });
 
+        const task = create ? 'createdocument' : 'updatedocument';
+
         try {
             const response = await client().post(
-                'index.php?option=com_emundus&controller=campaign&task=updatedocument',
+                'index.php?option=com_emundus&controller=campaign&task=' + task,
                 formData
             );
             

@@ -65,6 +65,8 @@
               v-if="showInSection == 'documents'"
               :profile_id="profile_id"
               :campaign_id="campaign_id"
+              @add-document="onOpenCreateDocument"
+              @edit-document="onEditDocument"
             >
             </form-builder-document-list>
           </transition>
@@ -97,9 +99,11 @@
                 :profile_id="profile_id"
             ></form-builder-element-properties>
             <form-builder-create-document
-                @close="onCloseCreateDocument"
                 v-if="showInRightPanel == 'create-document'"
                 :profile_id="profile_id"
+                :current_document="selectedDocument ? selectedDocument : null"
+                @close="onCloseCreateDocument"
+                @documents-updated="onCloseCreateDocument"
             >
             </form-builder-create-document>
           </transition>
@@ -142,6 +146,7 @@ export default {
       showInSection: 'page',
       selectedPage: 0,
       selectedElement: null,
+      selectedDocument: null,
       showInRightPanel: 'hierarchy',
       lastSave: null,
       leftPanel: {
@@ -217,7 +222,13 @@ export default {
     },
     onOpenCreateDocument()
     {
-      console.log('open create document');
+      this.selectedDocument = null;
+      this.showInRightPanel = 'create-document';
+      this.setSectionShown('documents');
+    },
+    onEditDocument(document)
+    {
+      this.selectedDocument = document;
       this.showInRightPanel = 'create-document';
       this.setSectionShown('documents');
     },

@@ -522,8 +522,12 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $document = $jinput->getRaw('document');
-            $types = $jinput->getRaw('types');
+            $document = $jinput->getString('document');
+            $document = json_decode($document, true);
+
+            $types = $jinput->getString('types');
+            $types = json_decode($types, true);
+
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
 
@@ -552,21 +556,30 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $document = $jinput->getRaw('document');
-            $types = $jinput->getRaw('types');
+            $document = $jinput->getString('document');
+            $document = json_decode($document, true);
+
+            $types = $jinput->getString('types');
+            $types = json_decode($types, true);
+
             $isModeleAndUpdate=$jinput->get('isModeleAndUpdate');
             $did = $jinput->getInt('did');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
 
-            $result = $this->m_campaign->updateDocument($document,$types,$did,$pid,$isModeleAndUpdate);
+            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => '');
 
-            if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+            if (!empty($document)) {
+                $result = $this->m_campaign->updateDocument($document,$types,$did,$pid,$isModeleAndUpdate);
+
+                $tab['data'] = $result;
+                if ($result) {
+                    $tab['status'] = 1;
+                    $tab['msg'] = JText::_('DOCUMENT_UPDATED');
+                }
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
