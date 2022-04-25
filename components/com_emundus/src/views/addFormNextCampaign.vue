@@ -113,6 +113,7 @@ import addEmail from "@/components/FunnelFormulaire/addEmail";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
 import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
 import {global} from "../store/global";
+import Swal from "sweetalert2";
 
 const qs = require("qs");
 
@@ -307,8 +308,31 @@ export default {
     },
 
     changeToCampMenu(index) {
-      this.menuHighlight = index;
-      this.menuHighlightProg = -1;
+      if (this.formCategories[this.menuHighlight] == "COM_EMUNDUS_GLOBAL_INFORMATIONS" && this.$store.getters['campaign/unsavedChanges'] === true) {
+        // check if there are unsaved changes
+        Swal.fire({
+          title: this.translate("COM_EMUNDUS_CAMPAIGN_UNSAVED_CHANGES"),
+          type: "warning",
+            showCancelButton: true,
+            confirmButtonText: this.translate("JYES"),
+            cancelButtonText: this.translate("JNO"),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              cancelButton: 'em-swal-cancel-button',
+              confirmButton: 'em-swal-confirm-button',
+            }
+        }).then(result => {
+          if (result.value) {
+            this.menuHighlight = index;
+            this.menuHighlightProg = -1;
+            this.$store.dispatch("campaign/setUnsavedChanges", false);
+          }
+        });
+      } else {
+        this.menuHighlight = index;
+        this.menuHighlightProg = -1;
+      }
     },
 
     setProfileId(prid) {
