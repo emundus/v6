@@ -4,7 +4,7 @@
       <div
           class="section-identifier em-bg-main-500 em-pointer"
           @click="closedSection = !closedSection"
-      >Section {{ index }} / {{ totalSections }}</div>
+      > {{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} / {{ totalSections }}</div>
       <div
           class="section-content"
           :class="{
