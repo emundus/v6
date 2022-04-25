@@ -368,3 +368,393 @@ VALUES (1038, 364, 'Politique de confidentialité des données', 'politique-de-c
 <p>Ce site web respecte votre choix.</p>
 <p> </p>
 <p> </p>', '', 1, 113, '2022-03-09 15:25:10', 62, '', '2022-03-09 15:25:10', 0, 0, '2022-03-09 15:25:10', '2021-06-02 13:00:23', '2099-03-09 15:25:10', '{}', '{}', '{"article_layout":"","show_title":"","link_titles":"","show_intro":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","alternative_readmore":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 1, 0, '', '', 1, 2, '{}', 0, '*', '', '');
+
+
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1038, 'content', 'title', 'Data Privacy Policy', 'c9f73374e4b0ced357e53518154a654d', '', '2022-04-25 08:27:02', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1038, 'content', 'alias', 'politique-de-confidentialite-des-donnees', '6a59c82785a5cfc2514541151d7af4da', '', '2022-04-25 08:27:02', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1038, 'content', 'introtext', '<p><strong> </strong></p>
+<p> </p>
+<p><strong>Preamble</strong></p>
+<p> </p>
+<p><span style="color: #ff0000;">[COMPANY NAME]</span> undertakes to ensure that the processing of personal data carried out on <span style="color: #ff0000;">[CUSTOMER WEBSITE ADDRESS]</span> complies with the General Data Protection Regulation (GDPR) and the French Data Protection Act.</p>
+<p>This data protection policy applies to the processing of data carried out via the website <span style="color: #ff0000;">[CUSTOMER SITE ADDRESS]</span>.<br /><br />It informs you about the purposes of the processing carried out, the legal basis for the processing, the recipients of the data as well as their retention period, the security measures, the possible existence of data transfers outside the European Union or automated decision making, the use and management of cookies, your computer rights and freedoms and the way to exercise them.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p><strong>Who is the data controller of this website?</strong></p>
+<p> </p>
+<p>The person responsible for the data processing carried out by the website <span style="color: #ff0000;">[CUSTOMER WEBSITE ADDRESS]</span> is the company <span style="color: #ff0000;">[CUSTOMER COMPANY NAME]</span>, located at <span style="color: #ff0000;">[CUSTOMER''S HEAD OFFICE ADDRESS]</span>.</p>
+<p>To learn more, see the <a href="mentions-légales">legal notice.</a></p>
+<p> </p>
+<p> </p>
+<p><strong>Does this site collect personal data?</strong></p>
+<p> </p>
+<p>According to article 4.1 of the RGPD, personal data is any information that allows you to be identified either directly or indirectly. This site collects personal data via its various contact forms. The personal data are freely communicated to <span style="color: #ff0000;">[COMPANY NAME CUSTOMER]</span> by the persons concerned by consenting to the processing and by taking note of the information displayed under the various contact forms. The data collected is adequate, useful, necessary and limited to the strict minimum.<br /><br /></p>
+<p>These include data:</p>
+<p><span style="color: #ff0000;">[QUALIFY THE DATA COLLECTED (E.G. IDENTIFICATION DATA)]</span></p>
+<p> </p>
+<p> </p>
+<p><strong>What are the purposes of data collection?</strong></p>
+<p> </p>
+<p>The processing of personal data collected through the various contact forms on the website has the following purposes:</p>
+<p> </p>
+<table>
+<tbody>
+<tr>
+<td style="background: #ccc;" width="302">
+<p><strong>Why do we process your Personal Information?</strong></p>
+</td>
+<td style="background: #ccc;" width="302">
+<p><strong>What data do we collect?</strong></p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p><span style="color: #ff0000;"><span style="color: #000000;">For the</span> [TO BE COMPLETED BY CUSTOMER]<span style="color: #000000;"> form</span></span></p>
+</td>
+<td width="302">
+<p>Example: Your identification data such as: name, first name,...</p>
+<p><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></p>
+</td>
+<td width="302">
+<p><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></p>
+</td>
+<td width="302">
+<p><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<p> </p>
+<p> </p>
+<p><strong>What are the purposes of data collection?</strong></p>
+<p> </p>
+<p>The personal data collected through the various contact forms on the website are used for the following purposes :</p>
+<ul>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+</ul>
+<p> </p>
+<p> </p>
+<p><strong>What is the legal basis for the processing done by this site?</strong></p>
+<p> </p>
+<p>The processing of your personal data by <span style="color: #ff0000;">[COMPANY NAME CUSTOMER]</span> is based :</p>
+<ul>
+<li>Or on your consent for all cases where you entrust your personal data yourself. Your consent can be withdrawn at any time.</li>
+<li>Or on legitimate interests pursued by <span style="color: #ff0000;">[COMPANY NAME CUSTOMER]</span>.</li>
+<li>Or on the respect of a legal obligation in particular as regards the exercise of your rights under the RGPD and the Data-processing law and Freedoms.</li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+</ul>
+<p> </p>
+<p> </p>
+<p><strong>Who are the recipients of the data processed by this site?</strong></p>
+<p> </p>
+<p>Your personal data is primarily intended for <span style="color: #ff0000;">[CUSTOMER''S BUSINESS NAME]</span>, <span style="color: #ff0000;">[CUSTOMER''S ACTIVITY]</span>. They are processed by the staff of the various departments concerned by your requests.</p>
+<p>They are processed solely for the purposes indicated above. Your personal data is hosted exclusively in France by a subcontractor of our Service Provider (within the meaning of Article 4.8 of the RGPD) in a strictly controlled manner. They are never communicated to third parties for commercial purposes.</p>
+<p> </p>
+<p> </p>
+<p><strong>Is personal data transferred outside the European Union?</strong></p>
+<p> </p>
+<p>Personal data collected by this website is not transferred to actors located outside the European Union. In case of contractual transfer of personal data, <span style="color: #ff0000;">[COMPANY NAME]</span> ensures that the recipients are based in the European Union.</p>
+<p> </p>
+<p> </p>
+<p><strong>How is the personal data processed by this site secured?</strong></p>
+<p> </p>
+<p><span style="color: #ff0000;">[CUSTOMER COMPANY NAME]</span> is committed to protecting personal data processed within the framework of this site, in accordance with the state of the art.</p>
+<p>The following are the main security measures to protect your personal data:</p>
+<ul>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+<li><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></li>
+</ul>
+<p> </p>
+<p> </p>
+<p><strong>How long will personal data processed by this site be kept?</strong></p>
+<p> </p>
+<p><span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></p>
+<p><strong> </strong></p>
+<p> </p>
+<p><strong>Does this site use cookies?</strong></p>
+<p> </p>
+<p>When you visit this site, one (1) session cookie is placed on your computer, tablet or ordiphone.<br /><br />This cookie allows the proper functioning of the site and greatly improves your user experience.</p>
+<p> </p>
+<p>This cookie is only used to assign a specific session to the user. A major advantage of the session ID is that if you open multiple windows of the same web page, they are assigned to a single session.<br /><br /><br />This makes it possible to launch several requests at the same time without losing important personal information.<br /><br /><br />The session cookie is therefore used to store information about the current session.<br /><br /><br />Other information, such as login data or previously completed online forms, is also retained during the session.<br /><br /><br />However, if you end your browsing session, the session ID and all other stored data will be deleted. This means that when you open the same web page in a new browser window, you will be considered a new visitor.</p>
+<p> </p>
+<p>For more information on cookies, you can visit our <a href="gestion-des-cookies">cookie use policy</a> or go to <a href="https://www.cnil.fr/">the site of the CNIL</a>.</p>
+<p> </p>
+<p> </p>
+<p><strong>Can I object to these cookies?</strong></p>
+<p> </p>
+<p>Yes, and in several ways. If you do not want this website to place cookies on your computer, you can block them:</p>
+<p> </p>
+<ul>
+<li>by using a browser that, by default, refuses cookies;</li>
+<li>by configuring your browser appropriately or by installing an additional component on your browser, specifically designed for cookie management;</li>
+</ul>
+<p> </p>
+<p>This website respects your choice.</p>
+<p> </p>
+<p> </p>', '55af10d363fc6bb7792941f294d357d7', '', '2022-04-25 08:27:02', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1038, 'content', 'fulltext', '', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:27:02', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1038, 'content', 'attribs', '{"article_layout":"","show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","info_block_show_title":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_associations":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_page_title":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 'a1a897c2b5d99df129961a64458fb0c3', '', '2022-04-25 08:27:02', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1038, 'content', 'com_fields', '{"params":""}', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:27:02', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1037, 'content', 'title', 'Managing your rights', 'c9998406b1b5812bcac9b0000f115691', '', '2022-04-25 08:41:17', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1037, 'content', 'alias', 'gestion-de-vos-droits', 'ccb2341e269a91389f64998b676ec004', '', '2022-04-25 08:41:17', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1037, 'content', 'introtext', '<p> </p>
+<p><strong> </strong></p>
+<p><strong>What are the rights of the data subjects of the processing carried out by this site?</strong><br /><br /> <br /><br />We collect the individual data that you provide us in the context of these contacts, as well as in the emails you send us.</p>
+<p><br /><br />In accordance with the General Regulation on the Protection of Personal Data (RGPD) which came into force on 25 May 2018 and by the LAW n° 2018-493 of 20 June 2018 relating to the protection of personal data, known as LIL3, and Order n° 2018-1125 of 12 December 2018 taken in application of Article 32 of Law n° 2018-493 of 20 June 2018 relating to the protection of personal data and amending Law n° 78-17 of 6 January 1978 relating to information technology, files and freedoms, you have the following rights:</p>
+<p> </p>
+<p> </p>
+<table>
+<tbody>
+<tr>
+<td style="background: #ccc;" width="302">
+<p><strong>Rights at your disposal</strong></p>
+</td>
+<td style="background: #ccc;" width="302">
+<p><strong>Usefulness</strong></p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p>Right of access</p>
+</td>
+<td width="302">
+<p>Right to know whether we hold Personal Data about you and to obtain a copy of it, including the following information:<br /><br />The purpose of the processing, the categories of Personal Data processed, the categories of recipients of the data, the retention period where possible (or the criteria used to determine this period), the rights you have.</p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p>Right to erasure (right to be forgotten)</p>
+</td>
+<td width="302">
+<p>Right to obtain the deletion of your Personal Data in the cases provided for by the GDPR (Article 17), including:<br /><br />When the data we process is no longer necessary for us; when you object to commercial prospecting and request deletion in addition to the cessation of processing; when the processing is unlawful.</p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p>Right to object</p>
+</td>
+<td width="302">
+<p>This right applies when we process your data in order to pursue one of our legitimate interests, such as advertising on your social network pages. If you request to object, we will analyze the reasons for your particular situation and investigate whether we have a legitimate and compelling reason to continue processing your data. If not, we will stop the processing concerned.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>Right to oppose commercial prospecting</p>
+</td>
+<td>
+<p>If you object to commercial prospecting, we will simply cease processing the Data concerned.</p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p>Withdrawal of consent</p>
+</td>
+<td width="302">
+<p>Where the processing of your Personal Data is based on your consent, the withdrawal of your consent prevents us from continuing to process the data in question.</p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p>Right to rectification and right to limitation</p>
+</td>
+<td width="302">
+<p>You may request the update or rectification of any Personal Data that you believe to be inaccurate or obsolete.<br /><br />You may also request that processing be suspended, with the exception of the retention of Personal Data when:</p>
+<ul>
+<li>you dispute the accuracy of the data (this limitation lasts as long as it takes for us to verify the possible inaccuracy);</li>
+<li>the processing is unlawful and you prefer to obtain the limitation of the processing rather than the erasure of the data;</li>
+<li>we no longer need the data but you consider that they are still necessary for the establishment, exercise or defense of legal claims;</li>
+<li>you have formulated a request for opposition due to your particular situation and this limitation is obtained during the time of checking the balance of interests between our legitimate interests and your rights and freedoms.</li>
+</ul>
+<p>Where processing has been restricted, your Data may only be processed with your consent or for the exercise, establishment and defence of legal claims.</p>
+<p> </p>
+</td>
+</tr>
+<tr>
+<td width="302">
+<p>Right to portability</p>
+</td>
+<td width="302">
+<p>You have the right to receive the Personal Data you have directly provided to us in a structured, commonly used and machine-readable format.<br /><br /> <br /><br />You also have the right to transmit this data or to request that we transmit it to another controller.<br /><br />This right applies only to processing based on the consent of the individual, or on the performance of the contract and which is carried out by means of an automated process.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<p> </p>
+<p><strong>Fate of Data in case of death</strong></p>
+<p> </p>
+<p>In accordance with the provisions of Article 85 of the Data Protection Act, we inform you that, as an individual :</p>
+<ul>
+<li>You have the right to provide us with instructions regarding the retention, deletion and disclosure of your Personal Information after your death;</li>
+<li>You may change or revoke these instructions with us at any time;</li>
+<li>You will be able to designate a person to carry out these instructions, who will have the authority after your death to review these instructions and to request their implementation from us.</li>
+<li>You are also informed that if you do not provide <span style="color: #ff0000;">[COMPANY CUSTOMER]</span> with specific instructions on what to do with your Personal Data, your heirs may exercise the rights to retain, delete and disclose your Personal Data after your death to the extent necessary to organize and settle your estate and for <span style="color: #ff0000;">[COMPANY CUSTOMER]</span> to take account of your death.</li>
+</ul>
+<p> </p>
+<p>You also have the right (where applicable) to formulate general or specific directives relating to the conservation, deletion and communication of your personal data after your death or right to be forgotten.</p>
+<p> </p>
+<p> </p>
+<p><strong>How can I exercise my rights under the RGPD and the Data Protection Act?</strong></p>
+<p> </p>
+<p>Your requests can be formulated in different ways:</p>
+<p> </p>
+<ul>
+<li>By email by writing to : <span style="color: #ff0000;">[CUSTOMER EMAIL ADDRESS]</span></li>
+<li>In person at the reception of <span style="color: #ff0000;">[COMPANY NAME + CLIENT ADDRESS]</span>.</li>
+<li>By mail by writing to <span style="color: #ff0000;">[CUSTOMER MAILING ADDRESS]</span>.</li>
+<li>Through an agent who will use one of the above channels to make the request.</li>
+</ul>
+<p><strong> </strong></p>
+<p> </p>
+<p><strong>Please submit each of your requests by one of the above means and attach a copy of your identification. </strong></p>
+<p> </p>
+<p> </p>
+<p><strong>For a right of access request:</strong></p>
+<p> </p>
+<p>Please specify in your request which data or processing operations it relates to.</p>
+<p>Your data will be sent to you electronically or by post, by registered mail with acknowledgement of receipt.</p>
+<p><span style="color: #ff0000;">[CUSTOMER''S BUSINESS NAME]</span> may require payment of a reasonable fee based on administrative costs for any additional copies requested (Article 15.3 of the GDPR).</p>
+<p>In case of manifestly unfounded or excessive requests, <span style="color: #ff0000;">[CUSTOMER BUSINESS NAME]</span> may require payment of a reasonable fee that takes into account the administrative costs incurred in providing the information or refuse to comply with such requests (Article 12.5 GDPR).</p>
+<p><strong> </strong></p>
+<p> </p>
+<p><strong>For a right of rectification request:</strong></p>
+<p> </p>
+<p>If you believe that information about you is inaccurate and should be corrected, please indicate precisely which data about you is inaccurate or incomplete, and provide any information that would allow it to be corrected or completed (Article 15 of the GDPR).</p>
+<p> </p>
+<p><strong>For a request for the right to erasure:</strong></p>
+<p> </p>
+<p>Please indicate precisely the data concerning you that you are requesting to be deleted, and the reasons for your request (article 17 of the RGPD).<br /><br /><span style="text-decoration: underline;">Please note</span>: this right is not absolute,<span style="color: #ff0000;"> [COMPANY NAME CUSTOMER]</span> may be obliged to keep information about you, in particular in the context of the management of the commercial relationship (management of invoices, management of disputes) and in the context of documentation and the provision of evidence relating to the exercise of your rights.</p>
+<p><strong> </strong></p>
+<p> </p>
+<p><strong>For a request to limit processing:</strong></p>
+<p> </p>
+<p>Please indicate precisely which data about you you are requesting to limit the processing of, and the reasons for your request.<br /><br /><span style="text-decoration: underline;">Please note</span>: this right is not absolute, <span style="color: #ff0000;">[CUSTOMER BUSINESS NAME]</span> may decide to continue processing your data (Article 18.3 of the GDPR). Limitation, if implemented, may result in the suspension of services provided by <span style="color: #ff0000;">[CUSTOMER BUSINESS NAME]</span> (access to work and deliverables, receipt of information, etc.). These effects will be described to you in the letter acknowledging receipt of your request to limit processing.</p>
+<p><strong> </strong></p>
+<p> </p>
+<p><strong>For an objection request:</strong></p>
+<p> </p>
+<p>Please indicate precisely which data processing you wish to object to, and the reasons for your request.<br /><br /><span style="text-decoration: underline;">Please note</span>: this right is not absolute. Please indicate precisely the processing for which you object to the handling of your personal data, and the reasons for your request (Article 21 of the GDPR).</p>
+<p><strong> </strong></p>
+<p> </p>
+<p><strong>To apply for the right to portability:</strong></p>
+<p> </p>
+<p>Each user may at any time make a request for data portability in order to recover the personal data that <span style="color: #ff0000;">[CUSTOMER''S BUSINESS NAME]</span> has collected about him/her in the context of processing based on consent and on a contractual basis.<br /><br />If you would like the data to be transferred to another controller in a standard format, please specify this and provide the contact details of the other controller.</p>
+<p> </p>
+<p> </p>
+<p><strong>How to contact the DPO?</strong></p>
+<p> </p>
+<p>You can contact the DPO of <span style="color: #ff0000;">[COMPANY NAME CUSTOMER]</span> by e-mail at the following address<span style="color: #ff0000;"> [CUSTOMER DPO E-MAIL ADDRESS]</span> or by post by sending your mail to the following address: <span style="color: #ff0000;">[POSTAL ADDRESS DPO CLIENT]</span>.</p>
+<p> </p>
+<p>You can make a request to the CNIL at the following address</p>
+<p>3 Place de Fontenoy - TSA 80715 - 75334 PARIS CEDEX 07</p>
+<p> </p>
+<p>Updated on May 07, 2021.</p>
+<p> </p>
+<p> </p>', 'e65537ca8b6e7309ad754016a7107350', '', '2022-04-25 08:41:17', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1037, 'content', 'fulltext', '', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:41:17', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1037, 'content', 'attribs', '{"article_layout":"","show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","info_block_show_title":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_associations":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_page_title":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 'a1a897c2b5d99df129961a64458fb0c3', '', '2022-04-25 08:41:17', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1037, 'content', 'com_fields', '{"params":""}', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:41:17', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1036, 'content', 'title', 'Cookie policy', '5eaf0d597c5b03dccf76ebdb3bbc2248', '', '2022-04-25 08:41:48', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1036, 'content', 'alias', 'cookie-policy', '92a3bb0a859b5a14f3be9660cfc8328c', '', '2022-04-25 08:41:48', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1036, 'content', 'introtext', '<p> </p>
+<p> </p>
+<p>This site uses cookies in order to know the preferences of the visitors and to optimize the presentation of this site. Cookies are small files deposited on your hard disk. They facilitate navigation and make the site very user-friendly. Cookies can be used to check whether your computer has already been connected to our pages. Only the cookie stored on your computer is identified.<br /><br />We use 2 cookies :<br /><br />The first one to store your preferred language in order to show you this site directly in the right language during your next visits. This cookie automatically expires 180 days after your last visit.<br />The second cookie is the session cookie (standard), used to detect that you are properly logged in. This cookie expires automatically when you close your browser.<br /><br />In order to be able to submit your project or application on this site, it is necessary to accept at least the session cookie.</p>
+<p> </p>', '18954f74c77fc6eeb4a749142a19acae', '', '2022-04-25 08:41:48', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1036, 'content', 'fulltext', '', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:41:48', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1036, 'content', 'attribs', '{"article_layout":"","show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","info_block_show_title":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_associations":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_page_title":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 'a1a897c2b5d99df129961a64458fb0c3', '', '2022-04-25 08:41:48', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1036, 'content', 'com_fields', '{"params":""}', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:41:48', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1035, 'content', 'title', 'Legal information', '6ba68484be023d7a6dbb170dce31deb3', '', '2022-04-25 08:45:32', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1035, 'content', 'alias', 'mentions-legales', '19a51ec9ca14f0dcfcb3ef708610507e', '', '2022-04-25 08:45:32', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1035, 'content', 'introtext', '<p> </p>
+<p> </p>
+<p><strong>Objective of the information disseminated from this site:</strong></p>
+<p><br />The purpose of this site is to present to visitors <span style="color: #ff0000;">[TO BE COMPLETED BY THE CLIENT]</span></p>
+<p> </p>
+<p> </p>
+<p><strong>Company name</strong> : <span style="color: #ff0000;">[CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><strong>Legal form:</strong> <span style="color: #ff0000;">[CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><strong>Headquarters:</strong> <span style="color: #ff0000;">[CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><span style="color: #ff0000;"><span style="color: #000000;"><strong>Share capital:</strong></span> [CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><strong>Company registration number (RCS) :</strong> <span style="color: #ff0000;">[CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><span style="color: #000000;">Intracommunity VAT number :</span> <span style="color: #ff0000;">[CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><span style="color: #ff0000;"><strong><span style="color: #000000;">Email address:</span> </strong>[CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><span style="color: #ff0000;"><span style="color: #000000;"><strong>Responsible for publication:</strong></span> [CUSTOMER INFORMATION]</span></p>
+<p> </p>
+<p> </p>
+<p><span style="color: #ff0000;"><span style="color: #000000;">Content creation: content creation by</span> [CUSTOMER INFORMATION].</span></p>
+<p> </p>
+<p> </p>
+<p><strong>Solution provider:</strong></p>
+<p><br />eMundus – 1 rue Alexander Fleming 17000 LA ROCHELLE <br />Email adress : info[@]emundus.fr</p>
+<p> </p>
+<p> </p>
+<p><strong>Technical, Ergonomic and Graphic Design :</strong></p>
+<p><br />eMundus – 1 rue Alexander Fleming 17000 LA ROCHELLE <br />Email adress: info[@]emundus.fr</p>
+<p> </p>
+<p> </p>
+<p><strong>Hosting and outsourcing :</strong></p>
+<p><br />SCALEWAY SAS BP 438 75366 PARIS CEDEX 08 FRANCE - <a href="https://www.scaleway.com">France Website : www.scaleway.com</a></p>
+<p> </p>
+<p> </p>
+<p> </p>', '4bbb795bd13750bf02cef10cc61c8557', '', '2022-04-25 08:45:32', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1035, 'content', 'fulltext', '', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:45:32', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1035, 'content', 'attribs', '{"article_layout":"","show_title":"","link_titles":"","show_tags":"","show_intro":"","info_block_position":"","info_block_show_title":"","show_category":"","link_category":"","show_parent_category":"","link_parent_category":"","show_associations":"","show_author":"","link_author":"","show_create_date":"","show_modify_date":"","show_publish_date":"","show_item_navigation":"","show_icons":"","show_print_icon":"","show_email_icon":"","show_vote":"","show_hits":"","show_noauth":"","urls_position":"","alternative_readmore":"","article_page_title":"","show_publishing_options":"","show_article_options":"","show_urls_images_backend":"","show_urls_images_frontend":""}', 'a1a897c2b5d99df129961a64458fb0c3', '', '2022-04-25 08:45:32', 62, 1);
+INSERT INTO jos_falang_content (language_id, reference_id, reference_table, reference_field, value, original_value, original_text, modified, modified_by, published)
+VALUES (1, 1035, 'content', 'com_fields', '{"params":""}', 'd41d8cd98f00b204e9800998ecf8427e', '', '2022-04-25 08:45:32', 62, 1);
