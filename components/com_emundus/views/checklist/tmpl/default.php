@@ -502,7 +502,7 @@ if (!empty($this->custom_title)) :?>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
-                    <p><em>'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
+                    <p><em>'. JText::_('COM_EMUNDUS_WRONG_FORMAT').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
                     </td>
                 </tr>';
                 } else {
