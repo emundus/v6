@@ -259,8 +259,11 @@ class EmundusControllersettings extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $col1 = $jinput->getRaw('col1');
-            $col2 = $jinput->getRaw('col2');
+            $col1 = $jinput->getString('col1');
+            $col2 = $jinput->getString('col2');
+
+            $col1 = json_decode($col1, true);
+            $col2 = json_decode($col2, true);
 
             $changeresponse = $this->m_settings->updateFooter($col1,$col2);
         }

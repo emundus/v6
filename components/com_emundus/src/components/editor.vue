@@ -37,7 +37,11 @@ export default {
     placeholder: String,
     id: String,
     height: String,
-    enable_variables: Boolean
+    enable_variables: Boolean,
+    max_chars: {
+      type: Number,
+      default: 0
+    }
   },
 
   data() {

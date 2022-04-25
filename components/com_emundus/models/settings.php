@@ -422,8 +422,8 @@ class EmundusModelsettings extends JModelList {
             if (!empty($params)) {
                 $params = json_decode($params->params);
 
-                $footers->column1 = $params->mod_emundus_footer_texte_col_1 !== 'null' ? $params->mod_emundus_footer_texte_col_1 : '';
-                $footers->column2 = $params->mod_emundus_footer_texte_col_2 !== 'null' ? $params->mod_emundus_footer_texte_col_2 : '';
+                $footers->column1 = !empty($params->mod_emundus_footer_texte_col_1) ? $params->mod_emundus_footer_texte_col_1 : ['fr-FR' => '', 'en-GB' => ''];
+                $footers->column2 = !empty($params->mod_emundus_footer_texte_col_2) ? $params->mod_emundus_footer_texte_col_2 : ['fr-FR' => '', 'en-GB' => ''];
                 return $footers;
             } else {
                 return $this->getOldFooterArticles();
@@ -612,7 +612,7 @@ class EmundusModelsettings extends JModelList {
      *
      * @since 1.28.0
      */
-    function updateFooter($col1,$col2) {
+    function updateFooter($col1, $col2) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 

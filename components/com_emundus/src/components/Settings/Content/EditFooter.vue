@@ -3,7 +3,23 @@
 
     <div class="em-w-80">
 
-      <div class="em-grid-3 em-mb-16">
+      <div class="em-grid-3 em-mb-16 em-flex-row">
+        <multiselect
+            v-model="lang"
+            label="title_native"
+            track-by="lang_code"
+            :options="availableLanguages"
+            :multiple="false"
+            :taggable="false"
+            select-label=""
+            selected-label=""
+            deselect-label=""
+            :placeholder="translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SELECT_LANGUAGE')"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :searchable="false"
+            :allow-empty="false"
+        ></multiselect>
         <multiselect
             v-model="selectedColumn"
             label="label"
@@ -22,11 +38,11 @@
         ></multiselect>
       </div>
 
-      <div class="form-group controls" v-if="selectedColumn.index === 0 && this.form.content.col1 != null">
-        <editor :height="'30em'" :text="form.content.col1" :lang="actualLanguage" :enable_variables="false" :id="'editor_1'" :key="dynamicComponent" v-model="form.content.col1" @focusout="saveFooter"></editor>
+      <div class="form-group controls" v-if="selectedColumn.index === 0 && this.form.content.col1 != null && lang">
+        <editor :height="'30em'" :text="form.content.col1[lang.lang_code]" :lang="actualLanguage" :enable_variables="false" :id="'editor_1' + lang.lang_code" :key="dynamicComponent" v-model="form.content.col1[lang.lang_code]" @focusout="saveFooter"></editor>
       </div>
-      <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null">
-        <editor :height="'30em'" :text="form.content.col2" :lang="actualLanguage" :enable_variables="false" :id="'editor_2'" :key="dynamicComponent" v-model="form.content.col2" @focusout="saveFooter"></editor>
+      <div class="form-group controls" v-if="selectedColumn.index === 1 && this.form.content.col2 != null && lang">
+        <editor :height="'30em'" :text="form.content.col2[lang.lang_code]" :lang="actualLanguage" :enable_variables="false" :id="'editor_2_' + lang.lang_code" :key="dynamicComponent" v-model="form.content.col2[lang.lang_code]" @focusout="saveFooter"></editor>
       </div>
     </div>
 
@@ -42,6 +58,7 @@ import Multiselect from 'vue-multiselect';
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
 import mixin from "com_emundus/src/mixins/mixin";
+import translationsService from "../../../services/translations";
 
 export default {
   name: "EditFooter",
@@ -52,7 +69,10 @@ export default {
   },
 
   props: {
-    actualLanguage: String
+    actualLanguage: {
+      type: String,
+      default: 'fr_FR'
+    }
   },
 
   mixins: [mixin],
@@ -62,6 +82,10 @@ export default {
       loading: false,
       dynamicComponent: 0,
       selectedColumn: 0,
+
+      defaultLang: 'fr_FR',
+      lang: null,
+      availableLanguages: [],
 
       form: {
         content: {
@@ -84,8 +108,14 @@ export default {
 
   created() {
     this.loading = true;
-    this.getArticles();
-    this.selectedColumn = this.columns[0];
+    translationsService.getDefaultLanguage().then((response) => {
+      this.defaultLang = response;
+      this.getAllLanguages().then(() => {
+        this.getArticles();
+        this.selectedColumn = this.columns[0];
+      });
+      this.loading = false;
+    });
   },
 
   methods: {
@@ -94,6 +124,17 @@ export default {
           .then(response => {
             this.form.content.col1 = response.data.data.column1;
             this.form.content.col2 = response.data.data.column2;
+
+            this.availableLanguages.forEach((lang) => {
+              if(!this.form.content.col1[lang.lang_code]) {
+                this.form.content.col1[lang.lang_code] = '';
+              }
+
+              if(!this.form.content.col2[lang.lang_code]) {
+                this.form.content.col2[lang.lang_code] = '';
+              }
+            });
+
             this.loading = false;
           });
     },
@@ -102,8 +143,10 @@ export default {
       this.$emit('updateSaving',true);
 
       const formData = new FormData();
-      formData.append('col1', this.form.content.col1);
-      formData.append('col2', this.form.content.col2);
+      formData.append('col1', JSON.stringify(this.form.content.col1));
+      formData.append('col2', JSON.stringify(this.form.content.col2));
+
+      console.log(formData);
 
       await client().post(`index.php?option=com_emundus&controller=settings&task=updatefooter`,
           formData,
@@ -117,10 +160,22 @@ export default {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
       });
     },
+
+    async getAllLanguages() {
+      await translationsService.getAllLanguages().then((response) => {
+        this.availableLanguages = response;
+        this.lang = this.defaultLang;
+
+        console.log(this.lang);
+      })
+    },
   },
 
   watch: {
     selectedColumn: function() {
+      this.dynamicComponent++;
+    },
+    lang: function() {
       this.dynamicComponent++;
     }
   }

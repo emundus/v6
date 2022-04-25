@@ -17,10 +17,14 @@ $document->addStyleSheet("modules/mod_emundus_footer/css/mod_emundus_footer.css"
 
 $params->def('greeting', 1);
 
-$mod_emundus_footer_texte_col_1=$params->get('mod_emundus_footer_texte_col_1', '');
-$mod_emundus_footer_texte_col_2=$params->get('mod_emundus_footer_texte_col_2', '');
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0 , 2);
 
+$col_1 = (array)$params['mod_emundus_footer_texte_col_1'];
+$col_2 = (array)$params['mod_emundus_footer_texte_col_2'];
 
+$mod_emundus_footer_texte_col_1 = $col_1[$lang->getTag()];
+$mod_emundus_footer_texte_col_2 = $col_2[$lang->getTag()];
 
 $type             = ModLoginHelper::getType();
 $return           = ModLoginHelper::getReturnUrl($params, $type);
@@ -32,13 +36,5 @@ $layout           = $params->get('layout', 'default');
 $file_version = file_get_contents('version.txt');
 //
 
-$lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0 , 2);
-
-/*Logged users must load the logout sublayout
-if (!$user->guest)
-{
-	$layout .= '_logout';
-}*/
 
 require JModuleHelper::getLayoutPath('mod_emundus_footer', $layout);
