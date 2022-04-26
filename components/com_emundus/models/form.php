@@ -22,7 +22,7 @@ class EmundusModelForm extends JModelList {
     public function __construct($config = array()) {
         parent::__construct($config);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         $this->model_campaign = new EmundusModelCampaign;
 
         // Get MenuItemModel.

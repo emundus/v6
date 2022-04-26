@@ -474,7 +474,7 @@ class EmundusModelMessages extends JModelList {
         try {
 
             $phpWord = new \PhpOffice\PhpWord\PhpWord();
-            $preprocess = $phpWord->loadTemplate(JPATH_BASE.$letter->file);
+            $preprocess = $phpWord->loadTemplate(JPATH_SITE.$letter->file);
             $tags = $preprocess->getVariables();
 
             $idFabrik   = array();
@@ -546,7 +546,7 @@ class EmundusModelMessages extends JModelList {
 
             }
 
-            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$letter->file);
+            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE.$letter->file);
             if (isset($fnumsInfos)) {
 
                 foreach ($setupTags as $tag) {
@@ -1150,8 +1150,8 @@ class EmundusModelMessages extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
         $_mEval = new EmundusModelEvaluation;
         $_mFile = new EmundusModelFiles;
@@ -1266,8 +1266,8 @@ class EmundusModelMessages extends JModelList {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
             $_mEval = new EmundusModelEvaluation;
             $_mFile = new EmundusModelFiles;
@@ -1331,8 +1331,8 @@ class EmundusModelMessages extends JModelList {
 
         if(!empty($fnums) and !is_null($fnums)) {
             try {
-                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
-                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
                 $_mProfiles = new EmundusModelProfile;
                 $_mFiles = new EmundusModelFiles;

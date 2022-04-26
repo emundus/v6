@@ -24,7 +24,7 @@ class EmundusModelFormbuilder extends JModelList {
     public function __construct($config = array()) {
         parent::__construct($config);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
         $this->m_translations = new EmundusModelTranslations;
 
         JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_languages/models');
@@ -94,7 +94,7 @@ class EmundusModelFormbuilder extends JModelList {
     function getTranslation($text,$code_lang){
         $matches = [];
 
-        $fileName = constant('JPATH_BASE') . '/language/overrides/' . $code_lang . '.override.ini';
+        $fileName = constant('JPATH_SITE') . '/language/overrides/' . $code_lang . '.override.ini';
         $strings  = JLanguageHelper::parseIniFile($fileName);
 
         if(!empty($text)) {

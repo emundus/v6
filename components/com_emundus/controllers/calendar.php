@@ -250,7 +250,7 @@ class EmundusControllerCalendar extends JControllerLegacy {
      * Used for first activation with the calendar.
      */
     public function authenticateclient() {
-    	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
+    	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'calendar.php');
     	$m_calendar = new EmundusModelCalendar();
 		$m_calendar->authenticateClient();
 		JFactory::getApplication()->redirect('/index.php');

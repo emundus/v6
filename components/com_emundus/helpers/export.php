@@ -323,7 +323,7 @@ class EmundusHelperExport {
         if (is_null($fileName)) {
             $name = $fnum . '-admission.pdf';
         } else {
-            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
             $m_checklist = new EmundusModelChecklist;
             $post = array(
                 'FNUM' => $fnum,

@@ -2345,7 +2345,7 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAllFnums($assoc_tab_fnums = false) {
-        include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
         $m_users = new EmundusModelUsers;
 
         $current_user = JFactory::getUser();

@@ -413,7 +413,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         if (!empty($attachments['upload'])) {
             // In the case of an uploaded file, just add it to the email.
             foreach ($attachments['upload'] as $upload) {
-                if (file_exists(JPATH_BASE.DS.$upload)) {
+                if (file_exists(JPATH_SITE.DS.$upload)) {
                     $toAttach['upload'][] = pathinfo($upload)['basename'];
                 }
             }
@@ -680,8 +680,8 @@ class EmundusControllerMessages extends JControllerLegacy {
             if (!empty($attachments['upload'])) {
                 // In the case of an uploaded file, just add it to the email.
                 foreach ($attachments['upload'] as $upload) {
-                    if (file_exists(JPATH_BASE.DS.$upload)) {
-                        $toAttach[] = JPATH_BASE.DS.$upload;
+                    if (file_exists(JPATH_SITE.DS.$upload)) {
+                        $toAttach[] = JPATH_SITE.DS.$upload;
                     }
                 }
             }
@@ -721,8 +721,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 //
 //                            case '1':
 //                                // This is a static file, we just need to find its path add it as an attachment.
-//                                if (file_exists(JPATH_BASE.$letter->file)) {
-//                                    $toAttach[] = JPATH_BASE.$letter->file;
+//                                if (file_exists(JPATH_SITE.$letter->file)) {
+//                                    $toAttach[] = JPATH_SITE.$letter->file;
 //                                }
 //                            break;
 //
@@ -958,8 +958,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 				// Here we also build the HTML being logged to show which files were attached to the email.
 				$files = '<ul>';
 				foreach ($attachments as $upload) {
-					if (file_exists(JPATH_BASE.DS.$upload)) {
-						$toAttach[] = JPATH_BASE.DS.$upload;
+					if (file_exists(JPATH_SITE.DS.$upload)) {
+						$toAttach[] = JPATH_SITE.DS.$upload;
 						$files .= '<li>'.basename($upload).'</li>';
 					}
 				}
@@ -1141,8 +1141,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                         case '1':
                             // This is a static file, we just need to find its path add it as an attachment.
-                            if (file_exists(JPATH_BASE.$letter->file)) {
-                                $toAttach[] = JPATH_BASE.$letter->file;
+                            if (file_exists(JPATH_SITE.$letter->file)) {
+                                $toAttach[] = JPATH_SITE.$letter->file;
                             }
                             break;
 
@@ -1562,7 +1562,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
         $m_messages = new EmundusModelMessages();
         $m_emails = new EmundusModelEmails();
