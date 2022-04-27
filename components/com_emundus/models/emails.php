@@ -59,7 +59,7 @@ class EmundusModelEmails extends JModelList {
      */
     public function getEmailById($id)
     {
-        $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$this->_db->Quote($id);
+        $query = 'SELECT ese.*, et.Template FROM #__emundus_setup_emails ese LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl WHERE ese.id='.$this->_db->Quote($id);
         $this->_db->setQuery( $query );
         return $this->_db->loadObject();
     }
@@ -488,9 +488,35 @@ class EmundusModelEmails extends JModelList {
             } elseif (!empty($fnum)) {
                 $request = explode('|', $value);
                 $val = $this->setTagsFabrik($request[1], array($fnum));
-                $replacements[] = eval("$val");
+
+                $result = "";
+                try {
+                    $result = eval("$val");
+                } catch (Exception $e) {
+                    JLog::add('Error setTags for tag : ' .  $tag['tag'] . '. Message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                    $result = "";
+                }
+
+                if (!empty($result)) {
+                    $replacements[] = $result;
+                } else {
+                    $replacements[] = "";
+                }
             } else {
-                $replacements[] = "";
+                $request = explode('|', $value);
+
+                try {
+                    $result = eval("$request[1]");
+                } catch (Exception $e) {
+                    JLog::add('Error setTags for tag : ' .  $tag['tag'] . '. Message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                    $result = "";
+                }
+
+                if (!empty($result)){
+                    $replacements[] = $result;
+                } else {
+                    $replacements[] = "";
+                }
             }
 
         }
@@ -530,7 +556,7 @@ class EmundusModelEmails extends JModelList {
                     $replacements[] = $request[0];
             }
             else {
-                $request = explode('|', $value);
+                $request = explode('php|', $value);
                 $val = $this->setTagsFabrik($request[1], array($fnum));
                 $replacements[] = eval("$val");
             }
@@ -1360,7 +1386,8 @@ class EmundusModelEmails extends JModelList {
             ];
             $this->logEmail($log);
             // Log the email in the eMundus logging system.
-            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+            $logsParams = array('created' => [$subject]);
+            EmundusModelLogs::log($current_user->id, $user->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
     }
 }

@@ -27,20 +27,6 @@
     </div>
 
     <p v-if="eval == 0 && !updateIntroPage" class="introP" v-html="object_json.intro_value" />
-    <!--    <div style="width: max-content;margin-left: 20px" v-show="updateIntroPage && indexPage == object_json.id">
-          <div class="input-can-translate" style="margin-top: 10px">
-    &lt;!&ndash;        <editor :height="'10em'" :text="object_json.intro['fr']" :lang="actualLanguage" :enable_variables="false" :id="'editor_fr'" v-model="object_json.intro['fr']" style="max-height: 180px;max-width: 50vw;"></editor>&ndash;&gt;
-            <textarea v-if="object_json.intro" v-model="object_json.intro[actualLanguage]" class="form__input field-general w-input" style="width: 400px;" :class="translate.intro_page ? '' : 'mb-1'" :id="'update_intro_' + object_json.id"/>
-            <button class="translate-icon" v-if="manyLanguages !== '0'" :class="translate.intro_page ? 'translate-icon-selected': ' translate-builder'" type="button" @click="enableTranslationPageIntro(object_json.id)"></button>
-            <div class="d-flex actions-update-label" :class="manyLanguages !== '0' ? '' : 'ml-10px'" :style="translate.intro_page ? 'margin-bottom: 6px' : 'margin-bottom: 12px'">
-              <a @click="updateIntroValuePage(object_json)" :title="Validate">
-                <em class="fas fa-check mr-1" data-toggle="tooltip" data-placement="top"></em>
-              </a>
-            </div>
-          </div>
-          <translation v-if="object_json.intro && translate.intro_page"  :label="object_json.intro" :actualLanguage="actualLanguage"></translation>
-        </div>-->
-
     <form method="post" v-on:submit.prevent object_json.attribs class="form-page" :id="'form_' + object_json.id" :style="eval == 1 ? 'margin-top: 30px' : ''">
       <div v-if="object_json.plugintop" v-html="object_json.plugintop"></div>
       <draggable
@@ -85,9 +71,6 @@
                               <a v-on:click="displayHideGroup(group)" class="action-submenu">
                                 {{translations.DisplayHide}}
                               </a>
-                              <!--                                <a v-on:click="enableUpdatingIntroGroup(group)" class="action-submenu">
-                                                                {{translations.EditIntro}}
-                                                              </a>-->
                               <a @click="deleteAGroup(group,index_group)" class="action-submenu" v-if="files == 0 && !group.cannot_delete" :title="translations.Delete">
                                 {{translations.Delete}}
                               </a>
@@ -97,19 +80,8 @@
                       </div>
                     </template>
                   </v-popover>
-                  <!--                  <a @click="enableUpdatingGroup(group)" style="margin-left: 1em;font-size: 16px" :title="translations.Edit" class="cta-block pointer">
-                                      <em class="fas fa-pen" data-toggle="tooltip" data-placement="top"></em>
-                                    </a>-->
                 </div>
               </div>
-              <!--                <div>
-                                <div v-show="!openGroup[group.group_id]">
-                                  <em class="fas fa-chevron-right"></em>
-                                </div>
-                                <div v-show="openGroup[group.group_id]">
-                                  <em class="fas fa-chevron-down"></em>
-                                </div>
-                              </div>-->
             </div>
             <div style="width: max-content" v-show="updateGroup && indexGroup == group.group_id">
               <div class="input-can-translate">
@@ -125,7 +97,7 @@
             </div>
             <div v-if="group.group_intro" class="groupintro" v-html="group.group_intro"></div>
 
-            <template v-if="typeof group.elts !== 'undefined'">
+            <template v-if="group.elts !== undefined">
               <div v-if="group.elts.length == 0" class="no-elements-tip">{{ translations.NoElementsTips }}</div>
             </template>
 
@@ -187,9 +159,6 @@
                           </div>
                         </div>
                         <translation :label="element.label" :actualLanguage="actualLanguage"v-if="translate.label && clickUpdatingLabel && indexHighlight == element.id"></translation>
-                        <!--                        <div v-if="element.params.date_table_format">-->
-                        <!--                          <date-picker v-model="date" :config="options"></date-picker>-->
-                        <!--                        </div>-->
                         <div v-else-if="element.labelsAbove == 0" class="controls">
                           <div v-if="element.error" class="fabrikElement" v-html="element.error"></div>
                           <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
@@ -206,10 +175,6 @@
                         <a class="d-flex mr-2 mb-1" v-if="element.plugin != 'calc'" @click="openParameters(element)" :title="translations.Settings">
                           <em class="fas fa-cog settings-elt"></em>
                         </a>
-                        <!--                      <a class="d-flex mr-2" v-if="element.plugin != 'calc'" @click="openDuplicate(element)">
-                                                <em class="fas fa-copy"></em>
-                                                <span class="ml-10px">{{Duplicate}}</span>
-                                              </a>-->
                         <a class="d-flex mr-2" style="color: red" @click="deleteElement(element,index)" v-if="files == 0" :title="translations.Delete">
                           <em class="fas fa-trash-alt delete-icon-elt"></em>
                         </a>

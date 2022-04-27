@@ -735,7 +735,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 					$m_emails->logEmail($log);
 
 					// Log the email in the eMundus logging system.
-					EmundusModelLogs::log($this->user->id, $user_from->id, '', 9, 'c', 'COM_EMUNDUS_LOGS_SEND_EMAIL');
+					$logsParams = array('created' => [$subject]);
+					EmundusModelLogs::log($this->user->id, $user_from->id, '', 9, 'c', 'COM_EMUNDUS_ACCESS_MAIL_APPLICANT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
 					$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
 					echo json_encode((object) ['status' => true]);

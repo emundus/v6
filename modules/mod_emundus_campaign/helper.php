@@ -233,7 +233,7 @@ class modEmundusCampaignHelper {
 
             $formations = $db->loadObjectList();
 
-            foreach ($formations as $formation) {                
+            foreach ($formations as $formation) {
                 $query
                     ->clear()
                     ->select('repeat.voie_d_acces')
@@ -288,7 +288,9 @@ class modEmundusCampaignHelper {
 
         $query
             ->select('*')
-            ->from($db->quoteName('data_voies_d_acces'));
+            ->from($db->quoteName('data_voies_d_acces'))
+            ->where($db->quoteName('published') . ' = 1')
+            ->order($db->quoteName('order'));
 
         try {
             $db->setQuery($query);
@@ -319,6 +321,14 @@ class modEmundusCampaignHelper {
                 }
             }
 
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('label')
+            ->from('#__emundus_setup_campaigns')
+            ->where('id = '.$item->id);
+
+            $db->setQuery($query);
+            $item->label = $db->loadResult();
 
         return $item;
         }, $data);

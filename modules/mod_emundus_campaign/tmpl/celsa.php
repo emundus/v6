@@ -14,6 +14,93 @@ if ($locallang == "fr-FR") {
     setlocale (LC_ALL, 'en_GB');
 }
 
+// Check if user don't already have an opened fnum
+$user = JFactory::getSession()->get('emundusUser');
+
+// check if user is not connected as coordinator 
+$unallowed_menutypes = [
+    "partnermenu",
+    "coordinatormenu"
+];
+
+if (in_array($user->menutype, $unallowed_menutypes)) {
+    return;
+}
+
+function userFormationLevelsAllowed() {
+    $user = JFactory::getSession()->get('emundusUser');
+
+    // get all formation levels from data_formation_level table
+    try {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('id');
+        $query->from('data_formation_level');
+        $db->setQuery($query);
+
+        $formationLevels = $db->loadColumn();
+
+        // check if user has an opened fnum for each formation level
+        foreach ($user->fnums as $fnum => $values) {
+            // get fnum's formation level
+            $query->clear();
+            $query->select('data_formation_level.id');
+            $query->from('data_formation_level')
+            ->leftJoin('data_formation ON data_formation_level.id = data_formation.level')
+            ->leftJoin('#__emundus_setup_campaigns ON data_formation.id = #__emundus_setup_campaigns.formation')
+            ->leftJoin('#__emundus_campaign_candidature ON #__emundus_setup_campaigns.id = #__emundus_campaign_candidature.campaign_id')
+            ->where('#__emundus_campaign_candidature.fnum = '.$fnum)
+            ->andWhere('#__emundus_campaign_candidature.published = 1');
+
+            $db->setQuery($query);
+            $formationLevel = $db->loadResult();
+
+            // check if user has an opened fnum for the formation level
+            if (in_array($formationLevel, $formationLevels)) {
+                // remove value from array
+                $key = array_search($formationLevel, $formationLevels);
+                unset($formationLevels[$key]);
+            }
+        }
+    } catch (Exception $e) {
+        JLog::add('Error getting formation levels from data_formation_level table : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+        return [];
+    }
+
+    return $formationLevels;
+}
+
+$allowedFormationLevels = userFormationLevelsAllowed();
+
+// remove campaigns that has a formation level that user does have an opened fnum for
+function removeNotAllowedCampaigns($campaigns, $allowedFormationLevels) {
+    foreach ($campaigns as $key => $campaign) {
+        // get campaign's formation level
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('data_formation_level.id');
+        $query->from('data_formation_level')
+        ->leftJoin('data_formation ON data_formation_level.id = data_formation.level')
+        ->leftJoin('#__emundus_setup_campaigns ON data_formation.id = #__emundus_setup_campaigns.formation')
+        ->where('#__emundus_setup_campaigns.id = '.$campaign->id);
+    
+        $db->setQuery($query);
+        $formationLevel = $db->loadResult();
+    
+        // remove campaign if user has an opened fnum for the formation level
+        if (!in_array($formationLevel, $allowedFormationLevels)) {
+            unset($campaigns[$key]);
+        }
+    }
+
+    return $campaigns;
+}
+
+$currentCampaign = removeNotAllowedCampaigns($currentCampaign, $allowedFormationLevels);
+$allCampaign = removeNotAllowedCampaigns($allCampaign, $allowedFormationLevels);
+$pastCampaign = removeNotAllowedCampaigns($pastCampaign, $allowedFormationLevels);
+$futurCampaign = removeNotAllowedCampaigns($futurCampaign, $allowedFormationLevels);
+
 // sort arrays by label and not by date
 usort($currentCampaign, function($a, $b) {
     return $a->label <=> $b->label;
@@ -31,26 +118,9 @@ usort($futurCampaign, function($a, $b) {
     return $a->label <=> $b->label;
 });
 
-// Add a custom class parameter to currentCampaign items
-$currentCampaign = array_map(function($item) use ($formations) {
-    $item->class = '';
-
-    foreach ($formations as $formation) {
-        if ($formation->id == $item->formation) {
-            $item->class .= 'formation_type-' . $formation->type;
-            $item->class .= ' formation_level-' . $formation->level;
-
-            foreach ($formation->voies_d_acces as $voie) {
-                $item->class .= ' voie_d_acces-' . $voie->voie_d_acces;
-            }
-            break;
-        }
-    }
-
-    return $item;
-}, $currentCampaign);
-
 ?>
+
+<?php if(!empty($allowedFormationLevels)):?>
 
 <?= $mod_em_campaign_intro; ?>
 
@@ -77,19 +147,21 @@ $currentCampaign = array_map(function($item) use ($formations) {
             <?php endif; ?>
             <?php if(!empty($formationTypes) && count($formationTypes) > 1): ?>
                 <div class="g-block size-30" id="navfilter">
-                    <p>
+                    <!-- <p>
                         <select name="formation_type" id="formation_type" onchange="filterBy('formation_type', this.value)">
                             <option value="all" selected>Tous type de formations</option>
                             <?php foreach ($formationTypes as $type): ?>
                                 <option value="<?php echo $type->id; ?>"><?php echo $type->type; ?></option>
                             <?php endforeach; ?>
                         </select>
-                    </p>
+                    </p> -->
                     <p>
                         <select name="formation_level" id="formation_level" onchange="filterBy('formation_level', this.value)">
                             <option value="all" selected>Tous les niveaux de formation</option>
                             <?php foreach ($formationLevels as $level): ?>
-                                <option value="<?php echo $level->id; ?>"><?php echo $level->label; ?></option>
+                                <?php if (in_array($level->id, $allowedFormationLevels)): ?>
+                                    <option value="<?php echo $level->id; ?>"><?php echo $level->label; ?></option>
+                                <?php endif; ?>
                             <?php endforeach; ?>
                         </select>
                     </p>
@@ -250,11 +322,14 @@ $currentCampaign = array_map(function($item) use ($formations) {
             <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course=' . $result->code . '&cid=' . $result->id); ?>
 
             <?php if ($result->apply_online == 1 && $m_campaign->isLimitObtained($result->id) !== true) : ?>
-                <?php if ($mod_em_campaign_get_link) : ?>
+                <?php if (!empty($result->formation_url)) : 
+                    echo "<a class='btn btn-primary btn-creux btn-orange' role='button' href='#' onclick='goTo(\"". $result->formation_url ."\", true)' data-toggle='sc-modal'>" . JText::_('MORE_INFO') . "</a>";
+                ?>
+                <?php elseif ($mod_em_campaign_get_link) : ?>
                     <a class="btn btn-primary btn-creux btn-orange" role="button"
                        href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
-                       target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
-                <?php else : ?>
+                       target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>    
+               <?php else : ?>
                     <a class="btn btn-primary btn-creux btn-orange" role="button"
                        href='<?php echo "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
                        data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
@@ -273,7 +348,10 @@ $currentCampaign = array_map(function($item) use ($formations) {
                 <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url; ?>'
                    data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
             <?php else : ?>
-                <?php if ($mod_em_campaign_get_link) : ?>
+                <?php if (!empty($result->formation_url)) : 
+                    echo "<a class='btn btn-primary btn-plein btn-blue' role='button' href='#' onclick='goTo(\"". $result->formation_url ."\", true)' data-toggle='sc-modal'>" . JText::_('MORE_INFO') . "</a>";
+                ?>
+                <?php elseif ($mod_em_campaign_get_link) : ?>
                     <a class="btn btn-primary btn-plein btn-blue" role="button"
                        href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
                        target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
@@ -354,7 +432,11 @@ $currentCampaign = array_map(function($item) use ($formations) {
                         } else {
                             $btn_class = "btn btn-primary btn-plein btn-blue";
                         } ?>
-                        <?php if ($mod_em_campaign_get_link) : ?>
+
+                        <?php if (!empty($result->formation_url)) : 
+                            echo "<a class='" . $btn_class . "' role='button' href='#' onclick='goTo(\"". $result->formation_url ."\", true)' data-toggle='sc-modal'>" . JText::_('MORE_INFO') . "</a>";    
+                        ?>
+                        <?php elseif ($mod_em_campaign_get_link) : ?>
                             <a class="<?php echo $btn_class; ?>" role="button"
                                href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
                                target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
@@ -482,6 +564,27 @@ $currentCampaign = array_map(function($item) use ($formations) {
             campaign.style.display = display ? "block" : "none";
         });
     }
+
+    function goTo(url, no_secure) {
+        if (!url || url === '') {
+            return;
+        }
+
+        // check format of url by regex
+        const regex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+        if (regex.test(url)) {
+            if (no_secure === true) {
+                // replace https with http
+                url = url.replace(/^https:/, 'http:');
+            }
+
+            // open url in new tab
+            window.open(url, '_blank');        
+        } else {
+            console.warn('URL is not valid');
+            return;
+        }
+    }
     
     jQuery(document).ready(function () {
 
@@ -531,3 +634,5 @@ $currentCampaign = array_map(function($item) use ($formations) {
         }
     });
 </script>
+
+<?php endif; ?>

@@ -57,8 +57,8 @@
             getArticles() {
                 axios.get("index.php?option=com_emundus_onboard&controller=settings&task=getfooterarticles")
                     .then(response => {
-                        this.form.content.col1 = response.data.data.column1.content;
-                        this.form.content.col2 = response.data.data.column2.content;
+                        this.form.content.col1 = response.data.data.column1;
+                        this.form.content.col2 = response.data.data.column2;
                     });
             },
 
