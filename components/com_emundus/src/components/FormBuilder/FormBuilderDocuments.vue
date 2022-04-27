@@ -3,7 +3,7 @@
     <div id="form-builder-title" class="em-flex-row em-flex-space-between em-p-16">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>
       <span
-           class="material-icons"
+          class="material-icons em-pointer"
           @click="createDocument"
       >
         add

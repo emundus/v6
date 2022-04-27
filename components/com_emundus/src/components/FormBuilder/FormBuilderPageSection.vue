@@ -174,9 +174,17 @@ export  default {
       this.updateLastSave();
     },
     deleteSection() {
-      formBuilderService.deleteGroup(this.section.group_id);
-      this.$emit('delete-section', this.section.group_id);
-      this.updateLastSave();
+      this.swalConfirm(
+          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION"),
+          this.section.label.fr,
+          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_SECTION_CONFIRM"),
+          this.translate("JNO"),
+          () => {
+            formBuilderService.deleteGroup(this.section.group_id);
+            this.$emit('delete-section', this.section.group_id);
+            this.updateLastSave();
+          }
+      );
     },
   },
   watch: {

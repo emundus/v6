@@ -50,9 +50,17 @@ export default {
       this.updateLastSave();
     },
     deleteElement() {
-      formBuilderService.deleteElement(this.element.id);
-      this.$emit('delete-element', this.element.id);
-      this.updateLastSave();
+      this.swalConfirm(
+          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT"),
+          this.element.label.fr,
+          this.translate("COM_EMUNDUS_FORM_BUILDER_DELETE_ELEMENT_CONFIRM"),
+          this.translate("JNO"),
+          () => {
+            formBuilderService.deleteElement(this.element.id);
+            this.$emit('delete-element', this.element.id);
+            this.updateLastSave();
+          }
+      );
     },
   }
 }
