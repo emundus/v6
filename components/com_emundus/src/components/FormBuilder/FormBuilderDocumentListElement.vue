@@ -31,6 +31,7 @@
 
 <script>
 import formService from '../../services/form';
+import formBuilderMixin from '../../mixins/formbuilder.js';
 
 export default {
   name: "FormBuilderDocumentListElement",
@@ -48,6 +49,7 @@ export default {
       default: 1,
     },
   },
+  mixins: [formBuilderMixin],
   data () {
     return {
       closedSection: false,
@@ -81,11 +83,18 @@ export default {
       this.$emit('edit-document');
     },
     deleteDocument(event) {
-      event.preventDefault();
-      formService.removeDocumentFromProfile(this.document.id).then(response => {
-        this.$emit('delete-document', this.document.id);
-        this.$destroy();
-      });
+      this.swalConfirm(
+        this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT'),
+        this.document.label,
+        this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT_CONFIRM'),
+        this.translate('JNO'),
+        () => {
+          formService.removeDocumentFromProfile(this.document.id).then(response => {
+            this.$emit('delete-document', this.document.id);
+            this.$destroy();
+          });
+        },
+      );
     },
   },
 }
@@ -108,6 +117,19 @@ export default {
       background-color: white;
       width: 100%;
       transition: all 0.3s ease-in-out;
+
+      #delete-section {
+        opacity: 0;
+        pointer-events: none;
+        transition: all .3s;
+      }
+
+      &:hover {
+        #delete-section {
+          opacity: 1;
+          pointer-events: all;
+        }
+      }
 
       &.closed {
         max-height: 93px;
