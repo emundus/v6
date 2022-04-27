@@ -30,6 +30,7 @@
           @open-element-properties="$emit('open-element-properties', $event)"
           @move-element="updateElementsOrder"
           @delete-section="deleteSection"
+          @update-element="getSections"
       >
       </form-builder-page-section>
     </div>

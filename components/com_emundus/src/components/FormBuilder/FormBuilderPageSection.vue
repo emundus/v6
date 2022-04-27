@@ -50,6 +50,7 @@
               :element="element"
               @open-element-properties="$emit('open-element-properties', element)"
               @delete-element="deleteElement"
+              @update-element="$emit('update-element')"
             >
             </form-builder-page-section-element>
           </transition-group>
