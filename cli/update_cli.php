@@ -116,7 +116,6 @@ class UpdateCli extends JApplicationCli
             $this->out("Update found");
         }
 
-
         foreach ($uid as $u) {
             $model = JModelLegacy::getInstance('InstallerModelUpdate');
             $component = JComponentHelper::getComponent('com_installer');
@@ -194,59 +193,6 @@ class UpdateCli extends JApplicationCli
         }
     }
 
-    public function packageComponent($component)
-    {
-        // Set path for component's folders
-        $name       = preg_split("/[_]+/", $component, 2);
-        $admin_path = JPATH_ADMINISTRATOR . "/components/" . $component . "/";
-        $site_path  = JPATH_BASE . "/components/" . $component . "/";
-        if (is_dir($admin_path . 'language')) {
-            $fr_path    = $admin_path . 'language/fr-FR/fr-FR.' . $component . '.ini';
-            $en_path    = $admin_path . 'language/en-GB/en-GB.' . $component . '.ini';
-        } else {
-            $fr_path = JPATH_BASE . '/language/fr-FR/fr-FR.' . $component . '.ini';
-            $en_path = JPATH_BASE . '/language/en-GB/en-GB.' . $component . '.ini';
-        }
-
-        $media_path = JPATH_BASE . "/media/" . $component;
-        $xml_path   = $admin_path . $name[1] . '.xml';
-        // Set destination path
-        $dest = JPATH_ROOT . '/tmp/' . $component;
-        mkdir($dest);
-
-        // Copy files in tmp folder
-        $succes = array();
-        if ($component != 'com_emundus_messenger')
-        {
-            $succes[] = $this->custom_copy($admin_path, $dest . '/admin');
-        }
-        $succes[] = $this->custom_copy($site_path, $dest . '/site');
-        $succes[] = $this->custom_copy($media_path, $dest . '/media/' . $component);
-        foreach ($succes as $row)
-        {
-            if (!$row)
-            {
-                echo "-> Custom copy failed";
-                exit();
-            }
-        }
-        mkdir($dest . '/language');
-        #mkdir($dest . '/language/fr-FR/');
-        #mkdir($dest . '/language/en-GB/');
-        if ((!copy($fr_path, $dest . '/language/fr-FR.' . $component . '.ini')) || (!copy($en_path, $dest . '/language/en-GB.' . $component . '.ini')))
-        {
-            echo "-> Language copy failed\n";
-        }
-        if (!copy($xml_path, $dest . '/' . $name[1] . '.xml'))
-        {
-            $xml_path = $site_path . $name[1] . '.xml';
-            if (!copy($xml_path, $dest . '/' . $name[1] . '.xml'))
-            {
-                echo '-> Xml copy failed';
-                exit();
-            }
-        }
-    }
 
     public function installExtension($app, $name, $token='')
     {
@@ -266,12 +212,16 @@ class UpdateCli extends JApplicationCli
                 if (!$token) {
                     $this->out('Need to pass an authentication token as argument');
                     exit();}
+                $extName = 'com_emundus';
                 $url = "https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=" . $token;
                 break;
             case 'fabrik':
-                $url = "https://github.com/Fabrik/fabrik/archive/master.zip";
+                $extName = 'com_fabrik';
+                $url = "https://fabrikar.com/index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=fileupload&method=ajax_download&format=raw&element_id=31&formid=3&rowid=3796&repeatcount=0&ajaxIndex=0";
+                #$url = "https://github.com/Fabrik/fabrik/archive/master.zip";
                 break;
             case 'gantry':
+                $extName = 'com_gantry';
                 $url = "https://github.com/gantry/gantry5/releases/download/5.5.5/joomla-pkg_gantry5_v5.5.5.zip";
                 break;
             case 'hikashop':
@@ -310,29 +260,9 @@ class UpdateCli extends JApplicationCli
         }
 
         try {
-            $p_file = JInstallerHelper::downloadPackage($url);
-            if (!$p_file) {
-                JError::raiseWarning('', JText::_('COM_INSTALLER_MSG_INSTALL_INVALID_URL'));
-                return false;
-            }
+            $app->input->set('install_url', $url);
+            $this->getInstall($extName);
 
-            $config = JFactory::getConfig();
-            $tmp_dest = $config->get('tmp_path');
-            $src_dir =  basename($p_file, '.zip');
-
-
-            // Unpack the downloaded package file.
-            $package = JInstallerHelper::unpack($tmp_dest . '/' . $p_file, true);
-
-            $extractdir = $package['extractdir'] . '/'. $src_dir.'/';
-            foreach (new DirectoryIterator($extractdir) as $file) {
-                if ($file->isDot()) continue;
-                if ((strpos($file, '.txt')) || (strpos($file, '.md'))) continue;
-
-                $filename = $file->getFilename();
-                $this->custom_copy($package['dir'] . '/' . $filename . '/', JPATH_BASE . '/' . $filename);
-                echo "\n" . JPATH_BASE . '/' . $filename;
-            }
         } catch (Exception $e) {
             echo $e;
         }
