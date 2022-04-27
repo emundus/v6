@@ -26,6 +26,8 @@
           id="element-parameters"
           class="em-p-16"
       >
+        <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
+        <input id="element-label" name="element-label" type="text" v-model="element.label.fr" :value="element.label.fr"/>
         <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <div class="em-toggle">
@@ -147,6 +149,7 @@ export default {
     },
     saveProperties()
     {
+      formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
       formBuilderService.updateParams(this.element).then(response => {
         if (response.status) {
           this.$emit('close');
