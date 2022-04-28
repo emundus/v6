@@ -1,5 +1,5 @@
 <template>
-  <div :id="'formBuilder'">
+  <div :id="'formBuilder'" class="em-w-100 em-h-100">
     <modal
         :name="'formBuilder'"
         height="auto"
@@ -12,7 +12,7 @@
         <div class="right-actions">
           <span
               id="go-back"
-              class="material-icons em-p-12-16"
+              class="material-icons em-p-12-16 em-pointer"
               @click="goTo('/formulaires')"
           >
             navigate_before
@@ -42,9 +42,9 @@
           <div class="tabs em-flex-column em-flex-start">
             <div class="tab" v-for="(tab, index) in leftPanel.tabs" :key="index" :class="{ active: tab.active }">
               <span
-
-                  class="material-icons"
-                  @click="tab.url ? goTo(tab.url, 'blank') : selectTab(index)">
+                  class="material-icons em-p-16"
+                  @click="tab.url ? goTo(tab.url, 'blank') : selectTab(index)"
+              >
                 {{ tab.icon }}
               </span>
             </div>
@@ -56,7 +56,7 @@
             ></form-builder-elements>
           </div>
         </aside>
-        <section class="em-flex-column">
+        <section class="em-flex-column em-w-100">
           <transition name="fade" mode="out-in">
             <form-builder-page
               ref="formBuilderPage"
@@ -79,10 +79,7 @@
         </section>
         <aside class="right-panel em-flex-column">
           <transition name="fade" mode="out-in">
-            <div
-                id="form-hierarchy"
-                v-if="showInRightPanel == 'hierarchy'"
-            >
+            <div id="form-hierarchy" v-if="showInRightPanel == 'hierarchy'" class="em-w-100">
               <form-builder-pages
                   :pages="pages"
                   :selected="selectedPage"
@@ -286,16 +283,10 @@ export default {
 
 <style lang="scss">
 #formBuilder {
-  width: 100%;
-  height: 100%;
   background: white;
 
   header {
     box-shadow: inset 0px -1px 0px #E3E5E8;
-
-    #go-back {
-      cursor: pointer;
-    }
 
     button {
       margin: 8px 16px;
@@ -316,8 +307,8 @@ export default {
     }
 
     section {
-      width: 100%;
       overflow-y: auto;
+      background: #f8f8f8;
     }
 
     .right-panel {
@@ -347,7 +338,6 @@ export default {
           }
 
           .material-icons {
-            padding: 16px;
             font-size: 22px !important;
           }
         }
@@ -358,10 +348,6 @@ export default {
         padding: 0 16px;
         height: 100%;
       }
-    }
-
-    section {
-      background: #f8f8f8;
     }
 
     .form-builder-title {

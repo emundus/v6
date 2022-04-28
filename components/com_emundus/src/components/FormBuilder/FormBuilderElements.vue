@@ -68,7 +68,6 @@ export default {
         plugin: this.cloneElement.value,
       }).then(response => {
         formBuilderService.updateElementOrder(group_id, response.data.scalar, event.newDraggableIndex).then((response) => {
-          console.log(response);
           this.$emit('element-created');
           this.updateLastSave();
         });

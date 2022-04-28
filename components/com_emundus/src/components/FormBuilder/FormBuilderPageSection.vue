@@ -6,7 +6,7 @@
           @click="closedSection = !closedSection"
       > {{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} / {{ totalSections }}</div>
       <div
-          class="section-content"
+          class="section-content em-w-100 em-p-32"
           :class="{
             'closed': closedSection,
           }"
@@ -214,10 +214,8 @@ export  default {
     }
 
     .section-content {
-      padding: 32px;
       border-top: 4px solid #20835F;
       background-color: white;
-      width: 100%;
       transition: all 0.3s ease-in-out;
 
       &:hover {
