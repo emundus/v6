@@ -18,6 +18,7 @@
               ref="sectionTitle"
               contenteditable="true"
               @focusout="updateTitle"
+              @keyup.enter="updateTitle"
           >
             {{ section.label.fr }}
           </span>
@@ -28,7 +29,7 @@
           ref="sectionIntro"
           contenteditable="true"
           @focusout="updateIntro"
-
+          @keyup.enter="updateIntro"
           v-html="section.group_intro"
         >
         </p>

@@ -13,6 +13,7 @@
           class="element-title editable-data"
           contenteditable="true"
           @focusout="updateLabel"
+          @keyup.enter="updateLabel"
       >
         {{ element.label.fr }}
       </span>

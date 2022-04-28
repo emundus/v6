@@ -4,6 +4,7 @@
         class="em-font-size-24 em-font-weight-800 editable-data"
         ref="pageTitle"
         @focusout="updateTitle"
+        @keyup.enter="updateTitle"
         contenteditable="true"
     >
       {{ title }}
@@ -13,6 +14,7 @@
         ref="pageDescription"
         v-html="description"
         @focusout="updateDescription"
+        @keyup.enter="updateDescription"
         contenteditable="true"
       >
     </span>
