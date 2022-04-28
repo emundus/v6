@@ -499,6 +499,10 @@ input:focus + .em-slider {
   width: 380px;
 }
 
+.em-h-100 {
+  height: 100%;
+}
+
 .em-w-max-content{
   width: max-content;
 }
@@ -588,6 +592,11 @@ input:focus + .em-slider {
 .em-p-24{
   padding: 24px;
 }
+
+.em-p-32{
+  padding: 32px;
+}
+
 .em-pt-16{
   padding-top: 16px;
 }
