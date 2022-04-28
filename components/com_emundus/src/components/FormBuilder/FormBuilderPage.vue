@@ -81,7 +81,7 @@ export default {
     }
   },
   methods: {
-    getSections() {
+    getSections(newElementIndex = null) {
       formService.getPageObject(this.page.id).then(response => {
         if (response.status) {
           this.fabrikPage = response.data;

@@ -240,6 +240,26 @@ export default {
             };
         }
     },
+    updateElementOrder(groupId, elementId, newIndex) {
+      const formData = new FormData();
+      formData.append('group_id', groupId);
+      formData.append('element_id', elementId);
+      formData.append('new_index', newIndex);
+
+      try {
+        const response = client().post(
+          'index.php?option=com_emundus&controller=formbuilder&task=updateelementorder',
+          formData
+        );
+
+        return response;
+      } catch (e) {
+        return {
+          status: false,
+          message: e.message
+        };
+      }
+    },
     async toggleElementPublishValue(element)
     {
         const formData = new FormData();

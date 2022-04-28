@@ -208,8 +208,8 @@ export default {
         }
       });
     },
-    onElementCreated() {
-      this.$refs.formBuilderPage.getSections();
+    onElementCreated(elementIndex) {
+      this.$refs.formBuilderPage.getSections(elementIndex);
     },
     onOpenElementProperties(event)
     {

@@ -2221,6 +2221,48 @@ this.set(words.join(&quot; &quot;));
 
     }
 
+    function updateElementOrder($group_id, $element_id, $new_index)
+    {
+        // get elements from group_id
+        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+        $groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+        $groupModel->setId($group_id);
+        $elements = $groupModel->getMyElements();
+        $elements_order = array();
+
+        foreach ($elements as $key => $element) {
+            if ($element->element->id == $element_id) {
+                $elements_order[] = [
+                    'id' => $element->element->id,
+                    'order' => intval($new_index),
+                ];
+            } else {
+                $elements_order[] = [
+                    'id' => $element->element->id,
+                    'order' => $element->element->ordering,
+                ];
+            }
+        }
+
+        // sort elements by order
+        usort($elements_order, function ($a, $b) {
+            return $a['order'] - $b['order'];
+        });
+
+        $after_element_id = false;
+        foreach ($elements_order as $key => $element) {
+            if ($element_id == $element['id']) {
+                $after_element_id = true;
+            }
+
+            if ($after_element_id && $element['order'] == $elements_order[$key -1]['order']) {
+                $elements_order[$key]['order'] = $elements_order[$key -1]['order'] + 1;
+            }
+        }
+
+        return $this->updateGroupElementsOrder($elements_order, $group_id);
+    }
+
     function ChangeRequire($element, $user) {
         if (empty($user)) {
             $user = JFactory::getUser()->id;
