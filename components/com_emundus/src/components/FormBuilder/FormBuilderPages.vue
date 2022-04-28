@@ -2,37 +2,42 @@
   <div id="form-builder-pages">
     <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between em-p-16">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
-      <span
-          class="material-icons"
-          @click="addPage"
-      >
-        add
-      </span>
+      <span class="material-icons em-pointer" @click="addPage"> add </span>
     </p>
-    <div
-        class="em-p-16 em-font-weight-500"
-        v-for="page in pages"
-        :key="page.id"
-        :class="{
-          selected: page.id === selected,
-        }"
-        @click="selectPage(page.id)"
+    <draggable
+        v-model="pages"
+        group="form-builder-pages"
+        :sort="true"
+        class="draggables-list"
+        @end="onDragEnd"
     >
-      <p>{{ page.label }}</p>
-      <ul
-          id="form-builder-pages-sections-list"
-          class="em-font-size-12 em-mb-8 em-mr-8 em-ml-8"
-          v-if="page.id === selected"
-      >
-        <li
-            v-for="section in selectedPageSections"
-            :key="section.group_id"
-            class="em-mb-4"
+      <transition-group>
+        <div
+            class="em-p-16 em-font-weight-500 em-pointer"
+            v-for="page in pages"
+            :key="page.id"
+            :class="{
+              selected: page.id === selected,
+            }"
         >
-          {{ section.label.fr }}
-        </li>
-      </ul>
-    </div>
+          <div class="em-flex-row em-flex-space-between">
+            <p @click="selectPage(page.id)">{{ page.label }}</p>
+            <span v-if="page.id === selected" class="material-icons" @click="sectionsShown = !sectionsShown">
+              {{ sectionsShown ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+            </span>
+          </div>
+          <ul
+              id="form-builder-pages-sections-list"
+              class="em-font-size-12 em-mb-8 em-mr-8 em-ml-8 em-mt-8"
+              v-if="page.id === selected  && sectionsShown"
+          >
+            <li v-for="section in selectedPageSections" :key="section.group_id" class="em-mb-4">
+              {{ section.label.fr }}
+            </li>
+          </ul>
+        </div>
+      </transition-group>
+    </draggable>
   </div>
 </template>
 
@@ -40,9 +45,13 @@
 import formBuilderService from '../../services/formbuilder';
 import formBuilderMixin from '../../mixins/formbuilder';
 import formService from '../../services/form';
+import draggable from "vuedraggable";
 
 export default {
   name: 'FormBuilderPages',
+  components: {
+    draggable,
+  },
   props: {
     pages: {
       type: Array,
@@ -60,6 +69,7 @@ export default {
   mixins: [formBuilderMixin],
   data() {
     return {
+      sectionsShown: false,
       selectedPageSections: [],
     };
   },
@@ -86,12 +96,22 @@ export default {
         this.$emit('add-page');
         this.updateLastSave();
       });
+    },
+    onDragEnd() {
+      const newOrder = this.pages.map((page, index) => {
+        return {
+          id: page.id,
+          order: index
+        };
+      });
+
+      formBuilderService.reorderMenu(newOrder);
     }
   },
   watch: {
     selected() {
       this.getPageSections();
-    }
+    },
   }
 }
 </script>
@@ -99,8 +119,6 @@ export default {
 <style lang="scss">
 #form-builder-pages {
   p {
-    cursor: pointer;
-    margin-bottom: 15px !important;
     font-weight: 400;
     font-size: 14px;
     line-height: 18px;
@@ -119,7 +137,6 @@ export default {
 
   #form-builder-pages-sections-list {
     list-style: none;
-    margin-top: 0;
   }
 }
 </style>
