@@ -19,7 +19,8 @@
       <span id="delete-element" class="material-icons em-red-500-color em-pointer" @click="deleteElement">delete</span>
     </div>
     <div class="element-field">
-      <form-builder-radio-button v-if="element.plugin == 'radiobutton'" :element="element"></form-builder-radio-button>
+      <form-builder-element-options v-if="element.plugin == 'radiobutton'" :element="element" type="radio"></form-builder-element-options>
+      <form-builder-element-options v-else-if="element.plugin == 'checkbox'" :element="element" type="checkbox"></form-builder-element-options>
       <span v-else v-html="element.element" :id="element.id">
       </span>
     </div>
@@ -29,11 +30,11 @@
 <script>
 import formBuilderService from '../../services/formbuilder';
 import formBuilderMixin from "../../mixins/formbuilder";
-import FormBuilderRadioButton from "./FormBuilderSectionSpecificElements/FormBuilderRadioButton";
+import FormBuilderElementOptions from "./FormBuilderSectionSpecificElements/FormBuilderElementOptions";
 
 export default {
   components: {
-    FormBuilderRadioButton
+    FormBuilderElementOptions
   },
   props: {
     element: {

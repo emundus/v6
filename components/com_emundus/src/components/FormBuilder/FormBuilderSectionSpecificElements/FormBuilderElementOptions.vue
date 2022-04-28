@@ -9,14 +9,14 @@
            :key="option"
       >
         <input
-            type="radio"
+            :type="type"
             :name="'element-id-' + element.id"
             :value="element.params.sub_options.sub_values[index]"
         > {{ option }}
       </div>
       <div id="add-option" class="em-flex-row em-flex-start em-s-justify-content-center">
         <input
-            type="radio"
+            :type="type"
             :name="'element-id-' + element.id"
         >
         <input
@@ -41,6 +41,10 @@ export default {
       type: Object,
       required: true
     },
+    type: {
+      type: String,
+      required: true
+    }
   },
   data() {
     return {
