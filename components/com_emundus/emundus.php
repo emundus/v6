@@ -408,6 +408,7 @@ JText::script('ATTACHMENT_LETTER');
 JText::script('MESSAGE_INFORMATION');
 JText::script('EMAIL_FAILED');
 JText::script('CAMPAIGN_YEAR');
+JText::script('COM_EMUNDUS_CAMPAIGN_UNSAVED_CHANGES');
 JText::script('CANDIDATE_EMAIL');
 JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');
