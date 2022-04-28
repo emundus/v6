@@ -142,6 +142,8 @@ export  default {
       this.elements = elements.length > 0 ? elements : [];
     },
     updateTitle() {
+      document.activeElement.blur();
+      this.$refs.sectionTitle.innerText = this.$refs.sectionTitle.innerText.trim();
       this.section.label.fr = this.$refs.sectionTitle.innerText;
       formBuilderService.updateTranslation({
         value: this.section.group_id,
@@ -150,6 +152,8 @@ export  default {
       this.updateLastSave();
     },
     updateIntro() {
+      document.activeElement.blur();
+      this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim();
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
       formBuilderService.updateGroupParams(this.section.group_id, {
         'intro': this.section.group_intro

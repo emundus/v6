@@ -47,7 +47,9 @@ export default {
   methods: {
     updateLabel()
     {
-      this.element.label.fr = this.$refs.label.innerText;
+      document.activeElement.blur();
+      this.element.label.fr = this.$refs.label.innerText.trim();
+
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
       this.updateLastSave();
     },

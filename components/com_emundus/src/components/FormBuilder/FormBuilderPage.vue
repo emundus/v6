@@ -14,7 +14,6 @@
         ref="pageDescription"
         v-html="description"
         @focusout="updateDescription"
-        @keyup.enter="updateDescription"
         contenteditable="true"
       >
     </span>
@@ -109,7 +108,8 @@ export default {
     },
     updateTitle()
     {
-      this.fabrikPage.show_title.label.fr = this.$refs.pageTitle.innerText;
+      document.activeElement.blur();
+      this.fabrikPage.show_title.label.fr = this.$refs.pageTitle.innerText.trim();
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
         if (response.status) {
           this.$emit('update-page-title', {
