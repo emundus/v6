@@ -178,7 +178,6 @@ export default {
     {
         const formData = new FormData();
         const postData = JSON.stringify(element);
-        console.log(postData);
         formData.append('element', postData);
 
         try {
