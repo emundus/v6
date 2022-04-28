@@ -19,6 +19,7 @@
               contenteditable="true"
               @focusout="updateTitle"
               @keyup.enter="updateTitle"
+              @keydown="(event) => checkMaxlength(event, 50)"
           >
             {{ section.label.fr }}
           </span>
@@ -89,6 +90,7 @@
 <script>
 import formBuilderService from '../../services/formbuilder';
 import formBuilderMixin from "../../mixins/formbuilder";
+import globalMixin from "../../mixins/mixin";
 
 import FormBuilderPageSectionElement from "./FormBuilderPageSectionElement";
 import draggable from "vuedraggable";
@@ -120,7 +122,7 @@ export  default {
       default: 0
     },
   },
-  mixins: [formBuilderMixin],
+  mixins: [formBuilderMixin, globalMixin],
   data() {
     return {
       closedSection: false,

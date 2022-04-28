@@ -19,9 +19,10 @@
             :class="{
               selected: page.id === selected,
             }"
+            @click="selectPage(page.id)"
         >
           <div class="em-flex-row em-flex-space-between">
-            <p @click="selectPage(page.id)">{{ page.label }}</p>
+            <p>{{ page.label }}</p>
             <span v-if="page.id === selected" class="material-icons" @click="sectionsShown = !sectionsShown">
               {{ sectionsShown ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
             </span>

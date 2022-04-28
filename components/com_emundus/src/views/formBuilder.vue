@@ -206,12 +206,16 @@ export default {
         formService.getSubmissionPage(this.profile_id).then(response => {
           const formId = response.data.link.match(/formid=(\d+)/)[1];
           if (formId) {
-            this.pages.push({
-              id: formId,
-              label: this.translate('COM_EMUNDUS_FORM_BUILDER_SUBMISSION_PAGE'),
-              type: 'submission',
-              elements: [],
-            });
+            // check if the form is already in the pages
+            const page = this.pages.find(page => page.id === formId);
+            if (!page) {
+              this.pages.push({
+                id: formId,
+                label: this.translate('COM_EMUNDUS_FORM_BUILDER_SUBMISSION_PAGE'),
+                type: 'submission',
+                elements: [],
+              });
+            }
           }
         });
       });

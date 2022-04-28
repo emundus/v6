@@ -5,6 +5,7 @@
         ref="pageTitle"
         @focusout="updateTitle"
         @keyup.enter="updateTitle"
+        @keydown="(event) => checkMaxlength(event, 50)"
         contenteditable="true"
     >
       {{ translate(title) }}
@@ -49,6 +50,7 @@ import formBuilderService from '../../services/formbuilder';
 
 import FormBuilderPageSection from "./FormBuilderPageSection";
 import formBuilderMixin from "../../mixins/formbuilder";
+import globalMixin from "../../mixins/mixin";
 
 export default {
   components: {
@@ -64,7 +66,7 @@ export default {
       default: {}
     },
   },
-  mixins: [formBuilderMixin],
+  mixins: [formBuilderMixin, globalMixin],
   data() {
     return {
       fabrikPage: {},
@@ -109,7 +111,9 @@ export default {
     updateTitle()
     {
       document.activeElement.blur();
-      this.fabrikPage.show_title.label.fr = this.$refs.pageTitle.innerText.trim();
+      this.$refs.pageTitle.innerText = this.$refs.pageTitle.innerText.trim();
+      this.fabrikPage.show_title.label.fr = this.$refs.pageTitle.innerText;
+
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then(response => {
         if (response.status) {
           this.$emit('update-page-title', {
@@ -142,7 +146,7 @@ export default {
     deleteSection(sectionId) {
       this.sections = this.sections.filter(section => section.group_id !== sectionId);
       this.updateLastSave();
-    }
+    },
   },
 }
 </script>

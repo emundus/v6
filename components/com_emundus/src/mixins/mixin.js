@@ -63,6 +63,11 @@ var mixin = {
 				await callback(array[index], index, array);
 			}
 		},
+		checkMaxlength(event, maxlength) {
+			if (event.target.textContent.length >= maxlength && event.keyCode != 8) {
+				event.preventDefault();
+			}
+		},
 	}
 };
 
