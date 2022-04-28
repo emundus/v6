@@ -2,11 +2,11 @@
   <div id="radiobtnF">
     <div class="row rowmodal">
       <div class="em-mb-32">
-        <label>{{ helptext }} :</label>
+        <label>{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT') }} :</label>
         <input type="text" v-model="element.params.rollover"/>
       </div>
       <div class="em-flex-row em-mb-16">
-        <label class="require col-md-3">{{ suboptions }} :</label>
+        <label class="require col-md-3">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS') }} :</label>
       </div>
       <div class="col-md-10 em-flex-row em-mb-16">
         <div class="em-toggle">
@@ -21,7 +21,7 @@
           <strong class="b em-toggle-switch"></strong>
           <strong class="b em-toggle-track"></strong>
         </div>
-        <label for="databasejoin_check" class="em-ml-8 em-mb-0">{{ translations.DataTables  }}</label>
+        <label for="databasejoin_check" class="em-ml-8 em-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN')  }}</label>
       </div>
       <div class="col-md-10">
         <draggable
@@ -37,13 +37,14 @@
             <button @click.prevent="leave(i)" type="button" class="em-transparent-button em-pointer"><span class="material-icons">remove_circle_outline</span></button>
           </div>
         </draggable>
-        <button @click.prevent="add" type="button" class="em-secondary-button em-w-auto em-ml-32" v-if="databasejoin != 1">{{ AddOption }}
+        <button @click.prevent="add" type="button" class="em-secondary-button em-w-auto em-ml-32" v-if="databasejoin != 1">
+          {{ translate('COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS') }}
         </button>
         <select v-if="databasejoin == 1" v-model="databasejoin_data" class="em-mt-16" @change="retrieveDataBaseJoinColumns()">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
         <div v-if="databasejoin == 1" class="em-mt-16">
-          <label class="em-w-100">{{translations.OrderBy}}</label>
+          <label class="em-w-100">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY') }}</label>
           <select v-model="databasejoin_data_order" class="em-mt-8 em-w-100">
             <option v-for="val in databases_colums" :value="val.COLUMN_NAME">{{val.COLUMN_NAME}}</option>
           </select>
@@ -55,18 +56,27 @@
 
 <script>
 import _ from "lodash";
-import axios from "axios";
 import draggable from "vuedraggable";
 import Swal from "sweetalert2";
 
-const qs = require("qs");
+import settingsService from '../../../services/settings';
+import formBuilderService from '../../../services/formbuilder';
 
 export default {
   name: "radiobtnF",
   components: {
     draggable
   },
-  props: {element: Object,databases:Array},
+  props: {
+    element: {
+      type: Object,
+      required: true
+    },
+    databases: {
+      type: Array,
+      required: true
+    },
+  },
   data() {
     return {
       arraySubValues: [],
@@ -76,20 +86,6 @@ export default {
       display_first_option: null,
       databasejoin_data: 0,
       databasejoin_data_order: '',
-      translations: {
-        helptext: this.translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT'),
-        suboptions: this.translate('COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS'),
-        AddOption: this.translate('COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS'),
-        DataTables: this.translate('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN'),
-        No_Default_Value: this.translate('COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE'),
-        OrderBy: this.translate('COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY'),
-      },
-      helptext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
-      suboptions: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_OPTIONS"),
-      AddOption: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_ADD_OPTIONS"),
-      DataTables: this.translate('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN'),
-      No_Default_Value: this.translate('COM_EMUNDUS_ONBOARD_BUILDER_NO_DEFAULT_VALUE'),
-      OrderBy: this.translate('COM_EMUNDUS_ONBOARD_BUILDER_ORDER_BY'),
     };
   },
   methods: {
@@ -113,13 +109,6 @@ export default {
       if (this.element.plugin === 'databasejoin') {
         this.databasejoin = 1;
 
-        /*if (this.element.params.database_join_show_please_select == "1") {
-          this.no_default_value = true;
-        } else {
-          this.no_default_value = false;
-        }*/
-
-
         this.databases.forEach((db, index) => {
           if (db.database_name == this.element.params.join_db_name) {
             this.databasejoin_data = index;
@@ -130,23 +119,15 @@ export default {
         });
       } else {
         if (typeof this.element.params.sub_options !== 'undefined') {
-          axios({
-            method: "post",
-            url: "index.php?option=com_emundus&controller=formbuilder&task=getJTEXTA",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            data: qs.stringify({
-              toJTEXT: this.element.params.sub_options.sub_labels
-            })
-          }).then(response => {
-          this.element.params.sub_options.sub_values.forEach((value, i) => {
-              let object = {
-                'sub_value' : value,
-                'sub_label' : Object.values(response.data)[i],
-              };
-              this.arraySubValues.push(object);
-            });
+          formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels)
+          .then(response => {
+            this.element.params.sub_options.sub_values.forEach((value, i) => {
+            let object = {
+              'sub_value' : value,
+              'sub_label' : Object.values(response.data)[i],
+            };
+
+            this.arraySubValues.push(object);});
             this.needtoemit();
           }).catch(e => {
             console.log(e);
@@ -161,52 +142,31 @@ export default {
       }
     },
     retrieveDataBaseJoinColumns() {
-      axios({
-        method: 'post',
-        url:
-            'index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoinOrdonancementColomns',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        data: qs.stringify({
-          database_name: (this.databases[this.databasejoin_data]).database_name,
-        }),
-      }).then((response) => {
+      formBuilderService.getDatabaseJoinOrderColumns(this.databases[this.databasejoin_data].database_name)
+      .then((response) => {
         this.databases_colums = response.data.data;
       }).catch((e) => {
         console.log(e);
       });
     },
     checkOnboarding() {
-      axios({
-        method: 'get',
-        url: 'index.php?option=com_emundus&controller=settings&task=checkfirstdatabasejoin',
-      }).then((response) => {
+      settingsService.checkFirstDatabaseJoin().then((response) => {
         if (response.data.status) {
           Swal.fire({
-            title: Joomla.JText._('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN'),
-            text: Joomla.JText._('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT'),
+            title: this.translate('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN'),
+            text: this.translate('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN_TEXT'),
             type: 'info',
             showCancelButton: false,
             showCloseButton: true,
             allowOutsideClick: false,
-            confirmButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_OK'),
+            confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
             customClass: {
               title: 'em-swal-title',
               confirmButton: 'em-swal-confirm-button',
             },
           }).then((result) => {
             if (result.value) {
-              axios({
-                method: 'post',
-                url: 'index.php?option=com_emundus&controller=settings&task=removeparam',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                data: qs.stringify({
-                  param: 'first_databasejoin',
-                }),
-              });
+              settingsService.removeParameter('first_databasejoin');
             }
           });
         }

@@ -71,6 +71,9 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import draggable from 'vuedraggable';
 
+import formBuilderService from '../../../services/formbuilder';
+import settingsService from '../../../services/settings';
+
 const qs = require('qs');
 
 export default {
@@ -150,16 +153,8 @@ export default {
               this.no_default_value = true;
             }
           }
-          axios({
-            method: 'post',
-            url: 'index.php?option=com_emundus&controller=formbuilder&task=getJTEXTA',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            data: qs.stringify({
-              toJTEXT: this.element.params.sub_options.sub_labels,
-            }),
-          }).then((response) => {
+
+          formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then((response) => {
             this.element.params.sub_options.sub_values.forEach((value, i) => {
               let object = {
                 'sub_value' : value,
@@ -182,18 +177,8 @@ export default {
     },
 
     retrieveDataBaseJoinColumns() {
-      axios({
-        method: 'post',
-        url:
-            'index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoinOrdonancementColomns',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        data: qs.stringify({
-          database_name: (this.databases[this.databasejoin_data]).database_name,
-        }),
-      }).then((response) => {
-        this.databases_colums = response.data.data;
+      formBuilderService.getDatabaseJoinOrderColumns(this.databases[this.databasejoin_data].database_name).then((response) => {
+        this.databasejoin_columns = response.data;
       }).catch((e) => {
         console.log(e);
       });
@@ -203,10 +188,7 @@ export default {
     }),
 
     checkOnboarding() {
-      axios({
-        method: 'get',
-        url: 'index.php?option=com_emundus&controller=settings&task=checkfirstdatabasejoin',
-      }).then((response) => {
+      settingsService.checkFirstDatabaseJoin().then((response) => {
         if (response.data.status) {
           Swal.fire({
             title: this.translate('COM_EMUNDUS_ONBOARD_TIP_DATABASEJOIN'),
@@ -222,16 +204,7 @@ export default {
             },
           }).then((result) => {
             if (result.value) {
-              axios({
-                method: 'post',
-                url: 'index.php?option=com_emundus&controller=settings&task=removeparam',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                data: qs.stringify({
-                  param: 'first_databasejoin',
-                }),
-              });
+              settingsService.removeParameter('first_databasejoin');
             }
           });
         }

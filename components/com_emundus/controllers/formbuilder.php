@@ -708,7 +708,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         exit;
     }
 
-    public function getdatabasesjoinOrdonancementColomns() {
+    public function getDatabaseJoinOrderColumns() {
         $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
@@ -716,13 +716,16 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
+            $database_name = $jinput->getString('database_name');
 
-            $data_base_name = $jinput->getString('database_name');
-
-            $database_name_columns = $this->m_formbuilder->getDatabasesJoinOrdonancementColumns($data_base_name);
-
-            $tab = array('status' => 1, 'msg' => 'worked', 'data' => $database_name_columns);
+            if (!empty($database_name)) {
+                $database_name_columns = $this->m_formbuilder->getDatabaseJoinOrderColumns($database_name);
+                $tab = array('status' => 1, 'msg' => 'worked', 'data' => $database_name_columns);
+            } else {
+                $tab = array('status' => 0, 'msg' => 'Missing database_name parameter');
+            }
         }
+
         echo json_encode((object)$tab);
         exit;
     }

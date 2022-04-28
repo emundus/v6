@@ -120,6 +120,25 @@ export default {
             };
         }
     },
+    async getJTEXTA(texts) {
+        const formData = new FormData();
+        texts.forEach((text, index) => {
+            formData.append('toJTEXT['+ index +']', text);
+        });
+
+        try {
+            const response = client().post('index.php?option=com_emundus&controller=formbuilder&task=getJTEXTA',
+                formData
+            );
+
+            return response;
+        }  catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     async getAllTranslations(text)
     {
         const formData = new FormData();
@@ -164,6 +183,25 @@ export default {
         try {
             const response = await client().get(
                 'index.php?option=com_emundus&controller=formbuilder&task=getdatabasesjoin'
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
+    getDatabaseJoinOrderColumns(databaseName) {
+        try {
+            const response = client().get(
+                'index.php?option=com_emundus&controller=formbuilder&task=getDatabaseJoinOrderColumns',
+                {
+                    params: {
+                        database_name: databaseName
+                    }
+                }
             );
 
             return response;

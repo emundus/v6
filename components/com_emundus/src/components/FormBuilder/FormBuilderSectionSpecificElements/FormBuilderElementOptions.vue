@@ -57,18 +57,16 @@ export default {
   },
   methods: {
     async getSubOptionsTranslation() {
-      for (let i = 0; i < this.element.params.sub_options.sub_labels.length; i++) {
-        this.loading = true;
+      this.loading = true;
 
-        formBuilderService.getJTEXT(this.element.params.sub_options.sub_labels[i]).then(response => {
-          this.element.params.sub_options.sub_labels[i] = response.data;
-          this.$forceUpdate();
-
-          if (i+1 == this.element.params.sub_options.sub_labels.length) {
-            this.loading = false;
-          }
+      formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
+        this.element.params.sub_options.sub_labels.forEach((label, index) => {
+          this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
         });
-      }
+
+        this.$forceUpdate();
+        this.loading = false;
+      });
     },
     addOption() {
       if (this.newOption.length) {

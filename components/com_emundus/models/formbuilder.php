@@ -3556,7 +3556,7 @@ this.set(words.join(&quot; &quot;));
             return false;
         }
     }
-    function getDatabasesJoinOrdonancementColumns($database_name) {
+    function getDatabaseJoinOrderColumns($database_name) {
 
         $db = $this->getDbo();
         $query = "SELECT DISTINCT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'$database_name'";
