@@ -83,6 +83,7 @@ export default {
   watch: {
     "element.params.sub_options.sub_labels": {
       handler: function (newValue) {
+        // TODO: find a better way to do this
         this.getSubOptionsTranslation();
       },
     },
