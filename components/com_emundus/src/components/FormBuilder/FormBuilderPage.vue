@@ -7,7 +7,7 @@
         @keyup.enter="updateTitle"
         contenteditable="true"
     >
-      {{ title }}
+      {{ translate(title) }}
     </span>
     <span
         class="description editable-data"
@@ -69,8 +69,8 @@ export default {
   data() {
     return {
       fabrikPage: {},
-      title: 'Nouvelle Page',
-      description: 'Ajouter une description',
+      title: 'COM_EMUNDUS_FORM_BUILDER_NEW_PAGE',
+      description: 'COM_EMUNDUS_FORM_BUILDER_ADD_DESCRIPTION',
       sections: [],
     };
   },
@@ -86,16 +86,15 @@ export default {
         if (response.status) {
           this.fabrikPage = response.data;
           this.title = this.fabrikPage.show_title.label.fr;
-          this.description = response.data.intro.fr;
           this.sections = Object.values(response.data.Groups);
-
+          this.description = response.data.intro ? response.data.intro.fr : '';
           this.getDescription();
         }
       });
     },
     getDescription() {
       formBuilderService.getAllTranslations(this.fabrikPage.intro_raw).then(response => {
-        if (response.status) {
+        if (response.status && response.data) {
           this.description = response.data.fr;
         }
       });

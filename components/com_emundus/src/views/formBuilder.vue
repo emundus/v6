@@ -19,27 +19,26 @@
           </span>
         </div>
           <span
-              class="em-font-size-14  em-font-weight-600 editable-data"
-              contenteditable="true"
-              ref="formTitle"
-              @focusout="updateFormTitle"
+            class="em-font-size-14  em-font-weight-600 editable-data"
+            contenteditable="true"
+            ref="formTitle"
+            @focusout="updateFormTitle"
           >
             {{ title }}
           </span>
-        <div class="left-actions em-flex-row em-flex-space-between">
+        <div class="left-actions em-flex-row em-flex-space-between em-p-12-16">
           <p
-              v-if="lastSave"
-              id="saved-at"
-              class="em-font-size-14 em-main-500-color"
+            v-if="lastSave"
+            id="saved-at"
+            class="em-font-size-14 em-main-500-color"
           >
             {{ translate("COM_EMUNDUS_FORM_BUILDER_SAVED_AT") }} {{ lastSave }}
           </p>
-          <button class="em-primary-button publish">{{ translate("COM_EMUNDUS_FORM_BUILDER_PUBLISH") }}</button>
         </div>
       </header>
       <div class="body em-flex-row em-flex-space-between">
-        <aside class="left-panel em-flex-row em-flex-start">
-          <div class="tabs em-flex-column em-flex-start">
+        <aside class="left-panel em-flex-row em-flex-start em-h-100">
+          <div class="tabs em-flex-column em-flex-start em-h-100">
             <div class="tab" v-for="(tab, index) in leftPanel.tabs" :key="index" :class="{ active: tab.active }">
               <span
                   class="material-icons em-p-16"
@@ -56,7 +55,7 @@
             ></form-builder-elements>
           </div>
         </aside>
-        <section class="em-flex-column em-w-100">
+        <section class="em-flex-column em-w-100 em-h-100">
           <transition name="fade" mode="out-in">
             <form-builder-page
               ref="formBuilderPage"
@@ -77,7 +76,7 @@
             </form-builder-document-list>
           </transition>
         </section>
-        <aside class="right-panel em-flex-column">
+        <aside class="right-panel em-flex-column em-h-100">
           <transition name="fade" mode="out-in">
             <div id="form-hierarchy" v-if="showInRightPanel == 'hierarchy'" class="em-w-100">
               <form-builder-pages
@@ -203,6 +202,18 @@ export default {
         } else {
           this.selectedPage = page_id;
         }
+
+        formService.getSubmissionPage(this.profile_id).then(response => {
+          const formId = response.data.link.match(/formid=(\d+)/)[1];
+          if (formId) {
+            this.pages.push({
+              id: formId,
+              label: this.translate('COM_EMUNDUS_FORM_BUILDER_SUBMISSION_PAGE'),
+              type: 'submission',
+              elements: [],
+            });
+          }
+        });
       });
     },
     onElementCreated(elementIndex) {
@@ -302,7 +313,6 @@ export default {
     height: calc(100% - 48px);
 
     aside, section {
-      height: 100%;
       justify-content: flex-start;
     }
 
@@ -327,6 +337,7 @@ export default {
       align-self: flex-start;
 
       .tabs {
+        align-self: flex-start;
         align-items: flex-start;
         border-right: solid 1px #E3E5E8;
 
