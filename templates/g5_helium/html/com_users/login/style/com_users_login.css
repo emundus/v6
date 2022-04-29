@@ -62,9 +62,16 @@ button.btn-primary:hover{
     font-weight: 600;
 }
 .login .well label {
-    color: #000;
-    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.0015em;
+    text-align: left;
+    margin-bottom: 0px;
 }
+
 ul.nav.nav-tabs.nav-stacked {
     background: white;
     border-radius: 0;
@@ -97,6 +104,7 @@ ul.nav.nav-tabs.nav-stacked a::before {
 .view-login  .form-horizontal .control-label {
     width: 100%;
     text-align: left;
+    padding-top: 0px;
 }
 .view-login .form-horizontal .control-group {
     display: flex;
@@ -109,19 +117,24 @@ footer div{
 .control-group .control-label label .star{
     display: none;
 }
-.fabrikLabel[opts*="Validation"]::after,
-body.view-login label#password-lbl::after,
-body.view-login label#username-lbl::after,
-body.view-reset label#jform_email-lbl::after,
-body.view-reset label#jform_username-lbl::after,
-.control-label .required::after {
+.fabrikLabel[opts*="Validation"]::before,
+body.view-login label#password-lbl::before,
+body.view-login label#username-lbl::before,
+body.view-reset label#jform_email-lbl::before,
+body.view-reset label#jform_username-lbl::before,
+.control-label .required::before {
     content: "\f005";
-    color: #c30505;
-    padding-left: 2px;
-    top: -10px;
-    position: relative;
     font-family: FontAwesome;
     font-size: 5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0;
+    text-align: left;
+    position: relative;
+    top: -5px;
+    margin-right: 5px;
+    color: #e5283B;
 }
 .control-group:nth-child(3) .controls button.btn.btn-primary {
     text-transform: capitalize;
@@ -132,6 +145,13 @@ body.view-reset label#jform_username-lbl::after,
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
     border-radius :4px;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    padding: 0 12px 0 12px;
+    border: 1px solid #E3E3E3;
+    box-shadow: none;
+    margin-top: 12px;
 }
 
 h1.em-titre-connectez-vous {
@@ -358,6 +378,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     margin-left: auto;
     margin-right: auto;
 }
+
 
 .view-login .login.em-formRegistrationCenter .page-header div.icon-title.loginicon {
     background-image: url('../../../../../../media/com_emundus/images/enter.svg');
