@@ -21,12 +21,6 @@
    text-align: left !important;
 }
 
-form#user-registration.form-validate.form-horizontal.well,
-.view-reset .reset-confirm form.form-validate.form-horizontal.well,
-.view-reset .reset-complete form.form-validate.form-horizontal.well {
-    padding: 0px 64px;
-    margin-top: 0px
-}
 
 form#user-registration.form-validate.form-horizontal.well,
 .view-reset .reset-confirm form.form-validate.form-horizontal.well,
@@ -34,6 +28,10 @@ form#user-registration.form-validate.form-horizontal.well,
     background: #fff;
     border: none;
     margin-bottom: 0px;
+    box-shadow: none;
+    border-radius: 0 0 16px 16px;
+    padding: 0px 64px 48px 64px;
+    margin-top: 0px;
 }
 
 form#user-registration.form-validate.form-horizontal.well label,
@@ -53,15 +51,15 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .view-reset  .form-validate.form-horizontal.well .control-group .controls button,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls button {
     width: 100%;
-    height: 41px;
+    height: 48px;
     text-transform: capitalize;
     margin-right:0;
-    height: 50px;
     border-radius: 4px;
     padding: 8px 12px;
     line-height: normal;
     font-weight: 300;
     font-size: 14px;
+    margin-bottom: 0px;
 }
 
 
@@ -134,6 +132,11 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     color: #e5283B;
 }
 
+.view-reset .reset .page-header h1,
+.view-reset .reset-confirm .page-header h1,
+.view-reset .reset-complete .page-header h1{
+    margin-top: 0px;
+}
 
 
 .view-reset .reset .page-header,  .view-reset .reset-confirm .page-header, .view-reset .reset-complete .page-header {
@@ -141,9 +144,8 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    padding: 80px 64px 32px 64px;
 }
 
 .view-reset .reset .page-header div.icon-title.resetpwd, .view-reset .reset-confirm .page-header div.icon-title.resetpwd, .view-reset .reset-complete .page-header div.icon-title.resetpwd  {
