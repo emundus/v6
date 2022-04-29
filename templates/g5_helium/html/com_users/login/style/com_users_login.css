@@ -36,14 +36,10 @@ button.btn-primary:hover{
 .login form.form-validate.form-horizontal.well {
     border: none;
     margin-bottom: 0 !important;
-    border-radius: 0;
     background: white;
-    border-radius: 0;
-    padding: 0px;
     box-shadow: none;
-    width: 58%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    padding: 0;
 }
 
 #g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
@@ -51,10 +47,12 @@ button.btn-primary:hover{
     flex-direction: column;
     align-items: center;
     background: white;
-    width: 60%;
+    margin-top: 50px;
+    border-radius: 16px 16px 0 0;
+    padding: 80px 64px 0 64px;
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 50px;
 }
 
 .invalid {
@@ -74,13 +72,13 @@ button.btn-primary:hover{
 
 ul.nav.nav-tabs.nav-stacked {
     background: white;
-    border-radius: 0;
+    border-radius: 0 0 16px 16px;
     display: flex;
     justify-content: space-around;
-    width: 60%;
+    width: 50%;
     margin-left: auto !important;
     margin-right: auto !important;
-   padding-bottom: 50px !important;
+    padding-: 0px 64px 80px 64px;
     margin-top: 0px;
     margin-bottom: 50px;
 }
@@ -157,6 +155,7 @@ form.form-validate.form-horizontal.well .control-group .controls input {
 
 h1.em-titre-connectez-vous {
     margin-bottom: 20px !important;
+    margin-top: 0px;
 }
 
 h1.em-titre-connectez-vous::after {
@@ -375,9 +374,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
-    width: 59%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
 }
 
 
