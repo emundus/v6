@@ -39,9 +39,14 @@ form#user-registration.form-validate.form-horizontal.well,
 form#user-registration.form-validate.form-horizontal.well label,
 .reset-confirm .form-validate.form-horizontal.well label,
 .reset-complete .form-validate.form-horizontal.well  label {
-    font-size: 14px;
-    margin-bottom: 5px !important;
-    font-weight: bold;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.0015em;
+    text-align: left;
+    margin-bottom: 0px;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
@@ -63,13 +68,20 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 form#user-registration.form-validate.form-horizontal.well .control-group ,
 .view-reset  .form-validate.form-horizontal.well .control-group,
 .reset-complete .form-validate.form-horizontal.well .control-group  {
-  margin-bottom: 0px;
+  margin-bottom: 16px;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls input {
+    border-radius :4px;
+    width: 100%;
+    height: 48px;
     border-radius: 4px;
+    padding: 0 12px 0 12px;
+    border: 1px solid #E3E3E3;
+    box-shadow: none;
+    margin-top: 12px;
 }
 
 .view-reset .reset .page-header,
@@ -104,17 +116,22 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     display:none;
 }
 
-#user-registration .required::after,
-.view-reset .required::after,
-.reset-complete .required::after
+#user-registration .required::before,
+.view-reset .required::before,
+.reset-complete .required::before
 {
     content: "\f005";
-    color: #c30505;
-    padding-left: 2px;
-    top: -10px;
-    position: relative;
     font-family: FontAwesome;
     font-size: 5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0;
+    text-align: left;
+    position: relative;
+    top: -5px;
+    margin-right: 5px;
+    color: #e5283B;
 }
 
 

@@ -110,6 +110,7 @@ ul.nav.nav-tabs.nav-stacked a::before {
     display: flex;
     justify-content: center;
     flex-direction: column;
+    margin-bottom: 16px;
 }
 footer div{
     line-height:1.5em;
