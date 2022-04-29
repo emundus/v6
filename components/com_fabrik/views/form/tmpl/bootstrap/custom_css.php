@@ -538,7 +538,7 @@ form#member-profile .form-horizontal .control-label {
 
 .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .row-fluid .span4 button {
         width: 100% !important;
-        height: 50px !important;
+        height: 48px !important;
         margin-bottom: 0px;
 }
 
@@ -1098,10 +1098,6 @@ ol li {
   padding-left: 0px;
 }
 
-.view-registration form.fabrikForm .controls select, .view-form .em-formRegistrationCenter form .controls select {
-    height: 50px !important;
-}
-
 .view-registration form .fabrikActions.form-actions {
     padding: 0 !important;
 }
@@ -1477,7 +1473,7 @@ a.btn-attach:active {
     margin-left: auto !important;
     margin-right: auto !important;
     padding-bottom: 50px !important;
-    margin-top: 150px !important; 
+    margin-top: 85px !important; 
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
