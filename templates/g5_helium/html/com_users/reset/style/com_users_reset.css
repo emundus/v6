@@ -146,7 +146,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
-    padding: 80px 64px 16px 64px;
+    padding: 80px 64px 32px 64px;
 }
 
 .view-reset .reset .page-header div.icon-title.resetpwd, .view-reset .reset-confirm .page-header div.icon-title.resetpwd, .view-reset .reset-complete .page-header div.icon-title.resetpwd  {

@@ -557,7 +557,7 @@ form#member-profile .form-horizontal .control-label {
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
-    padding: 80px 64px 0px 64px;
+    padding: 80px 64px 32px 64px;
 }
 .view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
       background-image: url(../../../../../../media/com_emundus/images/register.svg);
@@ -1070,6 +1070,8 @@ ol {
     text-align: justify;
     margin-left: 0px !important;
     margin-bottom: 0px !important;
+    width: 100%;
+    margin-top: 0px;
 }
 
 ol li {
