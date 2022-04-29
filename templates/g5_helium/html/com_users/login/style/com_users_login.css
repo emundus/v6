@@ -78,7 +78,7 @@ ul.nav.nav-tabs.nav-stacked {
     width: 50%;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-: 0px 64px 80px 64px;
+    padding: 0px 64px 80px 64px !important;
     margin-top: 0px;
     margin-bottom: 50px;
 }
@@ -140,6 +140,7 @@ body.view-reset label#jform_username-lbl::before,
     width: 100% !important;
     height: 50px;
     margin-right: 0px !important;
+    margin-bottom: 0px;
     font-weight: 300;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
@@ -154,7 +155,7 @@ form.form-validate.form-horizontal.well .control-group .controls input {
 }
 
 h1.em-titre-connectez-vous {
-    margin-bottom: 20px !important;
+    margin-bottom: 16px !important;
     margin-top: 0px;
 }
 
@@ -382,7 +383,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     background-image: url('../../../../../../media/com_emundus/images/enter.svg');
     background-size: contain;
     background-repeat: no-repeat;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 @media all and (max-width: 479px) {
