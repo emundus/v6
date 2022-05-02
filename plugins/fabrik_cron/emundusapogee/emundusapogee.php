@@ -96,20 +96,33 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             ->leftJoin($db->quoteName('#__emundus_personal_detail') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_personal_detail.fnum'))
             ->leftJoin($db->quoteName('#__emundus_1001_00') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_1001_00.fnum'))
             ->leftJoin($db->quoteName('#__emundus_users') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.applicant_id') . ' = ' . $db->quoteName('#__emundus_users.user_id'))
+            ->leftJoin($db->quoteName('#__emundus_logs') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_logs.fnum_to'))
+
             ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
             ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''")
-
             ->andWhere($db->quoteName('#__emundus_personal_detail.birth_date') . " != ''")
             ->andWhere($db->quoteName('#__emundus_personal_detail.birth_date') . " is not null")
-
             ->andWhere($db->quoteName('#__emundus_users.firstname') . " is not null")
             ->andWhere($db->quoteName('#__emundus_users.firstname') . " != ''")
-
             ->andWhere($db->quoteName('#__emundus_users.lastname') . " is not null")
             ->andWhere($db->quoteName('#__emundus_users.lastname') . " != ''");
 
         # if no status is defined, we get all
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
+
+        $query->andWhere(
+            (
+            "jos_emundus_logs.action_id = 1 AND (jos_emundus_logs.verb in ('c', 'u'))
+                    OR jos_emundus_logs.action_id = 4 AND (jos_emundus_logs.verb in ('c', 'u'))
+                    OR jos_emundus_logs.action_id = 5 AND (jos_emundus_logs.verb in ('c', 'u'))
+                    OR jos_emundus_logs.action_id = 10 AND (jos_emundus_logs.verb in ('c', 'u'))
+                    OR jos_emundus_logs.action_id = 14 AND (jos_emundus_logs.verb in ('c', 'u'))
+                    OR jos_emundus_logs.action_id = 29 AND (jos_emundus_logs.verb in ('c', 'u'))
+                    OR jos_emundus_logs.action_id = 32 AND (jos_emundus_logs.verb in ('c', 'u'))
+                "
+            ));
+
+        $query->andWhere('DATE (jos_emundus_logs.timestamp) = CURRENT_DATE()');
 
         # uncomment this line if you want to limit the records
         # $query->setLimit(3);       /* just local test */
