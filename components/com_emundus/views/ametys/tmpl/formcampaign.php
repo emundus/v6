@@ -17,13 +17,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <form class="ui form">
   <div class="two fields">
   	<div class="field">
-	    <label><?php echo JText::_('SCHOOLYEAR'); ?></label>
+	    <label><?php echo JText::_('COM_EMUNDUS_AMETYS_SCHOOLYEAR'); ?></label>
 	    <input id="year" type="text" placeholder="<?php echo date('Y'); ?>" value="<?php echo date('Y'); ?>">
 	</div>
 	<div class="field">
-	    <label><?php echo JText::_('PROFILE'); ?></label>
+	    <label><?php echo JText::_('COM_EMUNDUS_PROFILE'); ?></label>
 	    <select id="profile_id" class="ui dropdown">
-	  	<?php 
+	  	<?php
 	  	foreach ($this->applicantProfiles as $key => $value) {
 	  		echo '<option value="'.$value->id.'">'.$value->label.'</option>';
 	  	}
@@ -31,22 +31,22 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 	    </select>
 	</div>
   </div>
-  
+
   <div class="field">
-    <label><?php echo JText::_('SHORT_DESC'); ?></label>
+    <label><?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_SHORT_DESC'); ?></label>
     <textarea id='short_description'></textarea>
   </div>
 
   <div class="two fields">
   	<div class="field">
-	  	<label><?php echo JText::_('CAMPAIGN_START_DATE'); ?></label>
+	  	<label><?php echo JText::_('COM_EMUNDUS_AMETYS_CAMPAIGN_START_DATE'); ?></label>
 	     <div class="ui input left icon">
 	      <i class="calendar icon"></i>
 	      <input type="text" id="start_date" name="daterange" class="form-control">
 	    </div>
 	</div>
 	<div class="field">
-	    <label><?php echo JText::_('CAMPAIGN_END_DATE'); ?></label>
+	    <label><?php echo JText::_('COM_EMUNDUS_AMETYS_CAMPAIGN_END_DATE'); ?></label>
 	     <div class="ui input left icon">
 	      <i class="calendar icon"></i>
 	      <input type="text" id="end_date" name="daterange" class="form-control">
@@ -73,7 +73,7 @@ $( document ).ready(function() {
 
 	  if (start_date=="" || end_date=="" || profile_id=="" || year=="") {
 	  	alert(Joomla.JText._("COM_EMUNDUS_ERROR_MISSING_FORM_DATA"));
-	  	
+
 	  	return false;
 	  } else {
 	  	$.ajax({
@@ -81,21 +81,21 @@ $( document ).ready(function() {
 	        url:'index.php?option=com_emundus&controller=campaign&task=addcampaigns&Itemid=',
 	        dataType:'json',
 	        data: ({
-	        	start_date: start_date, 
+	        	start_date: start_date,
 	        	end_date: end_date,
 	        	profile_id: profile_id,
 	        	year: year,
 	        	short_description: short_description
 	       	}),
 	        success: function(result)
-	        { 
+	        {
 	        	if (result.status)
 	            {
 	            	$('#em-content').empty();
 		           	$('#em-content').append("<hr>");
-		        	$('#em-content').append(result.msg);				            
+		        	$('#em-content').append(result.msg);
 	            }
-	        }, 
+	        },
 	        error: function (jqXHR, textStatus, errorThrown)
 	        {
 	        	$('#em-content').empty();
@@ -149,5 +149,5 @@ $( document ).ready(function() {
 	});
 
 });
-	
+
 </script>

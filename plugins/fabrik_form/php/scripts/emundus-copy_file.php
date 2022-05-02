@@ -27,7 +27,7 @@ $app 	= JFactory::getApplication();
 $db   	= JFactory::getDBO();
 
 $jinput = $app->input;
-$itemid = $jinput->get('Itemid'); 
+$itemid = $jinput->get('Itemid');
 
 $fnum_from 		= $formModel->getElementData('jos_emundus_campaign_candidature___fnum', true);
 $campaign_id 	= $formModel->getElementData('jos_emundus_campaign_candidature___campaign_id', true);
@@ -38,13 +38,17 @@ $applicant_id 	= $formModel->getElementData('jos_emundus_campaign_candidature___
 $status 		= $formModel->getElementData('jos_emundus_campaign_candidature___status', true);
 $status 		= is_array($status) ? $status[0] : $status;
 $can_delete 	= $formModel->getElementData('jos_emundus_campaign_candidature___can_be_deleted', null);
+$copy_attachment 	    = $formModel->getElementData('jos_emundus_campaign_candidature___copy_attachment', 0);
+$copy_tag 	            = $formModel->getElementData('jos_emundus_campaign_candidature___copy_tag', 0);
+$move_hikashop_command 	= $formModel->getElementData('jos_emundus_campaign_candidature___move_hikashop_command', 0);
+$delete_from_file 	    = $formModel->getElementData('jos_emundus_campaign_candidature___delete_from_file', 0);
 
 // create new fnum
 $fnum_to = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($applicant_id, 7, '0', STR_PAD_LEFT);
 
 // 1. Get definition of fnum_from
 if ($copied == 1) {
-	
+
 	try {
 		$query = 'SELECT * FROM #__emundus_campaign_candidature WHERE fnum like '.$db->Quote($fnum_from);
 		$db->setQuery($query);
@@ -71,15 +75,15 @@ if ($copied == 1) {
 		$profiles = new EmundusModelProfile();
 
         $fnumInfos = $profiles->getFnumDetails($fnum_from);
-        
-        $pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
-		
-		$result = $m_application->copyApplication($fnum_from, $fnum_to, $pid);
 
-		// 4. Duplicate attachments for new fnum
-		if ($result) {
+        //$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
+
+        $result = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file);
+
+        // 4. Duplicate attachments for new fnum
+        /*if ($result) {
             $result = $m_application->copyDocuments($fnum_from, $fnum_to, $pid, $can_delete);
-        }
+        }*/
 
 	// 5. Duplicate evaluation for new fnum
 	// TODO
@@ -87,7 +91,7 @@ if ($copied == 1) {
 	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$query;
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
 	}
-	
+
 } elseif ($copied == 2) {
 
 	// Move the file to another campaign
@@ -97,14 +101,14 @@ if ($copied == 1) {
 	$m_application->moveApplication($fnum_from, $fnum_to, $campaign_id, $status);
 
 } else {
-	// new empty file	
+	// new empty file
 	try {
 
 		$query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `user_id`, `campaign_id`, `submitted`, `date_submitted`, `cancelled`, `fnum`, `status`, `published`, `copied`) 
 					VALUES ('.$applicant_id.', '.$user->id.', '.$campaign_id.', 0, NULL, 0, '.$db->Quote($fnum_to).', '.$status.', 1, 0)';
 		$db->setQuery($query);
 		$db->execute();
-	
+
 	} catch(Exception $e) {
 	    $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$query;
 	    JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -114,4 +118,4 @@ if ($copied == 1) {
 
 // 5. Exit plugin before store
 echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
-die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
+die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>');

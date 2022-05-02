@@ -2,7 +2,7 @@
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>Hikashop TaxCloud Plugin</name>
 	<creationDate>December 2013</creationDate>
-	<version>4.3.0</version>
+	<version>4.4.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
@@ -35,7 +35,6 @@
 		<param type="spacer" label="TIC" />
 		<param name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>
 		<param name="shipping_tic" type="text" default="" label="SHIPPING_TIC_ID" description=""/>
-		<param name="browse_tic" type="plugintrigger" default="browse_tic" label="BROWSE_TIC_CATEGOGIES" description="" />
 	</params>
 	<config>
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
@@ -61,7 +60,6 @@
 				<field type="spacer" label="TIC" />
 				<field name="default_tic" type="text" default="" label="DEFAULT_TIC_ID" description=""/>
 				<field name="shipping_tic" type="text" default="" label="SHIPPING_TIC_ID" description=""/>
-				<field name="browse_tic" type="plugintrigger" default="browse_tic" label="BROWSE_TIC_CATEGOGIES" description="" />
 			</fieldset>
 		</fields>
 	</config>

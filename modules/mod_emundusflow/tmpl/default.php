@@ -20,7 +20,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
 
 ?>
 <div class="ui attached segment">
-  <p><?= ($show_programme==1)?'<b>'.$user->campaign_name.'</b> '.@$renew:''; ?></p>
+  <p><?= ($show_programme==1)?'<b>'.JText::_($user->campaign_name).'</b> '.@$renew:''; ?></p>
   <?= ($show_deadline==1) ? '<p align="right">'.JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b> '.$offset.'</p>':''; ?>
 </div>
 <div class="ui tablet stackable bottom attached steps">
@@ -58,9 +58,9 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
     <?php elseif ($paid == false && $orderCancelled): ?>
       <i class="large ban outline icon"></i>
     <?php elseif (isset($scholarship) && $scholarship) :?>
-      <i class="large student icon"></i>
+      <i class="<?= $scholarship_icon; ?>"></i>
     <?php else: ?>
-      <i class="large add to cart icon"></i>
+      <i class="<?= $add_to_cart_icon; ?>"></i>
     <?php endif; ?>
     <div class="content">
       <?php if (!isset($sentOrder) || $sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check') :?>
@@ -75,7 +75,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
       <div class="description"> <?php echo  ($paid == false && !empty($sentOrder) && ($sentOrder->order_payment_method == 'banktransfer' || $sentOrder->order_payment_method == 'check'))?JText::_('AWAITING_PAYMENT'):'' ?> </div>
       <div class="description">
         <?php echo  ($paid == false && !empty($sentOrder))?'<a href="'.$checkout_url.'" title="'.JText::_('RETRY_PAYMENT').'">'.JText::_('RETRY_PAYMENT').'</a>':''; ?>
-        <?php echo  ($paid == false && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled && !isset($scholarship))?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
+        <?php echo  ($paid == false && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && !$orderCancelled && !isset($scholarship) && (!$is_dead_line_passed || !$deadline))?'<a href="'.$checkout_url.'" title="'.JText::_('ORDER_NOW').'">'.JText::_('ORDER_NOW').'</a>':''; ?>
         <?php echo  ($paid == false && !empty($sentOrder)==0 && $forms>=100 && $attachments>=100 && $orderCancelled)?'<a href="'.$checkout_url.'" title="'.JText::_('PAYMENT_DECLINED').'">'.JText::_('PAYMENT_DECLINED').'</a>':''; ?>
       </div>
     </div>

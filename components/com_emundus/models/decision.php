@@ -152,7 +152,7 @@ class EmundusModelDecision extends JModelList
 								  ) AS `'.$def_elmt->tab_name . '___' . $def_elmt->element_name.'`';
 					} else {
                         if ($attribs->database_join_display_type == "checkbox") {
-                            
+
                             $t = $def_elmt->tab_name.'_repeat_'.$def_elmt->element_name;
                             $query = '(
                                 SELECT GROUP_CONCAT('.$t.'.'.$def_elmt->element_name.' SEPARATOR ", ")
@@ -171,7 +171,7 @@ class EmundusModelDecision extends JModelList
                     }
 
 					$this->_elements_default[] = $query;
-				
+
 				} elseif ($def_elmt->element_plugin == 'cascadingdropdown') {
 					$attribs = json_decode($def_elmt->element_attribs);
                     $cascadingdropdown_id = $attribs->cascadingdropdown_id;
@@ -179,7 +179,7 @@ class EmundusModelDecision extends JModelList
                     $cascadingdropdown_label = $attribs->cascadingdropdown_label;
                     $r2 = explode('___', $cascadingdropdown_label);
                     $select = !empty($attribs->cascadingdropdown_label_concat)?"CONCAT(".$attribs->cascadingdropdown_label_concat.")":$r2[1];
-                    $from = $r2[0]; 
+                    $from = $r2[0];
                     $where = $r1[1];
 
                    if (@$group_params->repeat_group_button == 1) {
@@ -195,12 +195,12 @@ class EmundusModelDecision extends JModelList
                     } else {
                         $query = "(SELECT DISTINCT(".$select.") FROM ".$from." WHERE ".$where."=".$def_elmt->element_name." LIMIT 0,1) AS `".$def_elmt->tab_name . "___" . $def_elmt->element_name."`";
                     }
-                    
+
                     $query = preg_replace('#{thistable}#', $from, $query);
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-		        
+
 		        }elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
 
 		        	if (@$group_params->repeat_group_button == 1) {
@@ -291,7 +291,7 @@ class EmundusModelDecision extends JModelList
         if ($session->has('filt_params') || !empty($all)) {
 
             $filt_params = $session->get('filt_params');
-            
+
             if ($view != 'export_select_columns' && is_array(@$filt_params['programme']) && count(@$filt_params['programme']) > 0) {
 	            $programmes = $filt_params['programme'];
             } elseif (!empty($code)) {
@@ -300,14 +300,14 @@ class EmundusModelDecision extends JModelList
 	            return array();
             }
 
-            foreach ($programmes as $value) { 
+            foreach ($programmes as $value) {
                 $groups = $this->getGroupsDecisionByProgramme($value);
-                
+
                 if (empty($groups)) {
                     $eval_elt_list = array();
                 } else {
                     $eval_elt_list = $this->getElementsByGroups($groups, $show_in_list_summary, $hidden);
-                    
+
                     if (count($eval_elt_list)>0) {
                         foreach ($eval_elt_list as $eel) {
                             if(isset($eel->element_id) && !empty($eel->element_id))
@@ -880,7 +880,7 @@ class EmundusModelDecision extends JModelList
                             foreach ($q['join'] as $u) {
 	                            $query['join'] .= $u;
                             }
-								
+
 							if (isset($q['users'])) {
 								$query['users'] = true;
 							}
@@ -1007,7 +1007,7 @@ class EmundusModelDecision extends JModelList
                                 if (is_array($value) && $filt_menu_defined) {
 	                                $diff = array_diff($value, $filt_menu['status']);
                                 }
-                                
+
                                 if (count($diff) == 0) {
 	                                $query['q'] .= ' and c.status IN ('.implode(',', $value).') ';
                                 } else {
@@ -1135,7 +1135,7 @@ class EmundusModelDecision extends JModelList
 
 			$val = explode(': ', $str);
 
-			if ($val[0] == "ALL") {
+			if ($val[0] == "COM_EMUNDUS_ACTIONS_ALL") {
 
 				if (is_numeric($val[1])) {
 
@@ -1435,11 +1435,11 @@ class EmundusModelDecision extends JModelList
 			$res = $dbo->loadAssocList();
 			$this->_applicants = $res;
 
-			$limit = $session->get('limitstart');
+			$limit = $session->get('limit');
 
-			$limitStart = $session->get('limit');
-			if ($limitStart > 0) {
-				$query .= " limit $limit, $limitStart ";
+			$limitStart = $session->get('limitstart');
+			if ($limit > 0) {
+				$query .= " limit $limitStart, $limit ";
 			}
 
 			$dbo->setQuery($query);
@@ -1550,9 +1550,13 @@ class EmundusModelDecision extends JModelList
 	}
 
     public function getPageNavigation() : string {
+        if ($this->getPagination()->pagesTotal <= 1) {
+          return '';
+        }
+
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1598,7 +1602,7 @@ class EmundusModelDecision extends JModelList
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }

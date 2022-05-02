@@ -1,4 +1,4 @@
-<?php 
+<?php
 JFactory::getSession()->set('application_layout', 'assoc_files');
 
 if (!empty((array)$this->assoc_files)) : ?>
@@ -10,13 +10,13 @@ if (!empty((array)$this->assoc_files)) : ?>
 						<span class="label label-<?php echo $camp->class?>"> <?php echo $camp->step_value?></span>
 						<div class="pull-right btn-group">
 							<?php if (EmundusHelperAccess::asAccessAction(1, 'd', $this->_user->id, $camp->fnum)): ?>
-								<button id="em-delete-files" class = "btn btn-danger btn-xs pull-right" title="<?php echo JText::_('DELETE_APPLICATION_FILE')?>">
-									<span class="glyphicon glyphicon-trash"></span>
+								<button id="em-delete-files" class = "btn btn-danger btn-xs pull-right" title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_DELETE_APPLICATION_FILE')?>">
+									<span class="material-icons">delete_outline</span>
 								</button>
 							<?php endif; ?>
 							<?php if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $camp->fnum)): ?>
-								<button id="em-see-files" class = "btn btn-info btn-xs pull-right" title="<?php echo JText::_('OPEN_APPLICATION_FILE')?>">
-									<span class="glyphicon glyphicon-eye-open"></span>
+								<button id="em-see-files" class = "btn btn-info btn-xs pull-right" title="<?php echo JText::_('COM_EMUNDUS_APPLICATION_OPEN_APPLICATION_FILE')?>">
+									<span class="material-icons">visibility</span>
 								</button>
 							<?php endif; ?>
 						</div>
@@ -32,18 +32,16 @@ if (!empty((array)$this->assoc_files)) : ?>
 				<div class="panel-body em-container-assocFiles-body">
 					<div>
 						<ul>
-							<li><span><strong><?php echo JText::_('ACADEMIC_YEAR')?> :</strong> <?php echo $camp->year?></span></li>
-<!--							<li><span>--><?php //echo $camp->training?><!--</span></li>-->
-                            <li><span><strong><?php echo JText::_('PROGRAMME_CODE')?> :</strong> <?php echo $camp->training?></span></li>
-							<li><span><strong><?php echo JText::_('F_NUM')?> :</strong> <?php echo $camp->fnum?></span></li>
-							
-							<?php if($camp->submitted==1):?>
-								<li><span><strong><?php echo JText::_('SUBMITTED')?> :</strong> <?php echo JText::_('JYES');?></span></li>
-								<li><span><strong><?php echo JText::_('DATE_SUBMITTED')?> :</strong> <?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
-							<?php else:?>
-								<li><span><strong><?php echo JText::_('SUBMITTED')?> :</strong> <?php echo JText::_('JNO');?></span></li>
-							<?php endif;?>
+							<li><span><strong><?php echo JText::_('COM_EMUNDUS_ACADEMIC_YEAR')?> :</strong> <?php echo $camp->year?></span></li>
+							<li><span><?php echo $camp->training?></span></li>
+							<li><span><strong><?php echo JText::_('COM_EMUNDUS_FILE_F_NUM')?> :</strong> <?php echo $camp->fnum?></span></li>
 
+							<?php if($camp->submitted==1):?>
+								<li><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_SUBMITTED')?> :</strong> <?php echo JText::_('JYES');?></span></li>
+								<li><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_DATE_SUBMITTED')?> :</strong> <?php echo JFactory::getDate($camp->date_submitted)->format(JText::_('DATE_FORMAT_LC2'));?></span></li>
+							<?php else:?>
+								<li><span><strong><?php echo JText::_('COM_EMUNDUS_APPLICATION_SUBMITTED')?> :</strong> <?php echo JText::_('JNO');?></span></li>
+							<?php endif;?>
 						</ul>
 
 					</div>

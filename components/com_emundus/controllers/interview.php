@@ -58,7 +58,7 @@ class EmundusControllerInterview extends JControllerLegacy
         $student_id = $jinput->getInt('student_id', $jinput->getInt('user', $this->_user->id));
 
         if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');

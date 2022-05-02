@@ -152,7 +152,7 @@ class EmundusModelEvaluation extends JModelList {
                                 FROM '.$t.'
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
-                              ) AS `'.$t.'`';
+                              ) AS `'.$t.'___'.$def_elmt->element_name.'`';
                         } else {
                             $query = '(
                                 select DISTINCT '.$join_val_column.'
@@ -192,7 +192,7 @@ class EmundusModelEvaluation extends JModelList {
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton' || $def_elmt->element_plugin == 'checkbox') {
 
                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -205,7 +205,7 @@ class EmundusModelEvaluation extends JModelList {
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                $element_attribs->sub_options->sub_labels[$key] . '")';
+                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
@@ -1518,7 +1518,7 @@ class EmundusModelEvaluation extends JModelList {
                 $limit = $session->get('limit');
 
                 $limitStart = $session->get('limitstart');
-                if ($limitStart > 0) {
+                if ($limit > 0) {
                     $query .= " limit $limitStart, $limit ";
                 }
             }
@@ -1614,9 +1614,13 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     public function getPageNavigation() : string {
+        if ($this->getPagination()->pagesTotal <= 1) {
+            return '';
+        }
+
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1662,7 +1666,7 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -2281,7 +2285,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_letters = $this->getLettersByProgrammesStatusCampaigns($_programs,$_status, $_campaigns);
-            
+
             if (!empty($_letters)) {
                 if ($attachments == true) {
                     /// from $_letters --> get distinct attachment_id
@@ -2403,6 +2407,13 @@ class EmundusModelEvaluation extends JModelList {
 
     /// generate letters
     public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode) {
+        $user = JFactory::getUser();
+
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        /* replace old documents by the latest */
+        $replace_document = $eMConfig->get('export_replace_doc', 0);
+
         $tmp_path = JPATH_BASE . DS . 'tmp' . DS;
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
@@ -2456,13 +2467,15 @@ class EmundusModelEvaluation extends JModelList {
                 // get attachment info
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
 
-                /// before to generate letter, refresh all previous generated letters of current day
-                $refreshQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.attachment_id = ' . $attachInfo['id'] .
-                                    ' AND DATE(#__emundus_uploads.timedate) = current_date() ' .
-                                        ' AND #__emundus_uploads.fnum = ' . $fnum;
+                /* before to generate letter, refresh all previous generated letters of current day - if $replace_document = true */
+                if($replace_document == 1) {
+                    $refreshQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.attachment_id = ' . $attachInfo['id'] .
+                        ' AND DATE(#__emundus_uploads.timedate) = current_date() ' .
+                        ' AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
 
-                $this->_db->setQuery($refreshQuery);
-                $this->_db->execute();
+                    $this->_db->setQuery($refreshQuery);
+                    $this->_db->execute();
+                }
 
                 $type = $letter->template_type;
 
@@ -2529,7 +2542,7 @@ class EmundusModelEvaluation extends JModelList {
                                 /// remove it in database
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
                                                         ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2541,18 +2554,18 @@ class EmundusModelEvaluation extends JModelList {
                                 copy($file, $original_name);
 
                                 /// reupdate in database
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                                $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             } else {
                                 if (copy($file, $path_name) and copy($file, $original_name)) {
-                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                    $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
-                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                                 }
                             }
                         } else {
                             $res->status = false;
-                            $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                            $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
                         }
                         break;
 
@@ -2670,7 +2683,7 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
                                                         ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2678,11 +2691,11 @@ class EmundusModelEvaluation extends JModelList {
                                 $this->_db->execute();
                             }
                             /// copy generated letter to --letters folder
-                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
+                            $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
 
                             $pdf->Output($path_name, 'F');
                             $pdf->Output($original_name, 'F');
-                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                         }
                         unset($pdf, $path_name, $name, $url, $upIdn);
                         unset($pdf, $original_name, $name, $original_url, $upIdn);
@@ -2730,7 +2743,11 @@ class EmundusModelEvaluation extends JModelList {
                                 if (is_numeric($tag)) {
                                     $idFabrik[] = $tag;
                                 } else {
-                                    $setupTags[] = $tag;
+                                    if(strpos($tag, 'IMG_') !== false) {
+                                        $setupTags[] = trim(explode(":", $tag)[0]);
+                                    } else {
+                                        $setupTags[] = $tag;
+                                    }
                                 }
                             }
 
@@ -2801,6 +2818,8 @@ class EmundusModelEvaluation extends JModelList {
 
                             $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
+                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+
                                 foreach ($setupTags as $tag) {
                                     $val = "";
                                     $lowerTag = strtolower($tag);
@@ -2823,7 +2842,7 @@ class EmundusModelEvaluation extends JModelList {
                                     } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
                                         $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
                                     } else {
-                                        $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                        //$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                         $i = 0;
                                         foreach ($tags['patterns'] as $value) {
                                             if ($value == $tag) {
@@ -2832,7 +2851,12 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                             $i++;
                                         }
-                                        $preprocess->setValue($tag, htmlspecialchars($val));
+                                        // replace tag by image if tag name start by IMG_
+                                       if(strpos($tag, 'IMG_') !== false) {
+                                            $preprocess->setImageValue($tag, $val);
+                                        } else {
+                                            $preprocess->setValue($tag, htmlspecialchars($val));
+                                       }
                                     }
                                 }
 
@@ -2882,7 +2906,7 @@ class EmundusModelEvaluation extends JModelList {
                                 /// check if file exists or not
                                 if (file_exists($path_name) or file_exists($original_path)) {
                                     $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2898,7 +2922,12 @@ class EmundusModelEvaluation extends JModelList {
                                     //convert to PDF
                                     $dest = str_replace('.docx', '.pdf', $original_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
-                                    $m_Export->toPdf($original_name, $dest, $fnum);
+                                    try {
+                                        $m_Export->toPdf($original_name, $dest, 'docx', $fnum);
+                                    } catch(Exception $e) {
+                                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                                        return false;
+                                    }
 
                                     copy($original_path . DS . $filename, $path . DS . $filename);
 
@@ -2906,7 +2935,7 @@ class EmundusModelEvaluation extends JModelList {
                                     unlink($original_path . DS . $original_name);
 
                                     $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2916,8 +2945,8 @@ class EmundusModelEvaluation extends JModelList {
                                     copy($original_name, $path_name);
                                 }
 
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             }
                         } catch (Exception $e) {
                             $res->status = false;
@@ -3081,7 +3110,7 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -3094,11 +3123,11 @@ class EmundusModelEvaluation extends JModelList {
 
                                 copy($original_name, $path_name);
 
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
 
                             } else {
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
                                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                                 $writer->setIncludeCharts(true);
@@ -3106,7 +3135,7 @@ class EmundusModelEvaluation extends JModelList {
 
                                 copy($original_name, $path_name);
 
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             }
                             break;
                         }
@@ -3114,7 +3143,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_ids = array();
-            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
+            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum LIKE " . $this->_db->quote($fnum) . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
 
             $this->_db->setQuery($getLastUploadIdQuery);
             $availableUploads = $this->_db->loadObjectList();
@@ -3124,15 +3153,17 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             /// remove all duplicate attachments (just keep the last) -- unlink
-            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
+            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
 
             $this->_db->setQuery($getDuplicateAttachmentQuery);
             $duplicateAttachments = $this->_db->loadObjectList();
 
             /// remove unnecessary records for same attachment id in database
-            $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
-            $this->_db->setQuery($deleteDuplicateAttachmentsQuery);
-            $this->_db->execute();
+            if($replace_document == 1) {
+                $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
+                $this->_db->setQuery($deleteDuplicateAttachmentsQuery);
+                $this->_db->execute();
+            }
 
 //            foreach($duplicateAttachments as $attachment) {
 //                unlink(EMUNDUS_PATH_ABS . $attachment->user_id . DS . $attachment->filename);
@@ -3141,28 +3172,58 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         /// lastly, we get all records in jos_emundus_uploads
-        unset($res->files);
+        if($replace_document == 1) {
+            unset($res->files);
 
-        $availableFilesName = [];
+            $availableFilesName = [];
 
-        $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
-        $this->_db->setQuery($getAllUploadsQuery);
-        $_upAttachments = $this->_db->loadObjectList();
+            $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
+            $this->_db->setQuery($getAllUploadsQuery);
+            $_upAttachments = $this->_db->loadObjectList();
 
-        foreach($_upAttachments as $_upload) {
-            $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $_upload->user_id . DS);
-            $availableFilesName[] = $_upload->filename;
-        }
+            foreach ($_upAttachments as $_upload) {
+                $folder_id = current($_mFile->getFnumsInfos(array($_upload->fnum)))['applicant_id'];
+                $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $folder_id . DS);
+                $availableFilesName[] = $_upload->filename;
+            }
 
-        foreach($fnum_Array as $fnum) {
-            $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
-            $files = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . DS . '*');
+            foreach ($fnum_Array as $fnum) {
+                $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
+                $files = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] . '_' . $fnumInfo[$fnum]['applicant_id'] . DS . '*');
 
-            foreach($files as $_f) {
-                $fname = end(explode('/', $_f));
-                if(!in_array($fname, $availableFilesName)) {
-                    unlink($_f);
+                foreach ($files as $_f) {
+                    $fname = end(explode('/', $_f));
+                    if (!in_array($fname, $availableFilesName)) {
+                        unlink($_f);
+                    }
                 }
+            }
+        } else {
+            $_idList = array();
+            /* get max upload id for each fnum and for each attachment id and in currrent_date() */
+            foreach($templates as $tmpl) {
+                $getLastUploadIdQuery = 'SELECT MAX(#__emundus_uploads.id) as uid
+                                            FROM #__emundus_uploads 
+                                                WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') 
+                                                    AND DATE(#__emundus_uploads.timedate) = current_date() 
+                                                        AND #__emundus_uploads.attachment_id IN (' . $tmpl . ' ) 
+                                                            GROUP BY fnum';
+                $this->_db->setQuery($getLastUploadIdQuery);
+                $_idList[$tmpl] = $this->_db->loadAssocList();
+            }
+
+            $raw = array_reduce($_idList, 'array_merge', array());
+            $out = array();
+
+            foreach($raw as $r) { $out[] = $r['uid']; }
+
+            /* from $out, get the filename of each */
+            unset($res->files);
+            $getFiles = $_mFile->getAttachmentsById($out);
+
+            foreach($getFiles as $f) {
+                $folder_id = current($_mFile->getFnumsInfos(array($f['fnum'])))['applicant_id'];
+                $res->files[] = array('filename' => $f['filename'], 'upload' => $f['id'], 'url' => JURI::base() . EMUNDUS_PATH_REL . $folder_id . DS, 'type' => $f['attachment_id']);
             }
         }
 
@@ -3202,6 +3263,22 @@ class EmundusModelEvaluation extends JModelList {
                     if(!file_exists($mergeZipAllPath)) { mkdir($mergeZipAllPath, 0755, true); }
 
                     if(sizeof($_isEmptyTmpFolder) > 0) {
+                        if($replace_document == 0) {
+                            $keepFiles = [];
+                            foreach($res->files as $_f) {
+                                $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
+                                if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
+                                    $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                                    unset($keepFiles[$index]);
+
+                                    unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                                }
+                            }
+
+                            $diffFiles = array_diff($_isEmptyTmpFolder,$keepFiles);
+                            foreach($diffFiles as $df) { unlink($df); }
+                        }
+
                         $this->ZipLetter($_tmpFolder, $tmp_path . $_zipName, 'true');
                         $this->copy_directory($_tmpFolder . DS, $mergeZipAllPath . DS . str_replace('_tmp' , '', end(explode('/', $_tmpFolder))));
                     }
@@ -3231,6 +3308,22 @@ class EmundusModelEvaluation extends JModelList {
                     $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 
                     $fileList = glob($_tmpFolder . DS . '*');
+
+                    if(sizeof($fileList) > 0 and $replace_document == 0) {
+                        $keepFiles = [];
+                        foreach($res->files as $_f) {
+                            $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
+                            if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
+                                $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                                unset($keepFiles[$index]);
+                                unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                            }
+                        }
+                        $diffFiles = array_diff($fileList,$keepFiles);
+                        foreach($diffFiles as $df) { unlink($df); }
+                        // re-update $fileList
+                        $fileList = glob($_tmpFolder . DS . '*');
+                    }
 
                     foreach ($fileList as $filename) {
                         // if extension is pdf --> push into the array $pdf_files
@@ -3287,6 +3380,11 @@ class EmundusModelEvaluation extends JModelList {
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         elseif ($showMode == 1) {
+
+            /* get real files */
+            $raw = [];
+            foreach($res->files as $rf) { $raw[] = $rf['filename']; }
+
             unset($res->zip_data_by_candidat);
             unset($res->zip_all_data_by_candidat);
 
@@ -3317,15 +3415,23 @@ class EmundusModelEvaluation extends JModelList {
                     mkdir($dir_Name_Path, 0755, true);
                     if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
                 }
-                
-                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
+
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                    // get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {
-                    $_uName = $_mUser->getUsersById($file->user_id);
+                    $_uRaw = $_mFile->getFnumInfos($file->fnum);                                                // get applicant id (not evaluator id)
+
+                    $_uId = $_uRaw['applicant_id'];
+                    $_uName = $_uRaw['name'];
 
                     //$source = EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . $file->filename;
-                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName[0]->name . '_' . $_uName[0]->id . DS . $file->filename;
-                    copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
+                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName . '_' . $_uId . DS . $file->filename;
+
+                    if(!in_array($file->filename, $raw)) {
+                        unlink($source);
+                    } else {
+                        copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
+                    }
 
                     /// copy into /tmp/
                     $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';                                   // zip file name (e.g: "Convention de financement")
@@ -3417,26 +3523,37 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         // build the recap table (just get generated documents of current date)
-        $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
+        if($replace_document == 1) {
+            $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
                         FROM #__emundus_uploads
-                            WHERE #__emundus_uploads.fnum in (' . implode(',' , $available_fnums) . ') 
+                            WHERE #__emundus_uploads.fnum in (' . implode(',', $available_fnums) . ') 
                                 AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
                                     AND DATE(#__emundus_uploads.timedate) = current_date()
                                         GROUP BY #__emundus_uploads.attachment_id';
 
-        $this->_db->setQuery($query);
-
-        $document_count = $this->_db->loadAssocList();
-
-        $res->recapitulatif_count = [];
-
-        foreach($document_count as $key => $document) {
-            $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
             $this->_db->setQuery($query);
-            $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
+            $document_count = $this->_db->loadAssocList();
+            $res->recapitulatif_count = [];
+
+            foreach ($document_count as $key => $document) {
+                $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
+                $this->_db->setQuery($query);
+                $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
+            }
+        } else {
+            $res->recapitulatif_count = [];
+            $raw = [];
+
+            foreach($res->files as $file) { $raw[$file['type']] += 1; }
+
+           foreach($raw as $k => $v) {
+               $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $k;
+               $this->_db->setQuery($query);
+               $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $v);
+           }
         }
 
-        return json_encode($res);
+        return $res;
     }
 
     public function ZipLetter($source, $destination, $include_dir = false) {

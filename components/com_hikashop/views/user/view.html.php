@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -479,7 +479,9 @@ else
 
 		$user_id = hikashop_loadUser();
 
-		JHTML::_('behavior.formvalidation');
+		if(!HIKASHOP_J40) {
+			JHTML::_('behavior.formvalidation');
+		}
 
 		$user = @$_SESSION['hikashop_user_data'];
 		$address = @$_SESSION['hikashop_address_data'];
@@ -497,7 +499,9 @@ else
 		$this->assignRef('extraFields', $extraFields);
 		$this->assignRef('user', $user);
 
-		$simplified_reg = $config->get('simplified_registration', 1);
+		$simplified_reg = 0;
+		if(hikashop_level(1))
+			$simplified_reg = $config->get('simplified_registration', 0);
 		$this->assignRef('simplified_registration', $simplified_reg);
 
 		$display_method = $config->get('display_method', 0);
@@ -671,12 +675,23 @@ else
 		$file_ids = array();
 		$order_ids = array();
 
+		$productClass = hikashop_get('class.product');
 		foreach($downloadData as $k => $data) {
 			if((int)$data->order_id > 0)
 				$order_ids[(int)$data->order_id] = (int)$data->order_id;
 			$downloadData[$k]->download_total = 0;
 			$downloadData[$k]->downloads = array();
 			$downloadData[$k]->orders = array();
+			if(!empty($data->product_id) && !empty($data->product_parent_id) && $data->product_type == 'variant') {
+				$query = 'SELECT * FROM '.hikashop_table('variant').' AS v '.
+					' LEFT JOIN '.hikashop_table('characteristic') .' AS c ON v.variant_characteristic_id = c.characteristic_id '.
+					' WHERE v.variant_product_id = '.(int)$data->product_id.' ORDER BY v.ordering';
+				$db->setQuery($query);
+				$downloadData[$k]->characteristics = $db->loadObjectList();
+				$parentProduct = $productClass->get((int)$data->product_parent_id);
+				$productClass->checkVariant($downloadData[$k], $parentProduct);
+			}
+			$productClass->addAlias($downloadData[$k]);
 			if(strpos($k,'@') === false)
 				$file_ids[] = $k;
 		}

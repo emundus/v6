@@ -35,11 +35,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                 <?php if ($kl == 'check') :?>
                                     <label for="em-check-all">
                                         <input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-                                        <span><?php echo JText::_('COM_EMUNDUS_CHECK_ALL')?></span>
+                                        <span><?php echo JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL')?></span>
                                     </label>
                                     <label class="em-hide em-check-all-all" for="em-check-all-all">
                                         <input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-                                        <span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
+                                        <span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL')?></span>
                                     </label>
                                 <?php elseif (@$this->lists['order'] == $kl) :?>
                                     <?php if (@$this->lists['order_dir'] == 'desc') :?>
@@ -133,7 +133,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                                 ?>
                                                 >
                                                     <?php if (!isset($value->val)) :?>
-                                                        <option value="" disabled="disabled" selected="selected"> <?php echo JText::_('PLEASE_SELECT'); ?> </option>
+                                                        <option value="" disabled="disabled" selected="selected"> <?php echo JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                                                     <?php endif; ?>
                                                     <?php foreach ($value->radio as $rlabel => $rval) :?>
                                                         <option value="<?php echo $rval; ?>" <?php echo ($value->val == $rlabel)? "selected=true":''?>> <?php echo JText::_($rlabel); ?> </option>
@@ -144,7 +144,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                                 <span class="glyphicon glyphicon-share-alt em-field" id="<?php echo $cfnum.'-'.$value->id.'-span'; ?>" aria-hidden="true" style="color:black;"></span>
                                             <?php elseif ($value->type == 'fileupload') :?>
                                                 <?php if (!empty($value->val) && $value->val != "/") :?>
-                                                    <a href="<?php echo $value->val ?>" target="_blank"> <?php echo JText::_('LINK_TO_DOWNLOAD'); ?> <span class="glyphicon glyphicon-save"></span> </a>
+                                                    <a href="<?php echo $value->val ?>" target="_blank"> <?php echo JText::_('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD'); ?> <span class="glyphicon glyphicon-save"></span> </a>
                                                 <?php else :?>
                                                     <p> No File </p>
                                                 <?php endif; ?>
@@ -164,9 +164,9 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 		</div>
 		<div class="em-container-pagination">
             <div class="em-container-pagination-select">
-                <label for="pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
+                <label for="pager-select" class="em-container-pagination-label"><?php echo JText::_('COM_EMUNDUS_DISPLAY')?></label>
                 <select name="pager-select" class="chzn-select" id="pager-select">
-                    <option value="0" <?php echo ($this->pagination->limit == 0)?"selected=true":'';?>><?php echo JText::_('ALL')?></option>
+                    <option value="0" <?php echo ($this->pagination->limit == 0)?"selected=true":'';?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
                     <option value="5" <?php echo ($this->pagination->limit == 5)?"selected=true":'';?>>5</option>
                     <option value="10" <?php echo ($this->pagination->limit == 10)?"selected=true":'';?>>10</option>
                     <option value="15" <?php echo ($this->pagination->limit == 15)?"selected=true":'';?>>15</option>

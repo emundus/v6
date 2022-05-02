@@ -27,4 +27,4 @@ $lang = JFactory::getLanguage();
 >
 </div>
 
-<script src="media/com_emundus_vue/app_emundus.js"></script>
+<script src="media/com_emundus_vue/app_emundus.js?1"></script>

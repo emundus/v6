@@ -108,6 +108,17 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 			}
 		}
 	}
+	# get the logged user 	$user->id
+	# get the applicant id	$user->id
+	# get the fnum			$fnum
+	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	$user = JFactory::getSession()->get('emundusUser');		# logged user
+
+	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	$mFile = new EmundusModelFiles();
+	$applicant_id = ($mFile->getFnumInfos($user->fnum))['applicant_id'];
+
+	EmundusModelLogs::log($user->id, $applicant_id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'FORM_ADDED_BY_APPLICANT');
 } else {
 	try {
 		$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
@@ -137,8 +148,21 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 	$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
 
 	echo "<hr>";
-	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
+	echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>';
 	echo "<hr>";
+
+	# get the logged user 	$user->id
+	# get the fnum			$fnum
+	# get the applicant id	$sid
+	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	$user = JFactory::getSession()->get('emundusUser');		# logged user #
+
+	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	$mFile = new EmundusModelFiles();
+	$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+	EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'FORM_ADDED_BY_COORDINATOR');
+
 	exit;
 
 }

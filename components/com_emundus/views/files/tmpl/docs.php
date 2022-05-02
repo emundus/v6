@@ -15,7 +15,7 @@ $template_type = array(
 
     </br>
 
-    <label for="em-doc-cansee"><?= JText::_('CAN_BE_VIEWED'); ?></label>
+    <label for="em-doc-cansee"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_ACTIONS_CAN_BE_VIEWED'); ?></label>
     </br>
 
     <label class="em-switch">
@@ -150,7 +150,7 @@ $template_type = array(
         content: "";
         height: 16px;
         width: 16px;
-        left: 20px;
+        /*left: 20px;*/
         transition: .4s;
         background: #f9f5f5;
     }

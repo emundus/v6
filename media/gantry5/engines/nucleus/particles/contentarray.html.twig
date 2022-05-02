@@ -33,6 +33,10 @@
 
 {% block particle %}
 
+     {% if particle.title %}
+            <h2 class="g-title">{{ particle.title|raw }}</h2>
+        {% endif %}
+
     {# All Articles #}
     <div class="g-content-array g-joomla-articles{% if particle.css.class %} {{ particle.css.class }}{% endif %}" {{- attr_extra|raw }}>
 
@@ -43,6 +47,13 @@
                     <div class="g-block">
                         <div class="g-content">
                             <div class="g-array-item">
+                                {% if display.edit and article.edit %}
+                                    {% if not joomla.checkVersion('4.0') %}
+                                        <a class="g-array-item-edit" href="{{ article.edit }}">{{ 'COM_CONTENT_FORM_EDIT_ARTICLE'|trans }}</a>
+                                    {% else %}
+                                        <a class="g-array-item-edit" href="{{ article.edit }}" aria-describedby="editarticle-{{ article.id }}">{{ 'JGLOBAL_EDIT'|trans }}</a>
+                                    {% endif %}
+                                {% endif %}
                                 {% if display.image.enabled and article.images.image_intro or article.images.image_fulltext %}
                                     {% if article.images.image_intro and display.image.enabled == 'intro' or display.image.enabled == 'show' %}
                                         <div class="g-array-item-image">
@@ -74,11 +85,11 @@
                                         {% if display.date.enabled %}
                                             <span class="g-array-item-date">
                                                 {% if display.date.enabled == 'published' %}
-                                                    <i class="fa fa-clock-o" aria-hidden="true"></i>{{ article.publish_up|date(display.date.format) }}
+                                                    <i class="far fa-clock" aria-hidden="true"></i>{{ article.publish_up|date(display.date.format) }}
                                                 {% elseif display.date.enabled == 'modified' %}
-                                                    <i class="fa fa-clock-o" aria-hidden="true"></i>{{ article.modified|date(display.date.format) }}
+                                                    <i class="far fa-clock" aria-hidden="true"></i>{{ article.modified|date(display.date.format) }}
                                                 {% else %}
-                                                    <i class="fa fa-clock-o" aria-hidden="true"></i>{{ article.created|date(display.date.format) }}
+                                                    <i class="far fa-clock" aria-hidden="true"></i>{{ article.created|date(display.date.format) }}
                                                 {% endif %}
                                             </span>
                                         {% endif %}
@@ -124,9 +135,8 @@
 
                                 {% if display.read_more.enabled %}
                                     <div class="g-array-item-read-more">
-                                        <a href="{{ article.route }}">
-                                            <button class="button{% if display.read_more.css %} {{ display.read_more.css }}{% endif %}">{{ display.read_more.label|default('Read More...') }}</button>
-
+                                        <a href="{{ article.route }}" class="button{% if display.read_more.css %} {{ display.read_more.css }}{% endif %}">
+                                            {{ display.read_more.label|default('Read More...') }}
                                         </a>
                                     </div>
                                 {% endif %}

@@ -38,6 +38,7 @@ class SecuritycheckprosViewFileManager extends JViewLegacy
         // Obtenemos si está habilitada la opción para escanear sólo ficheros ejecutables
         $params = JComponentHelper::getParams('com_securitycheckpro');
         $scan_executables_only = $params->get('scan_executables_only', 0);
+		$this->file_manager_include_exceptions_in_database = $params->get('file_manager_include_exceptions_in_database', 0);
 
         // Información para la barra de navegación
         $logs_pending = $model->LogsPending();

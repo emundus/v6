@@ -430,6 +430,19 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 				}
 			}
 
+            // track the LOGS (1 | u | COM_EMUNDUS_ACCESS_FILE_UPDATE)
+            # get the logged user id	$user->id
+            # get the fnum				$user->fnum
+            # get the applicant id		$user->id
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');			# logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($user->fnum))['applicant_id'];
+
+            EmundusModelLogs::log($user->id, $applicant_id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_APPLICANT');
+
 		} else {
 
 			try {
@@ -463,10 +476,36 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
 			$link = JRoute::_('index.php?option=com_fabrik&view=form&formid='.$formid.'&usekey=fnum&rowid='.$fnum.'&tmpl=component');
 
-			echo "<hr>";
-			echo '<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>';
-			echo "<hr>";
-			exit;
+            # get logged user_id 	$user->id
+            # get candidat user_id	$sid
+            # get the fnum			$fnum
+
+            // TRACK THE LOGS (1 | u | COM_EMUNDUS_ACCESS_FILE_UPDATE)
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $user = JFactory::getSession()->get('emundusUser');		# logged user #
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_UPDATED_BY_COORDINATOR');
+
+            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+            echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
+            die("<script>
+              $(document).ready(function () {
+                Swal.fire({
+                  position: 'top',
+                  type: 'success',
+                  title: '".JText::_('SAVED')."',
+                  showConfirmButton: false,
+                  timer: 2000,
+                  onClose: () => {
+                    window.close();
+                  }
+                })
+              });
+            </script>");
 		}
 
 
