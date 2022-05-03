@@ -1,30 +1,15 @@
 <template>
   <div id="form-builder-create-document">
     <div class="em-flex-row em-flex-space-between em-p-16">
-      <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT") }}</p>
-      <span
-          class="material-icons em-pointer"
-          @click="$emit('close')"
-      >
-        close
-      </span>
+      <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES") }}</p>
+      <span class="material-icons em-pointer" @click="$emit('close')">close</span>
     </div>
-    <div class="em-p-16">
+    <!--<div class="em-p-16">
       <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_MODEL") }}</label>
       <select id="document-model" @change="selectModel" v-if="current_document === null">
         <option value="none"></option>
         <option v-for="(model, index) in models" :value="model.id">{{ model.name.fr }}</option>
       </select>
-
-      <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_REQUIRED") }}</label>
-      <div class="em-toggle">
-        <input type="checkbox" class="em-toggle-check" v-model="document.mandatory" @click="document.mandatory != document.mandatory">
-        <strong class="b em-toggle-switch"></strong>
-        <strong class="b em-toggle-track"></strong>
-      </div>
-
-      <label for="title">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
-      <input type="text" id="title" v-model="document.name.fr">
 
       <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION") }}</label>
       <editor
@@ -35,27 +20,69 @@
           :id="'editor'"
           :height="'200'"
       ></editor>
+    </div>-->
+    <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">
+      <li @click="activeTab = 'general'">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL") }}</li>
+      <li @click="activeTab = 'advanced'">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED") }}</li>
+    </ul>
+    <section id="general-properties" v-if="activeTab === 'general'">
+      <label for="title">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
+      <input type="text" id="title" v-model="document.name.fr">
+
+      <label>{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
+      <div v-for="(filetype, index) in fileTypes" :key="filetype.value">
+        <input
+          type="checkbox"
+          name="filetypes"
+          :id="filetype.value"
+          :value="filetype.value"
+          @change="checkFileType"
+        >
+        <label :for="filetype.value"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
+      </div>
 
       <label for="nbmax">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NBMAX") }}</label>
       <input type="number" id="nbmax" v-model="document.nbmax">
 
-      <label>{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
-      <!-- checkboxes from filetypes -->
-      <div
-          v-for="(filetype, index) in fileTypes"
-          :key="filetype.value"
-      >
-        <input
-            type="checkbox"
-            name="filetypes"
-            :id="filetype.value"
-            :value="filetype.value"
-            @change="checkFileType"
-        >
-        <label :for="filetype.value"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
+      <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_REQUIRED") }}</label>
+      <div class="em-toggle">
+        <input type="checkbox" class="em-toggle-check" v-model="document.mandatory" @click="document.mandatory != document.mandatory">
+        <strong class="b em-toggle-switch"></strong>
+        <strong class="b em-toggle-track"></strong>
       </div>
-      <button class="em-primary-button"  @click="updateDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT') }}</button>
-    </div>
+    </section>
+    <section id="advanced-properties" v-if="activeTab === 'advanced'">
+      <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_CATEGORY") }}</label>
+      <select id="document-category">
+        <option v-for="category in categories" :value="category.id">{{ category.title }}</option>
+      </select>
+
+      <label for="min-pdf-pages">{{ translate("COM_EMUNDUS_FORM_BUILDER_MIN_PDF_PAGES") }}</label>
+      <input id="min-pdf-pages" type="number" min="0">
+
+      <label for="max-pdf-pages">{{ translate("COM_EMUNDUS_FORM_BUILDER_MAX_PDF_PAGES") }}</label>
+      <input id="max-pdf-pages" type="number" min="0">
+
+      <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_IMAGES_DIMENSIONS") }}</label>
+      <p></p>
+      <div class="em-flex-column">
+        <div>
+          <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_WIDTH_DIMENSIONS") }}</p>
+          <div class="em-flex-row">
+            <input type="number" id="min-width" min="0" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_MINIMUM')">
+            <input type="number" id="max-width" min="0" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_MAXIMUM')">
+          </div>
+        </div>
+        <div>
+          <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_HEIGHT_DIMENSIONS") }}</p>
+          <div class="em-flex-row">
+            <input type="number" id="min-height" min="0" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_MINIMUM')">
+            <input type="number" id="max-height" min="0" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_MAXIMUM')">
+          </div>
+        </div>
+      </div>
+    </section>
+    <button class="em-primary-button"  @click="updateDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT') }}</button>
   </div>
 </template>
 
@@ -104,6 +131,7 @@ export default {
         }
       },
       fileTypes: [],
+      activeTab: 'general',
     };
   },
   created(){
