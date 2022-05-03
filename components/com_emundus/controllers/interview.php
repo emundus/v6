@@ -67,7 +67,7 @@ class EmundusControllerInterview extends JControllerLegacy
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
             $name = 'interview-'.$fnum.'.pdf';
-            $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+            $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
         }
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_interview'.$campaign['training'].'.php';
