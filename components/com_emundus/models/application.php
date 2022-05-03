@@ -2952,7 +2952,8 @@ class EmundusModelApplication extends JModelList
     public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
         try {
 
-            $query = "SELECT eu.*, sa.value FROM #__emundus_uploads as eu
+            $query = "SELECT eu.*, sa.value 
+                        FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa on sa.id = eu.attachment_id
                         WHERE fnum like ".$this->_db->quote($fnum);
 
@@ -4486,8 +4487,14 @@ class EmundusModelApplication extends JModelList
 
             // create preview based on filetype
             if ($extension == 'pdf') {
-                $content = base64_encode(file_get_contents($filePath));
-                $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
+                // if file is too big, just show an iframe with the file url
+                if (filesize($filePath) > 1000000) {
+                    $siteUrl = JURI::base();
+                    $preview['content'] = '<iframe src="' . $siteUrl . $filePath . '" style="width:100%;height:100%;" frameborder="0"></iframe>';
+                } else {
+                    $content = base64_encode(file_get_contents($filePath));
+                    $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
+                }
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;
@@ -4511,13 +4518,6 @@ class EmundusModelApplication extends JModelList
                     default:
                         $class = 'Word2007';
                 }
-
-                // ? Check if render as pdf would be a better solution
-                // $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
-                // \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
-                // $pdf = new \PhpOffice\PhpWord\Writer\PDF($phpWord);
-                // $pdf->save($fileName . '.pdf');
-                // $preview['content'] = '<iframe src="' . JPATH_BASE . DS . $fileName . '.pdf" width="99%" height="99%"></iframe>';
 
                 $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
