@@ -64,7 +64,7 @@ class EmundusViewUsers extends JViewLegacy {
 			'newsletter'		=> 1,
 			'group'             => 1,
 			'institution'       => 1,
-			'spam_suspect'		=> 1,
+			'spam_suspect'		=> 0,
 			'not_adv_filter'	=> 1,
 		];
 		$filts_options 	= [

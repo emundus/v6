@@ -28,9 +28,9 @@ foreach ($tabModule as $mod) {
 	$showModule .= "</td><td class='radioModule'><input type='checkbox' id='".JText::_($mod['title'])."' value='".$mod['id']."' onchange='changePublished(".$mod['id'].")' ".(($mod['published'] == 1)?"checked":"").">
 	<a href='#chart-container-".$view."'><label>".JText::_($mod['title'])."</label></a></td><td class='edit'>";
 	if (substr_count($view, "stats") != 1) {
-		$showModule .= "<input type='button' class='delete' value='&#128465; ".JText::_('RECYCLE_BIN')."' onclick='deleteModule(".$mod['id'].")'/></td>";
+		$showModule .= "<input type='button' class='delete' value='&#128465; ".JText::_('MOD_EMUNDUS_QUERY_RECYCLE_BIN')."' onclick='deleteModule(".$mod['id'].")'/></td>";
 	}
-	$showModule .= "</td><td class='edit'><input type='button' class='modif' value='&#128395; ".JText::_('EDIT')."' onclick='modifyModule(".$mod['id'].", \"".JText::_($mod['title'])."\", \"".$typeMod."\")'/></td>";
+	$showModule .= "</td><td class='edit'><input type='button' class='modif' value='&#128395; ".JText::_('MOD_EMUNDUS_QUERY_BUILDER_EDIT')."' onclick='modifyModule(".$mod['id'].", \"".JText::_($mod['title'])."\", \"".$typeMod."\")'/></td>";
 	$showModule .= "</tr></table></div>";
 	$i++;
 }
@@ -42,7 +42,7 @@ $i = 0;
 foreach ($tabExportModule as $mod) {
 	$typeMod = $helper->getTypeStatModule($mod['id']);
 	$view = json_decode($mod['params'], true)['view'];
-	
+
 	$exportModule .= "<table class='exportModule'><tr><td class='radioModule'><label><input type='checkbox' class='radioButton' id='".JText::_($mod['title'])."' value='".$mod['id']."' onchange='exportNum(\"".$view."\")'>".JText::_($mod['title'])."</label></td></td></tr></table>";
 	$i++;
 }

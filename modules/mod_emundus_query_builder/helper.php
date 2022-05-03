@@ -554,7 +554,7 @@ class modEmundusQueryBuilderHelper {
 		$elements = $h_files->getElements($tabProgram, $tabCampaign);
 		$output = '<label>Indicateur*</label>
 					<select id="indicateurModule">
-						<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+						<option value="">'.JText::_('MOD_EMUNDUS_QUERY_BUILDER_PLEASE_SELECT').'</option>';
 		$menu = "";
 		$groupe = "";
 

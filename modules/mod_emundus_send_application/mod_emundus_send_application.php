@@ -23,7 +23,7 @@ if (!empty($user->fnum)) {
 	$layout = $params->get('layout', 'default');
 	$print = $params->get('showprint', 1);
     $send = $params->get('showsend', 1);
-    $admission = $params->get('admission');
+    $admission = $params->get('admission', 1);
 	$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
 	$eMConfig = JComponentHelper::getParams('com_emundus');

@@ -210,7 +210,8 @@ class modEmundusCampaignHelper {
             ->select('c.id,c.title,c.introtext')
             ->from($db->quoteName('#__content', 'c'))
             ->leftJoin($db->quoteName('#__categories', 'ca') . ' ON ' . $db->quoteName('ca.id') . ' = '. $db->quoteName('c.catid'))
-            ->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'));
+            ->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'))
+            ->andWhere($db->quoteName('c.state') . ' = 1');
 
         try {
             $db->setQuery($query);
@@ -300,23 +301,23 @@ class modEmundusCampaignHelper {
         }
     }
 
-    public function addClassToData($data, $formations) 
+    public function addClassToData($data, $formations)
     {
         // Add a custom class parameter to data items
         $data = array_map(function($item) use ($formations) {
             $item->class = !isset($item->class) ? '' : $item->class;
-        
+
             // find formation associated to item inside formations array
             foreach ($formations as $formation) {
                 if ($formation->id == $item->formation) {
                     $item->class .= 'formation_type-' . $formation->type;
                     $item->class .= ' formation_level-' . $formation->level;
-                
+
                     foreach ($formation->voies_d_acces as $voie) {
                         $item->class .= ' voie_d_acces-' . $voie->voie_d_acces;
-                    
+
                     }
-                
+
                     break;
                 }
             }

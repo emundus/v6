@@ -223,7 +223,7 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
             return;
         }
         
-        $tasks = $this->cron_plugin->getValue('tasks', 'alternate', 'cron_plugin');
+        $tasks = $this->cron_plugin->getValue('tasks', 'integrity', 'cron_plugin');
         $launch_time = $this->cron_plugin->getValue('launch_time', 2, 'cron_plugin');
         $periodicity = $this->cron_plugin->getValue('periodicity', 24, 'cron_plugin');
             
@@ -408,7 +408,12 @@ class plgSystemSecuritycheckpro_cron extends JPlugin
             $mailer->isHTML(true);
             $mailer->Encoding = 'base64';
             // Enviamos el mensaje
-            $send = $mailer->Send();
+            try{
+				$send = $mailer->Send();
+			} catch (Exception $e)
+            {
+               
+            }
         }
             
     }

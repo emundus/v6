@@ -17,18 +17,18 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 			JRequest::setVar('view', $default );
 		}
 		parent::display();
-    }	
+    }
 	/**
 	 * Get application form elements to display in XLS file
 	*/
 	/*
 	function send_elements() {
 		error_reporting(0);
-		
+
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
 		$current_user = JFactory::getUser();
-		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id)) 
-			die( JText::_('RESTRICTED_ACCESS') );
+		if(!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::isEvaluator($current_user->id) && !EmundusHelperAccess::isPartner($current_user->id))
+			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
 		$view = JRequest::getVar('v', null, 'GET');
 		$session = JFactory::getSession();
@@ -37,9 +37,9 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 
 		//require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		//export_xls($cid, $elements); 
+		//export_xls($cid, $elements);
 		$xls = $this->getModel('xls_'.$view);
-		$xls->export_xls($cid, $elements); 
+		$xls->export_xls($cid, $elements);
 		exit();
 		}
 */

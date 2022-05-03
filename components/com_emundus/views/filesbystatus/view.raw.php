@@ -11,9 +11,9 @@
  * @license        GNU/GPL
  * @author        Benjamin Rivalland
  */
- 
+
 // no direct access
- 
+
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
 jimport( 'joomla.application.component.view');
@@ -22,7 +22,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewFilesbystatus extends JViewLegacy
 {
 	//protected $itemId;
@@ -34,7 +34,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'emails.php');
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'users.php');
-		
+
 		parent::__construct($config);
 	}
 
@@ -45,8 +45,8 @@ class EmundusViewFilesbystatus extends JViewLegacy
     	$current_user = JFactory::getUser();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
-			die( JText::_('RESTRICTED_ACCESS') );
-	   	
+			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
+
 	   	$app = JFactory::getApplication();
 		$params = JComponentHelper::getParams('com_emundus');
 		$default_actions = $params->get('default_actions', 0);
@@ -62,7 +62,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 			// get access list for application file
 			case 'access':
 				$fnums = $app->input->getString('users', null);
-				$fnums_obj = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING); 
+				$fnums_obj = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
 			    if(@$fnums_obj[0] == 'all')
 					$fnums = $model->getAllFnums();
@@ -91,24 +91,24 @@ class EmundusViewFilesbystatus extends JViewLegacy
 			// get Menu actions
 			case 'menuactions':
 				$fnum = $app->input->getString("fnum", "0");
-				$display = $app->input->getString('display', 'none'); 
+				$display = $app->input->getString('display', 'none');
 				$menu = @JFactory::getApplication()->getMenu();
 				$current_menu  = $menu->getActive();
 				if(isset($current_menu) && !empty($current_menu)) {
 					$params = $menu->getParams($current_menu->id);
-				
+
 					if($fnum === "0")
 					{
 						$items = @EmundusHelperFiles::getMenuList($params);
 					}
 					else
-					{ 
+					{
 						$items = @EmundusHelperFiles::getMenuList($params, $fnum);
 					}
 
 					$this->assignRef('items', $items);
 					$this->assignRef('display', $display);
-				} else { 
+				} else {
 					echo JText::_('ERROR_MENU_ID_NOT_FOUND');
 					return false;
 				}
@@ -185,7 +185,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 			    $users = $this->get('Users');
 
 			    $defaultElements = $this->get('DefaultElements');
-			    $datas = array(array('check' => '#', 'u.name' => JText::_('APPLICATION_FILES'), 'status' => JText::_('STATUS')));
+			    $datas = array(array('check' => '#', 'u.name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => JText::_('COM_EMUNDUS_STATUS')));
 			    $fl = array();
 			    $model = $this->getModel('Files');
 			    if (count($defaultElements)>0) {
@@ -211,15 +211,15 @@ class EmundusViewFilesbystatus extends JViewLegacy
 							    $datas[0]['PHOTOS'] = JText::_('PHOTOS');
 							    break;
 						    case 'evaluators':
-							    $datas[0]['EVALUATORS'] = JText::_('EVALUATORS');
+							    $datas[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
 							    $colsSup['evaluators'] = @EmundusHelperFiles::createEvaluatorList($col[1], $model);
 							    break;
 							case 'overall':
-								$datas[0] = array_merge($datas[0], array('overall' => JText::_('EVALUATION_OVERALL')));
+								$datas[0] = array_merge($datas[0], array('overall' => JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL')));
 								break;
                             case 'tags':
                                 $taggedFile = $model->getTaggedFile();
-                                $datas[0]['eta.id_tag'] = JText::_('TAGS');
+                                $datas[0]['eta.id_tag'] = JText::_('COM_EMUNDUS_TAGS');
                                 $colsSup['id_tag'] = array();
                                 break;
                             case 'access':
@@ -338,7 +338,7 @@ class EmundusViewFilesbystatus extends JViewLegacy
 			    }
 			    else
 			    {
-				    $datas = JText::_('NO_RESULT');
+				    $datas = JText::_('COM_EMUNDUS_NO_RESULT');
 			    }
 
 			    /* Get the values from the state object that were inserted in the model's construct function */

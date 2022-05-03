@@ -170,7 +170,7 @@ body {
 }
 
 body p {
-    margin: 0 !important;
+    margin: 0;
 }
 
 body p a:hover {

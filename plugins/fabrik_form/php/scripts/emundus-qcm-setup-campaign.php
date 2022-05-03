@@ -33,11 +33,11 @@ try {
 
 
     if((int)$data->type === 2){
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'formbuilder.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_onboard'.DS.'models'.DS.'form.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'formbuilder.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
 
-        $m_formbuilder = new EmundusonboardModelformbuilder;
-        $m_form = new EmundusonboardModelform;
+        $m_formbuilder = new EmundusModelformbuilder;
+        $m_form = new EmundusModelform;
 
         // Create a new profile
         $data_profile = [

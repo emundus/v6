@@ -4,8 +4,12 @@ import attachmentService from '../services/attachment.js';
 
 var mixin = {
 	methods: {
-		formattedDate: function (date) {
-			return moment(date).format('LLLL');
+		formattedDate: function (date = '',format = 'LLLL') {
+			if(date !== '') {
+				return moment(date).format(format);
+			} else {
+				return moment().format(format);
+			}
 		},
 		strippedHtml: function (html) {
 			if (html === null || html === undefined) {
@@ -16,7 +20,7 @@ var mixin = {
 		},
 		getUserNameById: function (id) {
 			let completeName = '';
-			// id to int 
+			// id to int
 			id = parseInt(id);
 
 			if (id > 0) {
@@ -54,7 +58,12 @@ var mixin = {
 				return {};
 			}
 		},
+		async asyncForEach(array, callback) {
+			for (let index = 0; index < array.length; index++) {
+				await callback(array[index], index, array);
+			}
+		},
 	}
-}
+};
 
 export default mixin;
