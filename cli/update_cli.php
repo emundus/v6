@@ -25,8 +25,20 @@ class UpdateCli extends JApplicationCli
             //Exclude Joomla & Gantry5
             ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0 AND' . ($this->db->quoteName('extension_id') . ' NOT LIKE 700 AND') . ($this->db->quoteName('extension_id') . ' NOT LIKE 11970'));
         $this->db->setQuery($query);
-        return $this->db->loadAssocList('', 'update_id');
+        return $this->db->loadAssocList('', );
     }
+
+
+    public function queryFromUid($table, $uid)
+    {
+        $query = $this->db->getQuery(true);
+        $query->select('*')
+            ->from('#__' . $table)
+            ->where($this->db->quoteName('extension_id') . ' LIKE ' . $uid);
+        $this->db->setQuery($query);
+        return $this->db->loadAssocList('');
+    }
+
 
     public function purgeAndFetchUpdates($id = null) {
         // Get the update cache time
@@ -56,18 +68,24 @@ class UpdateCli extends JApplicationCli
     }
 
     public function getInfo() {
-        $this->purgeAndFetchUpdates();
+        //$this->purgeAndFetchUpdates();
         $query = $this->db->getQuery(true);
-        $query->select('*')
-            ->from('#__' . 'updates')
+
             //Exclude Joomla & Gantry5
-            ->where($this->db->quoteName('extension_id') . ' NOT LIKE 0');
+        $query->select("u.extension_id, u.update_id,u.element, u.type, u.version, e.name")
+            ->where("u.extension_id NOT LIKE 0")
+            ->from($this->db->quoteName('#__updates','u'))
+            ->join('LEFT', $this->db->quoteName('#__extensions', 'e') . ' ON u.extension_id = e.extension_id');
+
         $this->db->setQuery($query);
         $arr = $this->db->loadAssocList();
+        $mask = "|%5s |%25s | %25s | %35s | %10s | %5s\n";
+        printf($mask, 'Id', 'Uid','Element', 'Name','Type', 'Version');
 
         $key = array_values($arr);
+
         foreach ($key as $k) {
-            echo $k['extension_id'] . ' --> ' . $k['name'] . ' (version : ' . $k['version'] . ')' . "\n";
+            printf($mask, $k['extension_id'], $k['update_id'],$k['element'],$k['name'],$k['type'], $k['version']);
         }
     }
 
@@ -76,44 +94,36 @@ class UpdateCli extends JApplicationCli
             Joomla! CLI Update DB
             
             Operations
-              -l, --list                  Liste les composants avec une mise à jour disponible
-              -h, --help                  Help
-              -i --install
-            Update Filters
-              -x, --extension                    Met à jour l'extension qui correspond à l'id en etnrée
-              -e, --extensions            Toutes les extensions avec une mise à jour disponible
-              -c, --core                  Composants Joomla
-              -s, --sql                   Mise à jour de la base de données
+              -l, --list               Liste les composants avec une mise à jour disponible
+              -h, --help               Help
+              -i, --install             Installe l'extension
+              -u, --update             Met à jour l'extension qui correspond à l'id en entrée
+              -c, --core               Mise à jour Joomla
+              -d, --database           Mise à jour SGBD Joomla
             
             EOHELP;
     }
 
-    public function queryUpdates($uid)
-    {
-        $query = $this->db->getQuery(true);
-        $query->select('*')
-            ->from('#__' . 'updates')
-            //Exclude Joomla & Gantry5
-            ->where($this->db->quoteName('extension_id') . ' LIKE ' . $uid);
-        $this->db->setQuery($query);
-        return $this->db->loadAssocList('', 'update_id');
-    }
 
-    public function updateExtensions($uid = null) {
-        $this->out('UPDATE EXTENSIONS...');
-        $this->purgeAndFetchUpdates();
+    public function updateExtensions($id = null) {
+        $ext = $this->queryFromUid('extensions', $id);
+        $this->out('UPDATE EXTENSIONS : ' . $ext[0]['name']);
+        //$this->purgeAndFetchUpdates();
 
         # Update by extension id
-        if ($uid != null) {
-            $uid = $this->queryUpdates($uid);
+        if ($id != null) {
+            $uid = $this->queryFromUid('updates',$id);
+            if ($uid != null){
+                $this->out("Update found");
+            }
+
         } else {
             $uid = $this->getUpdateId('updates');
+            $this->out(sizeof($uid) . " updates found");
         }
         if ($uid == null) {
             $this->out("No update for this extension");
             return false;
-        } else {
-            $this->out("Update found");
         }
 
         foreach ($uid as $u) {
@@ -122,10 +132,15 @@ class UpdateCli extends JApplicationCli
             $params = $component->params;
             $minimum_stability = (int)$params->get('minimum_stability', JUpdater::STABILITY_STABLE);
 
-            echo 'Update : ' . $u . "\n";
-            $u = array($u);
+            echo 'Update : ' . $u['name'] . "\n";
+            $u = array($u['update_id']);
             // For gantry canChmod() fail -> comment lines 124 to 127 in File.php
             $model->update($u, $minimum_stability);
+            if ($model->getState()->result) {
+                $this->out("update success");
+            } else {
+                $this->out('update fails');
+            };
         }
     }
 
@@ -166,6 +181,7 @@ class UpdateCli extends JApplicationCli
             //Create restoration.php (ends up in /com_joomlaupdate)
             //$updater->createRestorationFile($basename);
             //$this->out('Creating restoration...');
+
             // Extract files to core director
             $this->out("Extracting files...");
 
@@ -202,45 +218,28 @@ class UpdateCli extends JApplicationCli
         $app->input->set('installtype', 'url');
         $app->input->set('install_directory', JPATH_BASE . '/tmp');
         $app->input->set('max_upload_size', '10485760');
-        if ($name == 'emundus') {
-            $app->input->set('install_url', "https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=" . $token);
-            $this->getInstall('com_emundus');
-        }
 
         switch ($name) {
             case 'emundus':
                 if (!$token) {
                     $this->out('Need to pass an authentication token as argument');
                     exit();}
-                $extName = 'com_emundus';
                 $url = "https://git.emundus.io/emundus/cms/tchooz/-/archive/staging/tchooz-staging.zip?private_token=" . $token;
                 break;
             case 'fabrik':
-                $extName = 'com_fabrik';
                 $url = "https://fabrikar.com/index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=fileupload&method=ajax_download&format=raw&element_id=31&formid=3&rowid=3796&repeatcount=0&ajaxIndex=0";
                 #$url = "https://github.com/Fabrik/fabrik/archive/master.zip";
                 break;
             case 'gantry':
-                $extName = 'com_gantry';
                 $url = "https://github.com/gantry/gantry5/releases/download/5.5.5/joomla-pkg_gantry5_v5.5.5.zip";
                 break;
-            case 'hikashop':
-                $url = "";
-                break;
-            case 'extplorer':
-                $url = "";
-                break;
-            case 'eventbooking':
-                $url = "";
-                break;
             case 'scp':
-                $url = "https://securitycheck.protegetuordenador.com/component/ars/?task=download&view=Item&id=327&format=zip";
+                // need pro version
+                $url = "https://securitycheck.protegetuordenador.com/downloads/securitycheck/securitycheck-3-4-5/com_securitycheck-3-4.5.zip?format=zip";
+                #$url = "https://securitycheck.protegetuordenador.com/component/ars/?task=download&view=Item&id=327&format=zip";
                 break;
             case 'falang':
-                $url = "";
-                break;
-            case 'jumi':
-                $url = "";
+                $url = "https://www.faboba.com/component/ars/?view=download&id=397&dummy=my.zip&dlid=1d6d65391429d126157ed4c78f4d3108";
                 break;
             case 'dropfiles':
                 $url = "https://www.joomunited.com/index.php?option=com_juupdater&task=download.download&extension=dropfiles.zip&infosite=joomunited&version=6.0.1&token=d6bbea49-24be-4fda-91c8-f64f0e44cf87&siteurl=https://vanilla.emundus.io/";
@@ -248,25 +247,49 @@ class UpdateCli extends JApplicationCli
             case 'dpcalendar':
                 $url = "https://joomla.digital-peak.com/download/dpcalendar/dpcalendar-8.2.2/dpcalendar-free-8-2-2.zip?format=zip";
                 break;
-            case 'jce':
-                $url = "";
-                break;
-            case 'miniorange':
-                $url = "";
-                break;
-            case 'externallogin':
-                $url = "";
-                break;
+            /*            case 'hikashop':
+                            $url = "";
+                            break;
+                        case 'jumi':
+                            $url = "";
+                            break;
+                        case 'extplorer':
+                            $url = "";
+                            break;
+                        case 'eventbooking':
+                            $url = "";
+                            break;
+                        case 'jce':
+                            $url = "";
+                            break;
+                        case 'miniorange':
+                            $url = "";
+                            break;
+                        case 'externallogin':
+                            $url = "";
+                            break;*/
         }
 
         try {
             $app->input->set('install_url', $url);
-            $this->getInstall($extName);
+            $this->installFromUrl($name);
 
         } catch (Exception $e) {
             echo $e;
         }
     }
+
+
+    public function installFromUrl($extension_name){
+        $installer = JModelLegacy::getInstance('InstallerModelInstall');
+        $result = $installer->install();
+        if (!$result) {
+            JLog::add($extension_name, JLog::WARNING, 'jerror');
+
+            $this->out("\n" . "Install failed");
+        } else { $this->out("\n" . "Install OK");}
+    }
+
 
     public function discover() {
 
@@ -292,16 +315,6 @@ class UpdateCli extends JApplicationCli
 
         $app->input->set('cid', $cid);
         $discover->discover_install();
-    }
-
-
-    public function getInstall($extension_name){
-        $installer = JModelLegacy::getInstance('InstallerModelInstall');
-        $result = $installer->install();
-        if (!$result) {
-            JLog::add($extension_name, JLog::WARNING, 'jerror');
-            $this->out("\n" . "Install failed");
-        } else { $this->out("\n" . "Install OK");}
     }
 
 
@@ -350,27 +363,33 @@ class UpdateCli extends JApplicationCli
 
 
         if ($name = $this->input->get('i', $this->input->get('install'))) {
-            if ($name=='emundus' && sizeof($args) > 2) {
-                $this->installExtension($app, $name, $args[2]);
+            if ($name=='emundus' && sizeof($args) == 4) {
+                $this->installExtension($app, $name, $args[3]);
             } else {
                 $this->installExtension($app, $name);
             }
         }
-
         if ($this->input->get('c', $this->input->get('core'))) {
             $this->updateJoomla();
         }
-        if ($this->input->get('s', $this->input->get('sql'))) {
+        if ($this->input->get('d', $this->input->get('database'))) {
             $this->updateSQLJoomla();
+        }
+        if ($this->input->get('u', $this->input->get('extension'))) {
+            if (sizeof($args) == 2) {
+                $this->updateExtensions();
+            } elseif (sizeof($args) >= 3) {
+                $index = 2;
+                while ($index <= sizeof($args)-1) {
+                    $id = $args[$index];
+                    $this->updateExtensions($uid = $id);
+                    $index++;
+                }
+
+            }
         }
         if ($this->input->get('h', $this->input->get('help'))) {
             $this->doEchoHelp();
-        }
-        if ($id = $this->input->get('x', $this->input->get('extension'))) {
-            $this->updateExtensions($uid = $id);
-        }
-        if ($this->input->get('e', $this->input->get('extensions'))) {
-            $this->updateExtensions();
         }
         if ($this->input->get('l', $this->input->get('list'))) {
             $this->getInfo();
