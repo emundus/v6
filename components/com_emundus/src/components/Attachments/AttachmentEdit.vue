@@ -4,9 +4,10 @@
       <h2 class="title">{{ attachment.value }}</h2>
       <div class="editable-data">
         <div class="input-group">
-          <label for="description">{{ translate("DESCRIPTION") }} </label>
+          <label for="description">{{ translate("DESCRIPTION") }}</label>
           <textarea
               name="description"
+              id="description"
               type="text"
               v-model="attachmentDescription"
               :disabled="!canUpdate"
@@ -149,7 +150,7 @@ export default {
 
     this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
     this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
-    this.attachmentDescription = this.attachment.description;
+    this.attachmentDescription = this.attachment.upload_description;
     this.attachmentIsValidated = this.attachment.is_validated;
   },
   methods: {
@@ -175,7 +176,7 @@ export default {
 
       if (response.status.update) {
         this.attachment.modified_by = this.$store.state.user.currentUser;
-        this.attachment.description = this.attachmentDescription;
+        this.attachment.upload_description = this.attachmentDescription;
         this.attachment.is_validated = this.attachmentIsValidated;
         this.attachment.can_be_viewed = this.attachmentCanBeViewed;
         this.attachment.can_be_deleted = this.attachmentCanBeDeleted;
