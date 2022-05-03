@@ -863,7 +863,7 @@ class EmundusControllerFiles extends JControllerLegacy
                 // Log the update
                 $logsParams = array('updated' => []);
                 array_push($logsParams['updated'], ['old' => $fnum['value'], 'new' => $status[$state]['value']]);
-                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                EmundusModelLogs::log($this->_user->id, (int)substr($fnum['fnum'], -7), $fnum['fnum'], 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             //*********************************************************************
@@ -1527,7 +1527,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $session = JFactory::getSession();
         $fnums = $session->get('fnums_export');
-	    $anonymize_data = false;
+        $anonymize_data = false;
 
         if (count($fnums) == 0) {
             $fnums = array($session->get('application_fnum'));
@@ -1767,14 +1767,14 @@ class EmundusControllerFiles extends JControllerLegacy
                             }
                         } else {
 
-                        	if (!empty($date_elements[$k])) {
-		                        if ($v === '0000-00-00 00:00:00') {
-			                        $v = '';
-		                        } else {
-			                        $v = date($date_elements[$k], strtotime($v));
-		                        }
-								$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
-	                        } elseif(!empty($textarea_elements[$k])){
+                            if (!empty($date_elements[$k])) {
+                                if ($v === '0000-00-00 00:00:00') {
+                                    $v = '';
+                                } else {
+                                    $v = date($date_elements[$k], strtotime($v));
+                                }
+                                $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                            } elseif(!empty($textarea_elements[$k])){
                                 if($textarea_elements[$k] == 1){
                                     $v = strip_tags($v);
                                 }
@@ -1793,9 +1793,9 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($colOpt as $kOpt => $vOpt) {
                 switch ($kOpt) {
                     case "PHOTO":
-	                case "forms":
-	                case "attachment":
-	                case 'evaluators':
+                    case "forms":
+                    case "attachment":
+                    case 'evaluators':
                         if (array_key_exists($fnum['fnum'], $vOpt)) {
                             $line .= $vOpt[$fnum['fnum']]."\t";
                         } else {
@@ -1842,8 +1842,8 @@ class EmundusControllerFiles extends JControllerLegacy
                         $line .= $tags . "\t";
                         break;
 
-	                default:
-	                	$line .= $vOpt[$fnum['fnum']]."\t";
+                    default:
+                        $line .= $vOpt[$fnum['fnum']]."\t";
                         break;
                 }
             }
@@ -1898,9 +1898,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $pages = $h_menu->buildMenuQuery((int)$profile[0]);
 
         if ($camp[0] != 0) {
-        	$campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
+            $campaign = $m_campaign->getCampaignsByCourseCampaign($code[0], $camp[0]);
         } else {
-        	$campaign = $m_campaign->getCampaignsByCourse($code[0]);
+            $campaign = $m_campaign->getCampaignsByCourse($code[0]);
         }
 
 
@@ -2140,7 +2140,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     foreach ($attachids as $aids) {
                         $detail = explode("|", $aids);
                         if ((!empty($detail[1]) && $detail[1] == $fnumsInfo[$fnum]['training']) && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
-	                        $attachment_to_export[] = $detail[0];
+                            $attachment_to_export[] = $detail[0];
                         }
                     }
                     if ($attachment || !empty($attachment_to_export)) {
@@ -2729,8 +2729,8 @@ class EmundusControllerFiles extends JControllerLegacy
                     case "photo":
                         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_PHOTO'));
                         break;
-	                case "attachment":
-	                case "forms":
+                    case "attachment":
+                    case "forms":
                         $val = $vOpt[$fnunLine['fnum']];
                         $objPHPSpreadsheet->getActiveSheet()->getStyle($colonne_by_id[$col].':'.$colonne_by_id[$col])->getAlignment()->setWrapText(true);
                         if ($val == 0) {
@@ -2753,7 +2753,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $val.'%');
                         $objPHPSpreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
                         break;
-	                case "assessment":
+                    case "assessment":
                         $eval = '';
                         $evaluations = $vOpt[$fnunLine['fnum']];
                         foreach ($evaluations as $evaluation) {
@@ -2774,15 +2774,15 @@ class EmundusControllerFiles extends JControllerLegacy
                     case 'evaluators':
                         $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, $vOpt[$fnunLine['fnum']]);
                         break;
-	                case 'group-assoc':
-		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS'));
-		                break;
-	                case 'user-assoc':
-		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
-		                break;
-	                case 'overall':
-		                $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
-		                break;
+                    case 'group-assoc':
+                        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS'));
+                        break;
+                    case 'user-assoc':
+                        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_ASSOCIATED_USERS'));
+                        break;
+                    case 'overall':
+                        $objPHPSpreadsheet->getActiveSheet()->setCellValueByColumnAndRow($col, $line, JText::_('COM_EMUNDUS_EVALUATIONS_OVERALL'));
+                        break;
                 }
                 $col++;
             }
@@ -2805,18 +2805,18 @@ class EmundusControllerFiles extends JControllerLegacy
         $fileext = substr(strrchr($filename, '.'), 1);
 
         if (empty($fileext)) {
-        	return false;
+            return false;
         }
 
         $regex = "/^([\w\+\-\.\/]+)\s+(\w+\s)*($fileext\s)/i";
         $lines = file("$mimePath/mime.types");
         foreach($lines as $line) {
             if (substr($line, 0, 1) == '#') {
-            	continue;
+                continue;
             }
             $line = rtrim($line) . " ";
             if (!preg_match($regex, $line, $matches)) {
-            	continue;
+                continue;
             }
             return $matches[1];
         }
@@ -2869,7 +2869,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $current_user = JFactory::getUser();
 
         if ((!@EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) && $view != 'renew_application' && !$acl_override) {
-	        die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
         }
 
         require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
@@ -2886,7 +2886,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $fnumsInfo = $m_files->getFnumsInfos($fnums);
 
         if (file_exists($path)) {
-	        unlink($path);
+            unlink($path);
         }
 
         $users = array();
@@ -2897,7 +2897,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $users[$fnum] = JFactory::getUser($sid);
 
             if (!is_numeric($sid) || empty($sid)) {
-	            continue;
+                continue;
             }
 
             if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
@@ -2969,7 +2969,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     $filename = $application_form_name . DS . $application_pdf;
 
                     if (!$zip->addFile($dossier . $application_pdf, $filename)) {
-	                    continue;
+                        continue;
                     }
                 }
 
@@ -2997,7 +2997,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         foreach($attachids as $aids){
                             $detail = explode("|", $aids);
                             if ($detail[1] == $fnumsInfo[$fnum]['training'] && ($detail[2] == $fnumsInfo[$fnum]['campaign_id'] || $detail[2] == "0")) {
-	                            $attachment_to_export[] = $detail[0];
+                                $attachment_to_export[] = $detail[0];
                             }
                         }
                     }
@@ -3008,7 +3008,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         $file_ids = array();
 
                         foreach($files as $file) {
-	                        $file_ids[] = $file['attachment_id'];
+                            $file_ids[] = $file['attachment_id'];
                         }
 
                         $setup_attachments = $m_files->getSetupAttachmentsById($attachment_to_export);
@@ -3146,11 +3146,11 @@ class EmundusControllerFiles extends JControllerLegacy
         exit();
     }
 
-   /*
-     *   Get evaluation Fabrik formid by fnum
-     *
-     *
-     */
+    /*
+      *   Get evaluation Fabrik formid by fnum
+      *
+      *
+      */
     function getdecisionformid() {
         $current_user = JFactory::getUser();
 
