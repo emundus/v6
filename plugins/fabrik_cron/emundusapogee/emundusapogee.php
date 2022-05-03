@@ -110,7 +110,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # if no status is defined, we get all
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
-        # logs: 1 (access file), 4 (access attachment), 5 (access evaluation), 10 (comment file), 14 (access tag), 24 (edit user), 13 (publish), 29 (decision), 32 (admission)
+        # logs: 1 (access file), 4 (access attachment), 5 (access evaluation), 10 (comment file), 14 (access tag), 24 (edit user), 28 (publish), 29 (decision), 32 (admission)
         $query->andWhere(
             (
             "jos_emundus_logs.action_id = 1 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
@@ -119,7 +119,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
                     OR jos_emundus_logs.action_id = 10 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                     OR jos_emundus_logs.action_id = 14 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                     OR jos_emundus_logs.action_id = 24 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 13 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 28 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                     OR jos_emundus_logs.action_id = 29 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                     OR jos_emundus_logs.action_id = 32 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                 "
