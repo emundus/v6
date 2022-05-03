@@ -953,7 +953,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer = JFactory::getMailer();
 
                                 $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
-                                $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
+                                $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                                 $from_id    = 62;
@@ -1013,7 +1013,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $mailer = JFactory::getMailer();
 
                             $post = array();
-                            $tags = $m_email->setTags($recipient['id'], $post);
+                            $tags = $m_email->setTags($recipient['id'], $post, null, '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                             $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                             $from_id    = 62;
@@ -2226,7 +2226,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     'FNUM' => $fnum,
                     'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                 );
-                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum);
+                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum, '', $application_form_name);
 
                 // Format filename
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
@@ -2863,7 +2863,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     'FNUM' => $fnum,
                     'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                 );
-                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum);
+                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum, '', $application_form_name);
                 $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
                 $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
@@ -3233,7 +3233,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         ];
 
                         // Generate PDF
-                        $tags = $m_emails->setTags($fnumsInfos[$fnum]['applicant_id'], $post, $fnum);
+                        $tags = $m_emails->setTags($fnumsInfos[$fnum]['applicant_id'], $post, $fnum, '', $tmpl[0]["body"]);
 
                         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                         $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);

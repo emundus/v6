@@ -2151,7 +2151,7 @@ class EmundusModelUsers extends JModelList {
             'USER_EMAIL' => $user->email
         ];
 
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $subject.$body);
 
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 

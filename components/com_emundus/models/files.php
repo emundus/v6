@@ -3442,13 +3442,20 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     /**
-     * Find all variables like ${var} in string.
+     * Find all variables like ${var} or [var] in string.
      *
      * @param string $str
+     * @param int $type type of bracket default CURLY else SQUARE
      * @return string[]
      */
-    public function getVariables($str) {
-        preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+    public function getVariables($str, $type='CURLY') {
+        if($type == 'CURLY') {
+            preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+        } elseif ($type == 'SQUARE') {
+            preg_match_all('/\[(.*?)]/i', $str, $matches);
+        } else {
+            preg_match_all('/\{(.*?)}/i', $str, $matches);
+        }
         return $matches[1];
     }
 

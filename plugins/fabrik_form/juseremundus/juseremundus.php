@@ -596,7 +596,7 @@ class PlgFabrik_FormJUseremundus extends plgFabrik_Form
                         'FIRSTNAME'     => $data['jos_emundus_users___firstname'],
                         'LASTNAME'      => $data['jos_emundus_users___lastname']
                     );
-                    $tags = $emails->setTags($user->id, $post, null, $data['password_clear']);
+                    $tags = $emails->setTags($user->id, $post, null, $data['password_clear'], $email->name.$email->emailfrom.$email->subject.$email->message);
                     $email = $emails->getEmail($emailTmpl);
 
                     $data['fromname'] = preg_replace($tags['patterns'], $tags['replacements'], $email->name);

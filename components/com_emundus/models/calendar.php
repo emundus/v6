@@ -105,7 +105,7 @@ class EmundusModelCalendar extends JModelLegacy {
         );
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $booked_prefix);
 
         $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
 
@@ -286,7 +286,7 @@ class EmundusModelCalendar extends JModelLegacy {
         $m_emails = new EmundusModelEmails;
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $booked_prefix);
 
         $booked_prefix = preg_replace($tags['patterns'], $tags['replacements'], $booked_prefix);
 
@@ -410,7 +410,7 @@ class EmundusModelCalendar extends JModelLegacy {
         );
 
         // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post, $user->fnum);
+        $tags = $m_emails->setTags($user->id, $post, $user->fnum, '', $email->emailfrom.$email->subject.$email->message);
 
         $from_id = 62;
 
@@ -496,7 +496,7 @@ class EmundusModelCalendar extends JModelLegacy {
                 );
 
                 // An array containing the tag names is created.
-                $tags = $m_emails->setTags($recipient->id, $post, $user->fnum);
+                $tags = $m_emails->setTags($recipient->id, $post, $user->fnum, '', $email->emailfrom.$email->subject.$email->message);
 
                 // Tags are replaced with their corresponding values using the PHP preg_replace function.
                 $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
@@ -692,7 +692,7 @@ class EmundusModelCalendar extends JModelLegacy {
             'APPLICATION_PROGRESS' => $fnum
         );
 
-        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
+        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
 
         $synthesis = new stdClass();
         $synthesis->program = $program;

@@ -152,7 +152,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
         'FNUM' 				=> $fnum
     ];
 
-    $tags = $m_emails->setTags($user_id, $post, $fnum);
+    $tags = $m_emails->setTags($user_id, $post, $fnum, '', $letter->body);
     $htmldata = "";
     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -470,7 +470,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             }
 
         } else { // From HTML : $letter['template_type'] == 2
-            $tags = $m_emails->setTags($user_id, $post, $fnum);
+            $tags = $m_emails->setTags($user_id, $post, $fnum, '', $letter["body"]);
             $htmldata = "";
             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -651,7 +651,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
         'TRAINING_FEE' => @$courses_fee,
         'TRAINING_PERIODE' => @$courses_list
     ];
-    $tags = $m_emails->setTags($user_id, $post, $fnum);
+    $tags = $m_emails->setTags($user_id, $post, $fnum, '');
 
     foreach ($letters as $letter) {
         $attachment = $m_application->getAttachmentByID($letter['attachment_id']);

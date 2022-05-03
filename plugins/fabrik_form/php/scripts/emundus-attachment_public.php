@@ -132,7 +132,7 @@ try {
         'ID'             => $student->id,
         'NAME'           => $student->name,
     ];
-    $tags = $m_emails->setTags($student->id, $post, $fnum);
+    $tags = $m_emails->setTags($student->id, $post, $fnum, '', $obj->subject.$obj->message);
 
 	$patterns = array ('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/','/\n/');
 	$replacements = array ($student->id, $student->name, $student->email, '<br />');

@@ -44,7 +44,7 @@ defined('_JEXEC') or die;
                     'FNUM'          => $application->fnum
                 );
 
-                $tags = $m_email->setTags($user->id, $post, $application->fnum);
+                $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
                 $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
                 $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
                }

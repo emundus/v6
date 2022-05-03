@@ -144,7 +144,7 @@ if (count($trigger_emails) > 0) {
             if ($student->id == $recipient['id'] || in_array($recipient['id'], $mail_to)) {
 
                 $post = array('FICHE_EMPLOI' => $intitule_poste, 'FICHE_ID' => $fiche_emploi);
-                $tags = $emails->setTags($recipient['id'], $post);
+                $tags = $emails->setTags($recipient['id'], $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
 
                 $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
                 $from_id = 62;
