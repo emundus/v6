@@ -201,6 +201,7 @@ export default {
             customClass: {
               title: 'em-swal-title',
               confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
             },
           }).then((result) => {
             if (result.value) {

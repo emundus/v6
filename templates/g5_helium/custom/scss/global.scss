@@ -85,6 +85,7 @@ h1 {
 .swal2-title {
   color: #000;
   margin: 8px 8px 32px 8px;
+  font-family: "Maven Pro", sans-serif;
 }
 
 button.swal2-styled{
@@ -5459,4 +5460,8 @@ fieldset[disabled] .multiselect {
   left: 30px;
 }
 /**** END ****/
+
+.error-page #mod_emundus_help {
+  display: none;
+}
 

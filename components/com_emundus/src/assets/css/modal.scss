@@ -1,4 +1,5 @@
 #modalAddTriggercandidate .v--modal,
+#modalAddTriggermanual .v--modal,
 span[id*='modalEmailPreview_'] .v--modal,
 #modalUpdateLogo .v--modal,
 #modalUpdateIcon .v--modal,
@@ -8,6 +9,7 @@ span[id*='modalEmailPreview_'] .v--modal,
 
 span[id*='modalEditElement'] .v--modal,
 #modalAddDocuments .v--modal,
+#modalAffectCampaign .v--modal,
 #modalMenu .v--modal,
 #modalSide .v--modal{
   position: fixed;
@@ -16,6 +18,7 @@ span[id*='modalEditElement'] .v--modal,
   height: 100% !important;
   padding: 32px;
   top: 0 !important;
+  overflow: scroll;
 }
 
 span[id*='modalEditElement'] .v--modal-overlay,

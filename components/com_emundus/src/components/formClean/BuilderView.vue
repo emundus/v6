@@ -345,8 +345,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.orderSuccess,
-            this.update
+            this.translations.orderSuccess,
+            this.translations.update
         );
         let ellink = this.object.link.replace("fabrik","emundus");
         axios.get(ellink + "&format=vue_jsonclean").then(r => {
@@ -380,8 +380,8 @@ export default {
               "show",
               "foo-velocity",
               "error",
-              this.updateFailed,
-              this.updating
+              this.translations.updateFailed,
+              this.translations.updating
           );
         });
       }, 300);
@@ -405,8 +405,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
       });
     },
@@ -642,8 +642,8 @@ export default {
                   "show",
                   "foo-velocity",
                   "success",
-                  this.updateSuccess,
-                  this.update
+                  this.translations.updateSuccess,
+                  this.translations.update
               );
             });
           });
@@ -685,8 +685,8 @@ export default {
                 "show",
                 "foo-velocity",
                 "success",
-                this.updateSuccess,
-                this.update
+                this.translations.updateSuccess,
+                this.translations.update
             );
             this.can_translate.label = false;
           });
@@ -697,8 +697,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -731,8 +731,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -772,8 +772,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
         group.group_showLegend = group.label[this.actualLanguage];
         this.can_translate.label_group = false;
@@ -783,8 +783,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -855,16 +855,16 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.orderSuccess,
-            this.update
+            this.translations.orderSuccess,
+            this.translations.update
         );
       }).catch(e => {
         this.$emit(
             "show",
             "foo-velocity",
             "error",
-            this.orderFailed,
-            this.updating
+            this.translations.orderFailed,
+            this.translations.updating
         );
       });
     },
@@ -902,8 +902,8 @@ export default {
                     "show",
                     "foo-velocity",
                     "success",
-                    this.updateSuccess,
-                    this.update
+                    this.translations.updateSuccess,
+                    this.translations.update
                 );
                 group.group_showLegend = group.label[this.actualLanguage];
                 this.can_translate.label_group = false;
@@ -944,8 +944,8 @@ export default {
                     "show",
                     "foo-velocity",
                     "success",
-                    this.updateSuccess,
-                    this.update
+                    this.translations.updateSuccess,
+                    this.translations.update
                 );
                 group.group_showLegend = group.label[this.actualLanguage];
                 this.can_translate.label_group = false;
@@ -990,8 +990,8 @@ export default {
                 "show",
                 "foo-velocity",
                 "success",
-                this.updateSuccess,
-                this.update
+                this.translations.updateSuccess,
+                this.translations.update
             );
           });
         }
@@ -1044,8 +1044,8 @@ export default {
               "show",
               "foo-velocity",
               "success",
-              this.updateSuccess,
-              this.update
+              this.translations.updateSuccess,
+              this.translations.update
           );
           page.show_title.value = page.show_title.label[this.actualLanguage];
           page.label = page.show_title.label[this.actualLanguage];
@@ -1056,8 +1056,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -1096,8 +1096,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
         page.intro_value = page.intro[this.actualLanguage];
         this.updateIntroPage = false;
@@ -1106,8 +1106,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -1121,8 +1121,8 @@ export default {
           "show",
           "foo-velocity",
           "",
-          this.updating,
-          this.update
+          this.translations.updating,
+          this.translations.update
       );
       let ellink = this.object.link.replace("fabrik","emundus");
       axios.get(ellink + "&format=vue_jsonclean").then(r => {
@@ -1132,8 +1132,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
       });
     }, 1000),
