@@ -1728,11 +1728,15 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnum = $jinput->post->getRaw('fnum');
         $tmpl = $jinput->post->getRaw('tmpl');
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-        $_mMessages = new EmundusModelMessages;
+        if(!empty($fnum)) {
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+            $_mMessages = new EmundusModelMessages;
 
-        $_tags = $_mMessages->addTagsByFnum($fnum,$tmpl);
-        echo json_encode(['status'=>true]);
+            $_tags = $_mMessages->addTagsByFnum($fnum, $tmpl);
+            echo json_encode(['status'=>true]);
+        } else {
+            echo json_encode(['status'=>false]);
+        }
         exit;
     }
 
