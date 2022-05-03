@@ -2209,24 +2209,29 @@ class EmundusModelCampaign extends JModelList {
         }
     }
 
+    /**
+     * @param $emundusUser
+     *
+     * @return false|object False if error, object containing emundus_campaign_workflow id, start date and end_date if success
+     *
+     * @since version 1.30.0
+     */
     public function getCurrentCampaignWorkflow($emundusUser) {
         $current_phase = null;
 
-        if (!empty($emundusUser)) {
-            // check if user is on a specific phase
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+        if (!empty($emundusUser->fnum) && !empty($emundusUser->fnums[$emundusUser->fnum])) {
+            $query = $this->_db->getQuery(true);
             $query->select('id, start_date, end_date')
-                ->from($db->quoteName('#__emundus_campaign_workflow'))
-                ->where('campaign =' . $db->quote($emundusUser->fnums[$emundusUser->fnum]->campaign_id))
-                ->andWhere('status = ' . $db->quote($emundusUser->fnums[$emundusUser->fnum]->status));
+                ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
+                ->where('campaign =' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->campaign_id))
+                ->andWhere('status = ' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->status));
 
-            $db->setQuery($query);
+            $this->_db->setQuery($query);
 
             try {
-                $current_phase = $db->loadObject();
+                $current_phase = $this->_db->loadObject();
             } catch (Exception $e) {
-                JLog::add('Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             }
         }
 
