@@ -12,7 +12,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 	require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 
 	$menu = new EmundusHelperMenu;

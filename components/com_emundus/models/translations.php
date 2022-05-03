@@ -79,13 +79,13 @@ class EmundusModelTranslations extends JModelList
         $files = [];
         foreach ($this->getPlatformLanguages() as $language) {
             /*foreach ($extensions as $extension) {
-                $file = JPATH_BASE . '/' . $extension->type . '/' . $extension->element . '/language/' . $language . '/' . $language.'.'.$extension->element. '.ini';
+                $file = JPATH_SITE . '/' . $extension->type . '/' . $extension->element . '/language/' . $language . '/' . $language.'.'.$extension->element. '.ini';
                 if (file_exists($file)) {
                     $files[] = $file;
                 }
             }*/
             // Overrides
-            $override_file = JPATH_BASE . '/language/overrides/' . $language.'.override.ini';
+            $override_file = JPATH_SITE . '/language/overrides/' . $language.'.override.ini';
             if (file_exists($override_file)) {
                 $files[] = $override_file;
             }
@@ -273,10 +273,10 @@ class EmundusModelTranslations extends JModelList
     public function getTranslationsObject(){
         $objects = array();
 
-        include_once(JPATH_BASE . DS . 'administrator' . DS . 'components' . DS . 'com_falang' . DS . "models".DS."ContentElement.php");
+        include_once(JPATH_SITE . DS . 'administrator' . DS . 'components' . DS . 'com_falang' . DS . "models".DS."ContentElement.php");
 
         jimport('joomla.filesystem.folder');
-        $dir = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements/';
+        $dir = JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'contentelements/';
         $filesindir = JFolder::files($dir ,".xml");
         if(count($filesindir) > 0)
         {
@@ -544,7 +544,7 @@ class EmundusModelTranslations extends JModelList
             $this->_db->setQuery($query);
 
             if($this->_db->execute()){
-                $override_file = JPATH_BASE . '/language/overrides/' . $location;
+                $override_file = JPATH_SITE . '/language/overrides/' . $location;
                 if (file_exists($override_file)) {
                     $parsed_file = JLanguageHelper::parseIniFile($override_file);
                     $parsed_file[$tag] = $override;
@@ -597,7 +597,7 @@ class EmundusModelTranslations extends JModelList
                     ->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type));
                 $this->_db->setQuery($query);
 
-                if ($this->_db->execute()) {
+                if($this->_db->execute()) {
                     $override_file = JPATH_BASE . '/language/overrides/' . $location;
                     if (file_exists($override_file)) {
                         $parsed_file = JLanguageHelper::parseIniFile($override_file);
@@ -662,7 +662,7 @@ class EmundusModelTranslations extends JModelList
 
                 foreach ($languages as $language) {
                     $location = $language->lang_code . '.override.ini';
-                    $override_file = JPATH_BASE . '/language/overrides/' . $location;
+                    $override_file = JPATH_SITE . '/language/overrides/' . $location;
                     if (file_exists($override_file)) {
                         $parsed_file = JLanguageHelper::parseIniFile($override_file);
                         unset($parsed_file[$tag]);
@@ -671,7 +671,7 @@ class EmundusModelTranslations extends JModelList
                 }
             } else {
                 $location = $lang_code . '.override.ini';
-                $override_file = JPATH_BASE . '/language/overrides/' . $location;
+                $override_file = JPATH_SITE . '/language/overrides/' . $location;
                 if (file_exists($override_file)) {
                     $parsed_file = JLanguageHelper::parseIniFile($override_file);
                     unset($parsed_file[$tag]);

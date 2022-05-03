@@ -35,7 +35,7 @@ class EmundusControllerExport_select_columns extends JControllerLegacy {
 		$cid = $session->get( 'uid' );
 		$quick_search = $session->get( 'quick_search' );
 
-		//require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
+		//require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'export_xls'.DS.'xls_'.$view.'.php');
 		$elements = JRequest::getVar('ud', null, 'POST', 'array', 0);
 		//export_xls($cid, $elements);
 		$xls = $this->getModel('xls_'.$view);

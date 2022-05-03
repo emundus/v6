@@ -437,7 +437,7 @@ class EmundusHelperEmails {
         // Model for GetCampaignWithID()
 
         // include model email for Tag
-        include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         $m_emails = new EmundusModelEmails;
 
         $mainframe 	= JFactory::getApplication();
@@ -521,7 +521,7 @@ class EmundusHelperEmails {
             $user = $users[$i];
 
             if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
-                include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+                include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
                 $m_campaign = new EmundusModelCampaign;
                 $campaign 	= $m_campaign->getCampaignByID($campaigns_id[$i]);
                 $programme 	= $m_campaign->getProgrammeByCampaignID($campaigns_id[$i]);
@@ -598,7 +598,7 @@ class EmundusHelperEmails {
         }
 
         // include model email for Tag
-        include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         $m_emails = new EmundusModelEmails();
 
         $mainframe = JFactory::getApplication();
@@ -688,7 +688,7 @@ class EmundusHelperEmails {
             $user = $users[$i];
 
             if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
-                include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+                include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
                 $m_campaign = new EmundusModelCampaign;
                 $campaign 	= $m_campaign->getCampaignByID($campaigns_id[$i]);
                 $programme 	= $m_campaign->getProgrammeByCampaignID($campaigns_id[$i]);
