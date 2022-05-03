@@ -90,7 +90,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
          * */
 
         $query->clear()
-            ->select('#__emundus_campaign_candidature.fnum')
+            ->select('distinct #__emundus_campaign_candidature.fnum')
             ->from($db->quoteName('#__emundus_final_grade'))
             ->leftJoin($db->quoteName('#__emundus_campaign_candidature') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_final_grade.fnum'))
             ->leftJoin($db->quoteName('#__emundus_personal_detail') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_personal_detail.fnum'))
@@ -110,15 +110,18 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # if no status is defined, we get all
         if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
+        # logs: 1 (access file), 4 (access attachment), 5 (access evaluation), 10 (comment file), 14 (access tag), 24 (edit user), 13 (publish), 29 (decision), 32 (admission)
         $query->andWhere(
             (
-            "jos_emundus_logs.action_id = 1 AND (jos_emundus_logs.verb in ('c', 'u'))
-                    OR jos_emundus_logs.action_id = 4 AND (jos_emundus_logs.verb in ('c', 'u'))
-                    OR jos_emundus_logs.action_id = 5 AND (jos_emundus_logs.verb in ('c', 'u'))
-                    OR jos_emundus_logs.action_id = 10 AND (jos_emundus_logs.verb in ('c', 'u'))
-                    OR jos_emundus_logs.action_id = 14 AND (jos_emundus_logs.verb in ('c', 'u'))
-                    OR jos_emundus_logs.action_id = 29 AND (jos_emundus_logs.verb in ('c', 'u'))
-                    OR jos_emundus_logs.action_id = 32 AND (jos_emundus_logs.verb in ('c', 'u'))
+            "jos_emundus_logs.action_id = 1 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 4 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 5 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 10 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 14 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 24 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 13 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 29 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 32 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                 "
             ));
 
