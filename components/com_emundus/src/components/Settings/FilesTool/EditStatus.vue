@@ -24,7 +24,7 @@
             </span>
             <div class="status-field">
               <div>
-                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)">{{statu.label[actualLanguage]}}</p>
+                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + statu.step" @focusout="updateStatus(statu)" @keyup.enter="manageKeyup(statu)" @keydown="checkMaxlength">{{statu.label[actualLanguage]}}</p>
               </div>
               <input type="hidden" :class="'label-' + statu.class">
             </div>
@@ -39,8 +39,11 @@
                   popover-x="left"
                   popover-y="top"
               ></v-swatches>
-              <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" :style="statu.edit == 1 && statu.step != 0 && statu.step != 1 ? 'opacity: 1' : 'opacity: 0'" @click="removeStatus(statu,index)" class="em-flex-row em-ml-8 em-pointer">
+              <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)" class="em-flex-row em-ml-8 em-pointer">
                 <span class="material-icons em-red-500-color">delete_outline</span>
+              </a>
+              <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="em-flex-row em-ml-8 em-pointer">
+                <span class="material-icons em-text-neutral-600">delete_outline</span>
               </a>
             </div>
           </div>
@@ -219,6 +222,12 @@ export default {
 
     rgbToHex(r, g, b) {
       return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+    },
+
+    checkMaxlength(event) {
+      if(event.target.textContent.length === 50 && event.keyCode != 8) {
+        event.preventDefault();
+      }
     },
 
     enableGrab(index){

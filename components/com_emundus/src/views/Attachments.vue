@@ -85,6 +85,9 @@
 					</span>
         </div>
       </div>
+      <div class="em-mt-16 em-mb-16">
+        <a v-if="exportLink" :href="exportLink" target="_blank" @click="exportLink = ''">{{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}</a>
+      </div>
       <div v-if="attachments.length" class="table-wrapper">
         <table
             :class="{ loading: loading }"
@@ -125,15 +128,15 @@
               >arrow_downward</span
               >
             </th>
-            <th id="desc" class="desc" @click="orderBy('description')">
+            <th id="desc" class="desc" @click="orderBy('upload_description')">
               {{ translate("DESCRIPTION") }}
               <span
-                  v-if="sort.orderBy == 'description' && sort.order == 'asc'"
+                  v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'"
                   class="material-icons"
               >arrow_upward</span
               >
               <span
-                  v-if="sort.orderBy == 'description' && sort.order == 'desc'"
+                  v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'"
                   class="material-icons"
               >arrow_downward</span
               >
@@ -353,6 +356,7 @@ export default {
       modalLoading: false,
       slideTransition: "slide-fade",
       changeFileEvent: null,
+      exportLink: "",
     };
   },
   created() {
@@ -591,6 +595,7 @@ export default {
             .then((response) => {
               if (response.data.status === true) {
                 window.open(response.data.link, "_blank");
+                this.exportLink = response.data.link;
               } else {
                 this.displayErrorMessage(response.data.msg);
               }
@@ -735,7 +740,7 @@ export default {
         // if attachment description contains the search term, show it
         // lowercase the search term to avoid case sensitivity
         if (
-            attachment.description
+            attachment.upload_description
                 .toLowerCase()
                 .includes(this.$refs["searchbar"].value.toLowerCase()) ||
             attachment.value

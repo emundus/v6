@@ -252,6 +252,7 @@ class EmundusModelsettings extends JModelList {
             $status->label = new stdClass;
             $status->label->fr = 'Nouveau statut';
             $status->label->en = 'New status';
+            $status->edit = 1;
 
             $falang->insertFalang($status->label, $newstep, 'emundus_setup_status', 'value');
 

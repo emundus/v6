@@ -914,7 +914,7 @@ class EmundusModelFiles extends JModelLegacy
 
             $val = explode(': ', $str);
 
-            if ($val[0] == "COM_EMUNDUS_ACTIONS_ALL") {
+            if ($val[0] == "ALL") {
 
                 if (is_numeric($val[1])) {
 
@@ -2079,7 +2079,7 @@ class EmundusModelFiles extends JModelLegacy
             // Log the update
             $logsParams = array('updated' => []);
             array_push($logsParams['updated'], ['old' => $old_publish, 'new' => $new_publish]);
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 13, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 28, 'u', 'COM_EMUNDUS_PUBLISH_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
             // Update publish
             $dispatcher->trigger('onBeforePublishChange', [$fnum, $publish]);
@@ -2757,8 +2757,12 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($eval_query);
                 $eval = $db->loadResult();
 
-                if ((!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && EmundusHelperAccess::asAccessAction(5,  'c', JFactory::getUser()->id)) && (!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id))) && $eval) {
-                    $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
+                if ((!EmundusHelperAccess::asAccessAction(5,  'r', JFactory::getUser()->id) && EmundusHelperAccess::asAccessAction(5,  'c', JFactory::getUser()->id))) {
+                    if ((!empty($current_user->fnums) && !empty(array_diff($fnums, array_keys($current_user->fnums)))) || ((@EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)))) {
+                        if($eval){
+                            $query .= ' AND jos_emundus_evaluations.user = '.JFactory::getUser()->id;
+                        }
+                    }
                 }
 
             }
@@ -3579,7 +3583,7 @@ class EmundusModelFiles extends JModelLegacy
             $dateFormat = $this->dateFormatToMysql($dateFormat);
             $query = "select fnum, DATE_FORMAT({$name}, ".$dbo->quote($dateFormat).") as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         } else {
-            $query = "select fnum, {$name} as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
+            $query = "select fnum, $dbo->quote({$name}) as val from {$tableName} where fnum in ('".implode("','", $fnums)."')";
         }
 
         try {

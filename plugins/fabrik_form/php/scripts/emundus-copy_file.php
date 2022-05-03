@@ -117,5 +117,9 @@ if ($copied == 1) {
 
 
 // 5. Exit plugin before store
-echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
-die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>');
+echo "<script>
+      window.parent.$('html, body').animate({scrollTop : 0}, 300);  
+      window.setTimeout(function() {
+		parent.$('#em-modal-actions').modal('hide');
+	}, 1800);</script>";
+die('<div style="text-align: center"><img src="'.JURI::base().'images/emundus/animations/checked.gif" width="200" height="200" align="middle" /></div>');

@@ -1215,7 +1215,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	// Función que actualiza el Core de Joomla a la última versión disponible
 	private function UpdateCore()
 	{
-		
+		$this->write_log("Updating CORE...");
+			
 		// Cargamos el lenguaje del componente 'com_installer'
 		$lang = JFactory::getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
@@ -1227,24 +1228,25 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		if (version_compare(JVERSION, '3.20', 'lt'))
 		{
 			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/models/default.php';
+			// Instanciamos el modelo
+			$model = new JoomlaupdateModelDefault;
 		}
 		else
 		{
-			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/Model/UpdateModel.php';
+			include_once JPATH_ROOT . '/administrator/components/com_joomlaupdate/src/Model/UpdateModel.php';
+			// Instanciamos el modelo
+			$model = new UpdateModel;
 		}
-
-		// Instanciamos el modelo de la librería anteriormente cargada
-		$model = new JoomlaupdateModelDefault;
 
 		// Refrescamos la información de las actualizaciones ignorando la caché
 		$model->refreshUpdates(true);
 
 		// Extraemos la url de descarga
 		$coreInformation = $model->getUpdateInformation();
-		
+						
 		try
 		{
-		// Descargamos el archivo
+			// Descargamos el archivo
 			$file = $this->download_core($coreInformation['object']->downloadurl->_data);
 			
 			// Extract the downloaded package file
@@ -1255,38 +1257,47 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			{
 				$msg = JText::sprintf('COM_SECURITYCHECKPRO_MISSING_CLASS', 'ZipArchive');
 				$result[0][1] = $msg;
-				$result[0][0] = false;				
+				$result[0][0] = 2;				
 				return $result;
 			}
 			
-			$zip = new ZipArchive;
-			$res = $zip->open($tmp_dest . DIRECTORY_SEPARATOR . $file);
+			$zip = new ZipArchive;					
+			$res = $zip->open($tmp_dest . DIRECTORY_SEPARATOR . $file);				
 
 			if ($res === true)
 			{
 				$zip->extractTo(JPATH_SITE);
 				$zip->close();
 			}
-
-			// Create restoration file
-			$this->createRestorationFile($file);
 			
-			$install_result = $this->finaliseUpgrade();
-
+			// Cargamos las librerías necesarias
+			if (version_compare(JVERSION, '3.20', 'lt'))
+			{
+				$this->createRestorationFile($file);			
+				$install_result = $this->finaliseUpgrade();
+			}
+			else
+			{
+				$install_result = $model->finaliseUpgrade();
+				\JLoader::register('JNamespacePsr4Map', JPATH_LIBRARIES . '/namespacemap.php');
+				// Re-create namespace map. It is needed when updating to a Joomla! version has new extension added
+				(new \JNamespacePsr4Map)->create();	
+			}
+			
 			if (!$install_result)
 			{
 				$msg = JText::_('COM_INSTALLER_MSG_UPDATE_ERROR');
 				$result[0][1] = $msg;
-				$result[0][0] = false;
+				$result[0][0] = 2;
 			}
 			else
 			{
-				$result[0][1] = '';
-				$result[0][0] = true;
+				$result[0][1] = 'Core updated';
+				$result[0][0] = 1;
 			}
 
 				// Clean the site
-				JFile::delete($tmp_dest . DIRECTORY_SEPARATOR . $file);
+			JFile::delete($tmp_dest . DIRECTORY_SEPARATOR . $file);
 		}
 		catch (Exception $e)
 		{
@@ -1294,13 +1305,14 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$message = "Function UpdateCore. " . $e->getMessage();
 			$this->write_log($message,"ERROR");
 			$result[0][1] = $e->getMessage();
-			$result[0][0] = false;
+			$result[0][0] = 2;
 		}
-
+		
 		// Devolvemos el resultado
 		return $result;
 	}
-
+	
+	
 
 	/**
 	 * Install an extension from either folder, url or upload.
@@ -1545,12 +1557,19 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Instanciamos la consulta
 		$db = JFactory::getDBO();
 		
+		$joomla_version = "3";
+		$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeeba'";		
+		if (version_compare(JVERSION, '4.0', 'gt'))
+		{
+			$joomla_version = "4";
+			$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeebabackup'";
+		}		
+		
 		try {
 			// Consultamos si Akeeba Backup está instalado
-			$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeeba'";
 			$db->setQuery($query);
 			$db->execute();
-			$akeeba_installed = $db->loadResult();
+			$akeeba_installed = $db->loadResult();			
 		} catch (Exception $e)
         {    			
             $akeeba_installed = 0;
@@ -1560,7 +1579,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		if ($akeeba_installed == 1)
 		{
 			$this->backupinfo['product'] = 'Akeeba Backup';
-			$this->AkeebaBackupInfo();
+			$this->AkeebaBackupInfo($joomla_version);
 		}
 		else
 		{
@@ -1599,33 +1618,51 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	}
 
 	// Función que obtiene información del estado del último backup creado por Akeeba Backup
-	private function AkeebaBackupInfo()
+	private function AkeebaBackupInfo($joomla_version)
 	{
-
+		if ($joomla_version == "3") {
+			$akeeba_database = "#__ak_stats";
+		} else {
+			$akeeba_database = "#__akeebabackup_backups";
+		}
+		
 		// Instanciamos la consulta
 		$db = JFactory::getDBO();
-		$query = $db->getQuery(true)
-			->select('MAX(' . $db->qn('id') . ')')
-			->from($db->qn('#__ak_stats'))
-			->where($db->qn('origin') . ' != ' . $db->q('restorepoint'));
-		$db->setQuery($query);
-		$id = $db->loadResult();
+		try{
+			$query = $db->getQuery(true)
+				->select('MAX(' . $db->qn('id') . ')')
+				->from($db->qn('' . $akeeba_database . ''))
+				->where($db->qn('origin') . ' != ' . $db->q('restorepoint'));
+			$db->setQuery($query);
+			$id = $db->loadResult();
+		} catch (Exception $e)
+		{
+			$this->write_log("Error trying to get Akeeba database id: " . $e->getMessage(),"ERROR");
+		}
+			
 
 		// Hay al menos un backup creado
 		if (!empty($id))
 		{
-			$query = $db->getQuery(true)
-				->select(array('*'))
-				->from($db->quoteName('#__ak_stats'))
-				->where('id = ' . $id);
-			$db->setQuery($query);
-			$backup_statistics = $db->loadAssocList();
+			try{
+				$query = $db->getQuery(true)
+					->select(array('*'))
+					->from($db->quoteName('' . $akeeba_database .''))
+					->where('id = ' . $id);
+				$db->setQuery($query);
+				$backup_statistics = $db->loadAssocList();
+			} catch (Exception $e)
+			{
+				$this->write_log("Error trying to get Akeeba backup statistics: " . $e->getMessage(),"ERROR");
+			}
 
 			// Almacenamos el resultado
 			$this->backupinfo['latest'] = $backup_statistics[0]['backupend'];
 			$this->backupinfo['latest_status'] = $backup_statistics[0]['status'];
 			$this->backupinfo['latest_type'] = $backup_statistics[0]['type'];
 		}
+		
+		
 	}
 
 	// Función que obtiene información del estado del último backup creado por Xcloner - Backup and Restore
@@ -1764,22 +1801,23 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		);
 	}
 
-	// Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php)
+	// Función para actualizar los componentes. Extraída del core de Joomla (administrator/components/com_installer/models/update.php | administrator\components\com_installer\src\Model\UpdateModel.php)
 	private function install_update($update,$dlid=false)
 	{
 		$this->write_log("Installing update...");
-						
+		
+								
 		/* Cargamos el lenguaje del componente 'com_installer' */
 		$lang = JFactory::getLanguage();
 		$lang->load('com_installer',JPATH_ADMINISTRATOR);
-		
+				
 					
-		// Inicializamos la variable $result, que será un array con el resultado y el mensaje devuelto en el proceso
-		$result = array();
+		// Inicializamos la variable $update_result, que será un array con el resultado y el mensaje devuelto en el proceso
+		$update_result = array();
 		$extension_name = '';
 		$app = JFactory::getApplication();
-		
-		if (isset($update->get('downloadurl')->_data)) {
+				
+		if (isset($update->get('downloadurl')->_data)) {			
 			$url = trim($update->downloadurl->_data);
 			$extension_name = $update->get('name')->_data;
 					
@@ -1801,10 +1839,11 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 				
 		} else {
 			$this->write_log(JText::_('COM_INSTALLER_INVALID_EXTENSION_UPDATE'));
-			$this->array_result[0][1] = $extension_name . ' ' .  JText::_('COM_INSTALLER_INVALID_EXTENSION_UPDATE');
-			$this->array_result[0][0] = false;
-		}		
-
+			$update_result[0][1] = $extension_name . ' ' .  JText::_('COM_INSTALLER_INVALID_EXTENSION_UPDATE');
+			$update_result[0][0] = 2;
+			return $update_result;
+		}
+		
 		try{
 			$p_file = JInstallerHelper::downloadPackage($url);
 		} catch (Exception $e)
@@ -1812,16 +1851,14 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			$this->write_log("Error downloading package: " . $e->getMessage(),"ERROR");
 		}
 		
-			
-		
 		// Was the package downloaded?
 		if (!$p_file)
 		{
 			$this->write_log(JText::sprintf('COM_INSTALLER_PACKAGE_DOWNLOAD_FAILED', $url),"ERROR");
-			$this->array_result[0][1] = $extension_name . ' ' . JText::sprintf('COM_INSTALLER_PACKAGE_DOWNLOAD_FAILED', $url);
-			$this->array_result[0][0] = false;
+			$update_result[0][1] = $extension_name . ' ' . JText::sprintf('COM_INSTALLER_PACKAGE_DOWNLOAD_FAILED', $url);
+			$update_result[0][0] = 2;
 						
-			return;
+			return $update_result;
 		} 
 						
 		$config        = JFactory::getConfig();
@@ -1833,7 +1870,9 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Get an installer instance
 		$installer    = JInstaller::getInstance();
 		$update->set('type', $package['type']);
-				
+		
+		// TODO: Checksum validation
+								
 		try {
 			$install_result = $installer->update($package['dir']);
 			
@@ -1841,7 +1880,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$this->write_log("Error installing package: " . $e->getMessage(),"ERROR");
 		}
-		
+						
 		// Install the package
 		if (!$install_result)
 		{
@@ -1853,10 +1892,10 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			
 			$msg = $extension_name . ' ' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
 			$this->write_log($msg,"ERROR");
-			$this->array_result[0][1] = $msg;
-			$this->array_result[0][0] = false;
+			$update_result = $msg;
+			$update_result = 2;
 			
-			return;
+			return $update_result;
 		}
 		else
 		{
@@ -1868,8 +1907,8 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 
 			$msg = $extension_name . ' ' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS', JText::_('COM_INSTALLER_TYPE_TYPE_' . strtoupper($package['type'])));
 			$this->write_log($msg);
-			$this->array_result[0][1] = $msg;
-			$this->array_result[0][0] = true;
+			$update_result[0][1] = $msg;
+			$update_result[0][0] = 1;			
 		}
 		
 		// Quick change
@@ -1887,7 +1926,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 			JInstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
 		}
 		
-		//return $result;
+		return $update_result;
 	}
 
 	// Función que obtiene información del sistema (extraída del core)
@@ -2038,7 +2077,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	}
 
 	// Función que busca si una extensión pasada como argumento utiliza el mecanismo de actualización de Akeeba LiveUpdate
-	private function LookForPro(&$array_result,$extension_name,$update) {
+	private function LookForPro($extension_id,$extension_name,$update) {
 				
 		// Inicializamos las variables
 		$dlid = '';
@@ -2088,62 +2127,27 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		{
 			$msg = "Found Pro version of " . $extension_name . " with a valid dlid.";
 			$this->write_log($msg);
-			$this->install_update($update,$dlid);
+			$update_result = $this->install_update($update,$dlid);
+			// Guardamos el id de la extensión junto con el resultado
+			array_push($this->array_result, array($extension_id,$extension_name,$update_result));
 		} else {
 			$msg = "Found Pro version of " . $extension_name . " but not a valid dlid. Is the extension/plugin enabled and have a valid download id?";
 			$this->write_log($msg);
+			$update_result = array();
+			$update_result[0][1] = $msg;
+			$update_result[0][0] = 2;
 			// Guardamos el id de la extensión junto con el resultado
-			array_push($this->array_result, array($extension_name,$msg));			
+			array_push($this->array_result, array($extension_id,$extension_name,$update_result));			
 		}
 		
 	
 	}	
 
-	// Función que actualiza todas las extensiones desactualizadas
-	private function UpdateAll()
-	{
-
-		$db = JFactory::getDBO();
-
-		// Extraemos el la información de las extensiones que necesitan ser actualizadas, que se caracterizan porque su extension_id es distinto a cero
-		$query = 'SELECT extension_id FROM #__updates WHERE extension_id != 0';
-		$db->setQuery($query);
-		$extension_id_array = $db->loadRowList();
-
-				/*
-         Inicializamos la variable 'data', que contendrán las extensiones a actualizar. Tendrán el formato {"0":"1","1":"43"}, donde el primer número indica
-        el elemento del array y el segundo el id de la extensión */
-		$data = array();
-
-		// Esta variable contendrá el índice del array de extensiones; si no lo usamos, el array json que devolvemos tendría la sintaxis {"0":"1","0":"43"} en lugar de {"0":"1","1":"43"}, por lo que todos los índices del array sería el 0
-
-		$indice = 0;
-
-		foreach ($extension_id_array as $extension_id)
-		{
-			foreach ($extension_id as $key => $value)
-			{
-				// Extraemos el par key:value y lo almacenamos en el array
-				$key = '"' . addslashes($key + $indice) . '"';
-				$value = '"' . addslashes($value) . '"';
-				$data[] = $key . ":" . $value;
-				$indice++;
-			}
-		}
-
-		// Extraemos los datos del array y los codificamos en formato JSON
-		$data_json = "{" . implode(",", $data) . "}";
-
-		// A continuación, llamamos al método UpdateExtension y le pasamos el array en formato json obtenido. Éste se encargará de todo el proceso.
-		$this->UpdateExtension($data_json, true);
-
-	}
-
 	// Función que actualiza un array de extensiones (en formato json) pasado como argumento
-	private function UpdateExtension($extension_id_array,$updateall = false)
+	private function UpdateExtension($extension_id_array)
 	{
 		$this->write_log("Launching UPDATEEXTENSIONS task");
-		
+				
 		// Inicializamos las variables
 		
 		$db = JFactory::getDBO();
@@ -2165,67 +2169,69 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		}
 		else
 		{
-			// Tenemos que actualizar todas las extensiones. En este caso recibimos un string en lugar de un array (en formato json).
-			if ($updateall)
-			{
-				$extension_id_array = json_decode($extension_id_array, true);
-			}
-
 			// Para cada extensión, realizamos su actualización
 			foreach ($extension_id_array as $extension_id)
 			{
-				if ($extension_id == 700)
-				{
-					// Si el id de la extensión es el 700, se trata del core de Joomla. Lo tratamos de forma diferente.
-					$result_core = $this->UpdateCore();
-					array_push($array_result, array('Core',$result_core));
-				}
-				elseif ($extension_id == 0)
-				{
-					// Si el id de la extensión es el 0, significa que queremos actualizar todas las extensiones.
-					$this->UpdateAll();
-
-					// Devolvemos el array que contiene los resultados
-					return $this->data;
-				}
-				else
-				{
-					
-					// Extraemos los datos la extensión, que contendrán la información de actualización
-					$query = "SELECT name,detailsurl,element FROM #__updates WHERE extension_id={$extension_id}";
+				// Extraemos los datos la extensión, que contendrán la información de actualización
+				try{		
+					$query = "SELECT name,detailsurl,element,extra_query FROM #__updates WHERE extension_id={$extension_id}";
 					$db->setQuery($query);
 					$db->execute();
 					$extension_data = $db->loadAssoc();
+				} catch (Exception $e)
+				{
 					
+				}
+										
+				if ( is_array($extension_data) ) {					
 					$extension_name = $extension_data['name'];
 					$detailsurl = $extension_data['detailsurl'];
 					$extension_element = $extension_data['element'];
-
-					// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
-					$update = new JUpdate;
-					$update->loadFromXML($detailsurl);
-					
-
-					// Le pasamos a la función de actualización el objeto con los detalles de la actualización
-					$this->install_update($update);
-
-					if (!$this->array_result[0][0])
+					$extra_query = $extension_data['extra_query'];
+									
+					if (strtolower($extension_element) == "joomla")
 					{
-						$pro_versions_to_look_for = array('pkg_akeeba','pkg_admintools','com_rstbox','com_jch_optimize','com_sppagebuilder');
 						
-						if (in_array($extension_element, $pro_versions_to_look_for)) {
-							// Se ha producido un error y la extensión puede ser de pago. Intentamos actualizarla buscando su dlid
-							$this->LookForPro($this->array_result,$extension_element,$update);
-						}												
-					}
-					else
-					{
-						// Guardamos el id de la extensión junto con el resultado
-						array_push($this->array_result, array($extension_name,$this->array_result));
-					}
-				}
-			}
+						// Core de Joomla. Lo tratamos de forma diferente.
+						$result_core = $this->UpdateCore();
+						array_push($this->array_result, array($extension_id,'Core',$result_core));
+					}else
+					{	
+						// Instanciamos el objeto JUpdate y cargamos los detalles de la actualización
+						$update = new JUpdate;
+						$update->loadFromXML($detailsurl);					
 
+						// Le pasamos a la función de actualización el objeto con los detalles de la actualización
+						if (!empty($extra_query)) {
+							// Quitamos el texto "dlid="
+							$extra_query = str_replace("dlid=", "",$extra_query);
+							$update_result = $this->install_update($update,$extra_query);
+						} else {
+							$update_result = $this->install_update($update);
+						}
+						
+						// Update failed
+						if ( (!$update_result) || ($update_result[0][0] == 2) )
+						{
+							$pro_versions_to_look_for = array('pkg_akeeba','pkg_admintools','com_rstbox','com_jch_optimize','com_sppagebuilder');
+							
+							if (in_array($extension_element, $pro_versions_to_look_for)) {
+								// Se ha producido un error y la extensión puede ser de pago. Intentamos actualizarla buscando su dlid
+								$this->LookForPro($extension_id,$extension_element,$update);
+							}												
+						}
+						else
+						{
+							// Guardamos el id de la extensión junto con el resultado
+							array_push($this->array_result, array($extension_id,$extension_name,$update_result));
+						}
+					}
+				} else {
+					// Guardamos el id de la extensión junto con el resultado
+					array_push($this->array_result, array($extension_id,"","Error retrieving extension data"));
+				}				
+			}
+			
 			// Devolvemos el resultado
 			$this->data = array(
 				'update_result'        => $this->array_result
@@ -2255,10 +2261,18 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 		// Extraemos el perfil, que por defecto será 1
 		$akeeba_profile = $response['akeeba_profile'];
 		
-		$this->write_log("Launching curl: " . $uri . "?option=com_akeeba&view=backup&key=removed_for_security&profile=" . $akeeba_profile);
+		// Componente (com_akeeba para J3 y com_akeebackup para J4)
+		$akeeba_component = "com_akeeba";
+		
+		if (version_compare(JVERSION, '4.0', 'gt'))
+		{
+			$akeeba_component = "com_akeebabackup";
+		}
+		
+		$this->write_log("Launching curl: " . $uri . "?option=" . $akeeba_component . "&view=backup&key=removed_for_security&profile=" . $akeeba_profile);
 		
 		// Inicializamos la tarea
-		$ch = curl_init($uri . "?option=com_akeeba&view=backup&key=" . $akeeba_key . "&profile=" . $akeeba_profile);
+		$ch = curl_init($uri . "?option=" . $akeeba_component . "&view=backup&key=" . $akeeba_key . "&profile=" . $akeeba_profile);
 		
 		// Configuración extraída de https://www.akeebabackup.com/documentation/akeeba-backup-documentation/automating-your-backup.html
 		curl_setopt($ch, CURLOPT_HEADER, false);  // Este valor es false para que no incluya en la respuesta la cabecera HTTP
@@ -2452,7 +2466,7 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	public function download_core($packageURL)
 	{
 		$basename = basename($packageURL);
-		
+						
 
 		// Find the path to the temp directory and the local package.
 		$config = JFactory::getConfig();
@@ -2495,23 +2509,27 @@ class SecuritycheckProsModelJson extends SecuritycheckproModel
 	protected function downloadPackage($url, $target)
 	{
 			
-		// Get the handler to download the package
-		try
-		{
-			$http = JHttpFactory::getHttp(null, array('curl', 'stream'));
-		}
-		catch (RuntimeException $e)
-		{
-			return false;
-		}	
-
 		// Make sure the target does not exist.
 		if (file_exists($target)) {
 			JFile::delete($target);
 		}
-
+		
 		// Download the package
-		$result = $http->get($url);
+		try
+		{
+			if (version_compare(JVERSION, '3.20', 'lt'))
+			{
+				$result = JHttpFactory::getHttp(null, array('curl', 'stream'))->get($url);
+			}
+			else
+			{
+				$result = JHttpFactory::getHttp([], ['curl', 'stream'])->get($url);
+			}			
+		}
+		catch (\RuntimeException $e)
+		{			
+			return false;
+		}
 
 		if (!$result || ($result->code != 200 && $result->code != 310))
 		{
@@ -2973,6 +2991,8 @@ ENDDATA;
 
 		return true;
 	}
+	
+	
 
 	// Función que devuelve información sobre ips a añadir y ataques detenidos para el plugin "Connect"
 	public function Connect($url=null)

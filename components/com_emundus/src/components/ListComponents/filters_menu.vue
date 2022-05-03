@@ -3,34 +3,7 @@
     <div class="container-2 w-container" style="max-width: unset;min-width: 200px">
       <transition :name="'slide-down'" type="transition">
         <div>
-<!--          <div class="search">
-            <input class="searchTerm"
-                   :placeholder="Rechercher"
-                   v-model="recherche"
-                   @keyup="cherche(recherche) || debounce"
-                   @keyup.enter="chercheGo(recherche)"/>
-            <a @click="chercheGo(recherche)" class="searchButton"><em class="fa fa-search"></em></a>
-          </div>-->
-
           <div>
-<!--              <div>
-                <div class="filter-subtitle">
-                  <div>{{ Sort }}</div>
-                </div>
-                <nav aria-label="sort" class="actions-dropdown">
-                  <a @click="sort('DESC');updateSort('DESC');"
-                     class="action-submenu"
-                     :class="tri == 'DESC' ? 'selected' : ''">
-                    {{ SortCreasing }}
-                  </a>
-                  <a @click="sort('ASC');updateSort('ASC');"
-                     :class="tri == 'ASC' ? 'selected' : ''"
-                     class="action-submenu">
-                    {{ SortDecreasing }}
-                  </a>
-                </nav>
-              </div>-->
-
               <div>
                   <div class="filter-subtitle">
                     <div>{{ translations.Filter }}</div>
@@ -42,10 +15,16 @@
                       {{ translations.FilterAll }}
                     </a>
                     <a v-if="data.type == 'campaign'"
-                       @click="filter('notTerminated');updateFilter('notTerminated');"
-                       :class="filtre == 'notTerminated' ? 'selected' : ''"
+                       @click="filter('yettocome');updateFilter('yettocome');"
+                       :class="filtre == 'yettocome' ? 'selected' : ''"
                        class="action-submenu">
-                      {{ translations.FilterOpen }}
+                      {{ translations.FilterYetToCome }}
+                    </a>
+                    <a v-if="data.type == 'campaign'"
+                       @click="filter('ongoing');updateFilter('ongoing');"
+                       :class="filtre == 'ongoing' ? 'selected' : ''"
+                       class="action-submenu">
+                      {{ translations.FilterOnGoing }}
                     </a>
                     <a v-if="data.type == 'campaign'"
                        @click="filter('Terminated');updateFilter('Terminated');"
@@ -116,15 +95,6 @@
 </template>
 
 <script>
-  import axios from "axios";
-  import Swal from "sweetalert2";
-  import "sweetalert2/src/sweetalert2.scss";
-  ;
-  import "@fortawesome/fontawesome-free/css/all.css";
-  import "@fortawesome/fontawesome-free/js/all.js";
-
-  const qs = require("qs");
-
   export default {
     name: "action_menu",
 
@@ -165,6 +135,8 @@
           FilterClose: this.translate("COM_EMUNDUS_ONBOARD_FILTER_CLOSE"),
           FilterPublish: this.translate("COM_EMUNDUS_ONBOARD_FILTER_PUBLISH"),
           FilterUnpublish: this.translate("COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH"),
+          FilterYetToCome: this.translate("COM_EMUNDUS_CAMPAIGN_YET_TO_COME"),
+          FilterOnGoing: this.translate("COM_EMUNDUS_CAMPAIGN_ONGOING"),
           Rechercher: this.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
           Archived: this.translate("COM_EMUNDUS_ONBOARD_ARCHIVED"),
         },

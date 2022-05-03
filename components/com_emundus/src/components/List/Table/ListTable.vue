@@ -52,9 +52,6 @@ export default {
 		this.rowsData = typeof rows[this.type] !== undefined ? rows[this.type] : [];
 	},
 	methods: {
-		/*translate(label) {
-			return label ? this.translate(label) : '';
-		},*/
 		validateFilters() {
       this.$emit('validateFilters');
     },

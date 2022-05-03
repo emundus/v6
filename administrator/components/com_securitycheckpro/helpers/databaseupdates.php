@@ -265,7 +265,10 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
                 
                     // Si el resultado de la petición es 'false' obtenemos el error para ver qué está pasando
                     if ($xmlresponse === false) {
-                           $result = false;                    
+                        $result = false;
+						$message = curl_error($ch);
+						
+						JFactory::getApplication()->enqueueMessage("Securitycheck Pro Database Update: " . $message, 'error');
                     } else
                     {
                         /* Chequeamos si hay una etiqueta html de redirección, que tendrá el formato '<html><meta http-equiv="refresh" content="0;/.well-known/captcha/?b=http://192.168.56.50/index.php/downloads/securitycheck-pro-database-updates-xml/securitycheck-pro-database-updates-xml-1-0-0/databases-xml?dlid=xx"></meta></head></html>' */
@@ -325,13 +328,16 @@ class SecuritycheckprosModelDatabaseUpdates extends SecuritycheckproModel
                 }
             
                 // Si el proceso ha sido correcto, actualizamos la bbdd
+				$timestamp = $this->global_model->get_Joomla_timestamp();
                 if ($result) {					
-                    // Actualizamos la fecha de la última comprobación y la versión de la bbdd local
-					$timestamp = $this->global_model->get_Joomla_timestamp();
+                    // Actualizamos la fecha de la última comprobación y la versión de la bbdd local					
                     $this->set_campo_bbdd('last_check', $timestamp);
                     $this->set_campo_bbdd('version', $this->higher_database_version);
-                    $this->set_campo_bbdd('message', 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED');					
-                } 
+                    $this->set_campo_bbdd('message', 'PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED');
+				// Si no lo hacemos actualizamos la bbdd para hacer la petición en la siguiente ventana
+                } else {					
+                    $this->set_campo_bbdd('last_check', $timestamp);
+				}
             }
         }    
     }

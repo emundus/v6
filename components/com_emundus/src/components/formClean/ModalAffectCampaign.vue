@@ -14,30 +14,27 @@
         @before-open="beforeOpen"
     >
 
-      <div class="fixed-header-modal">
-        <div class="topright">
-          <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAffectCampaign')">
-            <em class="fas fa-times-circle"></em>
-          </button>
-        </div>
-        <div class="update-field-header">
-          <h2 class="update-title-header">
-            {{translations.affectCampaigns}}
-          </h2>
-        </div>
+      <div class="em-flex-row em-flex-space-between em-mb-16">
+        <span class="em-h4">
+          {{translations.affectCampaigns}}
+        </span>
+        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAffectCampaign')">
+          <span class="material-icons">close</span>
+        </button>
       </div>
 
-      <div class="modalC-content">
-        <p v-if="campaigns.length === 0" class="mt-1 mb-1">{{translations.campaignsEmpty}}</p>
-        <div class="wrap">
-          <div class="search">
+      <div>
+        <p v-if="campaigns.length === 0" class="em-mb-16">{{translations.campaignsEmpty}}</p>
+<!--        <div class="em-mb-16">
+          <div class="search em-flex-row">
             <input type="text" class="searchTerm" :placeholder="translations.Search" v-model="searchTerm" @keyup="searchCampaignByTerm">
             <button type="button" class="searchButton" @click="searchCampaignByTerm">
               <em class="fas fa-search"></em>
             </button>
           </div>
-        </div>
-        <div class="campaigns-list">
+        </div>-->
+
+        <div class="em-mb-16">
           <div v-for="(campaign, index) in campaigns" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="affectedCampaigns[campaign.id]">
               <div class="ml-10px">
@@ -46,24 +43,29 @@
           </div>
         </div>
       </div>
-      <div class="em-flex-row em-flex-space-between mb-1">
+
+      <div class="em-flex-row em-flex-space-between em-mb-8">
+        <button
+            type="button"
+            class="em-secondary-button em-w-auto"
+            onclick="history.back()">
+          {{ translations.BackWithoutAssociation }}
+        </button>
         <button type="button"
-                class="bouton-sauvergarder-et-continuer w-retour"
-            @click.prevent="affectToForm">
+                class="em-primary-button em-w-auto"
+                @click.prevent="affectToForm">
           {{ translations.Continuer }}
         </button>
+      </div>
+
+      <div class="em-float-right">
         <button v-if="!testing"
-            type="button"
-            class="bouton-sauvergarder-et-continuer"
-           @click.prevent="goAddCampaign">
+                type="button"
+                class="em-tertiary-button em-w-auto"
+                @click.prevent="goAddCampaign">
           {{translations.addCampaign}}
         </button>
       </div>
-      <button type="button"
-              class="bouton-sauvergarder-et-continuer w-retour"
-              @click.prevent="redirectJRoute('index.php?option=com_emundus&view=form')">
-          {{ translations.BackWithoutAssociation }}
-        </button>
     </modal>
   </span>
 </template>
@@ -115,7 +117,7 @@ export default {
           })
         }).then(() => {
           if(!this.testing) {
-            this.redirectJRoute('index.php?option=com_emundus&view=form');
+            history.back();
           } else {
             if(campaigns.length > 0){
               this.$emit("testForm");
@@ -125,7 +127,7 @@ export default {
         });
       } else {
         if(!this.testing) {
-          this.redirectJRoute('index.php?option=com_emundus&view=form');
+          history.back();
         } else {
           this.$modal.hide('modalAffectCampaign');
         }
@@ -136,7 +138,7 @@ export default {
         method: "get",
         url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
         params: {
-          link: 'index.php?option=com_emundus&view=campaign&layout=add&cid=',
+          link: 'index.php?option=com_emundus&view=campaigns&layout=add&cid=',
         },
         paramsSerializer: params => {
           return qs.stringify(params);
@@ -157,20 +159,6 @@ export default {
             this.campaigns = response.data.data;
           });
     },
-    redirectJRoute(link) {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=settings&task=redirectjroute",
-        params: {
-          link: link,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        window.location.href = window.location.pathname + response.data.data;
-      });
-    }
   },
 };
 </script>
@@ -222,5 +210,10 @@ export default {
 .wrap{
   position: fixed;
   width: 22%;
+}
+.searchButton{
+  height: 50px;
+  background: transparent;
+  margin-left: 12px;
 }
 </style>

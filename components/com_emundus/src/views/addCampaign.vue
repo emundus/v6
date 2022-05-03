@@ -1,7 +1,21 @@
 <template>
   <div class="campaigns__add-campaign">
+    <div v-if="typeof campaignId == 'undefined'">
+      <div class="em-flex-row em-mt-16 em-pointer" onclick="history.back()">
+        <span class="material-icons">arrow_back</span>
+        <p class="em-ml-8">{{ translate('BACK') }}</p>
+      </div>
+
+      <div class="em-flex-row em-mt-16">
+        <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
+      </div>
+      <p style="margin-top: 20px">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+
+      <hr>
+    </div>
+
     <div>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" v-if="ready">
         <div>
           <div class="em-red-500-color em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
@@ -10,10 +24,10 @@
             <input
                 id="campLabel"
                 type="text"
-                v-focus
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
+                @focusout="onFormChange()"
             />
           </div>
           <span v-if="errors.label" class="em-red-500-color em-mb-8">
@@ -31,6 +45,7 @@
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
                     :input-id="'start_date'"
                     :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
+                    @focusout="onFormChange()"
                 ></datetime>
               </div>
             </div>
@@ -45,6 +60,7 @@
                     :input-id="'end_date'"
                     :min-datetime="minDate"
                     :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
+                    @focusout="onFormChange()"
                 ></datetime>
               </div>
             </div>
@@ -70,6 +86,7 @@
                      id="published"
                      name="published"
                      v-model="form.published"
+                     @click="onFormChange()"
               />
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
@@ -96,11 +113,21 @@
                 v-model="form.short_description"
                 @keyup="checkMaxlength('campResume')"
                 @focusout="removeBorderFocus('campResume')"
+
             />
           </div>
 
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
-            <editor :height="'30em'" :text="form.description" v-model="form.description" :enable_variables="false" :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION')" :id="'campaign_description'" :key="editorKey"></editor>
+            <editor
+                :height="'30em'"
+                :text="form.description"
+                v-model="form.description"
+                :enable_variables="false"
+                :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION')"
+                :id="'campaign_description'"
+                :key="editorKey"
+                @focusout="onFormChange"
+            ></editor>
           </div>
         </div>
 
@@ -250,7 +277,6 @@ export default {
       limit: 50,
       limit_status: [],
     },
-
     programForm: {
       code: "",
       label: "",
@@ -278,7 +304,8 @@ export default {
       limit_status: false
     },
 
-    submitted: false
+    submitted: false,
+    ready: false,
   }),
 
   created() {
@@ -340,9 +367,12 @@ export default {
           } else {
             this.form.limit_status = [];
           }
+          this.ready = true;
         }).catch(e => {
           console.log(e);
         });
+      } else {
+        this.ready = true;
       }
       this.getAllPrograms();
     },
@@ -354,9 +384,8 @@ export default {
               this.programs.sort((a, b) => a.id - b.id);
             }
           }).catch(e => {
-        console.log(e);
-      });
-
+              console.log(e);
+          });
       this.getYears();
     },
     getYears() {
@@ -443,6 +472,8 @@ export default {
 
 
     submit() {
+      this.$store.dispatch('campaign/setUnsavedChanges', true);
+
       // Checking errors
       this.errors = {
         label: false,
@@ -584,7 +615,9 @@ export default {
     onSearchYear(value) {
       this.form.year = value;
     },
-
+    onFormChange() {
+      this.$store.dispatch('campaign/setUnsavedChanges', true);
+    },
     displayProgram() {
       if(this.isHiddenProgram){
         document.getElementById('add-program').style = 'transform: rotate(0)';
@@ -620,6 +653,7 @@ export default {
 
     removeBorderFocus(id){
       document.getElementById(id).style.borderColor = '#cccccc';
+      this.onFormChange();
     },
   },
 
@@ -629,7 +663,7 @@ export default {
       if (this.form.end_date == "") {
         this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
       }
-    }
+    },
   }
 };
 </script>

@@ -1275,30 +1275,37 @@ class EmundusModelMessages extends JModelList {
             try {
                 $attachment_ids = $_mEval->getLettersByFnums($fnum, $attachments = true);
 
-                $attachment_list = array();
-                foreach ($attachment_ids as $key => $value) {
-                    $attachment_list[] = $value['id'];
-                }
+                if(count($attachment_ids) > 0) {
 
-                $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
+                    $attachment_list = array();
+                    foreach ($attachment_ids as $key => $value) {
+                        $attachment_list[] = $value['id'];
+                    }
 
-                /// get message template from attachment list
-                $query->clear()
-                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
-                    ->from($db->quoteName('#__emundus_setup_emails'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
-                    ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+                    $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
 
-                $db->setQuery($query);
-                $_message_Info = $db->loadObjectList();
-                if(!empty($_message_Info)) {
-                    return true;
+                    /// get message template from attachment list
+                    $query->clear()
+                        ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
+                        ->from($db->quoteName('#__emundus_setup_emails'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
+                        ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+
+                    $db->setQuery($query);
+                    $_message_Info = $db->loadObjectList();
+                    if(!empty($_message_Info)) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
                 }
                 else {
                     return false;
                 }
             } catch(Exception $e) {
-                /// if in catch --> return false
+                JLog::add('Error get getActionByFnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
+                return false;
             }
         } else {
             return false;
