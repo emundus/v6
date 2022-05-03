@@ -125,15 +125,33 @@ export default {
             this.form.content.col1 = response.data.data.column1;
             this.form.content.col2 = response.data.data.column2;
 
-            this.availableLanguages.forEach((lang) => {
-              if(!this.form.content.col1[lang.lang_code]) {
-                this.form.content.col1[lang.lang_code] = '';
+            const translations_col1 = {}
+            const translations_col2 = {}
+
+            for(const lang of this.availableLanguages) {
+              if(typeof this.form.content.col1 === 'object') {
+                if (!this.form.content.col1[lang.lang_code]) {
+                  this.form.content.col1[lang.lang_code] = '';
+                }
+              } else {
+                translations_col1[lang.lang_code] = this.form.content.col1;
               }
 
-              if(!this.form.content.col2[lang.lang_code]) {
-                this.form.content.col2[lang.lang_code] = '';
+              if(typeof this.form.content.col2 === 'object') {
+                if (!this.form.content.col2[lang.lang_code]) {
+                  this.form.content.col2[lang.lang_code] = '';
+                }
+              } else {
+                translations_col2[lang.lang_code] = this.form.content.col2;
               }
-            });
+            }
+
+            if(Object.entries(translations_col1).length !== 0){
+              this.form.content.col1 = translations_col1;
+            }
+            if(Object.entries(translations_col2).length !== 0){
+              this.form.content.col2 = translations_col2;
+            }
 
             this.loading = false;
           });
@@ -145,8 +163,6 @@ export default {
       const formData = new FormData();
       formData.append('col1', JSON.stringify(this.form.content.col1));
       formData.append('col2', JSON.stringify(this.form.content.col2));
-
-      console.log(formData);
 
       await client().post(`index.php?option=com_emundus&controller=settings&task=updatefooter`,
           formData,
@@ -165,8 +181,6 @@ export default {
       await translationsService.getAllLanguages().then((response) => {
         this.availableLanguages = response;
         this.lang = this.defaultLang;
-
-        console.log(this.lang);
       })
     },
   },
