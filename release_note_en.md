@@ -8,6 +8,7 @@
   - New quick access to the platform translations (forms, campaigns, documents, statuses)
   - Change of the default language
   - Possibility to transmit from the manager part a request to add a new language
+- Move the Need Help menu to the bottom right help menu
 
 ##🔥 Major corrections 🔥
 - Visualization now possible of a logo when adding

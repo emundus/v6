@@ -42,6 +42,10 @@ JLog::addLogger(
 );
 // translation for javacript
 JText::script('PLEASE_SELECT');
+JText::script('IN');
+JText::script('ALL');
+JText::script('USERNAME');
+JText::script('EMAIL');
 
 JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
@@ -164,6 +168,9 @@ JText::script('COM_EMUNDUS_TAGS_DELETE_SUCCESS');
 JText::script('COM_EMUNDUS_FILTERS_CONFIRM_DELETE_FILTER');
 JText::script('COM_EMUNDUS_APPLICATION_ADD_TAGS');
 JText::script('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG');
+JText::script('COM_EMUNDUS_SELECT_SOME_OPTIONS');
+JText::script('COM_EMUNDUS_SELECT_AN_OPTION');
+JText::script('COM_EMUNDUS_SELECT_NO_RESULT');
 JText::script('VALID');
 JText::script('INVALID');
 JText::script('COM_EMUNDUS_ATTACHMENTS_UNCHECKED');
@@ -289,6 +296,7 @@ JText::script('PROGRAM_NAME');
 JText::script('CHOOSE_YOUR_OPTION');
 JText::script('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS_OTHERS_EVAL');
 JText::script('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL');
+JText::script('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
 
 //Export PDF
 JText::script('COM_EMUNDUS_EXPORTS_PDF_GENERATION');
@@ -400,6 +408,7 @@ JText::script('ATTACHMENT_LETTER');
 JText::script('MESSAGE_INFORMATION');
 JText::script('EMAIL_FAILED');
 JText::script('CAMPAIGN_YEAR');
+JText::script('COM_EMUNDUS_CAMPAIGN_UNSAVED_CHANGES');
 JText::script('CANDIDATE_EMAIL');
 JText::script('EMAIL_TAGS');
 JText::script('SEND_EMAIL_TOOLTIPS');

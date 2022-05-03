@@ -32,6 +32,9 @@ $layout           = $params->get('layout', 'default');
 $file_version = file_get_contents('version.txt');
 //
 
+$lang = JFactory::getLanguage();
+$actualLanguage = substr($lang->getTag(), 0 , 2);
+
 /*Logged users must load the logout sublayout
 if (!$user->guest)
 {

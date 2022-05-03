@@ -41,10 +41,10 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
       <div class="row">
         <div class="footer-rgpd">
             <hr class="footer-separation"/>
-            <p><a href="mentions-legales"><?= JText::_('MOD_EM_FOOTER_LEGAL_INFO_LINK'); ?></a></p>
-            <p><a href="politique-de-confidentialite-des-donnees"><?= JText::_('MOD_EM_FOOTER_DATA_PRIVACY_LINK'); ?></a></p>
-            <p><a href="gestion-de-vos-droits"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></p>
-            <p><a href="gestion-des-cookies"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/mentions-legales"><?= JText::_('MOD_EM_FOOTER_LEGAL_INFO_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/politique-de-confidentialite-des-donnees"><?= JText::_('MOD_EM_FOOTER_DATA_PRIVACY_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/gestion-de-vos-droits"><?= JText::_('MOD_EM_FOOTER_RIGHTS_LINK'); ?></a></p>
+            <p><a href="<?php echo $actualLanguage ?>/gestion-des-cookies"><?= JText::_('MOD_EM_FOOTER_COOKIES_LINK'); ?></a></p>
         </div>
       </div>
 

@@ -8,6 +8,7 @@
     - Nouvel accès rapide aux traductions de la plateforme (formulaires, campagnes, documents, statuts)
     - Changement de la langue par défaut
     - Possibilité de transmettre depuis la partie gestionnaire une demande d'ajout d'une nouvelle langue
+- Déplacement du menu Besoin d'aide dans le menu d'aide en bas à droite
 
 ##🔥 Corrections majeures 🔥
 - Visualisation désormais possible d'un logo lors de l'ajout
