@@ -87,6 +87,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            $m_campaign = new EmundusModelCampaign;
 
             jimport('joomla.log.log');
             JLog::addLogger(['text_file' => 'com_emundus.isApplicationSent.php'], JLog::ALL, ['com_emundus']);
@@ -104,6 +105,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
+            $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
 
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
@@ -125,7 +127,16 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $reload = $jinput->get('r', 0);
             $reload++;
 
-            if ($this->getParam('admission', 0) == 1) {
+
+            if (!empty($current_phase) && !empty($current_phase->end_date)) {
+                if (!empty($fnum)) {
+                    $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+                    $is_campaign_started = strtotime(date($now)) >= strtotime($current_phase->start_date);
+                } else {
+                    $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+                    $is_campaign_started = strtotime(date($now)) >= strtotime($current_phase->start_date);
+                }
+            } else if ($this->getParam('admission', 0) == 1) {
                 if(!empty($fnum)) {
                     $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
                     $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
@@ -134,8 +145,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
                     $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
                 }
-            }
-            else {
+            } else {
                 if(!empty($fnum)) {
                     $is_dead_line_passed = (strtotime(date($now)) > (!empty(@$user->fnums[$fnum]->end_date) ? strtotime(@$user->fnums[$fnum]->end_date) : strtotime(@$user->end_date))) ? true : false;
                     $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->start_date)) ? true : false;
@@ -157,7 +167,6 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             if (!empty($fnum)) {
 
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
-                $m_campaign = new EmundusModelCampaign;
                 $m_profile = new EmundusModelProfile;
                 $fnumDetail = $m_profile->getFnumDetails($fnum);
 

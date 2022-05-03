@@ -2208,4 +2208,28 @@ class EmundusModelCampaign extends JModelList {
             return false;
         }
     }
+
+    public function getCurrentCampaignWorkflow($emundusUser) {
+        $current_phase = null;
+
+        if (!empty($emundusUser)) {
+            // check if user is on a specific phase
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('id, start_date, end_date')
+                ->from($db->quoteName('#__emundus_campaign_workflow'))
+                ->where('campaign =' . $db->quote($emundusUser->fnums[$emundusUser->fnum]->campaign_id))
+                ->andWhere('status = ' . $db->quote($emundusUser->fnums[$emundusUser->fnum]->status));
+
+            $db->setQuery($query);
+
+            try {
+                $current_phase = $db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $current_phase;
+    }
 }
