@@ -6,10 +6,10 @@ function pdf_interview($user_id, $fnum = null, $output = true, $name = null, $op
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
     $m_profile = new EmundusModelProfile;
     $m_files = new EmundusModelFiles;
@@ -74,7 +74,7 @@ function pdf_interview($user_id, $fnum = null, $output = true, $name = null, $op
             $tab[1] = parse_url($tab[1], PHP_URL_PATH);
         }
 
-        $logo = JPATH_BASE.DS.$tab[1];
+        $logo = JPATH_SITE.DS.$tab[1];
     }
 
     //get title

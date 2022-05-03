@@ -616,7 +616,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 		    }
 		    //*********************************************************************
 		    // Get triggered email
-		    include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+		    include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 		    $m_email = new EmundusModelEmails;
 		    $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
 
@@ -937,7 +937,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
             $name = 'evaluation-'.$fnum.'.pdf';
-            $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+            $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
         }
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_evaluation'.$campaign['training'].'.php';
@@ -1095,7 +1095,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $today = date_default_timezone_get();
         $name = md5($today.rand(0,10));
         $name = $name.'.csv';
-        $chemin = JPATH_BASE.DS.'tmp'.DS.$name;
+        $chemin = JPATH_SITE.DS.'tmp'.DS.$name;
 
         if (!$fichier_csv = fopen($chemin, 'w+')){
             $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$chemin);
@@ -1171,7 +1171,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $colsup  = $this->getcolumn($objs);
         $colOpt = array();
-        if (!$csv = fopen(JPATH_BASE.DS.'tmp'.DS.$file, 'a')){
+        if (!$csv = fopen(JPATH_SITE.DS.'tmp'.DS.$file, 'a')){
             $result = array('status' => false, 'msg' => JText::_('ERROR_CANNOT_OPEN_FILE').' : '.$file);
             echo json_encode((object) $result);
             exit();
@@ -1371,7 +1371,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 	public function export_xls_from_csv()
     {
         // PHPExcel
-        ini_set('include_path', JPATH_BASE . DS . 'libraries' . DS);
+        ini_set('include_path', JPATH_SITE . DS . 'libraries' . DS);
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
         include 'PHPExcel/IOFactory.php';
@@ -1412,7 +1412,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $objPHPExcel->getActiveSheet()->freezePane('A2');
 
 
-        $objReader->loadIntoExisting(JPATH_BASE . DS . "tmp" . DS . $csv, $objPHPExcel);
+        $objReader->loadIntoExisting(JPATH_SITE . DS . "tmp" . DS . $csv, $objPHPExcel);
 
         $objConditional1 = new PHPExcel_Style_Conditional();
         $objConditional1->setConditionType(PHPExcel_Style_Conditional::CONDITION_CELLIS)
@@ -1463,9 +1463,9 @@ class EmundusControllerEvaluation extends JControllerLegacy
         }
 
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save(JPATH_BASE . DS . 'tmp' . DS . JFactory::getUser()->id . '_extraction.xls');
+        $objWriter->save(JPATH_SITE . DS . 'tmp' . DS . JFactory::getUser()->id . '_extraction.xls');
         $link = JFactory::getUser()->id . '_extraction.xls';
-        if (!unlink(JPATH_BASE . DS . "tmp" . DS . $csv)) {
+        if (!unlink(JPATH_SITE . DS . "tmp" . DS . $csv)) {
             $result = array('status' => false, 'msg' => 'ERROR_DELETE_CSV');
             echo json_encode((object)$result);
             exit();
@@ -1490,7 +1490,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         jimport( 'joomla.user.user' );
         error_reporting(0);
         // PHPExcel
-        ini_set('include_path', JPATH_BASE.DS.'libraries'.DS);
+        ini_set('include_path', JPATH_SITE.DS.'libraries'.DS);
 
         include 'PHPExcel.php';
         include 'PHPExcel/Writer/Excel5.php';
@@ -1728,7 +1728,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $objWriter = new PHPExcel_Writer_Excel5($objPHPExcel);
 
-        $objWriter->save(JPATH_BASE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
+        $objWriter->save(JPATH_SITE.DS.'tmp'.DS.JFactory::getUser()->id.'_extraction.xls');
         return JFactory::getUser()->id.'_extraction.xls';
         //$objPHPExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
         // Echo done
@@ -1754,7 +1754,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 
         $name = $jinput->getString('name', null);
 
-        $file = JPATH_BASE.DS.'tmp'.DS.$name;
+        $file = JPATH_SITE.DS.'tmp'.DS.$name;
 
         if (file_exists($file)) {
             $mime_type = $this->get_mime_type($file);
@@ -1791,7 +1791,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
             die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         require_once(JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'pdf.php');
+        require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
 
         //clearstatcache();
         //$modelProfil = $this->getModel('');
@@ -1800,7 +1800,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $zip = new ZipArchive();
 
         $nom = date("Y-m-d").'_'.rand(1000,9999).'_x'.(count($fnums)-1).'.zip';
-        $path = JPATH_BASE.DS.'tmp'.DS.$nom;
+        $path = JPATH_SITE.DS.'tmp'.DS.$nom;
         $m_files = $this->getModel('Files');
         $files = $m_files->getFilesByFnums($fnums);
 

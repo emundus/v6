@@ -31,13 +31,13 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 	public function __construct(array $config = array()) {
 
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
 		// Load class variables
 		$this->user = JFactory::getSession()->get('emundusUser');
@@ -116,16 +116,16 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$bcc = $jinput->post->getString('bcc', 'false') === 'true';
 
 		// check if the files are on the server
-        if (!empty($cv) && file_exists(JPATH_BASE.DS.$cv)) {
-	        $toAttach[] = JPATH_BASE.DS.$cv;
+        if (!empty($cv) && file_exists(JPATH_SITE.DS.$cv)) {
+	        $toAttach[] = JPATH_SITE.DS.$cv;
         }
 
-        if (!empty($ml) && file_exists(JPATH_BASE.DS.$ml)) {
-            $toAttach[] = JPATH_BASE.DS.$ml;
+        if (!empty($ml) && file_exists(JPATH_SITE.DS.$ml)) {
+            $toAttach[] = JPATH_SITE.DS.$ml;
         }
 
-		if (!empty($doc) && file_exists(JPATH_BASE.DS.$doc)) {
-			$toAttach[] = JPATH_BASE.DS.$doc;
+		if (!empty($doc) && file_exists(JPATH_SITE.DS.$doc)) {
+			$toAttach[] = JPATH_SITE.DS.$doc;
 		}
 
 		if (!empty($motivation)) {

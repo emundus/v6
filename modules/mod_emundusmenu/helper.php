@@ -36,8 +36,13 @@ class modEmundusMenuHelper
 		$user = JFactory::getSession()->get('emundusUser');
 		asort($levels);
 		$key = 'menu_items'.$params.implode(',', $levels).'.'.$active->id;
-		$cache = JFactory::getCache('mod_emundusmenu', '');
-		if (!($items = $cache->get($key)) && isset($user->menutype)) {
+		$caching = $params->get('cache', 0);
+		$items = [];
+		if($caching) {
+			$cache = JFactory::getCache('mod_emundusmenu', '');
+			$items = $cache->get($key);
+		}
+		if (isset($user->menutype) && empty($items)) {
 			// Initialise variables.
 			$list		= array();
 			$db			= JFactory::getDbo();
@@ -134,7 +139,9 @@ class modEmundusMenuHelper
 				}
 			}
 
-			$cache->store($items, $key);
+			if($caching) {
+				$cache->store($items, $key);
+			}
 		}
 		return $items;
 	}

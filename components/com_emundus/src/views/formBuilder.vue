@@ -254,9 +254,9 @@
               </draggable>
             </div>
 
-            <div class="em-flex-row em-flex-space-between">
-              <button class="em-secondary-button em-w-auto" @click="exitForm" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
-              <button class="em-primary-button em-w-auto" @click="sendForm" :title="translations.Validate">{{translations.Validate}}</button>
+            <div class="em-flex-column">
+              <button class="em-secondary-button em-w-100 em-mb-8" @click="exitForm" :title="translations.Validate">{{translations.ExitFormbuilder}}</button>
+              <button class="em-primary-button em-w-100" @click="sendForm" :title="translations.Validate">{{translations.Validate}}</button>
             </div>
           </div>
         </div>
@@ -932,6 +932,8 @@ export default {
     },
 
     show(group, type = "", text = "", title = "Information") {
+      text = this.translate(text);
+      type = this.translate(type);
       this.$notify({
         group,
         title: `${title}`,

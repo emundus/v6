@@ -341,10 +341,10 @@ class SecuritycheckprosModelFirewallConfig extends SecuritycheckproModel
                 }
                 if ($deleted_elements > 0) {
                     JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_SECURITYCHECKPRO_ELEMENTS_DELETED_FROM_LIST', $deleted_elements));
-                    if (!empty($list_to_array)) {
+					if (!empty($list_to_array)) {
 						sort($list_to_array, SORT_NUMERIC);
 						$params[$type] = implode(',', $list_to_array);
-					} 
+					}                    
                 }
             }
             break;

@@ -27,6 +27,9 @@ $site_offset = $config->get('offset');
             </p>
         </div>
     <?php endif; ?>
+    <?php if (sizeof($currentCampaign) == 0 && sizeof($futurCampaign) == 0 && sizeof($pastCampaign) == 0) : ?>
+        <?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?>
+    <?php else : ?>
     <div class="g-grid" id="navfilter">
         <div class="g-block size-30 navrowtabs">
             <?php if (!empty($pastCampaign) || !empty($currentCampaign) || !empty($futurCampaign)) : ?>
@@ -556,6 +559,7 @@ $site_offset = $config->get('offset');
         </div><!-- Close past tab -->
     <?php endif; ?>
     </div><!-- Close tab-content -->
+    <?php endif; ?>
 </form>
 <script type="text/javascript">
     jQuery(document).ready(function () {

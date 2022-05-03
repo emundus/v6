@@ -6,63 +6,44 @@ defined('_JEXEC') or die();
     var textdecoded = "no";
 
     jQuery(document).ready(function() {        
-        Disable();    
-        
+        Disable();
+		
 		jQuery( "#enable_url_inspector_button" ).click(function() {
             Joomla.submitbutton('enable_url_inspector');
         });
-        jQuery( "#li_lists_tab" ).click(function() {
-            SetActiveTab('lists');
-        });
-        jQuery( "#li_methods_tab" ).click(function() {
-            SetActiveTab('methods');
-        });
-        jQuery( "#li_mode_tab" ).click(function() {
-            SetActiveTab('mode');
-        });
-        jQuery( "#li_logs_tab" ).click(function() {
-            SetActiveTab('logs');
-        });
-        jQuery( "#li_redirection_tab" ).click(function() {
-            SetActiveTab('redirection');
-        });
-        jQuery( "#li_second_tab" ).click(function() {
-            SetActiveTab('second');                
-        });
-        jQuery( "#li_email_notifications_tab" ).click(function() {
-            SetActiveTab('email_notifications');
-        });
-        jQuery( "#li_exceptions_tab" ).click(function() {
-            SetActiveTab('exceptions');
-        });
-        jQuery( "#li_session_protection_tab" ).click(function() {
-            SetActiveTab('session_protection');
-        });
-        jQuery( "#li_upload_scanner_tab" ).click(function() {
-            SetActiveTab('upload_scanner');
-        });
-        jQuery( "#li_spam_protection_tab" ).click(function() {
-            SetActiveTab('spam_protection');
-        });
-        jQuery( "#li_url_inspector_tab" ).click(function() {
-            SetActiveTab('url_inspector');
-        });
-        jQuery( "#li_track_actions_tab" ).click(function() {
-            SetActiveTab('track_actions');
-        });
+
+		var triggerWafConfigurationTabs = [].slice.call(document.querySelectorAll('#WafConfigurationTabsTabs a'))
+		triggerWafConfigurationTabs.forEach(function (triggerEl) {
+		  var WafConfigurationTab = new bootstrap.Tab(triggerEl)
+
+		  triggerEl.addEventListener('click', function (event) {			
+			SetActiveTab(triggerEl.getAttribute('href'));
+		  })
+		})
+		
+		var triggerListsTabs = [].slice.call(document.querySelectorAll('#ListsTabsTabs a'))
+		triggerListsTabs.forEach(function (triggerEl) {
+		  var ListsTab = new bootstrap.Tab(triggerEl)
+
+		  triggerEl.addEventListener('click', function (event) {			
+			SetActiveTabLists(triggerEl.getAttribute('href'));
+		  })
+		})
+		
+		var triggerExceptionsTabs = [].slice.call(document.querySelectorAll('#ExceptionsTabsTabs a'))
+		triggerExceptionsTabs.forEach(function (triggerEl) {
+		  var ExceptionsTab = new bootstrap.Tab(triggerEl)
+
+		  triggerEl.addEventListener('click', function (event) {			
+			SetActiveTabExceptions(triggerEl.getAttribute('href'));
+		  })
+		})
+	       
         jQuery( "#search_button" ).click(function() {
             document.getElementById('filter_search').value='';
             this.form.submit();
         });
-        jQuery( "#li_blacklist_tab" ).click(function() {
-            SetActiveTabLists('blacklist');
-        });
-        jQuery( "#li_dynamic_blacklist_tab" ).click(function() {
-            SetActiveTabLists('dynamic_blacklist_tab');
-        });
-        jQuery( "#li_whitelist_tab" ).click(function() {
-            SetActiveTabLists('whitelist');
-        });
+        
         jQuery( "#upload_import_button" ).click(function() {
             Joomla.submitbutton('import_list');
         });
@@ -123,25 +104,7 @@ defined('_JEXEC') or die();
         jQuery( "#boton_test_email" ).click(function() {
             Joomla.submitbutton('send_email_test');
         });
-        jQuery( "#li_header_referer_tab" ).click(function() {
-            SetActiveTabExceptions('header_referer');
-        });
-        jQuery( "#li_base64_tab" ).click(function() {
-            SetActiveTabExceptions('base64');
-        });
-        jQuery( "#li_xss_tab" ).click(function() {
-            SetActiveTabExceptions('xss');
-        });
-        jQuery( "#li_sql_tab" ).click(function() {
-            SetActiveTabExceptions('sql');
-        });
-        jQuery( "#li_lfi_tab" ).click(function() {
-            SetActiveTabExceptions('lfi');
-        });
-        jQuery( "#li_secondlevel_tab" ).click(function() {
-            SetActiveTabExceptions('secondlevel');
-        });       
-        
+                
         jQuery( "#second_level_words" ).focusin(function() {
             if (textdecoded == "no") {                
                 // Decodificamos el contenido del campo de texto
@@ -295,15 +258,15 @@ defined('_JEXEC') or die();
 
         }
     
-    var ActiveTab = "lists"; 
-    var ActiveTabLists = "blacklist";
-    var ExceptionsActiveTab = "header_referer";
+    var ActiveTab = "li_lists_tab"; 
+    var ActiveTabLists = "li_blacklist_tab";
+    var ExceptionsActiveTab = "li_header_referer_tab";
         
     function SetActiveTab($value) {
         ActiveTab = $value;
         storeValue('active', ActiveTab);
 
-        if ($value == "second") {                
+        if ($value == "#li_second_tab") {                
         } else {    
             if (textdecoded == "si") {
                 // Codificamos el contenido del campo de texto
@@ -342,28 +305,32 @@ defined('_JEXEC') or die();
     }
     
     window.onload = function() {
-        ActiveTab = getStoredValue('active');        
-        if (ActiveTab) {
-            $('.nav-tabs a[href="#' + ActiveTab + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ActiveTab + '"]').tab('show');            
+        ActiveTab = getStoredValue('active');  
+		if (ActiveTab) {
+            $('.nav-item a[href="' + ActiveTab + '"]').parent().addClass('active');
+            $('.nav-item a[href="' + ActiveTab + '"]').tab('show');            
         } else {
-            $('.nav-tabs a[href="#lists"]').parent().addClass('active');
+            $('.nav-item a[href="#li_lists_tab"]').parent().addClass('active');
+			$('.nav-item a[href="#li_lists_tab"]').tab('show');
         }
         
         ActiveTablists = getStoredValue('activelists');
         if (ActiveTablists) {
-            $('.nav-tabs a[href="#' + ActiveTablists + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ActiveTablists + '"]').tab('show');
+            $('.nav-item a[href="' + ActiveTablists + '"]').parent().addClass('active');
+            $('.nav-item a[href="' + ActiveTablists + '"]').tab('show');
         } else {
-            $('.nav-tabs a[href="#blacklist"]').parent().addClass('active');
+            $('.nav-item a[href="#li_blacklist_tab"]').parent().addClass('active');
+			$('.nav-item a[href="#li_blacklist_tab"]').tab('show');
         }
         
         ExceptionsActiveTab = getStoredValue('exceptions_active');
+		
         if (ExceptionsActiveTab) {
-            $('.nav-tabs a[href="#' + ExceptionsActiveTab + '"]').parent().addClass('active');
-            $('.nav-tabs a[href="#' + ExceptionsActiveTab + '"]').tab('show');
-        } else {
-            $('.nav-tabs a[href="#header_referer"]').parent().addClass('active');
+            $('.nav-item a[href="' + ExceptionsActiveTab + '"]').parent().addClass('active');
+            $('.nav-item a[href="' + ExceptionsActiveTab + '"]').tab('show');
+        } else {			
+            $('.nav-item a[href="#li_header_referer_tab"]').parent().addClass('active');
+			$('.nav-item a[href="#li_header_referer_tab"]').tab('show');
         }       
        
                 

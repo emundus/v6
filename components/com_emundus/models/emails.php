@@ -79,7 +79,7 @@ class EmundusModelEmails extends JModelList {
      * @since version v6
      */
     public function getEmailTrigger($step, $code, $to_applicant = 0) {
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template
+        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags
                   FROM #__emundus_setup_emails_trigger as eset
                   LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
@@ -88,6 +88,7 @@ class EmundusModelEmails extends JModelList {
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
                   LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
                   LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
+                  LEFT JOIN #__emundus_setup_emails_repeat_tags AS ert ON ert.parent_id = eset.email_id
                   WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
         $this->_db->setQuery( $query );
         $triggers = $this->_db->loadObjectList();
@@ -100,6 +101,7 @@ class EmundusModelEmails extends JModelList {
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
+                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['tags'] = $trigger->tags;
 
                 // This is the email template model, the HTML structure that makes the email look good.
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
@@ -1351,11 +1353,11 @@ class EmundusModelEmails extends JModelList {
             return false;
         }
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $m_messages = new EmundusModelMessages();
         $template = $m_messages->getEmail($email);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
         $m_groups = new EmundusModelGroups();
         $users = $m_groups->getUsersByGroups($groups);
 
@@ -1379,7 +1381,7 @@ class EmundusModelEmails extends JModelList {
      * @since v6
      */
     public function sendEmailFromPlatform(int $user, object $template, array $attachments) : void {
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         $current_user = JFactory::getUser();
         $user = JFactory::getUser($user);
         $toAttach = [];
@@ -1420,8 +1422,8 @@ class EmundusModelEmails extends JModelList {
             // Here we also build the HTML being logged to show which files were attached to the email.
             $files = '<ul>';
             foreach ($attachments as $upload) {
-                if (file_exists(JPATH_BASE.DS.$upload)) {
-                    $toAttach[] = JPATH_BASE.DS.$upload;
+                if (file_exists(JPATH_SITE.DS.$upload)) {
+                    $toAttach[] = JPATH_SITE.DS.$upload;
                     $files .= '<li>'.basename($upload).'</li>';
                 }
             }

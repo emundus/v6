@@ -13,6 +13,8 @@ if ($s == '') {
 	$s = JRequest::getVar('lastname', null, 'post', 'none', 0);
 }
 
+$eMConfig = JComponentHelper::getParams('com_emundus');
+
 ?>
 
 <form action = "<?= ($this->edit == 1)?"index.php?option=com_emundus&controller=users&task=edituser":"index.php?option=com_emundus&controller=users&task=adduser"; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
@@ -77,6 +79,7 @@ if ($s == '') {
 				</select>
 			</div>
 		</div>
+        <?php if($eMConfig->get('showUniversities')) : ?>
 		<div class="form-group em-hidden-nonapli-fields em-addUser-university" <?= (($this->edit != 1) || ($this->user['university_id'] == 0))?'style="display:none;"':''; ?>>
 			<label for="univ"><?= JText::_('COM_EMUNDUS_USERS_UNIVERSITY_FROM'); ?></label>
 			<br/>
@@ -87,6 +90,7 @@ if ($s == '') {
 				<?php endforeach;?>
 			</select>
 		</div>
+        <?php endif ?>
 		<div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?= (($this->edit != 1) || (empty($this->uGroups)))?'style="display:none;"':''; ?>>
 			<label for="groups"><?= JText::_('COM_EMUNDUS_GROUPS'); ?></label>
 			<br/>

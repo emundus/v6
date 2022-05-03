@@ -162,6 +162,77 @@ class com_SecuritycheckproInstallerScript
         }
         
     }
+	
+	/* Uninstall installer plugin since 3.4.4 version as it will be no longer needed */
+    private function _uninstall_installer_plugin()
+    {
+		
+		$db = JFactory::getDBO();
+		
+		$columnName      = $db->quoteName("extension_id");
+        $tableExtensions = $db->quoteName("#__extensions");
+        $type              = $db->quoteName("type");
+        $columnElement   = $db->quoteName("element");
+        $columnType      = $db->quoteName("folder");
+		
+		try {
+			$query = $db->getQuery(true);
+			$query->select('*');
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('element') . ' = ' . $db->quote('com_securitycheckpro'));
+			$db->setQuery($query);
+			$db->execute();
+			$result = $db->loadAssocList();
+		} catch(\Exception $e)
+        {
+			$result = null;
+        }
+		        
+        // Si no existe versión previa no es necesario hacer ninguna acción
+        if (!empty($result)) {
+        
+            // Decodificamos la información de la versión, que está en formato json en la entrada 'manifest_cache'
+            $stack = json_decode($result[0]["manifest_cache"], true);
+            
+            // Versión de Securitycheck Pro instalada
+            $scpro_version = $stack["version"];
+            
+            // Si la versión instalada es menor a la 3.4, hemos de desinstalar el plugin
+            if (version_compare($scpro_version, "3.4.4", "lt")) {
+				// Uninstall Installer plugin
+				$db->setQuery(
+					"SELECT 
+						$columnName
+					FROM
+						$tableExtensions
+					WHERE
+						$type='plugin'
+					AND
+						$columnElement='securitycheckpro_installer'
+					AND
+						$columnType='installer'"
+				);
+
+				$id = $db->loadResult();
+				
+				if ($id) {
+					$installer = new JInstaller();
+					$uninstall_result = $installer->uninstall('plugin', $id, 1);        
+				} else 
+				{
+					// The plugin is not installed??
+				}
+				
+				if ($uninstall_result) {
+					JFactory::getApplication()->enqueueMessage("'Securitycheck Pro Installer' plugin has been succesfuly uninstalled. It's no longer needed.");
+				} else {
+					JFactory::getApplication()->enqueueMessage("Error uninstalling 'Securitycheck Pro Installer' plugin. Needs to be removed manually.", 'error');
+				}
+				
+				
+			}
+		}	
+	}
     
     /**
      * Joomla! pre-flight event
@@ -190,7 +261,9 @@ class com_SecuritycheckproInstallerScript
         }
         
         // Do changes for versions previous to 3.4
-        $this->_34_version_changes();        
+        $this->_34_version_changes();  
+
+		$this->	_uninstall_installer_plugin();	
         
         $this->_unistall_Securitycheck();    
         
@@ -499,32 +572,8 @@ class com_SecuritycheckproInstallerScript
             $result[3] = $installer->uninstall('plugin', $id, 1);        
         } else {
             $result[3] = false;
-        }
-        
-        // Uninstall Installer plugin
-        $db->setQuery(
-            "SELECT 
-				$columnName
-			FROM
-				$tableExtensions
-			WHERE
-				$type='plugin'
-			AND
-				$columnElement='securitycheckpro_installer'
-			AND
-				$columnType='installer'"
-        );
-
-        $id = $db->loadResult();
-        
-        if ($id) {
-            $installer = new JInstaller();
-            $result[4] = $installer->uninstall('plugin', $id, 1);        
-        } else 
-        {
-            $result[4] = 0;
-        }
-                
+        }        
+                        
         // Uninstall message
         $this->uninstall_message($result, $status);
         
@@ -725,39 +774,7 @@ class com_SecuritycheckproInstallerScript
             <?php
         }
         ?>
-                    </tr>
-                    <tr class="row0">
-                        <td class="key" colspan="2">Installer <?php echo JText::_('Plugin'); ?></td>
-        <?php
-        if ($result[4]) {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . $result_ok; ?>
-                                </span>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "info\">";    
-            $message = JText::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');                                                                                    
-            ?>
-            <?php echo $span . $message; ?>
-                            </td>
-            <?php
-        } else
-                        {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . $result_not_ok; ?>
-                                </span>
-                            </td>
-            <?php
-        }
-        ?>
-                    </tr>
+                    </tr>                    
         <?php
         if (count($status->modules) > 0) {
             ?>
@@ -947,34 +964,7 @@ class com_SecuritycheckproInstallerScript
             <?php
         }
         ?>
-                </tr>
-                <tr class="row0">
-                    <td class="key" colspan="2">Installer <?php echo JText::_('Plugin'); ?></td>
-        <?php
-        if ($result[4]) {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . JText::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        } else
-        {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . JText::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        }
-        ?>
-                </tr>
+                </tr>                
         <?php
         if (count($status->modules) > 0) {
             ?>

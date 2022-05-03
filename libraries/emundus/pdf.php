@@ -1310,28 +1310,25 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
         $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
-
-        $htmldata .= '<div class="card">
-                                <table width="100%"><tr>';
-
         if (!$anonymize_data) {
             if ($allowed_attachments === true || in_array('10', $allowed_attachments)) {
-
-                if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="left" /></td>';
-                } elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
-                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar . '" width="100" align="left" /></td>';
+                $htmldata .= '<div class="card">
+								<table width="100%"><tr>';
+                if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="left" /></td>';
+                } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                    $htmldata .= '<td width="20%"><img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="left" /></td>';
                 }
             }
 
-            $htmldata .= '<td width="80%">
+            $htmldata .= '
+			<td width="80%">
+	
 			<div class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . ', ' . @$item->label . ' (' . @$item->cb_schoolyear . ')</div>';
 
             if (isset($item->maiden_name)) {
                 $htmldata .= '<div class="maidename">' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</div>';
             }
-        } else {
-            $htmldata .= '<td width="80%">';
         }
 
         $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')) : JText::_('NOT_SENT');

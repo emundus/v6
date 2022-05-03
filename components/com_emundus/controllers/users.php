@@ -87,7 +87,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$user = clone(JFactory::getUser(0));
 
-		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
+		if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $username) !== 1) {
 			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
 			exit;
 		}
@@ -294,7 +294,7 @@ class EmundusControllerUsers extends JControllerLegacy {
    ////// EXPORT ALL XLS ///////////////////
 	public function export_account_to_xls($reqids = array(), $el = array()) {
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
+		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
 		export_xls($cid, array());
 	}
 
@@ -701,7 +701,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
     public function regeneratepassword() {
 
-        include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        include_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 
         jimport('joomla.user.helper');
@@ -740,7 +740,7 @@ class EmundusControllerUsers extends JControllerLegacy {
                     $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');
 
                 } else {
-                    $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT');
+                    $msg = JText::_('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
                 }
             }
         }
@@ -866,7 +866,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 	}
 
-	public function getusers() 
+	public function getusers()
 	{
 		$m_users = new EmundusModelUsers();
 		$users_list = $m_users->getUsers();
@@ -875,7 +875,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function getuserbyid() 
+	public function getuserbyid()
 	{
 		$id = JFactory::getApplication()->input->getInt('id', null);
 		$m_users = new EmundusModelUsers();
@@ -885,7 +885,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function getattachmentaccessrights() 
+	public function getattachmentaccessrights()
 	{
 		$rights = [
 			'canDelete' => false,

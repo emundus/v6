@@ -717,20 +717,25 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
         //
 
-        if ($filter == 'notTerminated') {
+        if ($filter == 'yettocome') {
+            $filterCount = 'Date(' . $this->_db->quoteName('sc.start_date') . ') > ' . $this->_db->quote($date);
+        } elseif ($filter == 'ongoing') {
             $filterCount =
-                'Date(' .
+                '(Date(' .
                 $this->_db->quoteName('sc.end_date') .
                 ')' .
                 ' >= ' .
                 $this->_db->quote($date) .
-                ' OR end_date = "0000-00-00 00:00:00"';
+                ' OR end_date = "0000-00-00 00:00:00") AND '.
+                $this->_db->quoteName('sc.start_date') .
+                ' <= ' .
+                $this->_db->quote($date);
         } elseif ($filter == 'Terminated') {
             $filterCount =
                 'Date(' .
@@ -740,23 +745,9 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quote($date) .
                 ' AND end_date != "0000-00-00 00:00:00"';
         } elseif ($filter == 'Publish') {
-            $filterCount =
-                $this->_db->quoteName('sc.published') .
-                ' = 1 AND (Date(' .
-                $this->_db->quoteName('sc.end_date') .
-                ')' .
-                ' >= ' .
-                $this->_db->quote($date) .
-                ' OR end_date = "0000-00-00 00:00:00")';
+            $filterCount = $this->_db->quoteName('sc.published') . ' = 1';
         } elseif ($filter == 'Unpublish') {
-            $filterCount =
-                $this->_db->quoteName('sc.published') .
-                ' = 0 AND (Date(' .
-                $this->_db->quoteName('sc.end_date') .
-                ')' .
-                ' >= ' .
-                $this->_db->quote($date) .
-                ' OR end_date = "0000-00-00 00:00:00")';
+            $filterCount = $this->_db->quoteName('sc.published') . ' = 0';
         } else {
             $filterCount = '1';
         }
@@ -764,15 +755,26 @@ class EmundusModelCampaign extends JModelList {
         if (empty($recherche)) {
             $fullRecherche = 1;
         } else {
-            $fullRecherche =
+            $fullRecherche = '(' .
                 $this->_db->quoteName('sc.label') .
                 ' LIKE ' .
-                $this->_db->quote('%' . $recherche . '%');
+                $this->_db->quote('%' . $recherche . '%') . ' OR ' .
+                $this->_db->quoteName('fc.value') .
+                ' LIKE ' .
+                $this->_db->quote('%' . $recherche . '%')
+                . ')';
         }
 
         $query
             ->select('COUNT(sc.id)')
             ->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
+            ->leftJoin(
+                $this->_db->quoteName('#__falang_content', 'fc') .
+                ' ON ' .
+                $this->_db->quoteName('fc.reference_id') .
+                ' LIKE ' .
+                $this->_db->quoteName('sc.id') . ' AND reference_table LIKE ' . $this->_db->quote('emundus_setup_campaigns')
+            )
             ->where($filterCount)
             ->andWhere($fullRecherche)
             ->andWhere($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')');
@@ -823,26 +825,31 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
 
-        if($program !="all"){
-            $programs=array_filter($programs,function($value) use ($program) {
+        if ($program != "all") {
+            $programs= array_filter($programs,function($value) use ($program) {
                 return $value == $program;
             });
         }
         //
 
-        if ($filter == 'notTerminated') {
+        if ($filter == 'yettocome') {
+            $filterDate = 'Date(' . $this->_db->quoteName('sc.start_date') . ') > ' . $this->_db->quote($date);
+        } elseif ($filter == 'ongoing') {
             $filterDate =
-                'Date(' .
+                '(Date(' .
                 $this->_db->quoteName('sc.end_date') .
                 ')' .
                 ' >= ' .
                 $this->_db->quote($date) .
-                ' OR end_date = "0000-00-00 00:00:00"';
+                ' OR end_date = "0000-00-00 00:00:00") AND '.
+                $this->_db->quoteName('sc.start_date') .
+                ' <= ' .
+                $this->_db->quote($date);
         } elseif ($filter == 'Terminated') {
             $filterDate =
                 'Date(' .
@@ -852,14 +859,7 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quote($date) .
                 ' AND end_date != "0000-00-00 00:00:00"';
         } elseif ($filter == 'Publish') {
-            $filterDate =
-                $this->_db->quoteName('sc.published') .
-                ' = 1 AND (Date(' .
-                $this->_db->quoteName('sc.end_date') .
-                ')' .
-                ' >= ' .
-                $this->_db->quote($date) .
-                ' OR end_date = "0000-00-00 00:00:00")';
+            $filterDate = $this->_db->quoteName('sc.published') . ' = 1';
         } elseif ($filter == 'Unpublish') {
             $filterDate =
                 $this->_db->quoteName('sc.published') .
@@ -870,16 +870,20 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quote($date) .
                 ' OR end_date = "0000-00-00 00:00:00")';
         } else {
-            $filterDate = '1';
+            $filterDate = $this->_db->quoteName('sc.published') . ' = 1';
         }
 
         if (empty($recherche)) {
             $fullRecherche = 1;
         } else {
-            $fullRecherche =
+            $fullRecherche = '(' .
                 $this->_db->quoteName('sc.label') .
                 ' LIKE ' .
-                $this->_db->quote('%' . $recherche . '%');
+                $this->_db->quote('%' . $recherche . '%') . ' OR ' .
+                $this->_db->quoteName('fc.value') .
+                ' LIKE ' .
+                $this->_db->quote('%' . $recherche . '%')
+            . ')';
         }
 
         $query
@@ -904,6 +908,13 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quoteName('sp.code') .
                 ' LIKE ' .
                 $this->_db->quoteName('sc.training')
+            )
+            ->leftJoin(
+                $this->_db->quoteName('#__falang_content', 'fc') .
+                ' ON ' .
+                $this->_db->quoteName('fc.reference_id') .
+                ' LIKE ' .
+                $this->_db->quoteName('sc.id') . ' AND reference_table LIKE ' . $this->_db->quote('emundus_setup_campaigns')
             )
             ->where($filterDate)
             ->andWhere($fullRecherche)
@@ -1626,7 +1637,7 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);

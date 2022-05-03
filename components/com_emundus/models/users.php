@@ -257,7 +257,7 @@ class EmundusModelUsers extends JModelList {
                 foreach ($search as $str) {
                     $val = explode(': ', $str);
 
-                    if ($val[0] == "COM_EMUNDUS_ACTIONS_ALL") {
+                    if ($val[0] == "ALL") {
                         $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR u.email LIKE '.$db->Quote('%'.$val[1].'%').'
@@ -1106,7 +1106,7 @@ class EmundusModelUsers extends JModelList {
      * Function to get Evaluators Infos for the mailing evaluators
      */
     public function getEvalutorByFnums($fnums) {
-        include_once(JPATH_BASE.'/components/com_emundus/models/files.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/files.php');
         $files = new EmundusModelFiles;
 
         $fnums_info = $files->getFnumsInfos($fnums);
