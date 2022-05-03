@@ -127,30 +127,26 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $reload = $jinput->get('r', 0);
             $reload++;
 
-
+            $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
             if (!empty($current_phase) && !empty($current_phase->end_date)) {
-                $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date);
-                $is_campaign_started = strtotime(date($now)) >= strtotime($current_phase->start_date);
-            } else if ($this->getParam('admission', 0) == 1) {
-                if(!empty($fnum)) {
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
-                }
-                else{
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
-                }
+                $current_end_date = $current_phase->end_date;
+                $current_start_date = $current_phase->start_date;
+            }  else if ($this->getParam('admission', 0) == 1) {
+                $current_end_date = @$user->fnums[$current_fnum]->admission_end_date;
+                $current_start_date = @$user->fnums[$current_fnum]->admission_start_date;
             } else {
-                if(!empty($fnum)) {
-                    $is_dead_line_passed = (strtotime(date($now)) > (!empty(@$user->fnums[$fnum]->end_date) ? strtotime(@$user->fnums[$fnum]->end_date) : strtotime(@$user->end_date))) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->start_date)) ? true : false;
-                }
-                else{
-                    $is_dead_line_passed = (strtotime(date($now)) > (!empty(@$user->fnums[$user->fnum]->end_date) ? strtotime(@$user->fnums[$user->fnum]->end_date) : strtotime(@$user->end_date))) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->start_date)) ? true : false;
-                }
+                $current_end_date = !empty(@$user->fnums[$current_fnum]->end_date) ? @$user->fnums[$current_fnum]->end_date : @$user->end_date;
+                $current_start_date = @$user->fnums[$current_fnum]->start_date;
             }
 
+            $is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
+            if (!$is_campaign_started) {
+                // STOP HERE, the campaign or step is not started yet. Redirect to main page
+                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
+                $mainframe->redirect('/');
+            }
+
+            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
             $is_app_sent = !in_array(@$user->status, explode(',', $this->getParam('applicationsent_status', 0)));
             $can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
             $can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
@@ -178,12 +174,10 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     else {
                         if (!$can_edit && $is_app_sent) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
-                        } elseif ($fnumDetail['published'] == -1){
+                        } else if ($fnumDetail['published'] == -1) {
                             $mainframe->enqueueMessage(JText::_('DELETED_FILE'), 'error');
                         } else if ($is_dead_line_passed) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
-                        } else if (!$is_campaign_started) {
-                            $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
                         }
                         $reload_url = false;
                     }
@@ -216,7 +210,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                 } else {
 
-                    if (($is_dead_line_passed && $can_edit_after_deadline == 0) || !$is_campaign_started || $isLimitObtained === true) {
+                    if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true) {
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
                                 $mainframe->enqueueMessage(JText::_('APPLICATION_LIMIT_OBTAINED'), 'error');
