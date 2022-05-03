@@ -210,7 +210,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $offset = $app->get('offset', 'UTC');
 
         # in case of CELSA, the meeting session will start 15 min before
-        $startTimeCELSA =  !empty($juryStartDate) ?  date('Y-m-d\TH:i:s\Z', strtotime($juryStartDate) - (15 * 60)) : date('Y-m-d\TH:i:s\Z');
+        $startTimeCELSA = !empty($juryStartDate) ? gmdate('Y-m-d\TH:i:s\Z', strtotime($juryStartDate) - (15 * 60)) : gmdate('Y-m-d\TH:i:s\Z');
 
         ######################################################################################################################
 

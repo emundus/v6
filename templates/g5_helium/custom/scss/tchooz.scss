@@ -413,7 +413,14 @@ input:focus + .em-slider {
 }
 
 .em-grab{
+  cursor: grab;
+}
+
+.em-grabbing{
   cursor: grabbing;
+}
+.em-edit-cursor{
+  cursor: url('/images/emundus/icons/edit_black_24dp.svg') 2 2, pointer;
 }
 
 /** HOVER **/
@@ -741,6 +748,9 @@ input:focus + .em-slider {
 /*
   BORDERS
 */
+.em-border-radius-5{
+  border-radius: 5px;
+}
 .em-border-neutral-300{
   border: 1px solid $neutral-300;
   box-sizing: border-box;
@@ -974,6 +984,9 @@ button.em-swal-cancel-button{
 }
 .swal2-actions{
   justify-content: space-between !important;
+}
+.em-swal-single-action{
+  justify-content: right !important;
 }
 
 /** Vue Modal - Translation tool **/

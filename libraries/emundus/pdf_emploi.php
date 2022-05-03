@@ -12,7 +12,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'list.php');
 	require_once(JPATH_COMPONENT.DS.'helpers'.DS.'menu.php');
 	require_once(JPATH_COMPONENT.DS.'models'.DS.'users.php');
-	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+	include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 
 	$eMConfig = JComponentHelper::getParams('com_emundus');
 	$fabrik_elements_title = $eMConfig->get('fabrik_elements_title', '2113');
@@ -70,7 +70,7 @@ function application_form_pdf($user_id, $rowid, $output = true) {
 	    	$tab[1] = parse_url($tab[1], PHP_URL_PATH);
 	    }
 
-	    $logo = JPATH_BASE.DS.$tab[1];
+	    $logo = JPATH_SITE.DS.$tab[1];
 	}
 	
 	// manage logo by programme

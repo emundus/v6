@@ -11,7 +11,7 @@ public function em_createRequest($data)
 	$config = JFactory::getConfig();
 	$timezone = new DateTimeZone( $config->get('offset') );
     // Creating requests requires the site's email sending be enabled
-    if (!config->get('mailonline', 1))
+    if (!$config->get('mailonline', 1))
     {
         $this->setError(JText::_('COM_PRIVACY_ERROR_CANNOT_CREATE_REQUEST_WHEN_SENDMAIL_DISABLED'));
 

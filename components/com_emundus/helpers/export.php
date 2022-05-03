@@ -242,9 +242,11 @@ class EmundusHelperExport {
     public static function getEvalPDF($fnum, $options = null) {
 
         $user = JFactory::getSession()->get('emundusUser');
+        $user = empty($user) ? JFactory::getUser() : $user;
 
-        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
+        if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums))) {
             die(JText::_('ACCESS_DENIED'));
+        }
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
@@ -275,6 +277,8 @@ class EmundusHelperExport {
 
     public static function getDecisionPDF($fnum, $options = null) {
         $user = JFactory::getSession()->get('emundusUser');
+        $user = empty($user) ? JFactory::getUser() : $user;
+
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums)))
             die(JText::_('ACCESS_DENIED'));
 
@@ -307,6 +311,8 @@ class EmundusHelperExport {
 	public static function getAdmissionPDF($fnum, $options = null) {
 
         $user = JFactory::getSession()->get('emundusUser');
+        $user = empty($user) ? JFactory::getUser() : $user;
+
         if (!EmundusHelperAccess::asPartnerAccessLevel($user->id) && !in_array($fnum, array_keys($user->fnums))) {
         	die(JText::_('ACCESS_DENIED'));
         }
@@ -323,7 +329,7 @@ class EmundusHelperExport {
         if (is_null($fileName)) {
             $name = $fnum . '-admission.pdf';
         } else {
-            require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'checklist.php');
             $m_checklist = new EmundusModelChecklist;
             $post = array(
                 'FNUM' => $fnum,
