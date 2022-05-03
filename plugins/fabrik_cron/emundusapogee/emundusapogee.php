@@ -122,6 +122,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
                     OR jos_emundus_logs.action_id = 28 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                     OR jos_emundus_logs.action_id = 29 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                     OR jos_emundus_logs.action_id = 32 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
+                    OR jos_emundus_logs.action_id = 13 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
                 "
             ));
 
