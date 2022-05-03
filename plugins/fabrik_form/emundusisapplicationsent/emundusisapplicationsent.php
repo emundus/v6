@@ -129,13 +129,8 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
 
             if (!empty($current_phase) && !empty($current_phase->end_date)) {
-                if (!empty($fnum)) {
-                    $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
-                    $is_campaign_started = strtotime(date($now)) >= strtotime($current_phase->start_date);
-                } else {
-                    $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
-                    $is_campaign_started = strtotime(date($now)) >= strtotime($current_phase->start_date);
-                }
+                $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date);
+                $is_campaign_started = strtotime(date($now)) >= strtotime($current_phase->start_date);
             } else if ($this->getParam('admission', 0) == 1) {
                 if(!empty($fnum)) {
                     $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
@@ -181,13 +176,13 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     }
                     //try to access detail view or other
                     else {
-                        if(!$can_edit && $is_app_sent){
+                        if (!$can_edit && $is_app_sent) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
-                        } elseif ($fnumDetail['published'] = -1){
+                        } elseif ($fnumDetail['published'] == -1){
                             $mainframe->enqueueMessage(JText::_('DELETED_FILE'), 'error');
-                        } elseif ($is_dead_line_passed){
+                        } else if ($is_dead_line_passed) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
-                        } elseif (!$is_campaign_started){
+                        } else if (!$is_campaign_started) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
                         }
                         $reload_url = false;
@@ -277,7 +272,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     $rowid = $formModel->data["rowid"];
 
                     $elements = array();
-                    foreach ($table_elements as $key => $element) {
+                    foreach ($table_elements as $element) {
                         $elements[] = $element->value;
                     }
 
@@ -286,7 +281,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                         $query = 'SELECT '.implode(',', $db->quoteName($elements)).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
                         $db->setQuery($query);
                         $stored = $db->loadAssoc();
-                        if (count($stored) > 0) {
+                        if (!empty($stored)) {
                             // update form data
                             $parent_id = $stored['id'];
                             unset($stored['id']);
@@ -307,7 +302,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             $groups = $formModel->getFormGroups(true);
                             $data = array();
                             if (count($groups) > 0) {
-                                foreach ($groups as $key => $group) {
+                                foreach ($groups as $group) {
                                     $group_params = json_decode($group->gparams);
                                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 
@@ -327,15 +322,15 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                         $data[$group->group_id]['table'] = $repeat_table;
                                     }
                                 }
-                                if (count($data) > 0) {
-                                    foreach ($data as $key => $d) {
+                                if (!empty($data)) {
+                                    foreach ($data as $d) {
 
                                         try {
                                             $query = 'SELECT '.implode(',', $db->quoteName($d['element_name'])).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                             $db->setQuery( $query );
                                             $stored = $db->loadAssoc();
 
-                                            if (count($stored) > 0) {
+                                            if (!empty($stored)) {
                                                 // update form data
                                                 unset($stored['id']);
                                                 unset($stored['parent_id']);
@@ -362,7 +357,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             $fnums = $user->fnums;
                             unset($fnums[$user->fnum]);
 
-                            if (count($fnums) > 0) {
+                            if (!empty($fnums)) {
                                 $previous_fnum = array_keys($fnums);
                                 $query = 'SELECT eu.*, esa.nbmax
 											FROM #__emundus_uploads as eu
@@ -374,9 +369,9 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                 $db->setQuery( $query );
                                 $stored = $db->loadAssocList();
 
-                                if (count($stored) > 0) {
+                                if (!empty($stored)) {
                                     // 2. copy DB définition and duplicate files in applicant directory
-                                    foreach ($stored as $key => $row) {
+                                    foreach ($stored as $row) {
                                         $src = $row['filename'];
                                         $ext = explode('.', $src);
                                         $ext = $ext[count($ext)-1];;
