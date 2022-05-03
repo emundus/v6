@@ -87,8 +87,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$user = clone(JFactory::getUser(0));
 
-		if (preg_match('/^[0-9a-zA-Z\_\@\-\.]+$/', $username) !== 1) {
-			echo json_encode((object)array('status' => false, 'msg' => JText::_('USERNAME_NOT_GOOD')));
+		if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $username) !== 1) {
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD')));
 			exit;
 		}
 		if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $email) !== 1) {
@@ -132,7 +132,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
-			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
+			echo json_encode((object) array('status' => false, 'uid' => $uid, 'msg' => JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN')));
 		}
 
 		// Envoi de la confirmation de création de compte par email
@@ -205,12 +205,12 @@ class EmundusControllerUsers extends JControllerLegacy {
 			}
 
 		} catch (Exception $e) {
-			echo json_encode((object)array('status' => false, 'msg' => JText::_('EMAIL_NOT_SENT')));
+			echo json_encode((object)array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT')));
 			JLog::add($e->__toString(), JLog::ERROR, 'com_emundus.email');
 			exit();
 		}
 
-		echo json_encode((object)array('status' => true, 'msg' => JText::_('USER_CREATED')));
+		echo json_encode((object)array('status' => true, 'msg' => JText::_('COM_EMUNDUS_USERS_USER_CREATED')));
 		exit;
 	}
 
@@ -307,7 +307,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		JArrayHelper::toInteger($cid, 0);
 
 		if (count( $cid ) == 0) {
-			JError::raiseWarning( 500, JText::_( 'ERROR_NO_ITEMS_SELECTED' ) );
+			JError::raiseWarning( 500, JText::_( 'COM_EMUNDUS_ERROR_NO_ITEMS_SELECTED' ) );
 			$this->setRedirect('index.php?option=com_emundus&view='.JRequest::getCmd( 'view' ).'&limitstart='.$limitstart.'&filter_order='.$filter_order.'&filter_order_Dir='.$filter_order_Dir.'&Itemid='.JRequest::getCmd( 'Itemid' ));
 			exit;
 		}
@@ -514,9 +514,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$res = $m_users->addGroup($gname, $gdesc, $actions, explode(',', $progs));
 
 		if ($res !== false) {
-			$msg = JText::_('GROUP_ADDED');
+			$msg = JText::_('COM_EMUNDUS_GROUPS_GROUP_ADDED');
 		} else {
-			$msg = JText::_('AN_ERROR_OCCURED');
+			$msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -555,8 +555,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res !== false) {
 			$res = true;
-			$msg = JText::_('COM_EMUNDUS_ACTIVATE_ACCOUNT');
-		} else $msg = JText::_('AN_ERROR_OCCURED');
+			$msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT');
+		} else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -588,11 +588,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res === true) {
 			$res = true;
-			$msg = JText::_('USERS_AFFECTED_SUCCESS');
+			$msg = JText::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
 		} elseif ($res === 0) {
-			$msg = JText::_('NO_GROUP_AFFECTED');
+			$msg = JText::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
 		} else {
-			$msg = JText::_('AN_ERROR_OCCURED');
+			$msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -634,14 +634,14 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res === true || !is_array($res)) {
 			$res = true;
-			$msg = JText::_('USERS_EDITED');
+			$msg = JText::_('COM_EMUNDUS_USERS_EDITED');
 		} else {
 			if (is_array($res)) {
 				$res['status'] = false;
 				echo json_encode((object)($res));
 				exit;
 			}
-			else $msg = JText::_('AN_ERROR_OCCURED');
+			else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 		}
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
@@ -692,7 +692,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		if ($users_id != "") {
-			$msg = JText::sprintf('THIS_USER_CAN_NOT_BE_DELETED', $users_id);
+			$msg = JText::sprintf('COM_EMUNDUS_USERS_THIS_USER_CAN_NOT_BE_DELETED', $users_id);
 		}
 		echo json_encode((object) array('status' => $res, 'msg' => $msg));
 
@@ -737,10 +737,10 @@ class EmundusControllerUsers extends JControllerLegacy {
                 $c_messages->sendEmailNoFnum($selectUser->email, $lbl, $post, $id);
 
                 if ($c_messages != true) {
-                    $msg = JText::_('EMAIL_NOT_SENT');
+                    $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');
 
                 } else {
-                    $msg = JText::_('EMAIL_SENT');
+                    $msg = JText::_('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
                 }
             }
         }
@@ -866,7 +866,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 	}
 
-	public function getusers() 
+	public function getusers()
 	{
 		$m_users = new EmundusModelUsers();
 		$users_list = $m_users->getUsers();
@@ -875,7 +875,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function getuserbyid() 
+	public function getuserbyid()
 	{
 		$id = JFactory::getApplication()->input->getInt('id', null);
 		$m_users = new EmundusModelUsers();
@@ -885,7 +885,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
-	public function getattachmentaccessrights() 
+	public function getattachmentaccessrights()
 	{
 		$rights = [
 			'canDelete' => false,

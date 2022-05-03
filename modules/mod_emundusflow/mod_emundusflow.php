@@ -24,6 +24,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
     // Load Joomla framework classes
     $document = JFactory::getDocument();
@@ -81,6 +82,7 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $m_application = new EmundusModelApplication;
     $m_files = new EmundusModelFiles;
     $m_profile = new EmundusModelProfile;
+    $m_emails = new EmundusModelEmails;
 
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
     $paid = null;
@@ -126,7 +128,12 @@ if (isset($user->fnum) && !empty($user->fnum)) {
                 $checkout_url = 'cart' . $user->profile;
             } elseif (!$paid) {
                 $orderCancelled = false;
-                $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document))) . '&usekey=fnum&rowid=' . $user->fnum;
+
+                $checkout_url = $m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document);
+                if(strpos($checkout_url,'${') !== false) {
+                    $checkout_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
+                }
+                $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url)) . '&usekey=fnum&rowid=' . $user->fnum;
 
                 $cancelled_orders = $m_application->getHikashopOrder($fnumInfos, true);
 

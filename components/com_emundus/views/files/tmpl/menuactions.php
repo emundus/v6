@@ -16,7 +16,7 @@ if (!empty($this->items)) :
 
     <div class="container-nav em-container-menuaction">
 
-        <span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS'); ?></span>
+        <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS'); ?></span>
         <div class="navbar-collapse collapse navbar-inverse-collapse">
 
             <ul class="nav navbar-nav em-container-menuaction-nav" style="display:<?php echo $this->display; ?>">
@@ -81,7 +81,7 @@ endif;
                 <table style="width: 95%">
                     <tr>
                         <td>
-                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_FORM_TITLE');?></h4>
                         </td>
                     </tr>
                 </table>
@@ -93,8 +93,8 @@ endif;
                 <table>
                     <tr>
                         <td style="text-align: right;" id="can-val">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-                            <button style="margin-left:5px;" type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL')?></button>
+                            <button style="margin-left:5px;" type="button" class="btn btn-success"><?php echo JText::_('COM_EMUNDUS_OK');?></button>
                         </td>
                     </tr>
                 </table>
@@ -107,13 +107,13 @@ endif;
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
+                <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_LOADING');?></h4>
             </div>
             <div class="modal-body">
                 <img alt="Loading..." src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL')?></button>
             </div>
         </div>
     </div>

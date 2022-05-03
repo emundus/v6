@@ -11,6 +11,11 @@ defined('_JEXEC') or die;
 $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_falang/style/mod_falang_emundus.css");
 
+// mod_falang helper set display to false because of the parameter layout=edit
+// we need to set it to true to switch language
+foreach ($list as $key=> $language) {
+    $list[$key]->display = true;
+}
 ?>
 <form name="lang" method="post" action="<?php echo htmlspecialchars(JUri::current()); ?>">
     <?php if (!$params->get('advanced_dropdown',0)) : ?>

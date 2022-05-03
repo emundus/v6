@@ -98,7 +98,7 @@ ul.unstyled.em-linkForgot li a span::before {
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header  div.icon-title.applyicon {
-    background-image: url(../../../../../components/com_emundus_onboard/src/assets/images/enter.svg);
+    background-image: url('../../../../../../media/com_emundus/images/enter.svg');
     background-size: contain;
     background-repeat: no-repeat;
 }

@@ -99,7 +99,7 @@ if (is_array($text) && !empty($text)) {
 	$t__ = $text;
 }
 
-$btn_profile = '<a class="circular ui icon button" href="'.JRoute::_('index.php?option=com_users&view=profile&layout=edit').'"><i class="user icon"></i>'.JText::_('PROFILE').'</a>';
+$btn_profile = '<a class="circular ui icon button" href="'.JRoute::_('index.php?option=com_users&view=profile&layout=edit').'"><i class="user icon"></i>'.JText::_('MOD_EMUNDUS_PANEL_PROFILE').'</a>';
 
 if (!empty($t__)) {
 

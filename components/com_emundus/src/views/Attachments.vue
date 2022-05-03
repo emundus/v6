@@ -3,7 +3,7 @@
     <div class="head">
       <div class="displayed-user">
         <p class="name">
-          {{ displayedUser.firstname }} {{ displayedUser.lastname }}
+          {{ canSee ? displayedUser.firstname + " " + displayedUser.lastname : displayedFnum}}
         </p>
         <p class="email">{{ displayedUser.email }} </p>
 
@@ -35,7 +35,7 @@
               id="searchbar"
               type="text"
               ref="searchbar"
-              :placeholder="translate('SEARCH')"
+              :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
               @input="searchInFiles"
           />
           <span class="material-icons search">search</span>
@@ -49,7 +49,7 @@
               ref="categoryFilter"
               @change="filterByCategory"
           >
-            <option value="all">{{ translate("SELECT_CATEGORY") }}</option>
+            <option value="all">{{ translate("COM_EMUNDUS_EMAILS_SELECT_CATEGORY") }}</option>
             <option
                 v-for="(category, key) in thisAttachmentCategories"
                 :key="key"
@@ -65,7 +65,7 @@
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
             <span class="material-icons export">file_upload</span>
-            <span>{{ translate("EXPORT") }}</span>
+            <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <span
               class="material-icons refresh"
@@ -164,7 +164,7 @@
               >arrow_downward</span
               >
             </th>
-            <th id="user" @click="orderBy('user_id')">
+            <th v-if="canSee" id="user" @click="orderBy('user_id')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
               <span
                   v-if="sort.orderBy == 'user_id' && sort.order == 'asc'"
@@ -177,7 +177,7 @@
               >arrow_downward</span
               >
             </th>
-            <th id="modified_by" @click="orderBy('modified_by')">
+            <th v-if="canSee" id="modified_by" @click="orderBy('modified_by')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
               <span
                   v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'"
@@ -215,6 +215,7 @@
               :attachment="attachment"
               :checkedAttachmentsProp="checkedAttachments"
               :canUpdate="canUpdate"
+              :canSee="canSee"
               @open-modal="openModal(attachment)"
               @update-checked-attachments="updateCheckedAttachments"
               @update-status="updateStatus"
@@ -250,7 +251,7 @@
               v-if="canDownload"
           >
             <span class="material-icons"> file_download </span>
-            <span>{{ translate("LINK_TO_DOWNLOAD") }}</span>
+            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD") }}</span>
           </a>
           <div class="prev-next-attachments">
             <div
@@ -300,9 +301,9 @@
 </template>
 
 <script>
-import AttachmentPreview from "../components/AttachmentPreview.vue";
-import AttachmentEdit from "../components/AttachmentEdit.vue";
-import AttachmentRow from "../components/AttachmentRow.vue";
+import AttachmentPreview from "../components/Attachments/AttachmentPreview.vue";
+import AttachmentEdit from "../components/Attachments/AttachmentEdit.vue";
+import AttachmentRow from "../components/Attachments/AttachmentRow.vue";
 import attachmentService from "../services/attachment.js";
 import userService from "../services/user.js";
 import fileService from "../services/file.js";
@@ -344,6 +345,7 @@ export default {
         order: "",
         orderBy: "",
       },
+      canSee: true,
       canExport: false,
       canDelete: false,
       canDownload: true,
@@ -355,6 +357,12 @@ export default {
   },
   created() {
     this.changeFileEvent = new Event("changeFile");
+    this.canSee = !this.$store.state.global.anonyme;
+    window.addEventListener('message', function (e) {
+      if (e.data == 'addFileToFnum') {
+        this.refreshAttachments(true);
+      }
+    }.bind(this));
   },
   mounted() {
     this.loading = true;
@@ -562,7 +570,6 @@ export default {
           });
         }
       }
-
       this.canExport = this.$store.state.user.rights[this.displayedFnum]
           ? this.$store.state.user.rights[this.displayedFnum].canExport
           : false;
@@ -616,11 +623,14 @@ export default {
           html: html,
           type: "warning",
           showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
           confirmButtonText: this.translate("JYES"),
           cancelButtonText: this.translate("JNO"),
           reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          },
         }).then((result) => {
           if (result.value) {
             this.deleteAttachments();
@@ -908,10 +918,15 @@ export default {
       return displayedCategories;
     },
   },
+  watch: {
+    "$store.state.global.anonyme": function () {
+      this.canSee = !this.$store.state.global.anonyme;
+    }
+  }
 };
 </script>
 
-<style lang='scss' scoped>
+<style lang='scss'>
 #em-attachments {
   font-size: 14px;
 
@@ -1288,5 +1303,9 @@ export default {
     display: flex;
     padding: 0;
   }
+}
+
+#em-attachments{
+  width: 100%;
 }
 </style>
