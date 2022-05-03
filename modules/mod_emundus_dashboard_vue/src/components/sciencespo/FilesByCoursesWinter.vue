@@ -48,7 +48,7 @@ export default {
     renderFilesByStatus(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilescountbystatusandcourses",
+        url: "index.php?option=com_emundus&controller=dashboard&task=getfilescountbystatusandcourses",
         params: {
           program: 'winter',
           session: this.session,

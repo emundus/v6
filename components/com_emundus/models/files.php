@@ -3924,7 +3924,7 @@ class EmundusModelFiles extends JModelLegacy
             return $db->loadColumn();
         }
         catch (Exception $e){
-            JLog::add($query->__toString(), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/files | Error when get tags by status ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
     }
 }

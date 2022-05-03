@@ -37,13 +37,13 @@ if (isset($user->fnum)) {
 
         $contact_info = array();
         if ($params->get('skype') == 1) {
-	        $contact_info['skype'] = JText::_('ENTER_SKYPE_ID');
+	        $contact_info['skype'] = JText::_('MOD_EM_BOOK_INTERVIEW_ENTER_SKYPE_ID');
         }
         if ($params->get('facetime') == 1) {
-	        $contact_info['facetime'] = JText::_('ENTER_FACETIME_ID');
+	        $contact_info['facetime'] = JText::_('MOD_EM_BOOK_INTERVIEW_ENTER_FACETIME_ID');
         }
         if ($params->get('whatsapp') == 1) {
-	        $contact_info['whatsapp'] = JText::_('ENTER_FACETIME_ID');
+	        $contact_info['whatsapp'] = JText::_('MOD_EM_BOOK_INTERVIEW_ENTER_FACETIME_ID');
         }
         if ($params->get('google') == 1) {
 	        $contact_info['google'] = JText::_('ENTER_GOOGLE_ID');

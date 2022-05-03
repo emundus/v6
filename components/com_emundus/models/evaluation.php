@@ -2565,7 +2565,7 @@ class EmundusModelEvaluation extends JModelList {
                             }
                         } else {
                             $res->status = false;
-                            $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                            $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
                         }
                         break;
 

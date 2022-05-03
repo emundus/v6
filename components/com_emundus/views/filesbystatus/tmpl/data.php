@@ -29,11 +29,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							<?php if($kl == 'check'): ?>
 								<label for="em-check-all">
 									<input type="checkbox" value="-1" id="em-check-all" class="em-check" style="width:20px !important;"/>
-									<span><?php echo JText::_('COM_EMUNDUS_CHECK_ALL')?></span>
+									<span><?php echo JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL')?></span>
 								</label>
 								<label class="em-hide em-check-all-all" for="em-check-all-all">
 									<input class="em-check-all-all em-hide" type="checkbox" name="check-all-all" value="all" id="em-check-all-all" style="width:20px !important;"/>
-									<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_CHECK_ALL_ALL')?></span>
+									<span class="em-hide em-check-all-all"><?php echo JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL')?></span>
 								</label>
 							<?php elseif($this->lists['order'] == $kl):?>
 								<?php if($this->lists['order_dir'] == 'desc'):?>
@@ -99,9 +99,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 		</div>
 		<div class="em-container-pagination">
-			<label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
+			<label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('COM_EMUNDUS_DISPLAY')?></label>
 			<select name="pager-select" class="chzn-select" id="pager-select">
-				<option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('ALL')?></option>
+				<option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
 				<option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
 				<option value="10" <?php if($this->pagination->limit == 10){echo "selected=true";}?>>10</option>
 				<option value="15" <?php if($this->pagination->limit == 15){echo "selected=true";}?>>15</option>
@@ -175,13 +175,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                         } else {
                             console.log(result);
                             $('.em-dimmer').remove();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>");
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
                         $('.em-dimmer').remove();
-                        $("<div class=\"alert alert-warning\"><?php echo JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        $("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }
                 })

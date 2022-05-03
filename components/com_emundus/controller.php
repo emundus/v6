@@ -219,7 +219,7 @@ class EmundusController extends JControllerLegacy {
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_emploi.php';
 
         if (!file_exists($file)) {
-            die(JText::_('FILE_NOT_FOUND'));
+            die(JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
         }
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
             mkdir(EMUNDUS_PATH_ABS.$student_id);
@@ -246,7 +246,7 @@ class EmundusController extends JControllerLegacy {
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_thesis.php';
 
         if (!file_exists($file)) {
-            die(JText::_('FILE_NOT_FOUND'));
+            die(JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
         }
         if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
             mkdir(EMUNDUS_PATH_ABS.$student_id);
@@ -493,10 +493,10 @@ class EmundusController extends JControllerLegacy {
                             if (is_file($chemin.$user->id.DS.'tn_'.$file['filename'])) {
                                 unlink($chemin.$user->id.DS.'tn_'.$file['filename']);
                             }
-                            $message .= '<br>'.JText::_('ATTACHMENT_DELETED').' : '.$file['filename'].'. ';
+                            $message .= '<br>'.JText::_('COM_EMUNDUS_ATTACHMENTS_DELETED').' : '.$file['filename'].'. ';
 
                         } else {
-                            $message .= '<br>'.JText::_('FILE_NOT_FOUND').' : '.$file['filename'].'. ';
+                            $message .= '<br>'.JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND').' : '.$file['filename'].'. ';
                         }
                     }
 
@@ -772,7 +772,7 @@ class EmundusController extends JControllerLegacy {
 	            echo '{"aid":"0","status":false,"message":"'.$error.' -> empty $_FILES" }';
             }
 
-            JFactory::getApplication()->enqueueMessage(JText::_('FILE_TOO_BIG'), 'error');
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_ATTACHMENTS_ERROR_FILE_TOO_BIG'), 'error');
             $this->setRedirect('index.php?option=com_emundus&view=checklist&Itemid='.$itemid);
             return false;
         }
@@ -838,7 +838,7 @@ class EmundusController extends JControllerLegacy {
                         $cpt = $db->loadResult();
 
                         if ($cpt >= $attachment['nbmax']) {
-                            $error = JText::_('MAX_ALLOWED').$attachment['nbmax'];
+                            $error = JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').$attachment['nbmax'];
                             if ($format == "raw") {
                                 echo '{"aid":"0","status":false,"message":"'.$error.'" }';
                             } else {
@@ -1185,8 +1185,8 @@ class EmundusController extends JControllerLegacy {
                     /// change name the resize image
                     rename($chemin . $user->id . DS . 'tn_' . $paths, $file_src);
                 } else if ($w_src * $h_src < (int)$image_resolution->min_width * (int)$image_resolution->min_height) {
-                    $errorInfo = "ERROR_IMAGE_TOO_SMALL";
-                    echo '{"aid":"0","status":false,"message":"' . JText::_('ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
+                    $errorInfo = "COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL";
+                    echo '{"aid":"0","status":false,"message":"' . JText::_('COM_EMUNDUS_ERROR_IMAGE_TOO_SMALL') . " " . (int)$image_resolution->min_width . 'px x ' . (int)$image_resolution->min_height . 'px' . '"}';
                     unlink($file_src);          /// remove uploaded file
                     return false;
                 }
@@ -1206,7 +1206,7 @@ class EmundusController extends JControllerLegacy {
                 $id = $db->insertid();
 
                 if ($format == "raw") {
-                    echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('DELETE').'"}';
+                    echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"}';
                 } else {
                     JFactory::getApplication()->enqueueMessage($nb.($nb>1?' '.JText::_("FILES_BEEN_UPLOADED"):' '.JText::_("FILE_BEEN_UPLOADED")), 'message');
                     $this->setRedirect($url);
@@ -1510,7 +1510,7 @@ class EmundusController extends JControllerLegacy {
                 exit;
             }
         } else {
-            JError::raiseWarning(500, JText::_( 'FILE_NOT_FOUND' ).' '.$url);
+            JError::raiseWarning(500, JText::_( 'COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND' ).' '.$url);
         }
     }
 
@@ -1622,11 +1622,11 @@ class EmundusController extends JControllerLegacy {
             if ($value > 0) {
                 $img = 'tick.png';
                 $btn = 'unvalidate|'.$uid;
-                $alt = JText::_('VALIDATED').'::'.JText::_('VALIDATED_NOTE');
+                $alt = JText::_('COM_EMUNDUS_FORMS_VALIDATED').'::'.JText::_('COM_EMUNDUS_FORMS_VALIDATED_NOTE');
             } else {
                 $img = 'publish_x.png';
                 $btn = 'validate|'.$uid;
-                $alt = JText::_('UNVALIDATED').'::'.JText::_('UNVALIDATED_NOTE');
+                $alt = JText::_('COM_EMUNDUS_FORMS_UNVALIDATED').'::'.JText::_('COM_EMUNDUS_FORMS_UNVALIDATED_NOTE');
             }
             echo '<span class="hasTip" title="'.$alt.'">
                     <input type="image" src="media/com_emundus/images/icones/'.$img.'" onclick="validation('.$uid.', \''.$value.'\', \''.$cible.'\');" ></span> ';
@@ -1772,9 +1772,9 @@ class EmundusController extends JControllerLegacy {
             }
             $pdf->Output(JPATH_BASE . DS . 'tmp' . DS . $file, 'F');
 
-            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('FILES_ADDED'), 'path'=>JURI::base());
+            $result = array('status' => true, 'file' => $file, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED'), 'path'=>JURI::base());
         } else {
-            $result = array('status' => false, 'msg' => JText::_('FILE_NOT_FOUND'));
+            $result = array('status' => false, 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND'));
         }
 
         echo json_encode((object) $result);
