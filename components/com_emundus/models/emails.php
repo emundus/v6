@@ -457,16 +457,20 @@ class EmundusModelEmails extends JModelList {
         $m_files = new EmundusModelFiles();
 
         $db = JFactory::getDBO();
-        
-        if (!empty($content)){
-            $tags_content = $m_files->getVariables($content, 'SQUARE');
-            $and = count($tags_content) > 0 ? ' AND tag IN ("' . implode('","', $tags_content) .'")' : '';
-        }
 
         $query = $db->getQuery(true);
         $query->select('tag, request')
             ->from($db->quoteName('#__emundus_setup_tags', 't'))
-            ->where($db->quoteName('t.published') . ' = 1' . $and);
+            ->where($db->quoteName('t.published') . ' = 1');
+
+        if (!empty($content)) {
+            $tags_content = $m_files->getVariables($content, 'SQUARE');
+
+            if( !empty($tags_content) ) {
+                $tags_content = array_unique($tags_content);
+                $query->andWhere('t.tag IN ("' . implode('","', $tags_content) .'")');
+            }
+        }
 
         try {
             $db->setQuery($query);
