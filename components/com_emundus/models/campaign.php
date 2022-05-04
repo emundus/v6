@@ -2221,7 +2221,7 @@ class EmundusModelCampaign extends JModelList {
 
         if (!empty($emundusUser->fnum) && !empty($emundusUser->fnums[$emundusUser->fnum])) {
             $query = $this->_db->getQuery(true);
-            $query->select('id, start_date, end_date')
+            $query->select('id, start_date, end_date, status')
                 ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
                 ->where('campaign =' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->campaign_id))
                 ->andWhere('status = ' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->status));
