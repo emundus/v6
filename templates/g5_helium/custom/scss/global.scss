@@ -3429,7 +3429,7 @@ button.swal2-cancel.goback-btn {
                   border: 1px solid $red-500;
                   background: $red-500;
                   border-radius: 4px 0 0 4px !important;
-                  width: 70px;
+                  width: 70px !important;
 
                   &:hover {
                     border: 1px solid $red-600;
@@ -3450,7 +3450,7 @@ button.swal2-cancel.goback-btn {
                   border-radius: 4px !important;
                   margin-left: -2px;
                   z-index: 0;
-                  width: 70px;
+                  width: 70px !important;
 
                   &:hover {
                     border: 1px solid $neutral-300;
