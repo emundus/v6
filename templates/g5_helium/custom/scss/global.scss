@@ -3195,7 +3195,7 @@ button.swal2-cancel.goback-btn {
     }
 
     /* INTRO FORMULAIRE */
-     p:first-of-type,
+     p:first-of-type:not(.accept_terms),
      p.form-intro {
       @include body-16;
       color: $neutral-600;
@@ -3279,6 +3279,21 @@ button.swal2-cancel.goback-btn {
 
 
           .fabrikElement {
+            width: 100%;
+
+            /* CAPCHA */
+
+            .captcha_input {
+              input {
+                @include input-default;
+                &:focus {
+                  @include input-focus;
+                }
+                &:hover {
+                  @include input-hover;
+                }
+              }
+            }
 
             /* INPUT */
             .fabrikinput:not(textarea) {
@@ -3328,18 +3343,6 @@ button.swal2-cancel.goback-btn {
                   border: none;
                   margin-right: 20px;
                   @include select-button-default;
-                }
-              }
-
-              .captcha_input {
-                input {
-                 @include input-default;
-                  &:focus {
-                    @include input-focus;
-                  }
-                  &:hover {
-                    @include input-hover;
-                  }
                 }
               }
             }
