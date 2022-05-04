@@ -2,9 +2,11 @@
 	<div id="em-attachment-preview">
 		<div
 			ref="a-preview"
-			id="attachment-preview"
+			class="attachment-preview"
 			:class="{ 'overflow-x': overflowX, 'overflow-y': overflowY }"
+      v-if="needShadowDOM"
 		></div>
+    <div v-else v-html="preview" 			class="attachment-preview"></div>
 		<div id="msg" :class="{ active: msg && openMsg }">
 			<p>{{ msg }}</p>
 		</div>
@@ -30,6 +32,7 @@ export default {
 			style: "",
 			msg: "",
 			openMsg: false,
+      needShadowDOM: false,
 		};
 	},
 	mounted() {
@@ -82,20 +85,35 @@ export default {
 				this.msg = "";
 			}
 
-			if (this.$refs["a-preview"].shadowRoot === null) {
-				this.$refs["a-preview"].attachShadow({ mode: "open" });
-			}
+      switch(this.style) {
+        case "sheet":
+        case "presentation":
+        case "word":
+          this.needShadowDOM = true;
+          break;
+        default:
+          this.needShadowDOM = false;
+          break;
+      }
 
-			this.$refs["a-preview"].shadowRoot.innerHTML =
-				this.preview != null ? this.preview : "";
 
-			if (this.style == "sheet") {
-				this.addSheetStyles();
-			} else if (this.style == "presentation") {
-				this.addPresentationStyles();
-			} else if (this.style == "word") {
-				this.addWordStyles();
-			}
+      if (this.needShadowDOM) {
+        if (this.$refs["a-preview"].shadowRoot === null) {
+          this.$refs["a-preview"].attachShadow({ mode: "open" });
+        }
+
+        this.$refs["a-preview"].shadowRoot.innerHTML = this.preview != null ? this.preview : "";
+
+        if (this.style == "sheet") {
+          this.addSheetStyles();
+        } else if (this.style == "presentation") {
+          this.addPresentationStyles();
+        } else if (this.style == "word") {
+          this.addWordStyles();
+        }
+      } else {
+        this.$refs["a-preview"].shadowRoot.innerHTML = "";
+      }
 		},
 		addSheetStyles() {
 			// get div elements of first level
@@ -182,7 +200,7 @@ export default {
 	overflow: hidden;
 	position: relative;
 
-	#attachment-preview {
+	.attachment-preview {
 		height: 100%;
 		width: 100%;
 		overflow: hidden;
