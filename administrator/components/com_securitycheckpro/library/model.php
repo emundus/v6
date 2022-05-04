@@ -99,7 +99,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     'session_protection_active'            => 1,
     'session_hijack_protection'            => 1,
 	'session_hijack_protection_what_to_check'            => 0,
-    'tasks'            => 'alternate',
+    'tasks'            => 'integrity',
     'launch_time'            => 2,
     'periodicity'            => 24,
     'control_center_enabled'    => '0',
@@ -1190,15 +1190,18 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     
         $endpoint = "https://securitycheck.protegetuordenador.com/status.php";    
         $plan_id = 0;
+		$product_name = "Securitycheck Pro";
     
         
         // Url que contendrá el fichero xml, que a su vez contendrá la url de acceso al elemento
         if ($product == "update") {                
             $plan_id = 14;
+			$product_name = "Update Database";
         } else     if ($product == "scp") {
             $plan_id = 12;    
         } else     if ($product == "trackactions") {
             $plan_id = 17;
+			$product_name = "Track Actions";
         }
                             
         // Establecemos el valor de las variables que se incorporarán a la url    
@@ -1206,7 +1209,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         $url = $endpoint . '?' . http_build_query($params);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
+		curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);                
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         @curl_setopt($ch, CURLOPT_CAINFO, SCP_CACERT_PEM);
@@ -1215,15 +1218,20 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
                     
         $response = curl_exec($ch);    
     
-        // Si el campo obtenido no es numérico salimos
+       // Si el campo obtenido no es numérico salimos
         if (!is_numeric($response)) {
+			$message = curl_error($ch);			
+			JFactory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
             return;        
-        }    
-                        
+
+        }                           
+
         // Si el resultado de la petición es 'false' no podemos hacer nada
-        if ($response === false) {        
-                
-        } else
+        if ($response === false) {  
+			$message = curl_error($ch);			
+			JFactory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
+
+        }  else
         {
             if ($response == "5") {
                 /* Hemos contactado y el código devuelto es '5'; establecemos la variable correspondiente a 'Active' */

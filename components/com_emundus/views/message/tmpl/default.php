@@ -362,7 +362,7 @@ if ($allowed_attachments !== true) {
         // call ajax to getemailbyid
         $.ajax({
             type: 'POST',
-            url: 'index.php?option=com_emundus_onboard&controller=email&task=getemailbyid',
+            url: 'index.php?option=com_emundus&controller=email&task=getemailbyid',
             dataType: 'JSON',
             data: {
                 id: select.value

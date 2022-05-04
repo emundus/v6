@@ -63,6 +63,13 @@
   cursor: pointer;
 }
 
+.em-transparent-button{
+  background: transparent;
+}
+button[class ^= 'em-']{
+  transition: all 0.3s ease-in-out;
+}
+
 /** INPUTS **/
 .em-input{
   border: 1px solid #E3E3E3;
@@ -101,6 +108,24 @@
   }
 }
 
+.em-autocomplete{
+  padding: unset;
+  box-shadow: unset;
+  border-radius: 4px;
+  li{
+    a{
+      padding: 8px !important;
+      &:hover,&:focus{
+        p{
+          color: white !important;
+        }
+        background: $main-500 !important;
+        color: white !important;
+      }
+    }
+  }
+}
+
 
 // TOGGLE BUTTON //
 .em-switch {
@@ -116,6 +141,66 @@
     width: 0;
     height: 0;
   }
+}
+
+.em-toggle {
+  vertical-align: middle;
+  position: relative;
+  width: 45px;
+  height: 22px;
+  border-radius: 100px;
+  background-color: #ddd;
+  overflow: hidden;
+  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
+}
+.em-toggle-check {
+  position: absolute;
+  display: block !important;
+  cursor: pointer !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100%;
+  opacity: 0;
+  z-index: 6;
+  &:checked {
+    ~ {
+      .em-toggle-track {
+        box-shadow: inset 0 0 0 20px #4bd863;
+      }
+      .em-toggle-switch {
+        right: 2px;
+        left: 22px;
+        transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+        transition-property: left, right;
+        transition-delay: 0.05s, 0s;
+      }
+    }
+  }
+}
+.em-toggle-switch {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  right: 22px;
+  background-color: #fff;
+  border-radius: 36px;
+  z-index: 1;
+  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition-property: left, right;
+  transition-delay: 0s, 0.05s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.em-toggle-track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
+  border-radius: 40px;
 }
 
 /* The slider */
@@ -295,6 +380,18 @@ input:focus + .em-slider {
   align-items: center;
 }
 
+.em-grid-2{
+  display: grid;
+  grid-gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.em-grid-2-20-80{
+  display: grid;
+  grid-gap: 0;
+  grid-template-columns: 30% 70%;
+}
+
 .em-grid-3{
   display: grid;
   grid-gap: 24px;
@@ -307,8 +404,23 @@ input:focus + .em-slider {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.em-float-right{
+  float: right;
+}
+
 .em-pointer{
   cursor: pointer;
+}
+
+.em-grab{
+  cursor: grab;
+}
+
+.em-grabbing{
+  cursor: grabbing;
+}
+.em-edit-cursor{
+  cursor: url('/images/emundus/icons/edit_black_24dp.svg') 2 2, pointer;
 }
 
 /** HOVER **/
@@ -358,12 +470,28 @@ input:focus + .em-slider {
   max-width: 1200px;
 }
 
+.em-w-auto{
+  width: auto;
+}
+
+.em-w-75rem{
+  width: 75rem;
+}
+
+.em-w-90rem{
+  width: 90rem;
+}
+
 .em-w-80{
   width: 80%;
 }
 
 .em-w-90{
   width: 90%;
+}
+
+.em-w-33{
+  width: 33%;
 }
 
 .em-w-100{
@@ -382,6 +510,9 @@ input:focus + .em-slider {
   width: max-content;
 }
 
+.em-color-white{
+  color: white;
+}
 .em-green-color{
   color: $em-green;
 }
@@ -430,6 +561,15 @@ input:focus + .em-slider {
 }
 .em-bg-main-500{
   background: $main-500;
+}
+
+/* MARGINS */
+.em-m-center{
+  margin: 0 auto;
+}
+
+.em-m-16{
+  margin: 16px;
 }
 
 .em-m-24{
@@ -506,6 +646,9 @@ input:focus + .em-slider {
 .em-ml-24{
   margin-left: $m-24;
 }
+.em-ml-32{
+  margin-left: 32px;
+}
 .em-ml-64{
   margin-left: 64px;
 }
@@ -535,6 +678,9 @@ input:focus + .em-slider {
 }
 .em-mt-80{
   margin-top: $m-80;
+}
+.em-mb-4{
+  margin-bottom: 4px;
 }
 .em-mb-8{
   margin-bottom: $m-8;
@@ -573,6 +719,10 @@ input:focus + .em-slider {
   justify-content: center !important;
 }
 
+.em-flex-col-center {
+  align-items: center !important;
+}
+
 .em-flex-end {
   justify-content: flex-end;
 }
@@ -584,14 +734,23 @@ input:focus + .em-slider {
 .em-flex-space-around {
   justify-content: space-around;
 }
+.em-text-align-center{
+  text-align: center;
+}
 .em-text-align-left{
   text-align: start;
+}
+.em-align-start{
+  align-items: start;
 }
 
 
 /*
   BORDERS
 */
+.em-border-radius-5{
+  border-radius: 5px;
+}
 .em-border-neutral-300{
   border: 1px solid $neutral-300;
   box-sizing: border-box;
@@ -716,10 +875,12 @@ input:focus + .em-slider {
   font-weight: bold;
 }
 
-.em-gradient-icons{
-  background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+@supports (background-clip: text) {
+  .em-gradient-icons {
+    background: linear-gradient(90deg, #26CAEA 0%, #32EE5F 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 /**
@@ -790,30 +951,42 @@ input:focus + .em-slider {
   margin: 8px 8px 32px 8px !important;
 }
 button.em-swal-confirm-button{
-  display: flex;
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: auto !important;
+  padding: 0 $p-16 !important;
+  border-radius: 4px !important;
+  border: unset !important;
+  height: 40px !important;
+  color: white !important;
+  background-color: $main-500 !important;
+}
+.swal2-actions.swal2-loading{
+  border-radius: 25px !important;
+}
+button.em-swal-cancel-button{
+  display: flex !important;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   width: auto;
-  padding: 0 $p-16;
+  padding: 0 $p-16 !important;
   border-radius: 4px !important;
-  border: unset;
-  height: 40px;
-  color: white;
-  background-color: $main-500 !important;
-}
-.swal2-actions.swal2-loading .swal2-styled.swal2-confirm.em-swal-confirm-button{
-  border-radius: 25px !important;
-}
-button.em-swal-cancel-button{
-  background: unset !important;
-  color: $blue-500 !important;
+  border: solid 1px $neutral-300 !important;
+  height: 40px !important;
+  background: transparent !important;
+  color: $neutral-900 !important;
   &:focus{
     box-shadow: unset !important;
   }
-  &:hover{
-    text-decoration: underline;
-  }
+}
+.swal2-actions{
+  justify-content: space-between !important;
+}
+.em-swal-single-action{
+  justify-content: right !important;
 }
 
 /** Vue Modal - Translation tool **/
@@ -834,6 +1007,7 @@ button.em-swal-cancel-button{
     overflow-y: auto !important;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    margin-top: unset !important;
   }
   .v--modal-box{
     padding: 0;

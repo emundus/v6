@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "com_emundus_onboard",
-    "com_emundus_messenger",
     "com_emundus"
   ],
   "scripts": {
@@ -23,7 +21,7 @@
     "moment": "^2.29.1",
     "qs": "^6.9.4",
     "sweetalert2": "^8.19.0",
-    "tinymce": "^5.5.1",
+    "tinymce": "^5.10.3",
     "v-tooltip": "^2.0.3",
     "v-wave": "^1.3.3",
     "velocity-animate": "^1.5.2",

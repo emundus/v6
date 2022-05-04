@@ -130,7 +130,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
             $marge_css_bottom = $tab_margin[0];
         }
         // Génération du HTML
-        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
         $emails = new EmundusModelEmails();
         $body = '';

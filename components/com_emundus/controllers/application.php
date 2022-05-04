@@ -414,9 +414,9 @@ class EmundusControllerApplication extends JControllerLegacy
                     $action = explode('|', $menu['note']);
                     if (EmundusHelperAccess::asAccessAction($action[0], $action[1], $user->id, $fnum)) {
                         if($action[0] == 36){
-                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus_messenger'.DS.'models'.DS.'messages.php');
+                            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messenger.php');
 
-                            $messenger = new EmundusmessengerModelmessages;
+                            $messenger = new EmundusModelMessenger;
                             $notifications = $messenger->getNotificationsByFnum($fnum);
                             if($notifications > 0) {
                                 $menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
@@ -737,6 +737,33 @@ class EmundusControllerApplication extends JControllerLegacy
         echo json_encode(array('status' => $update, 'msg' => $msg));
         exit;
     }
+
+    public function getform() {
+        $jinput = JFactory::getApplication()->input;
+        $current_user = JFactory::getUser();
+
+        $profile = $jinput->getInt('profile', null);
+        $user = $jinput->getInt('user', null);
+        $fnum = $jinput->getString('fnum', null);
+
+        if(EmundusHelperAccess::asAccessAction(1, 'r', $current_user->id, $fnum)) {
+            require_once(JPATH_COMPONENT . DS . 'models' . DS . 'application.php');
+            $m_application = new EmundusModelApplication;
+
+            $form = $m_application->getForms($user, $fnum, $profile);
+            if (!empty($form)) {
+                $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
+            } else {
+                $tab = array('status' => false, 'msg' => JText::_('FORM_NOT_RETRIEVED'), 'data' => null);
+            }
+        } else {
+            $tab = array('status' => false, 'msg' => JText::_('RESTRICTED_ACCESS'));
+        }
+
+        echo json_encode($tab);
+        exit;
+    }
+
 
     public function getattachmentpreview()
     {
