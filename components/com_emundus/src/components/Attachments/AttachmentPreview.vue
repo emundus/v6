@@ -3,10 +3,13 @@
 		<div
 			ref="a-preview"
 			class="attachment-preview"
-			:class="{ 'overflow-x': overflowX, 'overflow-y': overflowY }"
-      v-if="needShadowDOM"
+			:class="{
+        'overflow-x': overflowX,
+        'overflow-y': overflowY,
+        'hidden': !needShadowDOM
+      }"
 		></div>
-    <div v-else v-html="preview" 			class="attachment-preview"></div>
+    <div v-if="!needShadowDOM" v-html="preview" class="attachment-preview"></div>
 		<div id="msg" :class="{ active: msg && openMsg }">
 			<p>{{ msg }}</p>
 		</div>
@@ -35,8 +38,9 @@ export default {
       needShadowDOM: false,
 		};
 	},
-	mounted() {
-		this.attachment = this.$store.state.attachment.selectedAttachment;
+  mounted() {
+    this.$refs["a-preview"].attachShadow({ mode: "open" });
+    this.attachment = this.$store.state.attachment.selectedAttachment;
 		this.getPreview();
 	},
 	methods: {
@@ -96,12 +100,7 @@ export default {
           break;
       }
 
-
       if (this.needShadowDOM) {
-        if (this.$refs["a-preview"].shadowRoot === null) {
-          this.$refs["a-preview"].attachShadow({ mode: "open" });
-        }
-
         this.$refs["a-preview"].shadowRoot.innerHTML = this.preview != null ? this.preview : "";
 
         if (this.style == "sheet") {
