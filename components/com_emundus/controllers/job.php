@@ -38,13 +38,13 @@ class EmundusControllerJob extends EmundusController {
 
         // Get the model.
         $model = $this->getModel('Job', 'EmundusModel');
-        $fnum = $model->apply($user->id, $jobId); 
+        $fnum = $model->apply($user->id, $jobId);
         if ($fnum) {
             // Redirect to the edit screen.
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&controller=job&task=display&fnum='.$fnum.'&id='.$jobId.'&Itemid='.$Itemid, false));
-            
+
         } else {
-            JError::raiseWarning( 100, JText::_('ERROR') );
+            JError::raiseWarning( 100, JText::_('COM_EMUNDUS_ERROR') );
             $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid='.$Itemid, false));
         }
     }
@@ -94,7 +94,7 @@ class EmundusControllerJob extends EmundusController {
         if ($model->cancel($user->id, $fnum))
             $this->setMessage(JText::_('COM_EMUNDUS_JOBS_DELETED'));
         else
-            JError::raiseWarning( 100, JText::_('ERROR') );
+            JError::raiseWarning( 100, JText::_('COM_EMUNDUS_ERROR') );
 
         $this->setRedirect(JRoute::_('index.php?option=com_emundus&view=jobs&Itemid=1468', false));
     }

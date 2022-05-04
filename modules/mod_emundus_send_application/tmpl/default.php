@@ -17,7 +17,7 @@ $details_view = array_search('view=details',$url);
 <div class="em-send-print-button">
     <?php if ($print) :?>
         <div class="col-md-12 em-print-button">
-            <a id="print" class="btn btn-info btn-xs" href="index.php?option=com_emundus&task=pdf&fnum=<?php echo $user->fnum; ?>" target="_blank" title="<?php echo JText::_('PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?php echo JText::_('PRINT_APPLICATION_FILE'); ?></a>
+            <a id="print" class="btn btn-info btn-xs" href="index.php?option=com_emundus&task=pdf&fnum=<?php echo $user->fnum; ?>" target="_blank" title="<?php echo JText::_('MOD_EMUNDUS_SEND_APPLICATION_PRINT_APPLICATION_FILE'); ?>"><i class="icon-print"></i> <?php echo JText::_('MOD_EMUNDUS_SEND_APPLICATION_PRINT_APPLICATION_FILE'); ?></a>
         </div>
     <?php endif; ?>
     <?php if ($send && $details_view === false) :?>
@@ -29,15 +29,15 @@ $details_view = array_search('view=details',$url);
                     style="opacity: 0.6; cursor: not-allowed"
                 <?php endif; ?>
                 <?php if ($application_fee && !$paid) :?>
-                    title="<?php echo JText::_('PROCESS_TO_PAYMENT'); ?>"
+                    title="<?php echo JText::_('MOD_EMUNDUS_SEND_APPLICATION_PROCESS_TO_PAYMENT'); ?>"
                 <?php else :?>
-                    title="<?php echo JText::_('SEND_APPLICATION_FILE'); ?>"
+                    title="<?php echo JText::_('MOD_EMUNDUS_SEND_APPLICATION_SEND_APPLICATION_FILE'); ?>"
                 <?php endif ?>>
                 <i class="icon-envelope"></i>
                 <?php if ($application_fee && !$paid) :?>
-                    <?php echo JText::_('PROCESS_TO_PAYMENT'); ?>
+                    <?php echo JText::_('MOD_EMUNDUS_SEND_APPLICATION_PROCESS_TO_PAYMENT'); ?>
                 <?php else :?>
-                    <?php echo JText::_('SEND_APPLICATION_FILE'); ?>
+                    <?php echo JText::_('MOD_EMUNDUS_SEND_APPLICATION_SEND_APPLICATION_FILE'); ?>
                 <?php endif ?>
             </a>
         </div>

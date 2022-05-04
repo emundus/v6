@@ -45,14 +45,14 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                                 <div class="selectAll" id="selectAll">
                                     <label for="em-check-all">
                                         <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
-                                        <span id="span-check-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+                                        <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
                                     </label>
                                     <label class="em-check-all-all" for="em-check-all-all">
                                         <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
-                                        <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL'); ?></span>
+                                        <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                                     </label>
                                     <label class="em-check-none" for="em-check-none">
-                                        <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
+                                        <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                                     </label>
                                 </div>
 							<?php elseif ($this->lists['order'] == $kl) :?>
@@ -114,8 +114,8 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 									<?php else :
 											if ($value->type == 'text') {
 												echo strip_tags($value->val);
-											} elseif ($value->val !== 'PLEASE_SELECT') {
-												// Do not display the typical PLEASE_SELECT text used for empty dropdowns.
+											} elseif ($value->val !== 'COM_EMUNDUS_PLEASE_SELECT') {
+												// Do not display the typical COM_EMUNDUS_PLEASE_SELECT text used for empty dropdowns.
                                                 echo JText::_($value->val);
 											}
                                         endif; ?>
@@ -132,9 +132,9 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 		</div>
 		<div class="em-container-pagination">
             <div class="em-container-pagination-select">
-                <label for = "pager-select" class="em-container-pagination-label"><?= JText::_('DISPLAY')?></label>
+                <label for = "pager-select" class="em-container-pagination-label"><?= JText::_('COM_EMUNDUS_DISPLAY')?></label>
                 <select name="pager-select" class="chzn-select" id="pager-select">
-                    <option value="0" <?php if($this->pagination->limit == 0){echo "selected=true";}?>><?= JText::_('ALL')?></option>
+                    <option value="0" <?php if($this->pagination->limit == 0){echo "selected=true";}?>><?= JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
                     <option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
                     <option value="10" <?php if($this->pagination->limit == 10){echo "selected=true";}?>>10</option>
                     <option value="15" <?php if($this->pagination->limit == 15){echo "selected=true";}?>>15</option>
@@ -181,13 +181,13 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                         } else {
                             console.log(result);
                             $('.em-dimmer').remove();
-                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>");
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
                         $('.em-dimmer').remove();
-                        $("<div class=\"alert alert-warning\"><?= JText::_('CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        $("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }
                 })
@@ -253,11 +253,11 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
+        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
 
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILE') : Joomla.JText._('COM_EMUNDUS_FILES');
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_FILES_FILE') : Joomla.JText._('COM_EMUNDUS_FILES_FILES');
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {
             $('#countCheckedCheckbox').html('');
         }

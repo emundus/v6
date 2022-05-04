@@ -98,7 +98,7 @@ export default {
     getWidgets(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getwidgets",
+        url: "index.php?option=com_emundus&controller=dashboard&task=getwidgets",
       }).then(response => {
         this.widgets = response.data.data;
       });
@@ -107,7 +107,7 @@ export default {
     getPaletteColors(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getpalettecolors",
+        url: "index.php?option=com_emundus&controller=dashboard&task=getpalettecolors",
       }).then(response => {
         this.colors = response.data.data;
       });
@@ -116,7 +116,7 @@ export default {
     getProgrammes(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=program&task=getallprogram",
+        url: "index.php?option=com_emundus&controller=program&task=getallprogram",
       }).then(response => {
         this.programmes = response.data.data;
       });

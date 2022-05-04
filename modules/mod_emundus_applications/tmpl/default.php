@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
     ?>
     <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
         <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
-            <span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span>
+            <span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
         </a>
         <hr>
     <?php endif; ?>
@@ -62,18 +62,18 @@ defined('_JEXEC') or die;
                 <div class="col-xs-12 col-md-6 main-page-file-info">
                     <p class="em-tags-display"><?= $file_tags_display; ?></i></p>
                     <a class="btn btn-warning" href="<?php echo JRoute::_($first_page_url); ?>" role="button">
-                        <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('OPEN_ADMISSION') : JText::_('OPEN_APPLICATION'); ?>
+                        <i class="folder open outline icon"></i> <?= ($is_admission) ? JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_ADMISSION') : JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION'); ?>
                     </a>
 
                     <?php if (!empty($attachments) && ((int) ($attachments[$application->fnum]) >= 100 && (int) ($forms[$application->fnum]) >= 100 && in_array($application->status, $status_for_send) && !$is_dead_line_passed) || in_array($user->id, $applicants)) : ?>
 
-                        <a id='send' class="btn btn-xs" href="<?= JRoute::_($confirm_url); ?>" title="<?= JText::_('SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('SEND_APPLICATION_FILE'); ?></a>
+                        <a id='send' class="btn btn-xs" href="<?= JRoute::_($confirm_url); ?>" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_SEND_APPLICATION_FILE'); ?>"><i class="icon-envelope"></i> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SEND_APPLICATION_FILE'); ?></a>
 
                     <?php endif; ?>
 
-                    <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
+                    <a id='print' class="btn btn-info btn-xs" href="<?= JRoute::_('index.php?option=com_emundus&task=pdf&fnum=' . $application->fnum); ?>" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_PRINT_APPLICATION_FILE'); ?>" target="_blank"><i class="icon-print"></i></a>
                     <?php if (in_array($application->status, $status_for_send)) : ?>
-                        <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
+                        <a id="trash" class="btn btn-danger btn-xs" onClick="deletefile('<?= $application->fnum; ?>');" href="#row<?php !empty($attachments) ? $attachments[$application->fnum] : ''; ?>" title="<?= JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE'); ?>"><i class="icon-trash"></i> </a>
                     <?php endif; ?>
                 </div>
 
@@ -107,7 +107,7 @@ defined('_JEXEC') or die;
                                     foregroundBorderWidth: 15,
                                     backgroundBorderWidth: 15,
                                     percent: <?= (int) ($forms[$application->fnum]); ?>,
-                                    text: '<?= JText::_("FORMS"); ?>',
+                                    text: '<?= JText::_("MOD_EMUNDUS_APPLICATIONS_FORMS"); ?>',
                                     textStyle: 'font-size: 12px;',
                                     textColor: '#000',
                                     foregroundColor: '<?= $show_progress_color_forms; ?>'
@@ -126,7 +126,7 @@ defined('_JEXEC') or die;
                                     foregroundBorderWidth: 15,
                                     backgroundBorderWidth: 15,
                                     percent: <?= (int) ($attachments[$application->fnum]); ?>,
-                                    text: '<?= JText::_("DOCUMENTS"); ?>',
+                                    text: '<?= JText::_("MOD_EMUNDUS_APPLICATIONS_DOCUMENTS"); ?>',
                                     textStyle: 'font-size: 12px;',
                                     textColor: '#000',
                                     foregroundColor: '<?= $show_progress_color_documents; ?>'
@@ -137,12 +137,12 @@ defined('_JEXEC') or die;
                 </section>
                 <div class="main-page-file-progress-label">
                     <?php if(empty($visible_status)) : ?>
-                        <strong><?= JText::_('STATUS'); ?> :</strong>
+                        <strong><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</strong>
                         <span class="label label-<?= $application->class; ?>">
                             <?= $application->value; ?>
                         </span>
                     <?php elseif (in_array($application->status,$visible_status)) :?>
-                        <strong><?= JText::_('STATUS'); ?> :</strong>
+                        <strong><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</strong>
                         <span class="label label-<?= $application->class; ?>">
                             <?= $application->value; ?>
                         </span>
@@ -191,7 +191,7 @@ defined('_JEXEC') or die;
 endif; ?>
 
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
-    <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('ADD_APPLICATION_FILE'); ?></span></a>
+    <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
 
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>
@@ -223,7 +223,7 @@ endif; ?>
 
 <script type="text/javascript">
     function deletefile(fnum) {
-        if (confirm("<?= JText::_('CONFIRM_DELETE_FILE'); ?>")) {
+        if (confirm("<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>")) {
             document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
         }
     }
