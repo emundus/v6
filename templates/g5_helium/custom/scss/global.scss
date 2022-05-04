@@ -1203,21 +1203,6 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
     margin-top: 30px !important;
   }
 
-  /* FORMULAIRE  */
-
-  .controls .fabrikElement .radio.btn-radio.btn-group label.btn.active, .plg-radiobutton label.btn.active {
-    background-color: $base-secondary-color;
-    color: #fff;
-    border-color: $base-secondary-color;
-    border-radius: 0px !important;
-    margin-right: 0px;
-  }
-
-  .controls .fabrikElement .radio.btn-radio.btn-group label.btn:not(.active), .plg-radiobutton label.btn:not(.active) {
-    background: #ccc;
-    margin-left: 0px;
-    border-radius: 0px !important;
-  }
 
   #sidebar-a .em-send-button a.btn.btn-success.btn-xs {
     color: #fff;
@@ -3182,7 +3167,8 @@ button.swal2-cancel.goback-btn {
 /******************************* FORMULAIRES ***********************************/
 
 .view-form,
-.view-form.view-registration {
+.view-form.view-registration,
+.gantry.contentpane.modal {
 
   /* BLOC FORMULAIRE */
   .span12  {

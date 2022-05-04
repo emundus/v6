@@ -62,11 +62,11 @@ ul.nav.nav-tabs.nav-stacked {
     justify-content: space-evenly;
 }
 
-ul.nav.nav-tabs.nav-stacked li {
+.nav-stacked > li {
   flex: 0 0 50%;
 }
 
-ul.nav.nav-tabs.nav-stacked li:nth-child(2) {
+.nav-stacked > li:nth-child(2) {
    text-align: end;
 }
 
