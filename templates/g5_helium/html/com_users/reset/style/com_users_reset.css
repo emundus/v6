@@ -33,8 +33,9 @@ form#user-registration.form-validate.form-horizontal.well,
     margin-bottom: 0px;
     box-shadow: none;
     border-radius: 0 0 16px 16px;
-    padding: 0px 64px 48px 64px;
+    padding: 32px 64px 48px 64px;
     margin-top: 0px;
+    border-radius: 16px;
 }
 
 form#user-registration.form-validate.form-horizontal.well label,
@@ -184,7 +185,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
-    padding: 80px 64px 32px 64px;
+    padding: 80px 64px 0px 64px;
 }
 
 
