@@ -3429,6 +3429,7 @@ button.swal2-cancel.goback-btn {
                   border: 1px solid $red-500;
                   background: $red-500;
                   border-radius: 4px 0 0 4px !important;
+                  width: 70px;
 
                   &:hover {
                     border: 1px solid $red-600;
@@ -3449,6 +3450,7 @@ button.swal2-cancel.goback-btn {
                   border-radius: 4px !important;
                   margin-left: -2px;
                   z-index: 0;
+                  width: 70px;
 
                   &:hover {
                     border: 1px solid $neutral-300;
@@ -3582,6 +3584,13 @@ button.swal2-cancel.goback-btn {
                 margin-top: 0 !important;
                 padding: 0 !important;
               }
+            }
+
+            /* CALC */
+
+            span.fabrikElementReadOnly {
+              @include body-16;
+              padding: 15px 12px;
             }
          }
       }
