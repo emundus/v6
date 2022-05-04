@@ -83,6 +83,20 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     margin-top: 12px;
 }
 
+form#user-registration.form-validate.form-horizontal.well .control-group .controls input:focus,
+.reset-confirm .form-validate.form-horizontal.well .control-group .controls input:focus,
+.reset-complete .form-validate.form-horizontal.well .control-group .controls input:focus {
+    border: 1px solid #1C6EF2;
+    box-shadow: none;
+}
+
+form#user-registration.form-validate.form-horizontal.well .control-group .controls input:hover,
+.reset-confirm .form-validate.form-horizontal.well .control-group .controls input:hover,
+.reset-complete .form-validate.form-horizontal.well .control-group .controls input:hover {
+    border: 1px solid #727272;
+    box-shadow: none;
+}
+
 .view-reset .reset .page-header,
 .view-reset .reset-complete .page-header,
 .view-reset .reset-confirm .page-header{

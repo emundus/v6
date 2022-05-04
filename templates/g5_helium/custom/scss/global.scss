@@ -3286,6 +3286,7 @@ button.swal2-cancel.goback-btn {
             .captcha_input {
               input {
                 @include input-default;
+                width: 100%;
                 &:focus {
                   @include input-focus;
                 }
