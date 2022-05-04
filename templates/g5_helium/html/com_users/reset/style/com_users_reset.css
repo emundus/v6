@@ -90,6 +90,14 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     box-shadow: none;
 }
 
+form#user-registration.form-validate.form-horizontal.well .control-group .controls input.invalid,
+.reset-confirm .form-validate.form-horizontal.well .control-group .controls input.invalid,
+.reset-complete .form-validate.form-horizontal.well .control-group .controls input.invalid {
+    border: 1px solid #e5283B;
+    box-shadow: none;
+}
+
+
 form#user-registration.form-validate.form-horizontal.well .control-group .controls input:hover,
 .reset-confirm .form-validate.form-horizontal.well .control-group .controls input:hover,
 .reset-complete .form-validate.form-horizontal.well .control-group .controls input:hover {
@@ -151,6 +159,13 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .view-reset .reset-confirm .page-header h1,
 .view-reset .reset-complete .page-header h1{
     margin-top: 0px;
+    font-family:'Inter', sans-serif;
+    font-size: 80px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 97px;
+    letter-spacing: 0;
+    text-align: left;
 }
 
 

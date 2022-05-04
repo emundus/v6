@@ -15,8 +15,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
-            <div class="icon-title loginicon"></div>
-            <h1 class="em-titre-connectez-vous">
+               <h1 class="em-titre-connectez-vous">
                 <?php echo JText::_('MOD_LOGIN_TITLE'); ?>
             </h1>
         </div>
