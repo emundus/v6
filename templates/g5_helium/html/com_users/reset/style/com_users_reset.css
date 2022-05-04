@@ -46,6 +46,13 @@ form#user-registration.form-validate.form-horizontal.well label,
     letter-spacing: 0.0015em;
     text-align: left;
     margin-bottom: 0px;
+    color: #2B2B2B;
+}
+
+form#user-registration.form-validate.form-horizontal.well label.invalid,
+.reset-confirm .form-validate.form-horizontal.well label.invalid,
+.reset-complete .form-validate.form-horizontal.well  label.invalid {
+    color: #2B2B2B;
 }
 
 form#user-registration.form-validate.form-horizontal.well .control-group .controls button,
@@ -160,12 +167,11 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .view-reset .reset-complete .page-header h1{
     margin-top: 0px;
     font-family:'Inter', sans-serif;
-    font-size: 80px;
+    font-size: 32px;
     font-style: normal;
     font-weight: 600;
-    line-height: 97px;
+    line-height: 39px;
     letter-spacing: 0;
-    text-align: left;
 }
 
 

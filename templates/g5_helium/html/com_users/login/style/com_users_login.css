@@ -68,7 +68,13 @@ button.btn-primary:hover{
     letter-spacing: 0.0015em;
     text-align: left;
     margin-bottom: 0px;
+    color: #2B2B2B;
 }
+
+.login .well label.invalid {
+ color: #2B2B2B;
+}
+
 
 ul.nav.nav-tabs.nav-stacked {
     background: white;
@@ -141,7 +147,8 @@ body.view-reset label#jform_username-lbl::before,
     height: 48px;
     margin-right: 0px !important;
     margin-bottom: 0px;
-    font-weight: 300;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
     border-radius :4px;
@@ -174,12 +181,11 @@ h1.em-titre-connectez-vous {
     margin-bottom: 32px !important;
     margin-top: 0px;
     font-family:'Inter', sans-serif;
-    font-size: 80px;
+    font-size: 32px;
     font-style: normal;
     font-weight: 600;
-    line-height: 97px;
+    line-height: 39px;
     letter-spacing: 0;
-    text-align: left;
 }
 
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
