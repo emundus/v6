@@ -506,12 +506,13 @@ form#member-profile .form-horizontal .control-label {
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important; 
-  font-family:'Inter', sans-serif;
+    font-family:'Inter', sans-serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
+    color: #2B2B2B;
 }
 
 .view-form.view-registration .span12. .login.em-formRegistrationCenter  p:first-of-type, 
@@ -565,23 +566,6 @@ form#member-profile .form-horizontal .control-label {
     width: 100%;
     padding: 80px 64px 32px 64px;
 }
-.view-registration .login div.em-heading-registration  div.icon-title.registrationicon, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title.registrationicon {
-      background-image: url(../../../../../../media/com_emundus/images/register.svg);
-      background-size: contain;
-      background-repeat: no-repeat;
-}
-
-.view-registration .login div.em-heading-registration div.icon-title, .view-form .em-formRegistrationCenter div.em-heading-registration div.icon-title {
-      margin-right: 10px;
-      width: 40px;
-      height: 40px;
-      background-position: 0 0;
-      background-size: contain;
-      -webkit-filter: brightness(.5);
-      filter: brightness(.5);
-      fill: grey;
-    }
-  }
 
 form.fabrikForm label {
   width: 100% !important;

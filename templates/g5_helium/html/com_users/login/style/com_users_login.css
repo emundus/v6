@@ -72,7 +72,7 @@ button.btn-primary:hover{
 }
 
 .login .well label.invalid {
- color: #2B2B2B;
+ color: #2B2B2B !important;
 }
 
 
@@ -186,6 +186,7 @@ h1.em-titre-connectez-vous {
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
+    color: #2B2B2B;
 }
 
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
