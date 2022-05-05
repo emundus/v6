@@ -37,6 +37,57 @@ export default {
             };
         }
     },
+    async getAspects() {
+        try {
+            return await client().get(`index.php?option=com_emundus&controller=sync&task=getaspects`);
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+    async uploadAspectFile(file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            return await client().post(`index.php?option=com_emundus&controller=sync&task=uploadaspectfile`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
+    async updateAspectListFromFile(file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            return await client().post(`index.php?option=com_emundus&controller=sync&task=updateaspectlistfromfile`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            );
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
 
     async getDocuments(){
         try {

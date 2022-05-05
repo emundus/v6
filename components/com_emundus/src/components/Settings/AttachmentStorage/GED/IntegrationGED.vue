@@ -22,19 +22,24 @@
     <hr/>
 
     <FilesName @updateName="updateName" :name="name" v-if="buildedComponent" />
+
+    <hr/>
+
+    <Aspects :aspects="aspects" @update-aspects="updateAspects"></Aspects>
   </div>
 </template>
 
 <script>
 import Tree from "../Tree";
 import FilesName from "../FilesName";
+import Aspects from "./Aspects";
 
 import storageService from "com_emundus/src/services/storage";
 import mixin from "../../../../mixins/mixin";
 
 export default {
   name: "IntegrationGED",
-  components: {FilesName, Tree},
+  components: {FilesName, Tree, Aspects},
   mixins: [mixin],
   props:{
     site: String,
@@ -47,6 +52,7 @@ export default {
 
       emundus_tags: [],
       nodes: [],
+      aspects: [],
       name: '',
     }
   },
@@ -55,12 +61,10 @@ export default {
       if(response.data.data !== null) {
         this.nodes = response.data.data.tree;
         this.name = response.data.data.name;
+        this.aspects = response.data.data.aspects;
       }
       this.buildedComponent = true;
     });
-    /*storageService.getEmundusTags().then((response) => {
-      this.emundus_tags = response.data.data;
-    })*/
   },
 
   methods: {
@@ -125,17 +129,22 @@ export default {
         this.saveConfig();
       }
     },
+    updateAspects(aspects) {
+      this.aspects = aspects;
+      this.saveConfig();
+    },
 
     saveConfig(){
       this.$emit('updateSaving',true)
       let config = {
         tree: this.nodes,
-        name: this.name
+        name: this.name,
+        aspects: this.aspects
       }
       storageService.saveConfig(config,'ged').then(() => {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
         this.$emit('updateSaving',false);
-      })
+      });
     }
   }
 }

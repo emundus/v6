@@ -63,6 +63,49 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
+    public function getaspects(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $aspects = $this->m_sync->getAspects();
+            $tab = array('status' => 1, 'msg' => JText::_('ASPECTS_FOUND'), 'data' => $aspects);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function uploadaspectfile(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $file = $_FILES['file'];
+
+            $aspects = $this->m_sync->uploadAspectFile($file);
+            $tab = array('status' => !empty($aspects), 'msg' => JText::_('ASPECTS_UPLOADED'), 'data' => $aspects);
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updateaspectlistfromfile(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $file = $_FILES['file'];
+
+            $aspects = $this->m_sync->updateAspectListFromFile($file);
+            $tab = array('status' => !empty($aspects), 'msg' => JText::_('ASPECTS_UPDATED'), 'data' => $aspects);
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+
     public function getdocuments(){
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;

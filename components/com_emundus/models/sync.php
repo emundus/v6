@@ -68,6 +68,79 @@ class EmundusModelSync extends JModelList {
         }
     }
 
+    function getAspects() {
+        $aspects = [];
+        $config = $this->getConfig('ged');
+
+        if (!empty($config)) {
+            $config = json_decode($config, true);
+            if (isset($config['aspects'])) {
+                $aspects = $config['aspects'];
+            }
+        }
+
+        return $aspects;
+    }
+
+    function uploadAspectFile($file) {
+        $aspects = [];
+        $xml = simplexml_load_file($file['tmp_name']);
+
+        foreach($xml->aspects->aspect->properties->property as $property) {
+            $aspects[] = [
+                'name' => (string)$property->attributes()->name,
+                'label' => (string)$property->title,
+                'type' => (string)$property->type,
+                'required' => (string)$property->mandatory,
+                'mapping' => '',
+            ];
+        }
+
+        $config = $this->getConfig('ged');
+        $config = json_decode($config, true);
+
+        $config['aspects'] = $aspects;
+        $config = json_encode($config);
+
+        $this->saveConfig($config,'ged');
+
+        return $aspects;
+    }
+
+    function updateAspectListFromFile($file) {
+        $old_config = $this->getConfig('ged');
+        $old_config = json_decode($old_config, true);
+        $aspects = $old_config['aspects'];
+
+        $xml = simplexml_load_file($file['tmp_name']);
+        foreach($xml->aspects->aspect->properties->property as $property) {
+            // Check if the aspect exists in the old config
+            $found = false;
+            foreach($old_config['aspects'] as $old_aspect) {
+                if ($old_aspect['name'] == (string)$property->attributes()->name) {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $aspects[] = [
+                    'name' => (string)$property->attributes()->name,
+                    'label' => (string)$property->title,
+                    'type' => (string)$property->type,
+                    'required' => (string)$property->mandatory,
+                    'mapping' => '',
+                ];
+            }
+        }
+
+        $old_config['aspects'] = $aspects;
+        $config = json_encode($old_config);
+        $this->saveConfig($config,'ged');
+
+        return $aspects;
+    }
+
     function getDocuments(){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
