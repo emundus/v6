@@ -175,13 +175,8 @@ class FileSynchronizer
                 $this->emundusRootDirectory = '';
             }
 
-            if (!empty($this->emundusRootDirectory)) {
-                // check if emundus root directory exists
-                $exists = $this->checkEmundusRootDirectoryExists($this->emundusRootDirectory);
-
-                if (!$exists) {
-                    $this->emundusRootDirectory = '';
-                }
+            if (!empty($this->emundusRootDirectory) && !$this->checkEmundusRootDirectoryExists($this->emundusRootDirectory)) {
+                $this->emundusRootDirectory = '';
             }
         }
 
@@ -353,7 +348,8 @@ class FileSynchronizer
 
             return $response->getStatusCode();
         } catch (\Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            $type = $e->getCode() == 404 ? JLog::WARNING : JLog::ERROR; // 404 means the file does not exist, thus we can ignore it
+            JLog::add($e->getMessage(), $type, 'com_emundus');
 
             return $e->getCode();
         }
@@ -410,36 +406,43 @@ class FileSynchronizer
     public function addGEDFile($upload_id, $filename, $filepath, $relativePath) {
         $saved = false;
         $ext = pathinfo($filepath, PATHINFO_EXTENSION);
+        $file_pointer = fopen($filepath, 'r');
 
-        $params = array(
-            array(
-                'name' => 'name',
-                'contents' => $filename . '.' . $ext
-            ),
-            array(
-                'name' => 'nodeType',
-                'contents' => 'cm:content',
-            ),
-            array(
-                'name' => 'relativePath',
-                'contents' => $relativePath,
-            ),
-            array(
-                'name' => 'filedata',
-                'contents' => fopen($filepath, 'r'),
-            )
-        );
+        if ($file_pointer) {
+            $params = array(
+                array(
+                    'name' => 'name',
+                    'contents' => $filename . '.' . $ext
+                ),
+                array(
+                    'name' => 'nodeType',
+                    'contents' => 'cm:content',
+                ),
+                array(
+                    'name' => 'relativePath',
+                    'contents' => $relativePath,
+                ),
+                array(
+                    'name' => 'filedata',
+                    'contents' => $file_pointer,
+                )
+            );
 
-        $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
+            $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
 
-        if (!empty($response->entry)) {
-            $saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);
+            fclose($filepath);
 
-            if (!$saved) {
-                JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+            if (!empty($response->entry)) {
+                $saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);
+
+                if (!$saved) {
+                    JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+                }
+            } else {
+                JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
             }
         } else {
-            JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+            JLog::add('Could not open file for upload_id ' . $upload_id . ' with file name :' . $filename . ' and file path : ' . $filepath, JLog::ERROR, 'com_emundus');
         }
 
         return $saved;
@@ -696,6 +699,7 @@ class FileSynchronizer
         }
 
         $filename = str_replace(' ', '', $filename);
+        $filename = str_replace(['/', '\\'], '', $filename);
 
         // check if filename already exists
         $query->clear()
