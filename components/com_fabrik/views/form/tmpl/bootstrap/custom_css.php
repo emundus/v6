@@ -869,7 +869,7 @@ form#member-profile .controls button,
     margin-top: 10px;
 }
 
-body:not(.g-back-office-emundus-tableau) .fabrikForm .nav {
+body:not(.g-back-office-emundus-tableau) .fabrikForm div.nav.row-fluid {
     display: none;
 }
 

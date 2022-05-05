@@ -1,13 +1,13 @@
 <template>
   <div>
     <div class="em-flex-row em-flex-space-between em-align-start">
-      <div>
+      <div class="em-w-100">
         <FormViewer :link="formLinkArray[indexHighlight]" :visibility="this.visibility" v-if="formLinkArray[indexHighlight]" @editPage="EditPage" />
       </div>
 
       <hr class="vertical-divider">
 
-      <div class="em-flex-column em-align-start">
+      <div class="em-flex-column em-align-start em-mt-48">
         <div class="em-mb-16">
           <p class="em-h4">
             <span class="material-icons">article</span>
@@ -28,7 +28,7 @@
             {{ Documents }}
           </p>
           <div v-for="(doc, index) in documentsList" :key="index" class="MenuForm em-mb-8">
-            <a class="em-pointer em-text-neutral-900">{{doc.label}}</a>
+            <p class="em-text-neutral-900">{{doc.label}}</p>
           </div>
         </div>
       </div>

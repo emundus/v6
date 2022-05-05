@@ -17,7 +17,7 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 include_once ( JPATH_BASE . 'includes/defines.php' );
 include_once ( JPATH_BASE . 'includes/framework.php' );
 include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
-include_once (JPATH_SITE . '/components/com_emundus_onboard/models/dashboard.php');
+include_once (JPATH_SITE . '/components/com_emundus/models/dashboard.php');
 
 jimport('joomla.user.helper');
 jimport( 'joomla.application.application' );
@@ -32,7 +32,7 @@ JFactory::getApplication('site');
 // activate session
 session_start();
 
-class EmundusonboardModeldashboardTest extends TestCase
+class EmundusModeldashboardTest extends TestCase
 {
     private $m_dashboard;
 

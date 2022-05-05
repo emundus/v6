@@ -69,7 +69,7 @@ class EmundusHelperFiles
     }
 
     public function setMenuFilter() {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
         $current_user   = JFactory::getUser();
         $menu           = @JFactory::getApplication()->getMenu();
@@ -353,7 +353,7 @@ class EmundusHelperFiles
         if (!empty($code) && is_array($code)) {
             if ($code[0] == '%' || $code[0] == '') {
                 // ONLY FILES LINKED TO MY GROUPS
-                require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+                require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
                 $m_users = new EmundusModelUsers();
                 $user = JFactory::getUser();
                 $code = $m_users->getUserGroupsProgrammeAssoc($user->id);
@@ -531,10 +531,10 @@ class EmundusHelperFiles
 	 */
 
     public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(), $profile=null) : array {
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
         $h_menu = new EmundusHelperMenu;
         $m_user = new EmundusModelUsers;
@@ -1066,7 +1066,7 @@ class EmundusHelperFiles
     */  //$filts_details, $filts_options, $tables
     public function createFilterBlock($params, $types, $tables) {
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles;
         $h_files = new EmundusHelperFiles;
 
@@ -1143,39 +1143,43 @@ class EmundusHelperFiles
 
         // User filter
         $research_filters = $h_files->getEmundusFilters();
-        $filters .='<fieldset id="em_select_filter" class="em-user-personal-filter">
-                        <label for="select_filter" class="control-label em-user-personal-filter-label">'.JText::_('COM_EMUNDUS_FILTERS_SELECT_FILTER').'</label>
-                        <div class="em_select_filter_rapid_search">
-                            <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" >
-                                <option value="0" selected="true" style="font-style: italic;">'.JText::_('COM_EMUNDUS_FILTERS_CHOOSE_FILTER').'</option>';
-        if (!empty($research_filters)) {
+        if (empty($research_filters)) {
+            $display = 'style = "display: none"';
+        } else {
+            $display = '';
+        }
+            $filters .= '<fieldset id="em_select_filter" class="em-user-personal-filter" ' . $display . '>
+                            <label for="select_filter" class="control-label em-user-personal-filter-label">' . JText::_('COM_EMUNDUS_FILTERS_SELECT_FILTER') . '</label>
+                            <div class="em_select_filter_rapid_search">
+                                <select class="chzn-select" id="select_filter" style="width:95%" name="select_filter" >
+                                    <option value="0" selected="true" style="font-style: italic;">' . JText::_('COM_EMUNDUS_FILTERS_CHOOSE_FILTER') . '</option>';
+
             foreach ($research_filters as $filter) {
                 if ($select_id == $filter->id) {
-                    $filters .= '<option value="'.$filter->id.'" selected="true" >'.$filter->name.'</option>';
+                    $filters .= '<option value="' . $filter->id . '" selected="true" >' . $filter->name . '</option>';
                 } else {
-                    $filters .= '<option value="'.$filter->id.'">'.$filter->name.'</option>';
+                    $filters .= '<option value="' . $filter->id . '">' . $filter->name . '</option>';
                 }
             }
-        }
-        $filters .= '</select>
+            $filters .= '</select>
 
-						<button class="btn btn-xs" id="del-filter" title="'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"><span class="material-icons">delete_outline</span></button></div>
+						<button class="btn btn-xs" id="del-filter" title="' . JText::_('COM_EMUNDUS_ACTIONS_DELETE') . '"><span class="material-icons">delete_outline</span></button></div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="saved-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <strong>'.JText::_('COM_EMUNDUS_FILTERS_FILTER_SAVED').'</strong>
+                                <strong>' . JText::_('COM_EMUNDUS_FILTERS_FILTER_SAVED') . '</strong>
                             </div>
                             <div class="alert alert-dismissable alert-success em-alert-filter" id="deleted-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <strong>'.JText::_('COM_EMUNDUS_FILTERS_FILTER_DELETED').'</strong>
+                                <strong>' . JText::_('COM_EMUNDUS_FILTERS_FILTER_DELETED') . '</strong>
                             </div>
                             <div class="alert alert-dismissable alert-danger em-alert-filter" id="error-filter">
                                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                                <strong>'.JText::_('COM_EMUNDUS_ERROR_SQL_ERROR').'</strong>
+                                <strong>' . JText::_('COM_EMUNDUS_ERROR_SQL_ERROR') . '</strong>
                             </div>
                         </fieldset>
-                		<script type="text/javascript" >'.EmundusHelperJavascript::getPreferenceFilters().EmundusHelperJavascript::clearAdvanceFilter().'</script>
-                    </fieldset>
-                    <script>
+                		<script type="text/javascript" >' . EmundusHelperJavascript::getPreferenceFilters() . EmundusHelperJavascript::clearAdvanceFilter() . '</script>
+                    </fieldset>';
+        $filters .= '<script>
                         $(document).ready(function() {
 
                             $(".search_test").SumoSelect({search: true, searchText: "'.JText::_('COM_EMUNDUS_FILES_ENTER_HERE').'"});
@@ -1884,7 +1888,7 @@ class EmundusHelperFiles
             $filters .= $institution;
         }
 
-        if (@$params['spam_suspect'] !== NULL) {
+        if (!empty(@$params['spam_suspect'])) {
             $hidden = $types['spam_suspect'] == 'hidden';
 
             $filters.= '<div class="em_filters" id="spam_suspect">
@@ -1976,7 +1980,7 @@ class EmundusHelperFiles
                         $adv_filter .= $h_files->setSearchBox($selected_adv, $val, $key, $i);
                     }
 
-                    $adv_filter .= '<button class="btn btn-danger btn-xs" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
+                    $adv_filter .= '<button class="em-transparent-button" id="suppr-filt"><span class="material-icons">delete_outline</span></button>';
                     $i++;
                     $adv_filter .= '</fieldset>';
                 }
@@ -2028,7 +2032,7 @@ class EmundusHelperFiles
     }
 
     public function createFormProgressList($formsprogress) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
         $m_application = new EmundusModelApplication();
 
         $formsprogressList = array();
@@ -2047,7 +2051,7 @@ class EmundusHelperFiles
     }
 
     public function createAttachmentProgressList($attachmentsprogress) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
         $m_application = new EmundusModelApplication();
 
         $attachmentsprogressList = array();
@@ -2075,8 +2079,8 @@ class EmundusHelperFiles
 	 */
     public function createHTMLList($html, $fnums) {
 
-	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-	    require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 	    $m_emails = new EmundusModelEmails();
 	    $m_files = new EmundusModelFiles();
 
@@ -2135,7 +2139,7 @@ class EmundusHelperFiles
 
     // Get object of a Joomla Menu
     public function getMenuList($params, $fnum = null) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         $m_users = new EmundusModelUsers();
 
         $menu = @JFactory::getApplication()->getMenu();
@@ -2274,8 +2278,8 @@ class EmundusHelperFiles
 
     // getEvaluation
     function getEvaluation($format='html', $fnums) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -2366,8 +2370,8 @@ class EmundusHelperFiles
 
     // getDecision
     function getDecision($format='html', $fnums) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
         $m_evaluation   = new EmundusModelEvaluation();
         $m_files        = new EmundusModelFiles;
@@ -2440,8 +2444,8 @@ class EmundusHelperFiles
 
     // Get Admission
     function getAdmission($format='html', $fnums, $name = null) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
         $m_admission = new EmundusModelAdmission();
         $m_files = new EmundusModelFiles;
@@ -2593,8 +2597,8 @@ class EmundusHelperFiles
 
     // getInterview
     function getInterview($format='html', $fnums) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'interview.php');
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'interview.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
         $m_interview   = new EmundusModelInterview();
         $m_files        = new EmundusModelFiles;

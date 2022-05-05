@@ -738,6 +738,33 @@ class EmundusControllerApplication extends JControllerLegacy
         exit;
     }
 
+    public function getform() {
+        $jinput = JFactory::getApplication()->input;
+        $current_user = JFactory::getUser();
+
+        $profile = $jinput->getInt('profile', null);
+        $user = $jinput->getInt('user', null);
+        $fnum = $jinput->getString('fnum', null);
+
+        if(EmundusHelperAccess::asAccessAction(1, 'r', $current_user->id, $fnum)) {
+            require_once(JPATH_COMPONENT . DS . 'models' . DS . 'application.php');
+            $m_application = new EmundusModelApplication;
+
+            $form = $m_application->getForms($user, $fnum, $profile);
+            if (!empty($form)) {
+                $tab = array('status' => true, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $form);
+            } else {
+                $tab = array('status' => false, 'msg' => JText::_('FORM_NOT_RETRIEVED'), 'data' => null);
+            }
+        } else {
+            $tab = array('status' => false, 'msg' => JText::_('RESTRICTED_ACCESS'));
+        }
+
+        echo json_encode($tab);
+        exit;
+    }
+
+
     public function getattachmentpreview()
     {
         $m_application = $this->getModel('Application');

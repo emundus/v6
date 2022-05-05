@@ -2,7 +2,7 @@
 
 /**
  * @package     Joomla
- * @subpackage  com_emundus_onboard
+ * @subpackage  com_emundus
  *
  * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -24,6 +24,7 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAILS');
 JText::script('COM_EMUNDUS_ONBOARD_EMAILS_DESC');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL');
 JText::script('COM_EMUNDUS_ONBOARD_CATEGORIES');
+JText::script('COM_EMUNDUS_ONBOARD_CANT_REVERT');
 ## END ##
 
 ## ACTIONS ##

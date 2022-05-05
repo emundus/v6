@@ -214,7 +214,7 @@ export default {
         nbmax: 1,
         selectedTypes: {
           pdf: false,
-          'jpeg;jpg;png;gif': false,
+          'jpeg;jpg;png': false,
           'doc;docx;odt;ppt;pptx': false,
           'xls;xlsx;odf': false,
 
@@ -248,7 +248,7 @@ export default {
         },
         {
           title: this.translate("COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS"),
-          value: 'jpeg;jpg;png;gif'
+          value: 'jpeg;jpg;png'
         },
         {
           title: this.translate("COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS"),
@@ -258,8 +258,10 @@ export default {
           title: this.translate("COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS"),
           value: 'xls;xlsx;odf'
         },
-
-
+        {
+          title: this.translate("COM_EMUNDUS_ONBOARD_AUDIO"),
+          value: 'mp3;wav;aac;flac'
+        },
       ],
 
       selectedTypes: [],
@@ -573,7 +575,12 @@ export default {
         confirmButtonColor: '#12db42',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if(result.value){
           axios({
@@ -586,14 +593,18 @@ export default {
               did: this.doc,
             })
           }).then((response) => {
-            console.log(response);
             if(response.data.allowed){
               Swal.fire({
                 backdrop: true,
                 title: this.translate("COM_EMUNDUS_ONBOARD_MODEL_DELETED"),
                 text: this.translate("COM_EMUNDUS_ONBOARD_MODEL_DELETED_TEXT"),
                 showConfirmButton: true,
-                timer: 5000
+                timer: 5000,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  actions: "em-swal-single-action",
+                },
               }).then(() => {
                 this.$modal.hide('modalAddDocuments')
               });
@@ -603,7 +614,12 @@ export default {
                 title: this.translate("COM_EMUNDUS_ONBOARD_CANNOT_DELETE"),
                 text: this.translate("COM_EMUNDUS_ONBOARD_CANNOT_DELETE_TEXT"),
                 showConfirmButton: true,
-                timer: 5000
+                timer: 5000,
+                customClass: {
+                  title: 'em-swal-title',
+                  confirmButton: 'em-swal-confirm-button',
+                  actions: "em-swal-single-action",
+                },
               })
             }
           });

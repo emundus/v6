@@ -344,7 +344,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $data = $jinput->getRaw('body');
+            $data = $jinput->getArray();
             $data['user'] = $this->_user->id;
 
             $result = $this->m_campaign->createCampaign($data);

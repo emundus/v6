@@ -1,7 +1,7 @@
 const state = {
   list: [],
-      selectedItems: [],
-      formsAccess: [],
+  selectedItems: [],
+  formsAccess: [],
 };
 
 const getters = {

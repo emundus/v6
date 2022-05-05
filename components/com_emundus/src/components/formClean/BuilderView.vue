@@ -134,7 +134,7 @@
                         :key="keyElements['element' + element.id]"
                     />
                     <div class="control-group fabrikElementContainer span12">
-                      <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2" @click="openParameters(element)"
+                      <div class="em-w-90 em-pointer em-p-8-12 em-transparent-border-2"
                            :class="{'element-updating': hoverUpdating && indexHighlight == element.id, 'unpublished': !element.publish, 'draggable-item': draggable && indexHighlight == element.id, 'handle': !clickUpdatingLabel}">
                         <div class="em-flex-row" :class="clickUpdatingLabel && indexHighlight == element.id ? 'hidden' : ''">
                           <span v-if="element.label_value" @click="enableLabelInput(element.id)" v-html="element.label_value" v-show="element.labelsAbove != 2"></span>
@@ -165,6 +165,9 @@
                         </a>
 
                         <div class="em-flex-row">
+                          <div class="em-flex-row em-mr-8 em-pointer" @click="openParameters(element)" :title="translations.Edit">
+                            <span class="material-icons">edit</span>
+                          </div>
                           <div class="em-flex-row em-mr-8 em-pointer" @click="deleteElement(element,index)" :title="translations.Delete">
                             <span class="material-icons-outlined em-red-500-color">delete</span>
                           </div>
@@ -342,8 +345,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.orderSuccess,
-            this.update
+            this.translations.orderSuccess,
+            this.translations.update
         );
         let ellink = this.object.link.replace("fabrik","emundus");
         axios.get(ellink + "&format=vue_jsonclean").then(r => {
@@ -377,8 +380,8 @@ export default {
               "show",
               "foo-velocity",
               "error",
-              this.updateFailed,
-              this.updating
+              this.translations.updateFailed,
+              this.translations.updating
           );
         });
       }, 300);
@@ -402,8 +405,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
       });
     },
@@ -471,10 +474,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
 
@@ -635,8 +642,8 @@ export default {
                   "show",
                   "foo-velocity",
                   "success",
-                  this.updateSuccess,
-                  this.update
+                  this.translations.updateSuccess,
+                  this.translations.update
               );
             });
           });
@@ -678,8 +685,8 @@ export default {
                 "show",
                 "foo-velocity",
                 "success",
-                this.updateSuccess,
-                this.update
+                this.translations.updateSuccess,
+                this.translations.update
             );
             this.can_translate.label = false;
           });
@@ -690,8 +697,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -729,8 +736,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -770,8 +777,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
         group.group_showLegend = group.label[this.actualLanguage];
         this.can_translate.label_group = false;
@@ -781,8 +788,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -793,10 +800,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEGROUPWARNING"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
           axios({
@@ -849,16 +860,16 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.orderSuccess,
-            this.update
+            this.translations.orderSuccess,
+            this.translations.update
         );
       }).catch(e => {
         this.$emit(
             "show",
             "foo-velocity",
             "error",
-            this.orderFailed,
-            this.updating
+            this.translations.orderFailed,
+            this.translations.updating
         );
       });
     },
@@ -870,7 +881,6 @@ export default {
           text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE"),
           type: "info",
           showCancelButton: true,
-          confirmButtonColor: '#de6339',
           confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
           reverseButtons: true,
@@ -897,8 +907,8 @@ export default {
                     "show",
                     "foo-velocity",
                     "success",
-                    this.updateSuccess,
-                    this.update
+                    this.translations.updateSuccess,
+                    this.translations.update
                 );
                 group.group_showLegend = group.label[this.actualLanguage];
                 this.can_translate.label_group = false;
@@ -913,10 +923,14 @@ export default {
           text: this.translate("COM_EMUNDUS_ONBOARD_REPEAT_GROUP_MESSAGE_DISABLE"),
           type: "info",
           showCancelButton: true,
-          confirmButtonColor: '#de6339',
           confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
           cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-          reverseButtons: true
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button',
+          },
         }).then(result => {
           if(result.value) {
             axios({
@@ -935,8 +949,8 @@ export default {
                     "show",
                     "foo-velocity",
                     "success",
-                    this.updateSuccess,
-                    this.update
+                    this.translations.updateSuccess,
+                    this.translations.update
                 );
                 group.group_showLegend = group.label[this.actualLanguage];
                 this.can_translate.label_group = false;
@@ -956,10 +970,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DISPLAY_HIDE_MESSAGE"),
         type: "info",
         showCancelButton: true,
-        confirmButtonColor: '#12db42',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if(result.value) {
           axios({
@@ -977,8 +995,8 @@ export default {
                 "show",
                 "foo-velocity",
                 "success",
-                this.updateSuccess,
-                this.update
+                this.translations.updateSuccess,
+                this.translations.update
             );
           });
         }
@@ -1031,8 +1049,8 @@ export default {
               "show",
               "foo-velocity",
               "success",
-              this.updateSuccess,
-              this.update
+              this.translations.updateSuccess,
+              this.translations.update
           );
           page.show_title.value = page.show_title.label[this.actualLanguage];
           page.label = page.show_title.label[this.actualLanguage];
@@ -1043,8 +1061,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -1083,8 +1101,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
         page.intro_value = page.intro[this.actualLanguage];
         this.updateIntroPage = false;
@@ -1093,8 +1111,8 @@ export default {
             "show",
             "foo-velocity",
             "error",
-            this.updateFailed,
-            this.updating
+            this.translations.updateFailed,
+            this.translations.updating
         );
       });
     },
@@ -1108,8 +1126,8 @@ export default {
           "show",
           "foo-velocity",
           "",
-          this.updating,
-          this.update
+          this.translations.updating,
+          this.translations.update
       );
       let ellink = this.object.link.replace("fabrik","emundus");
       axios.get(ellink + "&format=vue_jsonclean").then(r => {
@@ -1119,8 +1137,8 @@ export default {
             "show",
             "foo-velocity",
             "success",
-            this.updateSuccess,
-            this.update
+            this.translations.updateSuccess,
+            this.translations.update
         );
       });
     }, 1000),
@@ -1265,7 +1283,8 @@ export default {
 
     // Draggable trigger
     SomethingChange: function(evt) {
-      let elt_id = evt.item.childNodes[0].id
+      console.log(evt);
+      let elt_id = evt.item.childNodes[1].id
       this.groups.forEach(group => {
         group.elts.forEach(element => {
           if(element.id == elt_id){
@@ -1343,5 +1362,9 @@ export default {
   min-height: 100px;
   display: block;
   width: 100%;
+}
+.unpublished {
+  background: #C5C8CE;
+  border-radius: 5px;
 }
 </style>

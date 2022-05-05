@@ -24,7 +24,7 @@ class EmundusModelFormbuilder extends JModelList {
     public function __construct($config = array()) {
         parent::__construct($config);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
         $this->m_translations = new EmundusModelTranslations;
 
         JModelLegacy::addIncludePath(JPATH_SITE . '/administrator/components/com_languages/models');
@@ -94,7 +94,7 @@ class EmundusModelFormbuilder extends JModelList {
     function getTranslation($text,$code_lang){
         $matches = [];
 
-        $fileName = constant('JPATH_BASE') . '/language/overrides/' . $code_lang . '.override.ini';
+        $fileName = constant('JPATH_SITE') . '/language/overrides/' . $code_lang . '.override.ini';
         $strings  = JLanguageHelper::parseIniFile($fileName);
 
         if(!empty($text)) {
@@ -170,6 +170,8 @@ class EmundusModelFormbuilder extends JModelList {
                     ->where($db->quoteName('id') . ' = ' . $db->quote($page));
                 $db->setQuery($query);
                 $db->execute();
+            } else {
+                $this->updateTranslation($labelTofind,$NewSubLabel);
             }
             return $new_key;
         }  catch(Exception $e) {
@@ -1189,8 +1191,8 @@ class EmundusModelFormbuilder extends JModelList {
             // Create hidden group
             $this->createHiddenGroup($formid);
             $group_label = array(
-                'fr' => 'Nouveau groupe',
-                'en' => 'New group'
+                'fr' => 'Nouvelle section',
+                'en' => 'New section'
             );
             $this->createGroup($group_label,$formid);
             //
@@ -2013,7 +2015,7 @@ class EmundusModelFormbuilder extends JModelList {
                 $sub_labels = [];
 
                 $sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
-                $sub_values[] = 'Option 1';
+                $sub_values[] = 1;
                 $labels = array(
                     'fr' => 'Option 1',
                     'en' => 'Option 1'
@@ -2443,34 +2445,34 @@ this.set(words.join(&quot; &quot;));
                     foreach ($element['params']['sub_options']['sub_values'] as $index => $sub_value) {
                         if ($old_params['sub_options']) {
                             $new_label = array(
-                                'fr' => $sub_value,
-                                'en' => $sub_value,
+                                'fr' => $element['params']['sub_options']['sub_labels'][$index],
+                                'en' => $element['params']['sub_options']['sub_labels'][$index],
                             );
                             if ($old_params['sub_options']['sub_labels'][$index]) {
                                 if($old_params['sub_options']['sub_labels'][$index] != 'PLEASE_SELECT'){
-                                    $this->formsTrad($old_params['sub_options']['sub_labels'][$index], $new_label);
+                                    $this->updateTranslation($old_params['sub_options']['sub_labels'][$index], $new_label);
                                     $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
-                                    $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
+                                    $sub_values[] = $sub_value;
                                 }
                             } else {
                                 $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
                                 $labels = array(
-                                    'fr' => $sub_value,
-                                    'en' => $sub_value,
+                                    'fr' => $element['params']['sub_options']['sub_labels'][$index],
+                                    'en' => $element['params']['sub_options']['sub_labels'][$index],
                                 );
                                 $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels,'fabrik_elements',$element['id'],'sub_labels');
                                 $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
-                                $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
+                                $sub_values[] = $index + 1;
                             }
                         } else {
                             $labels = array(
-                                'fr' => $sub_value,
-                                'en' => $sub_value,
+                                'fr' => $element['params']['sub_options']['sub_labels'][$index],
+                                'en' => $element['params']['sub_options']['sub_labels'][$index],
                             );
                             $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels,'fabrik_elements',$element['id'],'sub_labels');
 
                             $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
-                            $sub_values[] = $element['params']['sub_options']['sub_values'][$index];
+                            $sub_values[] = $index + 1;
                         }
                     }
 
@@ -3277,6 +3279,7 @@ this.set(words.join(&quot; &quot;));
                 ->from($db->quoteName('#__menu'))
                 ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
                 ->andWhere($db->quoteName('path') . ' LIKE ' . $db->quote($profile->menutype . '%'))
+                ->andWhere($db->quoteName('published') . ' = 1')
                 ->order('rgt');
             $db->setQuery($query);
             $menus = $db->loadObjectList();

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla
- * @subpackage  com_emundus_onboard
+ * @subpackage  com_emundus
  *
  * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -48,6 +48,7 @@ JText::script('COM_EMUNDUS_ONBOARD_TRIGGERMODEL');
 JText::script('COM_EMUNDUS_ONBOARD_THE_CANDIDATE');
 JText::script('COM_EMUNDUS_ONBOARD_MANUAL');
 JText::script('COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS');
+JText::script('COM_EMUNDUS_EMAIL_SHOW_TAGS');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');

@@ -1,8 +1,6 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
-
 $renew='';
 $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';
@@ -20,7 +18,7 @@ if ($forms>=100 && $attachments>=100 && $sent == 0) {
 
 ?>
 <div class="ui attached segment">
-  <p><?= ($show_programme==1)?'<b>'.$user->campaign_name.'</b> '.@$renew:''; ?></p>
+  <p><?= ($show_programme==1)?'<b>'.JText::_($user->campaign_name).'</b> '.@$renew:''; ?></p>
   <?= ($show_deadline==1) ? '<p align="right">'.JText::_('MOD_EMUNDUSFLOW_DEADLINE').' : <b>'.$deadline->format(JText::_('DATE_FORMAT_LC2')).'</b> '.$offset.'</p>':''; ?>
 </div>
 <div class="ui tablet stackable bottom attached steps">

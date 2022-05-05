@@ -39,8 +39,6 @@ export default {
   props: { element: Object },
   data() {
     return {
-      msg: '',
-      path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
       arraySubValues: [],
       wysiwyg: false,
       showmax: false,
@@ -57,8 +55,6 @@ export default {
   },
   methods: {},
   created(){
-    this.msg = '<p style="color: black">' + this.placeholderHelp + '</p>' +
-            '<img src="' + this.path + 'placeholder.gif" />'
     if(typeof this.element.params.height == "undefined"){
       this.element.params.height = 6;
     }

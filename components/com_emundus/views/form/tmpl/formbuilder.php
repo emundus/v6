@@ -2,7 +2,7 @@
 
 /**
  * @package     Joomla
- * @subpackage  com_emundus_onboard
+ * @subpackage  com_emundus
  *
  * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -66,6 +66,7 @@ JText::script('COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS');
+JText::script('COM_EMUNDUS_ONBOARD_AUDIO');
 JText::script('COM_EMUNDUS_ONBOARD_TEMPLATE_DOC');
 JText::script('COM_EMUNDUS_ONBOARD_ADDDOC_DESCRIPTION');
 ## END ##

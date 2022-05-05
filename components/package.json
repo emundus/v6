@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "com_emundus_onboard",
-    "com_emundus_messenger",
     "com_emundus"
   ],
   "scripts": {

@@ -14,8 +14,8 @@
           @closed="beforeClose"
           @opened="getFilesByUser"
       >
-        <div class="drag-window">
-          <div class="col-md-5 messages__campaigns-list">
+        <div class="drag-window em-grid-2-20-80">
+          <div class="messages__campaigns-list">
             <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
               <div class="messages__campaign-block">
                 <img class="messages__campaigns_folder-icon" src="/images/emundus/messenger/folder.svg" />
@@ -29,7 +29,7 @@
             </div>
           </div>
 
-          <div class="messages__list col-md-7">
+          <div class="messages__list">
             <div class="message__header">
               <label class="text-center" style="width: 100%">{{translations.messages}}</label>
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>

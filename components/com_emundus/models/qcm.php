@@ -64,7 +64,7 @@ class EmundusModelQcm extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
         $m_profile = new EmundusModelProfile;
 
         $query
