@@ -102,15 +102,22 @@ export default {
       this.saveConfig();
     },
 
-    deleteNode(id){
-      let node_found = this.nodes.findIndex(function(node, index) {
-        if(node.id === id)
-          return true;
-      });
-
-      this.nodes.splice(node_found,1);
+    deleteNode(node) {
+      this.deleteNodeById(this.nodes, node.id);
+      this.saveConfig();
     },
+    deleteNodeById(nodes, id) {
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].id === id) {
+          nodes.splice(i, 1);
+          return;
+        }
 
+        if (nodes[i].childrens.length > 0) {
+          this.deleteNodeById(nodes[i].childrens, id);
+        }
+      }
+    },
     updateName(name){
       this.name = name;
 
