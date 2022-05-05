@@ -45,16 +45,9 @@ export default {
   },
   methods: {
     getTags() {
-      this.tags = [
-        {
-          'id': 1,
-          'tag': 'APPLICANT_ID',
-        },
-        {
-          'id': 2,
-          'tag': 'USER_ID',
-        }
-      ];
+      storageService.getSetupTags().then(response => {
+        this.tags = response.data;
+      });
     },
     uploadAspectFile() {
       let file = document.getElementById('aspect-file').files[0];

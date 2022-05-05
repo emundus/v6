@@ -132,6 +132,21 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
+    public function getsetuptags(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'tags.php');
+            $helper = new EmundusHelperTags();
+            $tags = $helper->getTags();
+
+            $tab = array('status' => 1, 'msg' => JText::_('TAGS_RETRIEVED'), 'data' => $tags);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function updatedocumentsync(){
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
@@ -270,4 +285,6 @@ class EmundusControllerSync extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+
 }

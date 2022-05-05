@@ -154,4 +154,17 @@ export default {
             };
         }
     },
+
+    async getSetupTags() {
+        try {
+            const response = await client().get(`index.php?option=com_emundus&controller=sync&task=getsetuptags`);
+
+            return response.data;
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    }
 };
