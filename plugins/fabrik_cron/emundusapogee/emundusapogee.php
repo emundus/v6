@@ -52,17 +52,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         jimport('joomla.mail.helper');
 
         $params = $this->getParams();
-
-        /*
-         * First of all, we get all fnums having OPI code - satisfying 3 following conditions:
-         * 1. OPI code must exist (not null + not empty)
-         * 2. Date of birth (DoB) must exist (not null + not empty)
-         * 3. Firstname must exist (not null + not empty)
-         * 4. Lastname must exist (not null + not empty)
-         * */
-
         $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
 
         # get WSDL url
         $wsdl_url = $params->get('webservice_url');
@@ -92,55 +82,27 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # (optional) get logs day (today or not)
         $sending_date = $params->get('is_today');
 
-        /*
-         * Grab all fnums has OPI code and status (step) is in $sending_status
-         * */
-
-        $query->clear()
-            ->select('distinct #__emundus_campaign_candidature.fnum')
-            ->from($db->quoteName('#__emundus_final_grade'))
-            ->leftJoin($db->quoteName('#__emundus_campaign_candidature') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_final_grade.fnum'))
-            ->leftJoin($db->quoteName('#__emundus_personal_detail') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_personal_detail.fnum'))
-            ->leftJoin($db->quoteName('#__emundus_1001_00') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_1001_00.fnum'))
-            ->leftJoin($db->quoteName('#__emundus_users') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.applicant_id') . ' = ' . $db->quoteName('#__emundus_users.user_id'))
-            ->leftJoin($db->quoteName('#__emundus_logs') . ' ON ' . $db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName('#__emundus_logs.fnum_to'))
-
-            ->where($db->quoteName('#__emundus_final_grade.code_opi') . ' is not null')
-            ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . " != ''")
-            ->andWhere($db->quoteName('#__emundus_personal_detail.birth_date') . " != ''")
-            ->andWhere($db->quoteName('#__emundus_personal_detail.birth_date') . " is not null")
-            ->andWhere($db->quoteName('#__emundus_users.firstname') . " is not null")
-            ->andWhere($db->quoteName('#__emundus_users.firstname') . " != ''")
-            ->andWhere($db->quoteName('#__emundus_users.lastname') . " is not null")
-            ->andWhere($db->quoteName('#__emundus_users.lastname') . " != ''");
+        # get native SQL query
+        $query = $params->get('plg-cron-emundusapogee-sql-code');
 
         # if no status is defined, we get all
-        if(!empty(trim($sending_status))) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
+        if(!empty(trim($sending_status))) { $query .= " AND #__emundus_campaign_candidature.status IN (" . $sending_status . ")"; }
 
-        // build logs string
-        if(!empty(trim($sending_logs))) {
-            $logs = "";
-            foreach (explode(',', $sending_logs) as $log) {
-                $logs .= "'" . $log . "',";
-            }
-            $logs = substr($logs, 0, -1);
-            $query->andWhere($db->quoteName('#__emundus_logs.action_id') . ' IN (' . $logs . ')');
-        }
+        # build logs string
+        if(!empty(trim($sending_logs))) { $query .= " AND #__emundus_logs.action_id IN (" . $sending_logs . ')'; }
 
-        // build actions string
+        # build actions string
         if(!empty(trim($sending_actions))) {
             $actions = "";
             foreach (explode(',', $sending_actions) as $action) {
                 $actions .= "'" . $action . "',";
             }
             $actions = substr($actions, 0, -1);
-            $query->andWhere($db->quoteName('#__emundus_logs.verb') . ' IN (' . $actions . ')');
+            $query .= " AND #__emundus_logs.verb IN (" . $actions . ')';
         }
 
-        // build sending date string
-        if($sending_date == "1") {
-            $query->andWhere('DATE (jos_emundus_logs.timestamp) = CURRENT_DATE()');
-        }
+        # build sending date string
+        if($sending_date == "1") { $query .= " AND DATE (#__emundus_logs.timestamp) = CURRENT_DATE()"; }
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
