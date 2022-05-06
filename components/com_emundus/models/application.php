@@ -4506,14 +4506,8 @@ class EmundusModelApplication extends JModelList
 
             // create preview based on filetype
             if ($extension == 'pdf') {
-                // if file is too big, just show an iframe with the file url
-                if (filesize($filePath) > 1000000) {
-                    $siteUrl = JURI::base();
-                    $preview['content'] = '<iframe src="' . $siteUrl . $filePath . '" style="width:100%;height:100%;" frameborder="0"></iframe>';
-                } else {
-                    $content = base64_encode(file_get_contents($filePath));
-                    $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
-                }
+                $siteUrl = JURI::base();
+                $preview['content'] = '<iframe src="' . $siteUrl . $filePath . '" style="width:100%;height:100%;" frameborder="0"></iframe>';
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;
