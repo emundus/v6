@@ -30,3 +30,5 @@ alter table jos_emundus_setup_attachments
     add sync int default 0 null;
 alter table jos_emundus_setup_attachments
     add sync_method varchar(50) null;
+alter table jos_emundus_setup_attachments
+    add params text null;

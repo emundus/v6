@@ -14,23 +14,26 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
 
-class EmundusControllerSync extends JControllerLegacy {
+class EmundusControllerSync extends JControllerLegacy
+{
     private $_user = null;
     private $_db = null;
     private $m_sync = null;
 
-    public function __construct($config = array()) {
+    public function __construct($config = array())
+    {
         parent::__construct($config);
 
-        require_once (JPATH_COMPONENT.DS.'models'.DS.'sync.php');
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
+        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'sync.php');
+        require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
 
-        $this->_user  = JFactory::getSession()->get('emundusUser');
-        $this->_db    = JFactory::getDBO();
+        $this->_user = JFactory::getSession()->get('emundusUser');
+        $this->_db = JFactory::getDBO();
         $this->m_sync = new EmundusModelSync();
     }
 
-    public function getconfig(){
+    public function getconfig()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -46,7 +49,8 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function saveconfig(){
+    public function saveconfig()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -55,7 +59,7 @@ class EmundusControllerSync extends JControllerLegacy {
             $config = $jinput->getString('config', null);
             $type = $jinput->getString('type', null);
 
-            $saved = $this->m_sync->saveConfig($config,$type);
+            $saved = $this->m_sync->saveConfig($config, $type);
 
             $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $saved);
         }
@@ -63,7 +67,8 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function getaspects(){
+    public function getaspects()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -75,7 +80,8 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function uploadaspectfile(){
+    public function uploadaspectfile()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -90,7 +96,8 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function updateaspectlistfromfile(){
+    public function updateaspectlistfromfile()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -106,7 +113,8 @@ class EmundusControllerSync extends JControllerLegacy {
     }
 
 
-    public function getdocuments(){
+    public function getdocuments()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -119,7 +127,8 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function getemundustags(){
+    public function getemundustags()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -132,12 +141,13 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function getsetuptags(){
+    public function getsetuptags()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'tags.php');
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'tags.php');
             $helper = new EmundusHelperTags();
             $tags = $helper->getTags();
 
@@ -147,7 +157,8 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function updatedocumentsync(){
+    public function updatedocumentsync()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -156,7 +167,7 @@ class EmundusControllerSync extends JControllerLegacy {
             $did = $jinput->getString('did', null);
             $sync = $jinput->getString('sync', null);
 
-            $updated = $this->m_sync->updateDocumentSync($did,$sync);
+            $updated = $this->m_sync->updateDocumentSync($did, $sync);
 
             $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
         }
@@ -164,7 +175,8 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
-    public function updatedocumentsyncmethod(){
+    public function updatedocumentsyncmethod()
+    {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
@@ -173,7 +185,7 @@ class EmundusControllerSync extends JControllerLegacy {
             $did = $jinput->getString('did', null);
             $sync_method = $jinput->getString('sync_method', null);
 
-            $updated = $this->m_sync->updateDocumentSyncMethod($did,$sync_method);
+            $updated = $this->m_sync->updateDocumentSyncMethod($did, $sync_method);
 
             $tab = array('status' => 1, 'msg' => JText::_('CONFIG_SAVED'), 'data' => $updated);
         }
@@ -286,5 +298,46 @@ class EmundusControllerSync extends JControllerLegacy {
         exit;
     }
 
+    public function getattachmentaspectsconfig()
+    {
+        $user = JFactory::getUser();
 
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+        } else {
+            $attachmentId = JFactory::getApplication()->input->getInt('attachmentId', 0);
+
+            if (!empty($attachmentId)) {
+                $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_FOUND'));
+                $tab['data'] = $this->m_sync->getAttachmentAspectsConfig($attachmentId);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('MISSING_ATTACHMENT_ID'));
+            }
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function saveattachmentaspectsconfig()
+    {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $tab = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+        } else {
+            $attachmentId = JFactory::getApplication()->input->getInt('attachmentId', 0);
+            $config = JFactory::getApplication()->input->getString('config', '');
+
+            if (!empty($attachmentId)) {
+                $tab = array('status' => 1, 'msg' => JText::_('ATTACHMENT_ASPECTS_CONFIG_SAVED'));
+                $tab['data'] = $this->m_sync->saveAttachmentAspectsConfig($attachmentId, $config);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('MISSING_ATTACHMENT_ID'));
+            }
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
 }

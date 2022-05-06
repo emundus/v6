@@ -34,7 +34,7 @@ import Tree from "../Tree";
 import FilesName from "../FilesName";
 import Aspects from "./Aspects";
 
-import storageService from "com_emundus/src/services/storage";
+import syncService from "com_emundus/src/services/sync";
 import mixin from "../../../../mixins/mixin";
 
 export default {
@@ -57,7 +57,7 @@ export default {
     }
   },
   created() {
-    storageService.getConfig('ged').then((response) => {
+    syncService.getConfig('ged').then((response) => {
       if(response.data.data !== null) {
         this.nodes = response.data.data.tree;
         this.name = response.data.data.name;
@@ -141,7 +141,7 @@ export default {
         name: this.name,
         aspects: this.aspects
       }
-      storageService.saveConfig(config,'ged').then(() => {
+      syncService.saveConfig(config,'ged').then(() => {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
         this.$emit('updateSaving',false);
       });

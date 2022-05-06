@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="em-h4 em-mb-16">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS') }}</div>
-    <div id="no-aspects" v-if="aspects.length < 1">
+    <div id="no-aspects" v-if="aspects.length < 1 && upload">
       <!--Upload aspect file -->
       <input type="file" id="aspect-file" accept=".xml" />
       <div class="em-primary-button" @click="uploadAspectFile">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD') }}</div>
@@ -18,14 +18,16 @@
         </div>
       </div>
 
-      <input type="file" id="update-aspect-file" accept=".xml" />
-      <div class="em-primary-button" @click="updateAspectListFromFile">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_UPDATE') }}</div>
+      <div v-if="upload">
+        <input type="file" id="update-aspect-file" accept=".xml" />
+        <div class="em-primary-button" @click="updateAspectListFromFile">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_UPDATE') }}</div>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
-import storageService from "../../../../services/storage";
+import syncService from "../../../../services/sync";
 
 export default {
   name: 'Aspects',
@@ -33,7 +35,11 @@ export default {
     aspects: {
       type: Array,
       default: []
-    }
+    },
+    upload: {
+      type: Boolean,
+      default: true
+    },
   },
   data() {
     return {
@@ -45,26 +51,25 @@ export default {
   },
   methods: {
     getTags() {
-      storageService.getSetupTags().then(response => {
+      syncService.getSetupTags().then(response => {
         this.tags = response.data;
       });
     },
     uploadAspectFile() {
       let file = document.getElementById('aspect-file').files[0];
-      storageService.uploadAspectFile(file).then(response => {
+      syncService.uploadAspectFile(file).then(response => {
         this.aspects = response.data.data;
         this.$emit('update-aspects', this.aspects);
       });
     },
     updateAspectListFromFile() {
       let file = document.getElementById('update-aspect-file').files[0];
-      storageService.updateAspectListFromFile(file).then(response => {
+      syncService.updateAspectListFromFile(file).then(response => {
         this.aspects = response.data.data;
         this.$emit('update-aspects', this.aspects);
       });
     },
     updateAspectMapping(event) {
-      console.log('udpate aspects');
       this.$emit('update-aspects', this.aspects);
     }
   }

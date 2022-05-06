@@ -384,4 +384,68 @@ class EmundusModelSync extends JModelList {
 
         return $states;
     }
+
+    public function getAttachmentAspectsConfig($attachment_id) {
+        $aspectsConfig = array();
+
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('params')
+            ->from('#__emundus_setup_attachments')
+            ->where('id = ' . $attachment_id);
+
+        $db->setQuery($query);
+
+        try {
+            $params = $db->loadResult();
+
+            if (!empty($params)) {
+                $params = json_decode($params, true);
+
+                if (isset($params['aspects'])) {
+                    $aspectsConfig = $params['aspects'];
+                }
+            }
+        } catch (Exception $e) {
+            JLog::add('Error getting attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+        return $aspectsConfig;
+    }
+
+    public function saveAttachmentAspectsConfig($attachment_id, $aspectsConfig) {
+        $saved = false;
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('params')
+            ->from('#__emundus_setup_attachments')
+            ->where('id = ' . $attachment_id);
+
+        $db->setQuery($query);
+
+        try {
+            $params = $db->loadResult();
+
+            if (!empty($params)) {
+                $params = json_decode($params, true);
+                $params['aspects'] = $aspectsConfig;
+            } else {
+                $params = array('aspects' => $aspectsConfig);
+            }
+
+            $query->clear();
+            $query->update('#__emundus_setup_attachments')
+                ->set('params = ' . $db->quote(json_encode($params)))
+                ->where('id = ' . $attachment_id);
+
+            $db->setQuery($query);
+            $saved = $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Error saving attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+        return $saved;
+    }
 }
