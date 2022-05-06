@@ -85,6 +85,13 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # (optional) we define the status by which we send request (e.g: "Accepted", "Pre-accepted", etc)
         $sending_status = $params->get('status_to_send_request');
 
+        # (optional) get logs, actions from Back-Office
+        $sending_logs = $params->get('logs_to_send_request');
+        $sending_actions = $params->get('actions_to_send_request');
+
+        # (optional) get logs day (today or not)
+        $sending_date = $params->get('is_today');
+
         /*
          * Grab all fnums has OPI code and status (step) is in $sending_status
          * */
@@ -108,28 +115,32 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             ->andWhere($db->quoteName('#__emundus_users.lastname') . " != ''");
 
         # if no status is defined, we get all
-        if(!is_null($sending_status)) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
+        if(!empty(trim($sending_status))) { $query->andWhere($db->quoteName('#__emundus_campaign_candidature.status') . ' IN ( ' . $sending_status . ' )'); }
 
-        # logs: 1 (access file), 4 (access attachment), 5 (access evaluation), 10 (comment file), 14 (access tag), 24 (edit user), 28 (publish), 29 (decision), 32 (admission)
-        $query->andWhere(
-            (
-            "jos_emundus_logs.action_id = 1 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 4 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 5 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 10 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 14 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 24 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 28 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 29 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 32 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                    OR jos_emundus_logs.action_id = 13 AND (jos_emundus_logs.verb in ('c', 'u', 'd'))
-                "
-            ));
+        // build logs string
+        if(!empty(trim($sending_logs))) {
+            $logs = "";
+            foreach (explode(',', $sending_logs) as $log) {
+                $logs .= "'" . $log . "',";
+            }
+            $logs = substr($logs, 0, -1);
+            $query->andWhere($db->quoteName('#__emundus_logs.action_id') . ' IN (' . $logs . ')');
+        }
 
-        $query->andWhere('DATE (jos_emundus_logs.timestamp) = CURRENT_DATE()');
+        // build actions string
+        if(!empty(trim($sending_actions))) {
+            $actions = "";
+            foreach (explode(',', $sending_actions) as $action) {
+                $actions .= "'" . $action . "',";
+            }
+            $actions = substr($actions, 0, -1);
+            $query->andWhere($db->quoteName('#__emundus_logs.verb') . ' IN (' . $actions . ')');
+        }
 
-        # uncomment this line if you want to limit the records
-        # $query->setLimit(3);       /* just local test */
+        // build sending date string
+        if($sending_date == "1") {
+            $query->andWhere('DATE (jos_emundus_logs.timestamp) = CURRENT_DATE()');
+        }
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();

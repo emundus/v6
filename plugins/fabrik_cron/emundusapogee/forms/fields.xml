@@ -57,5 +57,26 @@
 			/>
 		</fieldset>
 
+		<fieldset name="plg-cron-emundusapogee-logs" label="PLG_APOGEE_REQUEST_SENDING_LOGS">
+			<field name="logs_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_LOGS_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_LOGS"
+				   size="30"
+			/>
+
+			<field name="actions_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_ACTIONS_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_ACTIONS"
+				   size="30"
+			/>
+
+			<field name="is_today" type="radio" default="1" label="PLG_APOGEE_SET_TODAY" description="PLG_APOGEE_SET_TODAY_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+		</fieldset>
+
 	</fields>
 </form>
