@@ -86,10 +86,20 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $query = $params->get('plg-cron-emundusapogee-sql-code');
 
         # if no status is defined, we get all
-        if(!empty(trim($sending_status))) { $query .= " AND #__emundus_campaign_candidature.status IN (" . $sending_status . ")"; }
+        if(!empty(trim($sending_status))) {
+            if(!strpos($query, 'WHERE') and !strpos($query, 'where')) {
+                $query .= " WHERE";
+            } else {
+                $query .= " AND";
+            }
+
+            $query .= " #__emundus_campaign_candidature.status IN (" . $sending_status . ")";
+        }
 
         # build logs string
-        if(!empty(trim($sending_logs))) { $query .= " AND #__emundus_logs.action_id IN (" . $sending_logs . ')'; }
+        if(!empty(trim($sending_logs))) {
+            $query .= " AND #__emundus_logs.action_id IN (" . $sending_logs . ')';
+        }
 
         # build actions string
         if(!empty(trim($sending_actions))) {
@@ -103,6 +113,8 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         # build sending date string
         if($sending_date == "1") { $query .= " AND DATE (#__emundus_logs.timestamp) = CURRENT_DATE()"; }
+
+        # add LIMIT params --> necessary?
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
@@ -145,7 +157,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
 
             # send request to Apogee server
-            $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
+            # $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
             $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
