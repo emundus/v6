@@ -87,5 +87,13 @@
 			</field>
 		</fieldset>
 
+		<fieldset name="plg-cron-emundusapogee-customs" label="PLG_APOGEE_CUSTOMS">
+			<field name="plg-cron-emundusapogee-customs-methods"
+				   type="fabrikeditor"
+				   description="PLG_APOGEE_CUSTOMS_DESC"
+				   label="PLG_APOGEE_CUSTOMS_LABEL"
+			/>
+		</fieldset>
+
 	</fields>
 </form>
