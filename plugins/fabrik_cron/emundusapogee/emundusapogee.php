@@ -118,7 +118,6 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         if($sending_date == "1") { $query .= " AND DATE (#__emundus_logs.timestamp) = CURRENT_DATE()"; }
 
         # add LIMIT params --> necessary?
-        $query .= " LIMIT 20";
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
