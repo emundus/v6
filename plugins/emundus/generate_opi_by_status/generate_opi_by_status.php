@@ -66,12 +66,10 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
             $db->setQuery($query);
             $checkFnum = $db->loadObject();
 
-            /// opi start digit (always 0)
-            $opi_suffix = 0;
 
             if (is_null($lastOpi)) {
                 /// no opi exists
-                $opi_suffix += 1;
+                $opi_suffix = '1';            // OPI code start with "1"
                 $opi_full_code = $opi_prefix . str_pad((int)$opi_suffix, 7, '0', STR_PAD_LEFT);
 
                 if(is_null($checkFnum)) {
