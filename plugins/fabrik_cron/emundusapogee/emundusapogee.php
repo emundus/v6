@@ -81,6 +81,9 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         # (optional) get logs day (today or not)
         $sending_date = $params->get('is_today');
+        
+        # (optional) get custom methods (ApogeeCustom.php)
+        $custom_php = $params->get('plg-cron-emundusapogee-customs-php');
 
         # get native SQL query
         $query = $params->get('plg-cron-emundusapogee-sql-code');
@@ -115,6 +118,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         if($sending_date == "1") { $query .= " AND DATE (#__emundus_logs.timestamp) = CURRENT_DATE()"; }
 
         # add LIMIT params --> necessary?
+        $query .= " LIMIT 20";
 
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
@@ -140,11 +144,9 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             # filling data for each fnum
             $xmlDataRequest = $xmlDataObj->fillData($xmlSchemaRequest, $xmlSchemaObj->getSchemaDescription(), $fnum);
 
-            # invoke Apogee Custom
-            $xmlCustomSchema_data = new ApogeeCustom($xmlDataRequest,$fnum);
-            $xmlCustomSchema_data->buildCustomData();
-            $xmlCustomSchema_data->setCustomVoeux();
-            $xmlCustomSchema_data->validateVoeux();
+            if(!empty(trim($custom_php))) {
+                eval($custom_php);
+            }
 
             # prune raw xml tree (remove unnecessary elements)
             $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);

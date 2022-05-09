@@ -88,7 +88,7 @@
 		</fieldset>
 
 		<fieldset name="plg-cron-emundusapogee-customs" label="PLG_APOGEE_CUSTOMS">
-			<field name="plg-cron-emundusapogee-customs-methods"
+			<field name="plg-cron-emundusapogee-customs-php"
 				   type="fabrikeditor"
 				   description="PLG_APOGEE_CUSTOMS_DESC"
 				   label="PLG_APOGEE_CUSTOMS_LABEL"
