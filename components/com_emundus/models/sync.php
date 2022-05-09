@@ -68,6 +68,27 @@ class EmundusModelSync extends JModelList {
         }
     }
 
+    function saveParams($key, $value, $type) {
+        $db = JFactory::getDbo();
+
+        $query = $db->getQuery(true);
+        $query->select('params')
+            ->from($db->quoteName('#__emundus_setup_sync'))
+            ->where($db->quoteName('type') . ' LIKE ' . $db->quote($type));
+        $db->setQuery($query);
+
+        $params = json_decode($db->loadResult(), true);
+        $params[$key] = $value;
+
+        $query->clear()
+            ->update($db->quoteName('#__emundus_setup_sync'))
+            ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+            ->where($db->quoteName('type') . ' LIKE ' . $db->quote($type));
+        $db->setQuery($query);
+
+        return $db->execute();
+    }
+
     function getAspects() {
         $aspects = [];
         $config = $this->getConfig('ged');
@@ -98,10 +119,10 @@ class EmundusModelSync extends JModelList {
 
         $config = $this->getConfig('ged');
         $config = json_decode($config, true);
-
         $config['aspects'] = $aspects;
         $config = json_encode($config);
 
+        $this->saveParams('aspectNames', $xml->attributes()->name, 'ged');
         $this->saveConfig($config,'ged');
 
         return $aspects;
@@ -136,6 +157,8 @@ class EmundusModelSync extends JModelList {
 
         $old_config['aspects'] = $aspects;
         $config = json_encode($old_config);
+
+        $this->saveParams('aspectNames', $xml->attributes()->name, 'ged');
         $this->saveConfig($config,'ged');
 
         return $aspects;
