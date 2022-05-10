@@ -35,13 +35,12 @@ if (count($recipients) > 0) {
     $emails = new EmundusModelEmails;
 
     $post = array('FIRSTNAME' => $first_name, 'LASTNAME' => strtoupper($last_name));
-    $tags = $emails->setTags($user->id, $post);
+    $tags = $emails->setTags($user->id, $post, null, '', $email->message);
 
     foreach ($recipients as $recipient) {
         $email = $emails->getEmail($recipient->email_tmpl);
 
         $mailer = JFactory::getMailer();
-        //$tags = $emails->setTags($recipient->id, $post);
         // Mail 
         $from = $email->emailfrom;
         $from_id = 62;

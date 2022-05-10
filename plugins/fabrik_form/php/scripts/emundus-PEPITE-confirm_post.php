@@ -40,7 +40,7 @@ $post = array(  'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($campaign[
 				'CAMPAIGN_CODE' => $campaign['training'],
     			'FNUM'          => $student->fnum
 			);
-$tags = $emails->setTags($student->id, $post, $student->fnum);
+$tags = $emails->setTags($student->id, $post, $student->fnum, '', $email->message);
 $email = $emails->getEmail("confirm_post");
 
 // Apllicant cannot delete this attachments now
@@ -135,7 +135,7 @@ if ($alert_new_applicant==1) {
 	if (count($evaluators) > 0) {
 		foreach ($evaluators as $evaluator) {
 			$eval_user = &JFactory::getUser($evaluator);
-			$tags = $emails->setTags($eval_user->id, $post);
+			$tags = $emails->setTags($eval_user->id, $post, $student->fnum, '', $email->message);
 			// Mail
 			$from = $email->emailfrom;
 			$from_id = 62;

@@ -534,7 +534,7 @@ class EmundusHelperEmails {
                 'SITE_URL' => JURI::base(),
                 'USER_EMAIL' => $user->email
             ];
-            $tags = $m_emails->setTags($user->id, $post);
+            $tags = $m_emails->setTags($user->id, $post, null, '', $message);
 
             $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
 
@@ -702,7 +702,7 @@ class EmundusHelperEmails {
                 'USER_EMAIL' => $user->email
             ];
 
-            $tags = $m_emails->setTags($user->id, $post);
+            $tags = $m_emails->setTags($user->id, $post, null, '', $from.$fromname.$subject.$message);
 
             $from 		= preg_replace($tags['patterns'], $tags['replacements'], $from);
             $from_id 	= $user->id;

@@ -354,7 +354,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             'USER_EMAIL' => $fnum->email
         ];
 
-        $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum);
+        $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
         $message = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
         $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
@@ -597,7 +597,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'USER_EMAIL' => $fnum->email
             ];
 
-            $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum);
+            $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
             $body = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
             $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
@@ -912,7 +912,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 				'USER_EMAIL' => $user->email
 			];
 
-			$tags = $m_emails->setTags($user->id, $post);
+			$tags = $m_emails->setTags($user->id, $post, null, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
 
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
@@ -1046,7 +1046,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 			    'USER_EMAIL'     => $fnum['email']
 		    ];
 	    }
-	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
+	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom.$user->name.$template->subject.$template->message);
 
 	    // Get default mail sender info
 	    $mail_from_sys = $config->get('mailfrom');
@@ -1263,7 +1263,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         if($user_id != null) {
             $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-            $post = $m_email->setTags($user_id, $post, null, $password);
+            $post = $m_email->setTags($user_id, $post, null, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
 
             $mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
 		    $mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
@@ -1612,7 +1612,6 @@ class EmundusControllerMessages extends JControllerLegacy {
             'USER_EMAIL' => $fnum_info['email'],
         ];
 
-        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
         /* old code
         $body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
         $subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
@@ -1636,6 +1635,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $body = $m_emails->setTagsFabrik($raw['content'], [$fnum_info['fnum']]);
         $subject = $m_emails->setTagsFabrik($raw['title'], [$fnum_info['fnum']]);
+
+        /* get tags from subject, body, mail from and mail address */
+        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum'], '', $mail_from.$mail_from_name.$subject.$body);
 
         /* attach email template to body */
         $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template);

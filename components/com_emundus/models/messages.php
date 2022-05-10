@@ -1171,8 +1171,9 @@ class EmundusModelMessages extends JModelList {
                 /// get message template from attachment list
                 $query->clear()
 //                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
-                    ->select('distinct #__emundus_setup_emails.*')
+                    ->select('distinct jos_emundus_setup_emails.*, jos_emundus_email_templates.Template')
                     ->from($db->quoteName('#__emundus_setup_emails'))
+                    ->leftJoin($db->quoteName('#__emundus_email_templates') . ' ON ' . $db->quoteName('#__emundus_email_templates.id') . ' = ' . $db->quoteName('#__emundus_setup_emails.email_tmpl'))
                     ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
                     ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
 

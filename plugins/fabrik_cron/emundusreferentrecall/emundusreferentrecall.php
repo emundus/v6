@@ -119,7 +119,7 @@ class PlgFabrik_Cronemundusreferentrecall extends PlgFabrik_Cron {
                             'UPLOAD_URL' => $link_upload,
                             'SITE_URL' => JURI::base(),
                         );
-                        $tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum);
+                        $tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
                         $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
                         $from_id = 62;

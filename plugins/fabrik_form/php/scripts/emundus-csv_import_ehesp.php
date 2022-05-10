@@ -756,15 +756,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
         if ($ldap_user) {
             $totals['ldap']++;
             $email = $m_emails->getEmail('new_ldap_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null);
+            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
         } else if ($cas_user) {
             $totals['cas']++;
             $email = $m_emails->getEmail('new_cas_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null);
+            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
         } else {
             $totals['user']++;
             $email = $m_emails->getEmail('new_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, $password);
+            $tags = $m_emails->setTags($user->id, null, $fnum, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
         }
 
         $mailer = JFactory::getMailer();

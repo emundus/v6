@@ -148,7 +148,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 		$mailer = JFactory::getMailer();
 		if ($ldap == 0) {
 			$post = array('PASSWORD' => $password);
-			$tags = $m_emails->setTags($user->id, $post, null, $password);
+			$tags = $m_emails->setTags($user->id, $post, null, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
 		} else {
 			$tags = $m_emails->setTags($user->id, array(), null, null);
 		}
