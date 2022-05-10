@@ -454,8 +454,8 @@ class EmundusModelEmails extends JModelList {
      * @return array[]
      */
     public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='') {
-        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-        $m_files = new EmundusModelFiles();
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'helpers'.DS.'tags.php');
+        $h_tags = new EmundusHelperTags();
 
         $db = JFactory::getDBO();
 
@@ -465,7 +465,7 @@ class EmundusModelEmails extends JModelList {
             ->where($db->quoteName('t.published') . ' = 1');
 
         if (!empty($content)) {
-            $tags_content = $m_files->getVariables($content, 'SQUARE');
+            $tags_content = $h_tags->getVariables($content, 'SQUARE');
 
             if( !empty($tags_content) ) {
                 $tags_content = array_unique($tags_content);
