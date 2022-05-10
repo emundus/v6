@@ -315,7 +315,7 @@ class ApogeeCustom {
         $countryEnsSupOpi = $db->loadResult();
 
         /* if $countryEnsSupOpi is not "100" */
-        if(empty($countryEnsSupOpi) or $countryEnsSupOpi !== '100') {
+        if($countryEnsSupOpi !== '100') {
             $daaEnsSupOpi->nodeValue = "";
         }
 
@@ -328,7 +328,7 @@ class ApogeeCustom {
         $db->setQuery($countryEntEtbOpiQuery);
         $countryEntSupOpi = $db->loadResult();
 
-        if(empty($countryEntSupOpi) or $countryEntSupOpi !== '100') {
+        if($countryEntSupOpi !== '100') {
             $daaEntEtbOpi->nodeValue = "";
         }
 
