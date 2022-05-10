@@ -360,10 +360,11 @@ class FileSynchronizer
         try {
             $response = $this->client->put($url, [
                 'auth' => [$this->auth['consumer_key'], $this->auth['consumer_secret']],
-                'json' => $params
+                'body' => json_encode($params),
+                'headers' => ['Content-Type' => 'application/json']
             ]);
 
-            return $response;
+            return $response->getBody();
         } catch (\Exception $e) {
             JLog::add('[PUT] ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
             return $e->getMessage();
@@ -458,12 +459,12 @@ class FileSynchronizer
 
                     if (!empty($properties)) {
                         $exists = $this->checkFileExists($upload_id);
-
                         if ($exists) {
                             $response = $this->put($this->coreUrl . "/nodes/" . $response->entry->id, array(
                                 'aspectNames' => $aspectNames,
-                                'properties' => $properties
+                                'properties' => $properties,
                             ));
+                            JLog::add('Updated properties for upload_id ' . $upload_id .  '. Response :' . $response, JLog::INFO, 'com_emundus');
                         } else {
                             JLog::add('File has been created but when we try to retrieve it, nothing returned ' . $upload_id, JLog::ERROR, 'com_emundus');
                         }
@@ -939,7 +940,7 @@ class FileSynchronizer
             if (!empty($params)) {
                 $params = json_decode($params);
 
-                if (isset($params->aspects)) {
+                if (!empty($params->aspects)) {
                     $params->aspects = json_decode($params->aspects);
                     $attachment_aspects = $params->aspects->default ? $this->getConfigAspects() : $params->aspects->aspects;
                 } else {
@@ -1021,8 +1022,7 @@ class FileSynchronizer
 
         if (!empty($config)) {
             $config = json_decode($config);
-
-            if (isset($config->aspects)) {
+            if (!empty($config->aspects)) {
                 $aspects = $config->aspects;
             }
         }
