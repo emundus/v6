@@ -61,15 +61,15 @@ class SoapConnect {
     }
 
     public function sendRequest($curl_obj,$fnum) {
+        /// get fnum info
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        $_mFile = new EmundusModelFiles;
+        $fnum_infos = $_mFile->getFnumInfos($fnum);
+        
         # send request
         try {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
-
-            /// get fnum info
-            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-            $_mFile = new EmundusModelFiles;
-            $fnum_infos = $_mFile->getFnumInfos($fnum);
 
             /// execute cURL
             curl_exec($curl_obj);
@@ -92,15 +92,27 @@ class SoapConnect {
                 );
             }
 
+        } catch(Exception $e) {
+
+            $data = array(
+                'date_time' => date('Y-m-d H:i:s'),
+                'applicant_id' => $fnum_infos['applicant_id'],
+                'fnum'      => $fnum,
+                'status'    => 0
+            );
+
+            JLog::add('Error passing to APOGEE server, error:' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+        finally {
             $query->clear()->insert($db->quoteName('#__emundus_apogee_status'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->quote(array_values($data))));
 
+            echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
+            
             $db->setQuery($query);
             $db->execute();
-
-        } catch(Exception $e) {
-            JLog::add('Error passing to APOGEE server, error:' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
     }
 }
