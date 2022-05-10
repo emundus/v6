@@ -156,19 +156,18 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(c.id)
+		$query = 'SELECT c.id
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
 					AND p.apply_online = 1
 					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()';
+					AND c.start_date <= NOW()
+					LIMIT 1';
 
 		try {
-
 			$db->setQuery($query);
-			return $db->loadResult() > 0;
-
+			return !empty($db->loadResult());
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
