@@ -492,102 +492,34 @@ class EmundusModelApplication extends JModelList
      */
     public function getFormsProgress($fnum = "0")
     {
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-        $m_profile = new EmundusModelProfile;
-
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
-        $session = JFactory::getSession();
-        $current_user = $session->get('emundusUser');
-
         if (!is_array($fnum)) {
-            $profile_by_status = $m_profile->getProfileByStatus($fnum);
-
-            if (empty($profile_by_status['profile'])) {
-                $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
-                    FROM #__emundus_setup_campaigns AS esc
-                    LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                    WHERE ecc.fnum like ' . $this->_db->Quote($fnum);
-                $this->_db->setQuery($query);
-
-                $profile_by_status = $this->_db->loadAssoc();
-            }
-
-            $profile = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
-
-            $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
-            $nb = 0;
-            $formLst = array();
-
-            if (empty($forms)) {
-                return 100;
-            }
-
-            foreach ($forms as $form) {
-                $query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($fnum);
-                $this->_db->setQuery($query);
-                $cpt = $this->_db->loadResult();
-                if ($cpt == 1) {
-                    $nb++;
-                } else {
-                    $formLst[] = $form->label;
-                }
-            }
-
-            $this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $fnum);
-            return @floor(100 * $nb / count($forms));
-
-        } else {
-
-            $result = array();
-            foreach ($fnum as $f) {
-                $profile_by_status = $m_profile->getProfileByStatus($f);
-
-                if (empty($profile_by_status["profile"])) {
-                    $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
-                FROM #__emundus_setup_campaigns AS esc
-                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                WHERE ecc.fnum like ' . $this->_db->Quote($f);
-                    $this->_db->setQuery($query);
-
-                    $profile_by_status = $this->_db->loadAssoc();
-                }
-
-                $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-
-                $forms = @EmundusHelperMenu::buildMenuQuery($profile_id);
-                $nb = 0;
-                $formLst = array();
-
-                if (empty($forms)) {
-                    $result[$f] = 100;
-                } else {
-                    foreach ($forms as $form) {
-                        $query = 'SELECT count(*) FROM ' . $form->db_table_name . ' WHERE fnum like ' . $this->_db->Quote($f);
-                        $this->_db->setQuery($query);
-                        $cpt = $this->_db->loadResult();
-                        if ($cpt == 1) {
-                            $nb++;
-                        } else {
-                            $formLst[] = $form->label;
-                        }
-                    }
-                    $this->updateFormProgressByFnum(@floor(100 * $nb / count($forms)), $f);
-                    $result[$f] = @floor(100 * $nb / count($forms));
-                }
-            }
-            return $result;
+            $fnum = array($fnum);
         }
+
+        $result = array();
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+        foreach ($fnum as $f) {
+            $query->clear()
+                ->select('form_progress')
+                ->from('#__emundus_campaign_candidature')
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+            $db->setQuery($query);
+
+            $result[$f] = intval($db->loadResult());
+        }
+
+        return $result;
     }
 
     public function getFormsProgressWithProfile($fnum, $profile_id)
     {
         $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
         $nb = 0;
-        $formLst = array();
 
         if (empty($forms)) {
             return 100;
@@ -599,8 +531,6 @@ class EmundusModelApplication extends JModelList
             $cpt = $this->_db->loadResult();
             if ($cpt == 1) {
                 $nb++;
-            } else {
-                $formLst[] = $form->label;
             }
         }
 
@@ -618,6 +548,37 @@ class EmundusModelApplication extends JModelList
         return $this->_db->execute();
     }
 
+
+    public function getFilesProgress($fnum = null)
+    {
+        if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
+            return false;
+        }
+
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        if (!is_array($fnum)) {
+            $fnum = [$fnum];
+        }
+
+        $result = array();
+        foreach ($fnum as $f) {
+            $query->clear()
+                ->select('attachment_progress, form_progress')
+                ->from('#__emundus_campaign_candidature')
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+            $db->setQuery($query);
+
+            $progress = $db->loadObject();
+
+            $result['attachments'][$f] = $progress->attachment_progress;
+            $result['forms'][$f] = $progress->form_progress;
+        }
+
+        return $result;
+    }
+
     /**
      * @param null $fnum
      *
@@ -627,105 +588,29 @@ class EmundusModelApplication extends JModelList
      */
     public function getAttachmentsProgress($fnum = null)
     {
-        $session = JFactory::getSession();
-        $current_user = $session->get('emundusUser');
-
-        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
-        $m_profile = new EmundusModelProfile;
-
-
         if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
             return false;
         }
 
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
         if (!is_array($fnum)) {
-            $profile_by_status = $m_profile->getProfileByStatus($fnum);
-
-            if (empty($profile_by_status["profile"])) {
-                $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
-                FROM #__emundus_setup_campaigns AS esc
-                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                WHERE ecc.fnum like ' . $this->_db->Quote($fnum);
-                $this->_db->setQuery($query);
-
-                $profile_by_status = $this->_db->loadAssoc();
-            }
-
-            $profile = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-            $profile_id = (!empty($current_user->fnums[$fnum]) && $current_user->profile != $profile && $current_user->applicant === 1) ? $current_user->profile : $profile;
-
-            $query = 'SELECT COUNT(profiles.id)
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
-
-            /*if (!empty($profile_id)) {
-                $query .= ' AND profile_id = ' . $profile_id;
-            }*/
-
-            $this->_db->setQuery($query);
-            $attachments = $this->_db->loadResult();
-
-            if (intval($attachments) == 0) {
-
-                $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
-                WHERE profiles.profile_id = ' . $profile_id . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-            } else {
-                $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
-                WHERE profiles.campaign_id = ' . $profile_by_status["campaign_id"] . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-            }
-
-            $this->_db->setQuery($query);
-            $doc_result = $this->_db->loadResult();
-            $this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
-            return floor($doc_result);
-
-        } else {
-            $result = array();
-            foreach ($fnum as $f) {
-                $profile_by_status = $m_profile->getProfileByStatus($f);
-
-                if (empty($profile_by_status["profile"])) {
-                    $query = 'SELECT esc.profile_id AS profile_id, ecc.campaign_id AS campaign_id
-                FROM #__emundus_setup_campaigns AS esc
-                LEFT JOIN #__emundus_campaign_candidature AS ecc ON ecc.campaign_id = esc.id
-                WHERE ecc.fnum like ' . $this->_db->Quote($f);
-                    $this->_db->setQuery($query);
-
-                    $profile_by_status = $this->_db->loadAssoc();
-                }
-
-                $profile_id = !empty($profile_by_status["profile_id"]) ? $profile_by_status["profile_id"] : $profile_by_status["profile"];
-
-                $query = 'SELECT COUNT(profiles.id)
-                FROM #__emundus_setup_attachment_profiles AS profiles
-                WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
-
-                $this->_db->setQuery($query);
-                $attachments = $this->_db->loadResult();
-
-                if (intval($attachments) == 0) {
-                    $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                    FROM #__emundus_setup_attachment_profiles AS profiles
-                    LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
-                    WHERE profiles.profile_id = ' . $profile_id . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-                } else {
-                    $query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
-                    FROM #__emundus_setup_attachment_profiles AS profiles
-                    LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($f) . '
-                    WHERE profiles.campaign_id = ' . $profile_by_status["campaign_id"] . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-                }
-
-                $this->_db->setQuery($query);
-                $doc_result = $this->_db->loadResult();
-                $this->updateAttachmentProgressByFnum(floor($doc_result), $f);
-                $result[$f] = floor($doc_result);
-            }
-            return $result;
+            $fnum = [$fnum];
         }
+
+        $result = array();
+        foreach ($fnum as $f) {
+            $query->clear()
+                ->select('attachment_progress')
+                ->from('#__emundus_campaign_candidature')
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+            $db->setQuery($query);
+
+            $result[$f] = intval($db->loadResult());
+        }
+
+        return $result;
     }
 
     /**

@@ -27,11 +27,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     // Include the latest functions only once
     require_once dirname(__FILE__).'/helper.php';
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
-
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -106,7 +101,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     } else {
         // We send the layout as a param because Hesam needs different information.
         $applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
-        $states = modemundusApplicationsHelper::getStatusFiles();
     }
 
     $linknames = $params->get('linknames', 0);
@@ -125,17 +119,14 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     }
 
     $m_application = new EmundusModelApplication;
-
-    $m_checklist = new EmundusModelChecklist;
     $m_email = new EmundusModelEmails;
 
 
-
-
-
 	$fnums = array_keys($applications);
-	$attachments = $m_application->getAttachmentsProgress($fnums);
-	$forms = $m_application->getFormsProgress($fnums);
+
+    $progress = $m_application->getFilesProgress($fnums);
+    $attachments = $progress['attachments'];
+    $forms = $progress['forms'];
 
 	if (EmundusHelperAccess::asAccessAction(1, 'c')) {
 		$applicant_can_renew = 1;

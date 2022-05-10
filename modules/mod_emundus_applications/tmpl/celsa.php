@@ -65,7 +65,7 @@ if (!empty($applications)) {
 
         <?php
         $is_admission = in_array($application->status, $admission_status);
-        $state = $states[$application->fnum]['published'];
+        $state = $application->published;
         $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
         $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
     

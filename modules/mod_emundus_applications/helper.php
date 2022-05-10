@@ -64,6 +64,7 @@ class modemundusApplicationsHelper {
 		$result = $db->loadObjectList('fnum');
 		return (array) $result;
 	}
+
     // get State of the files (published, removed, archived)
     static function getStatusFiles(){
         $user = JFactory::getUser();
