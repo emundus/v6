@@ -345,69 +345,34 @@ class ApogeeCustom {
         $_aaRoot = $this->xmlTree->getElementsByTagName('adresseAnnuelle')->item(0);
         $_aaTel = $_aaRoot->getElementsByTagName('numTel')->item(0);
 
-        /* set SQL script */
-        $_getAaSql = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
-        $db->setQuery($_getAaSql);
-        $rawAaTel = $db->loadResult();
-
-        # find ")" in $rawAaTel
-        if(strpos($rawAaTel, ")")) {
-            # split string
-            $rawAaTel = explode(')', $rawAaTel)[1];
-
-            if(strlen($rawAaTel) > 15) {
-                # truncate string if length is more than 15
-                $rawAaTel = substr($rawAaTel,0,15);
-            }
-        }
-
-        $_aaTel->nodeValue = $rawAaTel;
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /* secondly, find "adresseFixe" node */
+        /* find "adresseFixe" node */
         $_afRoot = $this->xmlTree->getElementsByTagName('adresseFixe')->item(0);
         $_afTel = $_afRoot->getElementsByTagName('numTel')->item(0);
 
-        /* set SQL script */
-        $_getAfBdiSql = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
-        $db->setQuery($_getAfBdiSql);
-        $rawAfTel = $db->loadResult();
-
-        # find ")" in $rawAaTel
-        if(strpos($rawAfTel, ")")) {
-            # split string
-            $rawAfTel = explode(')', $rawAfTel)[1];
-
-            if(strlen($rawAfTel) > 15) {
-                # truncate string if length is more than 15
-                $rawAfTel = substr($rawAfTel,0,15);
-            }
-        }
-
-        $_afTel->nodeValue = $rawAfTel;
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /* third, find "donneesPersonnelles" node */
+        /* find "donneesPersonnelles" node */
         $_dpRoot = $this->xmlTree->getElementsByTagName('donneesPersonnelles')->item(0);
         $_dpTelOpi = $_dpRoot->getElementsByTagName('numTelPorOpi')->item(0);
 
-        /* get SQL script */
-        $_getDpTelSql = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
-        $db->setQuery($_getDpTelSql);
-        $rawDpTel = $db->loadResult();
+        /// get telephone number
+        $getTelNumQuery = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
+        $db->setQuery($getTelNumQuery);
+        $getTel = $db->loadResult();
 
-        # find ")" in $rawDpTel
-        if(strpos($rawDpTel, ")")) {
+        # find ")" in $rawAaTel
+        if(strpos($getTel, ")")) {
             # split string
-            $rawDpTel = explode(')', $rawDpTel)[1];
+            $getTel = explode(')', $getTel)[1];
 
-            if(strlen($rawDpTel) > 15) {
-                # truncate string
-                $rawDpTel = substr($rawDpTel,0,15);
+            if(strlen($getTel) > 15) {
+                # truncate string if length is more than 15
+                $getTel = substr($getTel,0,15);
             }
         }
 
-        $_dpTelOpi->nodeValue = $rawDpTel;
+        $_aaTel->nodeValue = $getTel;
+        $_afTel->nodeValue = $getTel;
+        $_dpTelOpi->nodeValue = $getTel;
+
         return $this->xmlTree;
     }
 
