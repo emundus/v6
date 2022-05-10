@@ -60,9 +60,48 @@ class SoapConnect {
         return $ch;
     }
 
-    public function sendRequest($curl_obj) {
+    public function sendRequest($curl_obj,$fnum) {
         # send request
-        curl_exec($curl_obj);
+        try {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            /// get fnum info
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+            $_mFile = new EmundusModelFiles;
+            $fnum_infos = $_mFile->getFnumInfos($fnum);
+
+            /// execute cURL
+            curl_exec($curl_obj);
+            $info = curl_getinfo($curl_obj, CURLINFO_HTTP_CODE);
+
+            if(false === curl_exec($curl_obj) || $info !== 200) {
+                /// insert the status FAILED to table "jos_emundus_apogee_status"
+                $data = array(
+                    'date_time' => date('Y-m-d H:i:s'),
+                    'applicant_id' => $fnum_infos['applicant_id'],
+                    'fnum'      => $fnum,
+                    'status'    => 0
+                );
+            } else {
+                $data = array(
+                    'date_time' => date('Y-m-d H:i:s'),
+                    'applicant_id' => $fnum_infos['applicant_id'],
+                    'fnum'      => $fnum,
+                    'status'    => 1
+                );
+            }
+
+            $query->clear()->insert($db->quoteName('#__emundus_apogee_status'))
+                ->columns($db->quoteName(array_keys($data)))
+                ->values(implode(',', $db->quote(array_values($data))));
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch(Exception $e) {
+            JLog::add('Error passing to APOGEE server, error:' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
     }
 }
 

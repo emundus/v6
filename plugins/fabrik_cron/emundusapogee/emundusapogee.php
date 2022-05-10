@@ -158,7 +158,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
             $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
 
             # send request to Apogee server
-            # $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials));
+            $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials),$fnum);
 
             # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
             $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
