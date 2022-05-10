@@ -496,21 +496,28 @@ class EmundusModelApplication extends JModelList
             return false;
         }
 
-        if (!is_array($fnum)) {
-            $fnum = array($fnum);
-        }
-
-        $result = array();
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
-        foreach ($fnum as $f) {
+
+        if (!is_array($fnum)) {
             $query->clear()
                 ->select('form_progress')
                 ->from('#__emundus_campaign_candidature')
-                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
             $db->setQuery($query);
+            $result = intval($db->loadResult());
+        } else {
+            $result = array();
 
-            $result[$f] = intval($db->loadResult());
+            foreach ($fnum as $f) {
+                $query->clear()
+                    ->select('form_progress')
+                    ->from('#__emundus_campaign_candidature')
+                    ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+                $db->setQuery($query);
+
+                $result[$f] = intval($db->loadResult());
+            }
         }
 
         return $result;
@@ -596,18 +603,23 @@ class EmundusModelApplication extends JModelList
         $query = $db->getQuery(true);
 
         if (!is_array($fnum)) {
-            $fnum = [$fnum];
-        }
-
-        $result = array();
-        foreach ($fnum as $f) {
             $query->clear()
                 ->select('attachment_progress')
                 ->from('#__emundus_campaign_candidature')
-                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
             $db->setQuery($query);
+            $result = intval($db->loadResult());
+        } else {
+            $result = array();
+            foreach ($fnum as $f) {
+                $query->clear()
+                    ->select('attachment_progress')
+                    ->from('#__emundus_campaign_candidature')
+                    ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+                $db->setQuery($query);
 
-            $result[$f] = intval($db->loadResult());
+                $result[$f] = intval($db->loadResult());
+            }
         }
 
         return $result;
