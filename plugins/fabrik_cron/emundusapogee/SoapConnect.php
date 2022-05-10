@@ -108,8 +108,6 @@ class SoapConnect {
             $query->clear()->insert($db->quoteName('#__emundus_apogee_status'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->quote(array_values($data))));
-
-            echo '<pre>'; var_dump($query->__toString()); echo '</pre>'; die;
             
             $db->setQuery($query);
             $db->execute();
