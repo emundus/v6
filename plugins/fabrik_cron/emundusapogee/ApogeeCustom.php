@@ -238,28 +238,16 @@ class ApogeeCustom {
             //get first voeux
             $firstVoeux = $items->item(0);
 
-            // get cge
-            $_getCodCge = "select dra.code_centre from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
-            $db->setQuery($_getCodCge);
-            $firstVoeux->childNodes[1]->nodeValue = $db->loadResult();
+            //get data_referentiel_apogee data
+            $getApogeeRefQuery = "select dra.code_centre,dra.code_diplome,dra.code_etape,dra.code_version,dra.code_version_etape from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
+            $db->setQuery($getApogeeRefQuery);
+            $getApogeeRef = $db->loadObject();
 
-            // get codDip
-            $_getCodDip = "select dra.code_diplome from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
-            $db->setQuery($_getCodDip);
-            $firstVoeux->childNodes[7]->nodeValue = $db->loadResult();
-
-            // get codEtp
-            $_getCodEtp = "select dra.code_etape from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
-            $db->setQuery($_getCodEtp);
-            $firstVoeux->childNodes[8]->nodeValue = $db->loadResult();
-
-            $_getCodVrsVdi = "select dra.code_version from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
-            $db->setQuery($_getCodVrsVdi);
-            $firstVoeux->childNodes[14]->nodeValue = $db->loadResult();
-
-            $_getCodVrsVet = "select dra.code_version_etape from data_referentiel_apogee as dra left join jos_emundus_setup_campaigns as jesc on dra.id = jesc.libelle_apogee left join jos_emundus_campaign_candidature as jecc on jecc.campaign_id = jesc.id where jecc.fnum like ('%" . $this->fnum . "%')";
-            $db->setQuery($_getCodVrsVet);
-            $firstVoeux->childNodes[15]->nodeValue = $db->loadResult();
+            $firstVoeux->childNodes[1]->nodeValue = $getApogeeRef->code_centre;
+            $firstVoeux->childNodes[7]->nodeValue = $getApogeeRef->code_diplome;
+            $firstVoeux->childNodes[8]->nodeValue = $getApogeeRef->code_etape;
+            $firstVoeux->childNodes[14]->nodeValue = $getApogeeRef->code_version;
+            $firstVoeux->childNodes[15]->nodeValue = $getApogeeRef->code_version_etape;
 
             $firstVoeux->childNodes[17]->nodeValue = 1;
 
