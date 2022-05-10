@@ -387,7 +387,7 @@ class EmundusModelEmails extends JModelList {
     public function setConstants($user_id, $post=null, $passwd='') {
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
-        $user           = JFactory::getUser($user_id);
+        $user           = $current_user == $user_id ? $current_user : JFactory::getUser($user_id);
         $config         = JFactory::getConfig();
 
         //get logo
@@ -415,6 +415,8 @@ class EmundusModelEmails extends JModelList {
             $logo = JURI::base().$tab[1];
         }
 
+        $activation = $user->get('activation');
+
         $patterns = array(
             '/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SENDER_MAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
             '/\[ACTIVATION_URL\]/', '/\[ACTIVATION_URL_RELATIVE\]/' ,'/\[SITE_URL\]/' ,'/\[SITE_NAME\]/',
@@ -422,7 +424,7 @@ class EmundusModelEmails extends JModelList {
         );
         $replacements = array(
             $user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), "index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(), $sitename,
+            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, JURI::base(), $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 
@@ -453,14 +455,14 @@ class EmundusModelEmails extends JModelList {
      * @throws Exception
      * @since version v6
      */
-    public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='') {
+    public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='', $constants=null) {
         $db = JFactory::getDBO();
 
         $query = "SELECT tag, request FROM #__emundus_setup_tags";
         $db->setQuery($query);
         $tags = $db->loadAssocList();
 
-        $constants = $this->setConstants($user_id, $post, $passwd);
+        $constants = empty($constants) ? $this->setConstants($user_id, $post, $passwd) : $constants;
 
         $patterns = $constants['patterns'];
         $replacements = $constants['replacements'];
@@ -478,13 +480,10 @@ class EmundusModelEmails extends JModelList {
                 $request = explode('|', $value);
 
                 if (count($request) > 1) {
-
                     try {
-
                         $query = 'SELECT '.$request[0].' FROM '.$request[1].' WHERE '.$request[2];
                         $db->setQuery($query);
                         $result = $db->loadResult();
-
                     } catch (Exception $e) {
 
                         $error = JUri::getInstance().' :: USER ID : '.$user_id.'\n -> '.$query;
