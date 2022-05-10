@@ -1,9 +1,14 @@
 <?php
-
 defined('_JEXEC') or die('Access Deny');
+
+// INCLUDES
 require_once(dirname(__FILE__).DS.'helper.php');
 include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+$m_campaign     = new EmundusModelCampaign;
+
 include_once (JPATH_BASE.DS.'modules'.DS.'mod_emundus_campaign_dropfiles'.DS.'helper.php');
+$helper = new modEmundusCampaignHelper;
+// END INCLUDES
 
 JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
@@ -12,9 +17,8 @@ JHtml::script('media/jui/js/bootstrap.min.js');
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css" );
 
+// PARAMS
 $mod_em_campaign_url=$params->get('mod_em_campaign_url');
-/*$mod_em_campaign_period=$params->get('mod_em_campaign_period');
-$mod_em_campaign_period=$params->get('mod_em_campaign_period');*/
 $mod_em_campaign_class=$params->get('mod_em_campaign_class');
 $mod_em_campaign_intro=$params->get('mod_em_campaign_intro', '');
 $mod_em_campaign_start_date=$params->get('mod_em_campaign_start_date');
@@ -49,7 +53,8 @@ $ignored_program_code=$params->get('mod_em_ignored_program_code');
 $modules_tabs = $params->get('mod_em_campaign_modules_tab');
 $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
-$helper = new modEmundusCampaignHelper;
+// END PARAMS
+
 
 $condition ='';
 
@@ -128,11 +133,13 @@ $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching
 $futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
 $allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
 
+if ($params->get('mod_em_campaign_layout') == "single_campaign.php" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign.php") {
 // FAQ
-$faq_articles                = $helper->getFaq();
+    $faq_articles = $helper->getFaq();
 
-$dropfiles_helper = new modEmundusCampaignDropfilesHelper;
-$files = $dropfiles_helper->getFiles();
+    $dropfiles_helper = new modEmundusCampaignDropfilesHelper;
+    $files = $dropfiles_helper->getFiles();
+}
 
 if ($params->get('mod_em_campaign_layout') == "celsa") {
     $formations = $helper->getFormationsWithType();
@@ -156,7 +163,6 @@ $paginationPast     = new JPagination($helper->getTotalPast(), $session->get('li
 $paginationFutur    = new JPagination($helper->getTotalFutur(), $session->get('limitstartFutur'), $session->get('limit'));
 $paginationTotal    = new JPagination($helper->getTotal(), $session->get('limitstart'), $session->get('limit'));
 
-$m_campaign     = new EmundusModelCampaign;
 require(JModuleHelper::getLayoutPath('mod_emundus_campaign', $params->get('mod_em_campaign_layout')));
 
 ?>
