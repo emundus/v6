@@ -443,6 +443,13 @@ class FileSynchronizer
                     'contents' => $file_pointer,
                 ),
             );
+            $properties = $this->getGEDProperties($upload_id);
+            foreach($properties as $key => $property) {
+                $params[] = array(
+                    'name' => $key,
+                    'contents' => $property
+                );
+            }
 
             $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
 
@@ -453,22 +460,6 @@ class FileSynchronizer
 
                 if (!$saved) {
                     JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
-                } else {
-                    $properties = $this->getGEDProperties($upload_id);
-                    $aspectNames = $this->getAspectNames();
-
-                    if (!empty($properties)) {
-                        $exists = $this->checkFileExists($upload_id);
-                        if ($exists) {
-                            $response = $this->put($this->coreUrl . "/nodes/" . $response->entry->id, array(
-                                'aspectNames' => $aspectNames,
-                                'properties' => $properties,
-                            ));
-                            JLog::add('Updated properties for upload_id ' . $upload_id .  '. Response :' . $response, JLog::INFO, 'com_emundus');
-                        } else {
-                            JLog::add('File has been created but when we try to retrieve it, nothing returned ' . $upload_id, JLog::ERROR, 'com_emundus');
-                        }
-                    }
                 }
             } else {
                 JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
