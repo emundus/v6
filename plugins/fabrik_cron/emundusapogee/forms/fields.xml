@@ -87,6 +87,25 @@
 			</field>
 		</fieldset>
 
+		<fieldset name="plg-cron-emundusapogee-offset" label="PLG_APOGEE_REQUEST_SENDING_OFFSET">
+			<field name="offset_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_OFFSET_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_OFFSET"
+				   size="30"
+				   default="20"
+			/>
+
+			<field name="time_offset_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_TIME_OFFSET_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_TIME_OFFSET"
+				   size="30"
+				   default="150"
+			/>
+
+		</fieldset>
+
 		<fieldset name="plg-cron-emundusapogee-customs" label="PLG_APOGEE_CUSTOMS">
 			<field name="plg-cron-emundusapogee-customs-php"
 				   type="fabrikeditor"
