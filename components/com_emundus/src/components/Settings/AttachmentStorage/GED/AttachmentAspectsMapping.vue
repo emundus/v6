@@ -1,18 +1,20 @@
 <template>
-  <div id="attachment-aspects-mapping">
-    <label for="default-aspects">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_DEFAULT_ASPECTS_MAPPING') }}</label>
-    <div class="em-toggle">
-      <input type="checkbox"
-        :true-value="true"
-        :false-value="false"
-        class="em-toggle-check"
-        id="default-aspects"
-        name="'default-aspects'"
-        v-model="aspectsConfig.default"
-        @click="aspectsConfig.default = !aspectsConfig.default; saveAttachmentAspects();"
-      />
-      <strong class="b em-toggle-switch"></strong>
-      <strong class="b em-toggle-track"></strong>
+  <div id="attachment-aspects-mapping" class="em-mt-16">
+    <div id="default-aspects-toggle" class="em-flex-row em-flex-start">
+      <div class="em-toggle">
+        <input type="checkbox"
+          :true-value="true"
+          :false-value="false"
+          class="em-toggle-check"
+          id="default-aspects"
+          name="'default-aspects'"
+          v-model="aspectsConfig.default"
+          @click="aspectsConfig.default = !aspectsConfig.default; saveAttachmentAspects();"
+        />
+        <strong class="b em-toggle-switch"></strong>
+        <strong class="b em-toggle-track"></strong>
+      </div>
+      <label for="default-aspects">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_DEFAULT_ASPECTS_MAPPING') }}</label>
     </div>
 
     <div v-if="aspectsConfig.default == false">
@@ -68,3 +70,9 @@ export default {
   },
 }
 </script>
+
+<style>
+#default-aspects-toggle label {
+  margin: 0 0 0 10px;
+}
+</style>

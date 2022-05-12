@@ -19,8 +19,11 @@
       </div>
 
       <div v-if="upload">
-        <input type="file" id="update-aspect-file" accept=".xml" />
-        <div class="em-primary-button" @click="updateAspectListFromFile">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_UPDATE') }}</div>
+        <div class="em-h6 em-mb-16">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD_FROM_FILE') }}</div>
+        <div id="add-aspects-from-file" class="em-flex-row">
+          <input type="file" id="update-aspect-file" accept=".xml" />
+          <div class="em-primary-button" @click="updateAspectListFromFile">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD') }}</div>
+        </div>
       </div>
     </div>
   </section>
@@ -75,3 +78,15 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+#add-aspects-from-file {
+  input {
+    margin: 0 10px 0 0;
+  }
+
+  .em-primary-button {
+    width: fit-content;
+  }
+}
+</style>

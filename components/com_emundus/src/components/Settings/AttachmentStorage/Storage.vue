@@ -33,6 +33,7 @@
         transition="fade"
         :delay="100"
         :adaptive="true"
+        id="modal-attachment-parameters"
         class="em-h-100 em-w-25"
     >
       <AttachmentParameters :attachment="selectedDocument"></AttachmentParameters>

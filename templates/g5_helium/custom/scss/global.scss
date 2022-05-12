@@ -5522,6 +5522,12 @@ fieldset[disabled] .multiselect {
     height: 100%;
   }
 }
+
+#modal-attachment-parameters .v--modal {
+  width: 35vw !important;
+  padding: 16px;
+}
+
 /** **/
 .error-page #mod_emundus_help {
   display: none;
