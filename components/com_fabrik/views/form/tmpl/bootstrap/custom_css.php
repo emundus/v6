@@ -512,7 +512,6 @@ form#member-profile .form-horizontal .control-label {
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
-    color: #2B2B2B;
 }
 
 .view-form.view-registration .span12. .login.em-formRegistrationCenter  p:first-of-type, 
