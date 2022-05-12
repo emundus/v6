@@ -48,7 +48,8 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
      * @return  int  number of records updated
      * @throws Exception
      */
-    public function process(&$data, &$listModel) {
+    public function process(&$data, &$listModel)
+    {
         jimport('joomla.mail.helper');
 
         $params = $this->getParams();
@@ -81,12 +82,17 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         # (optional) get logs day (today or not)
         $sending_date = $params->get('is_today');
-        
+
         # (optional) get custom methods (ApogeeCustom.php)
         $custom_php = $params->get('plg-cron-emundusapogee-customs-php');
 
         # get native SQL query
         $query = $params->get('plg-cron-emundusapogee-sql-code');
+
+        # get offset value (max limit by batch)
+        $offset_limit = $params->get('offset_to_send_request', 20);              # set offset max 20 by default
+        $offset_interval = $params->get('time_offset_to_send_request', 150);     # set offset interval 150 by default (2,5 min)
+
 
         # if no status is defined, we get all
         if(!empty(trim($sending_status))) {
@@ -115,12 +121,9 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         }
 
         # build sending date string
-        if($sending_date == "1") { $query .= " AND DATE (#__emundus_logs.timestamp) = CURRENT_DATE()"; }
-
-        # add LIMIT params --> necessary?
-
-        $db->setQuery($query);
-        $available_fnums = $db->loadColumn();
+        if($sending_date == "1") {
+            $query .= " AND DATE (#__emundus_logs.timestamp) = CURRENT_DATE()";
+        }
 
         # next, we request description (schema) - json file
         $json_request_schema = $params->get('xml_description_json');
@@ -139,29 +142,45 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # now, we fill data into XML request (using data description file)
         $xmlDataObj = new XmlDataFilling($json_request_data);
 
-        foreach($available_fnums as $fnum) {
-            # filling data for each fnum
-            $xmlDataRequest = $xmlDataObj->fillData($xmlSchemaRequest, $xmlSchemaObj->getSchemaDescription(), $fnum);
+        # using limit from ... to in this case (limt 0,offset --> limit 1*offset,offset --> limit 2*offset,offset)      # limit value [mod] offset = 0
 
-            if(!empty(trim($custom_php))) {
-                eval($custom_php);
+        $db->setQuery($query);
+        $total_loop = ceil(count($db->loadColumn()) / $offset_limit);
+        $available_fnums = $db->loadColumn();
+
+        # using array slice to cut-off the $available_fnums with offset
+
+        for($loop = 1 ; $loop <= $total_loop; $loop++) {
+            $slice = ($loop - 1) * $offset_limit;
+
+            $fnums = array_slice($available_fnums,$slice,$offset_limit);
+
+            foreach ($fnums as $fnum) {
+                # filling data for each fnum
+                $xmlDataRequest = $xmlDataObj->fillData($xmlSchemaRequest, $xmlSchemaObj->getSchemaDescription(), $fnum);
+
+                if (!empty(trim($custom_php))) {
+                    eval($custom_php);
+                }
+
+                # prune raw xml tree (remove unnecessary elements)
+                $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);
+                $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
+
+                # connect to SOAP
+                $soapConnectObj = new SoapConnect;
+
+                # set HTTP request header with last xml output string
+                $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(), $credentials);
+
+                # send request to Apogee server
+                $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials),$fnum);
+
+                # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
+                $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
             }
 
-            # prune raw xml tree (remove unnecessary elements)
-            $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);
-            $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
-
-            # connect to SOAP
-            $soapConnectObj = new SoapConnect;
-
-            # set HTTP request header with last xml output string
-            $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(),$credentials);
-
-            # send request to Apogee server
-            $soapConnectObj->sendRequest($soapConnectObj->webServiceConnect($wsdl_url,$xmlOutputString->saveXML(),$credentials),$fnum);
-
-            # uncomment this line if you want to export requests into XML file (** should be deactivate on PROD env **)
-            $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
+            sleep($offset_interval);     # 5 minutes
         }
     }
 }

@@ -65,6 +65,10 @@ class SoapConnect {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         $_mFile = new EmundusModelFiles;
         $fnum_infos = $_mFile->getFnumInfos($fnum);
+
+        # write log file
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.apogee.php'], JLog::ALL, ['com_emundus']);
         
         # send request
         try {
@@ -83,6 +87,7 @@ class SoapConnect {
                     'fnum'      => $fnum,
                     'status'    => 0
                 );
+                JLog::add('# Error when passing data to APOGEE server, cURL exec fail or HTTP status is not 200 ' . date('Y-m-d H:i:s'), JLog::ERROR, 'com_emundus');
             } else {
                 $data = array(
                     'date_time' => date('Y-m-d H:i:s'),
@@ -90,6 +95,7 @@ class SoapConnect {
                     'fnum'      => $fnum,
                     'status'    => 1
                 );
+
             }
 
         } catch(Exception $e) {
@@ -101,7 +107,7 @@ class SoapConnect {
                 'status'    => 0
             );
 
-            JLog::add('Error passing to APOGEE server, error:' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('# Error when passing data to APOGEE server, error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 
         finally {
@@ -114,5 +120,3 @@ class SoapConnect {
         }
     }
 }
-
-
