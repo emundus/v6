@@ -1516,7 +1516,7 @@ class EmundusModelEmails extends JModelList {
         }
         $sortDb = 'se.id ';
 
-        if ($filter == 'Publish') {
+        if ($filter == 'Publish' || $filter == 'published') {
             $filterDate = $this->_db->quoteName('se.published') . ' = 1';
         } else if ($filter == 'Unpublish') {
             $filterDate = $this->_db->quoteName('se.published') . ' = 0';
