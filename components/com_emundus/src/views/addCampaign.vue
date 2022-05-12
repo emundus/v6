@@ -172,6 +172,7 @@
                       placeholder=" "
                       v-model="programForm.label"
                       @keyup="updateCode"
+                      @focusout="updateCode"
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
@@ -418,16 +419,16 @@ export default {
     },
     updateCode() {
       if(this.programForm.label !== ''){
-        this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';
-        if(Object.keys(this.programs).length !== 0) {
+        this.programForm.code = this.programForm.label.replace(/[^a-zA-Z0-9]/g,'').substring(0,10) + '_00';
+
+        if (Object.keys(this.programs).length !== 0) {
           this.programs.forEach((element) => {
             if (this.programForm.code == element.code) {
-              let newCode = parseInt(element.code.split('_')[1]) + 1;
-              if (newCode > 10) {
-                this.programForm.code = this.programForm.label.toUpperCase() + '_' + newCode;
-              } else {
-                this.programForm.code = this.programForm.label.toUpperCase() + '_0' + newCode;
-              }
+              // change last digit inside string to next available number
+              let code = this.programForm.code.split('_');
+              let number = parseInt(code[1]) + 1;
+              code[1] = number;
+              this.programForm.code = code.join('_');
             }
           });
         }
