@@ -3776,13 +3776,15 @@ button.swal2-cancel.goback-btn {
           width: 100% !important;
 
           ol {
-            width: 90%;
+            width: 80%;
             text-align: justify;
-            margin-left: 0px !important;
+            margin-left: 0 !important;
+            padding: 0 !important;
           }
 
           div.em-heading-registration {
-            width: 86%;
+            width: 100%;
+            padding: 80px 24px 32px 24px;
           }
 
           form.fabrikForm {

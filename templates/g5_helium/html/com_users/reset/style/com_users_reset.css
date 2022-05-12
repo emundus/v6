@@ -227,7 +227,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     .view-reset .form-validate.form-horizontal.well,
     .view-reset .reset-complete .form-validate.form-horizontal.well {
         width: 100% !important;
-        padding: 0 24px 80px 24px !important;
+        padding: 32px 24px 80px 24px !important;
     }
 
     .view-reset #g-navigation .g-container {
@@ -250,9 +250,9 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 }
 
 @media screen and (min-width: 768px) and (max-width: 959px) {
-    .view-reset .reset .page-header,
-    .view-reset .reset-confirm .page-header,
-    .view-reset .reset-complete .page-header {
+    .view-reset .reset,
+    .view-reset .reset-confirm,
+    .view-reset .reset-complete  {
         width: 65% !important;
     }
 

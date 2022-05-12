@@ -84,8 +84,8 @@ ul.nav.nav-tabs.nav-stacked {
     width: 50%;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding: 0px 64px 80px 64px !important;
-    margin-top: 0px;
+    padding: 0 0 80px 0 !important;
+    margin-top: 0;
     margin-bottom: 50px;
 }
 
@@ -339,7 +339,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     ul.nav.nav-tabs.nav-stacked {
         justify-content: center;
         flex-direction: column;
-        padding: 0 24px 80px 24px;
         width: 100%;
     }
 
@@ -366,7 +365,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     ul.nav.nav-tabs.nav-stacked
     {
         width: 65%;
-        padding: 0 24px 80px 24px !important;
     }
 
     .view-login .login.em-formRegistrationCenter .page-header  {

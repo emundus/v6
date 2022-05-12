@@ -1553,13 +1553,8 @@ a.btn-attach:active {
     .view-registration .login div.em-heading-registration,
      .view-form .em-formRegistrationCenter div.em-heading-registration {
          padding: 80px 24px 32px 24px;
+         width: 100%;
     }
-    
-    .view-registration .login.em-formRegistrationCenter ol,
-     .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) ol {
-          width: 80%;
-          padding: 0px !important;
-     }
     
 }
 
@@ -1724,8 +1719,12 @@ a.btn-attach:active {
     }
     
     /* INSCRIPTION */ 
-    .view-registration form.fabrikForm,  .view-form .em-formRegistrationCenter {
-        width: 70%;   
+    .view-form .em-formRegistrationCenter {
+        width: 65% !important;   
+    }
+    
+    .view-registration form.fabrikForm  {
+        width: 100% !important;
     }
     
      .view-registration .em-formRegistrationCenter .em-heading-registration {
