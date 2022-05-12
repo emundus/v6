@@ -18,48 +18,48 @@ class FileSynchronizer
     /**
      * @var string $type of api used
      */
-    public string $type = 'ged';
+    public $type = 'ged';
 
     /**
      * @var array $auth
      */
-    private array $auth = array();
+    private $auth = array();
 
     /**
      * @var array $headers
      */
-    private array $headers = array();
+    private $headers = array();
 
     /**
      * @var string $baseUrl
      */
-    private string $baseUrl = '';
+    private $baseUrl = '';
 
     /**
      * @var string $authenticationUrl
      */
-    private string $authenticationUrl = '';
+    private $authenticationUrl = '';
 
 
     /**
      * @var string $coreUrl
      */
-    private string $coreUrl = '';
+    private $coreUrl = '';
 
     /**
      * @var string $modelUrl
      */
-    private string $modelUrl = '';
+    private $modelUrl = '';
 
     /**
      * @var string $searchUrl
      */
-    private string $searchUrl = '';
+    private $searchUrl = '';
 
     /**
      * @var string $emundusRootDirectory
      */
-    private string $emundusRootDirectory = '';
+    private $emundusRootDirectory = '';
 
     /**
      * @param $client GuzzleClient
@@ -71,7 +71,7 @@ class FileSynchronizer
         $this->setType($type);
     }
 
-    public function getType(): string
+    public function getType()
     {
         return $this->type;
     }
@@ -118,7 +118,7 @@ class FileSynchronizer
         );
     }
 
-    private function getHeaders(): array
+    private function getHeaders()
     {
         return $this->headers;
     }
@@ -136,7 +136,7 @@ class FileSynchronizer
         }
     }
 
-    private function getBaseUrl(): string
+    private function getBaseUrl()
     {
         return $this->baseUrl;
     }
@@ -488,7 +488,7 @@ class FileSynchronizer
         return $updated;
     }
 
-    public function deleteFile($upload_id): bool
+    public function deleteFile($upload_id)
     {
         $nodeId = $this->getNodeId($upload_id);
 
@@ -516,7 +516,7 @@ class FileSynchronizer
         return false;
     }
 
-    public function checkFileExists($upload_id): bool {
+    public function checkFileExists($upload_id) {
         $exists = false;
 
         switch ($this->type) {
@@ -551,7 +551,7 @@ class FileSynchronizer
         return $exists;
     }
 
-    private function getRelativePaths(): array
+    private function getRelativePaths()
     {
         $paths = array();
 
@@ -756,7 +756,7 @@ class FileSynchronizer
         return $filename;
     }
 
-    private function getFnum($upload_id): string
+    private function getFnum($upload_id)
     {
         $fnum = '';
         $db = JFactory::getDbo();
@@ -776,7 +776,7 @@ class FileSynchronizer
         return $fnum;
     }
 
-    private function getFilePath($upload_id): string
+    private function getFilePath($upload_id)
     {
         $filePath = "";
         $user = $this->getApplicantId($upload_id);
@@ -798,7 +798,7 @@ class FileSynchronizer
         return $filePath;
     }
 
-    private function getApplicantId($upload_id): string
+    private function getApplicantId($upload_id)
     {
         $applicant_id = '';
         $db = JFactory::getDbo();
@@ -819,7 +819,7 @@ class FileSynchronizer
         return trim($applicant_id);
     }
 
-    private function getCampaignLabel($upload_id): string
+    private function getCampaignLabel($upload_id)
     {
         $campaign_label = '';
         $db = JFactory::getDbo();
@@ -841,7 +841,7 @@ class FileSynchronizer
         return trim($campaign_label);
     }
 
-    private function getCampaignYear($upload_id): string
+    private function getCampaignYear($upload_id)
     {
         $year = '';
         $db = JFactory::getDbo();
@@ -863,7 +863,7 @@ class FileSynchronizer
         return trim($year);
     }
 
-    private function getDocumentType($upload_id): string
+    private function getDocumentType($upload_id)
     {
         $type = "";
         $db = JFactory::getDbo();
@@ -907,7 +907,7 @@ class FileSynchronizer
        }
     }
 
-    private function getGEDProperties($upload_id): array
+    private function getGEDProperties($upload_id)
     {
         $properties = [];
 
@@ -993,7 +993,7 @@ class FileSynchronizer
     }
 
 
-    private function getConfigAspects(): array
+    private function getConfigAspects()
     {
         $aspects = [];
 
