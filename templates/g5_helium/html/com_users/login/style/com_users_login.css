@@ -316,7 +316,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
     .view-login .login  {
          width: 100% !important;
-        padding: 80px 24px 0 24px
+        padding: 80px 24px 0 24px;
     }
 
     .view-login .login .page-header {
@@ -340,7 +340,7 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         justify-content: center;
         flex-direction: column;
         padding: 0 24px 80px 24px;
-        width: 65%;
+        width: 100%;
     }
 
     ul.nav.nav-tabs.nav-stacked li {
@@ -358,10 +358,15 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
         width: 80%;
     }
 
-    #g-container-main div.em-formRegistrationCenter, #g-container-main div.login,
+    #g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
+        width: 65%;
+        padding: 80px 24px 0px 24px !important;
+    }
+
     ul.nav.nav-tabs.nav-stacked
     {
         width: 65%;
+        padding: 0 24px 80px 24px !important;
     }
 
     .view-login .login.em-formRegistrationCenter .page-header  {

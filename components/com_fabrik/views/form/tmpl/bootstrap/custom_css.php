@@ -1550,9 +1550,16 @@ a.btn-attach:active {
        align-items: end;
     }
     
-    .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
+    .view-registration .login div.em-heading-registration,
+     .view-form .em-formRegistrationCenter div.em-heading-registration {
          padding: 80px 24px 32px 24px;
     }
+    
+    .view-registration .login.em-formRegistrationCenter ol,
+     .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) ol {
+          width: 80%;
+          padding: 0px !important;
+     }
     
 }
 
