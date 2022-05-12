@@ -3718,6 +3718,10 @@ button.swal2-cancel.goback-btn {
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
+
+            input  {
+              width: auto;
+            }
           }
         }
 
@@ -4053,6 +4057,9 @@ button.swal2-cancel.goback-btn {
           flex-direction: column;
           justify-content: space-between;
           height: 100%;
+          input  {
+            width: auto;
+          }
         }
       }
 
@@ -4479,6 +4486,9 @@ button.swal2-cancel.goback-btn {
           flex-direction: column;
           justify-content: space-between;
           height: 100%;
+          input  {
+            width: auto;
+          }
         }
       }
 
