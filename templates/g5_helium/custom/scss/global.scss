@@ -3704,6 +3704,26 @@ button.swal2-cancel.goback-btn {
     .view-registration form.fabrikForm,
     .view-form .em-formRegistrationCenter form.fabrikForm {
       padding: 0px 24px 80px 24px;
+      width: 100%;
+    }
+
+    /* FORMULAIRES  - GP REPEAT TABLEAU */
+     .view-form .fabrikGroup .repeatGroupTable  {
+       display: flex;
+       flex-direction: row;
+        thead, tbody {
+          width: 100%;
+          tr {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+          }
+        }
+
+       .fabrikGroupRepeater {
+         bottom: 0px !important;
+       }
     }
 
 
@@ -4020,6 +4040,25 @@ button.swal2-cancel.goback-btn {
   @media all and (min-width: 480px) and (max-width: 767px) {
     .gantry #g-feature {
       margin-top: 100px;
+    }
+
+    /* FORMULAIRES  - GP REPEAT TABLEAU */
+    .view-form .fabrikGroup .repeatGroupTable  {
+      display: flex;
+      flex-direction: row;
+      thead, tbody {
+        width: 100%;
+        tr {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
+        }
+      }
+
+      .fabrikGroupRepeater {
+        bottom: 0px !important;
+      }
     }
 
     /* BURGER */
@@ -4428,6 +4467,26 @@ button.swal2-cancel.goback-btn {
 
 
   @media screen and (min-width: 768px) and (max-width: 959px) {
+
+    /* FORMULAIRES  - GP REPEAT TABLEAU */
+    .view-form .fabrikGroup .repeatGroupTable  {
+      display: flex;
+      flex-direction: row;
+      thead, tbody {
+        width: 100%;
+        tr {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
+        }
+      }
+
+      .fabrikGroupRepeater {
+        bottom: 0px !important;
+      }
+    }
+
     .header-right a.btn:first-child {
       margin-bottom: 10px;
     }

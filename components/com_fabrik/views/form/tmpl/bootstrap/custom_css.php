@@ -1728,7 +1728,7 @@ a.btn-attach:active {
     }
     
      .view-registration .em-formRegistrationCenter .em-heading-registration {
-        width: 75% !important;   
+        width: 100% !important;   
     }
     
     .view-registration ol {
