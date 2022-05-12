@@ -71,7 +71,7 @@ class FileSynchronizer
         $this->setType($type);
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -118,7 +118,7 @@ class FileSynchronizer
         );
     }
 
-    private function getHeaders()
+    private function getHeaders(): array
     {
         return $this->headers;
     }
@@ -136,7 +136,7 @@ class FileSynchronizer
         }
     }
 
-    private function getBaseUrl()
+    private function getBaseUrl(): string
     {
         return $this->baseUrl;
     }
@@ -488,7 +488,7 @@ class FileSynchronizer
         return $updated;
     }
 
-    public function deleteFile($upload_id)
+    public function deleteFile($upload_id): bool
     {
         $nodeId = $this->getNodeId($upload_id);
 
@@ -516,7 +516,7 @@ class FileSynchronizer
         return false;
     }
 
-    public function checkFileExists($upload_id) {
+    public function checkFileExists($upload_id): bool {
         $exists = false;
 
         switch ($this->type) {
@@ -551,7 +551,7 @@ class FileSynchronizer
         return $exists;
     }
 
-    private function getRelativePaths()
+    private function getRelativePaths(): array
     {
         $paths = array();
 
@@ -756,7 +756,7 @@ class FileSynchronizer
         return $filename;
     }
 
-    private function getFnum($upload_id)
+    private function getFnum($upload_id): string
     {
         $fnum = '';
         $db = JFactory::getDbo();
@@ -776,7 +776,7 @@ class FileSynchronizer
         return $fnum;
     }
 
-    private function getFilePath($upload_id)
+    private function getFilePath($upload_id): string
     {
         $filePath = "";
         $user = $this->getApplicantId($upload_id);
@@ -798,7 +798,7 @@ class FileSynchronizer
         return $filePath;
     }
 
-    private function getApplicantId($upload_id)
+    private function getApplicantId($upload_id): string
     {
         $applicant_id = '';
         $db = JFactory::getDbo();
@@ -819,7 +819,7 @@ class FileSynchronizer
         return trim($applicant_id);
     }
 
-    private function getCampaignLabel($upload_id)
+    private function getCampaignLabel($upload_id): string
     {
         $campaign_label = '';
         $db = JFactory::getDbo();
@@ -841,7 +841,7 @@ class FileSynchronizer
         return trim($campaign_label);
     }
 
-    private function getCampaignYear($upload_id)
+    private function getCampaignYear($upload_id): string
     {
         $year = '';
         $db = JFactory::getDbo();
@@ -863,7 +863,7 @@ class FileSynchronizer
         return trim($year);
     }
 
-    private function getDocumentType($upload_id)
+    private function getDocumentType($upload_id): string
     {
         $type = "";
         $db = JFactory::getDbo();
@@ -907,7 +907,7 @@ class FileSynchronizer
        }
     }
 
-    private function getGEDProperties($upload_id)
+    private function getGEDProperties($upload_id): array
     {
         $properties = [];
 
@@ -993,7 +993,7 @@ class FileSynchronizer
     }
 
 
-    private function getConfigAspects()
+    private function getConfigAspects(): array
     {
         $aspects = [];
 
