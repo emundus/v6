@@ -3700,6 +3700,13 @@ button.swal2-cancel.goback-btn {
   /* MOBILE */
   @media all and (max-width: 479px) {
 
+    /* FORMULAIRES  */
+    .view-registration form.fabrikForm,
+    .view-form .em-formRegistrationCenter form.fabrikForm {
+      padding: 0px 24px 80px 24px;
+    }
+
+
     .view-programme {
       #documents .single-campaign .below-content {
         width: 100%;

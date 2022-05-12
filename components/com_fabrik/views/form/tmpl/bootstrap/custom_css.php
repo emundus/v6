@@ -1550,6 +1550,10 @@ a.btn-attach:active {
        align-items: end;
     }
     
+    .view-registration .login div.em-heading-registration, .view-form .em-formRegistrationCenter div.em-heading-registration {
+         padding: 80px 24px 32px 24px;
+    }
+    
 }
 
 @media all and (min-width 480px) and (max-width: 767px) {
