@@ -524,7 +524,11 @@ class FileSynchronizer
                 $nodeId = $this->getNodeId($upload_id);
                 if (!empty($nodeId)) {
                     $response = $this->get($this->coreUrl . "/nodes/$nodeId");
-                    $exists = !empty($response->entry->id);
+
+                    if (!empty($response->entry->id)) {
+                        $exists = true;
+                        $this->updateUploadSyncState($upload_id, $nodeId);
+                    }
                 }
                 break;
             default:
@@ -681,6 +685,34 @@ class FileSynchronizer
         }
 
         return $saved;
+    }
+
+    private function updateNodeId($upload_id, $node_id, $params)
+    {
+        $updated = false;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->update('#__emundus_uploads_sync')
+            ->set('node_id = ' . $db->quote($node_id))
+            ->where("upload_id = " . $db->quote($upload_id));
+
+        if (!empty($params)) {
+            foreach ($params as $key => $value) {
+                $query->set($key . ' = ' . $db->quote($value));
+            }
+        }
+
+        $db->setQuery($query);
+
+        try {
+            $updated = $db->execute();
+        } catch (Exception $e) {
+            $app = JFactory::getApplication();
+            $app->enqueueMessage($e->getMessage(), 'error');
+            JLog::add('Error updating #__emundus_uploads_sync: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $updated;
     }
 
     private function getSyncId()
