@@ -3227,6 +3227,12 @@ button.swal2-cancel.goback-btn {
           margin: 48px 0 48px 0;
           flex-direction: column;
 
+          /* ERROR */
+
+          &.error input {
+            @include input-error;
+          }
+
           /* DISPLAY */
           &.plg-display .fabrikinput {
             height: auto !important;
