@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -43,13 +43,45 @@ class Tag extends Condition
 		return $this->passTag($this->request->id);
 	}
 
-	private function getTagsParentIds($id = 0)
+	private function passTagsContent()
 	{
-		$parentids = $this->getParentIds($id, 'tags');
-		// Remove the root tag
-		$parentids = array_diff($parentids, [1]);
+		$is_item     = in_array($this->request->view, ['', 'article', 'item']);
+		$is_category = in_array($this->request->view, ['category']);
 
-		return $parentids;
+		switch (true)
+		{
+			case ($is_item):
+				$prefix = 'com_content.article';
+				break;
+
+			case ($is_category):
+				$prefix = 'com_content.category';
+				break;
+
+			default:
+				return $this->_(false);
+		}
+
+		// Load the tags.
+		$query = $this->db->getQuery(true)
+			->select($this->db->quoteName('t.id'))
+			->select($this->db->quoteName('t.title'))
+			->from('#__tags AS t')
+			->join(
+				'INNER', '#__contentitem_tag_map AS m'
+				. ' ON m.tag_id = t.id'
+				. ' AND m.type_alias = ' . $this->db->quote($prefix)
+				. ' AND m.content_item_id = ' . (int) $this->request->id
+			);
+		$this->db->setQuery($query);
+		$tags = $this->db->loadObjectList();
+
+		if (empty($tags))
+		{
+			return $this->_(false);
+		}
+
+		return $this->_($this->passTagList($tags));
 	}
 
 	private function passTag($tag)
@@ -95,6 +127,15 @@ class Tag extends Condition
 		return false;
 	}
 
+	private function getTagsParentIds($id = 0)
+	{
+		$parentids = $this->getParentIds($id, 'tags');
+		// Remove the root tag
+		$parentids = array_diff($parentids, [1]);
+
+		return $parentids;
+	}
+
 	private function passTagListMatchAll($tags)
 	{
 		foreach ($this->selection as $id)
@@ -120,46 +161,5 @@ class Tag extends Condition
 		}
 
 		return false;
-	}
-
-	private function passTagsContent()
-	{
-		$is_item     = in_array($this->request->view, ['', 'article', 'item']);
-		$is_category = in_array($this->request->view, ['category']);
-
-		switch (true)
-		{
-			case ($is_item):
-				$prefix = 'com_content.article';
-				break;
-
-			case ($is_category):
-				$prefix = 'com_content.category';
-				break;
-
-			default:
-				return $this->_(false);
-		}
-
-		// Load the tags.
-		$query = $this->db->getQuery(true)
-			->select($this->db->quoteName('t.id'))
-			->select($this->db->quoteName('t.title'))
-			->from('#__tags AS t')
-			->join(
-				'INNER', '#__contentitem_tag_map AS m'
-				. ' ON m.tag_id = t.id'
-				. ' AND m.type_alias = ' . $this->db->quote($prefix)
-				. ' AND m.content_item_id = ' . (int) $this->request->id
-			);
-		$this->db->setQuery($query);
-		$tags = $this->db->loadObjectList();
-
-		if (empty($tags))
-		{
-			return $this->_(false);
-		}
-
-		return $this->_($this->passTagList($tags));
 	}
 }

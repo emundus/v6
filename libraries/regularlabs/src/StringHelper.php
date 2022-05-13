@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -102,30 +102,32 @@ class StringHelper extends \Joomla\String\StringHelper
 	}
 
 	/**
-	 * Check if any of the needles are found in any of the haystacks
+	 * Converts a string to a underscore separated string
+	 * eg: FooBar => foo_bar
+	 * eg: foo-bar => foo_bar
 	 *
-	 * @param $haystacks
-	 * @param $needles
+	 * @param string $string
+	 * @param bool   $to_lowercase
 	 *
-	 * @return bool
+	 * @return string
 	 */
-	public static function contains($haystacks, $needles)
+	public static function toUnderscoreCase($string = '', $to_lowercase = true)
 	{
-		$haystacks = (array) $haystacks;
-		$needles   = (array) $needles;
+		$array = ArrayHelper::applyMethodToValues([$string, $to_lowercase]);
 
-		foreach ($haystacks as $haystack)
+		if ( ! is_null($array))
 		{
-			foreach ($needles as $needle)
-			{
-				if (strpos($haystack, $needle) !== false)
-				{
-					return true;
-				}
-			}
+			return $array;
 		}
 
-		return false;
+		$string = JNormalise::toUnderscoreSeparated(JNormalise::fromCamelCase($string));
+
+		if ( ! $to_lowercase)
+		{
+			return $string;
+		}
+
+		return strtolower($string);
 	}
 
 	/**
@@ -492,6 +494,33 @@ class StringHelper extends \Joomla\String\StringHelper
 	}
 
 	/**
+	 * Check if any of the needles are found in any of the haystacks
+	 *
+	 * @param $haystacks
+	 * @param $needles
+	 *
+	 * @return bool
+	 */
+	public static function contains($haystacks, $needles)
+	{
+		$haystacks = (array) $haystacks;
+		$needles   = (array) $needles;
+
+		foreach ($haystacks as $haystack)
+		{
+			foreach ($needles as $needle)
+			{
+				if (strpos($haystack, $needle) !== false)
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Converts a string to a camel case
 	 * eg: foo_bar => FooBar
 	 * eg: foo-bar => FooBar
@@ -511,35 +540,6 @@ class StringHelper extends \Joomla\String\StringHelper
 		}
 
 		$string = JNormalise::toCamelCase($string);
-
-		if ( ! $to_lowercase)
-		{
-			return $string;
-		}
-
-		return strtolower($string);
-	}
-
-	/**
-	 * Converts a string to a camel case
-	 * eg: FooBar => foo-bar
-	 * eg: foo_bar => foo-bar
-	 *
-	 * @param string|array|object $string
-	 * @param bool                $to_lowercase
-	 *
-	 * @return string|array
-	 */
-	public static function toDashCase($string = '', $to_lowercase = true)
-	{
-		$array = ArrayHelper::applyMethodToValues([$string, $to_lowercase]);
-
-		if ( ! is_string($string))
-		{
-			return $array;
-		}
-
-		$string = JNormalise::toDashSeparated(JNormalise::fromCamelCase($string));
 
 		if ( ! $to_lowercase)
 		{
@@ -574,25 +574,25 @@ class StringHelper extends \Joomla\String\StringHelper
 	}
 
 	/**
-	 * Converts a string to a underscore separated string
-	 * eg: FooBar => foo_bar
-	 * eg: foo-bar => foo_bar
+	 * Converts a string to a camel case
+	 * eg: FooBar => foo-bar
+	 * eg: foo_bar => foo-bar
 	 *
-	 * @param string $string
-	 * @param bool   $to_lowercase
+	 * @param string|array|object $string
+	 * @param bool                $to_lowercase
 	 *
-	 * @return string
+	 * @return string|array
 	 */
-	public static function toUnderscoreCase($string = '', $to_lowercase = true)
+	public static function toDashCase($string = '', $to_lowercase = true)
 	{
 		$array = ArrayHelper::applyMethodToValues([$string, $to_lowercase]);
 
-		if ( ! is_null($array))
+		if ( ! is_string($string))
 		{
 			return $array;
 		}
 
-		$string = JNormalise::toUnderscoreSeparated(JNormalise::fromCamelCase($string));
+		$string = JNormalise::toDashSeparated(JNormalise::fromCamelCase($string));
 
 		if ( ! $to_lowercase)
 		{

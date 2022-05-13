@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -43,43 +43,134 @@ class PluginTag
 	}
 
 	/**
-	 * Convert an object using the old param style to the new syntax
+	 * Extract the plugin style div tags with the possible attributes. like:
+	 * {div width:100|float:left}...{/div}
 	 *
-	 * @param object $attributes
-	 * @param array  $known_boolean_keys
-	 * @param string $extra_key
+	 * @param string $start_tag
+	 * @param string $end_tag
+	 * @param string $tag_start
+	 * @param string $tag_end
+	 *
+	 * @return array
 	 */
-	public static function convertOldSyntax(&$attributes, $known_boolean_keys = [], $extra_key = 'class')
+	public static function getDivTags($start_tag = '', $end_tag = '', $tag_start = '{', $tag_end = '}')
 	{
-		$extra = isset($attributes->class) ? [$attributes->class] : [];
+		$tag_start = RegEx::quote($tag_start);
+		$tag_end   = RegEx::quote($tag_end);
 
-		foreach ($attributes->params as $i => $param)
+		$start_div = ['pre' => '', 'tag' => '', 'post' => ''];
+		$end_div   = ['pre' => '', 'tag' => '', 'post' => ''];
+
+		if ( ! empty($start_tag)
+			&& RegEx::match(
+				'^(?<pre>.*?)(?<tag>' . $tag_start . 'div(?: .*?)?' . $tag_end . ')(?<post>.*)$',
+				$start_tag,
+				$match
+			)
+		)
 		{
-			if ( ! $param)
+			$start_div = $match;
+		}
+
+		if ( ! empty($end_tag)
+			&& RegEx::match(
+				'^(?<pre>.*?)(?<tag>' . $tag_start . '/div' . $tag_end . ')(?<post>.*)$',
+				$end_tag,
+				$match
+			)
+		)
+		{
+			$end_div = $match;
+		}
+
+		if (empty($start_div['tag']) || empty($end_div['tag']))
+		{
+			return [$start_div, $end_div];
+		}
+
+		$attribs = trim(RegEx::replace($tag_start . 'div(.*)' . $tag_end, '\1', $start_div['tag']));
+
+		$start_div['tag'] = '<div>';
+		$end_div['tag']   = '</div>';
+
+		if (empty($attribs))
+		{
+			return [$start_div, $end_div];
+		}
+
+		$attribs = self::getDivAttributes($attribs);
+
+		$style = [];
+
+		if (isset($attribs->width))
+		{
+			if (is_numeric($attribs->width))
+			{
+				$attribs->width .= 'px';
+			}
+			$style[] = 'width:' . $attribs->width;
+		}
+
+		if (isset($attribs->height))
+		{
+			if (is_numeric($attribs->height))
+			{
+				$attribs->height .= 'px';
+			}
+			$style[] = 'height:' . $attribs->height;
+		}
+
+		if (isset($attribs->align))
+		{
+			$style[] = 'float:' . $attribs->align;
+		}
+
+		if ( ! isset($attribs->align) && isset($attribs->float))
+		{
+			$style[] = 'float:' . $attribs->float;
+		}
+
+		$attribs = isset($attribs->class) ? 'class="' . $attribs->class . '"' : '';
+
+		if ( ! empty($style))
+		{
+			$attribs .= ' style="' . implode(';', $style) . ';"';
+		}
+
+		$start_div['tag'] = trim('<div ' . trim($attribs)) . '>';
+
+		return [$start_div, $end_div];
+	}
+
+	/**
+	 * Get the attributes from a plugin style div tag
+	 *
+	 * @param string $string
+	 *
+	 * @return object
+	 */
+	private static function getDivAttributes($string)
+	{
+		if (strpos($string, '="') !== false)
+		{
+			return self::getAttributesFromString($string);
+		}
+
+		$parts      = explode('|', $string);
+		$attributes = (object) [];
+
+		foreach ($parts as $e)
+		{
+			if (strpos($e, ':') === false)
 			{
 				continue;
 			}
 
-			if (in_array($param, $known_boolean_keys))
-			{
-				$attributes->{$param} = true;
-				continue;
-			}
-
-			if (strpos($param, '=') == false)
-			{
-				$extra[] = $param;
-				continue;
-			}
-
-			[$key, $val] = explode('=', $param, 2);
-
+			[$key, $val] = explode(':', $e, 2);
 			$attributes->{$key} = $val;
 		}
 
-		$attributes->{$extra_key} = trim(implode(' ', $extra));
-
-		unset($attributes->params);
+		return $attributes;
 	}
 
 	/**
@@ -148,6 +239,79 @@ class PluginTag
 		}
 
 		return $tag;
+	}
+
+	/**
+	 * Replace special characters in the string with the protected versions
+	 *
+	 * @param string $string
+	 */
+	public static function protectSpecialChars(&$string)
+	{
+		$unescaped_chars = array_keys(self::$protected_characters);
+		array_walk($unescaped_chars, function (&$char) {
+			$char = '\\' . $char;
+		});
+
+		// replace escaped characters with special markup
+		$string = str_replace(
+			$unescaped_chars,
+			array_values(self::$protected_characters),
+			$string
+		);
+
+		if ( ! RegEx::matchAll(
+			'(<[a-z][a-z0-9-_]*(?: [a-z0-9-_]*=".*?")* ?/?>|{.*?}|\[.*?\])',
+			$string,
+			$tags,
+			null,
+			PREG_PATTERN_ORDER
+		)
+		)
+		{
+			return;
+		}
+
+		foreach ($tags[0] as $tag)
+		{
+			// replace unescaped characters with special markup
+			$protected = str_replace(
+				['=', '"'],
+				[self::$protected_characters['='], self::$protected_characters['"']],
+				$tag
+			);
+
+			$string = str_replace($tag, $protected, $string);
+		}
+	}
+
+	/**
+	 * Replace protected characters in the string with the original special versions
+	 *
+	 * @param string $string
+	 * @param array  $keep_escaped_chars
+	 */
+	public static function unprotectSpecialChars(&$string, $keep_escaped_chars = [])
+	{
+		$unescaped_chars = array_keys(self::$protected_characters);
+
+		if ( ! empty($keep_escaped_chars))
+		{
+			array_walk($unescaped_chars, function (&$char, $key, $keep_escaped_chars) {
+				if (is_array($keep_escaped_chars) && ! in_array($char, $keep_escaped_chars))
+				{
+					return;
+				}
+				$char = '\\' . $char;
+			}, $keep_escaped_chars);
+		}
+
+		// replace special markup with unescaped characters
+		$string = str_replace(
+			array_values(self::$protected_characters),
+			$unescaped_chars,
+			$string
+		);
 	}
 
 	/**
@@ -271,103 +435,88 @@ class PluginTag
 	}
 
 	/**
-	 * Extract the plugin style div tags with the possible attributes. like:
-	 * {div width:100|float:left}...{/div}
+	 * Convert an object using the old param style to the new syntax
 	 *
-	 * @param string $start_tag
-	 * @param string $end_tag
-	 * @param string $tag_start
-	 * @param string $tag_end
-	 *
-	 * @return array
+	 * @param object $attributes
+	 * @param array  $known_boolean_keys
+	 * @param string $extra_key
 	 */
-	public static function getDivTags($start_tag = '', $end_tag = '', $tag_start = '{', $tag_end = '}')
+	public static function convertOldSyntax(&$attributes, $known_boolean_keys = [], $extra_key = 'class')
 	{
-		$tag_start = RegEx::quote($tag_start);
-		$tag_end   = RegEx::quote($tag_end);
+		$extra = isset($attributes->class) ? [$attributes->class] : [];
 
-		$start_div = ['pre' => '', 'tag' => '', 'post' => ''];
-		$end_div   = ['pre' => '', 'tag' => '', 'post' => ''];
+		foreach ($attributes->params as $i => $param)
+		{
+			if ( ! $param)
+			{
+				continue;
+			}
 
-		if ( ! empty($start_tag)
-			&& RegEx::match(
-				'^(?<pre>.*?)(?<tag>' . $tag_start . 'div(?: .*?)?' . $tag_end . ')(?<post>.*)$',
-				$start_tag,
-				$match
+			if (in_array($param, $known_boolean_keys))
+			{
+				$attributes->{$param} = true;
+				continue;
+			}
+
+			if (strpos($param, '=') == false)
+			{
+				$extra[] = $param;
+				continue;
+			}
+
+			[$key, $val] = explode('=', $param, 2);
+
+			$attributes->{$key} = $val;
+		}
+
+		$attributes->{$extra_key} = trim(implode(' ', $extra));
+
+		unset($attributes->params);
+	}
+
+	/**
+	 * Get the value from a found attribute match
+	 *
+	 * @param array $match
+	 * @param array $known_boolean_keys
+	 * @param array $keep_escaped_chars
+	 *
+	 * @return bool|int|string
+	 */
+	private static function getAttributeValueFromMatch($match, $known_boolean_keys = [], $keep_escaped_chars = [','])
+	{
+		$value = $match['value'];
+
+		self::unprotectSpecialChars($value, $keep_escaped_chars);
+
+		if (is_numeric($value)
+			&& (
+				in_array($match['key'], $known_boolean_keys)
+				|| in_array(strtolower($match['key']), $known_boolean_keys)
 			)
 		)
 		{
-			$start_div = $match;
+			$value = $value ? 'true' : 'false';
 		}
 
-		if ( ! empty($end_tag)
-			&& RegEx::match(
-				'^(?<pre>.*?)(?<tag>' . $tag_start . '/div' . $tag_end . ')(?<post>.*)$',
-				$end_tag,
-				$match
-			)
-		)
+		// Convert numeric values to ints/floats
+		if (is_numeric($value))
 		{
-			$end_div = $match;
+			$value = $value + 0;
 		}
 
-		if (empty($start_div['tag']) || empty($end_div['tag']))
+		// Convert boolean values to actual booleans
+		if ($value === 'true' || $value === true)
 		{
-			return [$start_div, $end_div];
+			return $match['not'] ? false : true;
 		}
 
-		$attribs = trim(RegEx::replace($tag_start . 'div(.*)' . $tag_end, '\1', $start_div['tag']));
-
-		$start_div['tag'] = '<div>';
-		$end_div['tag']   = '</div>';
-
-		if (empty($attribs))
+		if ($value === 'false' || $value === false)
 		{
-			return [$start_div, $end_div];
+			return $match['not'] ? true : false;
 		}
 
-		$attribs = self::getDivAttributes($attribs);
-
-		$style = [];
-
-		if (isset($attribs->width))
-		{
-			if (is_numeric($attribs->width))
-			{
-				$attribs->width .= 'px';
-			}
-			$style[] = 'width:' . $attribs->width;
-		}
-
-		if (isset($attribs->height))
-		{
-			if (is_numeric($attribs->height))
-			{
-				$attribs->height .= 'px';
-			}
-			$style[] = 'height:' . $attribs->height;
-		}
-
-		if (isset($attribs->align))
-		{
-			$style[] = 'float:' . $attribs->align;
-		}
-
-		if ( ! isset($attribs->align) && isset($attribs->float))
-		{
-			$style[] = 'float:' . $attribs->float;
-		}
-
-		$attribs = isset($attribs->class) ? 'class="' . $attribs->class . '"' : '';
-
-		if ( ! empty($style))
-		{
-			$attribs .= ' style="' . implode(';', $style) . ';"';
-		}
-
-		$start_div['tag'] = trim('<div ' . trim($attribs)) . '>';
-
-		return [$start_div, $end_div];
+		return $match['not'] ? '!NOT!' . $value : $value;
 	}
 
 	/**
@@ -570,50 +719,6 @@ class PluginTag
 	}
 
 	/**
-	 * Replace special characters in the string with the protected versions
-	 *
-	 * @param string $string
-	 */
-	public static function protectSpecialChars(&$string)
-	{
-		$unescaped_chars = array_keys(self::$protected_characters);
-		array_walk($unescaped_chars, function (&$char) {
-			$char = '\\' . $char;
-		});
-
-		// replace escaped characters with special markup
-		$string = str_replace(
-			$unescaped_chars,
-			array_values(self::$protected_characters),
-			$string
-		);
-
-		if ( ! RegEx::matchAll(
-			'(<.*?>|{.*?}|\[.*?\])',
-			$string,
-			$tags,
-			null,
-			PREG_PATTERN_ORDER
-		)
-		)
-		{
-			return;
-		}
-
-		foreach ($tags[0] as $tag)
-		{
-			// replace unescaped characters with special markup
-			$protected = str_replace(
-				['=', '"'],
-				[self::$protected_characters['='], self::$protected_characters['"']],
-				$tag
-			);
-
-			$string = str_replace($tag, $protected, $string);
-		}
-	}
-
-	/**
 	 * Replace keys aliases with the main key names in an object
 	 *
 	 * @param object $attributes
@@ -642,111 +747,6 @@ class PluginTag
 				}
 			}
 		}
-	}
-
-	/**
-	 * Replace protected characters in the string with the original special versions
-	 *
-	 * @param string $string
-	 * @param array  $keep_escaped_chars
-	 */
-	public static function unprotectSpecialChars(&$string, $keep_escaped_chars = [])
-	{
-		$unescaped_chars = array_keys(self::$protected_characters);
-
-		if ( ! empty($keep_escaped_chars))
-		{
-			array_walk($unescaped_chars, function (&$char, $key, $keep_escaped_chars) {
-				if (is_array($keep_escaped_chars) && ! in_array($char, $keep_escaped_chars))
-				{
-					return;
-				}
-				$char = '\\' . $char;
-			}, $keep_escaped_chars);
-		}
-
-		// replace special markup with unescaped characters
-		$string = str_replace(
-			array_values(self::$protected_characters),
-			$unescaped_chars,
-			$string
-		);
-	}
-
-	/**
-	 * Get the value from a found attribute match
-	 *
-	 * @param array $match
-	 * @param array $known_boolean_keys
-	 * @param array $keep_escaped_chars
-	 *
-	 * @return bool|int|string
-	 */
-	private static function getAttributeValueFromMatch($match, $known_boolean_keys = [], $keep_escaped_chars = [','])
-	{
-		$value = $match['value'];
-
-		self::unprotectSpecialChars($value, $keep_escaped_chars);
-
-		if (is_numeric($value)
-			&& (
-				in_array($match['key'], $known_boolean_keys)
-				|| in_array(strtolower($match['key']), $known_boolean_keys)
-			)
-		)
-		{
-			$value = $value ? 'true' : 'false';
-		}
-
-		// Convert numeric values to ints/floats
-		if (is_numeric($value))
-		{
-			$value = $value + 0;
-		}
-
-		// Convert boolean values to actual booleans
-		if ($value === 'true' || $value === true)
-		{
-			return $match['not'] ? false : true;
-		}
-
-		if ($value === 'false' || $value === false)
-		{
-			return $match['not'] ? true : false;
-		}
-
-		return $match['not'] ? '!NOT!' . $value : $value;
-	}
-
-	/**
-	 * Get the attributes from a plugin style div tag
-	 *
-	 * @param string $string
-	 *
-	 * @return object
-	 */
-	private static function getDivAttributes($string)
-	{
-		if (strpos($string, '="') !== false)
-		{
-			return self::getAttributesFromString($string);
-		}
-
-		$parts      = explode('|', $string);
-		$attributes = (object) [];
-
-		foreach ($parts as $e)
-		{
-			if (strpos($e, ':') === false)
-			{
-				continue;
-			}
-
-			[$key, $val] = explode(':', $e, 2);
-			$attributes->{$key} = $val;
-		}
-
-		return $attributes;
 	}
 
 	/**

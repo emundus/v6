@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\HTML\HTMLHelper as JHtml;
 use Joomla\CMS\Language\Text as JText;
 use Joomla\Registry\Registry;
+use RegularLabs\Library\Field;
 
 if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 {
@@ -22,7 +23,7 @@ if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 
 require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 
-class JFormFieldRL_Tags extends \RegularLabs\Library\Field
+class JFormFieldRL_Tags extends Field
 {
 	public $type = 'Tags';
 
@@ -58,6 +59,24 @@ class JFormFieldRL_Tags extends \RegularLabs\Library\Field
 		return $options;
 	}
 
+	protected function getTags($use_names)
+	{
+		$value = $use_names ? 'a.title' : 'a.id';
+
+		$query = $this->db->getQuery(true)
+			->select($value . ' as value, a.title as text, a.parent_id AS parent')
+			->from('#__tags AS a')
+			->select('COUNT(DISTINCT b.id) - 1 AS level')
+			->join('LEFT', '#__tags AS b ON a.lft > b.lft AND a.rgt < b.rgt')
+			->where('a.alias <> ' . $this->db->quote('root'))
+			->where('a.published IN (0,1)')
+			->group('a.id')
+			->order('a.lft ASC');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList();
+	}
+
 	protected function getInput()
 	{
 		$size        = (int) $this->get('size');
@@ -75,23 +94,5 @@ class JFormFieldRL_Tags extends \RegularLabs\Library\Field
 			compact('size', 'simple', 'show_ignore', 'use_names'),
 			$simple
 		);
-	}
-
-	protected function getTags($use_names)
-	{
-		$value = $use_names ? 'a.title' : 'a.id';
-
-		$query = $this->db->getQuery(true)
-			->select($value . ' as value, a.title as text, a.parent_id AS parent')
-			->from('#__tags AS a')
-			->select('COUNT(DISTINCT b.id) - 1 AS level')
-			->join('LEFT', '#__tags AS b ON a.lft > b.lft AND a.rgt < b.rgt')
-			->where('a.alias <> ' . $this->db->quote('root'))
-			->where('a.published IN (0,1)')
-			->group('a.id')
-			->order('a.lft ASC');
-		$this->db->setQuery($query);
-
-		return $this->db->loadObjectList();
 	}
 }

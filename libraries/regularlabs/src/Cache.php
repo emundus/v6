@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -69,15 +69,6 @@ class Cache
 
 	// Get the cached object from the Joomla cache
 
-	public static function set($id, $data)
-	{
-		self::$cache[md5($id)] = $data;
-
-		return $data;
-	}
-
-	// Save the cached object to the Joomla cache
-
 	public static function write($id, $data, $time_to_life_in_minutes = 0, $force_caching = true)
 	{
 		if (JFactory::getApplication()->get('debug'))
@@ -105,6 +96,15 @@ class Cache
 		$cache->store($data, $hash);
 
 		self::set($hash, $data);
+
+		return $data;
+	}
+
+	// Save the cached object to the Joomla cache
+
+	public static function set($id, $data)
+	{
+		self::$cache[md5($id)] = $data;
 
 		return $data;
 	}

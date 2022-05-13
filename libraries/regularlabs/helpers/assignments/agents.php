@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -28,11 +28,11 @@ class RLAssignmentsAgents extends RLAssignment
 	var $device = null;
 
 	/**
-	 * isDesktop
+	 * isPhone
 	 */
-	public function isDesktop()
+	public function isPhone()
 	{
-		return $this->getDevice() == 'desktop';
+		return $this->isMobile();
 	}
 
 	/**
@@ -44,11 +44,46 @@ class RLAssignmentsAgents extends RLAssignment
 	}
 
 	/**
-	 * isPhone
+	 * setDevice
 	 */
-	public function isPhone()
+	private function getDevice()
 	{
-		return $this->isMobile();
+		if ( ! is_null($this->device))
+		{
+			return $this->device;
+		}
+
+		$detect = new RLMobile_Detect;
+
+		$this->is_mobile = $detect->isMobile();
+
+		switch (true)
+		{
+			case($detect->isTablet()):
+				$this->device = 'tablet';
+				break;
+
+			case ($detect->isMobile()):
+				$this->device = 'mobile';
+				break;
+
+			default:
+				$this->device = 'desktop';
+		}
+
+		return $this->device;
+	}
+
+	/**
+	 * passDevices
+	 */
+	public function passDevices()
+	{
+		$pass = (in_array('mobile', $this->selection) && $this->isMobile())
+			|| (in_array('tablet', $this->selection) && $this->isTablet())
+			|| (in_array('desktop', $this->selection) && $this->isDesktop());
+
+		return $this->pass($pass);
 	}
 
 	/**
@@ -57,6 +92,22 @@ class RLAssignmentsAgents extends RLAssignment
 	public function isTablet()
 	{
 		return $this->getDevice() == 'tablet';
+	}
+
+	/**
+	 * isDesktop
+	 */
+	public function isDesktop()
+	{
+		return $this->getDevice() == 'desktop';
+	}
+
+	/**
+	 * passOS
+	 */
+	public function passOS()
+	{
+		return self::passBrowsers();
 	}
 
 	/**
@@ -83,23 +134,30 @@ class RLAssignmentsAgents extends RLAssignment
 	}
 
 	/**
-	 * passDevices
+	 * passBrowser
 	 */
-	public function passDevices()
+	private function passBrowser($browser = '')
 	{
-		$pass = (in_array('mobile', $this->selection) && $this->isMobile())
-			|| (in_array('tablet', $this->selection) && $this->isTablet())
-			|| (in_array('desktop', $this->selection) && $this->isDesktop());
+		if ( ! $browser)
+		{
+			return false;
+		}
 
-		return $this->pass($pass);
-	}
+		if ($browser == 'mobile')
+		{
+			return $this->isMobile();
+		}
 
-	/**
-	 * passOS
-	 */
-	public function passOS()
-	{
-		return self::passBrowsers();
+		if ( ! (strpos($browser, '#') === 0))
+		{
+			$browser = '#' . RLText::pregQuote($browser) . '#';
+		}
+
+		// also check for _ instead of .
+		$browser = preg_replace('#\\\.([^\]])#', '[\._]\1', $browser);
+		$browser = str_replace('\.]', '\._]', $browser);
+
+		return preg_match($browser . 'i', $this->getAgent());
 	}
 
 	/**
@@ -137,63 +195,5 @@ class RLAssignmentsAgents extends RLAssignment
 		$this->agent = $agent;
 
 		return $this->agent;
-	}
-
-	/**
-	 * setDevice
-	 */
-	private function getDevice()
-	{
-		if ( ! is_null($this->device))
-		{
-			return $this->device;
-		}
-
-		$detect = new RLMobile_Detect;
-
-		$this->is_mobile = $detect->isMobile();
-
-		switch (true)
-		{
-			case($detect->isTablet()):
-				$this->device = 'tablet';
-				break;
-
-			case ($detect->isMobile()):
-				$this->device = 'mobile';
-				break;
-
-			default:
-				$this->device = 'desktop';
-		}
-
-		return $this->device;
-	}
-
-	/**
-	 * passBrowser
-	 */
-	private function passBrowser($browser = '')
-	{
-		if ( ! $browser)
-		{
-			return false;
-		}
-
-		if ($browser == 'mobile')
-		{
-			return $this->isMobile();
-		}
-
-		if ( ! (strpos($browser, '#') === 0))
-		{
-			$browser = '#' . RLText::pregQuote($browser) . '#';
-		}
-
-		// also check for _ instead of .
-		$browser = preg_replace('#\\\.([^\]])#', '[\._]\1', $browser);
-		$browser = str_replace('\.]', '\._]', $browser);
-
-		return preg_match($browser . 'i', $this->getAgent());
 	}
 }
