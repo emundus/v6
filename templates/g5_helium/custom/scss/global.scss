@@ -3411,7 +3411,7 @@ button.swal2-cancel.goback-btn {
                     border: 1px solid $main-500;
                     background: $main-500;
                     border-radius: 0 4px 4px 0 !important;
-                     width: 70px !important;
+                     width:55px !important;
 
                     &:hover {
                       border: 1px solid $main-600;
@@ -3430,7 +3430,7 @@ button.swal2-cancel.goback-btn {
                   border: 1px solid $red-500;
                   background: $red-500;
                   border-radius: 4px 0 0 4px !important;
-                  width: 70px !important;
+                  width: 55px !important;
 
                   &:hover {
                     border: 1px solid $red-600;
@@ -3616,7 +3616,7 @@ button.swal2-cancel.goback-btn {
 
           .fabrikGroupRepeater {
             position: relative;
-            bottom: 50px;
+            bottom: 0px;
             background: transparent;
           }
 
@@ -3712,7 +3712,7 @@ button.swal2-cancel.goback-btn {
        display: flex;
        flex-direction: row;
         thead, tbody {
-          width: 100%;
+          width: min-content;
           tr {
             display: flex;
             flex-direction: column;
@@ -3720,7 +3720,7 @@ button.swal2-cancel.goback-btn {
             height: 100%;
 
             input  {
-              width: auto;
+              width: 100%;
             }
           }
         }
