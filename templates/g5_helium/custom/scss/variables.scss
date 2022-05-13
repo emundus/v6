@@ -297,7 +297,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin input-error {
-  border: 1px solid $red;
+  border: 1px solid $red !important;
   box-shadow: none;
 }
 

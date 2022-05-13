@@ -3229,8 +3229,28 @@ button.swal2-cancel.goback-btn {
 
           /* ERROR */
 
-          &.error input {
+          &.error {
+
+            .fabrikElement input,
+            .fabrikElement textarea,
+            .fabrikElement select {
             @include input-error;
+            }
+          }
+
+          .fabrikErrorMessage  {
+            @include body-14;
+            color: $red;
+            margin-top: 4px;
+
+            &.help-inline {
+              color: $red;
+              padding: 0;
+
+              i.icon-warning {
+                display: none;
+              }
+            }
           }
 
           /* DISPLAY */
@@ -3457,7 +3477,7 @@ button.swal2-cancel.goback-btn {
                   border-radius: 4px !important;
                   margin-left: -2px;
                   z-index: 0;
-                  width: 70px !important;
+                  width: 55px !important;
 
                   &:hover {
                     border: 1px solid $neutral-300;
@@ -3516,20 +3536,6 @@ button.swal2-cancel.goback-btn {
               }
             }
 
-          /* ERREUR */
-          .fabrikErrorMessage  {
-           @include body-14;
-            color: $red;
-            margin-top: 4px;
-
-            &.help-inline {
-              padding: 0;
-            }
-
-            .icon-warning {
-              display: none;
-            }
-          }
 
           .fabrikMainError.alert.alert-error.fabrikError {
             border-color: $red;
