@@ -1,15 +1,15 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Helper;
 
-use FOF30\Container\Container;
+use FOF40\Container\Container;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 class ServerTechnology
 {
@@ -18,7 +18,7 @@ class ServerTechnology
 	 *
 	 * @return  int  0=No, 1=Yes, 2=Maybe
 	 */
-	public static function isHtaccessSupported()
+	public static function isHtaccessSupported(): int
 	{
 		// Get the server string
 		$serverString = $_SERVER['SERVER_SOFTWARE'];
@@ -56,7 +56,7 @@ class ServerTechnology
 	 *
 	 * @return  int  0=No, 1=Yes, 2=Maybe
 	 */
-	public static function isNginxSupported()
+	public static function isNginxSupported(): int
 	{
 		// Get the server string
 		$serverString = $_SERVER['SERVER_SOFTWARE'];
@@ -82,7 +82,7 @@ class ServerTechnology
 	 *
 	 * @return  int  0=No, 1=Yes, 2=Maybe
 	 */
-	public static function isWebConfigSupported()
+	public static function isWebConfigSupported(): int
 	{
 		// Get the server string
 		$serverString = $_SERVER['SERVER_SOFTWARE'];

@@ -42,21 +42,25 @@ class CpanelController extends JControllerLegacy  {
 		$this->setRedirect( 'index.php?option=com_falang' );
 	}
 
-    function checkUpdates() {
-        //force information reload
-        $updateInfo = LiveUpdate::getUpdateInformation(true);
-        //send json response
-        $document = JFactory::getDocument();
-        $document->setMimeEncoding('application/json');
+	/*
+	 * @since 3.1/4.1 use native joomla update system
+	 * */
+	function checkUpdates() {
+		//force information reload
 
-        if ($updateInfo->hasUpdates) {
-            $msg = JText::_('COM_FALANG_CPANEL_OLD_VERSION').'<a href="index.php?option=com_falang&view=liveupdate"/> '.JText::_('COM_FALANG_CPANEL_UPDATE_LINK').'</a>';
-            echo json_encode(array('update' => "true",'version' => $updateInfo->version, 'message' => $msg));
-        } else {
-            $msg = JText::_('COM_FALANG_CPANEL_LATEST_VERSION');
-            echo json_encode(array('update' => "false",'version' => $updateInfo->version, 'message' => $msg));
-        }
-        return true;
-    }
+		$updateInfo = FalangManager::getUpdateInfo(true);
+		//send json response
+		$document = JFactory::getDocument();
+		$document->setMimeEncoding('application/json');
+
+		if ($updateInfo->hasUpdate) {
+			$msg = JText::_('COM_FALANG_CPANEL_OLD_VERSION').'<a href="index.php?option=com_installer&view=update&filter[search]=falang&filter[type]=package"/> '.JText::_('COM_FALANG_CPANEL_UPDATE_LINK').'</a>';
+			echo json_encode(array('update' => "true",'version' => $updateInfo->version, 'message' => $msg));
+		} else {
+			$msg = JText::_('COM_FALANG_CPANEL_LATEST_VERSION');
+			echo json_encode(array('update' => "false",'version' => $updateInfo->version, 'message' => $msg));
+		}
+		return true;
+	}
 
 }

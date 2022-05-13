@@ -1,11 +1,11 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 // Make sure Admin Tools is installed, otherwise bail out
 if (!file_exists(JPATH_ADMINISTRATOR . '/components/com_admintools'))
@@ -27,7 +27,7 @@ else
 	$version = '5.0.0'; // all bets are off!
 }
 
-if (!version_compare($version, '7.1.0', '>='))
+if (!version_compare($version, '7.2.0', '>='))
 {
 	return;
 }
@@ -67,9 +67,9 @@ if (defined('JDEBUG') && JDEBUG)
 }
 
 // Include the standalone FOF 3.0 Date package
-if (!class_exists('FOF30\Date\Date', true))
+if (!class_exists('FOF40\Date\Date', true))
 {
-	include_once JPATH_LIBRARIES . '/fof30/Date/Date.php';
+	include_once JPATH_LIBRARIES . '/fof40/Date/Date.php';
 }
 
 // If Rescue Mode is enabled we MUST NOT load main.php

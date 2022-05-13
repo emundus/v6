@@ -8,9 +8,9 @@ div.mod-languages li {
 	margin-right: 4px;
 }
 
-/*div.mod-languages ul.lang-inline li {
+div.mod-languages ul.lang-inline li {
 	display:inline;
-}*/
+}
 
 div.mod-languages ul.lang-block li {
 	display:block;

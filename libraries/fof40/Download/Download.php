@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   FOF
- * @copyright Copyright (c)2010-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 2, or later
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace FOF40\Download;
@@ -334,7 +334,7 @@ class Download
 					}
 
 					// Delete and touch the output file
-					$fp = @fopen($localFilename, 'wb');
+					$fp = @fopen($localFilename, 'w');
 
 					if ($fp !== false)
 					{
@@ -400,7 +400,7 @@ class Download
 					$doneSize += $fileSize;
 
 					// Append the file
-					$fp = @fopen($localFilename, 'ab');
+					$fp = @fopen($localFilename, 'a');
 
 					if ($fp === false)
 					{
