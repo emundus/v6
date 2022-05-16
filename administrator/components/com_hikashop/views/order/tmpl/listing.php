@@ -1,33 +1,73 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div class="iframedoc" id="iframedoc"></div>
+?><?php
+$class_search = "hika_j3_search";
+$class_filters = ' no_extrafilter';
+
+if (HIKASHOP_J40) {
+	$class_search = "hika_j4_search";
+}
+if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
+	foreach($this->extrafilters as $name => $filterObj) {
+		if ($name == 'filter_partner') {
+			$filter_partner = $filterObj->displayFilter($name, $this->pageInfo->filter);
+			unset($this->extrafilters[$name]);
+		}
+	}
+} 
+if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
+	$class_filters =' hikafilter_extra extra_'.count($this->extrafilters);
+}
+?>
+<div class="iframedoc" id="iframedoc"></div>
 <form action="<?php echo hikashop_completeLink('order'); ?>" method="post"  name="adminForm" id="adminForm">
 <div class="hk-row-fluid">
-	<div class="hkc-md-3"><?php
+	<div class="hkc-md-3 <?php echo $class_search; ?>"><?php
 		echo $this->loadHkLayout('search', array());
 	?></div>
-	<div class="hkc-md-9 hikashop_listing_filters"><?php
-	foreach($this->extrafilters as $name => $filterObj) {
-		echo $filterObj->displayFilter($name, $this->pageInfo->filter);
-	}
+	<div id="hikashop_listing_filters_id" class="hkc-md-12 hikashop_listing_filters hikashop_listing_filters_order <?php echo $this->openfeatures_class.$class_filters; ?>">
+		<div class="hikashop_listing_filters_column colum1 hkc-md-3">
+<?php
 	if(!is_numeric($this->pageInfo->filter->filter_start) && !empty($this->pageInfo->filter->filter_start)) $this->pageInfo->filter->filter_start = strtotime($this->pageInfo->filter->filter_start);
-	if(!is_numeric($this->pageInfo->filter->filter_end) && !empty($this->pageInfo->filter->filter_end)) $this->pageInfo->filter->filter_end = strtotime($this->pageInfo->filter->filter_end);
-	echo JText::_('FROM').' ';
+	echo '<span class="hikafilter_span">'.JText::_('FROM').'</span> ';
 	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_start?@$this->pageInfo->filter->filter_start:''),'%Y-%m-%d'), 'filter_start','period_start',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10','onchange'=>'document.adminForm.submit();', 'onChange'=>'document.adminForm.submit();'));
-	echo ' '.JText::_('TO').' ';
+	if (isset($filter_partner))
+		echo $filter_partner;
+?>		
+		</div>
+		<div class="hikashop_listing_filters_column colum2 hkc-md-3">
+<?php
+	if(!is_numeric($this->pageInfo->filter->filter_end) && !empty($this->pageInfo->filter->filter_end)) $this->pageInfo->filter->filter_end = strtotime($this->pageInfo->filter->filter_end);
+	echo ' <span class="hikafilter_span">'.JText::_('TO').'</span> ';
 	echo JHTML::_('calendar', hikashop_getDate((@$this->pageInfo->filter->filter_end?@$this->pageInfo->filter->filter_end:''),'%Y-%m-%d'), 'filter_end','period_end',hikashop_getDateFormat('%d %B %Y'),array('size'=>'10','onchange'=>'document.adminForm.submit();', 'onChange'=>'document.adminForm.submit();'));
 	echo $this->payment->display("filter_payment",$this->pageInfo->filter->filter_payment,false);
 	$this->category->multiple = true;
+?>
+		</div>
+<?php
+	if ((!empty($this->extrafilters)) && (count($this->extrafilters))) {
+?>		<div class="hikashop_listing_filters_column colum_extra hkc-md-3">
+<?php		foreach($this->extrafilters as $name => $filterObj) {
+				echo $filterObj->displayFilter($name, $this->pageInfo->filter);
+			}
+?>		
+		</div>
+<?php	} ?>
+
+		<div class="hikashop_listing_filters_column colum3 hkc-md-2">
+<?php
 	echo $this->category->display("filter_status",$this->pageInfo->filter->filter_status,false);
 	$this->category->multiple = false;
-?></div>
+?>
+		</div>
+	</div>
 </div>
 <?php
 	$classes = 'adminlist table';

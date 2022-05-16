@@ -32,7 +32,7 @@ class SecuritycheckprosViewlogs extends JViewLegacy
         JToolBarHelper::custom('mark_unread', 'checkbox-unchecked', 'checkbox-unchecked', 'COM_SECURITYCHECKPRO_LOG_NO_READ_CHANGE');
         JToolBarHelper::custom('delete', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE');
         JToolBarHelper::custom('delete_all', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE_ALL', false);
-        JToolBarHelper::custom('add_to_blacklist', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_TO_BLACKLIST');
+        JToolBarHelper::custom('add_to_blacklist', 'plus_blacklist', 'plus', 'COM_SECURITYCHECKPRO_ADD_TO_BLACKLIST');
         JToolBarHelper::custom('add_to_whitelist', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_TO_WHITELIST');
 		JToolBarHelper::custom('add_exception', 'plus', 'plus', 'COM_SECURITYCHECKPRO_ADD_EXCEPTION');
 

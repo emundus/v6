@@ -40,14 +40,14 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                         <div class="selectAll" id="selectAll">
                             <label for="em-check-all">
                                 <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
-                                <span id="span-check-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+                                <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
                             </label>
                             <label class="em-check-all-all" for="em-check-all-all">
                                 <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
-                                <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL'); ?></span>
+                                <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                             </label>
                             <label class="em-check-none" for="em-check-none">
-                                <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
+                                <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                             </label>
                         </div>
                         <th id="<?php echo $key?>">
@@ -71,11 +71,11 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                 <?php else :?>
                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>
                                 <?php endif; ?>
-                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
                                 </p>
                         <?php else :?>
                             <p class="em-cell">
-                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
                             </p>
                         <?php endif; ?>
                         </th>
@@ -148,9 +148,9 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 		</table>
 	</div>
 	<div class="em-container-pagination">
-        <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
+        <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('COM_EMUNDUS_DISPLAY')?></label>
         <select name="pager-select" class="chzn-select" id="pager-select">
-            <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('ALL')?></option>
+            <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
             <option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
             <option value="10" <?php if($this->pagination->limit == 10){echo "selected=true";}?>>10</option>
             <option value="15" <?php if($this->pagination->limit == 15){echo "selected=true";}?>>15</option>
@@ -162,7 +162,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
         </select>
         <div class="em-container-pagination-selectPage">
             <ul class="pagination pagination-sm">
-                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'}?>"><<</a></li>
+                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesStart'}?>"><span class='material-icons'>navigate_before</span></a></li>
                 <?php if ($this->pagination->{'pagesTotal'} > 15) :?>
 
                     <?php for ($i = 1; $i <= 5; $i++ ) :?>
@@ -189,13 +189,13 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                         <li <?php if ($this->pagination->{'pagesCurrent'} == $i){echo 'class="active"';}?>><a id="<?php echo $i; ?>" href="#em-data"><?php echo $i; ?></a></li>
                     <?php endfor; ?>
                 <?php endif; ?>
-                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesTotal'}?>">>></a></li>
+                <li><a href="#em-data" id="<?php echo $this->pagination->{'pagesTotal'}?>"><span class='material-icons'>navigate_next</span></a></li>
             </ul>
         </div>
     </div>
 
 <?php else :?>
-	<?php echo JText::_('NO_RESULT'); ?>
+	<?php echo JText::_('COM_EMUNDUS_NO_RESULT'); ?>
 <?php endif; ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
@@ -256,11 +256,11 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
+        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
         //console.log(countCheckedCheckbox);
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_SELECT_USERS');
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USERS');
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {
             $('#countCheckedCheckbox').html('');
         }

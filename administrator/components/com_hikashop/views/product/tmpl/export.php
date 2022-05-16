@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -31,7 +31,19 @@ if(!HIKASHOP_J30){
 } else {
 	$columnsArray = $db->getTableColumns(hikashop_table('product'));
 }
-$columnsArray['categories_ordering'] = 'categories_ordering';
+
+$columnsArray['categories_ordering'] = 'varchar';
+$columnsArray['product_parent_id'] = 'varchar';
+
+$types = array();
+
+foreach($columnsArray as $type) {
+	if(in_array($type, array('varchar', 'text', 'longtext')))
+		$types[] = 'text';
+	else
+		$types[] = 'number';
+}
+
 
 $columns = $products_columns = array_keys($columnsArray);
 $product_table_count = count($columns);
@@ -67,6 +79,7 @@ if(!empty($this->characteristics)) {
 }
 $after_category_count = count($columns)-($product_table_count+3);
 $export->writeline($columns);
+$export->setTypes($types);
 
 if(!empty($this->categories)) {
 	foreach($this->categories as $category) {

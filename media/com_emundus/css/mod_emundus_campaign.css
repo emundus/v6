@@ -624,6 +624,7 @@ button.btn.btn-default.sch {
 
 .left-side {
     width: 60%;
+    border-top-left-radius: 8px;
 }
 
 .right-side {
@@ -685,7 +686,7 @@ button.btn.btn-default.sch {
     }
 
     .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.blue,   .campaigns-list .campaignbymonth .campaign-month-label .position-me .rotate-me.orange {
-        transform: rotate(180deg) !important;
+        transform: rotate(0deg) !important;
         margin: 0 auto;
         float: right;
     }

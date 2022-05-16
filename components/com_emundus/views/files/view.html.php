@@ -32,7 +32,7 @@ class EmundusViewFiles extends JViewLegacy
     {
 		$current_user = JFactory::getUser();
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-			die( JText::_('RESTRICTED_ACCESS') );
+			die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
     	// translation to load in javacript file ; /media/com_emundus/em_files.js
     	// put it in com_emundus/emundus.php

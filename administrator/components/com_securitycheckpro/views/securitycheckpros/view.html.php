@@ -44,7 +44,7 @@ class SecuritycheckprosViewSecuritycheckpros extends JViewLegacy
             $last_update = $model->get_last_update();    
         } else 
         {
-            $last_update = 'Jul 19 2021';
+            $last_update = 'Mar 22 2022';
         }
 
         // Filtro por tipo de extensión

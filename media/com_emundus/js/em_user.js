@@ -793,7 +793,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							}).then(function() {
 								window.location.replace('/user');
 							});
@@ -970,7 +975,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 						}
 					},
@@ -1044,7 +1054,7 @@ $(document).ready(function () {
 								type: 'success',
 								title: result.msg,
 								showConfirmButton: false,
-								timer: 1500
+								timer: 1500,
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1061,7 +1071,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1122,7 +1137,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1218,7 +1238,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1270,7 +1295,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1289,6 +1319,8 @@ $(document).ready(function () {
 				var usersData = getUserCheck();/*get objectJson with id et uid*/
 				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
 
+				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=regeneratepassword',
@@ -1298,20 +1330,29 @@ $(document).ready(function () {
 
 					dataType: 'json',
 					success: function (result) {
+						$('.modal-body .em-dimmer').remove();
 
 						if (result.status) {
-							setTimeout(function() {
-								$('#system-message-container').prepend('<div class="alert alert-dismissable alert-success" style="width: 70%;margin: 0 auto 10px auto;display: flex;">' +
-									'<button type="button" class="close" data-dismiss="alert">×</button>' +
-									'<strong>' + result.msg + '</strong>' +
-									'</div>');
-							},500);
+							Swal.fire({
+								text: result.msg,
+								type: "success",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 							$('.close').click();
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+							Swal.fire({
+								text: result.msg,
+								type: "error",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
@@ -1367,14 +1408,24 @@ $(document).ready(function () {
 
 								Swal.fire({
 									type: 'success',
-									title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-									html:  sent_to + '</ul>'
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+									html:  sent_to + '</ul>',
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								});
 
 							} else {
 								Swal.fire({
 									type: 'error',
-									title: Joomla.JText._('NO_EMAILS_SENT')
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								})
 							}
 
@@ -1409,7 +1460,7 @@ $(document).ready(function () {
 			e.handle = true;
 			var id = $(this).val();
 			var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
-			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="glyphicon glyphicon-trash"></span></button></li>');
+			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-icons">delete_outline</span></button></li>');
 		}
 	});
 

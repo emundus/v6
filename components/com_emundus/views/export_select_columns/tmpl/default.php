@@ -78,7 +78,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
 
     } else {
         echo '<input type="checkbox" id="emundus_checkall' . $this->elements[0]->profil_id . '" class="emundusall" data-check=".emunduspage"/>';
-        echo '<label for="emundus_checkall">'.JText::_('SELECT_ALL').'</label>';
+        echo '<label for="emundus_checkall">'.JText::_('COM_EMUNDUS_SELECT_ALL').'</label>';
         echo '<div id="emundus_elements">';
         $tbl_tmp='';
         $grp_tmp='';
@@ -147,7 +147,7 @@ if (is_array($this->elements) && count($this->elements) > 0) {
         echo '</div>';
     }
 
-} else echo JText::_('NO_FORM_DEFINED');                /// corriger ici en changeant par 'AUCUN ELEMENT EST DEFINI'
+} else echo JText::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED');                /// corriger ici en changeant par 'AUCUN ELEMENT EST DEFINI'
 ?>
 
 <script>

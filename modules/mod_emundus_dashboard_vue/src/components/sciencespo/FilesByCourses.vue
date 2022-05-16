@@ -48,7 +48,7 @@ export default {
     renderFilesByStatus(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilescountbystatusandcourses",
+        url: "index.php?option=com_emundus&controller=dashboard&task=getfilescountbystatusandcourses",
         params: {
           program: this.program,
           session: this.session,
@@ -97,7 +97,7 @@ export default {
   },
 
   watch:{
-    program: function (value) {
+    program: function () {
       this.renderFilesByStatus();
     }
   }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -50,19 +50,29 @@ class plgButtonHikashopproduct extends JPlugin
 			$plugin = $pluginsClass->getByName('editors-xtd','hikashopproduct');
 
 			$link = 'index.php?option=com_hikashop&amp;ctrl=plugins&amp;task=trigger&amp;function=productDisplay&amp;editor_name='.urlencode($name).'&amp;tmpl=component&amp;cid='.$plugin->extension_id.'&amp;'.hikashop_getFormToken().'=1';
-			JHtml::_('behavior.modal');
+			if(!HIKASHOP_J40)
+				JHtml::_('behavior.modal');
 			$button = new JObject;
 			$button->set('modal', true);
 			$button->set('link', $link);
 			$button->set('text', JText::_('PRODUCT'));
 			$button->set('class', 'btn');
 			$button->set('name', 'hikashopproduct');
-			$button->set('options', "{handler: 'iframe', size: {x: 800, y: 450}}");
+			if(HIKASHOP_J40) {
+				$button->set('options', [
+					'height'     => '450px',
+					'width'      => '800px',
+					'bodyHeight' => '70',
+					'modalWidth' => '80',
+				]);
+			} else {
+				$button->set('options', "{handler: 'iframe', size: {x: 800, y: 450}}");
+			}
 			$doc = JFactory::getDocument();
 
 			if(!HIKASHOP_J30)
 				JHTML::_('behavior.mootools');
-			else
+			elseif(!HIKASHOP_J40)
 				JHTML::_('behavior.framework');
 			$img_name = 'hikashopproduct.png';
 			$path = '../plugins/editors-xtd/hikashopproduct/'.$img_name;
@@ -121,7 +131,29 @@ class plgButtonHikashopproduct extends JPlugin
 			$pagination = new JPagination($nbrow, $pageInfo->limit->start, $pageInfo->limit->value);
 		}
 
-		$scriptV2 = "function insertTag(tag){ window.parent.jInsertEditorText(tag,'".str_replace(array('\\','\''), array('\\\\', '\\\''), $editor_name)."'); return true;}";
+		if(HIKASHOP_J40) {
+			$scriptV2 = "
+function insertTag(tag, event){
+	event.preventDefault();
+	var editor = '".str_replace(array('\\','\''), array('\\\\', '\\\''), $editor_name)."';
+
+	if (window.parent.Joomla && window.parent.Joomla.editors && window.parent.Joomla.editors.instances && Object.prototype.hasOwnProperty.call(window.parent.Joomla.editors.instances, editor)) {
+		window.parent.Joomla.editors.instances[editor].replaceSelection(tag);
+	}
+
+	if (window.parent.Joomla.Modal) {
+		window.parent.Joomla.Modal.getCurrent().close();
+	}
+	return true;
+}";
+		} else {
+			$scriptV2 = "
+function insertTag(tag, event){
+	window.parent.jInsertEditorText(tag,'".str_replace(array('\\','\''), array('\\\\', '\\\''), $editor_name)."');
+	window.parent.SqueezeBox.close();
+	return true;
+}";
+		}
 
 		$doc = JFactory::getDocument();
 		$doc->addScriptDeclaration( $scriptV2 );
@@ -129,6 +161,8 @@ class plgButtonHikashopproduct extends JPlugin
 		$config =& hikashop_config();
 		$pricetaxType = hikashop_get('type.pricetax');
 		$discountDisplayType = hikashop_get('type.discount_display');
+
+		hikashop_display(JText::_('HIKASHOP_PRODUCT_CONTENT_TAG_INFO'), 'info');
 ?>
 
 	<script language="JavaScript" type="text/javascript">
@@ -242,12 +276,12 @@ class plgButtonHikashopproduct extends JPlugin
 				<td width="100%">
 					<?php echo JText::_( 'FILTER' ); ?>:
 					<input type="text" name="search" id="hikashop_search" value="<?php echo hikashop_getEscaped($pageInfo->search);?>" class="inputbox" onchange="document.adminForm.submit();" />
-					<button class="btn" onclick="this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
-					<button class="btn" onclick="document.getElementById('hikashop_search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
+					<button class="btn btn-primary" onclick="this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
+					<button class="btn btn-primary" onclick="document.getElementById('hikashop_search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
 				</td>
 			</tr>
 		</table>
-		<fieldset>
+		<fieldset class="hika_field adminform">
 			<legend>OPTIONS</legend>
 			<div id="productInsertOptions">
 				<input type="checkbox" name="name" id="name" value="1" checked/><?php echo JText::_( 'HIKA_NAME' );?>
@@ -272,13 +306,16 @@ class plgButtonHikashopproduct extends JPlugin
 					<td>
 						<?php
 						$default_params = $config->get('default_params');
-						echo $discountDisplayType->display( 'pricedisc' ,3); ?>
+						$attributes='';
+						if(HIKASHOP_J40)
+							$attributes = 'style="width: 350px;"';
+						echo $discountDisplayType->display( 'pricedisc' , 3, $attributes); ?>
 					</td>
 				</tr>
 				<div>
 				</div>
 		</fieldset>
-			<fieldset>
+		<fieldset class="hika_field adminform">
 			<table class="adminlist table table-striped" cellpadding="1" width="100%">
 				<thead>
 					<tr>
@@ -350,7 +387,7 @@ class plgButtonHikashopproduct extends JPlugin
 			</table>
 		</fieldset>
 		<input type="hidden" name="product_insert" id="product_insert" value="" />
-		<button class="btn" onclick="checkSelect(); insertTag(document.getElementById('product_insert').value); window.parent.SqueezeBox.close();"><?php echo JText::_( 'HIKA_INSERT' ); ?></button>
+		<button class="btn btn-success" onclick="checkSelect(); insertTag(document.getElementById('product_insert').value, event);"><?php echo JText::_( 'HIKA_INSERT' ); ?></button>
 		<?php global $Itemid; ?>
 		<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
 		<?php echo JHTML::_( 'form.token' );

@@ -16,7 +16,7 @@ if (!empty($this->items)) :
 
     <div class="container-nav em-container-menuaction">
 
-        <span class="navbar-brand" href="#"><?php echo JText::_('ACTIONS'); ?></span>
+        <span class="navbar-brand" href="#"><?php echo JText::_('COM_EMUNDUS_ACTIONS'); ?></span>
         <div class="navbar-collapse collapse navbar-inverse-collapse">
 
             <ul class="nav navbar-nav em-container-menuaction-nav" style="display:<?php echo $this->display; ?>">
@@ -66,7 +66,7 @@ if (!empty($this->items)) :
     </div>
     <div class="em-close-minimise">
         <div class="btn-group pull-right">
-            <button id="em-close-file" class="btn btn-danger btn-xxl"><strong>X</strong></button>
+            <button id="em-close-file" class="btn btn-danger btn-xxl"><span class="material-icons">close</span></button>
         </div>
     </div>
 
@@ -81,11 +81,7 @@ endif;
                 <table style="width: 95%">
                     <tr>
                         <td>
-                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('TITLE');?></h4>
-                        </td>
-                        <td style="text-align: right;" id="can-val">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
-                            <button style="margin-left:5px;" type="button" class="btn btn-success"><?php echo JText::_('OK');?></button>
+                            <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_FORM_TITLE');?></h4>
                         </td>
                     </tr>
                 </table>
@@ -94,6 +90,14 @@ endif;
 
             </div>
             <div class="modal-footer">
+                <table>
+                    <tr>
+                        <td style="text-align: right;" id="can-val">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL')?></button>
+                            <button style="margin-left:5px;" type="button" class="btn btn-success"><?php echo JText::_('COM_EMUNDUS_OK');?></button>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
@@ -103,27 +107,17 @@ endif;
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('LOADING');?></h4>
+                <h4 class="modal-title" id="em-modal-actions-title"><?php echo JText::_('COM_EMUNDUS_LOADING');?></h4>
             </div>
             <div class="modal-body">
-                <img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
+                <img alt="Loading..." src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/loader-line.gif">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('CANCEL')?></button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL')?></button>
             </div>
         </div>
     </div>
 </div>
-
-<!--<?php if($this->fnum != 0 || $multiple != 0){ ?>
-<div id="em-close-multi-file" class="em-close-minimise">
-    <div class="btn-group pull-right">
-        <button id="em-close-file" class="btn btn-danger btn-xxl">
-            <strong>X</strong>
-        </button>
-    </div>
-</div>
-<?php } ?>-->
 
 <script>
     //$('#countCheckedCheckbox').html('');

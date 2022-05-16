@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -87,15 +87,15 @@ class plgHikashoppaymentVirtualmerchant extends hikashopPaymentPlugin
 		if($this->payment_params->use_avs) {
 			$addr1 = @$order->cart->billing_address->address_street;
 			if(strlen(urlencode($addr1)) > 20) {
-				$vars .= '<ssl_avs_address>'.urlencode(substr($addr1,0,20)).'</ssl_avs_address>'.
-					'<ssl_address2>'.urlencode(substr($addr1,20,30)).'</ssl_address2>';
+				$vars .= '<ssl_avs_address>'.substr(str_replace(array('<','>'),array('&lt;','&gt;'),$addr1),0,20).'</ssl_avs_address>'.
+					'<ssl_address2>'.substr(str_replace(array('<','>'),array('&lt;','&gt;'),$addr1),20,30).'</ssl_address2>';
 			} else {
-				$vars .= '<ssl_avs_address>'.urlencode($addr1).'</ssl_avs_address>';
+				$vars .= '<ssl_avs_address>'.str_replace(array('<','>'),array('&lt;','&gt;'),$addr1).'</ssl_avs_address>';
 			}
-			$vars .= '<ssl_city>'.urlencode(@$order->cart->billing_address->address_city).'</ssl_city>'.
-				'<ssl_state>'.urlencode(@$order->cart->billing_address->address_state->zone_name).'</ssl_state>'.
-				'<ssl_avs_zip>'.urlencode(@$order->cart->billing_address->address_post_code).'</ssl_avs_zip>'.
-				'<ssl_country>'.urlencode(@$order->cart->billing_address->address_country->zone_name_english).'</ssl_country>';
+			$vars .= '<ssl_city>'.str_replace(array('<','>'),array('&lt;','&gt;'),@$order->cart->billing_address->address_city).'</ssl_city>'.
+				'<ssl_state>'.str_replace(array('<','>'),array('&lt;','&gt;'),@$order->cart->billing_address->address_state->zone_name).'</ssl_state>'.
+				'<ssl_avs_zip>'.str_replace(array('<','>'),array('&lt;','&gt;'),@$order->cart->billing_address->address_post_code).'</ssl_avs_zip>'.
+				'<ssl_country>'.str_replace(array('<','>'),array('&lt;','&gt;'),@$order->cart->billing_address->address_country->zone_name_english).'</ssl_country>';
 		}
 
 		$vars .= '<ssl_email>'.str_replace(array('<','>'),array('&lt;','&gt;'),$this->user->user_email).'</ssl_email>'.
@@ -218,7 +218,7 @@ class plgHikashoppaymentVirtualmerchant extends hikashopPaymentPlugin
 	}
 
 	function getPaymentDefaultValues(&$element) {
-		$element->payment_name='VirtualMerchant';
+		$element->payment_name='VirtualMerchant (Elavon)';
 		$element->payment_description='You can pay by credit card using this payment method';
 		$element->payment_images='MasterCard,VISA,Credit_card,American_Express';
 

@@ -26,9 +26,11 @@ const actions = {
 
 const mutations = {
     setUser(state, users) {
-        users.forEach(user => {
-            state.users[user.id] = user;
-        });
+        if (users && users.length > 0) {
+            users.forEach(user => {
+                state.users[user.user_id] = user;
+            });
+        }
     },
     setCurrentUser(state, user) {
         state.currentUser = user;
@@ -41,7 +43,7 @@ const mutations = {
     }
 };
 
-export default{
+export default {
     namespaced: true,
     state,
     getters,

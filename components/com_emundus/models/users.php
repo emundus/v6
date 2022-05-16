@@ -758,7 +758,7 @@ class EmundusModelUsers extends JModelList {
         try {
 
             if (!$user->save()) {
-                JFactory::getApplication()->enqueueMessage(JText::_('CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER').'<BR />'.$user->getError(), 'error');
                 $res = array('msg' => $user->getError());
                 return $res;
             } else {
@@ -1106,7 +1106,7 @@ class EmundusModelUsers extends JModelList {
      * Function to get Evaluators Infos for the mailing evaluators
      */
     public function getEvalutorByFnums($fnums) {
-        include_once(JPATH_BASE.'/components/com_emundus/models/files.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/files.php');
         $files = new EmundusModelFiles;
 
         $fnums_info = $files->getFnumsInfos($fnums);
@@ -1283,7 +1283,7 @@ class EmundusModelUsers extends JModelList {
                 }
 
                 $res = $db->execute();
-	            EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_LOGS_UPDATE_USER_BLOCK');
+	            EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_ADD_USER_UPDATE');
             }
 
             return $res;
@@ -1444,7 +1444,7 @@ class EmundusModelUsers extends JModelList {
             ->leftJoin($db->quoteName('#__emundus_setup_groups','esg').' ON '.$db->quoteName('g.group_id').' = '.$db->quoteName('esg.id'))
             ->leftJoin($db->quoteName('#__emundus_setup_groups_repeat_course','esgc').' ON '.$db->quoteName('esgc.parent_id').' = '.$db->quoteName('esg.id'))
             ->where($db->quoteName('g.user_id') . ' = ' . $uid);
-            
+
         $db->setQuery($query);
         try {
             return $db->loadColumn();
@@ -1686,12 +1686,22 @@ class EmundusModelUsers extends JModelList {
         if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
-
+  
         $db = JFactory::getDBO();
-        $db->setQuery('UPDATE #__emundus_users SET firstname = '.$db->Quote($user['firstname']).',
-                                                    lastname = '.$db->Quote($user['lastname']).',
-                                                    profile = '.(int)$user['profile'].',
-                                                    university_id = '.$user['university_id'].' WHERE user_id = '.(int)$user['id']);
+        $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__emundus_users'))
+            ->set('firstname = ' . $db->quote($user['firstname']))
+            ->set('lastname = ' . $db->quote($user['lastname']))
+            ->set('profile = ' . $db->quote((int)$user['profile']));
+
+        if (!empty($user['university_id'])) {
+            $query->set('university_id = ' . $db->quote($user['university_id']));
+        }
+
+        $query->where('user_id = ' . $db->quote($user['id']));
+
+        $db->setQuery($query);
+
 	    try {
             $db->execute();
 	    } catch(Exception $e) {

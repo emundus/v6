@@ -41,7 +41,7 @@ class EmundusViewMessages extends JViewLegacy {
 		$current_user = JFactory::getUser();
 
     	if (!EmundusHelperAccess::asApplicantAccessLevel($current_user->id)) {
-		    die(JText::_('RESTRICTED_ACCESS'));
+		    die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 	    }
 
         $m_messages = new EmundusModelMessages();
@@ -67,7 +67,7 @@ class EmundusViewMessages extends JViewLegacy {
 		    }
 
 	    	if (!in_array($current_user->id, $m_messages->getChatroomUsersId($chatroom))) {
-	    		die(JText::_('RESTRICTED_ACCESS'));
+	    		die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		    }
 
 		    $chatroom = $m_messages->getChatroom($chatroom);

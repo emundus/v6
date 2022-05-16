@@ -92,7 +92,7 @@ if($user != null) {
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown' id="userDropdown" style="float: right;">
     <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <img src="<?php echo JURI::base()?>images/emundus/menus/user.png" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
+        <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
     </div>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
@@ -125,10 +125,12 @@ if($user != null) {
         <?php if ($show_logout == '1') :?>
             <?= '<li><a class="logout-button-user" href="index.php?option=com_users&task=user.logout&'.JSession::getFormToken().'=1">'.JText::_('LOGOUT').'</a></li>'; ?>
         <?php endif; ?>
-        <hr style="width: 100%">
-        <?php
-        echo '<li><a class="edit-button-user" href="index.php?option=com_users&view=profile&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
-        ?>
+        <?php if ($show_update == '1') :?>
+            <hr style="width: 100%">
+            <?php
+            echo '<li><a class="edit-button-user" href="index.php?option=com_users&view=profile&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
+            ?>
+        <?php endif; ?>
     </ul>
 </div>
 

@@ -1178,6 +1178,84 @@ class SecuritycheckprosModelCpanel extends SecuritycheckproModel
 		return $success;
     }
 	
+	/* Función que obtiene el download id de la tabla update_sites. */
+    function get_extra_query_update_sites_table($element)
+    {
+		$db = JFactory::getDBO();    
+		$query = $db->getQuery(true);
+		
+					
+		try {
+			$query->select($db->quoteName('extension_id'));
+			$query->from($db->quoteName('#__extensions'));
+			$query->where($db->quoteName('element') . ' = ' . $db->quote($element));
+            $db->setQuery($query);
+            $db->execute();
+            $extension_id = $db->loadResult();
+						
+			$query = null;
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName('update_site_id'));
+			$query->from($db->quoteName('#__update_sites_extensions'));
+			$query->where($db->quoteName('extension_id') . ' = ' . $db->quote($extension_id));
+            $db->setQuery($query);
+			$db->execute();
+            $update_site_id = $db->loadResult();
+						
+			$query = null;
+			$query = $db->getQuery(true);
+			$query->select($db->quoteName(array('extra_query', 'update_site_id')));
+			$query->from($db->quoteName('#__update_sites'));
+			$query->where($db->quoteName('update_site_id') . ' = ' . $db->quote($update_site_id));
+            $db->setQuery($query);
+            $db->execute();
+            $update_site_data = $db->loadObject();
+						
+			// Remove the 'dlid=' part of the string
+			if ( !empty($update_site_data) ) {
+				$update_site_data->extra_query = str_replace("dlid=", "",$update_site_data->extra_query);
+			}						
+			
+		} catch (Exception $e)		
+        {
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			return "error";
+		}	
+		
+		return $update_site_data;
+		
+	}
+	
+	/* Función que actualiza el campo 'extra_query' de la tabla update_sites. */
+    function update_extra_query_update_sites_table($site_id,$dlid)
+    {
+		$db = JFactory::getDBO();    
+		$query = $db->getQuery(true);
+				
+		if ( !is_int($site_id) ) {
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_SITE_ID_NOT_VALID'), 'error');	
+			return;
+		}
+		
+		// Construct the right dlid format
+		$extra_query = "dlid=" . $dlid;	
+					
+		try {
+			$query = $db->getQuery(true)
+				->update($db->quoteName('#__update_sites'))
+				->set('extra_query = '.$db->quote($extra_query))
+				->where('update_site_id = '.$db->quote($site_id));
+			$db->setQuery($query);    
+			$db->execute();        
+		} catch (Exception $e)		
+        {
+			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');	
+			return;
+		}	
+		
+		JFactory::getApplication()->enqueueMessage(JText::_('COM_SECURITYCHECKPRO_DOWNLOAD_ID_UPDATED'));
+	}
+	
 	
 
 }

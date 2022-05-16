@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -58,14 +58,14 @@ class hikashopVoteClass extends hikashopClass {
 	}
 
 	function checkVote(&$element){
-		$safeHtmlFilter = JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 
 		if(empty($element->vote_ref_id) || (int)$element->vote_ref_id == 0){
 			$this->error = array('code' => '505001', 'message' => JText::_('HIKA_VOTE_ITEM_ID_MISSING'));
 			return false;
 		}
 
-		if((!isset($element->vote_type) || empty($element->vote_type)) && (!$this->app->isAdmin() || $this->app->isAdmin() && $element->vote_id == 0)){
+		if((!isset($element->vote_type) || empty($element->vote_type)) && (!hikashop_isClient('administrator') || hikashop_isClient('administrator') && $element->vote_id == 0)){
 			$this->error = array('code' => '505015', 'message' => JText::_('HIKA_VOTE_TYPE_MISSING'));
 			return false;
 		}
@@ -83,7 +83,7 @@ class hikashopVoteClass extends hikashopClass {
 			return false;
 		}
 
-		if($this->app->isAdmin()){
+		if(hikashop_isClient('administrator')){
 			$element->vote_user_id = hikashop_getIP();
 		}else{
 			if(!is_null($user)){
@@ -170,14 +170,14 @@ class hikashopVoteClass extends hikashopClass {
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 
-		if(!$this->app->isAdmin())
+		if(!hikashop_isClient('administrator'))
 			$this->checkVote($element);
 
 		if(!empty($this->error['code']))
 			return false;
 
 
-		if(!$this->app->isAdmin()){
+		if(!hikashop_isClient('administrator')){
 			if($this->config->get('vote_ip', 1))
 				$element->vote_ip = hikashop_getIP();
 			if(!empty($element->vote_comment) && !$this->config->get('published_comment','1'))
@@ -187,7 +187,7 @@ class hikashopVoteClass extends hikashopClass {
 		}
 
 		$oldElement = new stdClass();
-		if($this->app->isAdmin()){
+		if(hikashop_isClient('administrator')){
 			if($element->vote_id != '0'){
 				$query = 'SELECT * FROM '.hikashop_table('vote').' WHERE vote_id = '.(int)$element->vote_id;
 				$db->setQuery($query);
@@ -322,17 +322,17 @@ class hikashopVoteClass extends hikashopClass {
 			$this->error = array('code' => '505013', 'message' => JText::_('HIKA_VOTE_ERROR_SAVING_ITEM_DATA'));
 			return false;
 		} else {
-			if(!$this->app->isAdmin()){
+			if(!hikashop_isClient('administrator')){
 				if(!empty($element->vote_comment) && !$this->config->get('published_comment','1')) {
 					$this->error = array('code' => '2', 'message' => JText::_('THANK_YOU_FOR_YOUR_VOTE_REVIEWED_BEFORE_PUBLISHING'));
 
-		}
+				}
 			}
 		}
 		return $success;
 	}
 
-	function updateAverage(&$element, $oldElement, &$data){
+	function updateAverage(&$element, $oldElement, &$data) {
 
 		$ref_id = 0;
 		if(!empty($element->vote_ref_id))
@@ -412,7 +412,7 @@ class hikashopVoteClass extends hikashopClass {
 		$element->vote_id = hikashop_getCID('vote_id');
 		$formData = hikaInput::get()->get('data', array(), 'array');
 		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = & JFilterInput::getInstance(null, null, 1, 1);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['vote'] as $column => $value){
 			hikashop_secureField($column);
 			$element->$column = $safeHtmlFilter->clean($value);
