@@ -12,6 +12,7 @@ if (password_value.match(regex) != null) {
     type: &quot;error&quot;,
     title: &#039;Invalid password&#039;,
     text: &#039;The character #${};&lt;&gt; are forbidden&#039;,
+    reverseButtons: true,
     customClass: {
       title: &#039;em-swal-title&#039;,
       cancelButton: &#039;em-swal-cancel-button&#039;,
@@ -21,4 +22,4 @@ if (password_value.match(regex) != null) {
 
   password.set(&#039;&#039;);
 }"
-WHERE id = @element_id;
+WHERE element_id = @element_id;
