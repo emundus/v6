@@ -96,7 +96,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
 
         # if no status is defined, we get all
         if(!empty(trim($sending_status))) {
-            if(!strpos($query, 'WHERE') and !strpos($query, 'where')) {
+            if (!strpos($query, 'WHERE') && !strpos($query, 'where')) {
                 $query .= " WHERE";
             } else {
                 $query .= " AND";
@@ -106,7 +106,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         }
 
         # build logs string
-        if(!empty(trim($sending_logs))) {
+        if (!empty(trim($sending_logs))) {
             $query .= " AND #__emundus_logs.action_id IN (" . $sending_logs . ')';
         }
 
@@ -142,35 +142,28 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # now, we fill data into XML request (using data description file)
         $xmlDataObj = new XmlDataFilling($json_request_data);
 
-        # using limit from ... to in this case (limt 0,offset --> limit 1*offset,offset --> limit 2*offset,offset)      # limit value [mod] offset = 0
-
         $db->setQuery($query);
-        $total_loop = ceil(count($db->loadColumn()) / $offset_limit);
         $available_fnums = $db->loadColumn();
+        $chunks = array_chunk($available_fnums, $offset_limit);
 
-        # using array slice to cut-off the $available_fnums with offset
-
-        for($loop = 1 ; $loop <= $total_loop; $loop++) {
-            $slice = ($loop - 1) * $offset_limit;
-
-            $fnums = array_slice($available_fnums,$slice,$offset_limit);
-
-            foreach ($fnums as $fnum) {
+        foreach($chunks as $chunked_fnums) {
+            foreach ($chunked_fnums as $fnum) {
                 # filling data for each fnum
                 $xmlDataRequest = $xmlDataObj->fillData($xmlSchemaRequest, $xmlSchemaObj->getSchemaDescription(), $fnum);
 
                 if (!empty(trim($custom_php))) {
-                    eval($custom_php);
+                    try {
+                        eval($custom_php);
+                    } catch (Exception $e) {
+                        JLog::add('[emundusApogee] Error in custom PHP code: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                    }
                 }
 
                 # prune raw xml tree (remove unnecessary elements)
                 $xmlOutputRawString = $xmlSchemaObj->exportXMLString($xmlDataRequest);
                 $xmlOutputString = $xmlDataObj->pruneXML($xmlOutputRawString);
 
-                # connect to SOAP
                 $soapConnectObj = new SoapConnect;
-
-                # set HTTP request header with last xml output string
                 $soapConnectObj->setSoapHeader($xmlOutputString->saveXML(), $credentials);
 
                 # send request to Apogee server
@@ -180,7 +173,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
                 $xmlSchemaObj->exportXMLFile($xmlOutputString, EMUNDUS_PATH_ABS . DS . $fnum);
             }
 
-            sleep($offset_interval);     # 5 minutes
+            sleep($offset_interval);
         }
     }
 }
