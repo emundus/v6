@@ -6359,7 +6359,11 @@ $(document).ready(function() {
                     type:'POST',
                     url:url,
                     dataType:'json',
-                    data:({fnums:checkInput, state: state}),
+                    data:({
+                        fnums:checkInput,
+                        state: state,
+                        to_applicant: "1"
+                    }),
                     success: function(result) {
                         $('.modal-body').empty();
                         $('.modal-body').append('<div>' +
