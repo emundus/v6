@@ -482,14 +482,14 @@ class ApogeeCustom {
         return $this->xmlTree;
     }
 
-    public function buildCustomSchema() {
+    /*public function buildCustomSchema() {
         /// custom schema building
         $this->buildConvocation();
         $this->buildTitreAccessExterne();
         return $this->xmlTree;
-    }
+    }*/
 
-    public function buildCustomData() {
+    /*public function buildCustomData() {
         /// custom data mapping
         $this->setCodPay_Address();
         $this->setBdiComAde_Address();
@@ -502,10 +502,10 @@ class ApogeeCustom {
         $this->setCustomTelephoneNumber();
 
         /* $this->setConvocation();
-        $this->setTitreAccessExterne(); /// expected results :: print */
+        $this->setTitreAccessExterne(); /// expected results :: print
 
         // $this->setCustomVoeux();
         return $this->xmlTree;
-    }
+    }*/
 }
 ?>
