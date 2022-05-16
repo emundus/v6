@@ -60,14 +60,13 @@ class ApogeeCustom {
         $nodes = $this->xmlTree->getElementsByTagName('codPay');            /// e.g: find(2)
 
         foreach($nodes as $node) {
-            if($node->nodeValue == "" or $node->nodeValue === null) { $node->nodeValue = '100'; }
+            $node->nodeValue = empty($node->nodeValue) ? '100' : $node->nodeValue;
         }
 
         return $this->xmlTree;
     }
 
     public function setBdiComAde_Address() {
-        $db = JFactory::getDbo();
         ///////////////////////////////// ADRESSE ANNUELLE /////////////////////////////////
         $_aaRoot = $this->xmlTree->getElementsByTagName('adresseAnnuelle')->item(0);
 
@@ -76,22 +75,16 @@ class ApogeeCustom {
         $_aaCodCom = $_aaRoot->getElementsByTagName('codCom')->item(0);
         $_aaLibAde = $_aaRoot->getElementsByTagName('libAde')->item(0);
 
-        if($_aaCodPay->nodeValue == '100') {        /// # france
-            /* set Bdi */
-            $_getAaBdiSql = "SELECT lpad(#__emundus_personal_detail.etu_code_postal,5,'0') FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = " . $this->fnum;
-            $db->setQuery($_getAaBdiSql);
-            $_aaCodBdi->nodeValue = $db->loadResult();
+        $bdiFrance = "";
+        $libAde = "";
+        if ($_aaCodPay->nodeValue == '100') {        /// # france
+            $bdiFrance = $this->getBdiFromFnum($this->fnum);
+            $_aaCodBdi->nodeValue = $bdiFrance;
         } else {                                    /// # not france
-            /* set Bdi */
-            $_getAaBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
             $_aaCodBdi->nodeValue = "";
-            /* set libAde --> concat(e_287_8117, '', e_287_8118) */
-            $_getAaLibAdeSql = "select trim(right(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118),32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
-            $db->setQuery($_getAaLibAdeSql);
-            $_aaLibAde->nodeValue =  $db->loadResult();
+            $libAde = $this->getLibAdeFromFnum($this->fnum);
+            $_aaLibAde->nodeValue =  $libAde;
         }
-
-
 
         ///////////////////////////////// ADRESSE FIXE /////////////////////////////////
         $_afRoot = $this->xmlTree->getElementsByTagName('adresseFixe')->item(0);
@@ -101,21 +94,12 @@ class ApogeeCustom {
         $_afCodCom = $_afRoot->getElementsByTagName('codCom')->item(0);
         $_afLibAde = $_afRoot->getElementsByTagName('libAde')->item(0);
 
-        if($_afCodPay->nodeValue == '100') {        /// #france
-            /* set Bdi */
-            $_getAfBdiSql = "SELECT lpad(#__emundus_personal_detail.etu_code_postal,5,'0') FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = " . $this->fnum;
-            $db->setQuery($_getAfBdiSql);
-            $_afCodBdi->nodeValue = $db->loadResult();
+        if ($_afCodPay->nodeValue == '100') {        /// #france
+            $_afCodBdi->nodeValue = !empty($bdiFrance) ? $bdiFrance : $this->getBdiFromFnum($this->fnum);
         } else {                                    /// # not france
-            /* set Bdi */
-            $_getAfBdiSql = 'SELECT #__emundus_personal_detail.e_287_8117 FROM #__emundus_personal_detail WHERE #__emundus_personal_detail.fnum = ' . $this->fnum;
             $_afCodBdi->nodeValue = "";
-            /* set libAde --> concat(e_287_8117, '', e_287_8118) */
-            $_getAfLibAdeSql = "select trim(right(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118),32)) from #__emundus_personal_detail where #__emundus_personal_detail.fnum = " . $this->fnum;
-            $db->setQuery($_getAfLibAdeSql);
-            $_afLibAde->nodeValue =  $db->loadResult();
+            $_afLibAde->nodeValue = !empty($libAde) ? $libAde : $this->getLibAdeFromFnum($this->fnum);
         }
-
 
         ///////////////////////////////////////////// Done /////////////////////////////////////////////
 
@@ -123,21 +107,59 @@ class ApogeeCustom {
             les deux données sont remises à blanc et les autres données de l’adresse sont chargées, à condition que le code pays soit renseigné
             et valide par rapport à la table PAYS d’Apogée.
         */
-        if($_aaCodBdi->nodeValue == null or $_aaCodCom->nodeValue == null) {
-            $_aaCodCom->nodeValue == '';
-            $_aaCodBdi->nodeValue == '';
+        if($_aaCodBdi->nodeValue == null || $_aaCodCom->nodeValue == null) {
+            $_aaCodCom->nodeValue = '';
+            $_aaCodBdi->nodeValue = '';
         }
 
-        if($_afCodBdi->nodeValue == null or $_afCodCom->nodeValue == null) {
-            $_afCodCom->nodeValue == '';
-            $_afCodBdi->nodeValue == '';
+        if($_afCodBdi->nodeValue == null || $_afCodCom->nodeValue == null) {
+            $_afCodCom->nodeValue = '';
+            $_afCodBdi->nodeValue = '';
         }
 
         return $this->xmlTree;
     }
 
-    public function setDepPayDerDip_LastObtainDipl() {
+    private function getBdiFromFnum($fnum) {
+        $bdiFrance = '';
         $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()->select("lpad('#__emundus_personal_detail.etu_code_postal',5,'0')")
+            ->from('#__emundus_personal_detail')
+            ->where('#__emundus_personal_detail.fnum = ' . $db->quote($fnum));
+
+        $db->setQuery($query);
+
+        try {
+            $bdiFrance = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting Bdi for fnum ' . $fnum . ' in plugin_emundus_export_xml at line ' . __LINE__, JLog::ERROR, 'com_emundus');
+        }
+
+        return $bdiFrance;
+    }
+
+    private function getLibAdeFromFnum($fnum) {
+        $libAde = '';
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()->select("trim(right(concat(#__emundus_personal_detail.e_287_8117, ' ', #__emundus_personal_detail.e_287_8118),32))")
+            ->from('#__emundus_personal_detail')
+            ->where('#__emundus_personal_detail.fnum = ' . $db->quote($fnum));
+        $db->setQuery($query);
+
+        try {
+            $libAde = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting Bdi for fnum ' . $fnum . ' in plugin_emundus_export_xml at line ' . __LINE__, JLog::ERROR, 'com_emundus');
+        }
+
+        return $libAde;
+    }
+
+    public function setDepPayDerDip_LastObtainDipl() {
         /* -- Si FRANCE (code = 100) --> codDepPayDerDip = Departement // codTypDepPayDerDip = "D" */
         /* -- Si pas FRANCE (code != 100) --> codDepPayDerDip = Pays // codTypDepPayDerDip = "P" */
 
@@ -146,12 +168,13 @@ class ApogeeCustom {
         $_codTypDepPayDerDipNode = $this->xmlTree->getElementsByTagName('codTypDepPayDerDip')->item(0);
 
         if($_codDepPayDerDipNode->nodeValue == '100') {
-            $_codTypDepPayDerDipNode->nodeValue = 'D';
-
             /// set $_codDepPayDerDipNode->nodeValue by France Department
+
+            $db = JFactory::getDbo();
             $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_1001_00 as je10 on je10.dep_etb_last_dip = data_departements.departement_code where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayDerDipNode->nodeValue = $db->loadResult();
+            $_codTypDepPayDerDipNode->nodeValue = 'D';
         } else {
             $_codTypDepPayDerDipNode->nodeValue = 'P';
         }
@@ -160,20 +183,20 @@ class ApogeeCustom {
     }
 
     public function setDepPayAnt_LastFrequentEtb() {
-        $db = JFactory::getDbo();
         /* -- Si FRANCE (code = 100) --> codDepPayAntIaaOpi = Departement // codTypDepPayAntIaaOpi = "D" */
         /* -- Si pas FRANCE (code != 100) --> codDepPayAntIaaOpi = Pays // codTypDepPayAntIaaOpi = "P" */
         $_codDepPayAntIaaOpiNode = $this->xmlTree->getElementsByTagName('codDepPayAntIaaOpi')->item(0);
         $_codTypDepPayAntIaaOpiNode = $this->xmlTree->getElementsByTagName('codTypDepPayAntIaaOpi')->item(0);
 
-        if($_codDepPayAntIaaOpiNode->nodeValue == '100') {
+        if ($_codDepPayAntIaaOpiNode->nodeValue == '100') {
             /// set $_codDepPayDerDipNode->nodeValue by France Department
+
+            $db = JFactory::getDbo();
             $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_1001_00 as je10 on je10.dep_etb_dernier = data_departements.departement_code where je10.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayAntIaaOpiNode->nodeValue = $db->loadResult();
             $_codTypDepPayAntIaaOpiNode->nodeValue = 'D';
-        }
-        else {
+        } else {
             $_codTypDepPayAntIaaOpiNode->nodeValue = 'P';
         }
 
@@ -181,18 +204,16 @@ class ApogeeCustom {
     }
 
     public function setDepPay_Civility() {
-        $db = JFactory::getDbo();
-
         $_codDepPayNaiNode = $this->xmlTree->getElementsByTagName('codDepPayNai')->item(0);
         $_codTypDepPayNaiNode = $this->xmlTree->getElementsByTagName('codTypDepPayNai')->item(0);
 
-        if($_codDepPayNaiNode->nodeValue == '100') {
-            $_codTypDepPayNaiNode->nodeValue = 'D';
-
+        if ($_codDepPayNaiNode->nodeValue == '100') {
             /* get French department if $_codDepPayNaiNode is 100 */
+            $db = JFactory::getDbo();
             $_getDepartmentSql = "select cod_dep from data_departements left join jos_emundus_personal_detail as jepd on jepd.etu_dept_nais = data_departements.departement_code where jepd.fnum = " . $this->fnum;
             $db->setQuery($_getDepartmentSql);
             $_codDepPayNaiNode->nodeValue = $db->loadResult();
+            $_codTypDepPayNaiNode->nodeValue = 'D';
         } else {
             $_codTypDepPayNaiNode->nodeValue = 'P';
         }
@@ -201,13 +222,13 @@ class ApogeeCustom {
     }
 
     public function setDepPay_LastYear() {
-        $db = JFactory::getDbo();
         $_codDepPayAnnPreOpiNode = $this->xmlTree->getElementsByTagName('codDepPayAnnPreOpi')->item(0);
         $_codTypDepPayAnnPreOpiNode =$this->xmlTree->getElementsByTagName('codTypDepPayAnnPreOpi')->item(0);
 
-        if($_codDepPayAnnPreOpiNode->nodeValue !== null and !empty($_codDepPayAnnPreOpiNode->nodeValue)) {
+        if (!empty($_codDepPayAnnPreOpiNode->nodeValue)) {
             if ($_codDepPayAnnPreOpiNode->nodeValue == '100') {         # france
                 // get France Dep
+                $db = JFactory::getDbo();
                 $_getDepartmentSql = "select cod_dep from data_departement left join jos_emundus_1001_00 as je10 on je10.e_358_7943 = data_departement.id where je10.fnum = " . $this->fnum;
                 $db->setQuery($_getDepartmentSql);
 
@@ -278,7 +299,7 @@ class ApogeeCustom {
 
                 /* get the "parent" of "item" */
                 $items[$index]->nodeValue = '';
-            };
+            }
         }
 
         return $this->xmlTree;
@@ -286,16 +307,10 @@ class ApogeeCustom {
 
     /* set Baccalaureat code for foreign students */
     public function setCodBac() {
-        /* firstly, get xml node naming 'bac' */
         $bac = $this->xmlTree->getElementsByTagName('bac')->item(0);
-
-        /* secondly, get xml node naming 'codBac' */
         $codBac = $bac->getElementsByTagName('codBac')->item(0);
+        $codBac->nodeValue = empty($codBac->nodeValue) ? '0031' : $codBac->nodeValue;
 
-        /* if $codBac is empty string, so set it to '0031' */
-        if(empty($codBac->nodeValue)) {
-            $codBac->nodeValue = '0031';
-        }
         return $this->xmlTree;
     }
 
@@ -303,10 +318,7 @@ class ApogeeCustom {
     public function setCustomFirstYear() {
         $db = JFactory::getDbo();
 
-        /* find the xml node "premiereInscription" */
         $premiereInscription = $this->xmlTree->getElementsByTagName('premiereInscription')->item(0);
-
-        /* find the node "daaEnsSupOpi" from "premiereInscription" */
         $daaEnsSupOpi = $premiereInscription->getElementsByTagName('daaEnsSupOpi')->item(0);
 
         /* first, set daaEnsSupOpi country */
@@ -314,13 +326,8 @@ class ApogeeCustom {
         $db->setQuery($countryEnsSupOpiQuery);
         $countryEnsSupOpi = $db->loadResult();
 
-        /* if $countryEnsSupOpi is not "100" */
-        if($countryEnsSupOpi !== '100') {
-            $daaEnsSupOpi->nodeValue = "";
-        }
+        $daaEnsSupOpi->nodeValue = $countryEnsSupOpi !== '100' ? "" : $daaEnsSupOpi->nodeValue;
 
-        /* */
-        /* find the xml node "daaEntEtbOpi" from "premiereInscription" */
         $daaEntEtbOpi = $premiereInscription->getElementsByTagName('daaEntEtbOpi')->item(0);
 
         /* get daaEntEtbOpi country */
@@ -328,9 +335,7 @@ class ApogeeCustom {
         $db->setQuery($countryEntEtbOpiQuery);
         $countryEntSupOpi = $db->loadResult();
 
-        if($countryEntSupOpi !== '100') {
-            $daaEntEtbOpi->nodeValue = "";
-        }
+        $daaEntEtbOpi->nodeValue =  $countryEntSupOpi !== '100' ? "" : $daaEntEtbOpi->nodeValue;
 
         return $this->xmlTree;
     }
@@ -341,37 +346,34 @@ class ApogeeCustom {
 
         /* find all xml nodes of numTel, we have at least 3 : numTel (aa), numTel (af), numTelPorOpi */
 
-        /* firstly, find "adresseAnnuelle" node */
         $_aaRoot = $this->xmlTree->getElementsByTagName('adresseAnnuelle')->item(0);
         $_aaTel = $_aaRoot->getElementsByTagName('numTel')->item(0);
 
-        /* find "adresseFixe" node */
         $_afRoot = $this->xmlTree->getElementsByTagName('adresseFixe')->item(0);
         $_afTel = $_afRoot->getElementsByTagName('numTel')->item(0);
 
-        /* find "donneesPersonnelles" node */
         $_dpRoot = $this->xmlTree->getElementsByTagName('donneesPersonnelles')->item(0);
         $_dpTelOpi = $_dpRoot->getElementsByTagName('numTelPorOpi')->item(0);
 
         /// get telephone number
         $getTelNumQuery = "select trim(replace(replace(#__emundus_personal_detail.etu_telephone,' ',''), '+', '')) from #__emundus_personal_detail where #__emundus_personal_detail.fnum =  " . $this->fnum;
         $db->setQuery($getTelNumQuery);
-        $getTel = $db->loadResult();
+        $tel = $db->loadResult();
 
         # find ")" in $rawAaTel
-        if(strpos($getTel, ")")) {
+        if(strpos($tel, ")")) {
             # split string
-            $getTel = explode(')', $getTel)[1];
+            $tel = explode(')', $tel)[1];
 
-            if(strlen($getTel) > 15) {
+            if(strlen($tel) > 15) {
                 # truncate string if length is more than 15
-                $getTel = substr($getTel,0,15);
+                $tel = substr($tel,0,15);
             }
         }
 
-        $_aaTel->nodeValue = $getTel;
-        $_afTel->nodeValue = $getTel;
-        $_dpTelOpi->nodeValue = $getTel;
+        $_aaTel->nodeValue = $tel;
+        $_afTel->nodeValue = $tel;
+        $_dpTelOpi->nodeValue = $tel;
 
         return $this->xmlTree;
     }
@@ -397,16 +399,11 @@ class ApogeeCustom {
                 if(in_array($_childs[$_count]->tagName, array_keys($convocation_elems))) {
                     // if query exists
                     if($convocation_elems[$_childs[$_count]->tagName]['sql'] !== null) {
-                        // get query
                         $query = $convocation_elems[$_childs[$_count]->tagName]['sql'];
 
-                        // run it // loadResults
                         $db->setQuery($query);
                         $res[$_childs[$_count]->tagName] = explode('>>> SPLIT <<<', $db->loadResult());
-                    }
-                    // otherwise
-                    else {
-                        // get default value
+                    } else {
                         $default = $convocation_elems[$_childs[$_count]->tagName]['default'];
                         $res[$_childs[$_count]->tagName]['default'] = $default;
                     }
@@ -417,12 +414,8 @@ class ApogeeCustom {
         foreach(array_keys($convocation_elems) as $attr) {
             $attr_node = $this->xmlTree->getElementsByTagName($attr);
 
-            for($_index = 0; $_index <= count($attr_node); $_index++) {
-                if($res[$attr]['default'] === null) {
-                    $attr_node[$_index]->nodeValue = $res[$attr][$_index];
-                } else {
-                    $attr_node[$_index]->nodeValue = $res[$attr]['default'];
-                }
+            for ($_index = 0; $_index <= count($attr_node); $_index++) {
+                $attr_node[$_index]->nodeValue = $res[$attr]['default'] === null ? $res[$attr][$_index] : $res[$attr]['default'];
             }
         }
         return $this->xmlTree;
@@ -451,16 +444,11 @@ class ApogeeCustom {
                 if(in_array($_childs[$_count]->tagName, array_keys($titreAccessExterne_elems))) {
                     // if query exists
                     if($titreAccessExterne_elems[$_childs[$_count]->tagName]['sql'] !== null) {
-                        // get query
                         $query = $titreAccessExterne_elems[$_childs[$_count]->tagName]['sql'];
 
-                        // run it // loadResults
                         $db->setQuery($query);
                         $res[$_childs[$_count]->tagName] = explode('>>> SPLIT <<<', $db->loadResult());
-                    }
-                    // otherwise
-                    else {
-                        // get default value
+                    } else {
                         $default = $titreAccessExterne_elems[$_childs[$_count]->tagName]['default'];
                         $res[$_childs[$_count]->tagName]['default'] = $default;
                     }
@@ -471,12 +459,8 @@ class ApogeeCustom {
         foreach(array_keys($titreAccessExterne_elems) as $attr) {
             $attr_node = $this->xmlTree->getElementsByTagName($attr);
 
-            for($_index = 0; $_index <= count($attr_node); $_index++) {
-                if($res[$attr]['default'] === null) {
-                    $attr_node[$_index]->nodeValue = $res[$attr][$_index];
-                } else {
-                    $attr_node[$_index]->nodeValue = $res[$attr]['default'];
-                }
+            for ($_index = 0; $_index <= count($attr_node); $_index++) {
+                $attr_node[$_index]->nodeValue = $res[$attr]['default'] === null ? $res[$attr][$_index] : $res[$attr]['default'];
             }
         }
         return $this->xmlTree;
@@ -508,4 +492,3 @@ class ApogeeCustom {
         return $this->xmlTree;
     }
 }
-?>
