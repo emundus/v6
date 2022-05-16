@@ -210,7 +210,8 @@ class modEmundusCampaignHelper {
             ->select('c.id,c.title,c.introtext')
             ->from($db->quoteName('#__content', 'c'))
             ->leftJoin($db->quoteName('#__categories', 'ca') . ' ON ' . $db->quoteName('ca.id') . ' = '. $db->quoteName('c.catid'))
-            ->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'));
+            ->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'))
+            ->andWhere($db->quoteName('c.state') . ' = 1');
 
         try {
             $db->setQuery($query);
@@ -219,6 +220,120 @@ class modEmundusCampaignHelper {
             return null;
         }
     }
+
+    public function getFormationsWithType() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_formation'));
+
+        try {
+            $db->setQuery($query);
+
+            $formations = $db->loadObjectList();
+
+            foreach ($formations as $formation) {
+                $query
+                    ->clear()
+                    ->select('repeat.voie_d_acces')
+                    ->from($db->quoteName('data_acces_formation_repeat_voie_d_acces', 'repeat'))
+                    ->leftJoin($db->quoteName('data_acces_formation', 'daf') . ' ON ' . $db->quoteName('repeat.parent_id') . ' = '. $db->quoteName('daf.id'))
+                    ->where($db->quoteName('daf.id') . ' = ' . $formation->id);
+
+                $formation->voies_d_acces = $db->setQuery($query)->loadObjectList();
+            }
+
+            return $formations;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function getFormationTypes() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_formation_type'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function getFormationLevels() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_formation_level'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function getVoiesDAcces() {
+        $db = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+
+        $query
+            ->select('*')
+            ->from($db->quoteName('data_voies_d_acces'))
+            ->where($db->quoteName('published') . ' = 1')
+            ->order($db->quoteName('order'));
+
+        try {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    public function addClassToData($data, $formations)
+    {
+        // Add a custom class parameter to data items
+        $data = array_map(function($item) use ($formations) {
+            $item->class = !isset($item->class) ? '' : $item->class;
+
+            // find formation associated to item inside formations array
+            foreach ($formations as $formation) {
+                if ($formation->id == $item->formation) {
+                    $item->class .= 'formation_type-' . $formation->type;
+                    $item->class .= ' formation_level-' . $formation->level;
+
+                    foreach ($formation->voies_d_acces as $voie) {
+                        $item->class .= ' voie_d_acces-' . $voie->voie_d_acces;
+
+                    }
+
+                    break;
+                }
+            }
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->select('label')
+            ->from('#__emundus_setup_campaigns')
+            ->where('id = '.$item->id);
+
+            $db->setQuery($query);
+            $item->label = $db->loadResult();
+
+        return $item;
+        }, $data);
+
+        return $data;
+    }
 }
-
-

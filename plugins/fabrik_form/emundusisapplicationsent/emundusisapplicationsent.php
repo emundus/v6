@@ -86,7 +86,8 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
         if (!$mainframe->isAdmin()) {
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
             require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
-
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+            $m_campaign = new EmundusModelCampaign;
 
             jimport('joomla.log.log');
             JLog::addLogger(['text_file' => 'com_emundus.isApplicationSent.php'], JLog::ALL, ['com_emundus']);
@@ -104,6 +105,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
+            $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
 
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
@@ -125,28 +127,33 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $reload = $jinput->get('r', 0);
             $reload++;
 
-            if ($this->getParam('admission', 0) == 1) {
-                if(!empty($fnum)) {
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->admission_start_date)) ? true : false;
-                }
-                else{
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->admission_start_date)) ? true : false;
-                }
-            }
-            else {
-                if(!empty($fnum)) {
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$fnum]->end_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$fnum]->start_date)) ? true : false;
-                }
-                else{
-                    $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$user->fnums[$user->fnum]->end_date)) ? true : false;
-                    $is_campaign_started = (strtotime(date($now)) >= strtotime(@$user->fnums[$user->fnum]->start_date)) ? true : false;
-                }
+            $current_fnum = !empty($fnum) ? $fnum : $user->fnum;
+            if (!empty($current_phase) && !empty($current_phase->end_date)) {
+                $current_end_date = $current_phase->end_date;
+                $current_start_date = $current_phase->start_date;
+            }  else if ($this->getParam('admission', 0) == 1) {
+                $current_end_date = @$user->fnums[$current_fnum]->admission_end_date;
+                $current_start_date = @$user->fnums[$current_fnum]->admission_start_date;
+            } else {
+                $current_end_date = !empty(@$user->fnums[$current_fnum]->end_date) ? @$user->fnums[$current_fnum]->end_date : @$user->end_date;
+                $current_start_date = @$user->fnums[$current_fnum]->start_date;
             }
 
-            $is_app_sent = !in_array(@$user->status, explode(',', $this->getParam('applicationsent_status', 0)));
+            $is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
+            if (!$is_campaign_started) {
+                // STOP HERE, the campaign or step is not started yet. Redirect to main page
+                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
+                $mainframe->redirect('/');
+            }
+
+            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
+
+            $edit_status = array();
+            if (!empty($current_phase) && !empty($current_phase->status)) {
+                $edit_status[] = $current_phase->status;
+            }
+            $edit_status = array_merge(explode(',', $this->getParam('applicationsent_status', 0)), $edit_status);
+            $is_app_sent = !in_array(@$user->status, $edit_status);
             $can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
             $can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
 
@@ -157,7 +164,8 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             if (!empty($fnum)) {
 
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
-                $m_campaign = new EmundusModelCampaign;
+                $m_profile = new EmundusModelProfile;
+                $fnumDetail = $m_profile->getFnumDetails($fnum);
 
                 $isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id);
 
@@ -170,12 +178,12 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     }
                     //try to access detail view or other
                     else {
-                        if(!$can_edit && $is_app_sent){
+                        if (!$can_edit && $is_app_sent) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
-                        } elseif ($is_dead_line_passed){
+                        } else if ($fnumDetail['published'] == -1) {
+                            $mainframe->enqueueMessage(JText::_('DELETED_FILE'), 'error');
+                        } else if ($is_dead_line_passed) {
                             $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
-                        } elseif (!$is_campaign_started){
-                            $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
                         }
                         $reload_url = false;
                     }
@@ -208,7 +216,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
 
                 } else {
 
-                    if (($is_dead_line_passed && $can_edit_after_deadline == 0) || !$is_campaign_started || $isLimitObtained === true) {
+                    if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true) {
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
                                 $mainframe->enqueueMessage(JText::_('APPLICATION_LIMIT_OBTAINED'), 'error');
@@ -264,7 +272,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                     $rowid = $formModel->data["rowid"];
 
                     $elements = array();
-                    foreach ($table_elements as $key => $element) {
+                    foreach ($table_elements as $element) {
                         $elements[] = $element->value;
                     }
 
@@ -273,7 +281,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                         $query = 'SELECT '.implode(',', $db->quoteName($elements)).' FROM '.$table->db_table_name.' WHERE user='.$user->id;
                         $db->setQuery($query);
                         $stored = $db->loadAssoc();
-                        if (count($stored) > 0) {
+                        if (!empty($stored)) {
                             // update form data
                             $parent_id = $stored['id'];
                             unset($stored['id']);
@@ -294,7 +302,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             $groups = $formModel->getFormGroups(true);
                             $data = array();
                             if (count($groups) > 0) {
-                                foreach ($groups as $key => $group) {
+                                foreach ($groups as $group) {
                                     $group_params = json_decode($group->gparams);
                                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
 
@@ -314,15 +322,15 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                         $data[$group->group_id]['table'] = $repeat_table;
                                     }
                                 }
-                                if (count($data) > 0) {
-                                    foreach ($data as $key => $d) {
+                                if (!empty($data)) {
+                                    foreach ($data as $d) {
 
                                         try {
                                             $query = 'SELECT '.implode(',', $db->quoteName($d['element_name'])).' FROM '.$d['table'].' WHERE parent_id='.$parent_id;
                                             $db->setQuery( $query );
                                             $stored = $db->loadAssoc();
 
-                                            if (count($stored) > 0) {
+                                            if (!empty($stored)) {
                                                 // update form data
                                                 unset($stored['id']);
                                                 unset($stored['parent_id']);
@@ -349,7 +357,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                             $fnums = $user->fnums;
                             unset($fnums[$user->fnum]);
 
-                            if (count($fnums) > 0) {
+                            if (!empty($fnums)) {
                                 $previous_fnum = array_keys($fnums);
                                 $query = 'SELECT eu.*, esa.nbmax
 											FROM #__emundus_uploads as eu
@@ -361,9 +369,9 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
                                 $db->setQuery( $query );
                                 $stored = $db->loadAssocList();
 
-                                if (count($stored) > 0) {
+                                if (!empty($stored)) {
                                     // 2. copy DB définition and duplicate files in applicant directory
-                                    foreach ($stored as $key => $row) {
+                                    foreach ($stored as $row) {
                                         $src = $row['filename'];
                                         $ext = explode('.', $src);
                                         $ext = $ext[count($ext)-1];;

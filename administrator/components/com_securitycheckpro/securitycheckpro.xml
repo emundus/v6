@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="3.6" method="upgrade">
 <name>Securitycheck Pro</name>
-<creationDate>19-07-2021</creationDate>
+<creationDate>22-03-2022</creationDate>
 <author>Jose A. Luque</author>
 <authorEmail>contacto@protegetuordenador.com</authorEmail>
 <authorUrl>http://www.protegetuordenador.com</authorUrl>
 <copyright>Copyright www.protegetuordenador.com</copyright>
 <license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
-<version>3.4.1</version>
-<description>COM_SECURITYCHECKPRO_DESCRIPTION</description> 
+<version>3.4.5</version>
+<description>COM_SECURITYCHECKPRO_DESCRIPTION</description>
+<dlid prefix="dlid=" suffix=""/>
 
 <!-- Public front end files  -->
 <files folder="frontend">
@@ -98,6 +99,8 @@
 	<language tag="ro-RO">language/ro-RO/ro-RO.com_securitycheckpro.sys.ini</language>
 	<language tag="ua-UA">language/ua-UA/ua-UA.com_securitycheckpro.ini</language>
 	<language tag="ua-UA">language/ua-UA/ua-UA.com_securitycheckpro.sys.ini</language>
+	<language tag="af-ZA">language/af-ZA/af-ZA.com_securitycheckpro.ini</language>
+	<language tag="af-ZA">language/af-ZA/af-ZA.com_securitycheckpro.sys.ini</language>
 </languages>
 
 </administration>
@@ -105,8 +108,7 @@
 <plugins>
        <plugin folder="plugins/system" plugin="securitycheckpro" name="System - Securitycheck Pro" group="system" />	  
 	   <plugin folder="plugins/system" plugin="securitycheckpro_cron" name="System - Securitycheck Pro Cron" group="system" />	  
-	   <plugin folder="plugins/system" plugin="url_inspector" name="System - url inspector" group="system" />
-	   <plugin folder="plugins/installer" plugin="securitycheckpro_installer" name="Installer - Securitycheck Pro" group="installer" />
+	   <plugin folder="plugins/system" plugin="url_inspector" name="System - url inspector" group="system" />	   
 </plugins> 
 	
 <updateservers>

@@ -478,12 +478,12 @@ class EmundusHelperFilters {
 		$current_filter = "";
 		if (!empty($selected)) {
 			if ($selected->element_plugin == "databasejoin"){
-				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
+				$query_paramsdefs = JPATH_SITE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
 				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
 				$query_params = json_decode($query_params);
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
-				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				<option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
 				if (!empty($option_list)) {
 					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';
@@ -494,12 +494,12 @@ class EmundusHelperFilters {
 				}
 				$current_filter .= '</select>';
 			} elseif($selected->element_plugin == "checkbox" || $selected->element_plugin == "radiobutton" || $selected->element_plugin == "dropdown"){
-				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.'field.xml';
+				$query_paramsdefs = JPATH_SITE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.'field.xml';
 				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
 				$query_params = json_decode($query_params);
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
-				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				<option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
 				if (!empty($option_list)) {
 					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';

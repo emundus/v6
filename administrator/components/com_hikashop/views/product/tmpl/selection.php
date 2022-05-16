@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -26,14 +26,14 @@ function hikashop_setId(el) {
 <?php } else { ?>
 <script type="text/javascript">
 function hikashop_setId(id) {
-	var form = document.getElementById("hikashop_form");
+	var form = document.getElementById("adminForm");
 	form.cid.value = id;
 	form.ctrl.value = '<?php echo $this->ctrl ?>';
 	hikashop.submitform("<?php echo $this->task; ?>",form);
 }
 </script>
 <?php } ?>
-<form action="<?php echo hikashop_completeLink('product'); ?>" method="post" name="hikashop_form" id="hikashop_form">
+<form action="<?php echo hikashop_completeLink('product'); ?>" method="post" name="adminForm" id="adminForm">
 <div class="hk-row-fluid">
 	<div class="hkc-xs-6">
 <?php
@@ -191,7 +191,7 @@ hika_categories.sel(hika_categories.find(<?php echo $this->cid; ?>));
 hika_categories.callbackSelection = function(tree,id) {
 	var d = document, node = tree.get(id);
 	if( node.value && node.name) {
-		var form = document['hikashop_form'];
+		var form = document['adminForm'];
 		form['cid'].value = node.value;
 		form.submit();
 	}

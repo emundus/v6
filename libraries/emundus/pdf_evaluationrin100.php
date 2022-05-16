@@ -6,10 +6,10 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
     require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+    include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 
     $m_profile = new EmundusModelProfile;
     $m_files = new EmundusModelFiles;
@@ -19,10 +19,10 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $config = JFactory::getConfig();
     $user = $m_profile->getEmundusUser($user_id);
     $fnum = empty($fnum)?$user->fnum:$fnum;
-    
+
     $infos = $m_profile->getFnumDetails($fnum);
     $campaign_id = $infos['campaign_id'];
-    
+
     // Get form HTML
     $htmldata = '';
 
@@ -60,7 +60,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
     unset($logo);
     unset($title);
-    
+
     $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
     $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, 'I', PDF_FONT_SIZE_DATA));
     $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
@@ -70,7 +70,7 @@ function pdf_evaluation($user_id, $fnum = null, $output = true, $name = null, $o
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
     $pdf->SetFont('helvetica', '', 10);
     $pdf->AddPage();
-    
+
 	/*** Applicant ***/
 	$htmldata .=
 		'<style>
@@ -166,7 +166,7 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
         $htmldata .='</td></tr></table>';
     }
     $htmldata .= '</td></tr></table></div>';
-    
+
 } elseif ($options[0] == "0") {
     $htmldata .= '';
 } else {
@@ -202,8 +202,8 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 /**  END APPLICANT   ****/
 
     // get evaluation
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
-	require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	$m_evaluation = new EmundusModelEvaluation();
 	$m_files = new EmundusModelFiles;
@@ -253,7 +253,7 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 	if (!$pole_expert) {
 		array_push($to_remove, '12717', '12721', '12725', '12729', '12737', '12741', '12705', '12709', '12865', '12877');
 	}
-	
+
 	// Filter out the parts we don't want.
 	$element_id = array_diff($element_id, $to_remove);
 
@@ -264,7 +264,7 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
 	$data = array();
 	foreach ($evaluations as $eval) {
 
-		$str = '<em>'.JText::_('EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
+		$str = '<em>'.JText::_('COM_EMUNDUS_EVALUATION_EVALUATED_ON').' : '.JHtml::_('date', $eval['jos_emundus_evaluations___time_date'], JText::_('DATE_FORMAT_LC')).' - '.$fnumInfo['name'].'</em>';
 		$str .= '<table width="100%" border="1" cellspacing="0" cellpadding="5">';
 
 		foreach ($elements as $element) {
@@ -340,7 +340,7 @@ if (!empty($options) && $options[0] != "" && $options[0] != "0") {
     } else {
         $path = $name;
     }
-    
+
     @chdir('tmp');
     if ($output) {
         $pdf->Output($path, 'FI');

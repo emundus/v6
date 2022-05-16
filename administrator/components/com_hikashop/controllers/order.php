@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -216,6 +216,12 @@ class OrderController extends hikashopController {
 				$obj = new stdClass();
 				$obj->order_product_name = $row->product_name;
 				$obj->order_product_code = $row->product_code;
+				$obj->order_product_weight = $row->product_weight;
+				$obj->order_product_weight_unit = $row->product_weight_unit;
+				$obj->order_product_width = $row->product_width;
+				$obj->order_product_height = $row->product_height;
+				$obj->order_product_length = $row->product_length;
+				$obj->order_product_dimension_unit = $row->product_dimension_unit;
 				$obj->order_product_quantity = (!empty($quantities[$row->product_id]) ? $quantities[$row->product_id]:1 );
 				$currencyClass->pricesSelection($row->prices,$obj->order_product_quantity);
 				$obj->product_id = $row->product_id;

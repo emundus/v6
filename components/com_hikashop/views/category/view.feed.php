@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -166,8 +166,8 @@ class CategoryViewCategory  extends HikaShopView {
 		$doc_description = $config->get('hikarss_description','');
 		$doc_title = $config->get('hikarss_name','');
 
-		$doc->title = $doc_title;
-		$doc->description = $doc_description;
+		$doc->title = hikashop_translate($doc_title);
+		$doc->description = hikashop_translate($doc_description);
 		$imageHelper = hikashop_get('helper.image');
 		foreach ( $products as $product ){
 			if($product->category_id == $cid && empty($doc_description)){

@@ -38,12 +38,12 @@ class EmundusViewMessage extends JViewLegacy {
 		$current_user = JFactory::getUser();
 
     	if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			die (JText::_('RESTRICTED_ACCESS'));
+			die (JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
 		// List of fnum is sent via GET in JSON format.
 	    $jinput = JFactory::getApplication()->input;
-		
+
 		$fnums_post = $jinput->getString('fnums', null);
 		$fnums_array = ($fnums_post=='all')?'all':(array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
@@ -69,7 +69,7 @@ class EmundusViewMessage extends JViewLegacy {
 		$fnum_array = [];
 
 		$tables = array('jos_users.name', 'jos_users.username', 'jos_users.email', 'jos_users.id');
-		
+
 		foreach ($fnums as $fnum) {
 			if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
 				$user = $m_application->getApplicantInfos($fnum->sid, $tables);

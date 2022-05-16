@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -29,6 +29,9 @@ class JHtmlHikaselect extends JHTMLSelect {
 	public static function radiolist($data, $name, $attribs = null, $optKey = 'value', $optText = 'text', $selected = null, $idtag = false, $translate = false, $vertical = false, $default = ''){
 		reset($data);
 		$app = JFactory::getApplication();
+
+		if(HIKASHOP_J40)
+			$attribs = str_replace('custom-select', '', $attribs);
 
 		if(hikashop_isClient('administrator')) {
 			$yes_text = JText::_('JYES');

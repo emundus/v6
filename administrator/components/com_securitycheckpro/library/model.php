@@ -99,7 +99,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     'session_protection_active'            => 1,
     'session_hijack_protection'            => 1,
 	'session_hijack_protection_what_to_check'            => 0,
-    'tasks'            => 'alternate',
+    'tasks'            => 'integrity',
     'launch_time'            => 2,
     'periodicity'            => 24,
     'control_center_enabled'    => '0',
@@ -147,19 +147,23 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         global $mainframe, $option;
         
         $mainframe = JFactory::getApplication();
-        $jinput = $mainframe->input;
- 
-        // Obtenemos las variables de paginación de la petición
-        $limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-    
-        $data = $jinput->get('post');
-        $limitstart = $jinput->get('limitstart', 0, 'int');
-    
-        // En el caso de que los límites hayan cambiado, los volvemos a ajustar
-        $limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
-    
-        $this->setState('limit', $limit);
-        $this->setState('limitstart', $limitstart);        
+		
+		// This is needed to avoid errors getting the file from cli
+		if ( (!empty($mainframe)) && (method_exists($mainframe,"getUserStateFromRequest")) ) {
+			$jinput = $mainframe->input;
+	 
+			// Obtenemos las variables de paginación de la petición
+			$limit = $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		
+			$data = $jinput->get('post');
+			$limitstart = $jinput->get('limitstart', 0, 'int');
+		
+			// En el caso de que los límites hayan cambiado, los volvemos a ajustar
+			$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
+		
+			$this->setState('limit', $limit);
+			$this->setState('limitstart', $limitstart);     
+		}
     }
 
     protected function populateState()
@@ -263,8 +267,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 		$query2 = $db->getQuery(true);
     
         $data = $this->config->toArray();
-		    
-        if ($key_name != 'inspector') {        
+		
+		if ($key_name != 'inspector') {        
             // Chequeamos si los valores de prioridad son nulos; si lo son, les asignamos un valor
             if ((array_key_exists("priority1", $data)) && (is_null($data['priority1'])) || (!array_key_exists("priority1", $data))) {
                 $data['priority1'] = 'Whitelist';
@@ -299,7 +303,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 			$db->setQuery($query2);
 			$db->execute();
 			$previous_data = $db->loadResult();
-						
+									
 			try {
 				//delete stored value
 				$query
@@ -307,7 +311,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 					->where($db->quoteName('storage_key').' = '.$db->quote($key_name));
 				$db->setQuery($query);
 				$db->execute();
-				
+								
 				$object = (object)array(
 				'storage_key'        => $key_name,
 				'storage_value'        => $data
@@ -325,6 +329,8 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 				);
 					
 				$db->insertObject('#__securitycheckpro_storage', $object);
+				JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+				
 			} 
 		} else {
 			JFactory::getApplication()->enqueueMessage("Error", 'error');
@@ -349,7 +355,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         foreach($this->defaultConfig as $k => $v)
         {			
             $config[$k] = $params->getValue($k, $v, 'pro_plugin');
-        }
+        }		
         return $config;    
     }
 
@@ -1184,15 +1190,18 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     
         $endpoint = "https://securitycheck.protegetuordenador.com/status.php";    
         $plan_id = 0;
+		$product_name = "Securitycheck Pro";
     
         
         // Url que contendrá el fichero xml, que a su vez contendrá la url de acceso al elemento
         if ($product == "update") {                
             $plan_id = 14;
+			$product_name = "Update Database";
         } else     if ($product == "scp") {
             $plan_id = 12;    
         } else     if ($product == "trackactions") {
             $plan_id = 17;
+			$product_name = "Track Actions";
         }
                             
         // Establecemos el valor de las variables que se incorporarán a la url    
@@ -1200,7 +1209,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         $url = $endpoint . '?' . http_build_query($params);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
+		curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);                
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         @curl_setopt($ch, CURLOPT_CAINFO, SCP_CACERT_PEM);
@@ -1209,15 +1218,20 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
                     
         $response = curl_exec($ch);    
     
-        // Si el campo obtenido no es numérico salimos
+       // Si el campo obtenido no es numérico salimos
         if (!is_numeric($response)) {
+			$message = curl_error($ch);			
+			JFactory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
             return;        
-        }    
-                        
+
+        }                           
+
         // Si el resultado de la petición es 'false' no podemos hacer nada
-        if ($response === false) {        
-                
-        } else
+        if ($response === false) {  
+			$message = curl_error($ch);			
+			JFactory::getApplication()->enqueueMessage("Unable to retrieve " . $product_name . " subscription's status. Message: " . $message, 'error');
+
+        }  else
         {
             if ($response == "5") {
                 /* Hemos contactado y el código devuelto es '5'; establecemos la variable correspondiente a 'Active' */

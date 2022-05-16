@@ -4,7 +4,7 @@
 		version="2.5"
 		client="site"
 		method="upgrade">
-	<name>MOD_EMUNDUS_APPLICATIONS_XML</name>
+	<name>MOD_EMUNDUS_APPLICATIONS_SYS_XML</name>
 	<author>Benjamin Rivalland</author>
 	<creationDate>June 2015</creationDate>
 	<copyright>Copyright (C) 2015 eMundus. All rights reserved.</copyright>
@@ -34,8 +34,8 @@
 						name="description"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
 						default=""
-						label="MOD_EMUNDUS_DESCRIPTION"
-						description="MOD_EMUNDUS_DESCRIPTION_DESC">
+						label="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION"
+						description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
 				</field>
 				<field
 						name="show_add_application"
@@ -55,11 +55,11 @@
 						label="MOD_EMUNDUS_BTN_LABEL"
 						description="MOD_EMUNDUS_BTN_DESC">
 					<option
-							value="0">TOP</option>
+							value="0">MOD_EMUNDUS_APPLICATIONS_TOP</option>
 					<option
-							value="1">BOTTOM</option>
+							value="1">MOD_EMUNDUS_APPLICATIONS_BOTTOM</option>
 					<option
-							value="2">BOTH</option>
+							value="2">MOD_EMUNDUS_APPLICATIONS_BOTH</option>
 				</field>
 				<field
 						name="show_progress"
@@ -201,6 +201,20 @@
 						label="MOD_EMUNDUS_TAGS"
 						description="MOD_EMUNDUS_TAGS_DESC">
 				</field>
+
+				<field
+						name="visible_status"
+						type="text"
+						label="MOD_EMUNDUS_VISIBLE_STATUS"
+						description=""
+						default="" />
+				<field 
+					name="for_specific_profiles"
+					type="text"
+					label="MOD_EMUNDUS_SPECIFIC_PROFILES"
+					description="MOD_EMUNDUS_SPECIFIC_PROFILES"
+					default=""
+				/>
 			</fieldset>
 			<fieldset
 					name="advanced">
@@ -239,7 +253,7 @@
 					<option
 							value="static"></option>
 				</field>
-				
+
 			</fieldset>
 		</fields>
 	</config>

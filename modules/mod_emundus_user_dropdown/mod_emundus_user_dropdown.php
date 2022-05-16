@@ -24,13 +24,14 @@ $primary_color = $params->get('primary_color', 'ECF0F1');
 $secondary_color = $params->get('secondary_color', 'F89406');
 $icon = $params->get('icon', 'big circular user outline icon');
 $show_logout = $params->get('show_logout', '1');
+$show_update = $params->get('show_update', '1');
 $url_logout = $params->get('url_logout', 'index.php');
 $intro = $params->get('intro', '');
 
 $link_login = $params->get('link_login', 'index.php?option=com_users&view=login&Itemid=1135');
 $link_register = $params->get('link_register', 'index.php?option=com_fabrik&view=form&formid=307&Itemid=1136');
 $link_forgotten_password = $params->get('link_forgotten_password', 'index.php?option=com_users&view=reset&Itemid=2833');
-$show_registration = !$params->get('show_registration', '0');
+$show_registration = $params->get('show_registration', '0');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css');
@@ -39,8 +40,10 @@ if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
 }
 
-if (!$show_registration && $user === null && modEmundusUserDropdownHelper::isCampaignActive()) {
-	$show_registration = true;
+if ($show_registration == 0 || ($show_registration == 1 && $user === null && modEmundusUserDropdownHelper::isCampaignActive())) {
+    $show_registration = true;
+} elseif ($show_registration == 2){
+    $show_registration = false;
 }
 
 //

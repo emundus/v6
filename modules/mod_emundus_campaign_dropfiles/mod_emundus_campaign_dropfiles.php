@@ -7,7 +7,10 @@ $document->addStyleSheet("modules/mod_emundus_campaign_dropfiles/style/mod_emund
 
 $helper = new modEmundusCampaignDropfilesHelper;
 
-$files = $helper->getFiles();
+$mod_em_dropfile_column=$params->get('mod_em_dropfile_column');
+$mod_em_dropfile_desc=$params->get('mod_em_dropfile_desc');
+
+$files = $helper->getFiles($mod_em_dropfile_column);
 
 
 if  (!empty($files)) {

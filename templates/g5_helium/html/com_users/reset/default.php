@@ -20,7 +20,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
             <h1>
-                <?php echo JText::_('COM_USER_FORGOT_PASSWORD_TITLE'); ?>
+                <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
 			</h1>
 		</div>
 	<?php endif; ?>
