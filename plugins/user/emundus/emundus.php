@@ -399,7 +399,7 @@ class plgUserEmundus extends JPlugin
 
                     $user_id = JFactory::getUser()->id;
 
-                    if(isset($user['firstname']) || isset($user['lastname'])) {
+                    if (isset($user['firstname']) || isset($user['lastname'])) {
                         $query->clear()
                             ->update('#__emundus_users');
 
@@ -415,41 +415,39 @@ class plgUserEmundus extends JPlugin
                     }
 
 
-                    if (isset($user['other_properties'])) {
-                        if (!empty($user['other_properties'])) {
+                    if (!empty($user['other_properties'])) {
+                        foreach ($user['other_properties'] as $key => $other_property) {
+                            if (!empty($other_property->values)) {
+                                $table = explode('___', $key)[0];
+                                $column = explode('___', $key)[1];
 
-                            foreach ($user['other_properties'] as $key => $other_property) {
-                                if (!empty($other_property->values)) {
-                                    $table = explode('___', $key)[0];
-                                    $column = explode('___', $key)[1];
+                                $query->clear()
+                                    ->select($db->quoteName($column))
+                                    ->from($db->quoteName($table))
+                                    ->where($db->quoteName('user_id') . ' = ' . $user_id);
 
-                                    $query->clear()
-                                        ->select($db->quoteName($column))
-                                        ->from($db->quoteName($table))
-                                        ->where($db->quoteName('user_id') . ' = ' . $user_id);
+                                if ($other_property->method == 'insert') {
+                                    $query->andWhere($db->quoteName($column) . ' = ' . $other_property->values);
+                                }
 
-                                    if ($other_property->method == 'insert') {
-                                        $query->andWhere($db->quoteName($column) . ' = ' . $other_property->values);
+                                $db->setQuery($query);
+
+                                $result = $db->loadResult();
+
+                                if (empty($result)) {
+                                    $query->clear();
+
+                                    if ($other_property->method == 'update') {
+                                        $query->update($db->quoteName($table));
+                                        $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
+                                        $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+                                    } else if ($other_property->method == 'insert') {
+                                        $query->insert($db->quoteName($table));
+                                        $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
+                                        $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
                                     }
-
                                     $db->setQuery($query);
-                                    $result = $db->loadResult();
-
-                                    if (empty($result)) {
-                                        $query->clear();
-
-                                        if ($other_property->method == 'update') {
-                                            $query->update($db->quoteName($table));
-                                            $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
-                                            $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
-                                        } else if ($other_property->method == 'insert') {
-                                            $query->insert($db->quoteName($table));
-                                            $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
-                                            $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
-                                        }
-                                        $db->setQuery($query);
-                                        $db->execute();
-                                    }
+                                    $db->execute();
                                 }
                             }
                         }
