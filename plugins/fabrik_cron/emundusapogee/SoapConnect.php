@@ -76,18 +76,24 @@ class SoapConnect {
             $query = $db->getQuery(true);
 
             /// execute cURL
-            curl_exec($curl_obj);
+            $response = curl_exec($curl_obj);
             $info = curl_getinfo($curl_obj, CURLINFO_HTTP_CODE);
 
             if(false === curl_exec($curl_obj) || $info !== 200) {
+                $doc = new DOMDocument();
+                $doc->loadXML($response);
+                $response_message = $doc->getElementsByTagName('faultstring')->item(0)->nodeValue;
+
                 /// insert the status FAILED to table "jos_emundus_apogee_status"
                 $data = array(
                     'date_time' => date('Y-m-d H:i:s'),
                     'applicant_id' => $fnum_infos['applicant_id'],
                     'fnum'      => $fnum,
-                    'status'    => 0
+                    'status'    => 0,
+                    'params'    => $response_message
                 );
-                JLog::add('# Error when passing data to APOGEE server, cURL exec fail or HTTP status is not 200 ' . date('Y-m-d H:i:s'), JLog::ERROR, 'com_emundus');
+
+                JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $response_message, JLog::ERROR, 'com_emundus');
             } else {
                 $data = array(
                     'date_time' => date('Y-m-d H:i:s'),
@@ -107,7 +113,7 @@ class SoapConnect {
                 'status'    => 0
             );
 
-            JLog::add('# Error when passing data to APOGEE server, error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('[emundusApogee] Error when fetching data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 
         finally {
