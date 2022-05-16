@@ -376,7 +376,7 @@ class ApogeeCustom {
         return $this->xmlTree;
     }
 
-    /* set value to repeat group */
+    /* set value to repeat group
     public function setConvocation() {
         $db = JFactory::getDbo();
 
@@ -426,10 +426,10 @@ class ApogeeCustom {
             }
         }
         return $this->xmlTree;
-    }
+    }*/
 
     /* set value to repeat group */
-    public function setTitreAccessExterne() {
+    /*public function setTitreAccessExterne() {
         $db = JFactory::getDbo();
 
         $titreAccessExterne_elems = array(
@@ -480,7 +480,7 @@ class ApogeeCustom {
             }
         }
         return $this->xmlTree;
-    }
+    }*/
 
     /*public function buildCustomSchema() {
         /// custom schema building
