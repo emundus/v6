@@ -5,7 +5,7 @@
          v-html="object_json.show_page_heading.page_heading"
     />
     <div class="em-flex-row em-flex-space-between page-header">
-      <h1 v-if="object_json.show_title" v-html="object_json.show_title.value" />
+      <h1 class="em-mt-0" v-if="object_json.show_title" v-html="object_json.show_title.value" />
     </div>
 
     <p v-if="object_json.intro_value" class="em-mt-16" v-html="object_json.intro_value" />
@@ -194,5 +194,8 @@ export default {
 .unpublished {
   background: #C5C8CE;
   border-radius: 5px;
+}
+.em-mt-0{
+  margin-top: 0 !important;
 }
 </style>

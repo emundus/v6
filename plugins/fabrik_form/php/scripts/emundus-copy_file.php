@@ -57,13 +57,16 @@ if ($copied == 1) {
 		if (!empty($application_file)) {
 			$application_file['fnum'] = $fnum_to;
 			$application_file['copied'] = $copied;
+            $application_file['user_id'] = $user->id;
+            $application_file['campaign_id'] = $campaign_id;
+            $application_file['status'] = $status;
 			unset($application_file['id']);
 
-			// 2. Copie definition of fnum for new file
-			$query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `user_id`, `campaign_id`, `submitted`, `date_submitted`, `cancelled`, `fnum`, `status`, `published`, `copied`) 
-					VALUES ('.$application_file['applicant_id'].', '.$user->id.', '.$campaign_id.', '.$db->Quote($application_file['submitted']).', '.$db->Quote($application_file['date_submitted']).', '.$application_file['cancelled'].', '.$db->Quote($fnum_to).', '.$status.', 1, 1)';
-			$db->setQuery($query);
-			$db->execute();
+            // 2. Copie definition of fnum for new file
+            $query = 'INSERT INTO #__emundus_campaign_candidature (`'.implode('`,`', array_keys($application_file)).'`)
+					VALUES ('.implode(',', $db->Quote($application_file)).')';
+            $db->setQuery($query);
+            $db->execute();
 		}
 
 		// 3. Duplicate file from new fnum
@@ -117,5 +120,9 @@ if ($copied == 1) {
 
 
 // 5. Exit plugin before store
-echo '<script>window.parent.$("html, body").animate({scrollTop : 0}, 300);</script>';
-die('<h1><img src="'.JURI::base().'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>');
+echo "<script>
+      window.parent.$('html, body').animate({scrollTop : 0}, 300);  
+      window.setTimeout(function() {
+		parent.$('#em-modal-actions').modal('hide');
+	}, 1800);</script>";
+die('<div style="text-align: center"><img src="'.JURI::base().'images/emundus/animations/checked.gif" width="200" height="200" align="middle" /></div>');

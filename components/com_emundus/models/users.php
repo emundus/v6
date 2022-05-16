@@ -257,7 +257,7 @@ class EmundusModelUsers extends JModelList {
                 foreach ($search as $str) {
                     $val = explode(': ', $str);
 
-                    if ($val[0] == "COM_EMUNDUS_ACTIONS_ALL") {
+                    if ($val[0] == "ALL") {
                         $q .= ' OR e.lastname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR e.firstname LIKE '.$db->Quote('%'.$val[1].'%').'
                         OR u.email LIKE '.$db->Quote('%'.$val[1].'%').'
@@ -1106,7 +1106,7 @@ class EmundusModelUsers extends JModelList {
      * Function to get Evaluators Infos for the mailing evaluators
      */
     public function getEvalutorByFnums($fnums) {
-        include_once(JPATH_BASE.'/components/com_emundus/models/files.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/files.php');
         $files = new EmundusModelFiles;
 
         $fnums_info = $files->getFnumsInfos($fnums);
@@ -1686,12 +1686,22 @@ class EmundusModelUsers extends JModelList {
         if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
-
+  
         $db = JFactory::getDBO();
-        $db->setQuery('UPDATE #__emundus_users SET firstname = '.$db->Quote($user['firstname']).',
-                                                    lastname = '.$db->Quote($user['lastname']).',
-                                                    profile = '.(int)$user['profile'].',
-                                                    university_id = '.$user['university_id'].' WHERE user_id = '.(int)$user['id']);
+        $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__emundus_users'))
+            ->set('firstname = ' . $db->quote($user['firstname']))
+            ->set('lastname = ' . $db->quote($user['lastname']))
+            ->set('profile = ' . $db->quote((int)$user['profile']));
+
+        if (!empty($user['university_id'])) {
+            $query->set('university_id = ' . $db->quote($user['university_id']));
+        }
+
+        $query->where('user_id = ' . $db->quote($user['id']));
+
+        $db->setQuery($query);
+
 	    try {
             $db->execute();
 	    } catch(Exception $e) {

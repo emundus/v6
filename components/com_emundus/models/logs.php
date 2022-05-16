@@ -23,7 +23,7 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
@@ -199,7 +199,7 @@ class EmundusModelLogs extends JModelList {
 
 		$query->select('*')
 			->from($db->quoteName('#__emundus_logs', 'lg'))
-			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.id').' = '.$db->QuoteName('lg.user_id_from'))
+			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
 			->order($db->QuoteName('lg.id') . ' DESC')
 			->setLimit(100, $offset);

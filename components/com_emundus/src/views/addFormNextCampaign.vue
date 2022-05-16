@@ -5,12 +5,16 @@
         :cid="campaignId"
     />
     <div>
-      <div class="em-flex-row em-mt-16">
-        <h2 v-if="menuHighlight != -1">{{formCategories[langue][menuHighlight]}}</h2>
-        <h2 v-if="menuHighlightProg != -1">{{formPrograms[langue][menuHighlightProg]}}</h2>
+      <div class="em-flex-row em-mt-16 em-pointer" onclick="history.back()">
+        <span class="material-icons">arrow_back</span>
+        <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
-      <p v-if="menuHighlight != -1" v-html="formCategoriesDesc[langue][menuHighlight]" style="margin-top: 20px"></p>
-      <p v-if="menuHighlightProg != -1" v-html="formProgramsDesc[langue][menuHighlightProg]" style="margin-top: 20px"></p>
+      <div class="em-flex-row em-mt-16">
+        <h2 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h2>
+        <h2 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h2>
+      </div>
+      <p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])" style="margin-top: 20px"></p>
+      <p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])" style="margin-top: 20px"></p>
 
       <hr>
 
@@ -28,19 +32,19 @@
       <div class="em-flex-row" >
         <ul class="nav nav-tabs topnav">
 
-          <li v-for="(formCat, index) in formCategories[langue]" :key="'category-' + index" v-show="closeSubmenu">
+          <li v-for="(formCat, index) in formCategories" :key="'category-' + index" v-show="closeSubmenu">
             <a  @click="profileId != null ? changeToCampMenu(index): ''"
                 class="em-neutral-700-color em-pointer"
                 :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-              {{ formCat }}
+              {{ translate(formCat) }}
             </a>
           </li>
 
-          <li v-for="(formProg, index) in formPrograms[langue]" :key="'program-' + index" v-show="closeSubmenu">
+          <li v-for="(formProg, index) in formPrograms" :key="'program-' + index" v-show="closeSubmenu">
             <a @click="profileId != null ? changeToProgMenu(index) : ''"
                class="em-neutral-700-color em-pointer"
                :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-              {{ formProg }}
+              {{ translate(formProg) }}
             </a>
           </li>
         </ul>
@@ -109,6 +113,7 @@ import addEmail from "@/components/FunnelFormulaire/addEmail";
 import addFormulaire from "@/components/FunnelFormulaire/addFormulaire";
 import AddEvaluationGrid from "@/components/FunnelFormulaire/addEvaluationGrid";
 import {global} from "../store/global";
+import Swal from "sweetalert2";
 
 const qs = require("qs");
 
@@ -134,75 +139,34 @@ export default {
     manyLanguages: 0,
 
     prid: "",
-    EmitIndex: "0",
     menuHighlight: 0,
     menuHighlightProg: -1,
     formReload: 0,
-    selectedform: "default",
-    formList: "",
     prog: 0,
     loading: false,
     closeSubmenu: true,
     profileId: null,
     profiles: [],
     campaignsByProgram: [],
-    currentElement: "",
-    currentSpan: "",
     langue: 0,
     formCategoriesDesc: [
-      [
-        "Vous pouvez modifier vos dates limites de campagne, vos descriptifs et définir une limite de dossiers",
-        "Proposez à vos visiteurs des documents d'informations avant même qu'il se connecte. Ces documents seront disponibles dans la section <em>Plus d'informations</em> de votre campagne",
-        "Choississez le formulaire de votre campagne. Nous vous proposons des modèles que vous pouvez modifier à tout moment.",
-        "Proposez des documents des documents à vos candidats qui remplissent le formulaire. Cela peut être des modèles que les candidats doivent compléter puis déposer ou simplement des documents complémentaires à certains informations demandées",
-        "Ajoutez des types de documents que le candidat doit déposer à la suite du formulaire. Glissez simplement les documents entre les 2 colonnes ou ajouter un nouveau type de document",
-      ],
-      [
-        "You can change your campaign deadlines, your descriptions and set a file limit",
-        "Offer your visitors information documents before they even log in. These documents will be available in the <em>More information</em> section of your campaign",
-        "Choose the form for your campaign. We offer templates that you can modify at any time.",
-        "Offer documents to your applicants when they fill in the form. These can be templates that applicants need to complete and then submit, or simply documents to supplement some of the information requested",
-        "Add document types that the applicant should file after the form. Simply drag and drop documents between the 2 columns or add a new document type",
-      ]
+        'COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC',
+        'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS_DESC',
+        'COM_EMUNDUS_FORM_CAMPAIGN_DESC'
     ],
 
     formCategories: [
-      [
-        "Informations générales",
-        "Documents préalables",
-        "Formulaire",
-      ],
-      [
-        "Global informations",
-        "Preliminary documents",
-        "Form",
-      ]
+      'COM_EMUNDUS_GLOBAL_INFORMATIONS',
+      'COM_EMUNDUS_DOCUMENTS_CAMPAIGNS',
+      'COM_EMUNDUS_FORM_CAMPAIGN'
     ],
 
     formPrograms: [
-      [
-        //"Utilisateurs",
-        //"Grille d'évaluation",
-        "Emails",
-      ],
-      [
-        //"Users",
-        //"Evaluation grid",
-        "Emails",
-      ]
+      'COM_EMUNDUS_EMAILS'
     ],
 
     formProgramsDesc: [
-      [
-        //"Ajoutez des utilisateurs, affectez-les à des rôles qui va leur donner des droits sur les dossiers.",
-        //"Définissez une phase d'évaluation en créant une grille avec différents critères.",
-        "Configurer des envois d'emails automatique aux changements de statuts de vos différents candidats.",
-      ],
-      [
-        //"Users",
-        //"Evaluation grid",
-        "Emails",
-      ]
+      'COM_EMUNDUS_EMAILS_DESC'
     ],
 
     form: {},
@@ -344,8 +308,31 @@ export default {
     },
 
     changeToCampMenu(index) {
-      this.menuHighlight = index;
-      this.menuHighlightProg = -1;
+      if (this.formCategories[this.menuHighlight] == "COM_EMUNDUS_GLOBAL_INFORMATIONS" && this.$store.getters['campaign/unsavedChanges'] === true) {
+        // check if there are unsaved changes
+        Swal.fire({
+          title: this.translate("COM_EMUNDUS_CAMPAIGN_UNSAVED_CHANGES"),
+          type: "warning",
+            showCancelButton: true,
+            confirmButtonText: this.translate("JYES"),
+            cancelButtonText: this.translate("JNO"),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              cancelButton: 'em-swal-cancel-button',
+              confirmButton: 'em-swal-confirm-button',
+            }
+        }).then(result => {
+          if (result.value) {
+            this.menuHighlight = index;
+            this.menuHighlightProg = -1;
+            this.$store.dispatch("campaign/setUnsavedChanges", false);
+          }
+        });
+      } else {
+        this.menuHighlight = index;
+        this.menuHighlightProg = -1;
+      }
     },
 
     setProfileId(prid) {

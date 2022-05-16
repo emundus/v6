@@ -120,7 +120,7 @@ class EmundusControllerMessenger extends JControllerLegacy
         $applicant = $jinput->getBool('applicant');
         $attachment = $jinput->getInt('attachment');
 
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
 
         $m_files = new EmundusModelFiles();
 

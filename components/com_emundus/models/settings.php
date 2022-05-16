@@ -76,7 +76,7 @@ class EmundusModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
         $falang = new EmundusModelFalang;
 
         $query->select('*')
@@ -203,7 +203,7 @@ class EmundusModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
         $falang = new EmundusModelFalang;
 
         $query->select('MAX(step)')
@@ -252,6 +252,7 @@ class EmundusModelsettings extends JModelList {
             $status->label = new stdClass;
             $status->label->fr = 'Nouveau statut';
             $status->label->en = 'New status';
+            $status->edit = 1;
 
             $falang->insertFalang($status->label, $newstep, 'emundus_setup_status', 'value');
 
@@ -274,7 +275,7 @@ class EmundusModelsettings extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'translations.php');
         $m_translations = new EmundusModelTranslations;
 
         $lang_to = $m_translations->getDefaultLanguage()->lang_code;

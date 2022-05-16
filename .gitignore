@@ -100,6 +100,7 @@ images/com_eventbooking/
 media/com_eventbooking/assets/css/custom.css
 media/com_eventbooking/assets/css/true
 media/com_eventbooking/images/thumbs/*
+components/com_eventbooking/fields.xml
 
 ## unit test ##
 /components/com_emundus_onboard/unittest/logs/

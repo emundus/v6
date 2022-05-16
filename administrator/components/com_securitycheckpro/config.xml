@@ -45,19 +45,26 @@
 			<option value="0">COM_SECURITYCHECKPRO_NO</option>
 		</field>
 		
+		<field name="checkbox_position" type="list" label="COM_SECURITYCHECKPRO_CHECKBOX_POSITION" description="COM_SECURITYCHECKPRO_CHECKBOX_POSITION_DESC" default="0">
+			<option value="0">COM_SECURITYCHECKPRO_RIGHT</option>
+			<option value="1">COM_SECURITYCHECKPRO_LEFT</option>
+		</field>
+		
+		<field name="file_manager_recursive_folder_exceptions" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		
+		<field name="file_manager_include_exceptions_in_database" type="radio" default="1" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_DESCRIPTION">
+			<option value="1">COM_SECURITYCHECKPRO_YES</option>
+			<option value="0">COM_SECURITYCHECKPRO_NO</option>
+		</field>
+		
 	</fieldset>
 	
 	<fieldset name="FileManager" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_DESCRIPTION">
 		<field name="file_manager_path" type="folderlist" default="JPATH_ROOT" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_DESCRIPTION" directory="" filter="" exclude="" stripext="" hide_none="true"/>
-		<field name="file_manager_path_exceptions" type="textarea" default="" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_DESCRIPTION" class="span12" />
-		<field name="file_manager_recursive_folder_exceptions" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_RECURSIVE_FOLDER_EXCEPTIONS_DESCRIPTION">
-			<option value="1">COM_SECURITYCHECKPRO_YES</option>
-			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
-		<field name="file_manager_include_exceptions_in_database" type="radio" default="0" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_EXCEPTIONS_IN_DATABASE_DESCRIPTION">
-			<option value="1">COM_SECURITYCHECKPRO_YES</option>
-			<option value="0">COM_SECURITYCHECKPRO_NO</option>
-		</field>
+		<field name="file_manager_path_exceptions" type="textarea" default="" label="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_LABEL" description="COM_SECURITYCHECKPRO_CONFIG_FILE_MANAGER_PATH_EXCEPTIONS_DESCRIPTION" class="span12" />		
 
 		<field name="change_permissions_option" type="radio" default="chmod" label="COM_SECURITYCHECKPRO_CHANGE_PERMISSIONS_OPTION_LABEL" description="COM_SECURITYCHECKPRO_CHANGE_PERMISSIONS_OPTION_DESCRIPTION">
 			<option value="chmod">Chmod</option>

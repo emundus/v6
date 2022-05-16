@@ -559,11 +559,11 @@ class SecuritycheckprosModelSecuritycheckpros extends SecuritycheckproModel
 			
 			$config = JFactory::getConfig();
 			$dbtype = $config->get('dbtype');
-			$version = '0.0.0';
-			$tipo = 'Notdefined';
-			
+									
 			$registros_map = array_map(function ($element) {
 				$new_array = array();
+				$tipo = 'Notdefined';
+				$version = '0.0.0';
 				$decode = json_decode($element->manifest_cache);
 				// Algunos componentes devuelven un valor nulo en el manifest_cache, así que hemos de controlar esto
 				if (is_object($decode)) {

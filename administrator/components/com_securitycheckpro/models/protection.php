@@ -673,6 +673,8 @@ class SecuritycheckprosModelProtection extends \Joomla\CMS\MVC\Model\BaseDatabas
             $rules .= PHP_EOL . "RewriteCond %{HTTP_REFERER} !" . $site_url;
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !" . $this->getValue("hide_backend_url") . "$";
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !com_securitycheckprocontrolcenter [NC]";
+			// Added to avoid errors in Joomla 4.1
+			$rules .= PHP_EOL . "RewriteCond %{REQUEST_URI} !templates/administrator [NC]";
             if (!is_null($this->getValue("hide_backend_url"))) {
                 $backend_exceptions = explode(",", $this->getValue("backend_exceptions"));
                 foreach ($backend_exceptions as $exception)
