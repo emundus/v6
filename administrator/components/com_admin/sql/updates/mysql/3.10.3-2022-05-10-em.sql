@@ -9,4 +9,8 @@ create table jos_emundus_apogee_status
     status       varchar(255) null
 );
 
+-- add "code_opi" to table "jos_emundus_final_grade" --
+alter table jos_emundus_final_grade
+    add code_opi varchar(255) null;
+
 
