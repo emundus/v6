@@ -3231,7 +3231,7 @@ button.swal2-cancel.goback-btn {
 
           &.error {
 
-            .fabrikElement input,
+            .fabrikElement input:not([type="radio"]),
             .fabrikElement textarea,
             .fabrikElement select {
             @include input-error;
@@ -3241,7 +3241,7 @@ button.swal2-cancel.goback-btn {
           .fabrikErrorMessage  {
             @include body-14;
             color: $red;
-            margin-top: 4px;
+            margin-top: 8px;
 
             &.help-inline {
               color: $red;
