@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Sourcerer
- * @version         9.0.2
+ * @version         9.2.1
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -419,7 +419,7 @@ class Replace
 		if ( ! $enabled)
 		{
 			// replace source block content with HTML comment
-			$string = Protect::getMessageCommentTag(JText::sprintf('SRC_CODE_REMOVED_NOT_ALLOWED', JText::_('SRC_CSS'), JText::_('SRC_CSS')));
+			$string = Protect::getMessageCommentTag(JText::sprintf('SRC_CODE_REMOVED_NOT_ALLOWED', JText::_('SRC_CSS')));
 
 			return;
 		}
@@ -476,7 +476,7 @@ class Replace
 		if ( ! $enabled)
 		{
 			// replace source block content with HTML comment
-			$string = Protect::getMessageCommentTag(JText::sprintf('SRC_CODE_REMOVED_NOT_ALLOWED', JText::_('SRC_JAVASCRIPT'), JText::_('SRC_JAVASCRIPT')));
+			$string = Protect::getMessageCommentTag(JText::sprintf('SRC_CODE_REMOVED_NOT_ALLOWED', JText::_('SRC_JAVASCRIPT')));
 
 			return;
 		}
@@ -523,7 +523,7 @@ class Replace
 		{
 			// replace source block content with HTML comment
 			$string_array    = [];
-			$string_array[0] = Protect::getMessageCommentTag(JText::sprintf('SRC_CODE_REMOVED_NOT_ALLOWED', JText::_('SRC_PHP'), JText::_('SRC_PHP')));
+			$string_array[0] = Protect::getMessageCommentTag(JText::sprintf('SRC_CODE_REMOVED_NOT_ALLOWED', JText::_('SRC_PHP')));
 
 			$string = implode('', $string_array);
 

@@ -1,13 +1,13 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
-use FOF30\Container\Container;
-use FOF30\Utils\Ip;
+use FOF40\Container\Container;
+use FOF40\IP\IPHelper as Ip;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
@@ -17,7 +17,7 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 // This dummy class is here to allow the class autoloader to load the main plugin file
 class AtsystemAdmintoolsMain
@@ -25,9 +25,9 @@ class AtsystemAdmintoolsMain
 
 }
 
-if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+if (!defined('FOF40_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof40/include.php'))
 {
-	// FOF 3.0 is not installed
+	// This extension requires FOF 4.
 	return;
 }
 
@@ -138,6 +138,9 @@ class plgSystemAdmintools extends CMSPlugin
 	 */
 	public function onAfterInitialise()
 	{
+		// We check for a Rescue URL before processing any other security rules.
+		$this->exceptionsHandler->checkRescueURL();
+
 		return $this->runFeature('onAfterInitialise', []);
 	}
 
@@ -167,7 +170,7 @@ class plgSystemAdmintools extends CMSPlugin
 		}
 		else
 		{
-			$app->getDispatcher()->addListener('onAfterRender', [$this, 'onAfterRenderLatebound'],  PHP_INT_MAX - 1);
+			$app->getDispatcher()->addListener('onAfterRender', [$this, 'onAfterRenderLatebound'], PHP_INT_MAX - 1);
 		}
 
 		return $this->runFeature('onBeforeRender', []);
@@ -424,7 +427,7 @@ class plgSystemAdmintools extends CMSPlugin
 			return;
 		}
 
-		if (!class_exists('FOF30\\Utils\\Ip'))
+		if (!class_exists('FOF40\\Utils\\Ip'))
 		{
 			return;
 		}
@@ -691,7 +694,7 @@ class plgSystemAdmintools extends CMSPlugin
 			/** @var SiteApplication $app */
 			$app = Factory::getApplication();
 
-			if ($app->getLanguageFilter())
+			if (($app->isClient('site') || $app->isClient('administrator')) && $app->getLanguageFilter())
 			{
 				jimport('joomla.language.helper');
 				$languages = LanguageHelper::getLanguages('lang_code');
@@ -911,8 +914,11 @@ class plgSystemAdmintools extends CMSPlugin
 	 */
 	private function getCurrentView()
 	{
-		$view = $this->input->getCmd('view', '');
-		$task = $this->input->getCmd('task', '');
+		$fallbackView = version_compare(JVERSION, '3.999.999', 'ge')
+			? $this->input->getCmd('controller', '')
+			: '';
+		$view         = $this->input->getCmd('view', $fallbackView);
+		$task         = $this->input->getCmd('task', '');
 
 		if (empty($view) && (strpos($task, '.') !== false))
 		{

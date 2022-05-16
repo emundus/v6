@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -94,6 +94,37 @@ class HtmlTag
 	}
 
 	/**
+	 * Extract all attributes from a html tag string
+	 *
+	 * @param string $string
+	 *
+	 * @return array
+	 */
+	public static function getAttributes($string)
+	{
+		if (empty($string))
+		{
+			return [];
+		}
+
+		RegEx::matchAll('([a-z0-9-_]+)="([^"]*)"', $string, $matches);
+
+		if (empty($matches))
+		{
+			return [];
+		}
+
+		$attribs = [];
+
+		foreach ($matches as $match)
+		{
+			$attribs[$match[1]] = $match[2];
+		}
+
+		return $attribs;
+	}
+
+	/**
 	 * Convert array of attributes to a html style string
 	 *
 	 * @param array $attributes
@@ -152,37 +183,6 @@ class HtmlTag
 		}
 
 		return $match[1];
-	}
-
-	/**
-	 * Extract all attributes from a html tag string
-	 *
-	 * @param string $string
-	 *
-	 * @return array
-	 */
-	public static function getAttributes($string)
-	{
-		if (empty($string))
-		{
-			return [];
-		}
-
-		RegEx::matchAll('([a-z0-9-_]+)="([^"]*)"', $string, $matches);
-
-		if (empty($matches))
-		{
-			return [];
-		}
-
-		$attribs = [];
-
-		foreach ($matches as $match)
-		{
-			$attribs[$match[1]] = $match[2];
-		}
-
-		return $attribs;
 	}
 
 	/**

@@ -1,16 +1,16 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
-use FOF30\Container\Container;
-use FOF30\Date\Date;
-use FOF30\Utils\TimezoneWrangler;
+use FOF40\Container\Container;
+use FOF40\Date\Date;
+use FOF40\Date\TimezoneWrangler;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
@@ -47,8 +47,7 @@ class AtsystemUtilExceptionshandler
 	 */
 	public function logAndAutoban($reason, $extraLogInformation = '', $extraLogTableInformation = '')
 	{
-		$ret = $this->logBreaches($reason, $extraLogInformation, $extraLogTableInformation);
-
+		$ret     = $this->logBreaches($reason, $extraLogInformation, $extraLogTableInformation);
 		$autoban = $this->cparams->getValue('tsrenable', 0);
 
 		if ($autoban)
@@ -73,9 +72,6 @@ class AtsystemUtilExceptionshandler
 	 */
 	public function blockRequest($reason = 'other', $message = '', $extraLogInformation = '', $extraLogTableInformation = '')
 	{
-		// Rescue URL check
-		AtsystemUtilRescueurl::processRescueURL($this);
-
 		if (empty($message))
 		{
 			$customMessage = $this->cparams->getValue('custom403msg', '');
@@ -138,7 +134,7 @@ class AtsystemUtilExceptionshandler
 
 				if (!$this->container->platform->isCli())
 				{
-					Factory::getSession()->close();
+					$this->container->session->close();
 				}
 
 				$this->container->platform->redirect(Uri::base());
@@ -552,9 +548,9 @@ class AtsystemUtilExceptionshandler
 		if ($this->cparams->getValue('email_throttle', 1))
 		{
 			// Ok I found out the best template, HOWEVER, should I really send out an email? Let's do some checks vs frequency limits
-			$emails       = $best->email_num ? $best->email_num : 5;
-			$numfreq      = $best->email_numfreq ? $best->email_numfreq : 1;
-			$frequency    = $best->email_freq ? $best->email_freq : 'hour';
+			$emails       = $best->email_num ?: 5;
+			$numfreq      = $best->email_numfreq ?: 1;
+			$frequency    = $best->email_freq ?: 'hour';
 			$mindatestamp = 0;
 
 			switch ($frequency)
@@ -764,6 +760,26 @@ HTML;
 	}
 
 	/**
+	 * Checks if the Rescue URL is being accessed.
+	 *
+	 * This only applies when IP autoban is enabled and this is an administrator access.
+	 *
+	 * @return  void
+	 */
+	public function checkRescueURL()
+	{
+		$autoban = $this->cparams->getValue('tsrenable', 0);
+
+		if (!$autoban)
+		{
+			return;
+		}
+
+		// If IP auto-ban is enabled we need to check for a Rescue URL
+		AtsystemUtilRescueurl::processRescueURL($this);
+	}
+
+	/**
 	 * Flag security exceptions coming from private network IPs so we can notify the user
 	 *
 	 * @return  void
@@ -773,7 +789,7 @@ HTML;
 	private function flagPrivateNetworkIPs()
 	{
 		// Make sure FOF 3 can be loaded, or fail gracefuly
-		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+		if (!defined('FOF40_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof40/include.php'))
 		{
 			return;
 		}
@@ -1071,29 +1087,29 @@ END;
 		}
 
 		// -- Log the exception
-		$fp = @fopen($fname, 'at');
+		$fp = @fopen($fname, 'a');
 
 		if ($fp === false)
 		{
 			return;
 		}
 
-		fwrite($fp, str_repeat('-', 79) . "\n");
-		fwrite($fp, "Blocking reason: " . $reason . "\n" . str_repeat('-', 79) . "\n");
-		fwrite($fp, "Reason     : " . $txtReason . "\n");
-		fwrite($fp, 'Timestamp  : ' . gmdate('Y-m-d H:i:s') . " GMT\n");
-		fwrite($fp, 'Local time : ' . $tokens['[DATE]'] . " \n");
-		fwrite($fp, 'URL        : ' . $tokens['[URL]'] . "\n");
-		fwrite($fp, 'User       : ' . $tokens['[USER]'] . "\n");
-		fwrite($fp, 'IP         : ' . $tokens['[IP]'] . "\n");
-		fwrite($fp, 'UA         : ' . $tokens['[UA]'] . "\n");
+		fwrite($fp, str_repeat('-', 79) . PHP_EOL);
+		fwrite($fp, "Blocking reason: " . $reason . PHP_EOL . str_repeat('-', 79) . PHP_EOL);
+		fwrite($fp, "Reason     : " . $txtReason . PHP_EOL);
+		fwrite($fp, 'Timestamp  : ' . gmdate('Y-m-d H:i:s') . " GMT" . PHP_EOL);
+		fwrite($fp, 'Local time : ' . $tokens['[DATE]'] . " " . PHP_EOL);
+		fwrite($fp, 'URL        : ' . $tokens['[URL]'] . PHP_EOL);
+		fwrite($fp, 'User       : ' . $tokens['[USER]'] . PHP_EOL);
+		fwrite($fp, 'IP         : ' . $tokens['[IP]'] . PHP_EOL);
+		fwrite($fp, 'UA         : ' . $tokens['[UA]'] . PHP_EOL);
 
 		if (!empty($extraLogInformation))
 		{
-			fwrite($fp, $extraLogInformation . "\n");
+			fwrite($fp, $extraLogInformation . PHP_EOL);
 		}
 
-		fwrite($fp, "\n\n");
+		fwrite($fp, PHP_EOL . PHP_EOL);
 		fclose($fp);
 	}
 

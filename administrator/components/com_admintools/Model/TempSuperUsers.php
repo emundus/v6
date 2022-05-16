@@ -1,23 +1,23 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use AtsystemFeatureNonewadmins;
 use DateInterval;
 use DateTimeZone;
 use Exception;
-use FOF30\Container\Container;
-use FOF30\Date\Date;
-use FOF30\Encrypt\Randval;
-use FOF30\Model\DataModel;
+use FOF40\Container\Container;
+use FOF40\Date\Date;
+use FOF40\Encrypt\Randval;
+use FOF40\Model\DataModel;
 use JDatabaseQuery;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Language\Text;
@@ -317,6 +317,57 @@ class TempSuperUsers extends DataModel
 		{
 			$this->container->platform->setSessionVar('superuserslist.createnew', true, 'com_admintools');
 		}
+	}
+
+	/**
+	 * Adds a new user into the list of "safe ids", otherwise at the next session load it will be disabled by the feature
+	 * "Monitor Super User accounts"
+	 *
+	 * @param int $userid ID of the new user that should be injected into the list
+	 *
+	 */
+	public function addUserToSafeId($userid)
+	{
+		$db    = $this->container->db;
+		$query = $db->getQuery(true)
+					->select($db->quoteName('value'))
+					->from($db->quoteName('#__admintools_storage'))
+					->where($db->quoteName('key') . ' = ' . $db->quote('superuserslist'));
+		$db->setQuery($query);
+
+		try
+		{
+			$jsonData = $db->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			return;
+		}
+
+		$userList = [];
+
+		if (!empty($jsonData))
+		{
+			$userList = json_decode($jsonData, true);
+		}
+
+		$userList[] = $userid;
+
+		$db   = $this->container->db;
+		$data = json_encode($userList);
+
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__admintools_storage'))
+			->where($db->quoteName('key') . ' = ' . $db->quote('superuserslist'));
+		$db->setQuery($query);
+		$db->execute();
+
+		$object = (object) [
+			'key'   => 'superuserslist',
+			'value' => $data,
+		];
+
+		$db->insertObject('#__admintools_storage', $object);
 	}
 
 	/**

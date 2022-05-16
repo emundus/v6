@@ -499,13 +499,15 @@ class FalangManager {
 	}
 
 
-
-	public function getRawFieldTranslations($reftable,$reffield, $refids, $language)
+	/*
+	 * @since 3.10.3 add $only_published parameter
+	 * */
+	public function getRawFieldTranslations($reftable,$reffield, $refids, $language,$only_publised = true)
 	{
 
 		static $cache = array();
 
-		$hash = md5(json_encode([$reftable,$reffield, $refids, $language]));
+		$hash = md5(json_encode([$reftable,$reffield, $refids, $language,$only_publised]));
 
 		if (!isset($cache[$hash])) {
 			$db      = JFactory::getDbo();
@@ -514,9 +516,12 @@ class FalangManager {
 				->from('#__falang_content fc')
 				->where('fc.reference_id = ' . $db->quote($refids))
 				->where('fc.language_id = ' . (int) $language)
-				->where('fc.published = 1')
 				->where('fc.reference_field = ' . $db->quote($reffield))
 				->where('fc.reference_table = ' . $db->quote($reftable));
+
+			if ($only_publised){
+				$dbQuery->where('fc.published = 1');
+			}
 
 			$db->setQuery($dbQuery);
 			$result  = $db->loadResult();
@@ -573,7 +578,24 @@ class FalangManager {
 		}
 
 		return $result;
+	}
 
+	/*
+	 * @since 3.10.4/4.0.6 use native Joomla upate system
+	 * */
+	public static function getUpdateInfo($force = false)
+	{
+		/** @var Updates $updateModel */
+		require_once JPATH_ADMINISTRATOR.'/components/com_falang/classes/Update.php';
+		$config = ['update_component' => 'pkg_falang'];
+		$updateModel = new Falang\Update($config);
+		$updateInfo = $updateModel->getUpdates($force);
+		$updateInfo['current_version'] = $updateModel->getVersion();
 
+		if (!$updateInfo['hasUpdate']){
+			$updateInfo['version'] = $updateModel->getVersion();
+		}
+
+		return (object)$updateInfo;
 	}
 }

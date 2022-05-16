@@ -51,22 +51,23 @@ class CPanelViewCpanel extends FalangViewDefault
 
 		$this->sidebar = JHtmlSidebar::render();
 
-        $params = JComponentHelper::getParams('com_falang');
+		$params = JComponentHelper::getParams('com_falang');
 		$updateCaching = $params->get('update_caching',false);
-        //if caching enalbed we don't force the update
-        $updateInfo = LiveUpdate::getUpdateInformation(!$updateCaching);
-        // Get current version available
-        $this->currentVersion = $updateInfo->extInfo->version;
+		//if caching enalbed we don't force the update
+		$updateInfo = FalangManager::getUpdateInfo($updateCaching);
 
-        //get latest version
-        $this->latestVersion = $updateInfo->version;
+		$this->currentVersion = $updateInfo->current_version;
+
+		//get latest version
+		$this->latestVersion = $updateInfo->version;
 
 		$version = new FalangVersion();
 		$this->versionType = $version->getVersionType();
 
-        $this->updateInfo = $updateInfo;
+		$this->updateInfo = $updateInfo;
 
-        $js = "var progress_msg = '".JText::_('COM_FALANG_CPANEL_CHECK_PROGRESS')."';";
+
+		$js = "var progress_msg = '".JText::_('COM_FALANG_CPANEL_CHECK_PROGRESS')."';";
         $document->addScriptDeclaration($js);
         $document->addScript('components/com_falang/assets/js/cpanel.js');
 
@@ -139,6 +140,13 @@ class CPanelViewCpanel extends FalangViewDefault
 			    'ars_id' => 109,
 			    'type'   => 'paid',
 		    ),
+		    'contentfalangtag'     => array(
+			    'name' => 'falangtag',
+			    'folder' => 'content',
+			    'title'  => 'Content - Tag',
+			    'ars_id' => 41,
+			    'type'   => 'paid',
+		    )
 	    );
 
 

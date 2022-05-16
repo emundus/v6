@@ -1,23 +1,23 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Dispatcher;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
-use FOF30\Container\Container;
-use FOF30\Dispatcher\Mixin\ViewAliases;
-use FOF30\Utils\Ip;
+use FOF40\Container\Container;
+use FOF40\Dispatcher\Mixin\ViewAliases;
+use FOF40\IP\IPHelper as Ip;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
-class Dispatcher extends \FOF30\Dispatcher\Dispatcher
+class Dispatcher extends \FOF40\Dispatcher\Dispatcher
 {
 	use ViewAliases
 	{
@@ -86,8 +86,8 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 
 		// Load the FOF language
 		$lang = $this->container->platform->getLanguage();
-		$lang->load('lib_fof30', JPATH_ADMINISTRATOR, 'en-GB', true, true);
-		$lang->load('lib_fof30', JPATH_ADMINISTRATOR, null, true, false);
+		$lang->load('lib_fof40', JPATH_ADMINISTRATOR, 'en-GB', true, true);
+		$lang->load('lib_fof40', JPATH_ADMINISTRATOR, null, true, false);
 
 		// FEF Renderer options. Used to load the common CSS file.
 		$darkMode  = $this->container->params->get('dark_mode', -1);
@@ -132,19 +132,13 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 
 		/** @var MasterPassword $model */
 		$model = $this->container->factory->model('MasterPassword')->tmpInstance();
+
 		if (!$model->accessAllowed($view))
 		{
 			$url = ($view == 'cpanel') ? 'index.php' : 'index.php?option=com_admintools&view=ControlPanel';
 			$this->container->platform->redirect($url, 303, Text::_('COM_ADMINTOOLS_ERR_CONTROLPANEL_NOTAUTHORIZED'), 'error');
 
 			return;
-		}
-
-		// Inject JS code to namespace the current jQuery instance
-		if ($this->container->platform->getDocument()->getType() == 'html')
-		{
-			HTMLHelper::_('jquery.framework');
-			$this->container->template->addJS('admin://components/com_admintools/media/js/namespace.min.js', false, false, ADMINTOOLS_VERSION);
 		}
 	}
 }

@@ -1,19 +1,19 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Helper;
 
+defined('_JEXEC') || die;
+
 use DateTimeZone;
-use FOF30\Container\Container;
-use FOF30\View\DataView\Raw;
+use FOF40\Container\Container;
+use FOF40\View\DataView\Raw;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-
-defined('_JEXEC') or die;
 
 class Html
 {
@@ -82,49 +82,5 @@ class Html
 		}
 
 		return '<span>' . $lang . '</span>';
-	}
-
-	public static function ordering(Raw $view, $orderingField, $orderingValue)
-	{
-		$ordering = $view->getLists()->order == $orderingField;
-		$class    = 'input-mini';
-		$icon     = 'icon-menu';
-
-		// Default inactive ordering
-		$html = '<span class="sortable-handler inactive" >';
-		$html .= '<span class="' . $icon . '"></span>';
-		$html .= '</span>';
-
-		// The modern drag'n'drop method
-		if ($view->getPerms()->editstate)
-		{
-			$disableClassName = '';
-			$disabledLabel    = '';
-
-			// DO NOT REMOVE! It will initialize Joomla libraries and javascript functions
-			$hasAjaxOrderingSupport = $view->hasAjaxOrderingSupport();
-
-			if (!$hasAjaxOrderingSupport['saveOrder'])
-			{
-				$disabledLabel    = Text::_('JORDERINGDISABLED');
-				$disableClassName = 'inactive tip-top';
-			}
-
-			$orderClass = $ordering ? 'order-enabled' : 'order-disabled';
-
-			$html = '<div class="' . $orderClass . '">';
-			$html .= '<span class="sortable-handler ' . $disableClassName . '" title="' . $disabledLabel . '" rel="tooltip">';
-			$html .= '<span class="' . $icon . '"></span>';
-			$html .= '</span>';
-
-			if ($ordering)
-			{
-				$html .= '<input type="text" name="order[]" style="display: none" size="5" class="' . $class . ' text-area-order" value="' . $orderingValue . '" />';
-			}
-
-			$html .= '</div>';
-		}
-
-		return $html;
 	}
 }
