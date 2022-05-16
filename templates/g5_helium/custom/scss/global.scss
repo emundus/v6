@@ -771,7 +771,7 @@ body>.g-container {
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 
-view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
+.view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
 .view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
   background-color: $base-secondary-color;
   color: #ffffff;
@@ -780,7 +780,7 @@ view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn
   margin-left: 0px !important;
 
   &:hover,
-  &active,
+  &:active,
   &:focus {
     background-color: transparent;
     color: $base-secondary-color;
@@ -5006,6 +5006,8 @@ button.swal2-cancel.goback-btn {
       padding: 20px 20px 20px 75px;
     }
   }
+
+/*
   VUE COLOR PICKER
  */
 .vue-swatches__trigger{
@@ -5138,6 +5140,7 @@ fieldset[disabled] .multiselect {
 .multiselect--active:not(.multiselect--above) .multiselect__tags {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+}
 .multiselect--active .multiselect__select {
   transform: rotateZ(180deg);
 }
@@ -5257,6 +5260,7 @@ fieldset[disabled] .multiselect {
 .multiselect__tag-icon:focus,
 .multiselect__tag-icon:hover {
   background: #ccc;
+}
 .multiselect__tag-icon:focus:after,
 .multiselect__tag-icon:hover:after {
   color: red;
@@ -5292,6 +5296,7 @@ fieldset[disabled] .multiselect {
   text-decoration: none;
   text-align: center;
   transition: transform 0.2s ease;
+}
 .multiselect__select:before {
   right: 0;
   top: 65%;
@@ -5311,6 +5316,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect--active .multiselect__placeholder {
   display: none;
+}
 .multiselect__content-wrapper {
   display: block;
   background: #fff;
@@ -5443,191 +5449,238 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--group.multiselect__option--highlight:after {
   background: #35495e;
-.multiselect__option--disabled.multiselect__option--highlight {
-  background: #dedede;
-}
-.multiselect__option--group-selected.multiselect__option--highlight {
-  background: #ff6a6a;
-  color: #fff;
 }
 
-.multiselect__option--group-selected.multiselect__option--highlight:after {
-  background: #ff6a6a;
-  content: attr(data-deselect);
-  color: #fff;
-.multiselect-enter-active,
-.multiselect-leave-active {
-  transition: all 0.15s ease;
-.multiselect-enter,
-.multiselect-leave-active {
-  opacity: 0;
-}
-.multiselect__strong {
-  margin-bottom: 8px;
-  line-height: 20px;
-  display: inline-block;
-  vertical-align: top;
-}
-
-*[dir="rtl"] .multiselect {
-  text-align: right;
-*[dir="rtl"] .multiselect__select {
-  right: auto;
-  left: 1px;
-}
-*[dir="rtl"] .multiselect__tags {
-  padding: 8px 8px 0px 40px;
-}
-
-*[dir="rtl"] .multiselect__content {
-  text-align: right;
-}
-
-*[dir="rtl"] .multiselect__option:after {
-  right: auto;
-  left: 0;
-}
-
-*[dir="rtl"] .multiselect__clear {
-  right: auto;
-  left: 12px;
-}
-
-*[dir="rtl"] .multiselect__spinner {
-  right: auto;
-  left: 1px;
-}
-
-/**
-  LOGIN GUARD
-**/
-#loginguard-methods-list{
-  .clearfix{
-    display: none;
+  .multiselect__option--disabled.multiselect__option--highlight {
+    background: #dedede;
   }
-  #loginguard-methods-reset-container{
-    border: unset;
-    .btn{
-      margin-bottom: 0;
+
+  .multiselect__option--group-selected.multiselect__option--highlight {
+    background: #ff6a6a;
+    color: #fff;
+  }
+
+  .multiselect__option--group-selected.multiselect__option--highlight:after {
+    background: #ff6a6a;
+    content: attr(data-deselect);
+    color: #fff;
+
+    .multiselect-enter-active,
+    .multiselect-leave-active {
+      transition: all 0.15s ease;
+    }
+
+    .multiselect-enter,
+    .multiselect-leave-active {
+      opacity: 0;
+    }
+
+    .multiselect__strong {
+      margin-bottom: 8px;
+      line-height: 20px;
+      display: inline-block;
+      vertical-align: top;
     }
   }
-  #loginguard-methods-list-head{
-    opacity: 0;
-    margin: 0 16px;
+
+  *[dir="rtl"] .multiselect {
+    text-align: right;
+
+    *[dir="rtl"] .multiselect__select {
+      right: auto;
+      left: 1px;
+    }
+
+    *[dir="rtl"] .multiselect__tags {
+      padding: 8px 8px 0px 40px;
+    }
+
+    *[dir="rtl"] .multiselect__content {
+      text-align: right;
+    }
+
+    *[dir="rtl"] .multiselect__option:after {
+      right: auto;
+      left: 0;
+    }
+
+    *[dir="rtl"] .multiselect__clear {
+      right: auto;
+      left: 12px;
+    }
+
+    *[dir="rtl"] .multiselect__spinner {
+      right: auto;
+      left: 1px;
+    }
   }
-  #loginguard-methods-list-instructions{
-    margin: 0 clamp(10px, 1.5em, 50px) 1em;
-  }
-  #loginguard-methods-list-container{
-    margin: 0 clamp(10px, 1.5em, 50px) .5em;
-    padding: unset;
-    .loginguard-methods-list-method-name-backupcodes{
+
+  /**
+    LOGIN GUARD
+  **/
+  #loginguard-methods-list {
+    .clearfix {
       display: none;
     }
-  }
-  .loginguard-methods-list-method{
-    border-radius: 4px;
-    padding: 1em;
-    .loginguard-methods-list-method-header {
-      align-items: center;
-      margin-bottom: 1em;
-      .loginguard-methods-list-method-image {
-        padding: unset;
-      }
-      .loginguard-methods-list-method-title {
-        display: flex;
-        align-items: center;
 
-        h4 {
-          margin-top: unset;
+    #loginguard-methods-reset-container {
+      border: unset;
+
+      .btn {
+        margin-bottom: 0;
+      }
+    }
+
+    #loginguard-methods-list-head {
+      opacity: 0;
+      margin: 0 16px;
+    }
+
+    #loginguard-methods-list-instructions {
+      margin: 0 clamp(10px, 1.5em, 50px) 1em;
+    }
+
+    #loginguard-methods-list-container {
+      margin: 0 clamp(10px, 1.5em, 50px) .5em;
+      padding: unset;
+
+      .loginguard-methods-list-method-name-backupcodes {
+        display: none;
+      }
+    }
+
+    .loginguard-methods-list-method {
+      border-radius: 4px;
+      padding: 1em;
+
+      .loginguard-methods-list-method-header {
+        align-items: center;
+        margin-bottom: 1em;
+
+        .loginguard-methods-list-method-image {
+          padding: unset;
+        }
+
+        .loginguard-methods-list-method-title {
           display: flex;
           align-items: center;
-          #loginguard-methods-list-method-default-tag{
-            margin-left: 1em;
-          }
-        }
-      }
-      .loginguard-methods-list-method-info{
-        height: 100%;
-      }
-    }
-    .loginguard-methods-list-method-records-container{
-      .loginguard-methods-list-method-records{
-        .loginguard-methods-list-method-record {
-          align-items: center;
-          .loginguard-methods-list-method-record-title-container {
+
+          h4 {
+            margin-top: unset;
             display: flex;
             align-items: center;
-            #loginguard-methods-list-method-default-badge-small {
-              background: unset;
-              color: $base-secondary-color;
+
+            #loginguard-methods-list-method-default-tag {
+              margin-left: 1em;
             }
           }
-          .loginguard-methods-list-method-record-lastused{
-            justify-content: start;
-            .loginguard-methods-list-method-record-createdon{
-              margin-right: 1em;
+        }
+
+        .loginguard-methods-list-method-info {
+          height: 100%;
+        }
+      }
+
+      .loginguard-methods-list-method-records-container {
+        .loginguard-methods-list-method-records {
+          .loginguard-methods-list-method-record {
+            align-items: center;
+
+            .loginguard-methods-list-method-record-title-container {
+              display: flex;
+              align-items: center;
+
+              #loginguard-methods-list-method-default-badge-small {
+                background: unset;
+                color: $base-secondary-color;
+              }
+            }
+
+            .loginguard-methods-list-method-record-lastused {
+              justify-content: start;
+
+              .loginguard-methods-list-method-record-createdon {
+                margin-right: 1em;
+              }
             }
           }
         }
       }
     }
   }
-#loginguard-method-edit{
-  .float-end{
-    display: none;
+
+  #loginguard-method-edit {
+    .float-end {
+      display: none;
+    }
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+
+    .control-group {
+      margin: 20px 0;
+    }
+
+    .buttons {
+      .controls {
+        display: flex;
+        justify-content: space-between;
+
+        .btn-primary {
+          background: $base-primary-color;
+
+          &:hover {
+            color: white;
+          }
+        }
+
+        .btn-danger {
+          background: transparent;
+          color: black;
+        }
+      }
+    }
   }
-  input[type="checkbox"]{
-    margin: 0;
-  }
-  .control-group {
-    margin: 20px 0;
-  }
-  .buttons{
-    .controls{
+
+  .loginguard-captive {
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 10em;
+
+    #loginguard-captive-form-method-fields {
+      #loginguard-captive-form-remember-me {
+        margin-top: 10px;
+
+        .loginguard-toggle input:checked + label.green {
+          background: $main-500;
+          box-shadow: unset;
+        }
+
+        .loginguard-toggle input:checked + label.red {
+          background: $red-500;
+          box-shadow: unset;
+        }
+      }
+    }
+
+    #loginguard-captive-form-standard-buttons {
       display: flex;
       justify-content: space-between;
-      .btn-primary{
-        background: $base-primary-color;
-        &:hover{
-          color: white;
-        }
-      }
-      .btn-danger{
-        background: transparent;
-        color: black;
-      }
+    }
+
+    #loginguard-captive-form-choose-another {
+      margin-top: 1em;
     }
   }
-.loginguard-captive{
-  flex-direction: column;
-  justify-content: center;
-  margin-top: 10em;
-  #loginguard-captive-form-method-fields{
-    #loginguard-captive-form-remember-me{
-      margin-top: 10px;
-      .loginguard-toggle input:checked + label.green{
-        background: $main-500;
-        box-shadow: unset;
-      }
-      .loginguard-toggle input:checked + label.red{
-        background: $red-500;
-        box-shadow: unset;
-      }
-    }
-  }
-  #loginguard-captive-form-standard-buttons{
-    display: flex;
-    justify-content: space-between;
-  }
-  #loginguard-captive-form-choose-another{
-    margin-top: 1em;
-  }
-/** END **/
-/** TOOLTIP **/
+
+  /** END **/
+
+  /** TOOLTIP **/
   .tooltip-target {
     cursor: pointer;
   }
+
   .tooltip {
     display: block !important;
     z-index: 10000;
@@ -5635,6 +5688,7 @@ fieldset[disabled] .multiselect {
 
   .tooltip[x-placement^="top"] {
     margin-bottom: 5px;
+
     .tooltip-arrow {
       border-width: 5px 5px 0 5px;
       border-left-color: transparent !important;
@@ -5645,6 +5699,8 @@ fieldset[disabled] .multiselect {
       margin-top: 0;
       margin-bottom: 0;
     }
+  }
+
   .tooltip[x-placement^="bottom"] {
     margin-top: 5px;
     left: -30px !important;
@@ -5659,6 +5715,8 @@ fieldset[disabled] .multiselect {
       margin-top: 0;
       margin-bottom: 0;
     }
+  }
+
   .tooltip[x-placement^="right"] {
     margin-left: 5px;
 
@@ -5672,6 +5730,8 @@ fieldset[disabled] .multiselect {
       margin-left: 0;
       margin-right: 0;
     }
+  }
+
   .tooltip[x-placement^="left"] {
     margin-right: 5px;
 
@@ -5685,6 +5745,8 @@ fieldset[disabled] .multiselect {
       margin-left: 0;
       margin-right: 0;
     }
+  }
+
   .tooltip.popover {
     .popover-inner {
       background: #f9f9f9;
@@ -5693,135 +5755,160 @@ fieldset[disabled] .multiselect {
       border-radius: 5px;
       box-shadow: 0 5px 30px rgba(black, .1);
     }
+
     .popover-arrow {
       border-color: #f9f9f9;
     }
+  }
+
   .tooltip[aria-hidden='true'] {
     visibility: hidden;
     opacity: 0;
     transition: opacity .15s, visibility .15s;
+  }
+
   .tooltip[aria-hidden='false'] {
     visibility: visible;
     opacity: 1;
     transition: opacity .15s;
-/** END **/
+  }
 
-/** ANIMATIONS **/
-/**
- * ----------------------------------------
- * animation jello-horizontal
- * ----------------------------------------
- */
-@-webkit-keyframes jello-horizontal {
-  0% {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
+  /** END **/
+
+  /** ANIMATIONS **/
+  /**
+   * ----------------------------------------
+   * animation jello-horizontal
+   * ----------------------------------------
+   */
+  @-webkit-keyframes jello-horizontal {
+    0% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
+    30% {
+      -webkit-transform: scale3d(1.5, 1, 1);
+      transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+      -webkit-transform: scale3d(0.75, 1.5, 1);
+      transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+      -webkit-transform: scale3d(1.35, 1, 1);
+      transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+      -webkit-transform: scale3d(0.95, 1.25, 1);
+      transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+      -webkit-transform: scale3d(1.15, 0.95, 1);
+      transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
   }
-  30% {
-    -webkit-transform: scale3d(1.5, 1, 1);
-    transform: scale3d(1.25, 0.75, 1);
-  40% {
-    -webkit-transform: scale3d(0.75, 1.5, 1);
-    transform: scale3d(0.75, 1.25, 1);
+  @keyframes jello-horizontal {
+    0% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
+    30% {
+      -webkit-transform: scale3d(1.5, 1, 1);
+      transform: scale3d(1.25, 0.75, 1);
+    }
+    40% {
+      -webkit-transform: scale3d(0.75, 1.5, 1);
+      transform: scale3d(0.75, 1.25, 1);
+    }
+    50% {
+      -webkit-transform: scale3d(1.35, 1, 1);
+      transform: scale3d(1.15, 0.85, 1);
+    }
+    65% {
+      -webkit-transform: scale3d(0.95, 1.25, 1);
+      transform: scale3d(0.95, 1.05, 1);
+    }
+    75% {
+      -webkit-transform: scale3d(1.15, 0.95, 1);
+      transform: scale3d(1.05, 0.95, 1);
+    }
+    100% {
+      -webkit-transform: scale3d(1, 1, 1);
+      transform: scale3d(1, 1, 1);
+    }
   }
-  50% {
-    -webkit-transform: scale3d(1.35, 1, 1);
-    transform: scale3d(1.15, 0.85, 1);
+  /**** END ****/
+  /**** VUE Transition ****/
+  .slide-fade-enter-active {
+    transition: all .3s ease;
   }
-  65% {
-    -webkit-transform: scale3d(0.95, 1.25, 1);
-    transform: scale3d(0.95, 1.05, 1);
+
+  .slide-fade-leave-active {
+    transition: all .3s ease;
   }
-  75% {
-    -webkit-transform: scale3d(1.15, 0.95, 1);
-    transform: scale3d(1.05, 0.95, 1);
+
+  .slide-fade-enter {
+    transform: translateY(-10px);
+    opacity: 0;
   }
-  100% {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
+
+  .slide-right-enter-active, .slide-right-leave-active {
+    transition: all .3s ease;
   }
-}
-@keyframes jello-horizontal {
-  0% {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
+
+  .slide-right-enter, .slide-right-leave-to {
+    transform: translateX(-10px);
+    opacity: 0;
   }
-  30% {
-    -webkit-transform: scale3d(1.5, 1, 1);
-    transform: scale3d(1.25, 0.75, 1);
+
+  .slide-down-enter-active, .slide-down-leave-active {
+    transition: all .3s ease;
   }
-  40% {
-    -webkit-transform: scale3d(0.75, 1.5, 1);
-    transform: scale3d(0.75, 1.25, 1);
+
+  .slide-down-enter, .slide-down-leave-to {
+    transform: translateY(-20px);
+    opacity: 0;
   }
-  50% {
-    -webkit-transform: scale3d(1.35, 1, 1);
-    transform: scale3d(1.15, 0.85, 1);
+
+  .move-right-enter-active, .move-right-leave-active {
+    transition: all .6s ease-in-out;
   }
-  65% {
-    -webkit-transform: scale3d(0.95, 1.25, 1);
-    transform: scale3d(0.95, 1.05, 1);
+
+  .move-right-enter, .move-right-leave-to {
+    transform: translateX(-500px);
   }
-  75% {
-    -webkit-transform: scale3d(1.15, 0.95, 1);
-    transform: scale3d(1.05, 0.95, 1);
+
+  .move-left-enter-active, .move-left-leave-active {
+    transition: all .6s ease-in-out;
   }
-  100% {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
+
+  .move-left-enter, .move-left-leave-to {
+    transform: translateX(500px);
   }
-}
-/**** END ****/
-/**** VUE Transition ****/
-.slide-fade-enter-active {
-  transition: all .3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .3s ease;
-}
-.slide-fade-enter {
-  transform: translateY(-10px);
-  opacity: 0;
-}
-.slide-right-enter-active,.slide-right-leave-active {
-  transition: all .3s ease;
-}
-.slide-right-enter,.slide-right-leave-to {
-  transform: translateX(-10px);
-  opacity: 0;
-}
-.slide-down-enter-active,.slide-down-leave-active {
-  transition: all .3s ease;
-}
-.slide-down-enter,.slide-down-leave-to  {
-  transform: translateY(-20px);
-  opacity: 0;
-}
-.move-right-enter-active,.move-right-leave-active {
-  transition: all .6s ease-in-out;
-}
-.move-right-enter,.move-right-leave-to {
-  transform: translateX(-500px);
-}
-.move-left-enter-active,.move-left-leave-active {
-  transition: all .6s ease-in-out;
-}
-.move-left-enter,.move-left-leave-to {
-  transform: translateX(500px);
-}
-.little-move-right-enter-active,.little-move-right-leave-active {
-  transition: all .3s ease;
-.little-move-right-enter,.little-move-right-leave-to {
-  transform: translateX(-200px);
-  left: -30px;
-}
-.little-move-left-enter-active,.little-move-left-leave-active {
-  transition: all .3s ease;
-}
-.little-move-left-enter,.little-move-left-leave-to {
-  transform: translateX(200px);
-  left: 30px;
-}
-/**** END ****/
-.error-page #mod_emundus_help {
-  display: none;
+
+  .little-move-right-enter-active, .little-move-right-leave-active {
+    transition: all .3s ease;
+  }
+
+  .little-move-right-enter, .little-move-right-leave-to {
+    transform: translateX(-200px);
+    left: -30px;
+  }
+
+  .little-move-left-enter-active, .little-move-left-leave-active {
+    transition: all .3s ease;
+  }
+
+  .little-move-left-enter, .little-move-left-leave-to {
+    transform: translateX(200px);
+    left: 30px;
+  }
+
+  /**** END ****/
+  .error-page #mod_emundus_help {
+    display: none;
+  }
