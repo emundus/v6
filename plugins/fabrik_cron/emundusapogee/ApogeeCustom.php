@@ -376,136 +376,136 @@ class ApogeeCustom {
         return $this->xmlTree;
     }
 
-    //set value to repeat group
-//    public function setConvocation() {
-//        $db = JFactory::getDbo();
-//
-//        $convocation_elems = array(
-//            "datCvc" => ["default" => 'N'],
-//            "dhhCvc" => ['sql' => "select concat(date_time, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', published) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
-//            "dmnCvc" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N']
-//        );
-//
-//
-//        $_convocationNodes = $this->xmlTree->getElementsByTagName('convocation');
-//        $_convocationNodesCount = $_convocationNodes->count();
-//
-//        for($_index = 0; $_index <= $_convocationNodesCount - 1; $_index++) {
-//            $_childs = $_convocationNodes[$_index]->childNodes;
-//
-//            for($_count = 0; $_count <= count($_childs); $_count++) {
-//                if(in_array($_childs[$_count]->tagName, array_keys($convocation_elems))) {
-//                    // if query exists
-//                    if($convocation_elems[$_childs[$_count]->tagName]['sql'] !== null) {
-//                        // get query
-//                        $query = $convocation_elems[$_childs[$_count]->tagName]['sql'];
-//
-//                        // run it // loadResults
-//                        $db->setQuery($query);
-//                        $res[$_childs[$_count]->tagName] = explode('>>> SPLIT <<<', $db->loadResult());
-//                    }
-//                    // otherwise
-//                    else {
-//                        // get default value
-//                        $default = $convocation_elems[$_childs[$_count]->tagName]['default'];
-//                        $res[$_childs[$_count]->tagName]['default'] = $default;
-//                    }
-//                }
-//            }
-//        }
-//
-//        foreach(array_keys($convocation_elems) as $attr) {
-//            $attr_node = $this->xmlTree->getElementsByTagName($attr);
-//
-//            for($_index = 0; $_index <= count($attr_node); $_index++) {
-//                if($res[$attr]['default'] === null) {
-//                    $attr_node[$_index]->nodeValue = $res[$attr][$_index];
-//                } else {
-//                    $attr_node[$_index]->nodeValue = $res[$attr]['default'];
-//                }
-//            }
-//        }
-//        return $this->xmlTree;
-//    }
-//
-//    /* set value to repeat group */
-//    public function setTitreAccessExterne() {
-//        $db = JFactory::getDbo();
-//
-//        $titreAccessExterne_elems = array(
-//            "codDacOpi" => ["default" => 'N'],
-//            "codDepPayDacOpi" => ['sql' => "select concat(fnum, '>>> SPLIT <<<', applicant_id, '>>> SPLIT <<<', user_id) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
-//            "codEtbDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
-//            "codTpeDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
-//            "codTypDepPayDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
-//            "daaDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N']
-//        );
-//
-//        $_titreAccessExterneNodes = $this->xmlTree->getElementsByTagName('titreAccesExterne');
-//        $_titreAccessExterneCount = $_titreAccessExterneNodes->count();
-//
-//        for($_index = 0; $_index <= $_titreAccessExterneCount - 1; $_index++) {
-//            $_childs = $_titreAccessExterneNodes[$_index]->childNodes;
-//
-//            for($_count = 0; $_count <= count($_childs); $_count++) {
-//                if(in_array($_childs[$_count]->tagName, array_keys($titreAccessExterne_elems))) {
-//                    // if query exists
-//                    if($titreAccessExterne_elems[$_childs[$_count]->tagName]['sql'] !== null) {
-//                        // get query
-//                        $query = $titreAccessExterne_elems[$_childs[$_count]->tagName]['sql'];
-//
-//                        // run it // loadResults
-//                        $db->setQuery($query);
-//                        $res[$_childs[$_count]->tagName] = explode('>>> SPLIT <<<', $db->loadResult());
-//                    }
-//                    // otherwise
-//                    else {
-//                        // get default value
-//                        $default = $titreAccessExterne_elems[$_childs[$_count]->tagName]['default'];
-//                        $res[$_childs[$_count]->tagName]['default'] = $default;
-//                    }
-//                }
-//            }
-//        }
-//
-//        foreach(array_keys($titreAccessExterne_elems) as $attr) {
-//            $attr_node = $this->xmlTree->getElementsByTagName($attr);
-//
-//            for($_index = 0; $_index <= count($attr_node); $_index++) {
-//                if($res[$attr]['default'] === null) {
-//                    $attr_node[$_index]->nodeValue = $res[$attr][$_index];
-//                } else {
-//                    $attr_node[$_index]->nodeValue = $res[$attr]['default'];
-//                }
-//            }
-//        }
-//        return $this->xmlTree;
-//    }
-//
-//    public function buildCustomSchema() {
-//        /// custom schema building
-//        $this->buildConvocation();
-//        $this->buildTitreAccessExterne();
-//        return $this->xmlTree;
-//    }
-//
-//    public function buildCustomData() {
-//        /// custom data mapping
-//        $this->setCodPay_Address();
-//        $this->setBdiComAde_Address();
-//        $this->setDepPayDerDip_LastObtainDipl();
-//        $this->setDepPayAnt_LastFrequentEtb();
-//        $this->setDepPay_Civility();
-//        $this->setDepPay_LastYear();
-//        $this->setCodBac();
-//        $this->setCustomFirstYear();
-//        $this->setCustomTelephoneNumber();
-//
-//        /* $this->setConvocation();
-//        $this->setTitreAccessExterne(); /// expected results :: print
-//
-//        // $this->setCustomVoeux();
-//        return $this->xmlTree;*/
-//    }
+    /* set value to repeat group
+    public function setConvocation() {
+        $db = JFactory::getDbo();
+
+        $convocation_elems = array(
+            "datCvc" => ["default" => 'N'],
+            "dhhCvc" => ['sql' => "select concat(date_time, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', published) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
+            "dmnCvc" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N']
+        );
+
+
+        $_convocationNodes = $this->xmlTree->getElementsByTagName('convocation');
+        $_convocationNodesCount = $_convocationNodes->count();
+
+        for($_index = 0; $_index <= $_convocationNodesCount - 1; $_index++) {
+            $_childs = $_convocationNodes[$_index]->childNodes;
+
+            for($_count = 0; $_count <= count($_childs); $_count++) {
+                if(in_array($_childs[$_count]->tagName, array_keys($convocation_elems))) {
+                    // if query exists
+                    if($convocation_elems[$_childs[$_count]->tagName]['sql'] !== null) {
+                        // get query
+                        $query = $convocation_elems[$_childs[$_count]->tagName]['sql'];
+
+                        // run it // loadResults
+                        $db->setQuery($query);
+                        $res[$_childs[$_count]->tagName] = explode('>>> SPLIT <<<', $db->loadResult());
+                    }
+                    // otherwise
+                    else {
+                        // get default value
+                        $default = $convocation_elems[$_childs[$_count]->tagName]['default'];
+                        $res[$_childs[$_count]->tagName]['default'] = $default;
+                    }
+                }
+            }
+        }
+
+        foreach(array_keys($convocation_elems) as $attr) {
+            $attr_node = $this->xmlTree->getElementsByTagName($attr);
+
+            for($_index = 0; $_index <= count($attr_node); $_index++) {
+                if($res[$attr]['default'] === null) {
+                    $attr_node[$_index]->nodeValue = $res[$attr][$_index];
+                } else {
+                    $attr_node[$_index]->nodeValue = $res[$attr]['default'];
+                }
+            }
+        }
+        return $this->xmlTree;
+    }*/
+
+    /* set value to repeat group */
+    /*public function setTitreAccessExterne() {
+        $db = JFactory::getDbo();
+
+        $titreAccessExterne_elems = array(
+            "codDacOpi" => ["default" => 'N'],
+            "codDepPayDacOpi" => ['sql' => "select concat(fnum, '>>> SPLIT <<<', applicant_id, '>>> SPLIT <<<', user_id) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
+            "codEtbDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
+            "codTpeDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
+            "codTypDepPayDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N'],
+            "daaDacOpi" => ['sql' => "select concat(submitted, '>>> SPLIT <<<', cancelled, '>>> SPLIT <<<', date_submitted) from #__emundus_campaign_candidature where #__emundus_campaign_candidature.fnum = " . $this->fnum, "default" => 'N']
+        );
+
+        $_titreAccessExterneNodes = $this->xmlTree->getElementsByTagName('titreAccesExterne');
+        $_titreAccessExterneCount = $_titreAccessExterneNodes->count();
+
+        for($_index = 0; $_index <= $_titreAccessExterneCount - 1; $_index++) {
+            $_childs = $_titreAccessExterneNodes[$_index]->childNodes;
+
+            for($_count = 0; $_count <= count($_childs); $_count++) {
+                if(in_array($_childs[$_count]->tagName, array_keys($titreAccessExterne_elems))) {
+                    // if query exists
+                    if($titreAccessExterne_elems[$_childs[$_count]->tagName]['sql'] !== null) {
+                        // get query
+                        $query = $titreAccessExterne_elems[$_childs[$_count]->tagName]['sql'];
+
+                        // run it // loadResults
+                        $db->setQuery($query);
+                        $res[$_childs[$_count]->tagName] = explode('>>> SPLIT <<<', $db->loadResult());
+                    }
+                    // otherwise
+                    else {
+                        // get default value
+                        $default = $titreAccessExterne_elems[$_childs[$_count]->tagName]['default'];
+                        $res[$_childs[$_count]->tagName]['default'] = $default;
+                    }
+                }
+            }
+        }
+
+        foreach(array_keys($titreAccessExterne_elems) as $attr) {
+            $attr_node = $this->xmlTree->getElementsByTagName($attr);
+
+            for($_index = 0; $_index <= count($attr_node); $_index++) {
+                if($res[$attr]['default'] === null) {
+                    $attr_node[$_index]->nodeValue = $res[$attr][$_index];
+                } else {
+                    $attr_node[$_index]->nodeValue = $res[$attr]['default'];
+                }
+            }
+        }
+        return $this->xmlTree;
+    }*/
+
+    /*public function buildCustomSchema() {
+        /// custom schema building
+        $this->buildConvocation();
+        $this->buildTitreAccessExterne();
+        return $this->xmlTree;
+    }*/
+
+    /*public function buildCustomData() {
+        /// custom data mapping
+        $this->setCodPay_Address();
+        $this->setBdiComAde_Address();
+        $this->setDepPayDerDip_LastObtainDipl();
+        $this->setDepPayAnt_LastFrequentEtb();
+        $this->setDepPay_Civility();
+        $this->setDepPay_LastYear();
+        $this->setCodBac();
+        $this->setCustomFirstYear();
+        $this->setCustomTelephoneNumber();
+
+        /* $this->setConvocation();
+        $this->setTitreAccessExterne(); /// expected results :: print
+
+        // $this->setCustomVoeux();
+        return $this->xmlTree;
+    }*/
 }
 ?>
