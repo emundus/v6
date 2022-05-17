@@ -745,7 +745,6 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function getExistEmailTrigger() {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
 
         $app    = JFactory::getApplication();
         $jinput = $app->input;
@@ -754,7 +753,6 @@ class EmundusControllerFiles extends JControllerLegacy
 
 
         $m_email = new EmundusModelEmails();
-        $m_messages = new EmundusModelMessages();
         $m_files = $this->getModel('Files');
 
         if($fnums == "all") {
@@ -788,7 +786,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $code[] = $fnum['training'];
         }
 
-        $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
+        $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1',0);
 
         echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO'))));
         exit;

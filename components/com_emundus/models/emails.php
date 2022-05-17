@@ -78,24 +78,35 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version v6
      */
-    public function getEmailTrigger($step, $code, $to_applicant = 0) {
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags
-                  FROM #__emundus_setup_emails_trigger as eset
-                  LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_programmes as esp ON esp.id=eserp.programme_id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
-                  LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
-                  LEFT JOIN #__emundus_setup_emails_repeat_tags AS ert ON ert.parent_id = eset.email_id
-                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
+    public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null) {
+        $query = $this->_db->getQuery(true);
+        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags')
+            ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_programmes','esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eserp.programme_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id','eser').' ON '.$this->_db->quoteName('eser.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id','eserg').' ON '.$this->_db->quoteName('eserg.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id','eseru').' ON '.$this->_db->quoteName('eseru.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_email_templates','et').' ON '.$this->_db->quoteName('et.id').' = '.$this->_db->quoteName('ese.email_tmpl'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_tags','ert').' ON '.$this->_db->quoteName('ert.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
+            ->where($this->_db->quoteName('eset.step').' = '.$this->_db->quote($step))
+            ->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')');
+        if(!is_null($to_current_user)) {
+            $query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
+        }
+        $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode('","', $this->_db->quote($code)) .')')
+            ->group('eset.id');
         $this->_db->setQuery( $query );
-        $triggers = $this->_db->loadObjectList();
+        $results = $this->_db->loadObjectList();
+        $triggers = array_filter($results, function($obj){
+            if (empty($obj->trigger_id)) { return false; }
+            return true;
+        });
 
         $emails_tmpl = array();
         if (count($triggers) > 0) {
-            foreach ($triggers as $key => $trigger) {
+            foreach ($triggers as $trigger) {
                 // email tmpl
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
