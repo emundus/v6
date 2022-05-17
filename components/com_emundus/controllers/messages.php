@@ -1214,7 +1214,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         $m_email = new EmundusModelEmails;
 		$m_messages = new EmundusModelMessages();
 
-		$user   = JFactory::getUser();
 		$config = JFactory::getConfig();
 
 		$template = $m_messages->getEmail($email);
@@ -1224,18 +1223,23 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mail_from_sys_name = $config->get('fromname');
 
 		// If no mail sender info is provided, we use the system global config.
-		$mail_from_name = $user->name;
-		$mail_from      = $template->emailfrom;
+        $mail_from = $mail_from_sys;
+        if(!empty($template->emailfrom)){
+            $mail_from = $template->emailfrom;
+        }
+        $mail_from_name = $mail_from_sys_name;
+        if(!empty($template->name)){
+            $mail_from_name = $template->name;
+        }
 
+        /* DEPRECATED */
 		// If the email sender has the same domain as the system sender address.
 		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
 			$mail_from_address = $mail_from;
-		else {*/
+		else {
+            $mail_from_address = $mail_from_sys;
+		}*/
         $mail_from_address = $mail_from_sys;
-        if(empty($mail_from_name)) {
-            $mail_from_name = $mail_from_sys_name;
-        }
-		//}
 
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
