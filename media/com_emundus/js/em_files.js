@@ -1770,6 +1770,14 @@ $(document).ready(function() {
                 var fnum = fnums_json[0].fnum;
                 var cid = fnums_json[0].cid;
                 var sid = fnums_json[0].sid;
+            } else {
+                var fnums_list = [];
+                for(const value of fnums_json){
+                    if(value.fnum !== 'em-check-all'){
+                        fnums_list.push(value.fnum);
+                    }
+                }
+                fnums_list = fnums_list.join(',');
             }
         }
 
@@ -1827,7 +1835,7 @@ $(document).ready(function() {
             for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
         };
 
-        url = url.fmt({ fnums: fnums, fnum: fnum, applicant_id: sid, campaign_id: cid, view: view, controller: view, Itemid: itemId, formid: formid });
+        url = url.fmt({ fnums: fnums, fnum: fnum,fnums_joins: fnums_list, applicant_id: sid, campaign_id: cid, view: view, controller: view, Itemid: itemId, formid: formid });
         url +='&action_id='+id;
 
         switch (id) {
