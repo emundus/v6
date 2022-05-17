@@ -1499,6 +1499,7 @@ class EmundusModelEvaluation extends JModelList {
             $query .= ' WHERE c.fnum like '.$current_fnum;
         }
 
+        $query .= ' AND esc.published = 1 ';
 
         $query .= $q['q'];
         $query .= $group_by;
