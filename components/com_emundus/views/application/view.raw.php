@@ -28,7 +28,6 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
-
 class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
     var $_db = null;
