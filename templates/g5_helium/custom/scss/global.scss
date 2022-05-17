@@ -5031,6 +5031,7 @@ button.swal2-cancel.goback-btn {
   width: 24px !important;
   height: 24px !important;
 }
+
 /**
   VUE Multiselect
  */
@@ -5051,7 +5052,11 @@ button.swal2-cancel.goback-btn {
   padding: 0 12px;
   color: $neutral-900 !important;
   border-radius: 30px !important;
+  height: 24px;
   background: $neutral-300 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: max-content;
   margin-right: 4px;
 }
@@ -5129,6 +5134,7 @@ fieldset[disabled] .multiselect {
   box-sizing: content-box;
   display: block;
   position: relative;
+  width: 100%;
   min-height: 40px;
   text-align: left;
   color: #35495e;
@@ -5158,6 +5164,7 @@ fieldset[disabled] .multiselect {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
+
 .multiselect--active .multiselect__select {
   transform: rotateZ(180deg);
 }
@@ -5191,6 +5198,7 @@ fieldset[disabled] .multiselect {
   left: 0 !important;
   height: auto !important;
   white-space: nowrap;
+  width: 100%;
 }
 
 .multiselect__input::placeholder {
@@ -5226,6 +5234,7 @@ fieldset[disabled] .multiselect {
   min-height: 50px;
   display: block;
   padding: 16px 40px 0 8px;
+  border-radius: 4px;
   border: 1px solid $neutral-300;
   background: #fff;
   font-size: 14px;
@@ -5278,6 +5287,7 @@ fieldset[disabled] .multiselect {
 .multiselect__tag-icon:hover {
   background: #ccc;
 }
+
 .multiselect__tag-icon:focus:after,
 .multiselect__tag-icon:hover:after {
   color: red;
@@ -5312,9 +5322,12 @@ fieldset[disabled] .multiselect {
   margin: 0;
   text-decoration: none;
   text-align: center;
+  cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 .multiselect__select:before {
+  position: relative;
   right: 0;
   top: 65%;
   color: #999;
@@ -5327,6 +5340,7 @@ fieldset[disabled] .multiselect {
 
 .multiselect__placeholder {
   color: #adadad;
+  display: inline-block;
   margin-bottom: 10px;
   padding-top: 5px;
 }
@@ -5334,7 +5348,9 @@ fieldset[disabled] .multiselect {
 .multiselect--active .multiselect__placeholder {
   display: none;
 }
+
 .multiselect__content-wrapper {
+  position: absolute;
   display: block;
   background: #fff;
   width: 100%;
@@ -5384,10 +5400,13 @@ fieldset[disabled] .multiselect {
   text-transform: none;
   vertical-align: middle;
   position: relative;
+  cursor: pointer;
   white-space: nowrap;
 }
 
 .multiselect__option:after {
+  top: 0;
+  right: 0;
   position: absolute;
   line-height: 40px;
   padding-right: 12px;
@@ -5468,329 +5487,302 @@ fieldset[disabled] .multiselect {
   background: #35495e;
 }
 
-  .multiselect__option--disabled.multiselect__option--highlight {
-    background: #dedede;
+.multiselect__option--disabled.multiselect__option--highlight {
+  background: #dedede;
+}
+
+.multiselect__option--group-selected.multiselect__option--highlight {
+  background: #ff6a6a;
+  color: #fff;
+}
+
+.multiselect__option--group-selected.multiselect__option--highlight:after {
+  background: #ff6a6a;
+  content: attr(data-deselect);
+  color: #fff;
+}
+
+.multiselect-enter-active,
+.multiselect-leave-active {
+  transition: all 0.15s ease;
+}
+
+.multiselect-enter,
+.multiselect-leave-active {
+  opacity: 0;
+}
+
+.multiselect__strong {
+  margin-bottom: 8px;
+  line-height: 20px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+*[dir="rtl"] .multiselect {
+  text-align: right;
+}
+
+*[dir="rtl"] .multiselect__select {
+  right: auto;
+  left: 1px;
+}
+
+*[dir="rtl"] .multiselect__tags {
+  padding: 8px 8px 0px 40px;
+}
+
+*[dir="rtl"] .multiselect__content {
+  text-align: right;
+}
+
+*[dir="rtl"] .multiselect__option:after {
+  right: auto;
+  left: 0;
+}
+
+*[dir="rtl"] .multiselect__clear {
+  right: auto;
+  left: 12px;
+}
+
+*[dir="rtl"] .multiselect__spinner {
+  right: auto;
+  left: 1px;
+}
+
+/**
+  LOGIN GUARD
+**/
+#loginguard-methods-list{
+  .clearfix{
+    display: none;
   }
-
-  .multiselect__option--group-selected.multiselect__option--highlight {
-    background: #ff6a6a;
-    color: #fff;
-  }
-
-  .multiselect__option--group-selected.multiselect__option--highlight:after {
-    background: #ff6a6a;
-    content: attr(data-deselect);
-    color: #fff;
-
-    .multiselect-enter-active,
-    .multiselect-leave-active {
-      transition: all 0.15s ease;
-    }
-
-    .multiselect-enter,
-    .multiselect-leave-active {
-      opacity: 0;
-    }
-
-    .multiselect__strong {
-      margin-bottom: 8px;
-      line-height: 20px;
-      display: inline-block;
-      vertical-align: top;
+  #loginguard-methods-reset-container{
+    border: unset;
+    .btn{
+      margin-bottom: 0;
     }
   }
-
-  *[dir="rtl"] .multiselect {
-    text-align: right;
-
-    *[dir="rtl"] .multiselect__select {
-      right: auto;
-      left: 1px;
-    }
-
-    *[dir="rtl"] .multiselect__tags {
-      padding: 8px 8px 0px 40px;
-    }
-
-    *[dir="rtl"] .multiselect__content {
-      text-align: right;
-    }
-
-    *[dir="rtl"] .multiselect__option:after {
-      right: auto;
-      left: 0;
-    }
-
-    *[dir="rtl"] .multiselect__clear {
-      right: auto;
-      left: 12px;
-    }
-
-    *[dir="rtl"] .multiselect__spinner {
-      right: auto;
-      left: 1px;
-    }
+  #loginguard-methods-list-head{
+    opacity: 0;
+    margin: 0 16px;
   }
-
-  /**
-    LOGIN GUARD
-  **/
-  #loginguard-methods-list {
-    .clearfix {
+  #loginguard-methods-list-instructions{
+    margin: 0 clamp(10px, 1.5em, 50px) 1em;
+  }
+  #loginguard-methods-list-container{
+    margin: 0 clamp(10px, 1.5em, 50px) .5em;
+    padding: unset;
+    .loginguard-methods-list-method-name-backupcodes{
       display: none;
     }
-
-    #loginguard-methods-reset-container {
-      border: unset;
-
-      .btn {
-        margin-bottom: 0;
+  }
+  .loginguard-methods-list-method{
+    border-radius: 4px;
+    padding: 1em;
+    .loginguard-methods-list-method-header {
+      align-items: center;
+      margin-bottom: 1em;
+      .loginguard-methods-list-method-image {
+        padding: unset;
       }
-    }
-
-    #loginguard-methods-list-head {
-      opacity: 0;
-      margin: 0 16px;
-    }
-
-    #loginguard-methods-list-instructions {
-      margin: 0 clamp(10px, 1.5em, 50px) 1em;
-    }
-
-    #loginguard-methods-list-container {
-      margin: 0 clamp(10px, 1.5em, 50px) .5em;
-      padding: unset;
-
-      .loginguard-methods-list-method-name-backupcodes {
-        display: none;
-      }
-    }
-
-    .loginguard-methods-list-method {
-      border-radius: 4px;
-      padding: 1em;
-
-      .loginguard-methods-list-method-header {
+      .loginguard-methods-list-method-title {
+        display: flex;
         align-items: center;
-        margin-bottom: 1em;
 
-        .loginguard-methods-list-method-image {
-          padding: unset;
-        }
-
-        .loginguard-methods-list-method-title {
+        h4 {
+          margin-top: unset;
           display: flex;
           align-items: center;
-
-          h4 {
-            margin-top: unset;
+          #loginguard-methods-list-method-default-tag{
+            margin-left: 1em;
+          }
+        }
+      }
+      .loginguard-methods-list-method-info{
+        height: 100%;
+      }
+    }
+    .loginguard-methods-list-method-records-container{
+      .loginguard-methods-list-method-records{
+        .loginguard-methods-list-method-record {
+          align-items: center;
+          .loginguard-methods-list-method-record-title-container {
             display: flex;
             align-items: center;
 
-            #loginguard-methods-list-method-default-tag {
-              margin-left: 1em;
+            #loginguard-methods-list-method-default-badge-small {
+              background: unset;
+              color: $base-secondary-color;
             }
           }
-        }
-
-        .loginguard-methods-list-method-info {
-          height: 100%;
-        }
-      }
-
-      .loginguard-methods-list-method-records-container {
-        .loginguard-methods-list-method-records {
-          .loginguard-methods-list-method-record {
-            align-items: center;
-
-            .loginguard-methods-list-method-record-title-container {
-              display: flex;
-              align-items: center;
-
-              #loginguard-methods-list-method-default-badge-small {
-                background: unset;
-                color: $base-secondary-color;
-              }
-            }
-
-            .loginguard-methods-list-method-record-lastused {
-              justify-content: start;
-
-              .loginguard-methods-list-method-record-createdon {
-                margin-right: 1em;
-              }
+          .loginguard-methods-list-method-record-lastused{
+            justify-content: start;
+            .loginguard-methods-list-method-record-createdon{
+              margin-right: 1em;
             }
           }
         }
       }
     }
   }
+}
 
-  #loginguard-method-edit {
-    .float-end {
-      display: none;
-    }
-
-    input[type="checkbox"] {
-      margin: 0;
-    }
-
-    .control-group {
-      margin: 20px 0;
-    }
-
-    .buttons {
-      .controls {
-        display: flex;
-        justify-content: space-between;
-
-        .btn-primary {
-          background: $base-primary-color;
-
-          &:hover {
-            color: white;
-          }
-        }
-
-        .btn-danger {
-          background: transparent;
-          color: black;
-        }
-      }
-    }
+#loginguard-method-edit{
+  .float-end{
+    display: none;
   }
-
-  .loginguard-captive {
-    flex-direction: column;
-    justify-content: center;
-    margin-top: 10em;
-
-    #loginguard-captive-form-method-fields {
-      #loginguard-captive-form-remember-me {
-        margin-top: 10px;
-
-        .loginguard-toggle input:checked + label.green {
-          background: $main-500;
-          box-shadow: unset;
-        }
-
-        .loginguard-toggle input:checked + label.red {
-          background: $red-500;
-          box-shadow: unset;
-        }
-      }
-    }
-
-    #loginguard-captive-form-standard-buttons {
+  input[type="checkbox"]{
+    margin: 0;
+  }
+  .control-group {
+    margin: 20px 0;
+  }
+  .buttons{
+    .controls{
       display: flex;
       justify-content: space-between;
-    }
-
-    #loginguard-captive-form-choose-another {
-      margin-top: 1em;
-    }
-  }
-
-  /** END **/
-
-  /** TOOLTIP **/
-  .tooltip-target {
-    cursor: pointer;
-  }
-
-  .tooltip {
-    display: block !important;
-    z-index: 10000;
-  }
-
-  .tooltip[x-placement^="top"] {
-    margin-bottom: 5px;
-
-    .tooltip-arrow {
-      border-width: 5px 5px 0 5px;
-      border-left-color: transparent !important;
-      border-right-color: transparent !important;
-      border-bottom-color: transparent !important;
-      bottom: -5px;
-      left: calc(50% - 5px);
-      margin-top: 0;
-      margin-bottom: 0;
+      .btn-primary{
+        background: $base-primary-color;
+        &:hover{
+          color: white;
+        }
+      }
+      .btn-danger{
+        background: transparent;
+        color: black;
+      }
     }
   }
+}
 
-  .tooltip[x-placement^="bottom"] {
-    margin-top: 5px;
-    left: -30px !important;
-
-    .tooltip-arrow {
-      border-width: 0 5px 5px 5px;
-      border-left-color: transparent !important;
-      border-right-color: transparent !important;
-      border-top-color: transparent !important;
-      top: -5px;
-      left: calc(50% - 5px);
-      margin-top: 0;
-      margin-bottom: 0;
+.loginguard-captive{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10em;
+  #loginguard-captive-form-method-fields{
+    #loginguard-captive-form-remember-me{
+      margin-top: 10px;
+      .loginguard-toggle input:checked + label.green{
+        background: $main-500;
+        box-shadow: unset;
+      }
+      .loginguard-toggle input:checked + label.red{
+        background: $red-500;
+        box-shadow: unset;
+      }
     }
   }
+  #loginguard-captive-form-standard-buttons{
+    display: flex;
+    justify-content: space-between;
+  }
+  #loginguard-captive-form-choose-another{
+    margin-top: 1em;
+  }
+}
+/** END **/
 
-  .tooltip[x-placement^="right"] {
-    margin-left: 5px;
+/** TOOLTIP **/
+.tooltip-target {
+  cursor: pointer;
+}
 
-    .tooltip-arrow {
-      border-width: 5px 5px 5px 0;
-      border-left-color: transparent !important;
-      border-top-color: transparent !important;
-      border-bottom-color: transparent !important;
-      left: -5px;
-      top: calc(50% - 5px);
-      margin-left: 0;
-      margin-right: 0;
-    }
+.tooltip {
+  display: block !important;
+  z-index: 10000;
+}
+
+.tooltip[x-placement^="top"] {
+  margin-bottom: 5px;
+
+  .tooltip-arrow {
+    border-width: 5px 5px 0 5px;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    bottom: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.tooltip[x-placement^="bottom"] {
+  margin-top: 5px;
+  left: -30px !important;
+
+  .tooltip-arrow {
+    border-width: 0 5px 5px 5px;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-top-color: transparent !important;
+    top: -5px;
+    left: calc(50% - 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.tooltip[x-placement^="right"] {
+  margin-left: 5px;
+
+  .tooltip-arrow {
+    border-width: 5px 5px 5px 0;
+    border-left-color: transparent !important;
+    border-top-color: transparent !important;
+    border-bottom-color: transparent !important;
+    left: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.tooltip[x-placement^="left"] {
+  margin-right: 5px;
+
+  .tooltip-arrow {
+    border-width: 5px 0 5px 5px;
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    right: -5px;
+    top: calc(50% - 5px);
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.tooltip.popover {
+  .popover-inner {
+    background: #f9f9f9;
+    color: black;
+    padding: 16px 16px 16px 8px;
+    border-radius: 5px;
+    box-shadow: 0 5px 30px rgba(black, .1);
   }
 
-  .tooltip[x-placement^="left"] {
-    margin-right: 5px;
-
-    .tooltip-arrow {
-      border-width: 5px 0 5px 5px;
-      border-top-color: transparent !important;
-      border-right-color: transparent !important;
-      border-bottom-color: transparent !important;
-      right: -5px;
-      top: calc(50% - 5px);
-      margin-left: 0;
-      margin-right: 0;
-    }
+  .popover-arrow {
+    border-color: #f9f9f9;
   }
+}
 
-  .tooltip.popover {
-    .popover-inner {
-      background: #f9f9f9;
-      color: black;
-      padding: 16px 16px 16px 8px;
-      border-radius: 5px;
-      box-shadow: 0 5px 30px rgba(black, .1);
-    }
+.tooltip[aria-hidden='true'] {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity .15s, visibility .15s;
+}
 
-    .popover-arrow {
-      border-color: #f9f9f9;
-    }
-  }
-
-  .tooltip[aria-hidden='true'] {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity .15s, visibility .15s;
-  }
-
-  .tooltip[aria-hidden='false'] {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity .15s;
-  }
-
-  /** END **/
+.tooltip[aria-hidden='false'] {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity .15s;
+}
+/** END **/
 
   /** ANIMATIONS **/
   /**
