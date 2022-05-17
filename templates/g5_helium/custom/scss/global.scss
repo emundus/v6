@@ -971,6 +971,16 @@ body>.g-container {
         border-color: $base-secondary-color;
       }
     }
+
+     .em-added-files a.btn.btn-danger  {
+
+       &:hover span.material-icons {
+         color: $base-primary-color;
+       }
+       span.material-icons {
+          color: #fff;
+       }
+     }
   }
 }
 
@@ -3590,7 +3600,7 @@ button.swal2-cancel.goback-btn {
 
         /* BLOC ELEMENT */
         .row-fluid .fabrikElementContainer.control-group {
-          margin: 32px 0 32px 0;
+          margin: 32px 0 16px 0;
           flex-direction: column;
 
           /* ERROR */
@@ -3706,7 +3716,10 @@ button.swal2-cancel.goback-btn {
                 color: $neutral-800;
               }
 
-              &.input-medium, &.input-large &.input-xlarge {
+              &.input-medium,
+              &.input-large,
+              &.input-xlarge,
+              &.input-xxlarge {
                 width: 100%;
               }
 

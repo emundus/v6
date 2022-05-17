@@ -324,10 +324,6 @@ button#back:hover, button#back:active, button#back:focus,
     align-items: center;
 }
 
-.view-checklist #attachment_list_mand a.btn span.material-icons,
-.view-checklist #attachment_list_opt a.btn span.material-icons {
-    color: #fff;
-}
 
 .view-checklist #attachment_list_mand a.btn ,
 .view-checklist #attachment_list_opt a.btn {
