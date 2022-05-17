@@ -536,13 +536,12 @@ class EmundusModelEmails extends JModelList {
                     $replacements[] = $request[0];
                 }
             } elseif (!empty($fnum)) {
-                $request = explode('|', $value);
-                unset($request[0]);
-                $request = join('|',$request);
+                $request = str_replace('php|', '', $value);
                 $val = $this->setTagsFabrik($request, array($fnum));
 
                 $result = "";
                 try {
+
                     $result = eval("$val");
                 } catch (Exception $e) {
                     JLog::add('Error setTags for tag : ' .  $tag['tag'] . '. Message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -555,9 +554,7 @@ class EmundusModelEmails extends JModelList {
                     $replacements[] = "";
                 }
             } else {
-                $request = explode('|', $value);
-                unset($request[0]);
-                $request = join('|',$request);
+                $request = str_replace('php|', '', $value);
 
                 try {
                     $result = eval("$request");
