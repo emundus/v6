@@ -50,7 +50,7 @@ var mixin = {
 				});
 
 				// remove empty categories
-				delete response.categories[""];
+				delete response.categories[''];
 
 				this.$store.dispatch('attachment/setCategories', response.categories);
 				return this.$store.state.attachment.categories;

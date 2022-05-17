@@ -750,7 +750,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = $app->input;
         $state  = $jinput->getInt('state', null);
         $fnums  = $jinput->getString('fnums', null);
-
+        $to_applicant = $jinput->getString('to_applicant', '0,1');
 
         $m_email = new EmundusModelEmails();
         $m_files = $this->getModel('Files');
@@ -786,7 +786,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $code[] = $fnum['training'];
         }
 
-        $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1',0);
+        $trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
 
         echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO'))));
         exit;

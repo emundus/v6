@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -110,6 +110,11 @@ class RLAssignmentsMijoShop extends RLAssignment
 		return $this->passSimple($cats);
 	}
 
+	private function getCatParentIds($id = 0)
+	{
+		return $this->getParentIds($id, 'mijoshop_category', 'parent_id', 'category_id');
+	}
+
 	public function passPageTypes()
 	{
 		return $this->passByPageTypes('com_mijoshop', $this->selection, $this->assignment, true);
@@ -123,10 +128,5 @@ class RLAssignmentsMijoShop extends RLAssignment
 		}
 
 		return $this->passSimple($this->request->id);
-	}
-
-	private function getCatParentIds($id = 0)
-	{
-		return $this->getParentIds($id, 'mijoshop_category', 'parent_id', 'category_id');
 	}
 }

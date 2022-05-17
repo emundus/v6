@@ -1,22 +1,23 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
+use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use Akeeba\AdminTools\Admin\Model\Scanner\Complexify;
 use Exception;
-use FOF30\Database\Installer;
-use FOF30\Encrypt\Randval;
-use FOF30\Model\Model;
-use FOF30\Utils\CacheCleaner;
-use FOF30\Utils\Ip;
+use FOF40\Database\Installer;
+use FOF40\Encrypt\Randval;
+use FOF40\Model\Model;
+use FOF40\JoomlaAbstraction\CacheCleaner;
+use FOF40\IP\IPHelper as Ip;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Language\Text;
@@ -37,7 +38,7 @@ class ControlPanel extends Model
 	 *
 	 * @return  int
 	 */
-	public function getPluginID()
+	public function getPluginID(): ?int
 	{
 		if (empty(static::$pluginId))
 		{
@@ -130,7 +131,7 @@ class ControlPanel extends Model
 	 *
 	 * @return  bool
 	 */
-	public function needsDownloadID()
+	public function needsDownloadID(): bool
 	{
 		// Do I need a Download ID?
 		if (!ADMINTOOLS_PRO)
@@ -196,9 +197,17 @@ class ControlPanel extends Model
 	 *
 	 * @return  bool
 	 */
-	public function isMyIPBlocked($externalIp = null)
+	public function isMyIPBlocked($externalIp = null): bool
 	{
+		$isPro = (defined('ADMINTOOLS_PRO') ? ADMINTOOLS_PRO : 0) == 1;
+
+		if (!$isPro)
+		{
+			return false;
+		}
+
 		// First let's get the current IP of the user
+		$ipList = [];
 		$ipList[] = $this->getVisitorIP();
 
 		if ($externalIp)
@@ -298,7 +307,7 @@ class ControlPanel extends Model
 	 *
 	 * @return  bool
 	 */
-	public function needsQuickSetupWizard()
+	public function needsQuickSetupWizard(): bool
 	{
 		$params = Storage::getInstance();
 
@@ -310,7 +319,7 @@ class ControlPanel extends Model
 	 *
 	 * @return  string
 	 */
-	public function getVisitorIP()
+	public function getVisitorIP(): string
 	{
 		$internalIP = Ip::getIp();
 
@@ -327,7 +336,7 @@ class ControlPanel extends Model
 	 *
 	 * @return bool
 	 */
-	public function needsIpWorkaroundsForPrivNetwork()
+	public function needsIpWorkaroundsForPrivNetwork(): bool
 	{
 		$WAFparams = Storage::getInstance();
 		$params    = $this->container->params;
@@ -346,7 +355,7 @@ class ControlPanel extends Model
 	 *
 	 * @return bool
 	 */
-	public function needsIpWorkaroundsHeaders()
+	public function needsIpWorkaroundsHeaders(): bool
 	{
 		$WAFparams = Storage::getInstance();
 		$params    = $this->container->params;
@@ -407,7 +416,7 @@ class ControlPanel extends Model
 	 *
 	 * @since  4.3.0
 	 */
-	public function isPluginInstalled()
+	public function isPluginInstalled(): bool
 	{
 		$this->getPluginID();
 
@@ -421,7 +430,7 @@ class ControlPanel extends Model
 	 *
 	 * @since   4.3.0
 	 */
-	public function isPluginLoaded()
+	public function isPluginLoaded(): bool
 	{
 		return class_exists('plgSystemAdmintools');
 	}
@@ -433,7 +442,7 @@ class ControlPanel extends Model
 	 *
 	 * @since   4.3.0
 	 */
-	public function isMainPhpDisabled()
+	public function isMainPhpDisabled(): bool
 	{
 		$folder = JPATH_PLUGINS . '/system/admintools/admintools';
 
@@ -447,7 +456,7 @@ class ControlPanel extends Model
 	 *
 	 * @since   4.3.0
 	 */
-	public function reenableMainPhp()
+	public function reenableMainPhp(): bool
 	{
 		$altName = $this->getRenamedMainPhp();
 
@@ -493,7 +502,7 @@ class ControlPanel extends Model
 	 *
 	 * @since   4.3.0
 	 */
-	public function getRenamedMainPhp()
+	public function getRenamedMainPhp(): ?string
 	{
 		$possibleNames = [
 			'main-disable.php',
@@ -562,7 +571,7 @@ class ControlPanel extends Model
 	/**
 	 * Checks if the current contents of the server configuration file (ie .htaccess) match with the saved one.
 	 */
-	public function serverConfigEdited()
+	public function serverConfigEdited(): bool
 	{
 		// Core version? No need to continue
 		if (!defined('ADMINTOOLS_PRO') || !ADMINTOOLS_PRO)
@@ -576,19 +585,23 @@ class ControlPanel extends Model
 			return false;
 		}
 
-		$storage    = Storage::getInstance();
-		$configInfo = $storage->getValue('configInfo', []);
+		$modelTech = '';
 
-		// Sanity checks
-		if (!$configInfo || !isset($configInfo->technology) || !isset($configInfo->contents))
+		if (ServerTechnology::isNginxSupported() == 1)
 		{
-			return false;
+			$modelTech = 'NginXConfMaker';
+		}
+		elseif (ServerTechnology::isWebConfigSupported() == 1)
+		{
+			$modelTech = 'WebConfigMaker';
+		}
+		elseif (ServerTechnology::isHtaccessSupported() == 1)
+		{
+			$modelTech = 'HtaccessMaker';
 		}
 
-		// Sanity checks - part 2
-		if (!in_array($configInfo->technology, [
-				'HtaccessMaker', 'NginXConfMaker', 'WebConfigMaker',
-			]) || !$configInfo->contents)
+		// Can't understand the Server Technology we're on, let's stop here
+		if (!$modelTech)
 		{
 			return false;
 		}
@@ -596,7 +609,7 @@ class ControlPanel extends Model
 		try
 		{
 			/** @var ServerConfigMaker $serverModel */
-			$serverModel = $this->container->factory->model($configInfo->technology)->tmpInstance();
+			$serverModel = $this->container->factory->model($modelTech)->tmpInstance();
 		}
 		catch (Exception $e)
 		{
@@ -610,10 +623,17 @@ class ControlPanel extends Model
 			return false;
 		}
 
-		$actualContents = md5(file_get_contents($serverFile));
+		$actualContents = file_get_contents($serverFile);
+
+		if (!$actualContents)
+		{
+			return false;
+		}
+
+		$currentContents = $serverModel->makeConfigFile();
 
 		// Is the hash of current file different from the saved one? If so, warn the user
-		return ($actualContents != $configInfo->contents);
+		return ($serverModel->getConfigHash($actualContents) != $serverModel->getConfigHash($currentContents));
 	}
 
 	/**
@@ -622,7 +642,7 @@ class ControlPanel extends Model
 	 *
 	 * @return  string
 	 */
-	public function getFrontendSecretWordError()
+	public function getFrontendSecretWordError(): string
 	{
 		$params = $this->container->params;
 

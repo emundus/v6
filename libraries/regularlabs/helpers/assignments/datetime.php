@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -96,59 +96,6 @@ class RLAssignmentsDateTime extends RLAssignment
 		return ($this->assignment == 'include');
 	}
 
-	public function passDays()
-	{
-		$day = $this->date->format('N', true); // 1 (for Monday) though 7 (for Sunday )
-
-		return $this->passSimple($day);
-	}
-
-	public function passMonths()
-	{
-		$month = $this->date->format('m', true); // 01 (for January) through 12 (for December)
-
-		return $this->passSimple((int) $month);
-	}
-
-	public function passSeasons()
-	{
-		$season = self::getSeason($this->date, $this->params->hemisphere);
-
-		return $this->passSimple($season);
-	}
-
-	public function passTime()
-	{
-		$now  = $this->getNow();
-		$up   = strtotime($this->date->format('Y-m-d ', true) . $this->params->publish_up);
-		$down = strtotime($this->date->format('Y-m-d ', true) . $this->params->publish_down);
-
-		if ($up > $down)
-		{
-			// publish up is after publish down (spans midnight)
-			// current time should be:
-			// - after publish up
-			// - OR before publish down
-			if ($now >= $up || $now < $down)
-			{
-				return $this->pass(true);
-			}
-
-			return $this->pass(false);
-		}
-
-		// publish down is after publish up (simple time span)
-		// current time should be:
-		// - after publish up
-		// - AND before publish down
-		if ($now >= $up && $now < $down)
-		{
-			return $this->pass(true);
-		}
-
-		return $this->pass(false);
-	}
-
 	private function getNow()
 	{
 		return strtotime($this->date->format('Y-m-d H:i:s', true));
@@ -171,6 +118,39 @@ class RLAssignmentsDateTime extends RLAssignment
 		}
 
 		return $this->dates[$id];
+	}
+
+	private function getTimeZone()
+	{
+		if ( ! is_null($this->timezone))
+		{
+			return $this->timezone;
+		}
+
+		$this->timezone = new DateTimeZone(JFactory::getApplication()->getCfg('offset'));
+
+		return $this->timezone;
+	}
+
+	public function passDays()
+	{
+		$day = $this->date->format('N', true); // 1 (for Monday) though 7 (for Sunday )
+
+		return $this->passSimple($day);
+	}
+
+	public function passMonths()
+	{
+		$month = $this->date->format('m', true); // 01 (for January) through 12 (for December)
+
+		return $this->passSimple((int) $month);
+	}
+
+	public function passSeasons()
+	{
+		$season = self::getSeason($this->date, $this->params->hemisphere);
+
+		return $this->passSimple($season);
 	}
 
 	private function getSeason(&$d, $hemisphere = 'northern')
@@ -264,15 +244,35 @@ class RLAssignmentsDateTime extends RLAssignment
 		return 0;
 	}
 
-	private function getTimeZone()
+	public function passTime()
 	{
-		if ( ! is_null($this->timezone))
+		$now  = $this->getNow();
+		$up   = strtotime($this->date->format('Y-m-d ', true) . $this->params->publish_up);
+		$down = strtotime($this->date->format('Y-m-d ', true) . $this->params->publish_down);
+
+		if ($up > $down)
 		{
-			return $this->timezone;
+			// publish up is after publish down (spans midnight)
+			// current time should be:
+			// - after publish up
+			// - OR before publish down
+			if ($now >= $up || $now < $down)
+			{
+				return $this->pass(true);
+			}
+
+			return $this->pass(false);
 		}
 
-		$this->timezone = new DateTimeZone(JFactory::getApplication()->getCfg('offset'));
+		// publish down is after publish up (simple time span)
+		// current time should be:
+		// - after publish up
+		// - AND before publish down
+		if ($now >= $up && $now < $down)
+		{
+			return $this->pass(true);
+		}
 
-		return $this->timezone;
+		return $this->pass(false);
 	}
 }

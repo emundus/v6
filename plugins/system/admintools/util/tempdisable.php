@@ -1,14 +1,14 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
-use FOF30\Container\Container;
+use FOF40\Container\Container;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 trait AtsystemUtilTempdisable
 {
@@ -21,7 +21,7 @@ trait AtsystemUtilTempdisable
 	{
 		// Create a secure temp token for the flag
 		$container = Container::getInstance('com_admintools');
-		$class     = get_called_class();
+		$class     = static::class;
 		$sig       = md5($class . '_tempDisableFlag_' . $container->platform->getToken());
 
 		// Make sure we are being called by an explicitly allowed method
@@ -42,7 +42,7 @@ trait AtsystemUtilTempdisable
 	{
 		// Get a secure temp token for the flag and retrieve the current value
 		$container = Container::getInstance('com_admintools');
-		$class     = get_called_class();
+		$class     = static::class;
 		$sig       = md5($class . '_tempDisableFlag_' . $container->platform->getToken());
 		$ret       = (bool) $container->platform->getSessionVar($sig, false, 'com_admintools');
 

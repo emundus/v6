@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -32,7 +32,12 @@ class RegEx
 	 */
 	public static function match($pattern, $string, &$match = null, $options = null, $flags = 0)
 	{
-		if ( ! is_string($pattern) || $pattern == '' || ! is_string($string) || $string == '')
+		if (
+			( ! is_string($pattern) && ! is_numeric($pattern))
+			|| $pattern === ''
+			|| ( ! is_string($string) && ! is_numeric($string))
+			|| $string === ''
+		)
 		{
 			return false;
 		}
@@ -40,45 +45,6 @@ class RegEx
 		$pattern = self::preparePattern($pattern, $options, $string);
 
 		return preg_match($pattern, $string, $match, $flags);
-	}
-
-	/**
-	 * Perform a global regular expression match
-	 *
-	 * @param string $pattern
-	 * @param string $string
-	 * @param null   $matches
-	 * @param string $options
-	 * @param int    $flags
-	 *
-	 * @return int
-	 */
-	public static function matchAll($pattern, $string, &$matches = null, $options = null, $flags = PREG_SET_ORDER)
-	{
-		if ( ! is_string($pattern) || $pattern == '' || ! is_string($string) || $string == '')
-		{
-			$matches = [];
-
-			return false;
-		}
-
-		$pattern = self::preparePattern($pattern, $options, $string);
-
-		return preg_match_all($pattern, $string, $matches, $flags);
-	}
-
-	/**
-	 * preg_quote the given string or array of strings
-	 *
-	 * @param string|array $data
-	 * @param string       $name
-	 * @param string       $delimiter
-	 *
-	 * @return string
-	 */
-	public static function nameGroup($data, $name = '')
-	{
-		return '(?<' . $name . '>' . $data . ')';
 	}
 
 	/**
@@ -112,6 +78,50 @@ class RegEx
 		}
 
 		return $pattern;
+	}
+
+	/**
+	 * Perform a global regular expression match
+	 *
+	 * @param string $pattern
+	 * @param string $string
+	 * @param null   $matches
+	 * @param string $options
+	 * @param int    $flags
+	 *
+	 * @return int
+	 */
+	public static function matchAll($pattern, $string, &$matches = null, $options = null, $flags = PREG_SET_ORDER)
+	{
+		if (
+			( ! is_string($pattern) && ! is_numeric($pattern))
+			|| $pattern === ''
+			|| ( ! is_string($string) && ! is_numeric($string))
+			|| $string === ''
+		)
+		{
+			$matches = [];
+
+			return false;
+		}
+
+		$pattern = self::preparePattern($pattern, $options, $string);
+
+		return preg_match_all($pattern, $string, $matches, $flags);
+	}
+
+	/**
+	 * preg_quote the given string or array of strings
+	 *
+	 * @param string|array $data
+	 * @param string       $name
+	 * @param string       $delimiter
+	 *
+	 * @return string
+	 */
+	public static function nameGroup($data, $name = '')
+	{
+		return '(?<' . $name . '>' . $data . ')';
 	}
 
 	/**
@@ -165,6 +175,21 @@ class RegEx
 	}
 
 	/**
+	 * Perform a regular expression search and replace once
+	 *
+	 * @param string $pattern
+	 * @param string $replacement
+	 * @param string $string
+	 * @param string $options
+	 *
+	 * @return string
+	 */
+	public static function replaceOnce($pattern, $replacement, $string, $options = null)
+	{
+		return self::replace($pattern, $replacement, $string, $options, 1);
+	}
+
+	/**
 	 * Perform a regular expression search and replace
 	 *
 	 * @param string $pattern
@@ -186,21 +211,6 @@ class RegEx
 		$pattern = self::preparePattern($pattern, $options, $string);
 
 		return preg_replace($pattern, $replacement, $string, $limit, $count);
-	}
-
-	/**
-	 * Perform a regular expression search and replace once
-	 *
-	 * @param string $pattern
-	 * @param string $replacement
-	 * @param string $string
-	 * @param string $options
-	 *
-	 * @return string
-	 */
-	public static function replaceOnce($pattern, $replacement, $string, $options = null)
-	{
-		return self::replace($pattern, $replacement, $string, $options, 1);
 	}
 
 	/**

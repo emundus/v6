@@ -431,10 +431,8 @@ export default {
           if (resp.status) {
             this.users.push(resp.user[0]);
             this.displayedUser = resp.user[0];
-            this.$store.dispatch(
-                "user/setDisplayedUser",
-                this.displayedUser.user_id
-            );
+            this.$store.dispatch("user/setDisplayedUser", this.displayedUser.user_id);
+            this.$store.dispatch("user/setUsers", resp.user);
           } else {
             this.displayErrorMessage(
                 this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
@@ -442,10 +440,8 @@ export default {
           }
         } else {
           this.displayedUser = foundUser;
-          this.$store.dispatch(
-              "user/setDisplayedUser",
-              this.displayedUser.user_id
-          );
+          this.$store.dispatch("user/setDisplayedUser", this.displayedUser.user_id);
+          this.$store.dispatch("user/setUsers", [foundUser]);
         }
       } else {
         this.displayErrorMessage(

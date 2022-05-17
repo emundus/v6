@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -55,40 +55,6 @@ class ParametersNew
 			self::getObjectFromRegistry(
 				$params,
 				JPATH_ADMINISTRATOR . '/components/' . $name . '/config.xml'
-			)
-		);
-	}
-
-	/**
-	 * Get a usable parameter object for the module
-	 *
-	 * @param string    $name
-	 * @param int       $admin
-	 * @param JRegistry $params
-	 * @param bool      $use_cache
-	 *
-	 * @return object
-	 */
-	public static function getModule($name, $admin = true, $params = '', $use_cache = true)
-	{
-		$name = 'mod_' . RegEx::replace('^mod_', '', $name);
-
-		$cache = new Cache([__METHOD__, $name, $params]);
-
-		if ($use_cache && $cache->exists())
-		{
-			return $cache->get();
-		}
-
-		if (empty($params))
-		{
-			$params = null;
-		}
-
-		return $cache->set(
-			self::getObjectFromRegistry(
-				$params,
-				($admin ? JPATH_ADMINISTRATOR : JPATH_SITE) . '/modules/' . $name . '/' . $name . '.xml'
 			)
 		);
 	}
@@ -159,158 +125,6 @@ class ParametersNew
 	}
 
 	/**
-	 * Returns an object based on the data in a given xml array
-	 *
-	 * @param      $xml
-	 * @param bool $use_cache
-	 *
-	 * @return bool|mixed
-	 */
-	public static function getObjectFromXml(&$xml, $use_cache = true)
-	{
-		$cache = new Cache([__METHOD__, $xml]);
-
-		if ($use_cache && $cache->exists())
-		{
-			return $cache->get();
-		}
-
-		if ( ! is_array($xml))
-		{
-			$xml = [$xml];
-		}
-
-		$object = self::getObjectFromXmlNode($xml);
-
-		return $cache->set($object);
-	}
-
-	/**
-	 * Get a usable parameter object for the plugin
-	 *
-	 * @param string    $name
-	 * @param string    $type
-	 * @param JRegistry $params
-	 * @param bool      $use_cache
-	 *
-	 * @return object
-	 */
-	public static function getPlugin($name, $type = 'system', $params = '', $use_cache = true)
-	{
-		$cache = new Cache([__METHOD__, $name, $type, $params]);
-
-		if ($use_cache && $cache->exists())
-		{
-			return $cache->get();
-		}
-
-		if (empty($params))
-		{
-			$plugin = JPluginHelper::getPlugin($type, $name);
-			$params = (is_object($plugin) && isset($plugin->params)) ? $plugin->params : null;
-		}
-
-		return $cache->set(
-			self::getObjectFromRegistry(
-				$params,
-				JPATH_PLUGINS . '/' . $type . '/' . $name . '/' . $name . '.xml'
-			)
-		);
-	}
-
-	public static function overrideFromObject($params, $object = null)
-	{
-		if (empty($object))
-		{
-			return $params;
-		}
-
-		foreach ($params as $key => $value)
-		{
-			if ( ! isset($object->{$key}))
-			{
-				continue;
-			}
-
-			$params->{$key} = $object->{$key};
-		}
-
-		return $params;
-	}
-
-	/**
-	 * Returns the main attributes key from an xml object
-	 *
-	 * @param $xml
-	 *
-	 * @return mixed
-	 */
-	private static function getKeyFromXML($xml)
-	{
-		if ( ! empty($xml->_attributes) && isset($xml->_attributes['name']))
-		{
-			return $xml->_attributes['name'];
-		}
-
-		return $xml->_name;
-	}
-
-	/**
-	 * Create an object from the given xml node
-	 *
-	 * @param $xml
-	 *
-	 * @return object
-	 */
-	private static function getObjectFromXmlNode($xml)
-	{
-		$object = (object) [];
-
-		foreach ($xml as $child)
-		{
-			$key   = self::getKeyFromXML($child);
-			$value = self::getValFromXML($child);
-
-			if ( ! isset($object->{$key}))
-			{
-				$object->{$key} = $value;
-				continue;
-			}
-
-			if ( ! is_array($object->{$key}))
-			{
-				$object->{$key} = [$object->{$key}];
-			}
-
-			$object->{$key}[] = $value;
-		}
-
-		return $object;
-	}
-
-	/**
-	 * Returns the value from an xml object / node
-	 *
-	 * @param $xml
-	 *
-	 * @return object
-	 */
-	private static function getValFromXML($xml)
-	{
-		if ( ! empty($xml->_attributes) && isset($xml->_attributes['value']))
-		{
-			return $xml->_attributes['value'];
-		}
-
-		if (empty($xml->_children))
-		{
-			return $xml->_data;
-		}
-
-		return self::getObjectFromXmlNode($xml->_children);
-	}
-
-	/**
 	 * Returns an array based on the data in a given xml file
 	 *
 	 * @param string $path
@@ -376,5 +190,191 @@ class ParametersNew
 		}
 
 		return $cache->set($xml);
+	}
+
+	/**
+	 * Get a usable parameter object for the module
+	 *
+	 * @param string    $name
+	 * @param int       $admin
+	 * @param JRegistry $params
+	 * @param bool      $use_cache
+	 *
+	 * @return object
+	 */
+	public static function getModule($name, $admin = true, $params = '', $use_cache = true)
+	{
+		$name = 'mod_' . RegEx::replace('^mod_', '', $name);
+
+		$cache = new Cache([__METHOD__, $name, $params]);
+
+		if ($use_cache && $cache->exists())
+		{
+			return $cache->get();
+		}
+
+		if (empty($params))
+		{
+			$params = null;
+		}
+
+		return $cache->set(
+			self::getObjectFromRegistry(
+				$params,
+				($admin ? JPATH_ADMINISTRATOR : JPATH_SITE) . '/modules/' . $name . '/' . $name . '.xml'
+			)
+		);
+	}
+
+	/**
+	 * Returns an object based on the data in a given xml array
+	 *
+	 * @param      $xml
+	 * @param bool $use_cache
+	 *
+	 * @return bool|mixed
+	 */
+	public static function getObjectFromXml(&$xml, $use_cache = true)
+	{
+		$cache = new Cache([__METHOD__, $xml]);
+
+		if ($use_cache && $cache->exists())
+		{
+			return $cache->get();
+		}
+
+		if ( ! is_array($xml))
+		{
+			$xml = [$xml];
+		}
+
+		$object = self::getObjectFromXmlNode($xml);
+
+		return $cache->set($object);
+	}
+
+	/**
+	 * Create an object from the given xml node
+	 *
+	 * @param $xml
+	 *
+	 * @return object
+	 */
+	private static function getObjectFromXmlNode($xml)
+	{
+		$object = (object) [];
+
+		foreach ($xml as $child)
+		{
+			$key   = self::getKeyFromXML($child);
+			$value = self::getValFromXML($child);
+
+			if ( ! isset($object->{$key}))
+			{
+				$object->{$key} = $value;
+				continue;
+			}
+
+			if ( ! is_array($object->{$key}))
+			{
+				$object->{$key} = [$object->{$key}];
+			}
+
+			$object->{$key}[] = $value;
+		}
+
+		return $object;
+	}
+
+	/**
+	 * Returns the main attributes key from an xml object
+	 *
+	 * @param $xml
+	 *
+	 * @return mixed
+	 */
+	private static function getKeyFromXML($xml)
+	{
+		if ( ! empty($xml->_attributes) && isset($xml->_attributes['name']))
+		{
+			return $xml->_attributes['name'];
+		}
+
+		return $xml->_name;
+	}
+
+	/**
+	 * Returns the value from an xml object / node
+	 *
+	 * @param $xml
+	 *
+	 * @return object
+	 */
+	private static function getValFromXML($xml)
+	{
+		if ( ! empty($xml->_attributes) && isset($xml->_attributes['value']))
+		{
+			return $xml->_attributes['value'];
+		}
+
+		if (empty($xml->_children))
+		{
+			return $xml->_data;
+		}
+
+		return self::getObjectFromXmlNode($xml->_children);
+	}
+
+	/**
+	 * Get a usable parameter object for the plugin
+	 *
+	 * @param string    $name
+	 * @param string    $type
+	 * @param JRegistry $params
+	 * @param bool      $use_cache
+	 *
+	 * @return object
+	 */
+	public static function getPlugin($name, $type = 'system', $params = '', $use_cache = true)
+	{
+		$cache = new Cache([__METHOD__, $name, $type, $params]);
+
+		if ($use_cache && $cache->exists())
+		{
+			return $cache->get();
+		}
+
+		if (empty($params))
+		{
+			$plugin = JPluginHelper::getPlugin($type, $name);
+			$params = (is_object($plugin) && isset($plugin->params)) ? $plugin->params : null;
+		}
+
+		return $cache->set(
+			self::getObjectFromRegistry(
+				$params,
+				JPATH_PLUGINS . '/' . $type . '/' . $name . '/' . $name . '.xml'
+			)
+		);
+	}
+
+	public static function overrideFromObject($params, $object = null)
+	{
+		if (empty($object))
+		{
+			return $params;
+		}
+
+		foreach ($params as $key => $value)
+		{
+			if ( ! isset($object->{$key}))
+			{
+				continue;
+			}
+
+			$params->{$key} = $object->{$key};
+		}
+
+		return $params;
 	}
 }
