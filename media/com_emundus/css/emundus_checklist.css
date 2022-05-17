@@ -316,6 +316,25 @@ button#back:hover, button#back:active, button#back:focus,
     color: #2E2E2E;
 }
 
+
+#attachment_list_mand .em-added-files > td,
+#attachment_list_opt .em-added-files > td {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.view-checklist #attachment_list_mand a.btn span.material-icons,
+.view-checklist #attachment_list_opt a.btn span.material-icons {
+    color: #fff;
+}
+
+.view-checklist #attachment_list_mand a.btn ,
+.view-checklist #attachment_list_opt a.btn {
+    display: flex !important;
+    align-items: center !important;
+}
+
 #attachment_list_mand .description,
 #attachment_list_opt .description {
     color: #2E2E2E;

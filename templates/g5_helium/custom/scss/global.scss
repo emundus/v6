@@ -3590,7 +3590,7 @@ button.swal2-cancel.goback-btn {
 
         /* BLOC ELEMENT */
         .row-fluid .fabrikElementContainer.control-group {
-          margin: 48px 0 48px 0;
+          margin: 32px 0 32px 0;
           flex-direction: column;
 
           /* ERROR */
@@ -3704,6 +3704,10 @@ button.swal2-cancel.goback-btn {
               &[value] {
                 @include body-16;
                 color: $neutral-800;
+              }
+
+              &.input-medium, &.input-large &.input-xlarge {
+                width: 100%;
               }
 
 

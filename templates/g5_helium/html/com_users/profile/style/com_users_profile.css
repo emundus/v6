@@ -27,12 +27,13 @@ a.btn:hover{
     text-align: left;
 }
 
+
 form#member-profile.well {
     background: #fff;
     border: none;
     margin-top: 50px;
     margin-bottom: 50px;
-    border-radius: 5px;
+    border-radius: 16px;
     padding: 80px 64px;
 }
 
@@ -72,11 +73,17 @@ form#member-profile.form-validate.form-horizontal.well button.btn.btn-primary.va
     text-transform: capitalize;
     border-radius: 4px;
     margin-bottom: 0px;
+    height: 38px;
+    display: flex;
+    align-items: center;
 }
 form#member-profile.form-validate.form-horizontal.well a.btn {
     font-weight: 300;
     margin-right: 16px !important;
     margin-bottom: 0px;
+    height: 38px;
+    display: flex;
+    align-items: center;
 }
 form#member-profile.form-validate.form-horizontal.well fieldset:nth-child(2) {
     margin-top: 20px;
