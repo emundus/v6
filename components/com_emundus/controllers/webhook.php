@@ -27,8 +27,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	private $c_emundus;
 
 	public function __construct(array $config = array()) {
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controller.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controller.php');
 
 		$this->m_files = new EmundusModelFiles;
 		$this->controller = new EmundusController;
@@ -414,7 +414,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $fnum 		= JFactory::getApplication()->input->get('rowid');
         $filename   = $eMConfig->get('filename');
         $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
-        $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
+        $file       = JPATH_SITE.DS.$url.DS.$filename.'.csv';
         $date = date('Y-m-d');
         $time_date = date('Y-m-d H:i:s');
 
@@ -515,7 +515,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
     }
 
     public function export_banner(){
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         $mFile = new EmundusModelFiles;
 
         $banner_limit = JFactory::getApplication()->input->get('limit', 100);

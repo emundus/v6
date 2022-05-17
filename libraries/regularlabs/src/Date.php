@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -52,6 +52,44 @@ class Date
 	public static function dateToStrftimeFormat($format)
 	{
 		return strtr((string) $format, self::getDateToStrftimeFormats());
+	}
+
+	private static function getDateToStrftimeFormats()
+	{
+		return [
+			// Day - no strf eq : S
+			'd'  => '%d',
+			'D'  => '%a',
+			'jS' => '%#d[TH]',
+			'j'  => '%#d',
+			'l'  => '%A',
+			'N'  => '%u',
+			'w'  => '%w',
+			'z'  => '%j',
+			// Week - no date eq : %U, %W
+			'W'  => '%V',
+			// Month - no strf eq : n, t
+			'F'  => '%B',
+			'm'  => '%m',
+			'M'  => '%b',
+			// Year - no strf eq : L; no date eq : %C, %g
+			'o'  => '%G',
+			'Y'  => '%Y',
+			'y'  => '%y',
+			// Time - no strf eq : B, G, u; no date eq : %r, %R, %T, %X
+			'a'  => '%P',
+			'A'  => '%p',
+			'g'  => '%l',
+			'h'  => '%I',
+			'H'  => '%H',
+			'i'  => '%M',
+			's'  => '%S',
+			// Timezone - no strf eq : e, I, P, Z
+			'O'  => '%z',
+			'T'  => '%Z',
+			// Full Date / Time - no strf eq : c, r; no date eq : %c, %D, %F, %x
+			'U'  => '%s',
+		];
 	}
 
 	/**
@@ -110,44 +148,6 @@ class Date
 		}
 
 		return strtr((string) $format, self::getStrftimeToDateFormats());
-	}
-
-	private static function getDateToStrftimeFormats()
-	{
-		return [
-			// Day - no strf eq : S
-			'd'  => '%d',
-			'D'  => '%a',
-			'jS' => '%#d[TH]',
-			'j'  => '%#d',
-			'l'  => '%A',
-			'N'  => '%u',
-			'w'  => '%w',
-			'z'  => '%j',
-			// Week - no date eq : %U, %W
-			'W'  => '%V',
-			// Month - no strf eq : n, t
-			'F'  => '%B',
-			'm'  => '%m',
-			'M'  => '%b',
-			// Year - no strf eq : L; no date eq : %C, %g
-			'o'  => '%G',
-			'Y'  => '%Y',
-			'y'  => '%y',
-			// Time - no strf eq : B, G, u; no date eq : %r, %R, %T, %X
-			'a'  => '%P',
-			'A'  => '%p',
-			'g'  => '%l',
-			'h'  => '%I',
-			'H'  => '%H',
-			'i'  => '%M',
-			's'  => '%S',
-			// Timezone - no strf eq : e, I, P, Z
-			'O'  => '%z',
-			'T'  => '%Z',
-			// Full Date / Time - no strf eq : c, r; no date eq : %c, %D, %F, %x
-			'U'  => '%s',
-		];
 	}
 
 	private static function getStrftimeToDateFormats()

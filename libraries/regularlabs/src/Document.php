@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -26,20 +26,103 @@ use RegularLabs\Library\CacheNew as Cache;
 class Document
 {
 	/**
-	 * @return  JDocument  The document object
+	 * Enqueues an admin error
+	 *
+	 * @param string $message
 	 */
-	public static function get()
+	public static function adminError($message)
 	{
-		$document = JFactory::getApplication()->getDocument();
+		self::adminMessage($message, 'error');
+	}
 
-		if ( ! is_null($document))
+	/**
+	 * Enqueues an admin message
+	 *
+	 * @param string $message
+	 * @param string $type
+	 */
+	public static function adminMessage($message, $type = 'message')
+	{
+		if ( ! self::isAdmin())
 		{
-			return $document;
+			return;
 		}
 
-		JFactory::getApplication()->loadDocument();
+		self::message($message, $type);
+	}
 
-		return JFactory::getApplication()->getDocument();
+	/**
+	 * Check if page is an admin page
+	 *
+	 * @param bool $exclude_login
+	 *
+	 * @return bool
+	 */
+	public static function isAdmin($exclude_login = false)
+	{
+		$cache = new Cache([__METHOD__, $exclude_login]);
+
+		if ($cache->exists())
+		{
+			return $cache->get();
+		}
+
+		$input = JFactory::getApplication()->input;
+		$user  = JFactory::getApplication()->getIdentity() ?: JFactory::getUser();
+
+		$is_admin = (
+			self::isClient('administrator')
+			&& ( ! $exclude_login || ! $user->get('guest'))
+			&& $input->get('task') != 'preview'
+			&& ! (
+				$input->get('option') == 'com_finder'
+				&& $input->get('format') == 'json'
+			)
+		);
+
+		return $cache->set($is_admin);
+	}
+
+	/**
+	 * Enqueues a message
+	 *
+	 * @param string $message
+	 * @param string $type
+	 */
+	public static function message($message, $type = 'message')
+	{
+		Language::load('plg_system_regularlabs');
+
+		JFactory::getApplication()->enqueueMessage($message, $type);
+	}
+
+	/**
+	 * Check if page is an edit page
+	 *
+	 * @return bool
+	 */
+	public static function isClient($identifier)
+	{
+		$identifier = $identifier == 'admin' ? 'administrator' : $identifier;
+
+		$cache = new Cache([__METHOD__, $identifier]);
+
+		if ($cache->exists())
+		{
+			return $cache->get();
+		}
+
+		return $cache->set(JFactory::getApplication()->isClient($identifier));
+	}
+
+	/**
+	 * Enqueues an error
+	 *
+	 * @param string $message
+	 */
+	public static function error($message)
+	{
+		self::message($message, 'error');
 	}
 
 	/**
@@ -75,35 +158,20 @@ class Document
 	}
 
 	/**
-	 * Check if page is an admin page
-	 *
-	 * @param bool $exclude_login
-	 *
-	 * @return bool
+	 * @return  JDocument  The document object
 	 */
-	public static function isAdmin($exclude_login = false)
+	public static function get()
 	{
-		$cache = new Cache([__METHOD__, $exclude_login]);
+		$document = JFactory::getApplication()->getDocument();
 
-		if ($cache->exists())
+		if ( ! is_null($document))
 		{
-			return $cache->get();
+			return $document;
 		}
 
-		$input = JFactory::getApplication()->input;
-		$user  = JFactory::getApplication()->getIdentity() ?: JFactory::getUser();
+		JFactory::getApplication()->loadDocument();
 
-		$is_admin = (
-			self::isClient('administrator')
-			&& ( ! $exclude_login || ! $user->get('guest'))
-			&& $input->get('task') != 'preview'
-			&& ! (
-				$input->get('option') == 'com_finder'
-				&& $input->get('format') == 'json'
-			)
-		);
-
-		return $cache->set($is_admin);
+		return JFactory::getApplication()->getDocument();
 	}
 
 	/**
@@ -145,25 +213,6 @@ class Document
 
 		// Return true if it IS a list layout
 		return $cache->set(true);
-	}
-
-	/**
-	 * Check if page is an edit page
-	 *
-	 * @return bool
-	 */
-	public static function isClient($identifier)
-	{
-		$identifier = $identifier == 'admin' ? 'administrator' : $identifier;
-
-		$cache = new Cache([__METHOD__, $identifier]);
-
-		if ($cache->exists())
-		{
-			return $cache->get();
-		}
-
-		return $cache->set(JFactory::getApplication()->isClient($identifier));
 	}
 
 	/**
@@ -321,7 +370,7 @@ class Document
 			return true;
 		}
 
-		if ($title)
+		if ($title && self::isAdmin())
 		{
 			Language::load('plg_system_regularlabs');
 
@@ -372,6 +421,92 @@ class Document
 	/**
 	 * Loads the required scripts and styles used in forms
 	 */
+	public static function loadMainDependencies()
+	{
+		JHtml::_('jquery.framework');
+
+		self::script('regularlabs/script.min.js');
+		self::style('regularlabs/style.min.css');
+	}
+
+	/**
+	 * Adds a script file to the page (with optional versioning)
+	 *
+	 * @param string $file
+	 * @param string $version
+	 * @param array  $options
+	 * @param array  $attribs
+	 * @param bool   $load_jquery
+	 */
+	public static function script($file, $version = '', $options = [], $attribs = [], $load_jquery = true)
+	{
+		if ( ! $url = File::getMediaFile('js', $file))
+		{
+			return;
+		}
+
+		if ($load_jquery)
+		{
+			JHtml::_('jquery.framework');
+		}
+
+		if (strpos($file, 'regularlabs/') !== false
+			&& strpos($file, 'regular.') === false
+		)
+		{
+			JHtml::_('behavior.core');
+			JHtml::_('script', 'jui/cms.js', ['version' => 'auto', 'relative' => true]);
+			$version = '22.4.18687';
+		}
+
+		if ( ! empty($version))
+		{
+			$url .= '?v=' . $version;
+		}
+
+		self::get()->addScript($url, $options, $attribs);
+	}
+
+	/**
+	 * Adds a stylesheet file to the page(with optional versioning)
+	 *
+	 * @param string $file
+	 * @param string $version
+	 * @param array  $options
+	 * @param array  $attribs
+	 */
+	public static function style($file, $version = '', $options = [], $attribs = [])
+	{
+		if (strpos($file, 'regularlabs/') === 0)
+		{
+			$version = '22.4.18687';
+		}
+
+		$file = File::getMediaFile('css', $file);
+		if ( ! $file)
+		{
+			return;
+		}
+
+		if ( ! empty($version))
+		{
+			$file .= '?v=' . $version;
+		}
+
+		self::get()->addStylesheet($file, $options, $attribs);
+	}
+
+	public static function loadPopupDependencies()
+	{
+		self::loadMainDependencies();
+		self::loadFormDependencies();
+
+		self::style('regularlabs/popup.min.css');
+	}
+
+	/**
+	 * Loads the required scripts and styles used in forms
+	 */
 	public static function loadFormDependencies()
 	{
 		if ((int) JVERSION != 3)
@@ -393,50 +528,6 @@ class Document
 
 		self::script('regularlabs/form.min.js');
 		self::style('regularlabs/form.min.css');
-	}
-
-	/**
-	 * Loads the required scripts and styles used in forms
-	 */
-	public static function loadMainDependencies()
-	{
-		JHtml::_('jquery.framework');
-
-		self::script('regularlabs/script.min.js');
-		self::style('regularlabs/style.min.css');
-	}
-
-	public static function loadPopupDependencies()
-	{
-		self::loadMainDependencies();
-		self::loadFormDependencies();
-
-		self::style('regularlabs/popup.min.css');
-	}
-
-	/**
-	 * Minify the given string
-	 *
-	 * @param string $string
-	 *
-	 * @return string
-	 */
-	public static function minify($string)
-	{
-		// place new lines around string to make regex searching easier
-		$string = "\n" . $string . "\n";
-
-		// Remove comment lines
-		$string = RegEx::replace('\n\s*//.*?\n', '', $string);
-		// Remove comment blocks
-		$string = RegEx::replace('/\*.*?\*/', '', $string);
-		// Remove enters
-		$string = RegEx::replace('\n\s*', ' ', $string);
-
-		// Remove surrounding whitespace
-		$string = trim($string);
-
-		return $string;
 	}
 
 	/**
@@ -495,44 +586,6 @@ class Document
 	}
 
 	/**
-	 * Adds a script file to the page (with optional versioning)
-	 *
-	 * @param string $file
-	 * @param string $version
-	 * @param array  $options
-	 * @param array  $attribs
-	 * @param bool   $load_jquery
-	 */
-	public static function script($file, $version = '', $options = [], $attribs = [], $load_jquery = true)
-	{
-		if ( ! $url = File::getMediaFile('js', $file))
-		{
-			return;
-		}
-
-		if ($load_jquery)
-		{
-			JHtml::_('jquery.framework');
-		}
-
-		if (strpos($file, 'regularlabs/') !== false
-			&& strpos($file, 'regular.') === false
-		)
-		{
-			JHtml::_('behavior.core');
-			JHtml::_('script', 'jui/cms.js', ['version' => 'auto', 'relative' => true]);
-			$version = '21.9.16879';
-		}
-
-		if ( ! empty($version))
-		{
-			$url .= '?v=' . $version;
-		}
-
-		self::get()->addScript($url, $options, $attribs);
-	}
-
-	/**
 	 * Adds a javascript declaration to the page
 	 *
 	 * @param string $content
@@ -553,6 +606,31 @@ class Document
 		}
 
 		self::get()->addScriptDeclaration($content, $type);
+	}
+
+	/**
+	 * Minify the given string
+	 *
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	public static function minify($string)
+	{
+		// place new lines around string to make regex searching easier
+		$string = "\n" . $string . "\n";
+
+		// Remove comment lines
+		$string = RegEx::replace('\n\s*//.*?\n', '', $string);
+		// Remove comment blocks
+		$string = RegEx::replace('/\*.*?\*/', '', $string);
+		// Remove enters
+		$string = RegEx::replace('\n\s*', ' ', $string);
+
+		// Remove surrounding whitespace
+		$string = trim($string);
+
+		return $string;
 	}
 
 	/**
@@ -585,35 +663,6 @@ class Document
 	public static function setComponentBuffer($buffer = '')
 	{
 		self::get()->setBuffer($buffer, 'component');
-	}
-
-	/**
-	 * Adds a stylesheet file to the page(with optional versioning)
-	 *
-	 * @param string $file
-	 * @param string $version
-	 * @param array  $options
-	 * @param array  $attribs
-	 */
-	public static function style($file, $version = '', $options = [], $attribs = [])
-	{
-		if (strpos($file, 'regularlabs/') === 0)
-		{
-			$version = '21.9.16879';
-		}
-
-		$file = File::getMediaFile('css', $file);
-		if ( ! $file)
-		{
-			return;
-		}
-
-		if ( ! empty($version))
-		{
-			$file .= '?v=' . $version;
-		}
-
-		self::get()->addStylesheet($file, $options, $attribs);
 	}
 
 	/**

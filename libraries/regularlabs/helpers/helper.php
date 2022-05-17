@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -30,7 +30,7 @@ class RLHelper
 			return null;
 		}
 
-		$cache = new RL_Cache([__METHOD__, $plugin->get('_type'), $plugin->get('_name'),$params]);
+		$cache = new RL_Cache([__METHOD__, $plugin->get('_type'), $plugin->get('_name'), $params]);
 
 		if ($cache->exists())
 		{

@@ -1,8 +1,6 @@
 <?php // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-$deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
-
 $renew='';
 $step_form = $forms<100?'':'completed';
 $step_attachment = $attachments<100?'':'completed';

@@ -294,7 +294,7 @@ class EmundusControllerUsers extends JControllerLegacy {
    ////// EXPORT ALL XLS ///////////////////
 	public function export_account_to_xls($reqids = array(), $el = array()) {
 		$cid = JRequest::getVar('ud', null, 'POST', 'array', 0);
-		require_once(JPATH_BASE.DS.'libraries'.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
+		require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'export_xls'.DS.'xls_users.php');
 		export_xls($cid, array());
 	}
 
@@ -701,7 +701,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
     public function regeneratepassword() {
 
-        include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        include_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once(JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
 
         jimport('joomla.user.helper');

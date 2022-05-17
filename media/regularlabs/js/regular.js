@@ -4,7 +4,7 @@
  *
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            https://github.com/regularlabs/regularjs
- * @copyright       Copyright © 2021 Regular Labs - All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs - All Rights Reserved
  * @license         https://github.com/regularlabs/regularjs/blob/master/LICENCE MIT
  */
 
@@ -12,7 +12,7 @@
 
 if (typeof window.Regular === 'undefined'
 	|| typeof Regular.version === 'undefined'
-	|| Regular.version < 1.3) {
+	|| Regular.version < 1.5) {
 
 	window.Regular = new function() {
 		/**
@@ -21,7 +21,7 @@ if (typeof window.Regular === 'undefined'
 		 *
 		 */
 
-		this.version = 1.3;
+		this.version = 1.5;
 
 		/**
 		 *
@@ -116,17 +116,30 @@ if (typeof window.Regular === 'undefined'
 		 *
 		 * @param selector  A CSS selector string, a HTMLElement object or a collection of HTMLElement objects.
 		 * @param classes   A string or array of class names.
+		 * @param force     An optional boolean value that forces the class to be added or removed.
 		 */
-		this.toggleClasses = function(selector, classes) {
-			doClasses('toggle', selector, classes);
+		this.toggleClasses = function(selector, classes, force) {
+			switch (force) {
+				case true:
+					doClasses('add', selector, classes);
+					break;
+
+				case false:
+					doClasses('remove', selector, classes);
+					break;
+
+				default:
+					doClasses('toggle', selector, classes);
+					break;
+			}
 		};
 
 		/**
-		 * Shows the given element(s) (changes opacity and display attributes).
+		 * Makes the given element(s) visible (changes visibility and display attributes).
 		 *
 		 * @param selector  A CSS selector string, a HTMLElement object or a collection of HTMLElement objects.
 		 */
-		this.show = function(selector) {
+		this.makeVisible = function(selector) {
 			if ( ! selector) {
 				return;
 			}
@@ -136,7 +149,7 @@ if (typeof window.Regular === 'undefined'
 				: selector;
 
 			if ('forEach' in element) {
-				element.forEach(subElement => $.show(subElement));
+				element.forEach(subElement => $.makeVisible(subElement));
 				return;
 			}
 
@@ -158,7 +171,30 @@ if (typeof window.Regular === 'undefined'
 			}
 
 			element.style.visibility = 'visible';
-			element.style.opacity    = 1;
+		};
+
+		/**
+		 * Shows the given element(s) (makes visible and changes opacity attribute).
+		 *
+		 * @param selector  A CSS selector string, a HTMLElement object or a collection of HTMLElement objects.
+		 */
+		this.show = function(selector) {
+			if ( ! selector) {
+				return;
+			}
+
+			const element = typeof selector === 'string'
+				? document.querySelectorAll(selector)
+				: selector;
+
+			if ('forEach' in element) {
+				element.forEach(subElement => $.show(subElement));
+				return;
+			}
+
+			this.makeVisible(element);
+
+			element.style.opacity = 1;
 		};
 
 		/**
@@ -192,7 +228,42 @@ if (typeof window.Regular === 'undefined'
 		};
 
 		/**
-		 * Fades in the the given element(s).
+		 * Shows or hides the given element(s).
+		 *
+		 * @param selector  A CSS selector string, a HTMLElement object or a collection of HTMLElement objects.
+		 * @param force     An optional boolean value that forces the class to be added or removed.
+		 */
+		this.toggle = function(selector, force) {
+			if ( ! selector) {
+				return;
+			}
+
+			switch (force) {
+				case true:
+					$.show(selector);
+					break;
+
+				case false:
+					$.hide(selector);
+					break;
+
+				default:
+					const element = typeof selector === 'string'
+						? document.querySelectorAll(selector)
+						: selector;
+
+					if ('forEach' in element) {
+						element.forEach(subElement => $.toggle(subElement));
+						return;
+					}
+
+					element.style.display === 'none' ? $.show(selector) : $.hide(selector);
+					break;
+			}
+		};
+
+		/**
+		 * Fades in the given element(s).
 		 *
 		 * @param selector    A CSS selector string, a HTMLElement object or a collection of HTMLElement objects.
 		 * @param duration    Optional duration of the effect in milliseconds.
@@ -206,6 +277,8 @@ if (typeof window.Regular === 'undefined'
 			const element = typeof selector === 'string'
 				? document.querySelectorAll(selector)
 				: selector;
+
+			this.makeVisible(element);
 
 			$.fadeTo(
 				element,
@@ -221,7 +294,7 @@ if (typeof window.Regular === 'undefined'
 		};
 
 		/**
-		 * Fades out the the given element(s).
+		 * Fades out the given element(s).
 		 *
 		 * @param selector    A CSS selector string, a HTMLElement object or a collection of HTMLElement objects.
 		 * @param duration    Optional duration of the effect in milliseconds.
@@ -250,7 +323,7 @@ if (typeof window.Regular === 'undefined'
 		};
 
 		/**
-		 * Fades out the the given element(s).
+		 * Fades out the given element(s).
 		 *
 		 * @param selector    A CSS selector string, a HTMLElement object or a collection of HTMLElement objects.
 		 * @param opacity     Opacity Value to fade to
@@ -286,6 +359,8 @@ if (typeof window.Regular === 'undefined'
 
 				return;
 			}
+
+			this.makeVisible(element);
 
 			const direction = opacity > element.style.opacity ? 'in' : 'out';
 
@@ -355,7 +430,7 @@ if (typeof window.Regular === 'undefined'
 		this.loadUrl = function(url, data, success, fail) {
 			const request = new XMLHttpRequest();
 
-			request.open("POST", url, true);
+			request.open('POST', url, true);
 
 			request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
@@ -372,7 +447,53 @@ if (typeof window.Regular === 'undefined'
 				fail && fail.call(null, this.responseText, this.status, this);
 			};
 
-			request.send(data);
+			request.send(this.toUrlQueryString(data));
+		};
+
+		/**
+		 * Converts a data object (key, value) to a serialized query string.
+		 *
+		 * @param data    The object with the data to serialize.
+		 * @param prefix  An Optional prefix.
+		 */
+		this.toUrlQueryString = function(data, prefix) {
+			if (typeof data !== 'object') {
+				return data;
+			}
+
+			const parts = [];
+
+			if ( ! (Symbol.iterator in Object(data))) {
+				data = Object.entries(data);
+			}
+
+			for (let i in data) {
+				let value = data[i];
+				let name  = '';
+
+				if (value instanceof Array) {
+					[name, value] = value;
+				}
+
+				let key = name ? (prefix ? `${prefix}[${name}]` : name) : prefix;
+
+				if ( ! key) {
+					continue;
+				}
+
+				if (value !== null && typeof value === 'object') {
+					if (value instanceof Array) {
+						key += '[]';
+					}
+
+					parts.push(this.toUrlQueryString(value, key));
+					continue;
+				}
+
+				parts.push(`${key}=${value}`);
+			}
+
+			return parts.join('&');
 		};
 
 		/**

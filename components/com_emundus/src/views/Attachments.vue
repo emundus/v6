@@ -85,6 +85,9 @@
 					</span>
         </div>
       </div>
+      <div class="em-mt-16 em-mb-16">
+        <a v-if="exportLink" :href="exportLink" target="_blank" @click="exportLink = ''">{{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}</a>
+      </div>
       <div v-if="attachments.length" class="table-wrapper">
         <table
             :class="{ loading: loading }"
@@ -353,6 +356,7 @@ export default {
       modalLoading: false,
       slideTransition: "slide-fade",
       changeFileEvent: null,
+      exportLink: "",
     };
   },
   created() {
@@ -587,6 +591,7 @@ export default {
             .then((response) => {
               if (response.data.status === true) {
                 window.open(response.data.link, "_blank");
+                this.exportLink = response.data.link;
               } else {
                 this.displayErrorMessage(response.data.msg);
               }

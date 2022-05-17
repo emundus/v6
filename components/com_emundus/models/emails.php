@@ -94,7 +94,7 @@ class EmundusModelEmails extends JModelList {
         $triggers = $this->_db->loadObjectList();
 
         $emails_tmpl = array();
-        if (count($triggers) > 0) {
+        if (count($triggers) > 0 && !empty($triggers[0]->id)) {
             foreach ($triggers as $key => $trigger) {
                 // email tmpl
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
@@ -1341,11 +1341,11 @@ class EmundusModelEmails extends JModelList {
             return false;
         }
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $m_messages = new EmundusModelMessages();
         $template = $m_messages->getEmail($email);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
         $m_groups = new EmundusModelGroups();
         $users = $m_groups->getUsersByGroups($groups);
 
@@ -1369,7 +1369,7 @@ class EmundusModelEmails extends JModelList {
      * @since v6
      */
     public function sendEmailFromPlatform(int $user, object $template, array $attachments) : void {
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         $current_user = JFactory::getUser();
         $user = JFactory::getUser($user);
         $toAttach = [];
@@ -1410,8 +1410,8 @@ class EmundusModelEmails extends JModelList {
             // Here we also build the HTML being logged to show which files were attached to the email.
             $files = '<ul>';
             foreach ($attachments as $upload) {
-                if (file_exists(JPATH_BASE.DS.$upload)) {
-                    $toAttach[] = JPATH_BASE.DS.$upload;
+                if (file_exists(JPATH_SITE.DS.$upload)) {
+                    $toAttach[] = JPATH_SITE.DS.$upload;
                     $files .= '<li>'.basename($upload).'</li>';
                 }
             }

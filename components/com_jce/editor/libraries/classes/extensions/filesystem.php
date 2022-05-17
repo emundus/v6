@@ -1,16 +1,14 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
- * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @copyright     Copyright (c) 2009-2021 Ryan Demmer. All rights reserved
+ * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses
  */
-defined('_JEXEC') or die('RESTRICTED');
-
-wfimport('editor.libraries.classes.extensions');
+defined('JPATH_PLATFORM') or die;
 
 class WFFileSystem extends WFExtension
 {
@@ -23,12 +21,13 @@ class WFFileSystem extends WFExtension
 
         $this->setProperties(array_merge($config, array(
             'local' => true,
-            'upload' => array(
-                'stream' => false,
-                'chunking' => false,
-                'unique_filenames' => false
-            ),
         )));
+
+        // get path variable properties
+        $vars = $this->getPathVariables();
+
+        // assign to instance
+        $this->setProperties($vars);
     }
 
     /**
@@ -43,26 +42,36 @@ class WFFileSystem extends WFExtension
      */
     public static function getInstance($type = 'joomla', $config = array())
     {
-        static $instance;
+        static $instance = array();
 
-        if (!is_object($instance)) {
+        if (!isset($instance[$type])) {
             $fs = parent::loadExtensions('filesystem', $type);
+
+            // load the default...
+            if (empty($fs)) {
+                $fs = parent::loadExtensions('filesystem', 'joomla');
+            }
 
             // get the first filesystem extension only
             if (is_array($fs)) {
                 $fs = array_shift($fs);
             }
 
-            $classname = 'WF'.ucfirst($fs->name).'FileSystem';
+            $classname = 'WF' . ucfirst($fs->name) . 'FileSystem';
 
             if (class_exists($classname)) {
-                $instance = new $classname($config);
+                $instance[$type] = new $classname($config);
             } else {
-                $instance = new self($config);
+                $instance[$type] = new self($config);
             }
         }
 
-        return $instance;
+        return $instance[$type];
+    }
+
+    public function updateOptions(&$options)
+    {
+        $options['dir'] = $this->getRootDir();
     }
 
     /**
@@ -85,6 +94,69 @@ class WFFileSystem extends WFExtension
         return WFUtility::makePath(JURI::root(true), $this->getRootDir());
     }
 
+    private function getPathVariables()
+    {
+        static $variables;
+
+        if (!isset($variables)) {
+            $user = JFactory::getUser();
+            $wf = WFApplication::getInstance();
+            $profile = $wf->getProfile();
+
+            jimport('joomla.user.helper');
+
+            $groups = JUserHelper::getUserGroups($user->id);
+
+            // get keys only
+            $groups = array_keys($groups);
+
+            // get the first group
+            $group_id = array_shift($groups);
+
+            if (is_int($group_id)) {
+                // usergroup table
+                $group = JTable::getInstance('Usergroup');
+                $group->load($group_id);
+                // usertype
+                $usertype = $group->title;
+            } else {
+                $usertype = $group_id;
+            }
+
+            // Replace any path variables
+            $path_pattern = array('/\$id/', '/\$username/', '/\$name/', '/\$user(group|type)/', '/\$(group|profile)/', '/\$day/', '/\$month/', '/\$year/');
+            $path_replacement = array($user->id, $user->username, $user->name, $usertype, $profile->name, date('d'), date('m'), date('Y'));
+
+            $websafe_textcase = $wf->getParam('editor.websafe_textcase', '');
+
+            // implode textcase array to create string
+            if (is_array($websafe_textcase)) {
+                $websafe_textcase = implode(',', $websafe_textcase);
+            }
+
+            $websafe_mode = $wf->getParam('editor.websafe_mode', 'utf-8');
+            $websafe_allow_spaces = $wf->getParam('editor.websafe_allow_spaces', '_');
+
+            $variables = compact('path_pattern', 'path_replacement', 'websafe_textcase', 'websafe_mode', 'websafe_allow_spaces');
+        }
+
+        return $variables;
+    }
+
+    public function processPath(&$path)
+    {
+        $path = preg_replace($this->get('path_pattern', array()), $this->get('path_replacement', array()), $path);
+
+        // split into path parts to preserve /
+        $parts = explode('/', $path);
+
+        // clean path parts
+        $parts = WFUtility::makeSafe($parts, $this->get('websafe_mode', 'utf-8'), $this->get('websafe_allow_spaces', '_'), $this->get('websafe_textcase', ''));
+
+        // join path parts
+        $path = implode('/', $parts);
+    }
+
     /**
      * Return the full user directory path. Create if required.
      *
@@ -97,10 +169,6 @@ class WFFileSystem extends WFExtension
         static $root;
 
         if (!isset($root)) {
-            $user = JFactory::getUser();
-            $wf = WFEditor::getInstance();
-            $profile = $wf->getProfile();
-
             // Get base directory as shared parameter
             $root = $this->get('dir', '');
 
@@ -110,58 +178,16 @@ class WFFileSystem extends WFExtension
             if (!empty($root)) {
                 // Convert slashes / Strip double slashes
                 $root = preg_replace('/[\\\\]+/', '/', $root);
+
                 // Remove first leading slash
                 $root = ltrim($root, '/');
-                // Force default directory if base param starts with a variable or a . eg $id
-                if (preg_match('/[\.\$]/', $root{0})) {
+                
+                // Force default directory if base param is now empty or starts with a variable or a . eg $id
+                if (empty($root) || preg_match('/[\.\$]/', $root[0])) {
                     $root = 'images';
                 }
 
-                jimport('joomla.user.helper');
-                // Joomla! 1.6+
-                if (method_exists('JUserHelper', 'getUserGroups')) {
-                    $groups = JUserHelper::getUserGroups($user->id);
-
-                    // get keys only
-                    $groups = array_keys($groups);
-
-                    // get the first group
-                    $group_id = array_shift($groups);
-
-                    // Joomla! 2.5?
-                    if (is_int($group_id)) {
-                        // usergroup table
-                        $group = JTable::getInstance('Usergroup');
-                        $group->load($group_id);
-                        // usertype
-                        $usertype = $group->title;
-                    } else {
-                        $usertype = $group_id;
-                    }
-                } else {
-                    $usertype = $user->usertype;
-                }
-
-                // Replace any path variables
-                $pattern = array('/\$id/', '/\$username/', '/\$user(group|type)/', '/\$(group|profile)/', '/\$day/', '/\$month/', '/\$year/');
-                $replace = array($user->id, $user->username, $usertype, $profile->name, date('d'), date('m'), date('Y'));
-                $root = preg_replace($pattern, $replace, $root);
-
-                // split into path parts to preserve /
-                $parts = explode('/', $root);
-
-                $textcase = $wf->getParam('editor.websafe_textcase', '');
-
-                // implode textcase array to create string
-                if (is_array($textcase)) {
-                    $textcase = implode(",", $textcase);
-                }
-
-                // clean path parts
-                $parts = WFUtility::makeSafe($parts, $wf->getParam('editor.websafe_mode', 'utf-8'), $wf->getParam('editor.websafe_allow_spaces', 0), $textcase);
-
-                //join path parts
-                $root = implode('/', $parts);
+                $this->processPath($root);
             }
         }
 
@@ -175,7 +201,7 @@ class WFFileSystem extends WFExtension
         // set default direction
         $direction = 'asc';
 
-        if ($type[0] === "-") {
+        if ($type[0] === '-') {
             $direction = 'desc';
             $type = substr($type, 1);
         }
@@ -184,7 +210,7 @@ class WFFileSystem extends WFExtension
             $sortable[$key] = isset($item[$type]) ? $item[$type] : $item['properties'][$type];
         }
 
-        array_multisort($sortable, $direction === "desc" ? SORT_DESC : SORT_ASC, SORT_NATURAL | SORT_FLAG_CASE, $items);
+        array_multisort($sortable, $direction === 'desc' ? SORT_DESC : SORT_ASC, SORT_NATURAL | SORT_FLAG_CASE, $items);
 
         return $items;
     }
@@ -345,11 +371,11 @@ final class WFFileSystemResult
 
     public $type = 'files';
     /*
-     * @boolean	Result state
+     * @boolean    Result state
      */
     public $state = false;
     /*
-     * @int	Error code
+     * @int    Error code
      */
     public $code = null;
     /*
