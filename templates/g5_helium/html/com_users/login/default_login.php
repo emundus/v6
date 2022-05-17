@@ -88,11 +88,6 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
                 <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
             </a>
         </li>
-        <li>
-            <a href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
-                <?php echo JText::_('COM_USERS_LOGIN_REMIND'); ?>
-            </a>
-        </li>
         <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>
         <?php if ($usersConfig->get('allowUserRegistration')) : ?>
             <li>
