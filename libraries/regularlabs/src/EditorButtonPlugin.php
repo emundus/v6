@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -33,17 +33,6 @@ class EditorButtonPlugin extends JCMSPlugin
 	private $_helper              = null; // The path to the original caller file
 	private $_init                = false; // Whether or not to enable the editor button on AcyMailing
 
-	public function extraChecks($params)
-	{
-		return true;
-	}
-
-	/*
-	 * Below methods are general functions used in most of the Regular Labs extensions
-	 * The reason these are not placed in the Regular Labs Library files is that they also
-	 * need to be used when the Regular Labs Library is not installed
-	 */
-
 	/**
 	 * Display the button
 	 *
@@ -61,13 +50,11 @@ class EditorButtonPlugin extends JCMSPlugin
 		return $this->_helper->render($editor_name, $this->_subject);
 	}
 
-	private function getDir()
-	{
-		// use static::class instead of get_class($this) after php 5.4 support is dropped
-		$rc = new ReflectionClass(get_class($this));
-
-		return dirname($rc->getFileName());
-	}
+	/*
+	 * Below methods are general functions used in most of the Regular Labs extensions
+	 * The reason these are not placed in the Regular Labs Library files is that they also
+	 * need to be used when the Regular Labs Library is not installed
+	 */
 
 	/**
 	 * Create the helper object
@@ -128,6 +115,15 @@ class EditorButtonPlugin extends JCMSPlugin
 		return $this->_helper;
 	}
 
+	private function isInstalled()
+	{
+		$extensions = ! is_null($this->check_installed)
+			? $this->check_installed
+			: [$this->main_type];
+
+		return Extension::areInstalled($this->_name, $extensions);
+	}
+
 	private function getParams()
 	{
 		switch ($this->main_type)
@@ -153,12 +149,16 @@ class EditorButtonPlugin extends JCMSPlugin
 		}
 	}
 
-	private function isInstalled()
+	public function extraChecks($params)
 	{
-		$extensions = ! is_null($this->check_installed)
-			? $this->check_installed
-			: [$this->main_type];
+		return true;
+	}
 
-		return Extension::areInstalled($this->_name, $extensions);
+	private function getDir()
+	{
+		// use static::class instead of get_class($this) after php 5.4 support is dropped
+		$rc = new ReflectionClass(get_class($this));
+
+		return dirname($rc->getFileName());
 	}
 }

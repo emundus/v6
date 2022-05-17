@@ -1,13 +1,13 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\View\ControlPanel;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
 use Akeeba\AdminTools\Admin\Model\AdminPassword;
@@ -15,8 +15,8 @@ use Akeeba\AdminTools\Admin\Model\ControlPanel;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Stats;
 use Akeeba\AdminTools\Admin\View\Mixin\SystemPluginExists;
-use FOF30\Date\Date;
-use FOF30\View\DataView\Html as BaseView;
+use FOF40\Date\Date;
+use FOF40\View\DataView\Html as BaseView;
 use Joomla\CMS\Language\Text;
 
 class Html extends BaseView
@@ -294,15 +294,15 @@ class Html extends BaseView
 			$this->newSecretWord           = $this->container->platform->getSessionVar('newSecretWord', null, 'admintools.cpanel');
 		}
 
-		$this->addJavascriptFile('admin://components/com_admintools/media/js/Modal.min.js');
-		$this->addJavascriptFile('admin://components/com_admintools/media/js/ControlPanel.min.js');
+		$this->addJavascriptFile('admin://components/com_admintools/media/js/ControlPanel.min.js', $this->container->mediaVersion, 'text/javascript', true);
 
 		// Pro version, control panel graphs (only if we enabled them in config options)
 		if (defined('ADMINTOOLS_PRO') && ADMINTOOLS_PRO && $this->showstats)
 		{
 			// Load JavaScript
-			$this->addJavascriptFile('admin://components/com_admintools/media/js/Chart.bundle.min.js');
-			$this->addJavascriptFile('admin://components/com_admintools/media/js/cpanelgraphs.min.js');
+			$this->addJavascriptFile('https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js', null,'text/javascript', true);
+			$this->addJavascriptFile('https://cdn.jsdelivr.net/npm/moment@2.27.0', null,'text/javascript', true);
+			$this->addJavascriptFile('https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@0.1.1', null,'text/javascript', true);
 		}
 
 		// Push translations
@@ -310,15 +310,7 @@ class Html extends BaseView
 
 		// Initialize some Javascript variables used in the view
 		$myIP = $controlPanelModel->getVisitorIP();
-
-		$js = <<< JS
-akeeba.jQuery(document).ready(function(){
-	
-
-	admintools.ControlPanel.myIP = '$myIP';
-})
-JS;
-		$this->addJavascriptInline($js);
+		$this->container->platform->addScriptOptions('admintools.ControlPanel.myIP', $myIP);
 	}
 
 	protected function formatChangelog($onlyLast = false)
@@ -352,23 +344,28 @@ JS;
 					break;
 
 				case '+':
-					$ret .= "\t" . '<li class="akeeba-changelog-added"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					$ret .= "\t" . '<li><span class="akeeba-label--green">Added</span> ' . htmlentities(trim(substr($line, 2))) . "</li>\n";
 					break;
 
 				case '-':
-					$ret .= "\t" . '<li class="akeeba-changelog-removed"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					$ret .= "\t" . '<li><span class="akeeba-label--grey">Removed</span> ' . htmlentities(trim(substr($line, 2))) . "</li>\n";
 					break;
 
 				case '~':
-					$ret .= "\t" . '<li class="akeeba-changelog-changed"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+				case '^':
+					$ret .= "\t" . '<li><span class="akeeba-label--grey">Changed</span> ' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					break;
+
+				case '*':
+					$ret .= "\t" . '<li><span class="akeeba-label--red">Security</span> ' . htmlentities(trim(substr($line, 2))) . "</li>\n";
 					break;
 
 				case '!':
-					$ret .= "\t" . '<li class="akeeba-changelog-important"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					$ret .= "\t" . '<li><span class="akeeba-label--orange">Important</span> ' . htmlentities(trim(substr($line, 2))) . "</li>\n";
 					break;
 
 				case '#':
-					$ret .= "\t" . '<li class="akeeba-changelog-fixed"><span></span>' . htmlentities(trim(substr($line, 2))) . "</li>\n";
+					$ret .= "\t" . '<li><span class="akeeba-label--teal">Fixed</span> ' . htmlentities(trim(substr($line, 2))) . "</li>\n";
 					break;
 
 				default:
@@ -383,7 +380,7 @@ JS;
 
 					if (!$onlyLast)
 					{
-						$ret .= "<h3 class=\"akeeba-changelog\">$line</h3>\n";
+						$ret .= "<h4>$line</h4>\n";
 					}
 					$ret .= "<ul class=\"akeeba-changelog\">\n";
 

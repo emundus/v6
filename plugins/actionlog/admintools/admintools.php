@@ -1,11 +1,11 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\AdminTools\Admin\Controller\AdminPassword;
 use Akeeba\AdminTools\Admin\Controller\AutoBannedAddresses;
@@ -36,12 +36,12 @@ use Akeeba\AdminTools\Admin\Controller\WhitelistedAddresses;
 use Akeeba\AdminTools\Admin\Model\BadWords;
 use Akeeba\AdminTools\Admin\Model\ScanAlerts;
 use Akeeba\AdminTools\Admin\Model\SecurityExceptions;
-use FOF30\Container\Container;
+use FOF40\Container\Container;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
 
 // PHP version check
-if (!version_compare(PHP_VERSION, '7.1.0', '>='))
+if (!version_compare(PHP_VERSION, '7.2.0', '>='))
 {
 	return;
 }
@@ -74,7 +74,7 @@ class plgActionlogAdmintools extends CMSPlugin
 		}
 
 		// Load FOF
-		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+		if (!defined('FOF40_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof40/include.php'))
 		{
 			return;
 		}
@@ -354,9 +354,12 @@ class plgActionlogAdmintools extends CMSPlugin
 		/** @var BadWords $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=BadWords&task=edit&id=' . $model->id . '">' . $model->word . '</a>';
+		$message = [
+			'title'    => $model->word,
+			'itemlink' => 'index.php?option=com_admintools&view=BadWords&task=edit&id=' . $model->id
+		];
 
-		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_BADWORDS_EDIT', 'com_admintools');
+		$this->container->platform->logUserAction($message, 'COM_ADMINTOOLS_LOGS_BADWORDS_EDIT', 'com_admintools');
 	}
 
 	/**
@@ -389,13 +392,17 @@ class plgActionlogAdmintools extends CMSPlugin
 		/** @var \Akeeba\AdminTools\Admin\Model\WAFBlacklistedRequests $model */
 		$model = $controller->getModel();
 
-		$parts[] = $model->option ? $model->option : '(All)';
-		$parts[] = $model->view ? $model->view : '(All)';
-		$parts[] = $model->query ? $model->query : '(All)';
+		$parts   = [];
+		$parts[] = $model->option ?: '(All)';
+		$parts[] = $model->view ?: '(All)';
+		$parts[] = $model->query ?: '(All)';
 
-		$link = '<a href="index.php?option=com_admintools&view=WAFBlacklistedRequests&task=edit&id=' . $model->id . '">' . implode(' ', $parts) . '</a>';
+		$message = [
+			'title'    => implode(' ', $parts),
+			'itemlink' => 'index.php?option=com_admintools&view=WAFBlacklistedRequests&task=edit&id=' . $model->id
+		];
 
-		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_EDIT', 'com_admintools');
+		$this->container->platform->logUserAction($message, 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_EDIT', 'com_admintools');
 	}
 
 	/**
@@ -416,9 +423,10 @@ class plgActionlogAdmintools extends CMSPlugin
 
 		foreach ($rows as $row)
 		{
-			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view : '(All)';
-			$parts[] = $row->query ? $row->query : '(All)';
+			$parts   = [];
+			$parts[] = $row->option ?: '(All)';
+			$parts[] = $row->view ?: '(All)';
+			$parts[] = $row->query ?: '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_PUBLISH', 'com_admintools');
 		}
@@ -442,9 +450,10 @@ class plgActionlogAdmintools extends CMSPlugin
 
 		foreach ($rows as $row)
 		{
-			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view : '(All)';
-			$parts[] = $row->query ? $row->query : '(All)';
+			$parts   = [];
+			$parts[] = $row->option ?: '(All)';
+			$parts[] = $row->view ?: '(All)';
+			$parts[] = $row->query ?: '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_UNPUBLISH', 'com_admintools');
 		}
@@ -468,9 +477,10 @@ class plgActionlogAdmintools extends CMSPlugin
 
 		foreach ($rows as $row)
 		{
-			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view : '(All)';
-			$parts[] = $row->query ? $row->query : '(All)';
+			$parts   = [];
+			$parts[] = $row->option ?: '(All)';
+			$parts[] = $row->view ?: '(All)';
+			$parts[] = $row->query ?: '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFBLACKLIST_DELETE', 'com_admintools');
 		}
@@ -484,13 +494,17 @@ class plgActionlogAdmintools extends CMSPlugin
 		/** @var \Akeeba\AdminTools\Admin\Model\ExceptionsFromWAF $model */
 		$model = $controller->getModel();
 
+		$parts   = [];
 		$parts[] = $model->option ? $model->option : '(All)';
-		$parts[] = $model->view ? $model->view : '(All)';
-		$parts[] = $model->query ? $model->query : '(All)';
+		$parts[] = $model->view ?: '(All)';
+		$parts[] = $model->query ?: '(All)';
 
-		$link = '<a href="index.php?option=com_admintools&view=ExceptionsFromWAF&task=edit&id=' . $model->id . '">' . implode(' ', $parts) . '</a>';
+		$message = [
+			'title'    => implode(' ', $parts),
+			'itemlink' => 'index.php?option=com_admintools&view=ExceptionsFromWAF&task=edit&id=' . $model->id
+		];
 
-		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WAFEXCEPTIONS_EDIT', 'com_admintools');
+		$this->container->platform->logUserAction($message, 'COM_ADMINTOOLS_LOGS_WAFEXCEPTIONS_EDIT', 'com_admintools');
 	}
 
 	/**
@@ -511,9 +525,10 @@ class plgActionlogAdmintools extends CMSPlugin
 
 		foreach ($rows as $row)
 		{
-			$parts[] = $row->option ? $row->option : '(All)';
-			$parts[] = $row->view ? $row->view : '(All)';
-			$parts[] = $row->query ? $row->query : '(All)';
+			$parts   = [];
+			$parts[] = $row->option ?: '(All)';
+			$parts[] = $row->view ?: '(All)';
+			$parts[] = $row->query ?: '(All)';
 
 			$this->container->platform->logUserAction(implode(' ', $parts), 'COM_ADMINTOOLS_LOGS_WAFEXCEPTIONS_DELETE', 'com_admintools');
 		}
@@ -527,9 +542,12 @@ class plgActionlogAdmintools extends CMSPlugin
 		/** @var \Akeeba\AdminTools\Admin\Model\WhitelistedAddresses $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=WhitelistedAddresses&task=edit&id=' . $model->id . '">' . $model->ip . '</a>';
+		$message = [
+			'title'    => $model->ip,
+			'itemlink' => 'index.php?option=com_admintools&view=WhitelistedAddresses&task=edit&id=' . $model->id
+		];
 
-		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WHITELISTEDADDRESSES_EDIT', 'com_admintools');
+		$this->container->platform->logUserAction($message, 'COM_ADMINTOOLS_LOGS_WHITELISTEDADDRESSES_EDIT', 'com_admintools');
 	}
 
 	/**
@@ -562,9 +580,12 @@ class plgActionlogAdmintools extends CMSPlugin
 		/** @var \Akeeba\AdminTools\Admin\Model\BlacklistedAddresses $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=BlacklistedAddresses&task=edit&id=' . $model->id . '">' . $model->ip . '</a>';
+		$message = [
+			'title'    => $model->ip,
+			'itemlink' => 'index.php?option=com_admintools&view=BlacklistedAddresses&task=edit&id=' . $model->id
+		];
 
-		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_BLACKLISTEDADDRESSES_EDIT', 'com_admintools');
+		$this->container->platform->logUserAction($message, 'COM_ADMINTOOLS_LOGS_BLACKLISTEDADDRESSES_EDIT', 'com_admintools');
 	}
 
 	/**
@@ -676,9 +697,12 @@ class plgActionlogAdmintools extends CMSPlugin
 		/** @var \Akeeba\AdminTools\Admin\Model\WAFEmailTemplates $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=WAFEmailTemplates&task=edit&id=' . $model->admintools_waftemplate_id . '">' . $model->subject . '</a>';
+		$message = [
+			'title'    => $model->subject,
+			'itemlink' => 'index.php?option=com_admintools&view=WAFEmailTemplates&task=edit&id=' . $model->admintools_waftemplate_id
+		];
 
-		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_WAFEMAILTEMPLATES_EDIT', 'com_admintools');
+		$this->container->platform->logUserAction($message, 'COM_ADMINTOOLS_LOGS_WAFEMAILTEMPLATES_EDIT', 'com_admintools');
 	}
 
 	/**
@@ -711,9 +735,12 @@ class plgActionlogAdmintools extends CMSPlugin
 		/** @var \Akeeba\AdminTools\Admin\Model\Redirections $model */
 		$model = $controller->getModel();
 
-		$link = '<a href="index.php?option=com_admintools&view=Redirections&task=edit&id=' . $model->id . '">' . $model->dest . '</a>';
+		$message = [
+			'title'    => $model->dest,
+			'itemlink' => 'index.php?option=com_admintools&view=Redirections&task=edit&id=' . $model->id
+		];
 
-		$this->container->platform->logUserAction($link, 'COM_ADMINTOOLS_LOGS_REDIRECTIONS_EDIT', 'com_admintools');
+		$this->container->platform->logUserAction($message, 'COM_ADMINTOOLS_LOGS_REDIRECTIONS_EDIT', 'com_admintools');
 	}
 
 	/**

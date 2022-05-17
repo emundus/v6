@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   FOF
- * @copyright Copyright (c)2010-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 2, or later
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace FOF40\Container;
@@ -386,11 +386,7 @@ class Container extends ContainerBase
 		}
 
 		// Input Access service
-		if (isset($this['input']) &&
-			(!(is_object($this['input'])) ||
-				!($this['input'] instanceof FOFInput) ||
-				!($this['input'] instanceof JoomlaInput))
-		)
+		if (isset($this['input']) && is_array($this['input']))
 		{
 			if (empty($this['input']))
 			{

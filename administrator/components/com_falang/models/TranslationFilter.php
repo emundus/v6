@@ -1418,6 +1418,13 @@ class TranslateParams_fields extends TranslateParams_xml
 			//fix bug with easyblog
 			$translation = json_decode($translation,true);
 		}
+		//3.10.3 try to fix when a new value exist in original or original changed.
+        //the value of each option is the key because not modified.
+        if (isset($original) && !empty($original)){
+	        $original = json_decode($original,true);
+        }
+		$translation = $this->update_translation($translation,$original);
+
 		$translationFieldModelForm = $this->trans_modelItem->getForm();
 		if (isset($translation->jfrequest)){
 			$translationFieldModelForm->bind(array("fieldparams" => $translation, "request" =>$translation->jfrequest));
@@ -1433,6 +1440,43 @@ class TranslateParams_fields extends TranslateParams_xml
 		$this->transparams = new JFFieldsParams($translationFieldModelForm, $this->trans_modelItem->getItem());
 
 	}
+
+	/*
+	 * update translation for options only (checkbox)
+	 * @since 3.10.3
+	 * */
+    private function update_translation($translation,$original){
+	    $updated_translation = array();
+	    $idx = 0;
+	    if (array_key_first($original) != 'options'){
+	        return $translation;
+        }
+
+	    foreach ($original['options'] as $name => $item){
+	        if ($this->visit($item['value'],$translation['options'])){
+	            $key = $this->visit($item['value'],$translation['options']);
+			    $updated_translation['options']['options'.$idx] =$translation['options'][$key];
+            } else {
+		        $updated_translation['options']['options'.$idx] = $item;
+            }
+	        $idx++;
+        }
+
+	    return $updated_translation;
+    }
+
+    /*
+     * look in all options if the value exist (translation change the key not the value
+     * $return $key where the translation is to make the right copy
+     * */
+    private function visit($value,$options){
+        foreach ($options as $key => $item){
+            if ($item['value'] == $value){
+                return $key;
+            }
+        }
+        return false;
+    }
 
 	function showOriginal()
 	{

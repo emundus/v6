@@ -105,7 +105,8 @@ class EmundusModelEmails extends JModelList {
         });
 
         $emails_tmpl = array();
-        if (count($triggers) > 0) {
+
+        if (!empty($triggers) && !empty($triggers[0]->id)) {
             foreach ($triggers as $trigger) {
                 // email tmpl
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;

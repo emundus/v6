@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -48,12 +48,15 @@ class PlgSystemRegularLabsInstallerScriptHelper
 			return;
 		}
 
+		$language_string = $this->install_type == 'update'
+			? 'RLI_THE_EXTENSION_HAS_BEEN_UPDATED_SUCCESSFULLY'
+			: 'RLI_THE_EXTENSION_HAS_BEEN_INSTALLED_SUCCESSFULLY';
+
 		JFactory::getApplication()->enqueueMessage(
 			JText::sprintf(
-				$this->install_type == 'update' ? 'RLI_THE_EXTENSION_HAS_BEEN_UPDATED_SUCCESSFULLY' : 'RLI_THE_EXTENSION_HAS_BEEN_INSTALLED_SUCCESSFULLY',
+				$language_string,
 				'<strong>' . JText::_($this->name) . '</strong>',
-				'<strong>' . $this->getVersion() . '</strong>',
-				$this->getFullType()
+				'<strong>' . $this->getVersion() . '</strong>'
 			), 'success'
 		);
 	}
@@ -386,6 +389,11 @@ class PlgSystemRegularLabsInstallerScriptHelper
 
 	public function onAfterInstall($route)
 	{
+		if ($this->extension_type == 'component')
+		{
+			$this->fixAssetsRules();
+		}
+
 		return true;
 	}
 
@@ -473,6 +481,12 @@ class PlgSystemRegularLabsInstallerScriptHelper
 
 	public function publishExtension($route)
 	{
+		if ($this->extension_type == 'module')
+		{
+			// Force enable administrator module extension to solve disabled J3 modules on J4 setups
+			$this->enableAdministratorModuleExtension();
+		}
+
 		if ($route == 'update'
 			&& $this->installed_joomla_version >= $this->current_joomla_version
 		)
@@ -490,6 +504,18 @@ class PlgSystemRegularLabsInstallerScriptHelper
 				$this->publishModule();
 				break;
 		}
+	}
+
+	public function enableAdministratorModuleExtension()
+	{
+		$query = $this->db->getQuery(true)
+			->update('#__extensions')
+			->set($this->db->quoteName('enabled') . ' = 1')
+			->where($this->db->quoteName('type') . ' = ' . $this->db->quote('module'))
+			->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_' . $this->extname))
+			->where($this->db->quoteName('client_id') . ' = 1');
+		$this->db->setQuery($query);
+		$this->db->execute();
 	}
 
 	public function publishModule()

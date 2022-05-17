@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -80,43 +80,11 @@ class CacheNew
 	}
 
 	/**
-	 * @return null|mixed
+	 * @return bool
 	 */
-	public function get()
+	private function existsMemory()
 	{
-		return $this->use_files
-			? $this->getFile()
-			: $this->getMemory();
-	}
-
-	/**
-	 * @param $data
-	 *
-	 * @return mixed
-	 */
-	public function set($data)
-	{
-		return $this->use_files
-			? $this->setFile($data)
-			: $this->setMemory($data);
-	}
-
-	/**
-	 * @param int  $time_to_life_in_minutes
-	 * @param bool $force_caching
-	 *
-	 * @return $this
-	 */
-	public function useFiles($time_to_life_in_minutes = 0, $force_caching = true)
-	{
-		$this->use_files = true;
-
-		// convert ttl to minutes
-		$this->time_to_life_in_seconds = $time_to_life_in_minutes * 60;
-
-		$this->force_caching = $force_caching;
-
-		return $this;
+		return isset(static::$cache[$this->id]);
 	}
 
 	/**
@@ -131,34 +99,6 @@ class CacheNew
 
 		return $this->getFileCache()->contains($this->id);
 	}
-
-	/**
-	 * @return bool
-	 */
-	private function existsMemory()
-	{
-		return isset(static::$cache[$this->id]);
-	}
-
-	/**
-	 * @return false|mixed
-	 * @throws Exception
-	 */
-	private function getFile()
-	{
-		if ($this->existsMemory())
-		{
-			return $this->getMemory();
-		}
-
-		$data = $this->getFileCache()->get($this->id);
-
-		$this->setMemory($data);
-
-		return $data;
-	}
-
-	// Get the cached object from the Joomla cache
 
 	/**
 	 * @return JCacheController
@@ -193,6 +133,34 @@ class CacheNew
 	/**
 	 * @return null|mixed
 	 */
+	public function get()
+	{
+		return $this->use_files
+			? $this->getFile()
+			: $this->getMemory();
+	}
+
+	/**
+	 * @return false|mixed
+	 * @throws Exception
+	 */
+	private function getFile()
+	{
+		if ($this->existsMemory())
+		{
+			return $this->getMemory();
+		}
+
+		$data = $this->getFileCache()->get($this->id);
+
+		$this->setMemory($data);
+
+		return $data;
+	}
+
+	/**
+	 * @return null|mixed
+	 */
 	private function getMemory()
 	{
 		if ( ! $this->existsMemory())
@@ -203,6 +171,32 @@ class CacheNew
 		$data = static::$cache[$this->id];
 
 		return is_object($data) ? clone $data : $data;
+	}
+
+	// Get the cached object from the Joomla cache
+
+	/**
+	 * @param mixed $data
+	 *
+	 * @return mixed
+	 */
+	private function setMemory($data)
+	{
+		static::$cache[$this->id] = $data;
+
+		return $data;
+	}
+
+	/**
+	 * @param $data
+	 *
+	 * @return mixed
+	 */
+	public function set($data)
+	{
+		return $this->use_files
+			? $this->setFile($data)
+			: $this->setMemory($data);
 	}
 
 	/**
@@ -226,14 +220,20 @@ class CacheNew
 	}
 
 	/**
-	 * @param mixed $data
+	 * @param int  $time_to_life_in_minutes
+	 * @param bool $force_caching
 	 *
-	 * @return mixed
+	 * @return $this
 	 */
-	private function setMemory($data)
+	public function useFiles($time_to_life_in_minutes = 0, $force_caching = true)
 	{
-		static::$cache[$this->id] = $data;
+		$this->use_files = true;
 
-		return $data;
+		// convert ttl to minutes
+		$this->time_to_life_in_seconds = $time_to_life_in_minutes * 60;
+
+		$this->force_caching = $force_caching;
+
+		return $this;
 	}
 }
