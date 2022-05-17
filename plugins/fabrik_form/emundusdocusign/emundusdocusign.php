@@ -97,10 +97,6 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		$student = JFactory::getSession()->get('emundusUser');
 		$fnum = $m_files->getFnumInfos($student->fnum);
 
-		// These tags will be used for generating signer names and emails programmatically.
-		$post = ['USER_NAME' => $student->name, 'USER_EMAIL' => $student->email];
-		$tags = $m_emails->setTags($student->id, $post, $fnum, '', $signer_name_1.$signer_name_2.signer_name_3);
-
 		// Docusign OAuth credentials are saved in the plugin's params.
 		$host = $this->getParam('host');
 
@@ -130,7 +126,11 @@ class PlgFabrik_FormEmundusdocusign extends plgFabrik_Form {
 		$signer_name_3 = $this->getParam('signer_name_3');
 		$signer_email_3 = $this->getParam('signer_email_3');
 
-		$signers = [];
+        // These tags will be used for generating signer names and emails programmatically.
+        $post = ['USER_NAME' => $student->name, 'USER_EMAIL' => $student->email];
+        $tags = $m_emails->setTags($student->id, $post, $fnum, '', $signer_name_1.$signer_name_2.$signer_name_3);
+
+        $signers = [];
 		if (!empty($signer_name_1) && !empty($signer_email_1)) {
 
 			// Parse the name and email of the signer using tags.
