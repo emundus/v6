@@ -62,7 +62,7 @@ if($valide == 1) {
         //
     	$email  = $emails->getEmail("csc_new_thesis_validated");
         $mailer = JFactory::getMailer();
-        $tags = $emails->setTags($thesis_supervisor_user_id, $post);
+        $tags = $emails->setTags($thesis_supervisor_user_id, $post, null, '', $email->emailfrom.$email->name.$email->subject.$email->message);
         // Mail 
         $from      = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
         $from_id   = 62;

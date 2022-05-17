@@ -587,7 +587,6 @@ class EmundusModelApplication extends JModelList
     {
         $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
         $nb = 0;
-        $formLst = array();
 
         if (empty($forms)) {
             return 100;
@@ -599,8 +598,6 @@ class EmundusModelApplication extends JModelList
             $cpt = $this->_db->loadResult();
             if ($cpt == 1) {
                 $nb++;
-            } else {
-                $formLst[] = $form->label;
             }
         }
 
@@ -616,6 +613,37 @@ class EmundusModelApplication extends JModelList
             ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
         $this->_db->setQuery($query);
         return $this->_db->execute();
+    }
+
+
+    public function getFilesProgress($fnum = null)
+    {
+        if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
+            return false;
+        }
+
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        if (!is_array($fnum)) {
+            $fnum = [$fnum];
+        }
+
+        $result = array();
+        foreach ($fnum as $f) {
+            $query->clear()
+                ->select('attachment_progress, form_progress')
+                ->from('#__emundus_campaign_candidature')
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+            $db->setQuery($query);
+
+            $progress = $db->loadObject();
+
+            $result['attachments'][$f] = $progress->attachment_progress;
+            $result['forms'][$f] = $progress->form_progress;
+        }
+
+        return $result;
     }
 
     /**

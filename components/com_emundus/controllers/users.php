@@ -146,12 +146,9 @@ class EmundusControllerUsers extends JControllerLegacy {
 		}
 
 		$mailer = JFactory::getMailer();
-		if ($ldap == 0) {
-			$post = array('PASSWORD' => $password);
-			$tags = $m_emails->setTags($user->id, $post, null, $password);
-		} else {
-			$tags = $m_emails->setTags($user->id, array(), null, null);
-		}
+        $pswd = $ldap == 0 ? $password : null;
+        $post = $ldap == 0 ? array('PASSWORD' => $pswd) : array();
+        $tags = $m_emails->setTags($user->id, $post, null, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
 
         $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
         $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
@@ -738,7 +735,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 
                 if ($c_messages != true) {
                     $msg = JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT');
-
                 } else {
                     $msg = JText::_('COM_EMUNDUS_USER_REGENERATE_PASSWORD_SUCCESS');
                 }

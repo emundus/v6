@@ -144,7 +144,6 @@ class PlgFabrik_Cronemundusglobalrecall extends PlgFabrik_Cron {
                                 $fnumList .= '<li><p>'.$fnum.'</p></li>';
                             }
                             $fnumList .= '</ul>';
-                            //$post = $m_emails->setTags($user->id);
 
                             if (!empty($params->get('logo')->custom->image)) {
                                 $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);

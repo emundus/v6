@@ -113,7 +113,7 @@ class PlgFabrik_Cronemundusrecall extends PlgFabrik_Cron {
                     'FIRSTNAME' => $applicant->firstname,
                     'LASTNAME' => strtoupper($applicant->lastname)
                 );
-                $tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum);
+                $tags = $m_emails->setTags($applicant->id, $post, $applicant->fnum, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
                 $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
                 $from_id = 62;

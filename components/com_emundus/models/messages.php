@@ -197,37 +197,18 @@ class EmundusModelMessages extends JModelList {
      * Gets a message template.
      *
      * @param Mixed The ID or label of the email.
-     * @param Bool Whether or not to also get the candidate file attachments linked to this template, this is an option use for compatibility because some DBs may not have this table.
-     * @param Bool Whether or not to also get the letter attachments linked to this template.
      * @return Object The email we seek, false if none is found.
      */
-    function getEmail($id, $candidateAttachments = false, $letterAttachments = false) {
-
+    function getEmail($id) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $select = 'e.*, et.*, GROUP_CONCAT(etr.tags) as tags';
-
-        if ($candidateAttachments) {
-            $select .= ', GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
-        }
-
-        if ($letterAttachments) {
-            $select .= ', GROUP_CONCAT(la.letter_attachment) AS letter_attachments';
-        }
-
-        $query->select($select)
+        $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments')
             ->from($db->quoteName('#__emundus_setup_emails','e'))
             ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'));
-
-        if ($candidateAttachments) {
-            $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
-        }
-
-        if ($letterAttachments) {
-            $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
-        }
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
 
         // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
         if (is_numeric($id)) {
@@ -238,13 +219,11 @@ class EmundusModelMessages extends JModelList {
 
 
         try {
-
             $db->setQuery($query);
             return $db->loadObject();
-
         } catch (Exception $e) {
             JLog::add('Error getting template in model/messages at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
+            return new stdClass;
         }
 
     }
@@ -1171,8 +1150,9 @@ class EmundusModelMessages extends JModelList {
                 /// get message template from attachment list
                 $query->clear()
 //                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
-                    ->select('distinct #__emundus_setup_emails.*')
+                    ->select('distinct jos_emundus_setup_emails.*, jos_emundus_email_templates.Template')
                     ->from($db->quoteName('#__emundus_setup_emails'))
+                    ->leftJoin($db->quoteName('#__emundus_email_templates') . ' ON ' . $db->quoteName('#__emundus_email_templates.id') . ' = ' . $db->quoteName('#__emundus_setup_emails.email_tmpl'))
                     ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
                     ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
 
