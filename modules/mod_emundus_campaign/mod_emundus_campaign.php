@@ -133,7 +133,7 @@ $pastCampaign       = $helper->getPast($condition, $mod_em_campaign_get_teaching
 $futurCampaign      = $helper->getFutur($condition, $mod_em_campaign_get_teaching_unity);
 $allCampaign        = $helper->getProgram($condition, $mod_em_campaign_get_teaching_unity);
 
-if ($params->get('mod_em_campaign_layout') == "single_campaign.php" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign.php") {
+if ($params->get('mod_em_campaign_layout') == "single_campaign" || $params->get('mod_em_campaign_layout') == "tchooz_single_campaign") {
 // FAQ
     $faq_articles = $helper->getFaq();
 

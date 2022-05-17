@@ -2909,8 +2909,8 @@ class EmundusControllerFiles extends JControllerLegacy
                     'FNUM' => $fnum,
                     'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                 );
-                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum, '', $application_form_name);
                 $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
+                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum, '', $application_form_name);
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
                 $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 
