@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -53,66 +53,6 @@ class DB
 		return '(' . implode(' ' . $glue . ' ', $conditions) . ')';
 	}
 
-	public static function getOperator(&$value, $default = '=')
-	{
-		if (empty($value))
-		{
-			return $default;
-		}
-
-		if (is_array($value))
-		{
-			$value = array_values($value);
-
-			$operator = self::getOperatorFromValue($value[0], $default);
-
-			// remove operators from other array values
-			foreach ($value as &$val)
-			{
-				$val = self::removeOperator($val);
-			}
-
-			return $operator;
-		}
-
-		$operator = self::getOperatorFromValue($value, $default);
-
-		$value = self::removeOperator($value);
-
-		return $operator;
-	}
-
-	public static function getOperatorFromValue($value, $default = '=')
-	{
-		$regex = '^' . RegEx::quote(self::getOperators(), 'operator');
-
-		if ( ! RegEx::match($regex, $value, $parts))
-		{
-			return $default;
-		}
-
-		$operator = $parts['operator'];
-
-		switch ($operator)
-		{
-			case '!':
-			case '!NOT!':
-				$operator = '!=';
-				break;
-
-			case '==':
-				$operator = '=';
-				break;
-		}
-
-		return $operator;
-	}
-
-	public static function getOperators()
-	{
-		return ['!NOT!', '!=', '!', '<>', '<=', '<', '>=', '>', '=', '=='];
-	}
-
 	/**
 	 * Create an IN statement
 	 * Reverts to a simple equals statement if array just has 1 value
@@ -148,21 +88,33 @@ class DB
 		return ' ' . $operator . ' (' . $values . ')';
 	}
 
-	/**
-	 * Create an LIKE statement
-	 *
-	 * @param string $value
-	 *
-	 * @return string
-	 */
-	public static function like($value)
+	public static function getOperator(&$value, $default = '=')
 	{
-		$operator = self::getOperator($value);
-		$value    = str_replace('*', '%', self::prepareValue($value));
+		if (empty($value))
+		{
+			return $default;
+		}
 
-		$operator = $operator == '!=' ? 'NOT LIKE' : 'LIKE';
+		if (is_array($value))
+		{
+			$value = array_values($value);
 
-		return ' ' . $operator . ' ' . $value;
+			$operator = self::getOperatorFromValue($value[0], $default);
+
+			// remove operators from other array values
+			foreach ($value as &$val)
+			{
+				$val = self::removeOperator($val);
+			}
+
+			return $operator;
+		}
+
+		$operator = self::getOperatorFromValue($value, $default);
+
+		$value = self::removeOperator($value);
+
+		return $operator;
 	}
 
 	public static function prepareValue($value, $handle_now = false)
@@ -194,11 +146,59 @@ class DB
 		return JFactory::getDbo()->quote($value);
 	}
 
+	public static function getOperatorFromValue($value, $default = '=')
+	{
+		$regex = '^' . RegEx::quote(self::getOperators(), 'operator');
+
+		if ( ! RegEx::match($regex, $value, $parts))
+		{
+			return $default;
+		}
+
+		$operator = $parts['operator'];
+
+		switch ($operator)
+		{
+			case '!':
+			case '!NOT!':
+				$operator = '!=';
+				break;
+
+			case '==':
+				$operator = '=';
+				break;
+		}
+
+		return $operator;
+	}
+
 	public static function removeOperator($string)
 	{
 		$regex = '^' . RegEx::quote(self::getOperators(), 'operator');
 
 		return RegEx::replace($regex, '', $string);
+	}
+
+	public static function getOperators()
+	{
+		return ['!NOT!', '!=', '!', '<>', '<=', '<', '>=', '>', '=', '=='];
+	}
+
+	/**
+	 * Create an LIKE statement
+	 *
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public static function like($value)
+	{
+		$operator = self::getOperator($value);
+		$value    = str_replace('*', '%', self::prepareValue($value));
+
+		$operator = $operator == '!=' ? 'NOT LIKE' : 'LIKE';
+
+		return ' ' . $operator . ' ' . $value;
 	}
 
 	/**

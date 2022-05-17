@@ -1499,6 +1499,7 @@ class EmundusModelEvaluation extends JModelList {
             $query .= ' WHERE c.fnum like '.$current_fnum;
         }
 
+        $query .= ' AND esc.published = 1 ';
 
         $query .= $q['q'];
         $query .= $group_by;
@@ -2586,7 +2587,7 @@ class EmundusModelEvaluation extends JModelList {
                             ];
 
                             // Generate PDF
-                            $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum);
+                            $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);

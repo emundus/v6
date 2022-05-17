@@ -1,22 +1,22 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Controller;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\AdminTools\Admin\Model\TempSuperUsers as TempSuperUsersModel;
 use DateInterval;
 use Exception;
-use FOF30\Container\Container;
-use FOF30\Controller\DataController;
-use FOF30\Controller\Mixin\PredefinedTaskList;
-use FOF30\Date\Date;
+use FOF40\Container\Container;
+use FOF40\Controller\DataController;
+use FOF40\Controller\Mixin\PredefinedTaskList;
+use FOF40\Date\Date;
 use Joomla\CMS\Language\Text;
 use RuntimeException;
 
@@ -158,6 +158,7 @@ class TempSuperUsers extends DataController
 
 			$model->setNoCheckFlags(true);
 			$user->save();
+			$model->addUserToSafeId($userID);
 			$model->setNoCheckFlags(false);
 		}
 	}

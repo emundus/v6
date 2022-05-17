@@ -21,7 +21,7 @@ $first_page = $m_application->getFirstPage('index.php', $fnums);
     <div class="<?= $moduleclass_sfx ?>">
         <?php foreach($applications as $application) : ?>
 
-            <?php $state=$states[$application->fnum]['published']; ?>
+            <?php $state=$application->published; ?>
 
             <?php if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
 

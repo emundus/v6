@@ -316,7 +316,7 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
                         'REFERENT_NAME'  => $recipient['name'],
                         'REFERENT_FIRST_NAME'  => $recipient['firstname']
                     ];
-                    $tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum);
+                    $tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum, '', $obj[0]->subject.$obj[0]->message);
                     $subject = $obj[0]->subject;
                     $body = $obj[0]->message;
 

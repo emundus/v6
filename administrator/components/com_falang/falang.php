@@ -14,13 +14,6 @@ if( !defined('DS') ) {
     define( 'DS', DIRECTORY_SEPARATOR );
 }
 
-//initialise liveupdate
-require_once JPATH_COMPONENT_ADMINISTRATOR.DS.'liveupdate'.DS.'liveupdate.php';
-if(JRequest::getCmd('view','') == 'liveupdate') {
-    LiveUpdate::handleRequest();
-    return;
-}
-
 // Access check.
 if (!JFactory::getUser()->authorise('core.manage', 'com_falang')) {
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));

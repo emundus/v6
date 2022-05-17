@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,7 +10,7 @@ namespace Akeeba\AdminTools\Admin\View\Mixin;
 use Akeeba\AdminTools\Admin\Model\ControlPanel;
 use AtsystemUtilRescueurl;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 /**
  * This trait defines the necessary properties for using the view template
@@ -77,7 +77,7 @@ trait SystemPluginExists
 		}
 
 		// Is the plugin enabled in the database?
-		$this->pluginActive = ((int) $cPanelModel->getPluginID()) != 0;
+		$this->pluginActive = (int) $cPanelModel->getPluginID() != 0;
 
 		if (!$this->pluginActive)
 		{

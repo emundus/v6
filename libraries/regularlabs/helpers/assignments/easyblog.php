@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -67,6 +67,39 @@ class RLAssignmentsEasyBlog extends RLAssignment
 		}
 
 		return $this->passSimple($cats);
+	}
+
+	private function getCategories()
+	{
+		switch ($this->request->view)
+		{
+			case 'entry' :
+				return $this->getCategoryIDFromItem();
+				break;
+
+			case 'categories' :
+				return $this->request->id;
+				break;
+
+			default:
+				return '';
+		}
+	}
+
+	private function getCatParentIds($id = 0)
+	{
+		return $this->getParentIds($id, 'easyblog_category', 'parent_id');
+	}
+
+	private function getCategoryIDFromItem()
+	{
+		$query = $this->db->getQuery(true)
+			->select('i.category_id')
+			->from('#__easyblog_post AS i')
+			->where('i.id = ' . (int) $this->request->id);
+		$this->db->setQuery($query);
+
+		return $this->db->loadResult();
 	}
 
 	public function passContentKeywords($fields = ['title', 'intro', 'content'], $text = '')
@@ -149,38 +182,5 @@ class RLAssignmentsEasyBlog extends RLAssignment
 		$tags = $this->db->loadColumn();
 
 		return $this->passSimple($tags, true);
-	}
-
-	private function getCatParentIds($id = 0)
-	{
-		return $this->getParentIds($id, 'easyblog_category', 'parent_id');
-	}
-
-	private function getCategories()
-	{
-		switch ($this->request->view)
-		{
-			case 'entry' :
-				return $this->getCategoryIDFromItem();
-				break;
-
-			case 'categories' :
-				return $this->request->id;
-				break;
-
-			default:
-				return '';
-		}
-	}
-
-	private function getCategoryIDFromItem()
-	{
-		$query = $this->db->getQuery(true)
-			->select('i.category_id')
-			->from('#__easyblog_post AS i')
-			->where('i.id = ' . (int) $this->request->id);
-		$this->db->setQuery($query);
-
-		return $this->db->loadResult();
 	}
 }

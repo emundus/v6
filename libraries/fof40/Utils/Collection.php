@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   FOF
- * @copyright Copyright (c)2010-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 2, or later
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace FOF40\Utils;
@@ -615,6 +615,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @return array
 	 */
+	#[ReturnTypeWillChange]
 	public function jsonSerialize(): array
 	{
 		return $this->toArray();
@@ -683,6 +684,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @return mixed
 	 */
+	#[ReturnTypeWillChange]
 	public function offsetGet($key)
 	{
 		return $this->items[$key];
@@ -696,6 +698,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @return void
 	 */
+	#[ReturnTypeWillChange]
 	public function offsetSet($key, $value)
 	{
 		if (is_null($key))
@@ -715,6 +718,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 	 *
 	 * @return void
 	 */
+	#[ReturnTypeWillChange]
 	public function offsetUnset($key)
 	{
 		unset($this->items[$key]);

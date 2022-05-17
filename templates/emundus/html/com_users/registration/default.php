@@ -51,7 +51,7 @@ foreach ($messages as $message) {
 			$mailer = JFactory::getMailer();
 			$email = $emails->getEmail("account_already_exists");
 			$post = array();
-			$tags = $emails->setTags($uid, $post, null, '');
+			$tags = $emails->setTags($uid, $post, null, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
 			//var_dump($jform);
 

@@ -1,22 +1,23 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Controller;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use Akeeba\AdminTools\Admin\Helper\ServerTechnology;
 use Akeeba\AdminTools\Admin\Model\MasterPassword;
 use Akeeba\AdminTools\Admin\Model\Updates;
 use Exception;
-use FOF30\Container\Container;
-use FOF30\Controller\Controller;
-use FOF30\Encrypt\Randval;
+use FOF40\Container\Container;
+use FOF40\Controller\Controller;
+use FOF40\Encrypt\Randval;
+use FOF40\Utils\ViewManifestMigration;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use RuntimeException;
@@ -32,7 +33,6 @@ class ControlPanel extends Controller
 		$this->predefinedTaskList = [
 			'browse',
 			'login',
-			'updateinfo',
 			'selfblocked',
 			'unblockme',
 			'applydlid',
@@ -44,7 +44,7 @@ class ControlPanel extends Controller
 			'renameMainPhp',
 			'ignoreServerConfigWarn',
 			'regenerateServerConfig',
-			'helloerror'
+			'helloerror',
 		];
 	}
 
@@ -74,6 +74,10 @@ class ControlPanel extends Controller
 		// Delete the old log files if logging is disabled
 		$model->deleteOldLogs();
 
+		// Migrate view manifest XML
+		ViewManifestMigration::migrateJoomla4MenuXMLFiles($this->container);
+		ViewManifestMigration::removeJoomla3LegacyViews($this->container);
+
 		// Refresh the update site definitions if required. Also takes into account any change of the Download ID
 		// in the Options.
 		/** @var Updates $updateModel */
@@ -98,46 +102,6 @@ class ControlPanel extends Controller
 		$this->setRedirect($url);
 	}
 
-	public function updateinfo()
-	{
-		/** @var Updates $updateModel */
-		$updateModel = $this->container->factory->model('Updates')->tmpInstance();
-		$updateInfo  = (object) $updateModel->getUpdates();
-
-		$result = '';
-
-		if ($updateInfo->hasUpdate)
-		{
-			$strings = [
-				'header'  => Text::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATEFOUND', $updateInfo->version),
-				'button'  => Text::sprintf('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATENOW', $updateInfo->version),
-				'infourl' => $updateInfo->infoURL,
-				'infolbl' => Text::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_MOREINFO'),
-			];
-
-			$result = <<<ENDRESULT
-	<div class="akeeba-block--warning">
-		<h3>
-			{$strings['header']}
-		</h3>
-		<p>
-			<a href="index.php?option=com_installer&view=Update" class="akeeba-btn--primary">
-				{$strings['button']}
-			</a>
-			<a href="{$strings['infourl']}" target="_blank" class="akeeba-btn--ghost">
-				{$strings['infolbl']}
-			</a>
-		</p>
-	</div>
-ENDRESULT;
-		}
-
-		echo '###' . $result . '###';
-
-		// Cut the execution short
-		$this->container->platform->closeApplication();
-	}
-
 	public function selfblocked()
 	{
 		$externalIP = $this->input->getString('ip', '');
@@ -154,6 +118,7 @@ ENDRESULT;
 
 	public function unblockme()
 	{
+		$unblockIP = [];
 		$unblockIP[] = $this->input->getString('ip', '');
 
 		/** @var \Akeeba\AdminTools\Admin\Model\ControlPanel $model */
@@ -217,20 +182,6 @@ ENDRESULT;
 		$this->setRedirect($url, $msg, $msgType);
 	}
 
-	public function reloadUpdateInformation()
-	{
-		$msg = null;
-
-		/** @var Updates $model */
-		$model = $this->container->factory->model('Updates')->tmpInstance();
-		$model->getUpdates(true);
-
-		$msg = Text::_('COM_ADMINTOOLS_MSG_CONTROLPANEL_UPDATE_INFORMATION_RELOADED');
-		$url = 'index.php?option=com_admintools';
-
-		$this->setRedirect($url, $msg);
-	}
-
 	/**
 	 * Resets the "updatedb" flag and forces the database updates
 	 */
@@ -277,7 +228,7 @@ ENDRESULT;
 			$customURL = base64_decode($customURL);
 		}
 
-		$returnUrl = $customURL ? $customURL : 'index.php?option=com_admintools&view=ControlPanel';
+		$returnUrl = $customURL ?: 'index.php?option=com_admintools&view=ControlPanel';
 
 		$this->setRedirect($returnUrl, $msg);
 	}
@@ -303,7 +254,7 @@ ENDRESULT;
 			$customURL = base64_decode($customURL);
 		}
 
-		$returnUrl = $customURL ? $customURL : 'index.php?option=com_admintools&view=ControlPanel';
+		$returnUrl = $customURL ?: 'index.php?option=com_admintools&view=ControlPanel';
 
 		$this->setRedirect($returnUrl);
 	}

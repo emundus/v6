@@ -197,7 +197,7 @@
 				<field
 						name="tags"
 						type="editor" width="50" filter="safehtml" hide="readmore,pagebreak"
-						default="N° [FNUM]"
+						default=""
 						label="MOD_EMUNDUS_TAGS"
 						description="MOD_EMUNDUS_TAGS_DESC">
 				</field>
@@ -208,7 +208,7 @@
 						label="MOD_EMUNDUS_VISIBLE_STATUS"
 						description=""
 						default="" />
-				<field 
+				<field
 					name="for_specific_profiles"
 					type="text"
 					label="MOD_EMUNDUS_SPECIFIC_PROFILES"

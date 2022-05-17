@@ -1,18 +1,18 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\View\TempSuperUsers;
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\AdminTools\Admin\Model\TempSuperUsers;
 use Akeeba\AdminTools\Admin\View\Mixin\SystemPluginExists;
-use FOF30\View\DataView\Html as BaseView;
+use FOF40\View\DataView\Html as BaseView;
 use Joomla\CMS\Language\Text;
 
 class Html extends BaseView

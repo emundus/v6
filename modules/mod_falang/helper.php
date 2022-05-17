@@ -311,6 +311,13 @@ abstract class modFaLangHelper
 		                    }
 	                    }
 
+	                    //fix for Creative contact form
+	                    if (isset($vars['option']) && $vars['option'] == 'com_creativecontactform'){
+		                    if (isset($vars['view']) && $vars['view'] == 'creativecontactform'){
+			                    unset($vars['form']);
+		                    }
+	                    }
+
                         $url = 'index.php?'.JURI::buildQuery($vars);
                         $language->link = JRoute::_($url);
 
@@ -481,14 +488,24 @@ abstract class modFaLangHelper
            return true;
     }
 
-    public static function isEditMode(){
-        $layout = JFactory::getApplication()->input->get('layout');
-        if ($layout == 'edit'){
-            return true;
-        } else {
-            return false;
-        }
-    }
+	/*
+	 * @since 4.0.2
+	 * Detect Edit mode for article or yootheme
+	 * */
+	public static function isEditMode(){
+		$return = false;
+		$layout = JFactory::getApplication()->input->get('layout');
+		if ($layout == 'edit'){
+			$return =  true;
+		}
+		//customizer is for yootheme
+		$customizer = JFactory::getApplication()->input->get('customizer');
+		if (!empty($customizer)){
+			$return =  true;
+		}
+
+		return $return;
+	}
 
     public static function mijosefToolEnabled() {
         //check mijosef
