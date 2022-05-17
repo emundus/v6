@@ -1551,7 +1551,7 @@ class EmundusModelEmails extends JModelList {
         } else if ($filter == 'Unpublish') {
             $filterDate = $this->_db->quoteName('se.published') . ' = 0';
         } else {
-            $filterDate = ('1');
+            $filterDate = $this->_db->quoteName('se.published') . ' = 1';
         }
 
         if (empty($recherche)) {

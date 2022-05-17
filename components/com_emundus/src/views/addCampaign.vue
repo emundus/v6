@@ -15,7 +15,7 @@
     </div>
 
     <div>
-      <form @submit.prevent="submit" v-if="ready">
+      <form @submit.prevent="submit" v-if="ready" class="fabrikForm">
         <div>
           <div class="em-red-500-color em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
@@ -27,6 +27,7 @@
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
+                class="form-control fabrikinput"
                 @focusout="onFormChange()"
             />
           </div>
@@ -42,6 +43,7 @@
                     v-model="form.start_date"
                     id="startDate"
                     type="datetime"
+                    class="em-w-100"
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
                     :input-id="'start_date'"
                     :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
@@ -56,6 +58,7 @@
                     v-model="form.end_date"
                     id="endDate"
                     type="datetime"
+                    class="em-w-100"
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') + ' *'"
                     :input-id="'end_date'"
                     :min-datetime="minDate"
@@ -110,6 +113,7 @@
                 id="campResume"
                 maxlength="500"
                 placeholder=" "
+                class="form-control fabrikinput"
                 v-model="form.short_description"
                 @keyup="checkMaxlength('campResume')"
                 @focusout="removeBorderFocus('campResume')"
@@ -142,7 +146,7 @@
           <div class="em-flex-row em-mb-16">
             <select
                 id="select_prog"
-                class="em-w-100"
+                class="form-control fabrikinput"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -169,6 +173,7 @@
                   <input
                       type="text"
                       id="prog_label"
+                      class="form-control fabrikinput"
                       placeholder=" "
                       v-model="programForm.label"
                       @keyup="updateCode"

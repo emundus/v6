@@ -23,7 +23,7 @@
 
       <div class="form-group" v-if="datepicker == 1 || datepicker == 2">
         <label>{{yearrange}}</label>
-        <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.birthday_forward"/>
+        <input type="text" id="format" class="em-w-100" v-model="element.params.birthday_forward"/>
         <label style="font-size: small">{{yeararrangetip}}</label>
       </div>
     </div>

@@ -401,3 +401,7 @@
 .vdatetime-input::placeholder {
   color: #9b9b9b;
 }
+
+.vdatetime-input{
+  width: 100%;
+}
