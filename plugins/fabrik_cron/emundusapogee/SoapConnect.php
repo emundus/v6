@@ -110,7 +110,8 @@ class SoapConnect {
                 'date_time' => date('Y-m-d H:i:s'),
                 'applicant_id' => $fnum_infos['applicant_id'],
                 'fnum'      => $fnum,
-                'status'    => 0
+                'status'    => 0,
+                'params'    => $e->getMessage()
             );
 
             JLog::add('[emundusApogee] Error when fetching data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
