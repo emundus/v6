@@ -651,7 +651,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
         'TRAINING_FEE' => @$courses_fee,
         'TRAINING_PERIODE' => @$courses_list
     ];
-    $tags = $m_emails->setTags($user_id, $post, $fnum, '');
+    $tags = $m_emails->setTags($user_id, $post, $fnum);
 
     foreach ($letters as $letter) {
         $attachment = $m_application->getAttachmentByID($letter['attachment_id']);

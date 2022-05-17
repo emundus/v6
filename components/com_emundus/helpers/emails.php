@@ -538,7 +538,7 @@ class EmundusHelperEmails {
 
             $body = preg_replace($tags['patterns'], $tags['replacements'], $message);
 
-            if(!empty($user->email)){
+            if (!empty($user->email)) {
                 // mail function
                 $mailer = JFactory::getMailer();
 
