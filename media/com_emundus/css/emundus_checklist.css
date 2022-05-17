@@ -273,11 +273,9 @@ button#back:hover, button#back:active, button#back:focus,
 #attachment_list_opt fieldset {
     background-color: #fff;
     box-shadow: none;
-}
-
-#attachment_list fieldset {
-    padding: 10px;
-    margin: 0 0 40px;
+    margin-bottom: 32px;
+    padding: 32px 24px 32px 24px;
+    border-radius: 16px !important;
     height: auto;
 }
 
@@ -340,10 +338,6 @@ button#back:hover, button#back:active, button#back:focus,
 #attachment_list_mand table td, #attachment_list_opt table td {
     border-top: none;
     white-space: normal;
-}
-
-#attachment_list_mand fieldset:hover, #attachment_list_opt fieldset:hover {
-    background-color: #fcfcfc;
 }
 
 #attachment_list_opt fieldset .description {
