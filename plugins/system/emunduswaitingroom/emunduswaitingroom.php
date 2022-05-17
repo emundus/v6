@@ -25,6 +25,14 @@ jimport( 'joomla.plugin.plugin' );
 class plgSystemEmunduswaitingroom extends JPlugin
 {
     /**
+     * Load the language file on instantiation.
+     *
+     * @var    boolean
+     * @since  3.1
+     */
+    protected $autoloadLanguage = true;
+
+    /**
      * Constructor
      *
      * For php4 compatability we must not use the __constructor as a constructor for plugins
@@ -38,8 +46,10 @@ class plgSystemEmunduswaitingroom extends JPlugin
      */
     function __construct(& $subject, $config)
     {
+        $lang = JFactory::getLanguage();
+        $lang->load('plg_emunduswaitingroom', dirname(__FILE__));
+
         parent::__construct($subject, $config);
-        $this->loadLanguage( );
     }
 
 
@@ -55,17 +65,18 @@ class plgSystemEmunduswaitingroom extends JPlugin
             $params = new JRegistry($plugin->params);
 
             $force_redirect = $params->get('force_redirect','1');
-            $redirection_url = $params->get('redirection_url','waiting-room.html');
+            $redirection_url = $params->get('redirection_url','waiting-queue');
             $message_displayed = $params->get('message_displayed','PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED');
             $max_sessions = $params->get('max_sessions','5000');
             $active_session = 0;
 
+            $db = JFactory::getDBo();
+            $query = $db->getQuery(true);
             try {
-                $db = JFactory::getDBo();
-                $query = $db->getQuery(true);
+
                 $query->select('count(userid)')
-                ->from($db->quoteName('#__session'))
-                ->where($db->quoteName('guest').' = 0');
+                    ->from($db->quoteName('#__session'))
+                    ->where($db->quoteName('guest').' = 0');
                 $db->setQuery($query);
                 $active_session = $db->loadResult();
             } catch (Exception $e) {
@@ -74,10 +85,9 @@ class plgSystemEmunduswaitingroom extends JPlugin
 
             if ($active_session > $max_sessions) {
                 if ($force_redirect) {
-                header('Location: '.JText::_($redirection_url));
-                        exit;
+                    $app->redirect('/'.$redirection_url);
                 } else {
-                        JFactory::getApplication()->enqueueMessage(JText::_($message_displayed), 'warning');
+                    $app->enqueueMessage(JText::_($message_displayed), 'warning');
                 }
             }
         }

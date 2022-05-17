@@ -14,6 +14,13 @@
 		<filename>index.html</filename>
 		<folder>language</folder>
 	</files>
+	<!-- Joomla! language tag -->
+	<languages>
+		<language tag="en-GB">en-GB.emunduswaitingroom.ini</language>
+		<language tag="en-GB">en-GB.emunduswaitingroom.sys.ini</language>
+		<language tag="fr-FR">fr-FR.plg_emunduswaitingroom.ini</language>
+		<language tag="fr-FR">fr-FR.plg_emunduswaitingroom.sys.ini</language>
+	</languages>
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
