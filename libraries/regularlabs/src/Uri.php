@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -56,41 +56,47 @@ class Uri
 	}
 
 	/**
-	 * Appends the given hash to the url or replaces it if there is already one
+	 * Parse a query string into an associative array.
 	 *
-	 * @param string $url
-	 * @param string $hash
+	 * @param string $string
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public static function appendHash($url = '', $hash = '')
+	private static function parse_query($string)
 	{
-		if (empty($hash))
+		$result = [];
+
+		if ($string === '')
 		{
-			return $url;
+			return $result;
 		}
 
-		$uri = parse_url($url);
+		$decoder = function ($value) {
+			return rawurldecode(str_replace('+', ' ', $value));
+		};
 
-		$uri['fragment'] = $hash;
-
-		return self::createUrlFromArray($uri);
-	}
-
-	public static function createCompressedAttributes($string)
-	{
-		$parameters = [];
-
-		$compressed   = base64_encode(gzdeflate($string));
-		$chunk_length = ceil(strlen($compressed) / 10);
-		$chunks       = str_split($compressed, $chunk_length);
-
-		foreach ($chunks as $i => $chunk)
+		foreach (explode('&', $string) as $kvp)
 		{
-			$parameters[] = 'rlatt_' . $i . '=' . urlencode($chunk);
+			$parts = explode('=', $kvp, 2);
+
+			$key   = $decoder($parts[0]);
+			$value = isset($parts[1]) ? $decoder($parts[1]) : null;
+
+			if ( ! isset($result[$key]))
+			{
+				$result[$key] = $value;
+				continue;
+			}
+
+			if ( ! is_array($result[$key]))
+			{
+				$result[$key] = [$result[$key]];
+			}
+
+			$result[$key][] = $value;
 		}
 
-		return implode('&', $parameters);
+		return $result;
 	}
 
 	/**
@@ -112,6 +118,22 @@ class Uri
 			. (! empty($uri['path']) ? $uri['path'] : '')
 			. (! empty($uri['query']) ? '?' . $uri['query'] : '')
 			. (! empty($uri['fragment']) ? '#' . $uri['fragment'] : '');
+	}
+
+	public static function createCompressedAttributes($string)
+	{
+		$parameters = [];
+
+		$compressed   = base64_encode(gzdeflate($string));
+		$chunk_length = ceil(strlen($compressed) / 10);
+		$chunks       = str_split($compressed, $chunk_length);
+
+		foreach ($chunks as $i => $chunk)
+		{
+			$parameters[] = 'rlatt_' . $i . '=' . urlencode($chunk);
+		}
+
+		return implode('&', $parameters);
 	}
 
 	public static function decode($string)
@@ -141,6 +163,28 @@ class Uri
 		}
 
 		return self::appendHash($url, $hash);
+	}
+
+	/**
+	 * Appends the given hash to the url or replaces it if there is already one
+	 *
+	 * @param string $url
+	 * @param string $hash
+	 *
+	 * @return string
+	 */
+	public static function appendHash($url = '', $hash = '')
+	{
+		if (empty($hash))
+		{
+			return $url;
+		}
+
+		$uri = parse_url($url);
+
+		$uri['fragment'] = $hash;
+
+		return self::createUrlFromArray($uri);
 	}
 
 	public static function getCompressedAttributes()
@@ -203,49 +247,5 @@ class Uri
 	public static function route($url)
 	{
 		return JRoute::_(JUri::root(true) . '/' . $url);
-	}
-
-	/**
-	 * Parse a query string into an associative array.
-	 *
-	 * @param string $string
-	 *
-	 * @return array
-	 */
-	private static function parse_query($string)
-	{
-		$result = [];
-
-		if ($string === '')
-		{
-			return $result;
-		}
-
-		$decoder = function ($value) {
-			return rawurldecode(str_replace('+', ' ', $value));
-		};
-
-		foreach (explode('&', $string) as $kvp)
-		{
-			$parts = explode('=', $kvp, 2);
-
-			$key   = $decoder($parts[0]);
-			$value = isset($parts[1]) ? $decoder($parts[1]) : null;
-
-			if ( ! isset($result[$key]))
-			{
-				$result[$key] = $value;
-				continue;
-			}
-
-			if ( ! is_array($result[$key]))
-			{
-				$result[$key] = [$result[$key]];
-			}
-
-			$result[$key][] = $value;
-		}
-
-		return $result;
 	}
 }

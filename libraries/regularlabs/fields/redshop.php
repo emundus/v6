@@ -1,17 +1,18 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
 defined('_JEXEC') or die;
 
 use RegularLabs\Library\DB as RL_DB;
+use RegularLabs\Library\FieldGroup;
 
 if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 {
@@ -20,7 +21,7 @@ if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 
 require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 
-class JFormFieldRL_RedShop extends \RegularLabs\Library\FieldGroup
+class JFormFieldRL_RedShop extends FieldGroup
 {
 	public $type = 'RedShop';
 
@@ -42,37 +43,6 @@ class JFormFieldRL_RedShop extends \RegularLabs\Library\FieldGroup
 		$items = $this->db->loadObjectList();
 
 		return $this->getOptionsTreeByList($items);
-	}
-
-	public function getProducts()
-	{
-		$query = $this->db->getQuery(true)
-			->select('COUNT(*)')
-			->from('#__redshop_product AS p')
-			->where('p.published > -1');
-		$this->db->setQuery($query);
-		$total = $this->db->loadResult();
-
-		if ($total > $this->max_list_count)
-		{
-			return -1;
-		}
-
-		$this->db->setQuery($this->getProductsQuery());
-		$list = $this->db->loadObjectList();
-
-		return $this->getOptionsByList($list, ['number', 'cat']);
-	}
-
-	protected function getInput()
-	{
-		$error = $this->missingFilesOrTables(['categories' => 'category', 'products' => 'product']);
-		if ($error)
-		{
-			return $error;
-		}
-
-		return $this->getSelectList();
 	}
 
 	private function getCategoriesQuery()
@@ -100,6 +70,26 @@ class JFormFieldRL_RedShop extends \RegularLabs\Library\FieldGroup
 		return $query;
 	}
 
+	public function getProducts()
+	{
+		$query = $this->db->getQuery(true)
+			->select('COUNT(*)')
+			->from('#__redshop_product AS p')
+			->where('p.published > -1');
+		$this->db->setQuery($query);
+		$total = $this->db->loadResult();
+
+		if ($total > $this->max_list_count)
+		{
+			return -1;
+		}
+
+		$this->db->setQuery($this->getProductsQuery());
+		$list = $this->db->loadObjectList();
+
+		return $this->getOptionsByList($list, ['number', 'cat']);
+	}
+
 	private function getProductsQuery()
 	{
 		$query = $this->db->getQuery(true)
@@ -123,5 +113,16 @@ class JFormFieldRL_RedShop extends \RegularLabs\Library\FieldGroup
 			->join('LEFT', '#__redshop_category AS c ON c.id = x.category_id');
 
 		return $query;
+	}
+
+	protected function getInput()
+	{
+		$error = $this->missingFilesOrTables(['categories' => 'category', 'products' => 'product']);
+		if ($error)
+		{
+			return $error;
+		}
+
+		return $this->getSelectList();
 	}
 }

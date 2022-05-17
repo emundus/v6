@@ -1,20 +1,20 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Controller;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Akeeba\AdminTools\Admin\Controller\Mixin\PredefinedTaskList;
 use Akeeba\AdminTools\Admin\Controller\Mixin\SendTroubleshootingEmail;
 use Exception;
-use FOF30\Container\Container;
-use FOF30\Controller\Controller;
+use FOF40\Container\Container;
+use FOF40\Controller\Controller;
 use Joomla\CMS\Language\Text;
 
 class AdminPassword extends Controller
@@ -48,6 +48,12 @@ class AdminPassword extends Controller
 		$password        = $this->input->get('password', '', 'raw', 2);
 		$password2       = $this->input->get('password2', '', 'raw', 2);
 		$resetErrorPages = $this->input->get('resetErrorPages', 1, 'int');
+		$mode            = $this->input->get('mode', 'everything', 'cmd');
+
+		if (!in_array($mode, ['joomla', 'php', 'everything']))
+		{
+			$mode = 'everything';
+		}
 
 		if (empty($username))
 		{
@@ -78,6 +84,7 @@ class AdminPassword extends Controller
 		$model->username        = $username;
 		$model->password        = $password;
 		$model->resetErrorPages = $resetErrorPages;
+		$model->mode            = $mode;
 
 		$status = $model->protect();
 		$url    = 'index.php?option=com_admintools';

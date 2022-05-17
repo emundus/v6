@@ -51,12 +51,11 @@ if (count($recipients) > 0) {
     $emails = new EmundusModelEmails;
 
     $post = array('FICHE_EMPLOI' => $intitule_poste, 'FICHE_ID' => $id);
-    $tags = $emails->setTags($user->id, $post);
     $email = $emails->getEmail("new_job");
 
     foreach ($recipients as $referent) {
         $mailer = JFactory::getMailer();
-        $tags = $emails->setTags($referent->id, $post);
+        $tags = $emails->setTags($referent->id, $post, null, '', $email->message);
         // Mail 
         $from = $user->email;
         $from_id = $user->id;

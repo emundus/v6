@@ -1,17 +1,17 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Exception;
-use FOF30\Container\Container;
-use FOF30\Update\Update;
+use FOF40\Container\Container;
+use FOF40\Update\Update;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 
@@ -71,7 +71,7 @@ class Updates extends Update
 	/**
 	 * Refreshes the update sites, removing obsolete update sites in the process
 	 */
-	public function refreshUpdateSite()
+	public function refreshUpdateSite(): void
 	{
 		// Remove any update sites for the old com_admintools package
 		$this->removeObsoleteComponentUpdateSites();
@@ -389,7 +389,7 @@ ENDBODY;
 				$db->q('') . ',' .
 				$db->q('') . ',' .
 				$db->q(0) . ',' .
-				$db->q($db->getNullDate()) . ',' .
+				(version_compare(JVERSION, '3.9999.9999', 'le') ? $db->q($db->getNullDate()) : 'NULL') . ',' .
 				$db->q(0) . ',' .
 				$db->q(0),
 			]);

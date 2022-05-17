@@ -62,7 +62,7 @@ if (count($recipients) > 0) {
     //
 	$email      = $emails->getEmail("csc_new_thesis");
     $mailer		= JFactory::getMailer();
-    $tags 		= $emails->setTags($user->id, $post);
+    $tags 		= $emails->setTags($user->id, $post, null, '', $email->emailfrom.$email->name.$email->subject.$email->message);
     // Mail 
     $from      = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
     $from_id   = 62;
@@ -100,7 +100,7 @@ if (count($recipients) > 0) {
     //
     $email  = $emails->getEmail("csc_new_thesis_info");
     $mailer = JFactory::getMailer();
-    $tags = $emails->setTags($user->id, $post);
+    $tags = $emails->setTags($user->id, $post, null, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
     $from      = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
     $from_id   = 62;
@@ -132,7 +132,7 @@ if (count($recipients) > 0) {
         $post['FIRSTNAME_DIRECTOR'] = $referent->firstname;
         $post['LASTNAME_DIRECTOR']  = $referent->lastname;
 
-		$tags = $emails->setTags($referent->id, $post);
+		$tags = $emails->setTags($referent->id, $post, null, '', $email_director->emailfrom.$email_director->name.$email_director->subject.$email_director->message);
 
 		// Mail 
 		$from      = preg_replace($tags['patterns'], $tags['replacements'], $email_director->emailfrom);

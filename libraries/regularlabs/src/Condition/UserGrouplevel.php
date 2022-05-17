@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -22,6 +22,8 @@ use RegularLabs\Library\DB as RL_DB;
  */
 class UserGrouplevel extends User
 {
+	static $user_group_children;
+
 	public function pass()
 	{
 		$user = JFactory::getApplication()->getIdentity() ?: JFactory::getUser();
@@ -48,6 +50,20 @@ class UserGrouplevel extends User
 		}
 
 		return $this->passSimple($groups);
+	}
+
+	private function setUserGroupChildrenIds()
+	{
+		$children = $this->getUserGroupChildrenIds($this->selection);
+
+		if ($this->params->inc_children == 2)
+		{
+			$this->selection = $children;
+
+			return;
+		}
+
+		$this->selection = array_merge($this->selection, $children);
 	}
 
 	private function convertUsergroupNamesToIds($selection)
@@ -85,21 +101,20 @@ class UserGrouplevel extends User
 		return array_unique(array_merge($selection, $group_ids));
 	}
 
+	private function passMatchAll($groups)
+	{
+		$pass = ! array_diff($this->selection, $groups) && ! array_diff($groups, $this->selection);
+
+		return $this->_($pass);
+	}
+
 	private function getUserGroupChildrenIds($groups)
 	{
 		$children = [];
 
-		$db = JFactory::getDbo();
-
 		foreach ($groups as $group)
 		{
-			$query = $db->getQuery(true)
-				->select($db->quoteName('id'))
-				->from($db->quoteName('#__usergroups'))
-				->where($db->quoteName('parent_id') . ' = ' . (int) $group);
-			$db->setQuery($query);
-
-			$group_children = $db->loadColumn();
+			$group_children = $this->getUserGroupChildrenIdsByGroup($group);
 
 			if (empty($group_children))
 			{
@@ -123,24 +138,34 @@ class UserGrouplevel extends User
 		return $children;
 	}
 
-	private function passMatchAll($groups)
+	private function getUserGroupChildrenIdsByGroup($group)
 	{
-		$pass = ! array_diff($this->selection, $groups) && ! array_diff($groups, $this->selection);
+		$group = (int) $group;
 
-		return $this->_($pass);
-	}
-
-	private function setUserGroupChildrenIds()
-	{
-		$children = $this->getUserGroupChildrenIds($this->selection);
-
-		if ($this->params->inc_children == 2)
+		if ( ! is_null(self::$user_group_children))
 		{
-			$this->selection = $children;
-
-			return;
+			return self::$user_group_children[$group] ?? [];
 		}
 
-		$this->selection = array_merge($this->selection, $children);
+		$db = JFactory::getDbo();
+
+		$query = $db->getQuery(true)
+			->select(['id', 'parent_id'])
+			->from($db->quoteName('#__usergroups'));
+		$db->setQuery($query);
+
+		$groups = $db->loadAssocList('id', 'parent_id');
+
+		foreach ($groups as $id => $parent)
+		{
+			if ( ! isset(self::$user_group_children[$parent]))
+			{
+				self::$user_group_children[$parent] = [];
+			}
+
+			self::$user_group_children[$parent][] = $id;
+		}
+
+		return self::$user_group_children[$group] ?? [];
 	}
 }

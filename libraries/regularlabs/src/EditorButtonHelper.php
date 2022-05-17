@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -39,6 +39,28 @@ class EditorButtonHelper
 		Document::style('regularlabs/style.min.css');
 	}
 
+	public function renderPopupButton($editor_name, $width = 0, $height = 0)
+	{
+		$button = new JObject;
+
+		$button->modal   = true;
+		$button->class   = 'btn rl_button_' . $this->_name;
+		$button->link    = $this->getPopupLink($editor_name);
+		$button->text    = $this->getButtonText();
+		$button->name    = $this->getIcon();
+		$button->options = $this->getPopupOptions($width, $height);
+
+		return $button;
+	}
+
+	public function getPopupLink($editor_name)
+	{
+		return 'index.php?rl_qp=1'
+			. '&folder=plugins.editors-xtd.' . $this->_name
+			. '&file=popup.php'
+			. '&name=' . $editor_name;
+	}
+
 	public function getButtonText()
 	{
 		$text_ini = strtoupper(str_replace(' ', '_', $this->params->button_text ?? $this->_name));
@@ -59,14 +81,6 @@ class EditorButtonHelper
 		return 'reglab icon-' . $icon;
 	}
 
-	public function getPopupLink($editor_name)
-	{
-		return 'index.php?rl_qp=1'
-			. '&folder=plugins.editors-xtd.' . $this->_name
-			. '&file=popup.php'
-			. '&name=' . $editor_name;
-	}
-
 	public function getPopupOptions($width = 0, $height = 0)
 	{
 		$width  = $width ?: 1600;
@@ -82,19 +96,5 @@ class EditorButtonHelper
 			. 'y:' . $height
 			. '}'
 			. '}';
-	}
-
-	public function renderPopupButton($editor_name, $width = 0, $height = 0)
-	{
-		$button = new JObject;
-
-		$button->modal   = true;
-		$button->class   = 'btn rl_button_' . $this->_name;
-		$button->link    = $this->getPopupLink($editor_name);
-		$button->text    = $this->getButtonText();
-		$button->name    = $this->getIcon();
-		$button->options = $this->getPopupOptions($width, $height);
-
-		return $button;
 	}
 }

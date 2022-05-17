@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -26,6 +26,19 @@ require_once dirname(__FILE__, 2) . '/assignment.php';
 class RLAssignmentsGeo extends RLAssignment
 {
 	var $geo = null;
+
+	/**
+	 * passContinents
+	 */
+	public function passContinents()
+	{
+		if ( ! $this->getGeo() || empty($this->geo->continentCode))
+		{
+			return $this->pass(false);
+		}
+
+		return $this->passSimple([$this->geo->continent, $this->geo->continentCode]);
+	}
 
 	public function getGeo($ip = '')
 	{
@@ -52,17 +65,21 @@ class RLAssignmentsGeo extends RLAssignment
 		return $this->geo;
 	}
 
-	/**
-	 * passContinents
-	 */
-	public function passContinents()
+	private function getGeoObject($ip)
 	{
-		if ( ! $this->getGeo() || empty($this->geo->continentCode))
+		if ( ! file_exists(JPATH_LIBRARIES . '/geoip/geoip.php'))
 		{
-			return $this->pass(false);
+			return false;
 		}
 
-		return $this->passSimple([$this->geo->continent, $this->geo->continentCode]);
+		require_once JPATH_LIBRARIES . '/geoip/geoip.php';
+
+		if ( ! class_exists('RegularLabs_GeoIp'))
+		{
+			return new GeoIp($ip);
+		}
+
+		return new RegularLabs_GeoIp($ip);
 	}
 
 	/**
@@ -112,22 +129,5 @@ class RLAssignmentsGeo extends RLAssignment
 		});
 
 		return $this->passSimple($regions);
-	}
-
-	private function getGeoObject($ip)
-	{
-		if ( ! file_exists(JPATH_LIBRARIES . '/geoip/geoip.php'))
-		{
-			return false;
-		}
-
-		require_once JPATH_LIBRARIES . '/geoip/geoip.php';
-
-		if ( ! class_exists('RegularLabs_GeoIp'))
-		{
-			return new GeoIp($ip);
-		}
-
-		return new RegularLabs_GeoIp($ip);
 	}
 }

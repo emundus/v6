@@ -65,7 +65,7 @@ if (!empty($applications)) {
 
         <?php
         $is_admission = in_array($application->status, $admission_status);
-        $state = $states[$application->fnum]['published'];
+        $state = $application->published;
         $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
         $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
     
@@ -84,7 +84,7 @@ if (!empty($applications)) {
                     'FNUM'          => $application->fnum
                 );
 
-                $tags = $m_email->setTags($user->id, $post, $application->fnum);
+                $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags);
                 $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
                 $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
                }

@@ -1,20 +1,21 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Exception;
-use FOF30\Model\Model;
+use FOF40\Model\Model;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
 use Joomla\Session\SessionInterface;
 use JSessionStorage;
+use ReflectionObject;
 
 class DatabaseTools extends Model
 {
@@ -78,11 +79,17 @@ class DatabaseTools extends Model
 		{
 			$table = array_shift($tables);
 
-			// First, check the table
-			$db->setQuery('CHECK TABLE ' . $db->qn($table));
-			$result = $db->loadObjectList();
-
+			// On Joomla 4 we cannot run CHECK TABLE. Therefore we have to assume it's not OK.
 			$isOK = false;
+			$result = null;
+
+			if (version_compare(JVERSION, '3.999.999', 'lt'))
+			{
+				// First, check the table
+				$this->executeUnpreparedQuery('CHECK TABLE ' . $db->qn($table));
+				$db->setQuery('CHECK TABLE ' . $db->qn($table));
+				$result = $db->loadObjectList();
+			}
 
 			if (!empty($result))
 			{
@@ -108,8 +115,7 @@ class DatabaseTools extends Model
 					echo "Repairing $table\n";
 				}
 
-				$db->setQuery('REPAIR TABLE ' . $db->qn($table));
-				$db->execute();
+				$this->executeUnpreparedQuery('REPAIR TABLE ' . $db->qn($table));
 			}
 
 			// Finally, optimize
@@ -118,8 +124,7 @@ class DatabaseTools extends Model
 				echo "Optimizing $table\n";
 			}
 
-			$db->setQuery('OPTIMIZE TABLE ' . $db->qn($table));
-			$db->execute();
+			$this->executeUnpreparedQuery('OPTIMIZE TABLE ' . $db->qn($table));
 		}
 
 		if (!count($tables))
@@ -161,14 +166,12 @@ class DatabaseTools extends Model
 
 		try
 		{
-			$db->setQuery('TRUNCATE TABLE ' . $db->qn('#__session'));
-			$db->execute();
+			$db->truncateTable('#__session');
 
 			$db->setQuery('DELETE FROM ' . $db->qn('#__session'));
 			$db->execute();
 
-			$db->setQuery('OPTIMIZE TABLE ' . $db->qn('#__session'));
-			$db->execute();
+			$this->executeUnpreparedQuery('OPTIMIZE TABLE ' . $db->qn('#__session'));
 		}
 		catch (Exception $e)
 		{
@@ -262,4 +265,44 @@ class DatabaseTools extends Model
 			// It's OK if we fail. No harm, no foul.
 		}
 	}
+
+	/**
+	 * Executes an unprepared SQL statement.
+	 *
+	 * The PDO driver doesn't distinguish between prepared and unprepared statements. Therefore we can just run anything
+	 * we please. The MySQLi driver, however, has a distinction between prepared and unprepared statements. We cannot
+	 * run certain SQL comments (such as OPTIMIZE and REPAIR) over a prepared statement. The MySQLi driver has a handy
+	 * method called executeUnpreparedStatement which is protected and which runs this kind of statements.
+	 *
+	 * This here method tries to figure out if the database driver object has that method and use it instead of the
+	 * prepared statement.
+	 *
+	 * @param $sql
+	 *
+	 * @return bool|mixed
+	 */
+	private function executeUnpreparedQuery($sql)
+	{
+		/** @var \JDatabaseDriver $db */
+		$db = $this->container->db;
+
+		if (version_compare(JVERSION, '3.999.999', 'le'))
+		{
+			return $db->setQuery($sql)->execute();
+		}
+
+		$refObj = new ReflectionObject($db);
+
+		try
+		{
+			$method = $refObj->getMethod('executeUnpreparedQuery');
+			$method->setAccessible(true);
+			return $method->invoke($db, $sql);
+		}
+		catch (\ReflectionException $e)
+		{
+			return $db->execute();
+		}
+	}
+
 }

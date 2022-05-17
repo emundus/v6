@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Language\Text as JText;
 use Joomla\Registry\Registry;
+use RegularLabs\Library\Field;
 
 if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 {
@@ -21,7 +22,7 @@ if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 
 require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 
-class JFormFieldRL_AccessLevel extends \RegularLabs\Library\Field
+class JFormFieldRL_AccessLevel extends Field
 {
 	public $type = 'AccessLevel';
 
@@ -41,20 +42,6 @@ class JFormFieldRL_AccessLevel extends \RegularLabs\Library\Field
 		return $this->selectList($options, $name, $value, $id, $size, $multiple);
 	}
 
-	protected function getAccessLevels($use_names = false)
-	{
-		$value = $use_names ? 'a.title' : 'a.id';
-
-		$query = $this->db->getQuery(true)
-			->select($value . ' as value, a.title as text')
-			->from('#__viewlevels AS a')
-			->group('a.id')
-			->order('a.ordering ASC');
-		$this->db->setQuery($query);
-
-		return $this->db->loadObjectList();
-	}
-
 	protected function getOptions($show_all = false, $use_names = false)
 	{
 		$options = $this->getAccessLevels($use_names);
@@ -69,6 +56,20 @@ class JFormFieldRL_AccessLevel extends \RegularLabs\Library\Field
 		}
 
 		return $options;
+	}
+
+	protected function getAccessLevels($use_names = false)
+	{
+		$value = $use_names ? 'a.title' : 'a.id';
+
+		$query = $this->db->getQuery(true)
+			->select($value . ' as value, a.title as text')
+			->from('#__viewlevels AS a')
+			->group('a.id')
+			->order('a.ordering ASC');
+		$this->db->setQuery($query);
+
+		return $this->db->loadObjectList();
 	}
 
 	protected function getInput()

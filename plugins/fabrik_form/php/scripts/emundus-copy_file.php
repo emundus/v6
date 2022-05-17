@@ -60,18 +60,21 @@ foreach ($fnums_from as $fnum_from) {
             $query = 'SELECT * FROM #__emundus_campaign_candidature WHERE fnum like ' . $db->Quote($fnum_from);
             $db->setQuery($query);
             $application_file = $db->loadAssoc();
-
+		    
             if (!empty($application_file)) {
-                $application_file['fnum'] = $fnum_to;
-                $application_file['copied'] = $copied;
-                unset($application_file['id']);
+		    	$application_file['fnum'] = $fnum_to;
+		    	$application_file['copied'] = $copied;
+                $application_file['user_id'] = $user->id;
+                $application_file['campaign_id'] = $campaign_id;
+                $application_file['status'] = $status;
+		    	unset($application_file['id']);
 
                 // 2. Copie definition of fnum for new file
-                $query = 'INSERT INTO #__emundus_campaign_candidature (`applicant_id`, `user_id`, `campaign_id`, `submitted`, `date_submitted`, `cancelled`, `fnum`, `status`, `published`, `copied`) 
-					VALUES (' . $application_file['applicant_id'] . ', ' . $user->id . ', ' . $campaign_id . ', ' . $db->Quote($application_file['submitted']) . ', ' . $db->Quote($application_file['date_submitted']) . ', ' . $application_file['cancelled'] . ', ' . $db->Quote($fnum_to) . ', ' . $status . ', 1, 1)';
+                $query = 'INSERT INTO #__emundus_campaign_candidature (`'.implode('`,`', array_keys($application_file)).'`)
+		    			VALUES ('.implode(',', $db->Quote($application_file)).')';
                 $db->setQuery($query);
                 $db->execute();
-            }
+		    }
 
             // 3. Duplicate file from new fnum
             include_once(JPATH_SITE . '/components/com_emundus/models/application.php');

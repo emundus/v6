@@ -226,7 +226,7 @@ class plgAuthenticationEmundus_Oauth2_cci extends JPlugin {
                 'USERNAME'      => $user['username']
             ];
 
-            $tags = $m_emails->setTags($user_id, $post);
+            $tags = $m_emails->setTags($user_id, $post, null, '', $template->subject.$template->message);
 
             // Tags are replaced with their corresponding values using the PHP preg_replace function.
             $subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
