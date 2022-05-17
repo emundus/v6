@@ -386,8 +386,7 @@ var FbFileUpload = {
             text: Joomla.JText._('PLG_ELEMENT_FIELD_SURE_TEXT'),
             type: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            reverseButtons: true,
             confirmButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CONFIRM'),
             confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue',
             cancelButtonText: Joomla.JText._('PLG_ELEMENT_FIELD_CANCEL'),
@@ -413,7 +412,11 @@ var FbFileUpload = {
                                 title: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE'),
                                 text: Joomla.JText._('PLG_ELEMENT_FIELD_DELETE_TEXT'),
                                 type: 'success',
-                                confirmButtonClass: 'btn btn-primary save-btn sauvegarder button save_continue'
+                                customClass: {
+                                    title: 'em-swal-title',
+                                    confirmButton: 'em-swal-confirm-button',
+                                    actions: "em-swal-single-action",
+                                }
                             });
                         }
                         document.querySelectorAll('div#'+elementId+'_attachment').forEach(element => {

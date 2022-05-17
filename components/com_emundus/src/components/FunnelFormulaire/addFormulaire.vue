@@ -178,6 +178,7 @@ export default {
 #select_profile{
   width: 23%;
   margin-right: 10px;
+  height: 50px;
 }
 </style>
 

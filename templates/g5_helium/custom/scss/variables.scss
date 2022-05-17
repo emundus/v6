@@ -1,4 +1,10 @@
 /** VARIABLES **/
+
+//Colors
+$em-green: #12DB42;
+$em-blue: #16afe1;
+$em-grey: #5A5A72;
+
 $light-blue: #26CAEA;
 $dark-blue: #16AFE1;
 $light-green: #32EE5F;
@@ -11,17 +17,7 @@ $grey: #B0B0BF;
 $light-grey: #F4F4F6;
 $white: #FFFFFF;
 
-$red: #e5283B;
-
-$complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
-$simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
-
-
-//Colors
-$em-green: #12DB42;
-$em-blue: #16afe1;
-$em-grey: #5A5A72;
-
+/*
 $neutral-100: #FFFFFF;
 $neutral-200: #F2F2F3;
 $neutral-300: #E3E5E8;
@@ -30,7 +26,18 @@ $neutral-500: #ACB1B9;
 $neutral-600: #8F96A3;
 $neutral-700: #5E646E;
 $neutral-800: #2B313B;
-$neutral-900: #080C12;
+$neutral-900: #080C12;*/
+
+$neutral-50: #FFFFFF;
+$neutral-100: #FAFAFA;
+$neutral-200: #F3F3F3;
+$neutral-300: #EDEDED;
+$neutral-400: #E3E3E3;
+$neutral-500: #A4A4A4;
+$neutral-600: #727272;
+$neutral-700: #4B4B4B;
+$neutral-800: #2B2B2B;
+$neutral-900: #000000;
 
 $main-100: #DFF5E9;
 $main-200: #CCEDE1;
@@ -73,6 +80,11 @@ $yellow-800: #805100;
 $yellow-900: #3E2200;
 
 
+$valid: #20835F;
+$focus: #1C6EF2;
+$red: #e5283B;
+
+
 // Padding
 $p-4: 4px;
 $p-8: 8px;
@@ -97,3 +109,263 @@ $m-56: 56px;
 $m-64: 64px;
 $m-72: 72px;
 $m-80: 80px;
+
+
+// Gradient
+$complete-gradient: linear-gradient(rgba(240,238,109,10), rgba(50,238,95,50), rgba(240,238,109,96));
+$simple-gradient: linear-gradient(rgba(240,238,109,5), rgba(240,238,109,120));
+
+
+// Font
+$font:'Inter', sans-serif;
+
+// Mixin - typo
+
+@mixin headline-1 {
+  font-family: $font;
+  font-size: 80px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 97px;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+@mixin headline-2 {
+  font-family: $font;
+  font-size: 64px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 77px;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+@mixin headline-3 {
+  font-family: $font;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 58px;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+@mixin headline-4 {
+  font-family: $font;
+  font-size: 32px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 39px;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+@mixin headline-5 {
+  font-family: $font;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 29px;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+@mixin headline-6 {
+  font-family: $font;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-align: left;
+}
+
+@mixin body-16 {
+  font-family: $font;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0.0015em;
+  text-align: left;
+}
+
+@mixin body-16-medium {
+  font-family: $font;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 19px;
+  letter-spacing: 0.0015em;
+  text-align: left;
+}
+
+@mixin body-16-semibold {
+  font-family: $font;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 19px;
+  letter-spacing: 0.0015em;
+  text-align: left;
+}
+
+@mixin body-14 {
+  font-family: $font;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 17px;
+  letter-spacing: 0.0025em;
+  text-align: left;
+}
+
+@mixin body-14-medium {
+  font-family: $font;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 17px;
+  letter-spacing: 0.0025em;
+  text-align: left;
+}
+
+@mixin body-14-semibold {
+  font-family: $font;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 17px;
+  letter-spacing: 0.0025em;
+  text-align: left;
+}
+
+@mixin caption {
+  font-family: $font;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 15px;
+  letter-spacing: 0.004em;
+  text-align: left;
+}
+
+@mixin overline {
+  font-family: $font;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 12px;
+  letter-spacing: 0.015em;
+  text-align: left;
+}
+
+// Mixin - form
+
+@mixin star {
+  font-family: $font;
+  font-size: 5px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0;
+  text-align: left;
+  position: relative;
+  top: -5px;
+  margin-right: -2px;
+  color: $red;
+}
+
+@mixin input-default {
+  height: 48px;
+  border-radius: 4px;
+  padding: 0 12px 0 12px;
+  border: 1px solid $neutral-400;
+  box-shadow: none;
+  margin-top: 12px;
+}
+
+@mixin input-focus {
+  border: 1px solid $focus;
+  box-shadow: none;
+}
+
+@mixin input-hover {
+  border: 1px solid $neutral-600;
+  box-shadow: none;
+}
+
+@mixin input-error {
+  border: 1px solid $red !important;
+  box-shadow: none;
+}
+
+@mixin input-valid {
+  border: 1px solid $valid;
+  box-shadow: none;
+}
+
+@mixin input-readonly {
+  background: $neutral-400;
+  border: 1px solid $neutral-400;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+@mixin select-default {
+  background-position-x: 98%;
+  background-position-y: 54%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow.svg);
+  background-size: 8px;
+  background-repeat: no-repeat;
+  height: 48px !important;
+}
+
+@mixin multiple-select {
+  background-position-x: 86%;
+  background-position-y: 54%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow.svg);
+  background-size: 8px;
+  background-repeat: no-repeat;
+  height: 48px !important;
+  padding: 0 16px;
+}
+
+@mixin select-button-default {
+  height: 48px !important;
+  background: $neutral-200;
+  border-radius: 4px 0 0 4px !important;
+  color: $neutral-800;
+}
+
+@mixin checkbox {
+  height: 16px !important;
+  width: 16px !important;
+  background: $neutral-200;
+  border-radius: 1px !important;
+  margin-right: 16px;
+  margin-top: 0;
+  border: 1px solid $neutral-600;
+  padding: 0 !important;
+}
+
+@mixin radio {
+  height: 14px !important;
+  width: 14px !important;
+  background: $neutral-50;
+  border-radius: 9px !important;
+  margin-right: 16px;
+  margin-top: 0;
+  border: 1px solid $neutral-600;
+  padding: 0!important;
+}
+
+@mixin yes-no {
+  padding: 12px;
+  margin-top: 12px;
+  box-shadow: none;
+}
+

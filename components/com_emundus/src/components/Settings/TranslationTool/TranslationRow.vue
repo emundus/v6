@@ -5,7 +5,7 @@
         <p>{{ field.reference_label.toUpperCase() }}</p>
         <div class="em-flex-space-between em-mt-16 em-grid-50 em-ml-24">
           <p class="em-neutral-700-color">{{ field.default_lang }}</p>
-          <input v-if="field.field_type === 'field'" class="mb-0 em-input" type="text" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
+          <input v-if="field.field_type === 'field'" class="mb-0 em-input em-w-100" type="text" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
           <textarea v-if="field.field_type === 'textarea'" class="mb-0 em-input" :value="field.lang_to" @focusout="saveTranslation($event.target.value,field)" />
         </div>
       </div>
