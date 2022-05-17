@@ -1566,7 +1566,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
-        $m_messages = new EmundusModelMessages();
         $m_emails = new EmundusModelEmails();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
@@ -1587,14 +1586,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         /// from fnum --> detect candidat email
         $fnum_info = $m_files->getFnumInfos($fnum);
-
-        $candidat_email = $fnum_info['email'];
-
-        /// get message recap by fnum --> reuse the function models/messages.php/getMessageRecapByFnum($fnum)
-//        $message = $m_messages->getMessageRecapByFnum($fnum);
-//
-//        $email_recap = $message['message_recap'];                   /// length = 1
-//        $letter_recap = $message['attached_letter'];                /// length >= 1
 
         // get programme info
         $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);

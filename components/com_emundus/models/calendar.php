@@ -409,9 +409,6 @@ class EmundusModelCalendar extends JModelLegacy {
             'PROGRAM'       => $label
         );
 
-        // An array containing the tag names is created.
-        $tags = $m_emails->setTags($user->id, $post, $user->fnum, '', $email->emailfrom.$email->subject.$email->message);
-
         $from_id = 62;
 
         if ($booked) {
@@ -419,6 +416,9 @@ class EmundusModelCalendar extends JModelLegacy {
         } else {
             $email = $m_emails->getEmail('booking_deleted_user');
         }
+
+        // An array containing the tag names is created.
+        $tags = $m_emails->setTags($user->id, $post, $user->fnum, '', $email->emailfrom . $email->subject . $email->message);
 
         // Tags are replaced with their corresponding values using the PHP preg_replace function.
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);

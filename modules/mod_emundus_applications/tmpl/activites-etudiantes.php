@@ -57,7 +57,7 @@ echo $description;
                     $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
                     if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0' ) : ?>
                         <?php
-                        if ($file_tags != '') {
+                        if (!empty($file_tags)) {
 
                             $post = array(
                                 'APPLICANT_ID'  => $user->id,

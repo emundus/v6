@@ -106,8 +106,8 @@ class PlgFabrik_Cronemundusreferentrecall extends PlgFabrik_Cron {
 
                     $referentEmails = $this->getFilesRequest($applicant->fnum,$applicant->attachment_id);
 
-                    foreach ($referentEmails as $referentEmail) {
 
+                    if (!empty($referentEmails)) {
                         $post = array(
                             'FNUM' => $applicant->fnum,
                             'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($applicant->end_date)),
@@ -124,12 +124,10 @@ class PlgFabrik_Cronemundusreferentrecall extends PlgFabrik_Cron {
                         $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
                         $from_id = 62;
                         $fromname = preg_replace($tags['patterns'], $tags['replacements'], $email->name);
-                        $to = $referentEmail->email;
-                        $to_id = $applicant->id;
                         $subject = preg_replace($tags['patterns'], $tags['replacements'], $email->subject);
                         $body = preg_replace($tags['patterns'], $tags['replacements'], $email->message);
                         $body = $m_emails->setTagsFabrik($body, [$applicant->fnum]);
-
+                        $to_id = $applicant->id;
 
                         $config = JFactory::getConfig();
 
@@ -143,42 +141,45 @@ class PlgFabrik_Cronemundusreferentrecall extends PlgFabrik_Cron {
                             $mail_from_address = $email_from_sys;
                         }
 
-                        // Set sender
-                        $sender = [
-                            $mail_from_address,
-                            $fromname
-                        ];
+                        foreach ($referentEmails as $referentEmail) {
+                            $to = $referentEmail->email;
 
-                        $mailer->setSender($sender);
-                        $mailer->addRecipient($to);
-                        $mailer->setSubject($subject);
-                        $mailer->isHTML(true);
-                        $mailer->Encoding = 'base64';
-                        $mailer->setBody($body);
+                            // Set sender
+                            $sender = [
+                                $mail_from_address,
+                                $fromname
+                            ];
 
-                        // Send emails
-                        $send = $mailer->Send();
+                            $mailer->setSender($sender);
+                            $mailer->addRecipient($to);
+                            $mailer->setSubject($subject);
+                            $mailer->isHTML(true);
+                            $mailer->Encoding = 'base64';
+                            $mailer->setBody($body);
 
-                        $mailer->clearAddresses();
-                        $mailer->clearAllRecipients();
-                        $mailer->smtpClose();
+                            // Send emails
+                            $send = $mailer->Send();
 
-                        if ($send !== true) {
-                            $this->log .= "\n Error sending email : " . $to;
-                        } else {
-                            $message = array(
-                                'user_id_from' => $from_id,
-                                'user_id_to' => $to_id,
-                                'subject' => $subject,
-                                'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
-                            );
-                            $m_emails->logEmail($message);
-                            $this->log .= '\n' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . ' :: ' . $body;
+                            $mailer->clearAddresses();
+                            $mailer->clearAllRecipients();
+                            $mailer->smtpClose();
+
+                            if ($send !== true) {
+                                $this->log .= "\n Error sending email : " . $to;
+                            } else {
+                                $message = array(
+                                    'user_id_from' => $from_id,
+                                    'user_id_to' => $to_id,
+                                    'subject' => $subject,
+                                    'message' => '<i>' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . '</i><br>' . $body
+                                );
+                                $m_emails->logEmail($message);
+                                $this->log .= '\n' . JText::_('MESSAGE') . ' ' . JText::_('SENT') . ' ' . JText::_('TO') . ' ' . $to . ' :: ' . $body;
+                            }
+
+                            // to avoid being considered as a spam process or DDoS
+                            sleep(5);
                         }
-
-                        // to avoid being considered as a spam process or DDoS
-                        sleep(5);
-
                     }
                 }
             }

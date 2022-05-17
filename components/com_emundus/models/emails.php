@@ -387,7 +387,7 @@ class EmundusModelEmails extends JModelList {
     public function setConstants($user_id, $post=null, $passwd='') {
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
-        $user           = $current_user == $user_id ? $current_user : JFactory::getUser($user_id);
+        $user           = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
         $config         = JFactory::getConfig();
 
         //get logo
