@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -15,6 +15,7 @@ use Joomla\CMS\Editor\Editor as JEditor;
 use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\Plugin\PluginHelper as JPluginHelper;
 use RegularLabs\Library\Document as RL_Document;
+use RegularLabs\Library\Field;
 
 if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 {
@@ -23,7 +24,7 @@ if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 
 require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 
-class JFormFieldRL_CodeEditor extends \RegularLabs\Library\Field
+class JFormFieldRL_CodeEditor extends Field
 {
 	public $type = 'CodeEditor';
 
@@ -32,8 +33,6 @@ class JFormFieldRL_CodeEditor extends \RegularLabs\Library\Field
 		$width  = $this->get('width', '100%');
 		$height = $this->get('height', 400);
 		$syntax = $this->get('syntax', 'html');
-
-		$this->value = htmlspecialchars(str_replace('\n', "\n", $this->value), ENT_COMPAT, 'UTF-8');
 
 		$editor_plugin = JPluginHelper::getPlugin('editors', 'codemirror');
 
@@ -64,12 +63,12 @@ class JFormFieldRL_CodeEditor extends \RegularLabs\Library\Field
 
 		return '<div class="rl_codemirror" id="rl_codemirror_' . $this->id . '">'
 			. JEditor::getInstance('codemirror')->display(
-				$this->name, $this->value,
+				$this->name, htmlentities($this->value),
 				$width, $height,
 				80, 10,
 				false,
 				$this->id, null, null,
-				['markerGutter' => false, 'activeLine' => true, 'syntax' => $syntax, 'class' => 'xxx']
+				['markerGutter' => false, 'activeLine' => true, 'syntax' => $syntax]
 			)
 			. '</div>';
 	}

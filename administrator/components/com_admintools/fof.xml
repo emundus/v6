@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+<!--~
   ~ @package   admintools
-  ~ @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
   ~ @license   GNU General Public License version 3, or later
   -->
 <fof>
 	<common>
 		<container>
 			<option name="componentNamespace">Akeeba\AdminTools</option>
-			<option name="factoryClass">FOF30\Factory\BasicFactory</option>
+			<option name="factoryClass">FOF40\Factory\BasicFactory</option>
 			<option name="scaffolding">0</option>
-			<option name="rendererClass">FOF30\Render\FEF</option>
+			<option name="rendererClass">FOF40\Render\FEF</option>
 		</container>
 	</common>
 
 	<frontend>
 		<container>
-			<option name="factoryClass">FOF30\Factory\BasicFactory</option>
+			<option name="factoryClass">FOF40\Factory\BasicFactory</option>
 			<option name="scaffolding">0</option>
 		</container>
 	</frontend>

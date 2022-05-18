@@ -20,6 +20,7 @@
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
+                  class="em-w-100"
                   v-model="form.subject"
                   :class="{ 'is-invalid': errors.subject}"
               />
@@ -42,6 +43,9 @@
                   :placeholder="translations.EmailResume"
               >
               </editor>
+              <div class="em-mt-8">
+                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-blue-500" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
+              </div>
             </div>
             <p v-if="errors.message" class="em-red-500-color em-mb-8">
               <span class="em-red-500-color">{{translations.BodyRequired}}</span>
@@ -66,6 +70,7 @@
               <label>{{translations.receiverName}}</label>
               <input
                   type="text"
+                  class="em-w-100"
                   v-model="form.name"
               />
             </div>
@@ -74,6 +79,7 @@
               <label>{{translations.emailAddress}}</label>
               <input
                   type="text"
+                  class="em-w-100"
                   v-model="form.emailfrom"
               />
             </div>
@@ -585,7 +591,7 @@ export default {
             selectedTags: this.selectedTags
           })
         }).then(() => {
-          this.redirectJRoute('index.php?option=com_emundus&view=email');
+          this.redirectJRoute('index.php?option=com_emundus&view=emails');
         }).catch(error => {
           console.log(error);
         });
@@ -616,7 +622,7 @@ export default {
               users: this.selectedUsers
             })
           }).then(() => {
-            this.redirectJRoute('index.php?option=com_emundus&view=email');
+            this.redirectJRoute('index.php?option=com_emundus&view=emails');
           });
         }).catch(error => {
           console.log(error);

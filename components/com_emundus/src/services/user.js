@@ -29,7 +29,7 @@ export default {
             return {
                 status: false,
                 msg: e.message
-            }
+            };
         }
     },
     async getAccessRights(id, fnum) {
@@ -46,7 +46,7 @@ export default {
             return {
                 status: false,
                 msg: e.message
-            }
+            };
         }
     },
     async getNoApplicantProfiles(){

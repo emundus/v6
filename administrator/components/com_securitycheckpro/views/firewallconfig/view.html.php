@@ -530,6 +530,10 @@ class SecuritycheckprosViewFirewallConfig extends SecuritycheckproView
         } else if (!is_null($pagination_whitelist)) {
             $this->pagination = $pagination_whitelist;    
         }
+		
+		if (version_compare(JVERSION, '3.220', 'lt')) {
+			$this->setLayout('j3_default'); // Set the old_layout style for J3
+		}	
 
         parent::display($tpl);
     }

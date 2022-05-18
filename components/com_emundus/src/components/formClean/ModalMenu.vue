@@ -33,7 +33,7 @@
 
         <div class="em-mb-16">
           <label>{{translations.Name}}* :</label>
-          <input v-model="label[actualLanguage]" type="text" maxlength="40" id="menu_label" :class="{ 'is-invalid': errors}"/>
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" id="menu_label" class="em-w-100" :class="{ 'is-invalid': errors}"/>
         </div>
         <p v-if="errors && model_id == -1" class="em-red-500-color">
           <span class="em-red-500-color">{{translations.LabelRequired}}</span>

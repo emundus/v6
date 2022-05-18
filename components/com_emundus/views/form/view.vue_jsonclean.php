@@ -66,7 +66,7 @@ class EmundusViewForm extends FabrikViewFormBase
                         $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
                     }
                 } catch (Exception $e) {
-                    JLog::add('component/com_emundus_onboard/view/vue_jsonclean | Cannot find '.$language->sef.'language override file : ', JLog::ERROR, 'com_emundus');
+                    JLog::add('component/com_emundus/view/vue_jsonclean | Cannot find '.$language->sef.'language override file : ', JLog::ERROR, 'com_emundus');
                     continue;
                 }
             }
@@ -311,7 +311,7 @@ class EmundusViewForm extends FabrikViewFormBase
 
             echo json_encode($returnObject);
         } catch(Exception $e){
-            JLog::add('component/com_emundus_onboard/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
     }

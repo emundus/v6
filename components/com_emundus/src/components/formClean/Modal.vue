@@ -204,7 +204,8 @@ export default {
     UpdateParams() {
       this.changes = true;
       if(typeof this.element.params.sub_options !== 'undefined') {
-        this.element.params.sub_options.sub_values = this.sublabel;
+        this.element.params.sub_options.sub_labels = this.sublabel.map(value => value.sub_label);
+        this.element.params.sub_options.sub_values = this.sublabel.map(value => value.sub_value);
       }
 
 

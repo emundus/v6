@@ -15,8 +15,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
         <div class="page-header">
-            <div class="icon-title loginicon"></div>
-            <h1 class="em-titre-connectez-vous">
+               <h1 class="em-titre-connectez-vous">
                 <?php echo JText::_('JLOGIN'); ?>
             </h1>
         </div>
@@ -87,11 +86,6 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
         <li>
             <a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>">
                 <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
-            </a>
-        </li>
-        <li>
-            <a href="<?php echo JRoute::_('index.php?option=com_users&view=remind'); ?>">
-                <?php echo JText::_('COM_USERS_LOGIN_REMIND'); ?>
             </a>
         </li>
         <?php $usersConfig = JComponentHelper::getParams('com_users'); ?>

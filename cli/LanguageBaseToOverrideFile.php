@@ -77,6 +77,13 @@ class LanguageBaseToOverrideFile extends JApplicationCli {
                         $parsed_file[$modified_override->tag] = $modified_override->override;
                     }
                     JLanguageHelper::saveToIniFile($file, $parsed_file);
+                } else {
+                    foreach ($modified_overrides as $modified_override) {
+                        if(empty($parsed_file[$modified_override->tag])) {
+                            $parsed_file[$modified_override->tag] = $modified_override->override;
+                        }
+                    }
+                    JLanguageHelper::saveToIniFile($file, $parsed_file);
                 }
             }
         } catch(Exception $e){

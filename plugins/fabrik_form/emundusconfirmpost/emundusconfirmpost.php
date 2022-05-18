@@ -124,7 +124,10 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			echo $e->getMessage() . '<br />';
 		}
 
-        if ($this->getParam('admission', 0) == 1) {
+        $current_phase = $m_campaign->getCurrentCampaignWorkflow($student);
+        if (!empty($current_phase) && !empty($current_phase->end_date)) {
+            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+        } else if ($this->getParam('admission', 0) == 1) {
             $is_dead_line_passed = strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$student->fnums[$student->fnum]->admission_start_date);
         } else {
             $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->end_date)) ? true : false;
@@ -241,7 +244,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 
 				// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
 				$post = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
-				$tags = $m_emails->setTags($student->id, $post, $fnum);
+				$tags = $m_emails->setTags($student->id, $post, $fnum, '', $application_form_name.$export_path);
 				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
 				$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 

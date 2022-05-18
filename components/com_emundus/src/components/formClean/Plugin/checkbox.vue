@@ -3,7 +3,7 @@
     <div class="row rowmodal">
       <div class="em-mb-32">
         <label>{{helptext}} :</label>
-        <input type="text" v-model="element.params.rollover" />
+        <input type="text" class="em-w-100" v-model="element.params.rollover" />
       </div>
       <div class="em-flex-row em-mb-16">
         <label class="require col-md-3">{{suboptions}} :</label>
@@ -33,12 +33,12 @@
           <span class="icon-handle">
             <span class="material-icons handle">drag_indicator</span>
           </span>
-          <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" :id="'suboption_' + i" @keyup.enter="add"/>
+          <input type="text" class="em-w-100" v-model="arraySubValues[i].sub_label" @change="needtoemit()" :id="'suboption_' + i" @keyup.enter="add"/>
           <button @click.prevent="leave(i)" type="button" class="em-transparent-button em-pointer"><span class="material-icons">remove_circle_outline</span></button>
         </div>
         </draggable>
         <button @click.prevent="add" type="button" v-if="databasejoin != 1" class="em-secondary-button em-w-auto em-ml-32">{{AddOption}}</button>
-        <select v-if="databasejoin == 1" class="dropdown-toggle" v-model="databasejoin_data" class="em-mt-16">
+        <select v-if="databasejoin == 1" v-model="databasejoin_data" class="em-mt-16 em-w-100">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
       </div>
@@ -73,7 +73,10 @@ export default {
   methods: {
     add: _.debounce(function() {
       let size = Object.keys(this.arraySubValues).length;
-      this.$set(this.arraySubValues, size, "");
+      this.$set(this.arraySubValues, size, {
+        'sub_value' : null,
+        'sub_label' : '',
+      });
       this.needtoemit();
       let id = 'suboption_' + size.toString();
       setTimeout(() => {
@@ -103,18 +106,22 @@ export default {
             data: qs.stringify({
               toJTEXT: this.element.params.sub_options.sub_labels
             })
-          }).then(response => {
-            Object.values(response.data).forEach(rep => {
-              this.arraySubValues.push(rep);
+          }).then((response) => {
+          this.element.params.sub_options.sub_values.forEach((value, i) => {
+              let object = {
+                'sub_value' : value,
+                'sub_label' : Object.values(response.data)[i],
+              };
+              this.arraySubValues.push(object);
             });
             this.needtoemit();
-          }).catch(e => {
+          }).catch((e) => {
             console.log(e);
           });
         } else {
           this.element.params.sub_options = {
-            'sub_values': [],
-            'sub_labels': [],
+            sub_values: [],
+            sub_labels: [],
           }
           this.arraySubValues = this.element.params.sub_options.sub_labels;
         }
@@ -137,8 +144,12 @@ export default {
             showCancelButton: false,
             showCloseButton: true,
             allowOutsideClick: false,
-            confirmButtonColor: '#de6339',
             confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            },
           }).then(result => {
             if (result.value) {
               axios({
@@ -183,8 +194,8 @@ export default {
         delete this.element.params.join_val_column_concat;
         if(typeof this.element.params.sub_options === 'undefined') {
           this.element.params.sub_options = {
-            'sub_values': [],
-            'sub_labels': [],
+            sub_values: [],
+            sub_labels: [],
           }
           this.arraySubValues = this.element.params.sub_options.sub_labels;
         }

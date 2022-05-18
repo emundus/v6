@@ -1093,6 +1093,7 @@ $(document).ready(function() {
                             success: function(result) {
 
                                 if (result.status) {
+                                    document.getElementById('em_select_filter').style.display = 'block'
                                     $('#select_filter').append('<option id="' + result.filter.id + '" selected="">' + result.filter.name + '<option>');
                                     $("#select_filter").trigger("chosen:updated");
                                     $('#saved-filter').show();
@@ -1769,6 +1770,14 @@ $(document).ready(function() {
                 var fnum = fnums_json[0].fnum;
                 var cid = fnums_json[0].cid;
                 var sid = fnums_json[0].sid;
+            } else {
+                var fnums_list = [];
+                for(const value of fnums_json){
+                    if(value.fnum !== 'em-check-all'){
+                        fnums_list.push(value.fnum);
+                    }
+                }
+                fnums_list = fnums_list.join(',');
             }
         }
 
@@ -1826,7 +1835,7 @@ $(document).ready(function() {
             for (key in hash) string = string.replace(new RegExp('\\{' + key + '\\}', 'gm'), hash[key]); return string;
         };
 
-        url = url.fmt({ fnums: fnums, fnum: fnum, applicant_id: sid, campaign_id: cid, view: view, controller: view, Itemid: itemId, formid: formid });
+        url = url.fmt({ fnums: fnums, fnum: fnum,fnums_joins: fnums_list, applicant_id: sid, campaign_id: cid, view: view, controller: view, Itemid: itemId, formid: formid });
         url +='&action_id='+id;
 
         switch (id) {
@@ -5262,14 +5271,24 @@ $(document).ready(function() {
 
                                                 Swal.fire({
                                                     type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT'),
-                                                    html: dest
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
+                                                    html: dest,
+                                                    customClass: {
+                                                        title: 'em-swal-title',
+                                                        confirmButton: 'em-swal-confirm-button',
+                                                        actions: "em-swal-single-action",
+                                                    },
                                                 });
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 Swal.fire({
                                                     type: 'error',
-                                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+                                                    customClass: {
+                                                        title: 'em-swal-title',
+                                                        confirmButton: 'em-swal-confirm-button',
+                                                        actions: "em-swal-single-action",
+                                                    },
                                                 })
                                             }
 
@@ -5297,14 +5316,14 @@ $(document).ready(function() {
 
                                                 Swal.fire({
                                                     type: 'success',
-                                                    title: Joomla.JText._('EMAILS_SENT'),
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
                                                     html: dest
                                                 });
                                             } else {
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 Swal.fire({
                                                     type: 'error',
-                                                    title: Joomla.JText._('NO_EMAILS_SENT')
+                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT')
                                                 })
                                             }
 
@@ -6035,7 +6054,12 @@ $(document).ready(function() {
                                 showCancelButton: true,
                                 cancelButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_CANCEL_EMAIL'),
                                 confirmButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL'),
-                                reverseButtons: true
+                                reverseButtons: true,
+                                customClass: {
+                                    title: 'em-swal-title',
+                                    cancelButton: 'em-swal-cancel-button',
+                                    confirmButton: 'em-swal-confirm-button',
+                                },
                             }).then(function(confirm) {
 
                                 if (confirm.value) {
@@ -6060,33 +6084,26 @@ $(document).ready(function() {
                                                         sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
                                                     });
 
-                                                    /* add tags to fnums */
-                                                    $.ajax({
-                                                        type: 'post',
-                                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
-                                                        dataType: 'json',
-                                                        data: { data: data },
-                                                        success: function(tags) {
-                                                            console.log(tags);
-                                                            $('#em-modal-sending-emails').css('display', 'none');
+                                                    $('#em-modal-sending-emails').css('display', 'none');
 
-                                                            $('#em-modal-actions').modal('hide');
-                                                            addDimmer();
+                                                    $('#em-modal-actions').modal('hide');
+                                                    addDimmer();
 
-                                                            reloadData();
-                                                            reloadActions($('#view').val(), undefined, false);
-                                                            $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
-                                                            $('body').removeClass('modal-open');
+                                                    reloadData();
+                                                    reloadActions($('#view').val(), undefined, false);
+                                                    $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
+                                                    $('body').removeClass('modal-open');
 
-                                                            Swal.fire({
-                                                                type: 'success',
-                                                                title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                                                                html: sent_to + '</ul>'
-                                                            });
-                                                        }, error: function(jqXHR) {
-                                                            console.log(jqXHR.responseText);
-                                                        }
-                                                    })
+                                                    Swal.fire({
+                                                        type: 'success',
+                                                        title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+                                                        html: sent_to + '</ul>',
+                                                        customClass: {
+                                                            title: 'em-swal-title',
+                                                            confirmButton: 'em-swal-confirm-button',
+                                                            actions: "em-swal-single-action",
+                                                        },
+                                                    });
 
                                                 } else {
                                                     $('#em-modal-sending-emails').css('display', 'none');
@@ -6137,7 +6154,12 @@ $(document).ready(function() {
                                                         Swal.fire({
                                                             type: 'success',
                                                             title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
-                                                            html: sent_to
+                                                            html: sent_to,
+                                                            customClass: {
+                                                                title: 'em-swal-title',
+                                                                confirmButton: 'em-swal-confirm-button',
+                                                                actions: "em-swal-single-action",
+                                                            },
                                                         });
                                                     }, error: function(jqXHR) {
                                                         console.log(jqXHR.responseText);
@@ -6345,7 +6367,11 @@ $(document).ready(function() {
                     type:'POST',
                     url:url,
                     dataType:'json',
-                    data:({fnums:checkInput, state: state}),
+                    data:({
+                        fnums:checkInput,
+                        state: state,
+                        to_applicant: "1"
+                    }),
                     success: function(result) {
                         $('.modal-body').empty();
                         $('.modal-body').append('<div>' +
@@ -6360,7 +6386,13 @@ $(document).ready(function() {
                                 type: "warning",
                                 showCancelButton: true,
                                 confirmButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT'),
-                                cancelButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT')
+                                cancelButtonText: Joomla.JText._('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT'),
+                                reverseButtons: true,
+                                customClass: {
+                                    title: 'em-swal-title',
+                                    cancelButton: 'em-swal-cancel-button',
+                                    confirmButton: 'em-swal-confirm-button',
+                                },
                             }).then(function(result) {
                                 if (result.value) {
                                     $.ajax({

@@ -62,4 +62,4 @@ VALUES (397, 'eMundus release version', '', null, 1, 'footer', 0, '2022-02-22 16
 
 UPDATE jos_template_styles
 SET params = '{"templateColor":"#106949","headerColor":"#20835f","sidebarColor":"#007aff","linkColor":"#007aff","loginBackgroundColor":"#0d5946","logoFile":"images\/emundus\/tchooz.png","loginLogoFile":"images\/emundus\/tchooz_black.png","admin_menus":1,"displayHeader":1,"statusFixed":1,"stickyToolbar":1}'
-WHERE template = 'isis' and client_id = 1
+WHERE template = 'isis' and client_id = 1;

@@ -31,13 +31,13 @@ class EmundusControllerCifre extends JControllerLegacy {
 
 	public function __construct(array $config = array()) {
 
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'cifre.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controllers'.DS.'messages.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
 		// Load class variables
 		$this->user = JFactory::getSession()->get('emundusUser');
@@ -116,16 +116,16 @@ class EmundusControllerCifre extends JControllerLegacy {
 		$bcc = $jinput->post->getString('bcc', 'false') === 'true';
 
 		// check if the files are on the server
-        if (!empty($cv) && file_exists(JPATH_BASE.DS.$cv)) {
-	        $toAttach[] = JPATH_BASE.DS.$cv;
+        if (!empty($cv) && file_exists(JPATH_SITE.DS.$cv)) {
+	        $toAttach[] = JPATH_SITE.DS.$cv;
         }
 
-        if (!empty($ml) && file_exists(JPATH_BASE.DS.$ml)) {
-            $toAttach[] = JPATH_BASE.DS.$ml;
+        if (!empty($ml) && file_exists(JPATH_SITE.DS.$ml)) {
+            $toAttach[] = JPATH_SITE.DS.$ml;
         }
 
-		if (!empty($doc) && file_exists(JPATH_BASE.DS.$doc)) {
-			$toAttach[] = JPATH_BASE.DS.$doc;
+		if (!empty($doc) && file_exists(JPATH_SITE.DS.$doc)) {
+			$toAttach[] = JPATH_SITE.DS.$doc;
 		}
 
 		if (!empty($motivation)) {
@@ -198,7 +198,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			}
 
 			$m_emails = new EmundusModelEmails();
-			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
+			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $chat_contact_request->message);
 			$chat_contact_request = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_request->message);
 
             // Send a chat message as folder 3 to the user in order to start a conversation thread.
@@ -352,9 +352,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 				'OFFER_NAME' => $offerInformation->titre,
 				'CONTACT_ID' => $contact_id,
 			];
-			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+            $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $chat_contact_accept->message);
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
 			$m_messages->deleteSystemMessages($fnum['applicant_id'], $this->user->id);
 			$m_messages->sendMessage($this->user->id, $chat_contact_accept, $fnum['applicant_id'], true);
@@ -425,8 +425,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 			];
 
 			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
-			$tags = $m_emails->setTags($this->user->id, $post, $fnum['fnum']);
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+            $tags = $m_emails->setTags($this->user->id, $post, $fnum['fnum'], '', $chat_contact_accept->message);
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
 			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
 			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
@@ -480,7 +480,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			];
 
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
-			$tags    = $m_emails->setTags($user_from->id, $post);
+			$tags    = $m_emails->setTags($user_from->id, $post, null, '', $template->subject.$template->message);
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
 			$body    = $template->message;
 			if ($template != false)
@@ -497,8 +497,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 			$mailer->Encoding = 'base64';
 			$mailer->setBody($body);
 
-			$tags = $m_emails->setTags($this->user->id, $post);
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+            $tags = $m_emails->setTags($this->user->id, $post, null, '', $chat_contact_accept->message);
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
 			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
 			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
@@ -694,7 +694,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 				];
 
 				// Tags are replaced with their corresponding values using the PHP preg_replace function.
-				$tags    = $m_emails->setTags($user_from->id, $post);
+				$tags    = $m_emails->setTags($user_from->id, $post, null, '', $template->subject.$template->message);
 				$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
 				$body    = $template->message;
 				if ($template != false) {

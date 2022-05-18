@@ -1,15 +1,17 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
 /* @DEPRECATED */
+
+use RegularLabs\Library\Condition;
 
 defined('_JEXEC') or die;
 
@@ -18,7 +20,7 @@ if (is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 	require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 }
 
-class RLAssignment extends \RegularLabs\Library\Condition
+class RLAssignment extends Condition
 {
 	public function pass($pass = true, $include_type = null)
 	{

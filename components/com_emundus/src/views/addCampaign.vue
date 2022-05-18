@@ -1,65 +1,76 @@
 <template>
   <div class="campaigns__add-campaign">
-    <notifications
-        group="foo-velocity"
-        position="bottom left"
-        animation-type="velocity"
-        :speed="500"
-        :classes="'vue-notification-custom'"
-    />
+    <div v-if="typeof campaignId == 'undefined'">
+      <div class="em-flex-row em-mt-16 em-pointer" onclick="history.back()">
+        <span class="material-icons">arrow_back</span>
+        <p class="em-ml-8">{{ translate('BACK') }}</p>
+      </div>
+
+      <div class="em-flex-row em-mt-16">
+        <h2>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS') }}</h2>
+      </div>
+      <p style="margin-top: 20px">{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
+
+      <hr>
+    </div>
 
     <div>
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit" v-if="ready" class="fabrikForm">
         <div>
-          <div class="em-red-500-color em-mb-8">{{translations.RequiredFieldsIndicate}}</div>
+          <div class="em-red-500-color em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
           <div class="em-mb-16">
-            <label for="campLabel">{{translations.CampName}} <span class="em-red-500-color">*</span></label>
+            <label for="campLabel">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME') }} <span class="em-red-500-color">*</span></label>
             <input
                 id="campLabel"
                 type="text"
-                v-focus
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
+                class="form-control fabrikinput"
+                @focusout="onFormChange()"
             />
           </div>
           <span v-if="errors.label" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{translations.LabelRequired}}</span>
+            <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
           </span>
 
           <div class="em-grid-2 em-mb-16">
             <div>
               <div>
-                <label for="startDate">{{translations.StartDate}} <span class="em-red-500-color">*</span></label>
+                <label for="startDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE') }} <span class="em-red-500-color">*</span></label>
                 <datetime
                     v-model="form.start_date"
                     id="startDate"
                     type="datetime"
-                    :placeholder="translations.StartDate"
+                    class="em-w-100"
+                    :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
                     :input-id="'start_date'"
-                    :phrases="{ok: translations.OK, cancel: translations.Cancel}"
+                    :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
+                    @focusout="onFormChange()"
                 ></datetime>
               </div>
             </div>
             <div>
               <div>
-                <label for="endDate">{{translations.EndDate}} <span class="em-red-500-color">*</span></label>
+                <label for="endDate">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') }} <span class="em-red-500-color">*</span></label>
                 <datetime
                     v-model="form.end_date"
                     id="endDate"
                     type="datetime"
-                    :placeholder="translations.EndDate + ' *'"
+                    class="em-w-100"
+                    :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') + ' *'"
                     :input-id="'end_date'"
                     :min-datetime="minDate"
-                    :phrases="{ok: translations.OK, cancel: translations.Cancel}"
+                    :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
+                    @focusout="onFormChange()"
                 ></datetime>
               </div>
             </div>
           </div>
 
           <div class="em-mb-16">
-            <label for="year">{{translations.PickYear}} <span class="em-red-500-color">*</span></label>
+            <label for="year">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR') }} <span class="em-red-500-color">*</span></label>
             <autocomplete
                 :id="'year'"
                 @searched="onSearchYear"
@@ -78,86 +89,49 @@
                      id="published"
                      name="published"
                      v-model="form.published"
+                     @click="onFormChange()"
               />
               <strong class="b em-toggle-switch"></strong>
               <strong class="b em-toggle-track"></strong>
             </div>
-            <span for="published" class="em-ml-8">{{ translations.Publish }}</span>
+            <span for="published" class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_FILTER_PUBLISH') }}</span>
           </div>
-
-<!--          <div class="em-mb-16 em-flex-row">
-            <div class="toggle">
-              <input type="checkbox"
-                     true-value="1"
-                     false-value="0"
-                     class="check"
-                     id="limit"
-                     name="limit"
-                     v-model="form.is_limited"
-              />
-              <strong class="b switch"></strong>
-              <strong class="b track"></strong>
-            </div>
-            <span for="limit" class="em-ml-8">{{ translations.FilesLimit }}</span>
-          </div>
-
-          <transition name="'slide-down'">
-            <div v-if="form.is_limited == 1">
-              <div class="em-mb-16">
-                <label for="campLabel">{{translations.FilesNumberLimit}} <span class="em-red-500-color">*</span></label>
-                <input type="number"
-                       v-model="form.limit"
-                       :class="{ 'is-invalid': errors.limit_files_number }"
-                />
-              </div>
-              <span v-if="errors.limit_files_number" class="em-red-500-color em-mb-8">
-                <span class="em-red-500-color">{{translations.FilesLimitRequired}}</span>
-              </span>
-
-              <div class="em-mb-16">
-                <label for="campLabel">{{translations.StatusLimit}} <span class="em-red-500-color">*</span></label>
-                <div class="users-block" :class="{ 'is-invalid': errors.limit_status}">
-                  <div v-for="(statu, index) in status" :key="index" class="user-item">
-                    <input type="checkbox" class="form-check-input bigbox" v-model="form.limit_status[statu.step]">
-                    <div class="em-ml-8">
-                      <p>{{statu.value}}</p>
-                    </div>
-                  </div>
-                </div>
-                <p v-if="errors.limit_status" class="em-red-500-color em-mb-8">
-                  <span class="em-red-500-color">{{translations.StatusLimitRequired}}</span>
-                </p>
-              </div>
-            </div>
-          </transition>-->
         </div>
 
         <hr/>
 
         <div>
           <div class="em-mb-16">
-            <h2>{{ translations.Information }}</h2>
+            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
           </div>
 
           <div class="em-mb-16">
-            <label style="top: 5em">{{translations.Resume}} <span class="em-red-500-color">*</span></label>
+            <label style="top: 5em">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }} <span class="em-red-500-color">*</span></label>
             <textarea
                 type="textarea"
                 rows="2"
                 id="campResume"
                 maxlength="500"
                 placeholder=" "
+                class="form-control fabrikinput"
                 v-model="form.short_description"
                 @keyup="checkMaxlength('campResume')"
                 @focusout="removeBorderFocus('campResume')"
+
             />
           </div>
-          <p v-if="errors.short_description" class="em-red-500-color em-mb-8">
-            <span class="em-red-500-color">{{translations.ResumeRequired}}</span>
-          </p>
 
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
-            <editor :height="'30em'" :text="form.description" v-model="form.description" :enable_variables="false" :placeholder="translations.Description" :id="'campaign_description'" :key="editorKey"></editor>
+            <editor
+                :height="'30em'"
+                :text="form.description"
+                v-model="form.description"
+                :enable_variables="false"
+                :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION')"
+                :id="'campaign_description'"
+                :key="editorKey"
+                @focusout="onFormChange"
+            ></editor>
           </div>
         </div>
 
@@ -165,19 +139,19 @@
 
         <div>
           <div class="em-mb-16">
-            <h2>{{ translations.Program }}</h2>
+            <h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
           </div>
-          <div class="em-mb-16">{{translations.ProgramDesc}}<span class="em-red-500-color">*</span></div>
+          <div class="em-mb-16">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC') }}<span class="em-red-500-color">*</span></div>
 
           <div class="em-flex-row em-mb-16">
             <select
                 id="select_prog"
-                class="em-w-100"
+                class="form-control fabrikinput"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
             >
-              <option value="">{{ translations.ChooseProg }}</option>
+              <option value="">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG') }}</option>
               <option
                   v-for="(item, index) in this.programs"
                   v-bind:value="item.code"
@@ -186,7 +160,7 @@
                 {{ item.label }}
               </option>
             </select>
-            <button v-if="coordinatorAccess != 0" :title="translations.AddProgram" type="button" id="add-program" class="em-ml-8 em-transparent-button" @click="displayProgram">
+            <button v-if="coordinatorAccess != 0" :title="translate('COM_EMUNDUS_ONBOARD_ADDPROGRAM')" type="button" id="add-program" class="em-ml-8 em-transparent-button" @click="displayProgram">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
           </div>
@@ -195,18 +169,20 @@
             <div v-if="isHiddenProgram">
               <div>
                 <div class="em-mb-16">
-                  <label for="prog_label">{{translations.ProgName}} <span class="em-red-500-color">*</span></label>
+                  <label for="prog_label">{{ translate('COM_EMUNDUS_ONBOARD_PROGNAME') }} <span class="em-red-500-color">*</span></label>
                   <input
                       type="text"
                       id="prog_label"
+                      class="form-control fabrikinput"
                       placeholder=" "
                       v-model="programForm.label"
                       @keyup="updateCode"
+                      @focusout="updateCode"
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
                 <p v-if="errors.progLabel" class="em-red-500-color em-mb-8">
-                  <span class="em-red-500-color">{{translations.ProgLabelRequired}}</span>
+                  <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
               </div>
             </div>
@@ -220,13 +196,13 @@
               type="button"
               class="em-secondary-button em-w-auto"
               onclick="history.back()">
-            {{ translations.Retour }}
+            {{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
           </button>
           <button
               type="button"
               class="em-primary-button em-w-auto"
               @click="quit = 1; submit()">
-            {{ translations.Continuer }}
+            {{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
           </button>
         </div>
       </form>
@@ -243,6 +219,9 @@ import { DateTime as LuxonDateTime, Settings } from "luxon";
 import Editor from "../components/editor";
 import Autocomplete from "../components/autocomplete";
 import Translation from "../components/translation"
+
+/** SERVICES **/
+import campaignService from 'com_emundus/src/services/campaign';
 
 const qs = require("qs");
 
@@ -263,8 +242,6 @@ export default {
     }
   },
 
-  quit: 1,
-
   props: {
     campaign: Number,
   },
@@ -274,12 +251,11 @@ export default {
     campaignId: 0,
     actualLanguage: "",
     coordinatorAccess: 0,
-    manyLanguages: 0,
+    quit: 1,
 
     isHiddenProgram: false,
 
     // Date picker rules
-    olderDate: "",
     minDate: "",
     //
 
@@ -307,13 +283,6 @@ export default {
       limit: 50,
       limit_status: [],
     },
-
-    can_translate: {
-      label: false,
-    },
-
-    enableTip: false,
-
     programForm: {
       code: "",
       label: "",
@@ -341,45 +310,8 @@ export default {
       limit_status: false
     },
 
-    translations: {
-      Parameter: "COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER",
-      CampName: "COM_EMUNDUS_ONBOARD_ADDCAMP_CAMPNAME",
-      StartDate: "COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE",
-      EndDate: "COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE",
-      Information: "COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION",
-      Resume: "COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME",
-      Description: "COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION",
-      Program: "COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM",
-      AddProgram: "COM_EMUNDUS_ONBOARD_ADDPROGRAM",
-      ChooseProg: "COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG",
-      PickYear: "COM_EMUNDUS_ONBOARD_ADDCAMP_PICKYEAR",
-      Retour: "COM_EMUNDUS_ONBOARD_ADD_RETOUR",
-      Quitter: "COM_EMUNDUS_ONBOARD_ADD_QUITTER",
-      Continuer: "COM_EMUNDUS_ONBOARD_ADD_CONTINUER",
-      Publish: "COM_EMUNDUS_ONBOARD_FILTER_PUBLISH",
-      DepotDeDossier: "COM_EMUNDUS_ONBOARD_DEPOTDEDOSSIER",
-      ProgName: "COM_EMUNDUS_ONBOARD_PROGNAME",
-      ProgCode: "COM_EMUNDUS_ONBOARD_PROGCODE",
-      ChooseCategory: "COM_EMUNDUS_ONBOARD_CHOOSECATEGORY",
-      NameCategory: "COM_EMUNDUS_ONBOARD_NAMECATEGORY",
-      LabelRequired: "COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME",
-      RequiredFieldsIndicate: "COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE",
-      ProgramResume: "COM_EMUNDUS_ONBOARD_PROGRAM_RESUME",
-      ProgLabelRequired: "COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL",
-      ResumeRequired: "COM_EMUNDUS_ONBOARD_CAMP_REQUIRED_RESUME",
-      OK: "COM_EMUNDUS_ONBOARD_OK",
-      Cancel: "COM_EMUNDUS_ONBOARD_CANCEL",
-      TranslateEnglish: "COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH",
-      FilesLimit: "COM_EMUNDUS_ONBOARD_FILES_LIMIT",
-      FilesNumberLimit: "COM_EMUNDUS_ONBOARD_FILES_LIMIT_NUMBER",
-      StatusLimit: "COM_EMUNDUS_ONBOARD_FILES_LIMIT_STATUS",
-      StatusLimitRequired: "COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED",
-      FilesLimitRequired: "COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED",
-      AddCampaign: "COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN",
-      ProgramDesc: "COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC",
-    },
-
-    submitted: false
+    submitted: false,
+    ready: false,
   }),
 
   created() {
@@ -391,7 +323,6 @@ export default {
     }
 
     this.actualLanguage = this.$store.getters['global/actualLanguage'];
-    this.manyLanguages = this.$store.getters['global/manyLanguages'];
     this.coordinatorAccess = this.$store.getters['global/coordinatorAccess'];
 
     // Configure datetime
@@ -430,8 +361,6 @@ export default {
           this.form.end_date = LuxonDateTime.fromSQL(this.form.end_date).toISO();
           if (this.form.end_date === "0000-00-00T00:00:00.000Z") {
             this.form.end_date = "";
-          } else {
-            this.olderDate = this.form.end_date;
           }
           //
 
@@ -444,9 +373,12 @@ export default {
           } else {
             this.form.limit_status = [];
           }
+          this.ready = true;
         }).catch(e => {
           console.log(e);
         });
+      } else {
+        this.ready = true;
       }
       this.getAllPrograms();
     },
@@ -458,9 +390,8 @@ export default {
               this.programs.sort((a, b) => a.id - b.id);
             }
           }).catch(e => {
-        console.log(e);
-      });
-
+              console.log(e);
+          });
       this.getYears();
     },
     getYears() {
@@ -493,30 +424,21 @@ export default {
     },
     updateCode() {
       if(this.programForm.label !== ''){
-        this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';
-        if(Object.keys(this.programs).length !== 0) {
+        this.programForm.code = this.programForm.label.replace(/[^a-zA-Z0-9]/g,'').substring(0,10) + '_00';
+
+        if (Object.keys(this.programs).length !== 0) {
           this.programs.forEach((element) => {
             if (this.programForm.code == element.code) {
-              let newCode = parseInt(element.code.split('_')[1]) + 1;
-              if (newCode > 10) {
-                this.programForm.code = this.programForm.label.toUpperCase() + '_' + newCode;
-              } else {
-                this.programForm.code = this.programForm.label.toUpperCase() + '_0' + newCode;
-              }
+              // change last digit inside string to next available number
+              let code = this.programForm.code.split('_');
+              let number = parseInt(code[1]) + 1;
+              code[1] = number;
+              this.programForm.code = code.join('_');
             }
           });
         }
       } else {
         this.programForm.code = '';
-      }
-    },
-
-    enableLabelTranslation(){
-      this.can_translate.label = !this.can_translate.label
-      if(this.can_translate.label){
-        setTimeout(() => {
-          document.getElementById('label_en').focus();
-        },100);
       }
     },
 
@@ -528,18 +450,9 @@ export default {
     },
 
     createCampaignWithExistingProgram(form_data){
-      axios({
-        method: "post",
-        url: "index.php?option=com_emundus&controller=campaign&task=createcampaign",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        data: qs.stringify({body: form_data})
-      }).then(response => {
+      campaignService.createCampaign(form_data).then((response) => {
         this.campaignId = response.data.data;
         this.quitFunnelOrContinue(this.quit);
-      }).catch(error => {
-        console.log(error);
       });
     },
 
@@ -555,24 +468,18 @@ export default {
         this.form.training = programForm.code;
         this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
         this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
-        axios({
-          method: "post",
-          url: "index.php?option=com_emundus&controller=campaign&task=createcampaign",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          data: qs.stringify({body: this.form})
-        }).then(response => {
+
+        campaignService.createCampaign(this.form).then((response) => {
           this.campaignId = response.data.data;
           this.quitFunnelOrContinue(this.quit);
-        }).catch(error => {
-          console.log(error);
         });
       });
     },
 
 
     submit() {
+      this.$store.dispatch('campaign/setUnsavedChanges', true);
+
       // Checking errors
       this.errors = {
         label: false,
@@ -677,6 +584,7 @@ export default {
             data: qs.stringify({ body: this.form, cid: this.campaignId })
           }).then(() => {
             this.$emit('nextSection');
+            this.$emit('updateHeader',this.form);
           }).catch(error => {
             console.log(error);
           });
@@ -698,11 +606,11 @@ export default {
     },
 
     quitFunnelOrContinue(quit) {
-      if (quit == 0) {
+      if (quit === 0) {
         this.redirectJRoute('index.php?option=com_emundus&view=campaign');
-      } else if (quit == 1) {
-        document.cookie = 'campaign_'+this.campaignId+'_menu = 2; expires=Session; path=/'
-        this.redirectJRoute('index.php?option=com_emundus&view=form&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
+      } else if (quit === 1) {
+        document.cookie = 'campaign_'+this.campaignId+'_menu = 2; expires=Session; path=/';
+        this.redirectJRoute('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0')
       }
     },
 
@@ -713,7 +621,9 @@ export default {
     onSearchYear(value) {
       this.form.year = value;
     },
-
+    onFormChange() {
+      this.$store.dispatch('campaign/setUnsavedChanges', true);
+    },
     displayProgram() {
       if(this.isHiddenProgram){
         document.getElementById('add-program').style = 'transform: rotate(0)';
@@ -738,13 +648,6 @@ export default {
       this.isHiddenProgram = !this.isHiddenProgram;
     },
 
-    enableTranslationTip() {
-      if(!this.enableTip){
-        this.enableTip = true;
-        this.tip();
-      }
-    },
-
     checkMaxlength(id) {
       var maxLength = document.getElementById(id).getAttribute('maxlength');
       if(maxLength == this.form.short_description.length) {
@@ -756,33 +659,7 @@ export default {
 
     removeBorderFocus(id){
       document.getElementById(id).style.borderColor = '#cccccc';
-    },
-
-    /**
-     * ** Methods for notify
-     */
-    tip(){
-
-      if(this.manyLanguages !=0) {
-
-        this.show(
-            "foo-velocity",
-            this.translate("COM_EMUNDUS_ONBOARD_TRANSLATETIP") + '<em class="translate-icon"></em>',
-            this.translate("COM_EMUNDUS_ONBOARD_TIP"),
-        );
-      }
-    },
-
-    show(group, text = "", title = "Information") {
-      this.$notify({
-        group,
-        title: `${title}`,
-        text,
-        duration: 100000
-      });
-    },
-    clean(group) {
-      this.$notify({ group, clean: true });
+      this.onFormChange();
     },
   },
 
@@ -792,7 +669,7 @@ export default {
       if (this.form.end_date == "") {
         this.form.end_date = LuxonDateTime.fromISO(val).plus({days: 1}).toISO();
       }
-    }
+    },
   }
 };
 </script>

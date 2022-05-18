@@ -42,7 +42,6 @@ export default {
   },
   data() {
     return {
-      msg: '',
       size: this.element.params.size/1048576,
       types: [
         {
@@ -90,7 +89,6 @@ export default {
         maxSize:false
       },
       selectedTypes: [],
-      path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
       heightext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HEIGHT"),
       helptext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       MaxRequired: this.translate("COM_EMUNDUS_ONBOARD_MAXPERUSER_REQUIRED"),
@@ -199,8 +197,6 @@ export default {
   },
 
   created() {
-    this.msg = '<p style="color: black">' + this.placeholderHelp + '</p>' +
-        '<img src="' + this.path + 'placeholder.gif" />'
 
     this.retrieveAssociateElementDoc(this.element.params.attachmentId);
     this.retrieveDocumentNameFalangs(this.element.params.attachmentId);

@@ -273,11 +273,9 @@ button#back:hover, button#back:active, button#back:focus,
 #attachment_list_opt fieldset {
     background-color: #fff;
     box-shadow: none;
-}
-
-#attachment_list fieldset {
-    padding: 10px;
-    margin: 0 0 40px;
+    margin-bottom: 32px;
+    padding: 32px 24px 32px 24px;
+    border-radius: 16px !important;
     height: auto;
 }
 
@@ -316,6 +314,21 @@ button#back:hover, button#back:active, button#back:focus,
     color: #2E2E2E;
 }
 
+
+#attachment_list_mand .em-added-files > td,
+#attachment_list_opt .em-added-files > td {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
+.view-checklist #attachment_list_mand a.btn ,
+.view-checklist #attachment_list_opt a.btn {
+    display: flex !important;
+    align-items: center !important;
+}
+
 #attachment_list_mand .description,
 #attachment_list_opt .description {
     color: #2E2E2E;
@@ -325,10 +338,6 @@ button#back:hover, button#back:active, button#back:focus,
 #attachment_list_mand table td, #attachment_list_opt table td {
     border-top: none;
     white-space: normal;
-}
-
-#attachment_list_mand fieldset:hover, #attachment_list_opt fieldset:hover {
-    background-color: #fcfcfc;
 }
 
 #attachment_list_opt fieldset .description {

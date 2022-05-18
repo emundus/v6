@@ -12,21 +12,21 @@
       </div>-->
       <div class="form-group">
         <label>{{placeholdertext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.placeholder" />
+        <input type="text" class="em-w-100" v-model="element.params.placeholder" />
       </div>
       <div class="form-group">
         <label>{{helptext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
+        <input type="text" class="em-w-100" v-model="element.params.rollover" />
       </div>
       <div class="form-group">
         <label>{{maxlength}} :</label>
-        <input type="number" min="1" class="form__input field-general w-input" v-model="element.params.maxlength" />
+        <input type="number" min="1" class="em-w-100" v-model="element.params.maxlength" />
       </div>
 
 <!--      v-show - shox this div when option 4 is checked-->
       <div class="form-group" v-if="element.params.password == 0">
         <label>{{inputmasktitle}}</label>
-        <input type="text" id="format" class="form__input field-general w-input" v-model="element.params.text_input_mask" :placeholder="[[ inputmaskplaceholder ]]"/>
+        <input type="text" id="format" class="em-w-100" v-model="element.params.text_input_mask" :placeholder="[[ inputmaskplaceholder ]]"/>
         <label style="font-size: small">{{tipData}}</label>
       </div>
     </div>
@@ -42,8 +42,6 @@ export default {
   data() {
 
     return {
-      msg: '',
-      path: window.location.protocol + '//' + window.location.host + '/media/com_emundus_onboard/',
       helptext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT"),
       placeholdertext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER"),
       sizetext: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_SIZE"),
@@ -64,9 +62,6 @@ export default {
 
   },
   created(){
-    this.msg =
-            '<p style="color: white">' + this.placeholderHelp + '</p>' +
-            '<img src="' + this.path + 'placeholder.gif" />';
     if(typeof this.element.params.password == 'undefined'){
       this.element.params.password = 0;
     }

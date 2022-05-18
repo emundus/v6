@@ -28,6 +28,7 @@ class EmundusModelEmails extends JModelList {
     public function __construct() {
         parent::__construct();
 
+        $this->_db = JFactory::getDBO();
         $this->_em_user = JFactory::getSession()->get('emundusUser');
         $this->_user = JFactory::getUser();
 
@@ -61,8 +62,9 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version v6
      */
-    public function getEmailById($id) {
-        $query = 'SELECT * FROM #__emundus_setup_emails WHERE id='.$this->_db->Quote($id);
+    public function getEmailById($id)
+    {
+        $query = 'SELECT ese.*, et.Template FROM #__emundus_setup_emails ese LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl WHERE ese.id='.$this->_db->Quote($id);
         $this->_db->setQuery( $query );
         return $this->_db->loadObject();
     }
@@ -76,28 +78,42 @@ class EmundusModelEmails extends JModelList {
      *
      * @since version v6
      */
-    public function getEmailTrigger($step, $code, $to_applicant = 0) {
-        $query = 'SELECT eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template
-                  FROM #__emundus_setup_emails_trigger as eset
-                  LEFT JOIN #__emundus_setup_emails as ese ON ese.id=eset.email_id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_programme_id as eserp ON eserp.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_programmes as esp ON esp.id=eserp.programme_id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_profile_id as eser ON eser.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_group_id as eserg ON eserg.parent_id=eset.id
-                  LEFT JOIN #__emundus_setup_emails_trigger_repeat_user_id as eseru ON eseru.parent_id=eset.id
-                  LEFT JOIN #__emundus_email_templates AS et ON et.id = ese.email_tmpl
-                  WHERE eset.step='.$step.' AND eset.to_applicant IN ('.$to_applicant.') AND esp.code IN ("'.implode('","', $code).'")';
+    public function getEmailTrigger($step, $code, $to_applicant = 0, $to_current_user = null) {
+        $query = $this->_db->getQuery(true);
+        $query->select('eset.id as trigger_id, eset.step, ese.*, eset.to_current_user, eset.to_applicant, eserp.programme_id, esp.code, esp.label, eser.profile_id, eserg.group_id, eseru.user_id, et.Template, GROUP_CONCAT(ert.tags) as tags')
+            ->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'eset'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails','ese').' ON '.$this->_db->quoteName('ese.id').' = '.$this->_db->quoteName('eset.email_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id','eserp').' ON '.$this->_db->quoteName('eserp.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_programmes','esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('eserp.programme_id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id','eser').' ON '.$this->_db->quoteName('eser.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id','eserg').' ON '.$this->_db->quoteName('eserg.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id','eseru').' ON '.$this->_db->quoteName('eseru.parent_id').' = '.$this->_db->quoteName('eset.id'))
+            ->leftJoin($this->_db->quoteName('#__emundus_email_templates','et').' ON '.$this->_db->quoteName('et.id').' = '.$this->_db->quoteName('ese.email_tmpl'))
+            ->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_tags','ert').' ON '.$this->_db->quoteName('ert.parent_id').' = '.$this->_db->quoteName('eset.email_id'))
+            ->where($this->_db->quoteName('eset.step').' = '.$this->_db->quote($step))
+            ->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')');
+        if(!is_null($to_current_user)) {
+            $query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
+        }
+        $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode('","', $this->_db->quote($code)) .')')
+            ->group('eset.id');
         $this->_db->setQuery( $query );
-        $triggers = $this->_db->loadObjectList();
+        $results = $this->_db->loadObjectList();
+        $triggers = array_filter($results, function($obj){
+            if (empty($obj->trigger_id)) { return false; }
+            return true;
+        });
 
         $emails_tmpl = array();
-        if (count($triggers) > 0) {
-            foreach ($triggers as $key => $trigger) {
+
+        if (!empty($triggers) && !empty($triggers[0]->id)) {
+            foreach ($triggers as $trigger) {
                 // email tmpl
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['subject'] = $trigger->subject;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['emailfrom'] = $trigger->emailfrom;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['message'] = $trigger->message;
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['name'] = $trigger->name;
+                $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['tags'] = $trigger->tags;
 
                 // This is the email template model, the HTML structure that makes the email look good.
                 $emails_tmpl[$trigger->id][$trigger->code]['tmpl']['template'] = $trigger->Template;
@@ -228,7 +244,7 @@ class EmundusModelEmails extends JModelList {
                 foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
                     $mailer = JFactory::getMailer();
 
-                    $tags = $this->setTags($student->id, $post, $student->fnum);
+                    $tags = $this->setTags($student->id, $post, $student->fnum, '', $trigger_email[$student->code]['tmpl']['emailfrom'].$trigger_email[$student->code]['tmpl']['name'].$trigger_email[$student->code]['tmpl']['subject'].$trigger_email[$student->code]['tmpl']['message']);
 
                     $from = preg_replace($tags['patterns'], $tags['replacements'], $trigger_email[$student->code]['tmpl']['emailfrom']);
                     $from_id = 62;
@@ -383,7 +399,7 @@ class EmundusModelEmails extends JModelList {
     public function setConstants($user_id, $post=null, $passwd='') {
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
-        $user           = JFactory::getUser($user_id);
+        $user           = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
         $config         = JFactory::getConfig();
 
         //get logo
@@ -411,14 +427,16 @@ class EmundusModelEmails extends JModelList {
             $logo = JURI::base().$tab[1];
         }
 
+        $activation = $user->get('activation');
+
         $patterns = array(
             '/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SENDER_MAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
             '/\[ACTIVATION_URL\]/', '/\[ACTIVATION_URL_RELATIVE\]/' ,'/\[SITE_URL\]/' ,'/\[SITE_NAME\]/',
             '/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[LOGO\]/'
         );
         $replacements = array(
-            $user->id, $user->name, $user->email, $user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
-            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), "index.php?option=com_users&task=registration.activate&token=".$user->get('activation'), JURI::base(), $sitename,
+            $user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
+            JURI::base()."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, JURI::base(), $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
 
@@ -438,35 +456,50 @@ class EmundusModelEmails extends JModelList {
     }
 
     /**
-     * @param $user_id
-     * @param $post
-     * @param $fnum
-     * @param $passwd
-     * @param $content
+     * Define replacement values for tags
      *
-     * @return array
-     *
-     * @throws Exception
-     * @since version v6
+     * @param int $user_id
+     * @param array $post custom tags define from context
+     * @param string $fnum used to get fabrik tags ids from applicant file
+     * @param string $passwd used set password if needed
+     * @param string $content string containing tags to replace, ATTENTION : if empty all tags are computing
+     * @return array[]
      */
     public function setTags($user_id, $post=null, $fnum=null, $passwd='', $content='') {
+        require_once(JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'helpers'.DS.'tags.php');
+        $h_tags = new EmundusHelperTags();
+
         $db = JFactory::getDBO();
 
-        $query = "SELECT tag, request FROM #__emundus_setup_tags";
-        $db->setQuery($query);
-        $tags = $db->loadAssocList();
+        $query = $db->getQuery(true);
+        $query->select('tag, request')
+            ->from($db->quoteName('#__emundus_setup_tags', 't'))
+            ->where($db->quoteName('t.published') . ' = 1');
+
+        if (!empty($content)) {
+            $tags_content = $h_tags->getVariables($content, 'SQUARE');
+
+            if( !empty($tags_content) ) {
+                $tags_content = array_unique($tags_content);
+                $query->andWhere('t.tag IN ("' . implode('","', $tags_content) .'")');
+            }
+        }
+
+        try {
+            $db->setQuery($query);
+            $tags = $db->loadAssocList();
+        } catch(Exception $e) {
+            JLog::add('Error getting tags model/emails/setTags at query : '.$query->__toString(), JLog::ERROR, 'com_emundus.email');
+            return array('patterns' => array() , 'replacements' => array());
+        }
 
         $constants = $this->setConstants($user_id, $post, $passwd);
 
         $patterns = $constants['patterns'];
         $replacements = $constants['replacements'];
+
         foreach ($tags as $tag) {
-            if (!empty($content)){
-                $tag_pattern = '[' . $tag['tag'] . ']';
-                if(strpos($content, $tag_pattern) === false){
-                    continue;
-                }
-            }
+
             $patterns[] = '/\['.$tag['tag'].'\]/';
             $value = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
 
@@ -504,11 +537,12 @@ class EmundusModelEmails extends JModelList {
                     $replacements[] = $request[0];
                 }
             } elseif (!empty($fnum)) {
-                $request = explode('|', $value);
-                $val = $this->setTagsFabrik($request[1], array($fnum));
+                $request = str_replace('php|', '', $value);
+                $val = $this->setTagsFabrik($request, array($fnum));
 
                 $result = "";
                 try {
+
                     $result = eval("$val");
                 } catch (Exception $e) {
                     JLog::add('Error setTags for tag : ' .  $tag['tag'] . '. Message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
@@ -521,10 +555,10 @@ class EmundusModelEmails extends JModelList {
                     $replacements[] = "";
                 }
             } else {
-                $request = explode('|', $value);
+                $request = str_replace('php|', '', $value);
 
                 try {
-                    $result = eval("$request[1]");
+                    $result = eval("$request");
                 } catch (Exception $e) {
                     JLog::add('Error setTags for tag : ' .  $tag['tag'] . '. Message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                     $result = "";
@@ -831,17 +865,17 @@ class EmundusModelEmails extends JModelList {
 
             $mail_from_name = $jinput->get('mail_from_name', null, 'STRING');
             $mail_from      = $jinput->get('mail_from', null, 'STRING');
+			$mail_to		= $jinput->get('mail_to', null, 'STRING');
+			$mail_body 		= $jinput->get('mail_body', null, 'RAW');
 
             $campaign = @EmundusHelperfilters::getCampaignByID($campaign_id);
 
-            $tags = $this->setTags($this->_em_user->id);
+            $tags = $this->setTags($this->_em_user->id, null, null, '', $mail_from_name.$mail_from.$mail_to);
 
             $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
             $mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
-
-            $mail_to = explode(',', $jinput->get('mail_to', null, 'STRING'));
-
-            $mail_body = $this->setBody($student, $jinput->get('mail_body', null, 'RAW'));
+            $mail_to = explode(',', $mail_to);
+            $mail_body = $this->setBody($student, $mail_body);
 
             //
             // Replacement
@@ -852,7 +886,7 @@ class EmundusModelEmails extends JModelList {
                 'CAMPAIGN_END'          => $campaign['end_date'],
                 'EVAL_DEADLINE'         => date("d/M/Y", mktime(0, 0, 0, date("m")+2, date("d"), date("Y")))
             ];
-            $tags = $this->setTags($student_id, $post, $fnum);
+            $tags = $this->setTags($student_id, $post, $fnum, '', $mail_body);
             $mail_body = preg_replace($tags['patterns'], $tags['replacements'], $mail_body);
 
             //tags from Fabrik ID
@@ -1337,11 +1371,11 @@ class EmundusModelEmails extends JModelList {
             return false;
         }
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
         $m_messages = new EmundusModelMessages();
         $template = $m_messages->getEmail($email);
 
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'groups.php');
         $m_groups = new EmundusModelGroups();
         $users = $m_groups->getUsersByGroups($groups);
 
@@ -1365,7 +1399,7 @@ class EmundusModelEmails extends JModelList {
      * @since v6
      */
     public function sendEmailFromPlatform(int $user, object $template, array $attachments) : void {
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         $current_user = JFactory::getUser();
         $user = JFactory::getUser($user);
         $toAttach = [];
@@ -1406,8 +1440,8 @@ class EmundusModelEmails extends JModelList {
             // Here we also build the HTML being logged to show which files were attached to the email.
             $files = '<ul>';
             foreach ($attachments as $upload) {
-                if (file_exists(JPATH_BASE.DS.$upload)) {
-                    $toAttach[] = JPATH_BASE.DS.$upload;
+                if (file_exists(JPATH_SITE.DS.$upload)) {
+                    $toAttach[] = JPATH_SITE.DS.$upload;
                     $files .= '<li>'.basename($upload).'</li>';
                 }
             }
@@ -1517,7 +1551,7 @@ class EmundusModelEmails extends JModelList {
         } else if ($filter == 'Unpublish') {
             $filterDate = $this->_db->quoteName('se.published') . ' = 0';
         } else {
-            $filterDate = ('1');
+            $filterDate = $this->_db->quoteName('se.published') . ' = 1';
         }
 
         if (empty($recherche)) {

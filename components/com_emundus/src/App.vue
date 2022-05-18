@@ -17,6 +17,7 @@ import moment from "moment";
 
 //Register my components
 import Attachments from "./views/Attachments.vue";
+import fileService from "./services/file.js";
 import list from "./views/list";
 import addcampaign from "./views/addCampaign"
 import addemail from "./views/addEmail"
@@ -55,6 +56,13 @@ export default {
     messagescoordinator,
     messages,
 	},
+  beforeCreate() {
+    fileService.isDataAnonymized().then(response => {
+      if (response.status !== false) {
+        this.$store.dispatch("global/setAnonyme", response.anonyme);
+      }
+    });
+  },
 
   created() {
     if(typeof this.$props.datas != 'undefined') {
@@ -71,7 +79,7 @@ export default {
     }
   },
 
-	mounted() {
+  mounted() {
 		if (this.data.lang) {
 			this.$store.dispatch("global/setLang", this.data.lang.split("-")[0]);
 		} else {
@@ -80,7 +88,6 @@ export default {
 
 		moment.locale(this.$store.state.global.lang);
 
-		// baseUrl
 		if (this.data.base) {
 			this.$store.dispatch(
 				"attachment/setAttachmentPath",

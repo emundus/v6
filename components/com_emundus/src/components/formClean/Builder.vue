@@ -96,7 +96,12 @@ export default {
         title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENU"),
         text: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_DELETEMENUWARNING"),
         type: "warning",
-        showCancelButton: true
+        showCancelButton: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
           axios({

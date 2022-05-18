@@ -3,12 +3,12 @@
     <div class="row rowmodal">
       <div class="em-mb-32">
         <label>{{ helptext }} :</label>
-        <input type="text" v-model="element.params.rollover"/>
+        <input type="text" class="em-w-100" v-model="element.params.rollover"/>
       </div>
       <div class="em-flex-row em-mb-16">
         <label class="require col-md-3">{{ suboptions }} :</label>
       </div>
-      <div class="col-md-10 em-flex-row em-mb-8">
+      <div class="col-md-10 em-flex-row em-mb-16">
         <div class="em-toggle">
           <input type="checkbox"
                  true-value="1"
@@ -21,7 +21,7 @@
           <strong class="b em-toggle-switch"></strong>
           <strong class="b em-toggle-track"></strong>
         </div>
-        <label for="databasejoin_check" class="ml-10px em-ml-8 em-mb-0">{{ translations.DataTables  }}</label>
+        <label for="databasejoin_check" class="em-ml-8 em-mb-0">{{ translations.DataTables  }}</label>
       </div>
       <div class="col-md-10">
         <draggable
@@ -33,13 +33,13 @@
             <span class="icon-handle">
               <span class="material-icons handle">drag_indicator</span>
             </span>
-            <input type="text" v-model="arraySubValues[i]" @change="needtoemit()" :id="'suboption_' + i" @keyup.enter="add"/>
+            <input type="text" class="em-w-100" v-model="arraySubValues[i].sub_label" @change="needtoemit()" :id="'suboption_' + i" @keyup.enter="add"/>
             <button @click.prevent="leave(i)" type="button" class="em-transparent-button em-pointer"><span class="material-icons">remove_circle_outline</span></button>
           </div>
         </draggable>
         <button @click.prevent="add" type="button" class="em-secondary-button em-w-auto em-ml-32" v-if="databasejoin != 1">{{ AddOption }}
         </button>
-        <select v-if="databasejoin == 1" v-model="databasejoin_data" @change="retrieveDataBaseJoinColumns()">
+        <select v-if="databasejoin == 1" v-model="databasejoin_data" class="em-mt-16 em-w-100" @change="retrieveDataBaseJoinColumns()">
           <option v-for="(database,index) in databases" :value="index">{{database.label}}</option>
         </select>
         <div v-if="databasejoin == 1" class="em-mt-16">
@@ -95,7 +95,10 @@ export default {
   methods: {
     add: _.debounce(function () {
       let size = Object.keys(this.arraySubValues).length;
-      this.$set(this.arraySubValues, size, "");
+      this.$set(this.arraySubValues, size, {
+        'sub_value' : null,
+        'sub_label' : '',
+      });
       this.needtoemit();
       let id = 'suboption_' + size.toString();
       setTimeout(() => {
@@ -137,8 +140,12 @@ export default {
               toJTEXT: this.element.params.sub_options.sub_labels
             })
           }).then(response => {
-            Object.values(response.data).forEach(rep => {
-              this.arraySubValues.push(rep);
+          this.element.params.sub_options.sub_values.forEach((value, i) => {
+              let object = {
+                'sub_value' : value,
+                'sub_label' : Object.values(response.data)[i],
+              };
+              this.arraySubValues.push(object);
             });
             this.needtoemit();
           }).catch(e => {
@@ -146,8 +153,8 @@ export default {
           });
         } else {
           this.element.params.sub_options = {
-            'sub_values': [],
-            'sub_labels': [],
+            sub_values: [],
+            sub_labels: [],
           }
           this.arraySubValues = this.element.params.sub_options.sub_labels;
         }
@@ -183,8 +190,12 @@ export default {
             showCancelButton: false,
             showCloseButton: true,
             allowOutsideClick: false,
-            confirmButtonColor: '#de6339',
             confirmButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_OK'),
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            },
           }).then((result) => {
             if (result.value) {
               axios({

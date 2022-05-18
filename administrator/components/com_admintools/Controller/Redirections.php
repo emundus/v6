@@ -1,24 +1,24 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Controller;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\AdminTools\Admin\Controller\Mixin\CustomACL;
 use Exception;
-use FOF30\Controller\DataController;
+use FOF40\Controller\DataController;
 use Joomla\CMS\Language\Text;
 
 class Redirections extends DataController
 {
 	use CustomACL;
 
-	public function copy()
+	public function copy(): void
 	{
 		// CSRF prevention
 		$this->csrfProtection();

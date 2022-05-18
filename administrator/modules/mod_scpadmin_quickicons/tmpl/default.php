@@ -29,8 +29,8 @@ if (version_compare(JVERSION, '3.20', 'lt')) {
     <link href="<?php echo JURI::root(); ?>media/com_securitycheckpro/stylesheets/cpanelui.css" rel="stylesheet" type="text/css">
     
     <?php if (!empty($html)) : ?>
-    <div class="row margin-left-auto">
-        <nav class="quick-icons" aria-label="Securitycheck Pro Info Module" tabindex="-1">
+    <div class="card-body">
+        <nav class="quick-icons px-3 pb-3" aria-label="Securitycheck Pro Info Module" tabindex="-1">
             <ul class="nav flex-wrap">
         <?php echo $html; ?>
             </ul>    

@@ -14,10 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
 
 jimport('joomla.application.component.model');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'files.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
 
 class EmundusModelEvaluation extends JModelList {
@@ -1419,7 +1419,7 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     public function getUsers($current_fnum = null) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
         $session = JFactory::getSession();
         $dbo = $this->getDbo();
@@ -1499,6 +1499,7 @@ class EmundusModelEvaluation extends JModelList {
             $query .= ' WHERE c.fnum like '.$current_fnum;
         }
 
+        $query .= ' AND esc.published = 1 ';
 
         $query .= $q['q'];
         $query .= $group_by;
@@ -2414,12 +2415,12 @@ class EmundusModelEvaluation extends JModelList {
         /* replace old documents by the latest */
         $replace_document = $eMConfig->get('export_replace_doc', 0);
 
-        $tmp_path = JPATH_BASE . DS . 'tmp' . DS;
+        $tmp_path = JPATH_SITE . DS . 'tmp' . DS;
 
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
         $_mEval = new EmundusModelEvaluation;
@@ -2483,7 +2484,7 @@ class EmundusModelEvaluation extends JModelList {
                     case 1:     // simple file
                         /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");          //// remove existing file
                         @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . ".pdf");*/                                                    //// remove existing file
-                        $file = JPATH_BASE . $letter->file;
+                        $file = JPATH_SITE . $letter->file;
                         if (file_exists($file)) {
                             $res->status = true;
                             $rand = rand(0, 1000000);
@@ -2504,7 +2505,7 @@ class EmundusModelEvaluation extends JModelList {
                                 $eMConfig = JComponentHelper::getParams('com_emundus');
                                 $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
                                     $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                 } else {
@@ -2586,7 +2587,7 @@ class EmundusModelEvaluation extends JModelList {
                             ];
 
                             // Generate PDF
-                            $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum);
+                            $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -2600,11 +2601,11 @@ class EmundusModelEvaluation extends JModelList {
 
                             // Get logo
                             preg_match('#src="(.*?)"#i', $letter->header, $tab);
-                            $pdf->logo = JPATH_BASE . DS . @$tab[1];
+                            $pdf->logo = JPATH_SITE . DS . @$tab[1];
 
                             // Get footer
                             preg_match('#src="(.*?)"#i', $letter->footer, $tab);
-                            $pdf->logo_footer = JPATH_BASE . DS . @$tab[1];
+                            $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
                             unset($logo, $logo_footer);
 
                             $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
@@ -2651,7 +2652,7 @@ class EmundusModelEvaluation extends JModelList {
                                 $eMConfig = JComponentHelper::getParams('com_emundus');
                                 $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
                                     $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                 } else {
@@ -2711,7 +2712,7 @@ class EmundusModelEvaluation extends JModelList {
                         @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf");*/
 
                         require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
+                        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
 
                         $m_Export = new EmundusModelExport;
                         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -2732,7 +2733,7 @@ class EmundusModelEvaluation extends JModelList {
 
                         try {
                             $phpWord = new \PhpOffice\PhpWord\PhpWord();
-                            $preprocess = $phpWord->loadTemplate(JPATH_BASE . $letter->file);
+                            $preprocess = $phpWord->loadTemplate(JPATH_SITE . $letter->file);
                             $tags = $preprocess->getVariables();
 
                             $idFabrik = array();
@@ -2816,7 +2817,7 @@ class EmundusModelEvaluation extends JModelList {
                                 }
                             }
 
-                            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
+                            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
                                 $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
 
@@ -2879,7 +2880,7 @@ class EmundusModelEvaluation extends JModelList {
                                     $eMConfig = JComponentHelper::getParams('com_emundus');
                                     $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                     if (!empty($generated_doc_name)) {
-                                        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                         $m_checklist = new EmundusModelChecklist;
                                         $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                     } else {
@@ -2962,7 +2963,7 @@ class EmundusModelEvaluation extends JModelList {
 
                         require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
-                        $inputFileName = JPATH_BASE . $letter->file;
+                        $inputFileName = JPATH_SITE . $letter->file;
                         $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
                         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
 
@@ -3016,7 +3017,7 @@ class EmundusModelEvaluation extends JModelList {
                                         }
 
                                         /// call to file controller
-                                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
+                                        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
                                         $_cFiles = new EmundusControllerFiles;
 
                                         $fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
@@ -3080,7 +3081,7 @@ class EmundusModelEvaluation extends JModelList {
                                 $eMConfig = JComponentHelper::getParams('com_emundus');
                                 $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
                                     $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                 } else {

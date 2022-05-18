@@ -35,15 +35,6 @@
         <option v-for="(cat, index) in notEmptyEmailCategories" :value="cat" :key="'cat_' + index">{{ cat }}</option>
       </select>
 
-      <select
-          class="list-vue-select"
-          v-if="type === 'formulaire' || type === 'grilleEval'"
-          v-model="type"
-      >
-        <option value="formulaire">{{ translations.candidature }}</option>
-        <option value="grilleEval">{{ translations.evaluations }}</option>
-      </select>
-
       <div class="search-container">
         <div class="search em-flex-row">
           <input class="searchTerm"
@@ -217,6 +208,7 @@ export default {
   created() {
     this.datas = this.$store.getters['global/datas'];
     this.type = this.datas.type.value;
+    this.filtersFilter = "&filter=published"
 
     axios({
       method: "get",
@@ -336,13 +328,14 @@ export default {
     },
     paginationNumber(index) {
       if (this.countPages > 10) {
-        return index < 4 || index > this.countPages - 3 || (index > pages - 3 && index < pages + 3) ? index : "...";
+        return index < 4 || index > this.countPages - 3 || (index > this.pages - 3 && index < this.pages + 3) ? index : "...";
       }
 
       return index;
     },
     allFilters() {
-      let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd
+      let controller = this.typeForAdd === 'grilleEval' ? 'form' : this.typeForAdd;
+
       if (this.type !== "files") {
         axios.get("index.php?option=com_emundus&controller=" +
           controller +

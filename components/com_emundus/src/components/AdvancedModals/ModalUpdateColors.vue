@@ -4,7 +4,6 @@
     <modal
             :name="'modalUpdateColors'"
             height="auto"
-            transition="little-move-left"
             :min-width="200"
             :min-height="200"
             :delay="100"

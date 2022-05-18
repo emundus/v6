@@ -27,6 +27,9 @@ $site_offset = $config->get('offset');
             </p>
         </div>
     <?php endif; ?>
+    <?php if (sizeof($currentCampaign) == 0 && sizeof($futurCampaign) == 0 && sizeof($pastCampaign) == 0) : ?>
+        <?php echo JText::_('MOD_EM_CAMPAIGN_NO_CAMPAIGN') ?>
+    <?php else : ?>
     <div class="g-grid" id="navfilter">
         <div class="g-block size-30 navrowtabs">
             <?php if (!empty($pastCampaign) || !empty($currentCampaign) || !empty($futurCampaign)) : ?>
@@ -262,7 +265,7 @@ $site_offset = $config->get('offset');
         <div class="below-content">
             <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course=' . $result->code . '&cid=' . $result->id); ?>
 
-            <?php if ($result->apply_online == 1 && $m_campaign->isLimitObtained($result->id) !== true) : ?>
+            <?php if (($result->apply_online == 1 && !$result->is_limited) || ($result->apply_online == 1 && $result->is_limited && $m_campaign->isLimitObtained($result->id) !== true)) : ?>
                 <?php if ($mod_em_campaign_get_link) : ?>
                     <a class="btn btn-primary btn-creux btn-orange" role="button"
                        href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
@@ -556,6 +559,7 @@ $site_offset = $config->get('offset');
         </div><!-- Close past tab -->
     <?php endif; ?>
     </div><!-- Close tab-content -->
+    <?php endif; ?>
 </form>
 <script type="text/javascript">
     jQuery(document).ready(function () {

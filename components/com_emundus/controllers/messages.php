@@ -41,19 +41,12 @@ class EmundusControllerMessages extends JControllerLegacy {
      * @since 3.8.6
      */
     function gettemplate() {
-
-        require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
-
         $jinput = JFactory::getApplication()->input;
         $template_id = $jinput->post->getInt('select', null);
 
         $m_messages = new EmundusModelMessages();
-        $h_files = new EmundusHelperFiles();
 
-        $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
-        $get_letters_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_letter_attachment');
-
-        $template = $m_messages->getEmail($template_id, $get_candidate_attachments, $get_letters_attachments);
+        $template = $m_messages->getEmail($template_id);
 
         if (!$template) {
             echo json_encode((object)(['status' => false]));
@@ -239,7 +232,6 @@ class EmundusControllerMessages extends JControllerLegacy {
      * @since 3.8.13
      */
     public function previewemail() {
-
         if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
             die(JText::_("ACCESS_DENIED"));
         }
@@ -285,7 +277,6 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    $bcc = $jinput->post->getString('bcc');
 
 	    if (!empty($bcc)) {
-
 		    if (!is_array($bcc)) {
 			    $bcc = [];
 		    }
@@ -354,7 +345,7 @@ class EmundusControllerMessages extends JControllerLegacy {
             'USER_EMAIL' => $fnum->email
         ];
 
-        $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum);
+        $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
         $message = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
         $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
@@ -381,14 +372,14 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
         // If the email sender has the same domain as the system sender address.
-        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
             $mail_from_address = $mail_from;
-        } else {
-            $mail_from_address = $mail_from_sys;
-            if (!empty($mail_from_name) && !empty($mail_from)) {
-                $reply_to = $mail_from_name . ' &lt;' . $mail_from . '&gt;';
-            }
+        } else {*/
+        $mail_from_address = $mail_from_sys;
+        if (!empty($mail_from_name) && !empty($mail_from)) {
+            $reply_to = $mail_from_name . ' &lt;' . $mail_from . '&gt;';
         }
+        //}
 
         $sender = $mail_from_name.' &lt;'.$mail_from_address.'&gt;';
 
@@ -413,7 +404,7 @@ class EmundusControllerMessages extends JControllerLegacy {
         if (!empty($attachments['upload'])) {
             // In the case of an uploaded file, just add it to the email.
             foreach ($attachments['upload'] as $upload) {
-                if (file_exists(JPATH_BASE.DS.$upload)) {
+                if (file_exists(JPATH_SITE.DS.$upload)) {
                     $toAttach['upload'][] = pathinfo($upload)['basename'];
                 }
             }
@@ -582,29 +573,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         $template = $m_messages->getEmail($template_id);
 
         foreach ($fnums as $fnum) {
-            if($tags_str != null){
-                $db = JFactory::getDBO();
-                $query = $db->getQuery(true);
-
-                $tags = explode(',',$tags_str);
-
-
-                foreach($tags as $tag){
-                    try{
-                        $query->clear()
-                            ->insert($db->quoteName('#__emundus_tag_assoc'));
-                        $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
-                            ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
-                            ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
-
-                        $db->setQuery($query);
-                        $db->execute();
-                    }  catch (Exception $e) {
-                        JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
-                    }
-                }
-            }
-
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
             $toAttach = [];
@@ -620,7 +588,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'USER_EMAIL' => $fnum->email
             ];
 
-            $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum);
+            $tags = $m_emails->setTags($fnum->applicant_id, $post, $fnum->fnum, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
             $body = $m_emails->setTagsFabrik($mail_message, [$fnum->fnum]);
             $subject = $m_emails->setTagsFabrik($mail_subject, [$fnum->fnum]);
 
@@ -645,14 +613,18 @@ class EmundusControllerMessages extends JControllerLegacy {
 	        $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 	        $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
+            /* DEPRECATED */
 	        // If the email sender has the same domain as the system sender address.
-	        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+	        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 		        $mail_from_address = $mail_from;
 	        } else {
-		        $mail_from_address = $mail_from_sys;
-	        }
+            $mail_from_address = $mail_from_sys;
+	        }*/
 
-	        // Set sender
+            $mail_from_address = $mail_from_sys;
+
+
+            // Set sender
 	        $sender = [
 		        $mail_from_address,
 		        $mail_from_name
@@ -680,8 +652,8 @@ class EmundusControllerMessages extends JControllerLegacy {
             if (!empty($attachments['upload'])) {
                 // In the case of an uploaded file, just add it to the email.
                 foreach ($attachments['upload'] as $upload) {
-                    if (file_exists(JPATH_BASE.DS.$upload)) {
-                        $toAttach[] = JPATH_BASE.DS.$upload;
+                    if (file_exists(JPATH_SITE.DS.$upload)) {
+                        $toAttach[] = JPATH_SITE.DS.$upload;
                     }
                 }
             }
@@ -721,8 +693,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 //
 //                            case '1':
 //                                // This is a static file, we just need to find its path add it as an attachment.
-//                                if (file_exists(JPATH_BASE.$letter->file)) {
-//                                    $toAttach[] = JPATH_BASE.$letter->file;
+//                                if (file_exists(JPATH_SITE.$letter->file)) {
+//                                    $toAttach[] = JPATH_SITE.$letter->file;
 //                                }
 //                            break;
 //
@@ -826,6 +798,30 @@ class EmundusControllerMessages extends JControllerLegacy {
                 echo 'Error sending email: ' . $send->__toString();
                 JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
             } else {
+                // Assoc tags if email has been sent
+                if($tags_str != null || !empty($template->tags)){
+                    $db = JFactory::getDBO();
+                    $query = $db->getQuery(true);
+
+                    $tags = array_filter(array_merge(explode(',',$tags_str),explode(',',$template->tags)));
+
+                    foreach($tags as $tag){
+                        try{
+                            $query->clear()
+                                ->insert($db->quoteName('#__emundus_tag_assoc'));
+                            $query->set($db->quoteName('fnum') . ' = ' . $db->quote($fnum->fnum))
+                                ->set($db->quoteName('id_tag') . ' = ' . $db->quote($tag))
+                                ->set($db->quoteName('user_id') . ' = ' . $db->quote($fnum->applicant_id));
+
+                            $db->setQuery($query);
+                            $db->execute();
+                        }  catch (Exception $e) {
+                            JLog::add('NOT IMPORTANT IF DUPLICATE ENTRY : Error getting template in model/messages at query :'.$query->__toString(). " with " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                        }
+                    }
+                }
+
+                // Log email
                 $sent[] = $fnum->email;
                 $log = [
                     'user_id_from' => $user->id,
@@ -911,7 +907,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 				'USER_EMAIL' => $user->email
 			];
 
-			$tags = $m_emails->setTags($user->id, $post);
+			$tags = $m_emails->setTags($user->id, $post, null, '', $mail_from.$mail_from_name.$mail_subject.$mail_message);
 
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $mail_subject);
@@ -925,11 +921,11 @@ class EmundusControllerMessages extends JControllerLegacy {
 			$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
 			// If the email sender has the same domain as the system sender address.
-			if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+			/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 				$mail_from_address = $mail_from;
-			} else {
-				$mail_from_address = $mail_from_sys;
-			}
+			} else {*/
+            $mail_from_address = $mail_from_sys;
+			//}
 
 			// Set sender
 			$sender = [
@@ -958,8 +954,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 				// Here we also build the HTML being logged to show which files were attached to the email.
 				$files = '<ul>';
 				foreach ($attachments as $upload) {
-					if (file_exists(JPATH_BASE.DS.$upload)) {
-						$toAttach[] = JPATH_BASE.DS.$upload;
+					if (file_exists(JPATH_SITE.DS.$upload)) {
+						$toAttach[] = JPATH_SITE.DS.$upload;
 						$files .= '<li>'.basename($upload).'</li>';
 					}
 				}
@@ -1009,17 +1005,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 * @throws \PhpOffice\PhpWord\Exception\Exception
 	 */
     function sendEmail($fnum, $email_id, $post = null, $attachments = [], $bcc = false) {
-
         require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'files.php');
 
         $m_messages = new EmundusModelMessages();
 	    $m_emails   = new EmundusModelEmails();
 	    $m_files    = new EmundusModelFiles();
-	    $h_files    = new EmundusHelperFiles();
 	    $m_campaign = new EmundusModelCampaign();
 
 	    $user   = JFactory::getUser();
@@ -1027,11 +1020,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
 	    // Get additional info for the fnums such as the user email.
 	    $fnum = $m_files->getFnumInfos($fnum);
-
-	    $get_candidate_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_candidate_attachment');
-	    $get_letters_attachments = $h_files->tableExists('#__emundus_setup_emails_repeat_letter_attachment');
-	    $template = $m_messages->getEmail($email_id, $get_candidate_attachments, $get_letters_attachments);
-
+	    $template = $m_messages->getEmail($email_id);
 	    $programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 
 	    // In case no post value is supplied
@@ -1045,23 +1034,32 @@ class EmundusControllerMessages extends JControllerLegacy {
 			    'USER_EMAIL'     => $fnum['email']
 		    ];
 	    }
-	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
+	    $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $template->emailfrom.$template->name.$template->subject.$template->message);
 
 	    // Get default mail sender info
 	    $mail_from_sys = $config->get('mailfrom');
 	    $mail_from_sys_name = $config->get('fromname');
 
 	    // If no mail sender info is provided, we use the system global config.
-	    $mail_from_name = $user->name;
-	    $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
+        if(!empty($template->emailfrom)) {
+            $mail_from = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
+        } else {
+            $mail_from = $mail_from_sys;
+        }
+        if(!empty($template->name)){
+            $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $template->name);
+        } else {
+            $mail_from_name = $mail_from_sys_name;
+        }
 
-	    // If the email sender has the same domain as the system sender address.
-	    if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+        /* DEPRECATED */
+	    // If the email sender has the same domain as the system sender address
+	    /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
 		    $mail_from_address = $mail_from;
 	    } else {
-		    $mail_from_address = $mail_from_sys;
-		    $mail_from_name = $mail_from_sys_name;
-	    }
+            $mail_from_address = $mail_from_sys;
+	    }*/
+        $mail_from_address = $mail_from_sys;
 
 	    // Set sender
 	    $sender = [
@@ -1139,8 +1137,8 @@ class EmundusControllerMessages extends JControllerLegacy {
 
                         case '1':
                             // This is a static file, we just need to find its path add it as an attachment.
-                            if (file_exists(JPATH_BASE.$letter->file)) {
-                                $toAttach[] = JPATH_BASE.$letter->file;
+                            if (file_exists(JPATH_SITE.$letter->file)) {
+                                $toAttach[] = JPATH_SITE.$letter->file;
                             }
                             break;
 
@@ -1179,13 +1177,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         $send = $mailer->Send();
 
 	    if ($send !== true) {
-
 		    JLog::add($send, JLog::ERROR, 'com_emundus');
 		    return false;
-
 	    } else {
-
-		    $sent[] = $fnum['email'];
 		    $log = [
 			    'user_id_from'  => $user->id,
 			    'user_id_to'    => $fnum['applicant_id'],
@@ -1220,7 +1214,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         $m_email = new EmundusModelEmails;
 		$m_messages = new EmundusModelMessages();
 
-		$user   = JFactory::getUser();
 		$config = JFactory::getConfig();
 
 		$template = $m_messages->getEmail($email);
@@ -1230,16 +1223,23 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mail_from_sys_name = $config->get('fromname');
 
 		// If no mail sender info is provided, we use the system global config.
-		$mail_from_name = $user->name;
-		$mail_from      = $template->emailfrom;
+        $mail_from = $mail_from_sys;
+        if(!empty($template->emailfrom)){
+            $mail_from = $template->emailfrom;
+        }
+        $mail_from_name = $mail_from_sys_name;
+        if(!empty($template->name)){
+            $mail_from_name = $template->name;
+        }
 
+        /* DEPRECATED */
 		// If the email sender has the same domain as the system sender address.
-		if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
+		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
 			$mail_from_address = $mail_from;
 		else {
-			$mail_from_address = $mail_from_sys;
-			$mail_from_name = $mail_from_sys_name;
-		}
+            $mail_from_address = $mail_from_sys;
+		}*/
+        $mail_from_address = $mail_from_sys;
 
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
@@ -1257,7 +1257,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         if($user_id != null) {
             $password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-            $post = $m_email->setTags($user_id, $post, null, $password);
+            $post = $m_email->setTags($user_id, $post, null, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
 
             $mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
 		    $mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
@@ -1558,9 +1558,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
-        $m_messages = new EmundusModelMessages();
         $m_emails = new EmundusModelEmails();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
@@ -1582,14 +1581,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         /// from fnum --> detect candidat email
         $fnum_info = $m_files->getFnumInfos($fnum);
 
-        $candidat_email = $fnum_info['email'];
-
-        /// get message recap by fnum --> reuse the function models/messages.php/getMessageRecapByFnum($fnum)
-//        $message = $m_messages->getMessageRecapByFnum($fnum);
-//
-//        $email_recap = $message['message_recap'];                   /// length = 1
-//        $letter_recap = $message['attached_letter'];                /// length >= 1
-
         // get programme info
         $programme = $m_campaign->getProgrammeByTraining($fnum_info['training']);
 
@@ -1606,7 +1597,6 @@ class EmundusControllerMessages extends JControllerLegacy {
             'USER_EMAIL' => $fnum_info['email'],
         ];
 
-        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum']);
         /* old code
         $body = $m_emails->setTagsFabrik($email_recap[0]->message, [$fnum_info['fnum']]);
         $subject = $m_emails->setTagsFabrik($email_recap[0]->subject, [$fnum_info['fnum']]);
@@ -1631,6 +1621,9 @@ class EmundusControllerMessages extends JControllerLegacy {
         $body = $m_emails->setTagsFabrik($raw['content'], [$fnum_info['fnum']]);
         $subject = $m_emails->setTagsFabrik($raw['title'], [$fnum_info['fnum']]);
 
+        /* get tags from subject, body, mail from and mail address */
+        $tags = $m_emails->setTags($fnum_info['applicant_id'], $post, $fnum_info['fnum'], '', $mail_from.$mail_from_name.$subject.$body);
+
         /* attach email template to body */
         $body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template);
 
@@ -1642,11 +1635,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         $mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 
         // If the email sender has the same domain as the system sender address.
-        if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
+        /*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1)) {
             $mail_from_address = $mail_from;
-        } else {
-            $mail_from_address = $mail_from_sys;
-        }
+        } else {*/
+        $mail_from_address = $mail_from_sys;
+        //}
 
         // Set sender
         $sender = [
@@ -1722,11 +1715,15 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnum = $jinput->post->getRaw('fnum');
         $tmpl = $jinput->post->getRaw('tmpl');
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
-        $_mMessages = new EmundusModelMessages;
+        if(!empty($fnum)) {
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
+            $_mMessages = new EmundusModelMessages;
 
-        $_tags = $_mMessages->addTagsByFnum($fnum,$tmpl);
-        echo json_encode(['status'=>true]);
+            $_tags = $_mMessages->addTagsByFnum($fnum, $tmpl);
+            echo json_encode(['status'=>true]);
+        } else {
+            echo json_encode(['status'=>false]);
+        }
         exit;
     }
 

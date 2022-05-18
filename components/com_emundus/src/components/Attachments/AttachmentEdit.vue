@@ -4,9 +4,10 @@
       <h2 class="title">{{ attachment.value }}</h2>
       <div class="editable-data">
         <div class="input-group">
-          <label for="description">{{ translate("DESCRIPTION") }} </label>
+          <label for="description">{{ translate("DESCRIPTION") }}</label>
           <textarea
               name="description"
+              id="description"
               type="text"
               v-model="attachmentDescription"
               :disabled="!canUpdate"
@@ -80,7 +81,7 @@
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}</span>
           <span>{{ formattedDate(attachment.timedate) }}</span>
         </div>
-        <div v-if="attachment.user_id">
+        <div v-if="attachment.user_id && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}</span>
           <span>{{ getUserNameById(attachment.user_id) }}</span>
         </div>
@@ -88,7 +89,7 @@
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}</span>
           <span>{{ this.categories[attachment.category] }}</span>
         </div>
-        <div v-if="attachment.modified_by">
+        <div v-if="attachment.modified_by && canSee">
           <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}</span>
           <span>{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
@@ -130,6 +131,7 @@ export default {
       categories: {},
       file: null,
       canUpdate: false,
+      canSee: true,
       error: false,
       errorMessage: "",
       attachmentIsValidated: "-2",
@@ -142,12 +144,13 @@ export default {
     this.canUpdate = this.$store.state.user.rights[this.fnum]
         ? this.$store.state.user.rights[this.fnum].canUpdate
         : false;
+    this.canSee = !this.$store.state.global.anonyme;
     this.attachment = this.$store.state.attachment.selectedAttachment;
     this.categories = this.$store.state.attachment.categories;
 
     this.attachmentCanBeViewed = this.attachment.can_be_viewed == "1";
     this.attachmentCanBeDeleted = this.attachment.can_be_deleted == "1";
-    this.attachmentDescription = this.attachment.description;
+    this.attachmentDescription = this.attachment.upload_description;
     this.attachmentIsValidated = this.attachment.is_validated;
   },
   methods: {
@@ -173,7 +176,7 @@ export default {
 
       if (response.status.update) {
         this.attachment.modified_by = this.$store.state.user.currentUser;
-        this.attachment.description = this.attachmentDescription;
+        this.attachment.upload_description = this.attachmentDescription;
         this.attachment.is_validated = this.attachmentIsValidated;
         this.attachment.can_be_viewed = this.attachmentCanBeViewed;
         this.attachment.can_be_deleted = this.attachmentCanBeDeleted;

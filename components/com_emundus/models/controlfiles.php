@@ -138,7 +138,7 @@ class EmundusModelControlfiles extends JModelList
 	
 	function getListFiles () {
 		$tabfile = array();
-		return $this->dir_walk('files'.DS, true, JPATH_BASE.DS.'images'.DS.'emundus'.DS, $tabfile, $this->_getFirstUserId());
+		return $this->dir_walk('files'.DS, true, JPATH_SITE.DS.'images'.DS.'emundus'.DS, $tabfile, $this->_getFirstUserId());
 	}
 }
 ?>

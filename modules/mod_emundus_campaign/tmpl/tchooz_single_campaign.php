@@ -42,10 +42,11 @@ switch ($order) {
         $month = ( $currentCampaign->formation_end !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($currentCampaign->formation_end, $site_offset))->format("F Y") : "";
         break;
 }
+
 ?>
 
 <div class="single-campaign-tabs">
-    <?php if (!empty($faq_articles) || !empty($files)) : ?>
+    <?php if ((in_array('faq', $modules_tabs) && !empty($faq_articles)) || (in_array('documents', $modules_tabs) && !empty($files))) : ?>
         <button class="btn btn-primary current-tab" onclick="displayTab('campaign')" id="campaign_tab">
             <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
         </button>
@@ -63,7 +64,7 @@ switch ($order) {
 </div>
 <div class="g-block size-100 tchooz-single-campaign">
     <div class="single-campaign" id="campaign">
-        <div class="right-side-tchooz col-md-4">
+        <div class="right-side-tchooz col-md-12">
             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                 <div class="campaingapplycontent">
                     <legend><?php echo JText::_('CAMPAIGN_PERIOD'); ?></legend>
@@ -144,26 +145,30 @@ switch ($order) {
             </div>
         <?php endif; ?>
     </div><!-- Close campaign-content -->
-    <div id="faq">
-        <?php foreach ($faq_articles as $article) :?>
-            <h2> <?php echo $article->title ?></h2>
-            <p> <?php echo $article->introtext ?></p>
-            <hr>
-        <?php endforeach; ?>
-    </div>
-    <div id="documents">
-        <div class="em-campaign-dropfiles">
-        <ul>
-            <?php foreach($files as $file) { ?>
-                <a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >
-                    <li class="em-campaign-dropfiles__btn">
-                        <?php echo $file->title_file.".".$file->ext; ?><span><i class="fas fa-arrow-circle-down"></i></span>
-                    </li>
-                </a>
-            <?php } ?>
-        </ul>
+    <?php if (in_array('faq', $modules_tabs) && !empty($faq_articles)) : ?>
+        <div id="faq">
+            <?php foreach ($faq_articles as $article) :?>
+                <h2> <?php echo $article->title ?></h2>
+                <p> <?php echo $article->introtext ?></p>
+                <hr>
+            <?php endforeach; ?>
         </div>
-    </div>
+    <?php endif ?>
+    <?php if (in_array('documents', $modules_tabs) && !empty($files)) : ?>
+        <div id="documents">
+            <div class="em-campaign-dropfiles">
+            <ul>
+                <?php foreach($files as $file) { ?>
+                    <a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >
+                        <li class="em-campaign-dropfiles__btn">
+                            <?php echo $file->title_file.".".$file->ext; ?><span><i class="fas fa-arrow-circle-down"></i></span>
+                        </li>
+                    </a>
+                <?php } ?>
+            </ul>
+            </div>
+        </div>
+    <?php endif ?>
 
 </div>
 
@@ -172,11 +177,11 @@ switch ($order) {
 
         window.onload = function() {
             document.getElementById('campaign_tab').classList.add('current-tab');
-            <?php if (in_array('faq', $modules_tabs)) : ?>
+            <?php if (in_array('faq', $modules_tabs)  && !empty($faq_articles)) : ?>
                 document.getElementById('faq').style.display = 'none';
             <?php endif; ?>
 
-            <?php if (in_array('documents', $modules_tabs)) : ?>
+            <?php if (in_array('documents', $modules_tabs)  && !empty($files)) : ?>
                 document.getElementById('documents').style.display = 'none';
                 if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
                     document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
@@ -214,6 +219,10 @@ switch ($order) {
                     }
                     break;
                 default:
+                    document.getElementById('faq').style.display = 'none';
+                    document.getElementById('faq_tab').classList.remove('current-tab');
+                    document.getElementById('documents').style.display = 'none';
+                    document.getElementById('documents_tab').classList.remove('current-tab');
                     break;
             }
             current_tab = tab;

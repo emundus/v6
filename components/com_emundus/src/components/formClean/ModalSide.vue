@@ -25,7 +25,7 @@
       <div>
         <div class="em-mb-16">
           <label>{{translations.Name}} :</label>
-          <input v-model="label[actualLanguage]" type="text" maxlength="40" class="form__input field-general w-input" style="margin: 0" :class="{ 'is-invalid': errors}"/>
+          <input v-model="label[actualLanguage]" type="text" maxlength="40" class="em-w-100" style="margin: 0" :class="{ 'is-invalid': errors}"/>
         </div>
         <p v-if="errors" class="em-red-500-color">
           <span class="em-red-500-color">{{translations.LabelRequired}}</span>
@@ -243,10 +243,14 @@ export default {
         text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
         type: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#de6339',
         confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
         cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-confirm-button',
+        },
       }).then(result => {
         if (result.value) {
           axios({

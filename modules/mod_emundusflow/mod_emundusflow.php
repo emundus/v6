@@ -24,6 +24,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 
     // Load Joomla framework classes
     $document = JFactory::getDocument();
@@ -81,13 +83,14 @@ if (isset($user->fnum) && !empty($user->fnum)) {
     $m_application = new EmundusModelApplication;
     $m_files = new EmundusModelFiles;
     $m_profile = new EmundusModelProfile;
+    $m_emails = new EmundusModelEmails;
+    $m_campaign = new EmundusModelCampaign;
 
     $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
     $paid = null;
 
     if ($application_fee) {
         $fnumInfos = $m_files->getFnumInfos($user->fnum);
-
         $order = $m_application->getHikashopOrder($fnumInfos);
         $paid = !empty($order);
         $cart = $m_application->getHikashopCartUrl($user->profile);
@@ -121,12 +124,17 @@ if (isset($user->fnum) && !empty($user->fnum)) {
                 }
 
             }
-            if(!empty($cart)){
+            if (!empty($cart)) {
                 $cartorder = $m_application->getHikashopCart($fnumInfos);
                 $checkout_url = 'cart' . $user->profile;
             } elseif (!$paid) {
                 $orderCancelled = false;
-                $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document))) . '&usekey=fnum&rowid=' . $user->fnum;
+
+                $checkout_url = $m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document);
+                if(strpos($checkout_url,'${') !== false) {
+                    $checkout_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
+                }
+                $checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url)) . '&usekey=fnum&rowid=' . $user->fnum;
 
                 $cancelled_orders = $m_application->getHikashopOrder($fnumInfos, true);
 
@@ -166,6 +174,13 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         if (!empty($user->end_date)) {
             $is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date))?true:false;
         }
+    }
+
+    $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+    if (!empty($current_phase) && !empty($current_phase->end_date)) {
+        $deadline = new JDate($current_phase->end_date);
+    } else {
+        $deadline = !empty($admission) ? new JDate($user->fnums[$user->fnum]->admission_end_date) : new JDate($user->end_date);
     }
 
     require(JModuleHelper::getLayoutPath('mod_emundusflow', $layout));

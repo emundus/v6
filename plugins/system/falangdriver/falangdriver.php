@@ -7,6 +7,8 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die;
 
 //Global definitions use for front
@@ -23,15 +25,22 @@ jimport('joomla.plugin.plugin');
 class plgSystemFalangdriver extends JPlugin
 {
 
+	/**
+	 * Affects constructor behavior. If true, language files will be loaded automatically.
+	 *
+	 * @var    boolean
+	 * @since  3.10.2
+	 */
+	protected $autoloadLanguage = true;
+
 	public function __construct(&$subject, $config = array())
 	{
-
-
 		parent::__construct($subject, $config);
-		//load plugin language
-		$this->loadLanguage();
 
 		$this->setupCoreFileOverride();
+
+		//use for finder content plugin
+		$this->displayInfoMessage();
 
         // This plugin is only relevant for use within the frontend!
 		if (JFactory::getApplication()->isAdmin())
@@ -419,43 +428,31 @@ class plgSystemFalangdriver extends JPlugin
     }
 
 
-    function setupDatabaseDriverOverride()
-    {
-        //override only the override file exist
-        if (file_exists(dirname(__FILE__) . '/falang_database.php'))
-        {
-            require_once( dirname(__FILE__) . '/falang_database.php');
+	function setupDatabaseDriverOverride()
+	{
+		//override only the override file exist
+		if (file_exists(dirname(__FILE__) . '/falang_database.php')) {
+			require_once(dirname(__FILE__) . '/falang_database.php');
 
-            $conf = JFactory::getConfig();
+			$conf = JFactory::getConfig();
 
-            $host = $conf->get('host');
-            $user = $conf->get('user');
-            $password = $conf->get('password');
-            $db = $conf->get('db');
-            $dbprefix = $conf->get('dbprefix');
-            $driver = $conf->get('dbtype');
-            $debug = $conf->get('debug');
+			$host = $conf->get('host');
+			$user = $conf->get('user');
+			$password = $conf->get('password');
+			$db = $conf->get('db');
+			$dbprefix = $conf->get('dbprefix');
+			$driver = $conf->get('dbtype');
+			$debug = $conf->get('debug');
 
-            $options = array('driver' => $driver,"host" => $host, "user" => $user, "password" => $password, "database" => $db, "prefix" => $dbprefix, "select" => true);
-            $db = new JFalangDatabase($options);
-            $db->setDebug($debug);
+			$options = array('driver' => $driver, "host" => $host, "user" => $user, "password" => $password, "database" => $db, "prefix" => $dbprefix, "select" => true);
+			$db = new JFalangDatabase($options);
 
+			Factory::$database = null;//
+			Factory::$database = $db;
 
-            if ($db->getErrorNum() > 2)
-            {
-                JError::raiseError('joomla.library:' . $db->getErrorNum(), 'JDatabase::getInstance: Could not connect to database <br/>' . $db->getErrorMsg());
-            }
+		}
 
-            // replace the database handle in the factory
-            JFactory::$database = null;
-            JFactory::$database = $db;
-
-            $test = JFactory::getDBO();
-
-        }
-
-    }
-
+	}
     private function setBuffer()
     {
         $doc = JFactory::getDocument();
@@ -490,9 +487,14 @@ class plgSystemFalangdriver extends JPlugin
 	    }
     }
 
-	//use to set the value of the custom fields to the falang translation form
-	//custom fields exist only since Joomla 3.7
-	//actually can't work because fields_values table don't have id key
+
+	/*
+	 * use to set the value of the custom fields to the falang translation form
+	 * actually can't work perfectly because fields_values table don't have id key
+	 *
+	 * @since 3.10.3 load publish/unpublish custom field translation
+	 *
+	 *  */
 
 	private function loadCustomFields($form, $data){
 
@@ -555,8 +557,8 @@ class plgSystemFalangdriver extends JPlugin
 			if (empty($language_id)){
 				$language_id = $select_language_id;
 			}
-			//load com_fields values (json format)
-			$translations =  $fManager->getRawFieldTranslations($content_element->getTableName(),'com_fields',$reference_id,$language_id);
+			//load com_fields values (json format) published or unpublish value
+			$translations =  $fManager->getRawFieldTranslations($content_element->getTableName(),'com_fields',$reference_id,$language_id,false);
 
 
 			if (empty($translations)) {
@@ -715,6 +717,9 @@ class plgSystemFalangdriver extends JPlugin
 	/**
 	 * We need to prepare custom fields per plugin because #__fields_values doesn't have a primary key
 	 *
+	 * $since 3.10.3 load only published by param's
+	 *               fix subform custom field translation
+	 *
 	 * @param $context
 	 * @param $item
 	 * @param $field
@@ -745,7 +750,8 @@ class plgSystemFalangdriver extends JPlugin
 		$languageTag  = JFactory::getLanguage()->getTag();
 		$id_lang = $fManager->getLanguageID($languageTag);
 
-		$translations = FalangManager::getInstance()->getRawFieldTranslations($content_element->getTableName(),'com_fields',$item->{$content_element->getReferenceId()},$id_lang);
+		//load only published
+		$translations = FalangManager::getInstance()->getRawFieldTranslations($content_element->getTableName(),'com_fields',$item->{$content_element->getReferenceId()},$id_lang,true);
 
 		if (empty($translations)) {
 			return;
@@ -758,13 +764,16 @@ class plgSystemFalangdriver extends JPlugin
 			$field->valueUntranslated    = $field->value;
 			$field->rawvalueUntranslated = $field->rawvalue;
 
-			if ($field->type != 'repeatable'){
-				$field->value                = $json_value[$field->name];
-				$field->rawvalue             = $json_value[$field->name];
-			} else {
-				//repeatable value are json encoded
-				$field->value                = json_encode($json_value[$field->name]);
-				$field->rawvalue             = json_encode($json_value[$field->name]);
+			switch ($field->type) {
+				case 'repeatable':
+				case 'subform' :
+					$field->value                = json_encode($json_value[$field->name]);
+					$field->rawvalue             = json_encode($json_value[$field->name]);
+					break;
+				default :
+					$field->value                = $json_value[$field->name];
+					$field->rawvalue             = $json_value[$field->name];
+					break;
 			}
 
 		}
@@ -815,5 +824,28 @@ class plgSystemFalangdriver extends JPlugin
 
 		//for front
 
+	}
+
+	/*
+	 * Display message on Indexed content view
+	 * since 3.10.2
+	 * */
+	public function displayInfoMessage()
+	{
+		if (JFactory::getApplication()->isClient('site')) {
+			return;
+		}
+		$input = JFactory::getApplication()->input;
+		$option = $input->get('option');
+		$view = $input->get('view', 'index');
+		if ($option == 'com_finder' && $view == 'index') {
+			//check if finder content is publisshed
+			$enabled_finder_content = JPluginHelper::isEnabled('finder', 'content');
+			$enabled_finder_falang_content = JPluginHelper::isEnabled('finder', 'falangcontent');
+
+			if ($enabled_finder_content && $enabled_finder_falang_content) {
+				JFactory::getApplication()->enqueueMessage(JText::_('PLG_SYSTEM_FALANGDRIVER_CONTENT_FINDER_INFO_MSG'), 'warning');
+			}
+		}
 	}
 }

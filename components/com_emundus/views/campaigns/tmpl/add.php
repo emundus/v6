@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     Joomla
- * @subpackage  com_emundus_onboard
+ * @subpackage  com_emundus
  *
  * @copyright   Copyright (C) 2005 - 2018 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -51,6 +51,8 @@ JText::script('COM_EMUNDUS_ONBOARD_FILES_LIMIT_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
 JText::script('COM_EMUNDUS_ONBOARD_TRANSLATE_IN');
 JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_INTRO_DESC');
+JText::script('COM_EMUNDUS_GLOBAL_INFORMATIONS');
+JText::script('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -58,6 +60,7 @@ JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+JText::script('BACK');
 ## END ##
 
 $lang = JFactory::getLanguage();

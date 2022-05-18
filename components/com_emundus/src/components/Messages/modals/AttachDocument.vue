@@ -30,7 +30,7 @@
             </div>
             <vue-dropzone
                 ref="dropzone"
-                id="customdropzone"
+                id="customdropzone_messenger"
                 :include-styling="false"
                 :options="dropzoneOptions"
                 :useCustomSlot=true

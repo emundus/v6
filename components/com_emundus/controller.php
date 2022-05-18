@@ -1464,11 +1464,23 @@ class EmundusController extends JControllerLegacy {
 
         $current_user = JFactory::getSession()->get('emundusUser');
 
+        $fnum= "";
+        if($current_user->id == $uid){
+            $fnum = $current_user->fnum;
+        }
+
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
         if (!empty(JFactory::getUser($uid)->id)) {
 
             $db = JFactory::getDBO();
-            $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads WHERE user_id = ' . $uid . ' AND filename like ' . $db->Quote($file);
+            $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
+            if(!empty($fnum)){
+                $query.= " WHERE fnum like ". $db->quote($fnum);
+            } else{
+                $query.= " WHERE user_id = " . $uid;
+            }
+            $query .= " AND filename like " . $db->Quote($file);
+
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
 

@@ -31,7 +31,7 @@ class PlgEmundusEb_book_event_status extends JPlugin {
     function onAfterStatusChange($fnum,$state) {
         $status_to_check = $this->params->get('eb_book_event_status_step', '');
 
-        // No need to continue if the status is not in the list of statuses 
+        // No need to continue if the status is not in the list of statuses
         if (!in_array($state,explode(',',$status_to_check))) {
             return false;
         }
@@ -78,12 +78,13 @@ class PlgEmundusEb_book_event_status extends JPlugin {
                         $db->setQuery($query);
                         $db->execute();
                     }
-                break;
+                    break;
 
                 // Register the user to the event
                 case 4:
                     if (empty($registration->eb_registration)) {
                         $query
+                            ->clear()
                             ->select('event')
                             ->from($db->quoteName('#__emundus_setup_campaigns'))
                             ->where($db->quoteName('id') . ' = ' . $fnumInfos['id']);
@@ -118,7 +119,7 @@ class PlgEmundusEb_book_event_status extends JPlugin {
                             ->update('#__eb_registrants')
                             ->set($db->quoteName('published') . ' = 1')
                             ->where($db->quoteName('id') . ' = ' . $db->quote($registration->eb_registration));
-                            
+
                         $db->setQuery($query);
                         $db->execute();
                     }

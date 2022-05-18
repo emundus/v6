@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -20,7 +20,7 @@ require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 
 JFormHelper::loadFieldClass('subform');
 
-class JFormFieldRL_Subform extends \JFormFieldSubform
+class JFormFieldRL_Subform extends JFormFieldSubform
 {
 
 	public function __construct($form = null)

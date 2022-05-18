@@ -102,10 +102,14 @@
               text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -142,10 +146,14 @@
               text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -186,10 +194,14 @@
               text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -229,10 +241,14 @@
               text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -275,10 +291,14 @@
               title: this.translate("COM_EMUNDUS_ONBOARD_PROGUNPUBLISH"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -309,10 +329,14 @@
               title: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNUNPUBLISH"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -361,10 +385,14 @@
               title: this.translate("COM_EMUNDUS_ONBOARD_FORMUNPUBLISH"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -478,10 +506,14 @@
               title: this.translate("COM_EMUNDUS_ONBOARD_CAMPAIGNDUPLICATE"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);
@@ -501,10 +533,14 @@
               title: this.translate("COM_EMUNDUS_ONBOARD_FORMDUPLICATE"),
               type: "warning",
               showCancelButton: true,
-              confirmButtonColor: '#de6339',
               confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
               cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true
+              reverseButtons: true,
+              customClass: {
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button',
+              },
             }).then(result => {
               if (result.value) {
                 this.$emit("updateLoading",true);

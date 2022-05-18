@@ -1,5 +1,5 @@
 <template>
-  <div class="em-flex-column">
+  <div class="em-flex-column em-edit-style-vue">
     <notifications
         group="foo-velocity"
         animation-type="velocity"

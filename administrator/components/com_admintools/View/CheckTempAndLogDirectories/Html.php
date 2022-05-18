@@ -1,15 +1,15 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\View\CheckTempAndLogDirectories;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
-use FOF30\View\DataView\Html as BaseView;
+use FOF40\View\DataView\Html as BaseView;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
@@ -22,7 +22,7 @@ class Html extends BaseView
 			HTMLHelper::_('behavior.modal');
 		}
 
-		$this->addJavascriptFile('admin://components/com_admintools/media/js/CheckTempAndLogDirectories.min.js');
+		$this->addJavascriptFile('admin://components/com_admintools/media/js/CheckTempAndLogDirectories.min.js', $this->container->mediaVersion, 'text/javascript', true);
 
 		Text::script('COM_ADMINTOOLS_LBL_CHECKTEMPANDLOGDIRECTORIES_CHECKCOMPLETED', true);
 	}

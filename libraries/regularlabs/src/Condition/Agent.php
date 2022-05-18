@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -36,11 +36,34 @@ abstract class Agent extends Condition
 	}
 
 	/**
-	 * isMobile
+	 * setDevice
 	 */
-	public function isMobile()
+	private function getDevice()
 	{
-		return $this->getDevice() == 'mobile';
+		if ( ! is_null($this->device))
+		{
+			return $this->device;
+		}
+
+		$detect = new MobileDetect;
+
+		$this->is_mobile = $detect->isMobile();
+
+		switch (true)
+		{
+			case($detect->isTablet()):
+				$this->device = 'tablet';
+				break;
+
+			case ($detect->isMobile()):
+				$this->device = 'mobile';
+				break;
+
+			default:
+				$this->device = 'desktop';
+		}
+
+		return $this->device;
 	}
 
 	/**
@@ -49,6 +72,14 @@ abstract class Agent extends Condition
 	public function isPhone()
 	{
 		return $this->isMobile();
+	}
+
+	/**
+	 * isMobile
+	 */
+	public function isMobile()
+	{
+		return $this->getDevice() == 'mobile';
 	}
 
 	/**
@@ -116,36 +147,5 @@ abstract class Agent extends Condition
 		$this->agent = $agent;
 
 		return $this->agent;
-	}
-
-	/**
-	 * setDevice
-	 */
-	private function getDevice()
-	{
-		if ( ! is_null($this->device))
-		{
-			return $this->device;
-		}
-
-		$detect = new MobileDetect;
-
-		$this->is_mobile = $detect->isMobile();
-
-		switch (true)
-		{
-			case($detect->isTablet()):
-				$this->device = 'tablet';
-				break;
-
-			case ($detect->isMobile()):
-				$this->device = 'mobile';
-				break;
-
-			default:
-				$this->device = 'desktop';
-		}
-
-		return $this->device;
 	}
 }
