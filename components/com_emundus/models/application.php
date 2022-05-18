@@ -1645,7 +1645,7 @@ class EmundusModelApplication extends JModelList
                             } else {
                                 $check_not_empty_group = $this->checkEmptyGroups($elements ,$itemt->db_table_name, $fnum);
 
-                                if($check_not_empty_group && $g_params->repeat_group_show_first == -1) {
+                                if($check_not_empty_group && $g_params->repeat_group_show_first != -1) {
                                     $forms .= '<table class="em-personalDetail-table-inline"><legend class="legend">' . JText::_($itemg->label) . '</legend>';
 
                                     $modulo = 0;
@@ -1816,7 +1816,12 @@ class EmundusModelApplication extends JModelList
                                             } elseif ($element->plugin == 'internalid') {
                                                 $elt = '';
                                             } elseif ($element->plugin == 'yesno') {
-                                                $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
+                                                $elt = '';
+                                                if($element->content === '1'){
+                                                    $elt = JText::_('JYES');
+                                                } elseif ($element->content === '0') {
+                                                    $elt = JText::_('JNO');
+                                                }
                                             } elseif ($element->plugin == 'field') {
                                                 $params = json_decode($element->params);
 
@@ -1829,8 +1834,6 @@ class EmundusModelApplication extends JModelList
                                                 } else {
                                                     $elt = $element->content;
                                                 }
-                                            } elseif ($element->plugin == 'yesno') {
-                                                $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
                                             } elseif ($element->plugin == 'emundus_fileupload') {
                                                 $params = json_decode($element->params);
 
