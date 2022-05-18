@@ -445,9 +445,6 @@ class UpdateCli extends JApplicationCli
                 $this->out("\nCustom updates...");
 
                 try {
-                    # Override manifest file
-                    $this->manifest->asXML($xml_path);
-                    $this->refreshManifestCache($id);
 
                     if ($elementArr['element'] == 'com_emundus') {
                         $script = new com_emundusInstallerScript();
@@ -513,12 +510,19 @@ class UpdateCli extends JApplicationCli
 
                     } elseif ($elementArr['element'] == 'com_dpcalendar') {
                         $script = new Com_DPCalendarInstallerScript();
+                        # Restore previous xml version
+                        $new_version = (string)$this->manifest->version[0];
+                        $this->restoreVersion($xml_path, $manifest['version']);
+
                         if ($script->preflight('update', $installer) === false) {
                             $res = false;
                             break;
                         }
-                        $res = $script->update($installer);
-                        $re = $script->postflight('update', $installer);
+                        $script->update($installer);
+
+                        $this->restoreVersion($xml_path, $new_version);
+
+                        $script->postflight('update', $installer);
 
                     } elseif ($elementArr['element'] == 'com_jce') {
                         $installer = JInstaller::getInstance();
@@ -529,7 +533,7 @@ class UpdateCli extends JApplicationCli
                     $schema_version = $this->getSchemaVersion($id);
 
                     # Check success of custom updates, if true overwrite new version in xml
-                    if ($res !== true) {
+                    if ($res !== false) {
                         $this->refreshManifestCache($id);
                         $this->out("\n-> Schema : " . $schema_version);
                         $this->out("-> Extension : " . $this->manifest->version);
@@ -582,9 +586,9 @@ class UpdateCli extends JApplicationCli
                 'com_miniorange_saml', 'com_loginguard', 'com_jchoptimize', 'com_jce'); #, 'com_jch_optimize'
             $compArr = $this->getComponentsId('extensions', $availableComp);
 
-            foreach ($compArr as $comp) {
+           /* foreach ($compArr as $comp) {
                 $this->refreshManifestCache($this->getExtensionId('extensions',$comp['element']));
-            }
+            }*/
             # Array of components with refreshed informations
             $this->components = $this->getComponentsId('extensions', $availableComp);
 
@@ -605,6 +609,17 @@ class UpdateCli extends JApplicationCli
         $executionEndTime = microtime(true);
         $seconds = $executionEndTime - $executionStartTime;
         echo "\n" . "This script took $seconds to execute.";
+    }
+
+    private function restoreVersion($xml_path, $version)
+    {
+        $dom = new DOMDocument();
+        $dom->load($xml_path);
+        $dom->formatOutput = true;
+        $dom->getElementsByTagName("version")->item(0)->nodeValue = "";
+        $dom->getElementsByTagName("version")->item(0)->appendChild($dom->createTextNode($version));
+        $dom->save($xml_path);
+
     }
 }
 
