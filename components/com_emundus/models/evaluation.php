@@ -2073,7 +2073,7 @@ class EmundusModelEvaluation extends JModelList {
     * 	@return int
     */
     function getEvaluationFormByProgramme($code = null) {
-
+        $form = 0;
         if ($code === NULL) {
             $session = JFactory::getSession();
             if ($session->has('filt_params')) {
@@ -2084,20 +2084,37 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
+        $group_id = 0;
+        $query = $this->_db->getQuery(true);
+        $query->select('fabrik_group_id')
+            ->from('#__emundus_setup_programmes')
+            ->where('code like '.$this->_db->Quote($code));
+
+        $this->_db->setQuery($query);
         try {
-            $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
-//die(str_replace('#_', 'jos', $query));
-            $this->_db->setQuery($query);
-
-            return $this->_db->loadResult();
-
+            $group_id = $this->_db->loadResult();
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+
+        if (!empty($group_id)) {
+            $query->clear()
+                ->select('ff.form_id')
+                ->from('#__fabrik_formgroup AS ff')
+                ->where('ff.group_id like '.$this->_db->quote($group_id));
+
+            $this->_db->setQuery($query);
+
+            try {
+                $form = $this->_db->loadResult();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $form;
     }
 
     /*
