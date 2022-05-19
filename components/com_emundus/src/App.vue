@@ -131,16 +131,6 @@ export default {
       color: dimgrey;
     }
   }
-
-  @media (max-width: 1440px) {
-    .v--modal-box.v--modal {
-      width: 90vw !important;
-      height: 90vh !important;
-      top: 0 !important;
-      left: 0 !important;
-      margin: 5vh auto 5vh auto !important;
-    }
-  }
 }
 
 .view-campaigns #g-container-main .g-container,
