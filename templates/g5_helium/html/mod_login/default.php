@@ -20,7 +20,6 @@ $doc->addStyleSheet('templates/g5_helium/html/mod_login/style/mod_login.css');
 ?>
 
 <div class="page-header">
-    <div class="icon-title applyicon"></div>
     <h1 class="em-titre-connectez-vous-apply">
         <?php echo JText::_('MOD_LOGIN_TITLE'); ?>
     </h1>

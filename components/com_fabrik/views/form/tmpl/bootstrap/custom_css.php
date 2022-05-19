@@ -113,7 +113,8 @@ echo <<<EOT
 }
 
 
-.view-form.view-registration .fabrikGroup {
+.view-form.view-registration .fabrikGroup, 
+.view-form.em-formRegistrationCenter .fabrikGroup {
     padding: 0px !important;
 }
 
@@ -523,7 +524,7 @@ form#member-profile .form-horizontal .control-label {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 150px;
+    margin-top: 100px;
     border-radius: 16px;
 }
 
