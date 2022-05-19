@@ -579,6 +579,7 @@ button.register {
     padding: 0px 64px 80px 64px;
     margin-top: 0px !important;
     border-radius: 0 0 16px 16px;
+    width: 100%;
   }
 
 .view-registration fieldset {
@@ -1473,11 +1474,41 @@ a.btn-attach:active {
     border-radius: 0;
     background: #fff;
     border-radius: 0;
-    padding: 0px !important;
+    padding: 80px 64px 0 64px;
     box-shadow: none;
-    width: 59%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls input {
+    border-radius: 4px;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    padding: 0 12px 0 12px;
+    border: 1px solid #E3E3E3;
+    box-shadow: none;
+    margin-top: 12px;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls label {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.0015em;
+    text-align: left;
+    margin-bottom: 0px;
+    color: #2B2B2B;
 }
 
 /*** MEDIA QUERY SECTION ***/
