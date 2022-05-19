@@ -516,7 +516,7 @@ form#member-profile .form-horizontal .control-label {
     margin-top: 0 !important; 
 }
 
-.view-registration .login.em-formRegistrationCenter,  .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
+.view-registration .login.em-formRegistrationCenter {
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -524,7 +524,19 @@ form#member-profile .form-horizontal .control-label {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 100px;
+    margin-top: 92px;
+    border-radius: 16px;
+}
+
+ .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 32px;
     border-radius: 16px;
 }
 
@@ -1462,7 +1474,7 @@ a.btn-attach:active {
     margin-left: auto !important;
     margin-right: auto !important;
     padding-bottom: 80px !important;
-    margin-top: 150px !important;
+    margin-top: 137px !important;
 
 }
 
@@ -1509,20 +1521,6 @@ a.btn-attach:active {
     color: #2B2B2B;
 }
 
-.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls label::before {
-    content: "\f005";
-    font-family: FontAwesome;
-    font-size: 5px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 19px;
-    letter-spacing: 0;
-    text-align: left;
-    position: relative;
-    top: -5px;
-    margin-right: 5px;
-    color: #e5283B;
-}
 
 /*** MEDIA QUERY SECTION ***/
 
