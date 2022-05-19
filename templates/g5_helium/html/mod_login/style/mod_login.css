@@ -59,6 +59,22 @@ form[action="/connexion-candidater"] .em_label-user, .em_label-passwd{
     color: #e5283B;
 }
 
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls input:hover {
+    border: 1px solid #727272;
+    box-shadow: none;
+
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls input:focus {
+    border: 1px solid #1C6EF2;
+    box-shadow: none;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls input[aria-invalid="false"] {
+    border: 1px solid #e5283B;
+    box-shadow: none;
+}
+
 /* CONNEXION - CANDIDATER */
 
 ul.unstyled.em-linkForgot{

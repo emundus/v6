@@ -528,7 +528,7 @@ form#member-profile .form-horizontal .control-label {
     border-radius: 16px;
 }
 
- .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
+ .view-form.em-formRegistrationCenter:not(.view-registration) .em-formRegistrationCenter:not(.componentheading) {
     display: flex !important;
     flex-direction: column;
     align-items: center;
