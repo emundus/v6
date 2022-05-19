@@ -113,7 +113,8 @@ echo <<<EOT
 }
 
 
-.view-form.view-registration .fabrikGroup {
+.view-form.view-registration .fabrikGroup, 
+.view-form.em-formRegistrationCenter .fabrikGroup {
     padding: 0px !important;
 }
 
@@ -523,7 +524,7 @@ form#member-profile .form-horizontal .control-label {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 150px;
+    margin-top: 100px;
     border-radius: 16px;
 }
 
@@ -578,6 +579,7 @@ button.register {
     padding: 0px 64px 80px 64px;
     margin-top: 0px !important;
     border-radius: 0 0 16px 16px;
+    width: 100%;
   }
 
 .view-registration fieldset {
@@ -1455,15 +1457,13 @@ a.btn-attach:active {
 
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
     background: #fff;
-    width: 60%;
+    width: 50%;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-bottom: 50px !important;
-    margin-top: 85px !important; 
+    padding-bottom: 80px !important;
+    margin-top: 150px !important;
+
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
@@ -1472,11 +1472,56 @@ a.btn-attach:active {
     border-radius: 0;
     background: #fff;
     border-radius: 0;
-    padding: 0px !important;
+    padding: 32px 64px 0 64px;
     box-shadow: none;
-    width: 59%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls input {
+    border-radius: 4px;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    padding: 0 12px 0 12px;
+    border: 1px solid #E3E3E3;
+    box-shadow: none;
+    margin-top: 12px;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls label {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.0015em;
+    text-align: left;
+    margin-bottom: 0px;
+    color: #2B2B2B;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls label::before {
+    content: "\f005";
+    font-family: FontAwesome;
+    font-size: 5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0;
+    text-align: left;
+    position: relative;
+    top: -5px;
+    margin-right: 5px;
+    color: #e5283B;
 }
 
 /*** MEDIA QUERY SECTION ***/
