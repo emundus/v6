@@ -15,7 +15,6 @@
 <script>
 import moment from "moment";
 
-//Register my components
 import Attachments from "./views/Attachments.vue";
 import fileService from "./services/file.js";
 import list from "./views/list";
