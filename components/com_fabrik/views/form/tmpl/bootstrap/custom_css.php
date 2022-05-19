@@ -1457,15 +1457,13 @@ a.btn-attach:active {
 
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
     background: #fff;
-    width: 60%;
+    width: 50%;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-bottom: 50px !important;
-    margin-top: 85px !important; 
+    padding-bottom: 80px !important;
+    margin-top: 150px !important;
+
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
@@ -1474,7 +1472,7 @@ a.btn-attach:active {
     border-radius: 0;
     background: #fff;
     border-radius: 0;
-    padding: 80px 64px 0 64px;
+    padding: 32px 64px 0 64px;
     box-shadow: none;
     width: 100%;
     margin-left: auto;
@@ -1509,6 +1507,21 @@ a.btn-attach:active {
     text-align: left;
     margin-bottom: 0px;
     color: #2B2B2B;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls label::before {
+    content: "\f005";
+    font-family: FontAwesome;
+    font-size: 5px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0;
+    text-align: left;
+    position: relative;
+    top: -5px;
+    margin-right: 5px;
+    color: #e5283B;
 }
 
 /*** MEDIA QUERY SECTION ***/

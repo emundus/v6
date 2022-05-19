@@ -88,14 +88,19 @@ ul.unstyled.em-linkForgot li a span::before {
 /* ICONE TITRE LOGIN */
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    flex-direction: row;
-    width: 59%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    padding: 80px 64px 0 64px;
 }
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter .page-header h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 39px;
+    letter-spacing: 0;
+}
+
 
 /* RESPONSIVE */
 
