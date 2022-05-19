@@ -460,12 +460,7 @@ export default {
         });
 
         const categoriesResponse = await this.getAttachmentCategories();
-
-        if (categoriesResponse) {
-          this.categories = categoriesResponse;
-        } else {
-          this.categories = {};
-        }
+        this.categories = categoriesResponse ? categoriesResponse : {};
       } else {
         this.displayErrorMessage(
             this.translate("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_ATTACHMENTS")
