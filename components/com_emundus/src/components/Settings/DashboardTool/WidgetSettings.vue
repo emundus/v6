@@ -35,17 +35,39 @@
         </div>
 
         <div class="em-mb-16" v-if="selectedWidget.type === 'chart'">
+          <div class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_LIBRARY_TYPE') }} : </div>
+          <select v-model="selectedWidget.library" class="em-w-100">
+            <option :value="'chartjs'">ChartJS</option>
+            <option :value="'fusioncharts'">FusionCharts</option>
+          </select>
+        </div>
+
+        <div class="em-mb-16" v-if="selectedWidget.type === 'chart'">
           <div class="em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_CHART_TYPE') }} : </div>
           <multiselect
+              v-if="selectedWidget.library === 'fusioncharts'"
               v-model="selectedWidget.chart_type"
               label="label"
               track-by="value"
-              :options="chart_types"
+              :options="fusioncharts_chart_types"
               :multiple="false"
               select-label=""
               selected-label=""
               deselect-label=""
           ></multiselect>
+          <multiselect
+              v-if="selectedWidget.library === 'chartjs'"
+              v-model="selectedWidget.chart_type"
+              label="label"
+              track-by="value"
+              :options="chartjs_chart_types"
+              :multiple="false"
+              select-label=""
+              selected-label=""
+              deselect-label=""
+              @select="getHelpLink"
+          ></multiselect>
+          <a :href="chart_type_help_link" target="_blank" class="em-mt-8" v-if="chart_type_help_link">Page d'aide</a>
         </div>
 
         <div class="em-mb-16" v-show="selectedWidget.type === 'chart' || selectedWidget.type === 'other'">
@@ -156,13 +178,15 @@ export default {
           value: 'other'
         }
       ],
-      chart_types: [],
+      fusioncharts_chart_types: [],
+      chartjs_chart_types: [],
       profiles: [],
 
       loading: false,
       displayCode: false,
       displayPreview: false,
       uid: null,
+      chart_type_help_link: null
     };
   },
   methods: {
@@ -182,8 +206,12 @@ export default {
     },
 
     buildWidget() {
-      this.chart_types = types['types'];
-      this.chart_types.forEach((type) => {
+      this.fusioncharts_chart_types = types['fusioncharts'];
+      this.chartjs_chart_types = types['chartjs'];
+      this.fusioncharts_chart_types.forEach((type) => {
+        type.label = this.translate(type.label);
+      })
+      this.chartjs_chart_types.forEach((type) => {
         type.label = this.translate(type.label);
       })
 
@@ -203,11 +231,21 @@ export default {
         }
 
         if(this.selectedWidget.chart_type != null){
-          let chart_type_found = this.chart_types.findIndex((chart, index) => {
-            if(chart.value === this.selectedWidget.chart_type)
-              return true;
-          });
-          this.selectedWidget.chart_type = this.chart_types[chart_type_found];
+          if(this.selectedWidget.library == 'chartjs'){
+            let chart_type_found = this.chartjs_chart_types.findIndex((chart, index) => {
+              if(chart.value === this.selectedWidget.chart_type)
+                return true;
+            });
+
+            this.selectedWidget.chart_type = this.chartjs_chart_types[chart_type_found];
+          } else {
+            let chart_type_found = this.fusioncharts_chart_types.findIndex((chart, index) => {
+              if(chart.value === this.selectedWidget.chart_type)
+                return true;
+            });
+
+            this.selectedWidget.chart_type = this.fusioncharts_chart_types[chart_type_found];
+          }
         }
       } else{
         this.selectedWidget = {
@@ -255,6 +293,10 @@ export default {
           fusioncharts.render();
         });
       });
+    },
+
+    getHelpLink(value){
+      this.chart_type_help_link = value.help;
     }
   },
   watch: {

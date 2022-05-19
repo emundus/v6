@@ -14,7 +14,8 @@
 			"
     >
       <div v-if="selectedWidget.type === 'chart'">
-        <div :id="id"></div>
+        <canvas v-if="selectedWidget.library === 'chartjs'" :id="id" width="400" height="250"></canvas>
+        <div v-else :id="id"></div>
       </div>
       <div v-else :class="selectedWidget.class">
         <div v-html="datas"></div>
@@ -72,6 +73,7 @@ export default {
     },
 
     renderChart() {
+      console.log(this.selectedWidget)
       axios({
         method: "post",
         url: "index.php?option=com_emundus&controller=dashboard&task=renderchartbytag",
@@ -80,20 +82,36 @@ export default {
           filters: [],
         }),
       }).then((response) => {
-        this.datas = response.data.dataset;
+        this.datas = response.data.dataset
 
-        const chartConfig = {
-          type: this.selectedWidget.chart_type,
-          renderAt: this.id,
-          width: '100%',
-          height: '250',
-          dataFormat: 'json',
-          dataSource: response.data.dataset
-        };
-        FusionCharts.ready(function() {
-          let fusioncharts = new FusionCharts(chartConfig);
-          fusioncharts.render();
-        });
+        if(this.selectedWidget.library === 'chartjs') {
+          const ctx = document.getElementById(this.id);
+
+          const chart = new Chart(ctx, {
+            type: this.selectedWidget.chart_type,
+            data: this.datas,
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        } else if(this.selectedWidget.library === 'fusioncharts') {
+          const chartConfig = {
+            type: this.selectedWidget.chart_type,
+            renderAt: this.id,
+            width: '100%',
+            height: '250',
+            dataFormat: 'json',
+            dataSource: response.data.dataset
+          };
+          FusionCharts.ready(function() {
+            let fusioncharts = new FusionCharts(chartConfig);
+            fusioncharts.render();
+          })
+        }
         //
       }).catch((error) => {
         // TODO: handle error
@@ -154,6 +172,9 @@ export default {
 
 <style lang="scss">
 .tchooz-widget{
+  canvas{
+    max-height: 250px;
+  }
   .section-sub-menu {
     display: block;
     width: 100%;

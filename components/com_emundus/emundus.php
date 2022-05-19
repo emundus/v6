@@ -493,6 +493,9 @@ JHTML::script('media/com_emundus/js/em_files.js');
 JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
 JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 
+JHTML::script('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js');
+JHTML::script('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/helpers.esm.min.js');
+
 JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js');
 JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js');
 

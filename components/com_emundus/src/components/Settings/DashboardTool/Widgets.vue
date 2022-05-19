@@ -113,9 +113,6 @@ export default {
   padding: 24px 32px;
   transition: all 0.3s ease-in-out;
 }
-.em-hover-blur:hover {
-  filter: blur(2px);
-}
 .em-widget-title{
   font-size: 24px;
 }

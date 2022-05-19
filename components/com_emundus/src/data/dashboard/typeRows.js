@@ -1,5 +1,5 @@
 export default {
-	types: [
+	fusioncharts: [
 		{
 			label: "COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_AREA2D",
 			value: 'area2d',
@@ -96,4 +96,36 @@ export default {
 			help: 'https://www.fusioncharts.com/dev/chart-attributes/stackedcolumn2d',
 		},
 	],
+	chartjs: [
+		{
+			label: "COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_BAR2D",
+			value: 'bar',
+			help: 'https://www.chartjs.org/docs/latest/charts/bar.html',
+		},
+		{
+			label: "COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_BUBBLE",
+			value: 'bubble',
+			help: 'https://www.chartjs.org/docs/latest/charts/bubble.html',
+		},
+		{
+			label: "COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_PIE_2D",
+			value: 'pie',
+			help: 'https://www.chartjs.org/docs/latest/charts/doughnut.html#pie',
+		},
+		{
+			label: "COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_DOUGHNUT",
+			value: 'doughnut',
+			help: 'https://www.chartjs.org/docs/latest/charts/doughnut.html#doughnut',
+		},
+		{
+			label: "COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_POLARAREA",
+			value: 'polarArea',
+			help: 'https://www.chartjs.org/docs/latest/charts/polar.html',
+		},
+		{
+			label: "COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_RADAR",
+			value: 'radar',
+			help: 'https://www.chartjs.org/docs/latest/charts/radar.html',
+		},
+	]
 };
