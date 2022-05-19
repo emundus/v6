@@ -47,8 +47,13 @@
                 <div class="em-flex-row">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="material-icons-outlined handle em-handle-group">drag_indicator</span>
 
-                  <legend @click="enableUpdatingGroup(group)" v-if="group.group_showLegend" class="legend">
-                    <span class="em-ml-32">{{group.group_showLegend}}</span>
+                  <legend @click="enableUpdatingGroup(group)" class="legend">
+                    <span
+                        class="em-ml-32"
+                        :class="{'em-opacity-low': !group.group_showLegend}"
+                    >
+                      {{ group.group_showLegend ? group.group_showLegend : translate('COM_EMUNDUS_FORM_BUILDER_ADD_TITLE')}}
+                    </span>
                   </legend>
                 </div>
 
