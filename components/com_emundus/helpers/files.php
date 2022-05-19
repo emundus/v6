@@ -398,7 +398,7 @@ class EmundusHelperFiles
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label
         FROM #__emundus_setup_profiles esp
-        WHERE esp.status=1';
+        WHERE esp.status=1 and esp.id <> 1';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
     }
