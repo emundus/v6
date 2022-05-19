@@ -1497,7 +1497,7 @@ a.btn-attach:active {
     margin-top: 12px;
 }
 
-.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls label {
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls label {
     font-family: 'Inter', sans-serif;
     font-size: 16px;
     font-style: normal;
@@ -1509,7 +1509,7 @@ a.btn-attach:active {
     color: #2B2B2B;
 }
 
-.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls label::before {
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls label::before {
     content: "\f005";
     font-family: FontAwesome;
     font-size: 5px;

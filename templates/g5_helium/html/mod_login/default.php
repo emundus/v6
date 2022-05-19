@@ -42,7 +42,7 @@ $doc->addStyleSheet('templates/g5_helium/html/mod_login/style/mod_login.css');
                         <input id="modlgn-username" type="text" name="username" class="input-small" tabindex="0" size="18" placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>" />
                     </div>
                 <?php else : ?>
-                    <label for="modlgn-username" class="em_label-user"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?><i data-isicon="true" class="icon-star small "></i></label>
+                    <label for="modlgn-username" class="em_label-user"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?><!--<i data-isicon="true" class="icon-star small "></i>--></label>
                     <input id="modlgn-username" class="em_label-userInput" type="text" name="username" class="input-small" tabindex="0" size="18"/>
                 <?php endif; ?>
             </div>
@@ -60,7 +60,7 @@ $doc->addStyleSheet('templates/g5_helium/html/mod_login/style/mod_login.css');
                         <input id="modlgn-passwd" type="password" name="password" class="input-small" tabindex="0" size="18" placeholder="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>" />
                     </div>
                 <?php else : ?>
-                    <label for="modlgn-passwd" class="em_label-passwd"><?php echo JText::_('JGLOBAL_PASSWORD'); ?><i data-isicon="true" class="icon-star small "></i></label>
+                    <label for="modlgn-passwd" class="em_label-passwd"><?php echo JText::_('JGLOBAL_PASSWORD'); ?><!--<i data-isicon="true" class="icon-star small "></i>--></label>
                     <input id="modlgn-passwd" class="em_label-passwdInput" type="password" name="password" class="input-small" tabindex="0" size="18" />
                 <?php endif; ?>
             </div>

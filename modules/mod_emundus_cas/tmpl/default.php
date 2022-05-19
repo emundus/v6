@@ -77,7 +77,7 @@ JHtml::_('bootstrap.tooltip');
                                   title="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"></span>
 							<label for="modlgn-username"
                                    class="element-invisible"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>
-                                  <!--<i data-isicon="true" class="icon-star small "></i>-->
+                                  <i data-isicon="true" class="icon-star small "></i>
                             </label>
 						</span>
                                         <input id="modlgn-username" type="text" name="username" class="input-small"
@@ -87,7 +87,7 @@ JHtml::_('bootstrap.tooltip');
                                     </div>
                                 <?php else : ?>
                                     <label for="modlgn-username"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>
-                                        <!--<i data-isicon="true" class="icon-star small "></i>-->
+                                        <i data-isicon="true" class="icon-star small "></i>
                                     </label>
                                     <input id="modlgn-username" type="text" name="username" class="input-small"
                                            tabindex="0"
@@ -104,7 +104,7 @@ JHtml::_('bootstrap.tooltip');
 							</span>
 								<label for="modlgn-passwd"
                                        class="element-invisible"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
-                                       <!--<i data-isicon="true" class="icon-star small "></i>-->
+                                       <i data-isicon="true" class="icon-star small "></i>
 							</label>
 						</span>
                                         <input id="modlgn-passwd" type="password" name="password" class="input-small"
@@ -113,7 +113,7 @@ JHtml::_('bootstrap.tooltip');
                                     </div>
                                 <?php else : ?>
                                     <label for="modlgn-passwd"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
-                                        <!--<i data-isicon="true" class="icon-star small "></i>-->
+                                        <i data-isicon="true" class="icon-star small "></i>
                                     </label>
                                     <input id="modlgn-passwd" type="password" name="password" class="input-small"
                                            tabindex="0"
