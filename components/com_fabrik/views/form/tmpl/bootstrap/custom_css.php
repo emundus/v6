@@ -540,9 +540,15 @@ form#member-profile .form-horizontal .control-label {
     border-radius: 16px;
 }
 
+
 .view-registration .login.em-formRegistrationCenter .row-fluid {
     background: #fff;
 }
+
+.view-form.view-registration #system-message {
+     top: 95px;
+}
+
  .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .span4 .btn-group {
         width: 100% !important; 
 }

@@ -3579,6 +3579,13 @@ button.swal2-cancel.goback-btn {
   }
 }
 
+.view-form {
+  div.calendar  {
+    left: 275px;
+  }
+}
+
+
 .view-form,
 .view-form.view-registration,
 .view-form.em-formRegistrationCenter,
@@ -3806,6 +3813,14 @@ button.swal2-cancel.goback-btn {
             /* SELECT */
              select {
               @include select-default;
+
+               option {
+                  @include body-16;
+                 color: $neutral-800;
+                  &[value=""] {
+                    color: $neutral-500;
+                  }
+               }
              }
 
             /* SELECTION MULTIPLE */
