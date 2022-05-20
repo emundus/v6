@@ -3588,13 +3588,6 @@ button.swal2-cancel.goback-btn {
   }
 }
 
-/* DATE PICKER */
-.view-form {
-  div.calendar  {
-    left: 275px !important;
-  }
-}
-
 /* EVAL / DECISION */
 .gantry.contentpane.modal .platform-content.row-fluid > .span12  {
     margin-top: 0px !important;
@@ -3969,9 +3962,7 @@ button.swal2-cancel.goback-btn {
                 }
                 button.calendarbutton,
                 button.timeButton {
-                  border-top: 1px solid $neutral-400;
-                  border-right: 1px solid $neutral-400;
-                  border-bottom: 1px solid $neutral-400;
+                  border: 1px solid $neutral-400;
                   margin-top: 12px;
                   width: 48px !important;
                   display: flex;
