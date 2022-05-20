@@ -2945,8 +2945,13 @@ body>.g-container {
         color: $neutral-900;
       }
 
+      .em-list-status {
+        padding-bottom: 8px;
+      }
+
       .em-list-status-date a {
         color: $night-blue;
+        padding-top: 8px;
       }
 
       .edit-comment-container button.edit-comment {
@@ -3588,7 +3593,7 @@ button.swal2-cancel.goback-btn {
 
 /* EVAL / DECISION */
 .gantry.contentpane.modal {
-  .span12:first-of-type  {
+  > .span12  {
     margin-top: 0px !important;
     .fabrikGroup  {
       padding: 24px 0px 24px 0px !important;
@@ -3820,6 +3825,7 @@ button.swal2-cancel.goback-btn {
             /* SELECT */
              select {
               @include select-default;
+               color: $neutral-800 !important;
 
                option {
                   @include body-16;
