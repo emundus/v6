@@ -1234,7 +1234,7 @@ export default {
   }
 
   .modal-body {
-    height: 100vh;
+    height: calc(100vh - 65px);
     width: 100vw;
     display: flex;
     padding: 0;

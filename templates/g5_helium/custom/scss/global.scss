@@ -3579,9 +3579,20 @@ button.swal2-cancel.goback-btn {
   }
 }
 
+/* DATE PICKER */
 .view-form {
   div.calendar  {
-    left: 275px;
+    left: 275px !important;
+  }
+}
+
+/* EVAL / DECISION */
+.gantry.contentpane.modal {
+  .span12  {
+    margin-top: 0px !important;
+    .fabrikGroup  {
+      padding: 24px 0px 24px 0px !important;
+    }
   }
 }
 
@@ -3657,6 +3668,11 @@ button.swal2-cancel.goback-btn {
             .fabrikElement select {
             @include input-error;
             }
+          }
+
+          /* SUCCESS */
+          &.success input, &.has-success input {
+            @include input-valid;
           }
 
           .fabrikErrorMessage  {
@@ -3768,16 +3784,6 @@ button.swal2-cancel.goback-btn {
                 width: 100%;
               }
 
-
-              &.success input {
-                @include input-valid;
-              }
-
-              &.error input {
-                @include input-error;
-              }
-
-
               &[type="file"] {
                 padding-left: 0;
                 &::-webkit-file-upload-button {
@@ -3817,9 +3823,6 @@ button.swal2-cancel.goback-btn {
                option {
                   @include body-16;
                  color: $neutral-800;
-                  &[value=""] {
-                    color: $neutral-500;
-                  }
                }
              }
 
