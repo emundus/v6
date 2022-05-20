@@ -3588,7 +3588,7 @@ button.swal2-cancel.goback-btn {
 
 /* EVAL / DECISION */
 .gantry.contentpane.modal {
-  .span12  {
+  .span12:first-of-type  {
     margin-top: 0px !important;
     .fabrikGroup  {
       padding: 24px 0px 24px 0px !important;
@@ -3673,6 +3673,7 @@ button.swal2-cancel.goback-btn {
           /* SUCCESS */
           &.success input, &.has-success input {
             @include input-valid;
+            color: $neutral-800 !important;
           }
 
           .fabrikErrorMessage  {
