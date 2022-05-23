@@ -3972,6 +3972,7 @@ button.swal2-cancel.goback-btn {
                   background: $neutral-200;
                   border-radius: 0 4px 4px 0 !important;
                   color: $neutral-800;
+                  z-index: 10;
 
                   i.icon-clock {
                     margin: 0;
