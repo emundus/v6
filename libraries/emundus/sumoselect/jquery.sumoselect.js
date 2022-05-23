@@ -48,7 +48,7 @@
             prefix: '',                   // some prefix usually the field name. eg. '<b>Hello</b>'
             locale: ['OK', 'Cancel', Joomla.JText._('ALL')],  // all text that is used. don't change the index.
             up: false,                    // set true to open upside.
-            showTitle: true               // set to false to prevent title (tooltip) from appearing
+            showTitle: false               // set to false to prevent title (tooltip) from appearing
         }, options);
 
         var ret = this.each(function () {
