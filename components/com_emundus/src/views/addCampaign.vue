@@ -443,8 +443,9 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({body: programForm})
-      }).then(() => {
-        this.form.training = programForm.code;
+      }).then((rep) => {
+        this.form.progid = rep.data.data.programme_id;
+        this.form.training = rep.data.data.programme_code;
         this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
         this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
