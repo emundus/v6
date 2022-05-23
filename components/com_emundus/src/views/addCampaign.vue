@@ -176,8 +176,6 @@
                       class="form-control fabrikinput"
                       placeholder=" "
                       v-model="programForm.label"
-                      @keyup="updateCode"
-                      @focusout="updateCode"
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
@@ -422,25 +420,6 @@ export default {
       this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
       this.programForm = this.programs.find(program => program.code == this.form.training);
     },
-    updateCode() {
-      if(this.programForm.label !== ''){
-        this.programForm.code = this.programForm.label.replace(/[^a-zA-Z0-9]/g,'').substring(0,10) + '_00';
-
-        if (Object.keys(this.programs).length !== 0) {
-          this.programs.forEach((element) => {
-            if (this.programForm.code == element.code) {
-              // change last digit inside string to next available number
-              let code = this.programForm.code.split('_');
-              let number = parseInt(code[1]) + 1;
-              code[1] = number;
-              this.programForm.code = code.join('_');
-            }
-          });
-        }
-      } else {
-        this.programForm.code = '';
-      }
-    },
 
     getStatus() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
@@ -464,8 +443,9 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({body: programForm})
-      }).then(() => {
-        this.form.training = programForm.code;
+      }).then((rep) => {
+        this.form.progid = rep.data.data.programme_id;
+        this.form.training = rep.data.data.programme_code;
         this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
         this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
@@ -524,14 +504,10 @@ export default {
       }
 
       if (this.form.training == "") {
-        if(this.isHiddenProgram){
+        if (this.isHiddenProgram) {
           if (this.programForm.label == "") {
             this.errors.progLabel = true;
             document.getElementById('prog_label').focus();
-            return 0;
-          } else if (this.programForm.code == "") {
-            this.errors.progCode = true;
-            document.getElementById('prog_code').focus();
             return 0;
           }
         } else {
@@ -539,7 +515,6 @@ export default {
           return 0;
         }
       }
-      //
 
       // Set year object values
       this.year.label = this.form.label;
@@ -570,7 +545,12 @@ export default {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify(params)
-        }).then(() => {
+        }).then((response) => {
+          if (task === 'createprogram') {
+            this.programForm.code = response.data.data.programme_code;
+            this.form.progid = response.data.data.programme_id;
+          }
+
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
