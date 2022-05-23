@@ -19,7 +19,7 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
 	.widget .label-info { float: right; }
 	.widget li.list-group-item {border-radius: 0;border: 0;border-top: 1px solid #ddd;}
 	.widget li.list-group-item:hover { background-color: rgba(86,61,124,.1); }
-	.widget .mic-info { color: #666666;font-size: 11px; }
+	.widget .mic-info { color: #666666;font-size: 14px; }
 	.widget .action { margin-top:5px; }
 	.widget .comment-text { font-size: 12px; }
 	.widget .btn-block { border-top-left-radius:0px;border-top-right-radius:0px; }

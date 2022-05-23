@@ -2949,6 +2949,15 @@ body>.g-container {
         color: $night-blue;
       }
 
+      .em-list-status-date {
+        padding: 10px 0;
+      }
+
+      .edit-comment-container {
+        margin-top: 10px;
+      }
+
+
       .edit-comment-container button.edit-comment {
         background: $neutral-100;
         border: 1px solid $neutral-100;
@@ -3579,6 +3588,24 @@ button.swal2-cancel.goback-btn {
   }
 }
 
+/* EVAL / DECISION */
+.gantry.contentpane.modal .platform-content.row-fluid > .span12  {
+    margin-top: 0px !important;
+
+   h2 {
+     margin-top: 0px;
+     margin-bottom: 32px;
+  }
+
+  .page-header h1 {
+    margin-top: 0px !important;
+  }
+
+   form fieldset.fabrikGroup  {
+    padding: 0px !important;
+  }
+}
+
 .view-form,
 .view-form.view-registration,
 .view-form.em-formRegistrationCenter,
@@ -3650,6 +3677,12 @@ button.swal2-cancel.goback-btn {
             .fabrikElement select {
             @include input-error;
             }
+          }
+
+          /* SUCCESS */
+          &.success input, &.has-success input {
+            @include input-valid;
+            color: $neutral-800 !important;
           }
 
           .fabrikErrorMessage  {
@@ -3761,16 +3794,6 @@ button.swal2-cancel.goback-btn {
                 width: 100%;
               }
 
-
-              &.success input {
-                @include input-valid;
-              }
-
-              &.error input {
-                @include input-error;
-              }
-
-
               &[type="file"] {
                 padding-left: 0;
                 &::-webkit-file-upload-button {
@@ -3806,6 +3829,12 @@ button.swal2-cancel.goback-btn {
             /* SELECT */
              select {
               @include select-default;
+               color: $neutral-800 !important;
+
+               option {
+                  @include body-16;
+                 color: $neutral-800;
+               }
              }
 
             /* SELECTION MULTIPLE */
@@ -3926,22 +3955,24 @@ button.swal2-cancel.goback-btn {
               /* DATE */
               .input-append {
                 display: flex;
-                flex-direction: row-reverse;
+                flex-direction: row;
                 justify-content: flex-end;
                 input {
-                  border-radius: 0 4px 4px 0;
+                  border-radius: 4px 0 0 4px;
                 }
                 button.calendarbutton,
                 button.timeButton {
-                  border-top: 1px solid $neutral-400;
-                  border-left: 1px solid $neutral-400;
-                  border-bottom: 1px solid $neutral-400;
+                  border: 1px solid $neutral-400;
                   margin-top: 12px;
                   width: 48px !important;
                   display: flex;
                   justify-content: center;
                   align-items: center;
-                  @include select-button-default ;
+                  height: 48px !important;
+                  background: $neutral-200;
+                  border-radius: 0 4px 4px 0 !important;
+                  color: $neutral-800;
+                  z-index: 10;
 
                   i.icon-clock {
                     margin: 0;

@@ -302,7 +302,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin input-valid {
-  border: 1px solid $valid;
+  border: 1px solid $valid !important;
   box-shadow: none;
 }
 
