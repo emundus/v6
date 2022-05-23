@@ -78,11 +78,11 @@ $now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
                                     </div>
                                     <div class="actions-edit-comment" style="display: none">
                                         <button type="button" class="btn btn-danger btn-xs cancel-edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL');?>" >
-                                            <span class="glyphicon glyphicon-remove"></span>
+                                            <span class="material-icons">close</span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                         <button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >
-                                            <span class="material-icons">edit</span>
+                                            <span class="material-icons">done</span>
                                             <div class="hidden cid"><?php echo $comment->id; ?></div>
                                         </button>
                                     </div>
@@ -216,11 +216,11 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
                                     '</div>'+
                                     '<div class="actions-edit-comment" style="display: none">'+
                                         '<button type="button" class="btn btn-danger btn-xs cancel-edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CANCEL');?>" >'+
-                                            '<span class="glyphicon glyphicon-remove"></span>'+
+                                            '<span class="material-icons">close</span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
                                         '<button type="button" class="btn btn-success btn-xs confirm-edit-comment" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_EDIT');?>" >'+
-                                            '<span class="glyphicon glyphicon-ok"></span>'+
+                                            '<span class="material-icons">done</span>'+
                                             '<div class="hidden cid">'+result.id+'</div>'+
                                         '</button>'+
                                     '</div>'+
@@ -256,7 +256,7 @@ $(document).on('click', '.edit-comment', function (e) {
     var id = $($(this).find('.cid')[0]).text();
 
     var comment  = {
-        element: $('#' + id)
+        element: $('.comments li[id="'+id+'"]')
     };
 
     comment.title   = $(comment.element.find('.comment-name')[0]);
@@ -288,7 +288,7 @@ $(document).on('click', '.cancel-edit-comment', function (e) {
     var id = $($(this).find('.cid')[0]).text();
 
     var comment  = {
-        element: $('#' + id)
+        element: $('.comments li[id="'+id+'"]')
     };
 
     comment.title   = $(comment.element.find('.comment-name')[0]);
@@ -317,7 +317,7 @@ $(document).on('click', '.confirm-edit-comment', function (e) {
     var id = $($(this).find('.cid')[0]).text();
 
     var comment  = {
-        element: $('#' + id)
+        element: $('.comments li[id="'+id+'"]')
     };
 
     comment.title   = $(comment.element.find('.comment-name')[0]);
