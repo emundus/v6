@@ -517,9 +517,9 @@ if (!empty($this->custom_title)) :?>
                 }
             } else {
                 if ($this->isLimitObtained === true) {
-                    $div .= JError::raiseNotice(401, JText::_('LIMIT_OBTAINED'));
+                    $mainframe->enqueueMessage(JText::_('LIMIT_OBTAINED'), 'notice');
                 } else {
-                    $div .= JError::raiseNotice(401, JText::sprintf('COM_EMUNDUS_PERIOD', strftime("%d/%m/%Y %H:%M", strtotime($this->user->start_date) ), strftime("%d/%m/%Y %H:%M", strtotime($this->user->end_date) )));
+                    $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_READONLY'), 'warning');
                 }
             }
             $div .= '</table></div></fieldset>';
