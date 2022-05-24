@@ -85,6 +85,7 @@
                   :profile_id="profile_id"
                   @select-page="selectPage($event)"
                   @add-page="getPages(currentPage.id)"
+                  @delete-page="selectedPage = pages[0].id;"
               ></form-builder-pages>
               <hr>
               <form-builder-documents

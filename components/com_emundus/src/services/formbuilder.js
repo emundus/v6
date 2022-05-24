@@ -366,7 +366,7 @@ export default {
         }
     },
     async deletePage(page){
-        if (!page.id) {
+        if (!page) {
             return {
                 status: false,
                 message: 'Missing page id'
@@ -374,21 +374,19 @@ export default {
         }
 
         const formData = new FormData();
-        formData.append('page', page.id);
+        formData.append('mid', page);
 
-        /*try {
-            const response = await client().post(
+        try {
+            return await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=deletemenu',
                 formData
             );
-
-            return response;
         } catch (e) {
             return {
                 status: false,
                 message: e.message
             };
-        }*/
+        }
     },
     async updateTranslation(item, tag, value) {
         const formData = new FormData();
