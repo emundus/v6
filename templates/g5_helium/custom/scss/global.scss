@@ -5249,6 +5249,14 @@ fieldset[disabled] .multiselect {
   .tooltip {
     display: block !important;
     z-index: 10000;
+    border: unset;
+    padding: 0;
+    nav{
+      p:hover{
+        background: $neutral-300;
+        cursor: pointer;
+      }
+    }
   }
 
   .tooltip[x-placement^="top"] {
@@ -5316,7 +5324,7 @@ fieldset[disabled] .multiselect {
     .popover-inner {
       background: #f9f9f9;
       color: black;
-      padding: 16px 16px 16px 8px;
+      padding: 8px 0;
       border-radius: 5px;
       box-shadow: 0 5px 30px rgba(black, .1);
     }

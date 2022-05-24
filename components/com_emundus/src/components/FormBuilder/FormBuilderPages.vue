@@ -13,19 +13,39 @@
     >
       <transition-group>
         <div
-            class="em-p-16 em-font-weight-500 em-pointer"
+            class="em-font-weight-500 em-pointer"
             v-for="page in pages"
             :key="page.id"
             :class="{
               selected: page.id === selected,
             }"
-            @click="selectPage(page.id)"
         >
           <div class="em-flex-row em-flex-space-between">
-            <p>{{ page.label }}</p>
-            <span v-if="page.id === selected" class="material-icons" @click="sectionsShown = !sectionsShown">
-              {{ sectionsShown ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
-            </span>
+            <p  @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
+            <div class="em-flex-row em-p-16">
+              <v-popover :popoverArrowClass="'custom-popover-arraow'">
+                <span class="material-icons">more_horiz</span>
+
+                <template slot="popover">
+                  <transition :name="'slide-down'" type="transition">
+                    <div>
+                      <nav aria-label="action" class="em-flex-col-start">
+                        <p @click="" class="em-p-8-12 em-w-100">
+                          {{ translate('COM_EMUNDUS_FORM_BUILDER_DUPLICATE_PAGE') }}
+                        </p>
+                        <p @click="deletePage(page)" class="em-p-8-12 em-w-100 em-red-500-color">
+                          {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
+                        </p>
+                      </nav>
+                    </div>
+                  </transition>
+                </template>
+              </v-popover>
+
+<!--              <span :style="page.id === selected ? 'opacity:1' : 'opacity: 0'" class="material-icons em-ml-16" @click="sectionsShown = !sectionsShown">
+                {{ sectionsShown ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+              </span>-->
+            </div>
           </div>
           <ul
               id="form-builder-pages-sections-list"
@@ -47,6 +67,7 @@ import formBuilderService from '../../services/formbuilder';
 import formBuilderMixin from '../../mixins/formbuilder';
 import formService from '../../services/form';
 import draggable from "vuedraggable";
+import Swal from "sweetalert2";
 
 export default {
   name: 'FormBuilderPages',
@@ -96,6 +117,29 @@ export default {
       }).then(response => {
         this.$emit('add-page');
         this.updateLastSave();
+      });
+    },
+    deletePage(page) {
+      Swal.fire({
+        title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION') + page.label,
+        text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: this.translate("COM_EMUNDUS_ACTIONS_DELETE"),
+        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+        reverseButtons: true,
+        customClass: {
+          title: 'em-swal-title',
+          cancelButton: 'em-swal-cancel-button',
+          confirmButton: 'em-swal-delete-button',
+        },
+      }).then(result => {
+        if (result.value) {
+          formBuilderService.deletePage(page.id).then(response => {
+            this.$emit('delete-page');
+            this.updateLastSave();
+          });
+        }
       });
     },
     onDragEnd() {

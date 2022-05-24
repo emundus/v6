@@ -579,7 +579,9 @@ input:focus + .em-slider {
 .em-m-24{
   margin: 24px;
 }
-
+.em-p-8{
+  padding: 8px;
+}
 .em-p-16{
   padding: 16px;
 }
@@ -1002,6 +1004,19 @@ button.em-swal-cancel-button{
   &:focus{
     box-shadow: unset !important;
   }
+}
+button.em-swal-delete-button{
+  display: flex !important;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: auto !important;
+  padding: 0 $p-16 !important;
+  border-radius: 4px !important;
+  border: unset !important;
+  height: 40px !important;
+  color: white !important;
+  background-color: $red-500 !important;
 }
 .swal2-actions{
   justify-content: space-between !important;
