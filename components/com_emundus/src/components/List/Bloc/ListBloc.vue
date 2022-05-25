@@ -1,6 +1,6 @@
 <template>
 	<div class="list-bloc-item">
-		<div class="title">
+		<div class="title em-mb-16">
 			<h3>{{ title }}</h3>
 			<div class="dates" v-if="data.start_date && data.end_date">
 				{{ translations.from }} <span>{{ formatDate(data.start_date) }}</span> {{ translations.to }} <span>{{ formatDate(data.end_date) }}</span>
@@ -8,27 +8,25 @@
 		</div>
 
 		<div class="informations">
-			<p v-if="data.short_description" class="description">
-				{{ data.short_description }}
-			</p>
+			<p v-if="data.short_description" class="description">{{ data.short_description }}</p>
 
 			<div
 				v-if="campaign.associatedCampaigns !== null && campaign.associatedCampaigns.length > 0"
-				class="associated-campaigns"
+				class="associated-campaigns em-w-100 em-flex-row"
 				:title="translations.associatedCampaigns">
 				<div
 					v-for="campaign in campaign.associatedCampaigns"
 					:key="campaign.id"
-					class="tag campaign-item"
+					class="tag campaign-item em-p-4-8"
 				>
 					{{ campaign.label }}
 				</div>
 
 			</div>
 
-			<div class="tags">
+			<div class="tags em-flex-row em-flex-start">
 				<div
-					v-if="isPublished !== null"
+					v-if="displayPublished && isPublished !== null"
 					:class="{
 						published: isPublished,
 						unpublished: !isPublished
@@ -38,7 +36,7 @@
 				</div>
 
 				<div
-					v-if="isActive !== null"
+					v-if="displayPublished && isActive !== null"
 					:class="{
 						published: isActive,
 						unpublished: !isActive
@@ -67,13 +65,10 @@
 			</div>
 		</div>
 
-		<hr>
+		<hr class="em-w-100">
 
-		<div class="actions">
-			<a
-				@click="redirectToEditItem"
-				class="em-primary-button em-font-size-14"
-			>
+		<div class="actions em-flex-row em-w-100 em-flex-space-between">
+			<a @click="redirectToEditItem" class="em-primary-button em-font-size-14 em-pointer">
 					{{ translations.edit }}
 			</a>
 			<list-action-menu
@@ -84,8 +79,7 @@
 				@validateFilters="validateFilters"
 				@updateLoading="updateLoading"
 				@showModalPreview="showModalPreview"
-			>
-			</list-action-menu>
+			></list-action-menu>
 		</div>
 	</div>
 </template>
@@ -93,6 +87,7 @@
 <script>
 import moment from "moment";
 import axios from "axios";
+import rows from '../../../data/tableRows';
 import ListActionMenu from '../ListActionMenu.vue';
 
 const qs = require("qs");
@@ -282,6 +277,10 @@ export default {
 
 			return this.data.published == 1;
 		},
+    displayPublished() {
+      const display = rows[this.type].filter(row => (row.value == 'published' || row.value == 'status'))
+      return display.length;
+    }
 	}
 }
 </script>
@@ -307,13 +306,10 @@ export default {
 	border-radius: 4px;
 
 	hr {
-		width: 100%;
 		z-index: 1;
 	}
 
 	.title {
-    margin-bottom: 16px;
-
 		h3 {
 			font-size: 18px;
 			font-weight: 800;
@@ -340,12 +336,9 @@ export default {
 
 		.associated-campaigns {
 			margin: 0 0 24px 0;
-    	width: 100%;
     	height: 30px;
     	overflow: hidden;
     	text-overflow: ellipsis;
-    	display: flex;
-    	flex-direction: row;
     	flex-wrap: wrap;
 
 			.campaign-item {
@@ -359,8 +352,6 @@ export default {
 	}
 
 	.tags {
-		display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     margin: 8px 0;
 		font-size: 10px;
@@ -396,11 +387,6 @@ export default {
 	}
 
 	.actions {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		width: 100%;
-
 		&.finished {
 			pointer-events: none;
 			opacity: 0.3;
@@ -421,7 +407,6 @@ export default {
 		.em-primary-button {
 			width: fit-content;
 			border: 1px solid #20835F;
-			cursor: pointer;
 
 			&:hover {
 				background-color: white;
