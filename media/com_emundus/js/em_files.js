@@ -7521,7 +7521,7 @@ function setProgram(progCode) {
 async function setCampaign(progCode,campCode, campLabel, headers) {
     await setProgram(progCode);
 
-    getProgramCampaigns(progCode, headers).then(function(data) {
+    getProgramCampaigns(progCode).then(function(data) {
         if(data.status) {
             // $('#em-export-camp').empty();
 
