@@ -3900,9 +3900,9 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcamp = count($campaigns);
         foreach ($campaigns as $c) {
             if ($nbcamp == 1) {
-                $html .= '<option data-year="'+ $c->year +'" data-training="'+ $c->training +'" value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'" value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             } else {
-                $html .= '<option data-year="'+ $c->year +'" data-training="'+ $c->training +'"  value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'"  value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             }
         }
 
