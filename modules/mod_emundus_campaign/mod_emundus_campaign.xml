@@ -144,7 +144,7 @@
 					<field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP_DESC" />
 				</fieldset>
 
-			<fieldset name="other" label="Autres (Depreciated)">
+				<fieldset name="other" label="Autres (Depreciated)">
 				<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">
 					<option value="">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
 					<option value="red">MOD_EM_CAMPAIGN_LIST_RED</option>

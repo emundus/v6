@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<extension type="module" version="1.0.0" method="upgrade">
+    <name>MOD_EMUNDUS_HOMEPAGE</name>
+    <author>eMundus</author>
+    <creationDate>June 2022</creationDate>
+    <copyright>Copyright (C) eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>brice.hubinet@emundus.fr</authorEmail>
+    <authorEmail>laura.grandin@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.0.0</version>
+    <description>MOD_EMUNDUS_HOMEPAGE_XML_DESCRIPTION</description>
+    <files>
+        <filename>mod_emundus_homepage.xml</filename>
+        <filename module="mod_emundus_homepage">mod_emundus_homepage.php</filename>
+        <filename>index.html</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="homepage" label="Page d'accueil">
+                <field name="mod_em_homepage_general_note" type="note" label="MOD_EM_HOMEPAGE_GENERAL_TITLE"/>
+                <field type="checkboxes" name="mod_em_homepage_sections" label="MOD_EM_HOMEPAGE_SECTIONS" description="MOD_EM_HOMEPAGE_SECTIONS_DESC">
+                    <option checked="true" value="banner">MOD_EM_HOMEPAGE_BANNER</option>
+                    <option checked="true" value="filters">MOD_EM_HOMEPAGE_FILTERS</option>
+                    <option checked="true" value="introtext">MOD_EM_HOMEPAGE_INTRO_TEXT</option>
+                    <option checked="true" value="campaigns">MOD_EM_HOMEPAGE_CAMPAIGNS_LIST</option>
+                </field>
+
+                <field name="spacer1" type="spacer" hr="true"/>
+
+                <field name="mod_em_homepage_banner_note" type="note" label="MOD_EM_HOMEPAGE_BANNER_TITLE"/>
+                <field type="text" name="mod_em_homepage_banner_image" default="images/custom/banner.png" label="MOD_EM_HOMEPAGE_BANNER_IMAGE" description="" />
+                <field type="text" name="mod_em_homepage_banner_text" label="MOD_EM_HOMEPAGE_BANNER_TEXT" description="" />
+                <field type="number" name="mod_em_homepage_banner_opacity" default="50" label="MOD_EM_HOMEPAGE_BANNER_OPACITY" description="" />
+
+                <field name="spacer2" type="spacer" hr="true"/>
+
+                <field name="mod_em_homepage_filters_note" type="note" label="MOD_EM_HOMEPAGE_FILTERS_TITLE"/>
+                <field type="checkboxes" name="mod_em_homepage_filters_display" label="MOD_EM_HOMEPAGE_FILTERS_DISPLAY" description="">
+                    <option checked="true" value="keywords">MOD_EM_HOMEPAGE_FILTERS_KEYWORDS</option>
+                    <option checked="true" value="category">MOD_EM_HOMEPAGE_FILTERS_PROGRAM_CATEGORY</option>
+                    <option checked="true" value="program">MOD_EM_HOMEPAGE_FILTERS_PROGRAM</option>
+                    <option checked="true" value="state">MOD_EM_HOMEPAGE_FILTERS_STATE</option>
+                </field>
+
+                <field name="spacer3" type="spacer" hr="true"/>
+
+                <field name="mod_em_homepage_introtext_note" type="note" label="MOD_EM_HOMEPAGE_INTROTEXT_TITLE"/>
+                <field type="editor" width="50" filter="safehtml" hide="readmore,pagebreak" default="" name="mod_em_homepage_introtext_text" label="MOD_EM_HOMEPAGE_INTROTEXT_TEXT" description="" />
+
+                <field name="spacer4" type="spacer" hr="true"/>
+
+                <field name="mod_em_homepage_list_note" type="note" label="MOD_EM_HOMEPAGE_LIST_TITLE"/>
+                <field type="checkboxes" name="mod_em_homepage_list_display" label="MOD_EM_HOMEPAGE_LIST_DISPLAY_STATE" description="">
+                    <option checked="true" value="current">MOD_EM_HOMEPAGE_LIST_CURRENT</option>
+                    <option value="past">MOD_EM_HOMEPAGE_LIST_PAST</option>
+                    <option checked="true" value="future">MOD_EM_HOMEPAGE_LIST_FUTURE</option>
+                </field>
+                <field type="list" name="mod_em_homepage_list_program_category" default="1" label="MOD_EM_HOMEPAGE_LIST_SHOW_PROGRAM_CATEGORY" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="list" name="mod_em_homepage_list_program" default="1" label="MOD_EM_HOMEPAGE_LIST_SHOW_PROGRAM" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="list" name="mod_em_homepage_list_timezone" default="0" label="MOD_EM_HOMEPAGE_LIST_SHOW_TIMEZONE" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="radio" name="mod_em_homepage_list_start_date_display" default="daily_count" label="MOD_EM_HOMEPAGE_LIST_START_DATE_DISPLAY" description="">
+                    <option value="daily_count">MOD_EM_HOMEPAGE_LIST_START_DATE_DISPLAY_DAILY_COUNT</option>
+                    <option value="date">MOD_EM_HOMEPAGE_LIST_START_DATE_DISPLAY_DATE</option>
+                    <option value="simple">MOD_EM_HOMEPAGE_LIST_START_DATE_DISPLAY_SIMPLE</option>
+                </field>
+                <field type="radio" name="mod_em_homepage_list_end_date_display" default="1" label="MOD_EM_HOMEPAGE_LIST_END_DATE_DISPLAY" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="checkboxes" name="mod_em_homepage_list_text_display" label="MOD_EM_HOMEPAGE_LIST_TEXT_DISPLAY" description="">
+                    <option checked="true" value="short_description">MOD_EM_HOMEPAGE_LIST_TEXT_DISPLAY_RESUME</option>
+                    <option value="description">MOD_EM_HOMEPAGE_LIST_TEXT_DISPLAY_DESCRIPTION</option>
+                    <option value="program_description">MOD_EM_HOMEPAGE_LIST_TEXT_DISPLAY_DESCRIPTION_PROGRAM</option>
+                </field>
+                <field type="radio" name="mod_em_homepage_list_more_informations_display" default="1" label="MOD_EM_HOMEPAGE_LIST_MORE_INFORMATIONS_DISPLAY" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="radio" name="mod_em_homepage_list_alerting_display" default="0" label="MOD_EM_HOMEPAGE_LIST_ALERTING_DISPLAY" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="radio" name="mod_em_homepage_list_pinned_campaign_display" default="1" label="MOD_EM_HOMEPAGE_LIST_PINNED_CAMPAIGN_DISPLAY" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+
+            <fieldset name="details" label="Détails d'une campagne">
+                <field type="checkboxes" name="mod_em_homepage_details_tabs" label="MOD_EM_HOMEPAGE_DETAILS_TABS" description="">
+                    <option checked="true" value="informations">MOD_EM_HOMEPAGE_DETAILS_INFORMATIONS</option>
+                    <option checked="true" value="faq">MOD_EM_HOMEPAGE_DETAILS_FAQ</option>
+                    <option checked="true" value="available_attachments">MOD_EM_HOMEPAGE_DETAILS_AVAILABLE_DOCUMENTS</option>
+                    <option checked="true" value="contact">MOD_EM_HOMEPAGE_DETAILS_CONTACT</option>
+                </field>
+
+                <field type="checkboxes" name="mod_em_homepage_details_text" label="MOD_EM_HOMEPAGE_DETAILS_TEXT" description="">
+                    <option value="short_description">MOD_EM_HOMEPAGE_LIST_TEXT_DISPLAY_RESUME</option>
+                    <option checked="true" value="description">MOD_EM_HOMEPAGE_LIST_TEXT_DISPLAY_DESCRIPTION</option>
+                    <option value="program_description">MOD_EM_HOMEPAGE_LIST_TEXT_DISPLAY_DESCRIPTION_PROGRAM</option>
+                </field>
+
+                <field type="radio" name="mod_em_homepage_details_start_date_display" default="1" label="MOD_EM_HOMEPAGE_DETAILS_START_DATE_DISPLAY" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="radio" name="mod_em_homepage_details_end_date_display" default="1" label="MOD_EM_HOMEPAGE_DETAILS_END_DATE_DISPLAY" description="">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
