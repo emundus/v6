@@ -253,6 +253,7 @@ if ($allowed_attachments !== true) {
         plugins: ["remove_button"],
         create: true,
         preload: true,
+        placeholder: '<?= JText::_('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER'); ?>',
         render: {
             item: function(data, escape) {
                 var val = data.value;
@@ -270,6 +271,7 @@ if ($allowed_attachments !== true) {
         plugins: ["remove_button"],
         create: true,
         preload: true,
+        placeholder: '<?= JText::_('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER'); ?>',
         render: {
             item: function(data, escape) {
                 var val = data.value;
@@ -320,12 +322,6 @@ if ($allowed_attachments !== true) {
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
-
-        // add cc placeholder
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER') + '</label>');
-
-        // add bcc placeholder
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER') + '</label>');
     });
 
     // Change file upload string to selected file and reset the progress bar.
@@ -351,10 +347,6 @@ if ($allowed_attachments !== true) {
         // clear CC and BCC placeholder
         $("label[for='cc-emails']").empty();
         $("label[for='bcc-emails']").empty();
-
-        // remake CC / BCC placeholder
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER') + '</label>');
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER') + '</label>');
 
         // clear em-attachment-list
         $('#em-attachment-list').empty();
