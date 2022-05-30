@@ -45,7 +45,7 @@ class UpdateCli extends JApplicationCli
     private function getComponentsId($table, $comp) {
         $query = $this->db->getQuery(true);
         $query->select('extension_id, name, package_id, type, element, manifest_cache')
-            ->where($this->db->quoteName('element') . " IN (" . implode(',', $this->db->quote($comp)) . ') AND state != -1 ')
+            ->where($this->db->quoteName('element') . " IN (" . implode(',', $this->db->quote($comp)) . ')') #AND state != -1 ')
             ->from('#__' . $table);
         $this->db->setQuery($query);
         return $this->db->loadAssocList('extension_id');
@@ -129,12 +129,38 @@ class UpdateCli extends JApplicationCli
             Joomla! CLI Update DB
             
             Operations
-              without option           Target all updates
-              -l, --list               List all updates whith informations about extension
-              -h, --help               Help
-              -u, --update             Update extension(s) from id input
-              -c, --core               Update Joomla
-            
+              -c            Update Joomla core files
+              -u            Target all updates (except Joomla files)
+              -u ID         Update extension(s) from input id
+              -l            List all updates available whith informations
+              -h            Helper
+              
+              
+            Extensions list with ID
+                Admintools          10003
+                Fabrik              10041
+                Jumi                10092
+                Falang              11244
+                Emundus             11369
+                Hikashop            11373
+                Security Check Pro  11496
+                Associations        11540
+                Fields              11541
+                Api                 11545
+                Dpcalendar          11739
+                Gantry              11852
+                Actionlogs          12115
+                Privacy             12116
+                JCH Optimize        12161              
+                Dropfiles           12338
+                Extplorer           12244
+                Hikamarket          12938
+                Eventbooking        13028
+                Externallogin       13111
+                JCE                 13338
+                Loginguard          13486
+                Miniorange          13487
+                
             EOHELP;
     }
 
@@ -145,20 +171,14 @@ class UpdateCli extends JApplicationCli
         }
         $installer = JInstaller::getInstance();
         $installer->extension->load($ext_id);
-        if ($ext_id == '12244' OR $ext_id == '12338' OR $ext_id == '12161') {
+        # For Joomla update method to works, we need to rename folder for some extensions (extplorer dropfiles & jchoptimize)
+        if ($ext_id == '12244' OR $ext_id == '12338') {
             $comp = $this->getUpdateId('extensions', array($ext_id));
             $manifest = json_decode($comp[0]['manifest_cache'], true);
             $file = JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $manifest['filename'] . '.xml';
             $element = str_replace('com_', '', $comp[0]['element'] );
             if (file_exists($file)) {
                 rename($file, JPATH_ADMINISTRATOR . '/components/' . $comp[0]['element'] . '/' . $element . '.xml');
-            }
-            if ($ext_id == "12161") {
-                $folder = JPATH_ADMINISTRATOR . '/components/' . 'com_jchoptimize';
-                rename($folder, JPATH_ADMINISTRATOR . '/components/' . 'com_jch_optimize');
-                if(file_exists($file = JPATH_ADMINISTRATOR . '/components/' . 'com_jch_optimize/' . $element . '.xml')) {
-                    rename($file, $folder . '/' . 'jch_optimize.xml');
-                }
             }
         }
         $result = 0;
@@ -223,7 +243,6 @@ class UpdateCli extends JApplicationCli
                 break;
             } elseif (version_compare($file, $schema_version)>0){
                 $key = array_search($file, $files);
-
                 break;
             }
         }
@@ -236,6 +255,7 @@ class UpdateCli extends JApplicationCli
         }
 
         if ($begin_update === null) {
+            $this->updateSchema($eid, $files,null, $this->manifest->version);
             return array(0, 0);
         }
 
@@ -275,10 +295,10 @@ class UpdateCli extends JApplicationCli
 
                         $this->out("-> Error : " . $e->getMessage());
                         $installer->abort($e->getMessage(), $db->stderr(true));
-                        # TODO : if fail rollback update --> verify abort
-                        # TODO : if fail continue or stop update ?
-                        break;
-                        #return false;
+
+                        # TODO : if fail stop update and rollback
+                        #break;
+                        return false;
                     }
                     $queryString = (string) $query;
                     $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 80));
@@ -361,6 +381,16 @@ class UpdateCli extends JApplicationCli
         }
     }
 
+    private function restoreVersion($xml_path, $version)
+    {
+        $dom = new DOMDocument();
+        $dom->load($xml_path);
+        $dom->formatOutput = true;
+        $dom->getElementsByTagName("version")->item(0)->nodeValue = "";
+        $dom->getElementsByTagName("version")->item(0)->appendChild($dom->createTextNode($version));
+        $dom->save($xml_path);
+
+    }
 
     #Main functions
     public function updateJoomla()
@@ -378,14 +408,10 @@ class UpdateCli extends JApplicationCli
     public function updateComponents($ids = null){
         $installer = JModelLegacy::getInstance('InstallerModelInstall');
 
-
-
         # Case where id isn't defined in script parameters -> update all
         if (!$ids) {
             $ids = array_keys($this->components);
-            # $this->purgeAndFetchUpdates();
-            # $ids = $this->getUpdateId('updates', $ids);
-            #$this->out(sizeof($ids) . " updates found");
+
             if ($ids == null) {
                 $this->out("No update for this extension");
                 return false;
@@ -394,44 +420,54 @@ class UpdateCli extends JApplicationCli
             $ids = array($ids);
         }
         foreach ($ids as $id) {
-
             # Get component rows & load manifest cache to check values
             $elementArr = $this->components[$id];#$this->queryFromId('extensions', $id);
             $manifest = json_decode($elementArr['manifest_cache'], true);
 
-
             $this->out("\n---------------");
             $this->out("\nUPDATE " . $manifest['name'] . ' (' . $manifest['version'] . ')');
 
+/*            if ($id == "12161") {
+                $this->rename($id);
+            }*/
+
             # Check xml path and require scriptfile for custom updates
-            $xml_file = $manifest['filename'] . '.xml';
-            $xml_path = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/';
-            $xml_path_bis = JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
-            if (!is_dir($xml_path)) {
-                $xml_path = $xml_path_bis;
+            if($manifest['filename']) {
+                $xml_file = $manifest['filename'] . '.xml';
+
+            } else {
+                $xml_file = preg_split("/[_]+/", $elementArr["element"], 2)[1] . '.xml';
             }
-            $xml_path = $xml_path . $xml_file;
+            $path = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/';
+            $path_bis = JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
+            if (!is_dir($path)) {
+                $path = $path_bis;
+            }
+            $xml_path = $path . $xml_file;
             if (file_exists($xml_path)) {
                 $this->manifest = simplexml_load_file($xml_path);
 
-                try {
-                    if ($this->manifest->scriptfile){
-                        $scriptfile = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' . $this->manifest->scriptfile;
-                    } else {
-                        $scriptfile = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/install.php';
-                    }
-                    if (file_exists($scriptfile) && is_readable($scriptfile)) {
-                        require_once $scriptfile;
-                    } else {
-                        throw new Exception($scriptfile .' does not exists or is not readable.');
-                    }
-                } catch(Exception $e) {
-                    echo $e->getMessage();
-                    \JLog::add(\JText::sprintf($e->getMessage()), \JLog::WARNING, 'jerror');
+                # Try to find the scriptfile, except for some extensions who don't need one
+                $ext_without_scriptfile = array("11540", "11541", "11852", "12115", "12116", "13487");
+                if (!in_array($id, $ext_without_scriptfile) OR $this->manifest->scriptfile) {
+                    try {
+                        if ($this->manifest->scriptfile) {
+                            $scriptfile = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' . $this->manifest->scriptfile;
+                        } else {
+                            $scriptfile = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/install.php';
+                        }
+                        if (file_exists($scriptfile) && is_readable($scriptfile)) {
+                            require_once $scriptfile;
+                        } else {
+                            throw new Exception("-> Scriptfile does not exists or is not readable.");
+                        }
+                    } catch (Exception $e) {
+                        echo $e->getMessage();
+                        \JLog::add(\JText::sprintf($e->getMessage()), \JLog::WARNING, 'jerror');
 
-                    exit();
+                        exit();
+                    }
                 }
-
                 # Execute SQL files for update
                 $this->out("\nSQL Updates...");
                 $sql_update = $this->parseSchemaUpdates($id, $elementArr['element']);
@@ -445,90 +481,172 @@ class UpdateCli extends JApplicationCli
                 $this->out("\nCustom updates...");
 
                 try {
-
-                    if ($elementArr['element'] == 'com_emundus') {
-                        $script = new com_emundusInstallerScript();
-                        $res = $script->update();
-
-                    } elseif ($elementArr['element'] == 'com_fabrik') {
-                        $script = new Com_FabrikInstallerScript;
-                        $script->preflight('update', $installer);
-                        $res = $script->update($installer);
-                        if ($script->postflight('update', $installer) === false) {
-                            $res = false;
-                        };
-
-                    } elseif ($elementArr['element'] == 'com_dropfiles') {
-                        $script = new Com_DropfilesInstallerScript();
-                        $script->update();
-                        $installer = JInstaller::getInstance();
-
-                        $res = $script->postflight("update", $installer);
-
-                    } elseif ($elementArr['element'] == 'com_hikashop') {
-                        $script = new com_hikashopInstallerScript();
-                        $pre = $script->preflight('update', $installer);
-                        $up = $script->update($installer);
-                        $post = $script->postflight('update', $installer);
-                        if ($pre and $up and $post) {
-                            $res = true;
-                        }
-                    } elseif ($elementArr['element'] == 'com_hikamarket') {
-                        $script = new com_hikamarketInstallerScript();
-                        $pre = $script->preflight('update', $installer);
-                        $up = $script->update($installer);
-                        $post = $script->postflight('update', $installer);
-                        if ($pre and $up and $post) {
-                            $res = true;
-                        }
-                    } elseif ($elementArr['element'] == 'com_falang') {
-                        #$installer = method_exists($parent, 'getParent') ? $parent->getParent() : $parent->parent;
-
-                        $script = new com_falangInstallerScript();
-                        $script->preflight('update', $installer);
-                        $script->update($installer);
-                        $script->postflight('update', $installer);
-
-                    } elseif ($elementArr['element'] == 'com_securitycheckpro') {
-                        $script = new com_SecuritycheckproInstallerScript();
-                        $installer = JInstaller::getInstance();
-
-                        $script->preflight('update', $installer);
-                        $script->update($installer);
-                        $script->postflight('update', $installer);
-
-                    } elseif ($elementArr['element'] == 'com_eventbooking') {
-                        $script = new com_eventbookingInstallerScript();
-                        $script->preflight('update', $installer);
-                        $script->postflight('update', $installer);
-
-                    } elseif ($elementArr['element'] == 'com_extplorer') {
-                        $script = new com_extplorerInstallerScript();
-                        $script->preflight('update', $installer);
-                        $script->update($installer);
-                        $script->postflight('update', $installer);
-
-                    } elseif ($elementArr['element'] == 'com_dpcalendar') {
-                        $script = new Com_DPCalendarInstallerScript();
-                        # Restore previous xml version
-                        $new_version = (string)$this->manifest->version[0];
-                        $this->restoreVersion($xml_path, $manifest['version']);
-
-                        if ($script->preflight('update', $installer) === false) {
-                            $res = false;
+                    switch ($elementArr['element']) {
+                        case 'com_admintools' :
+/*                            $installer = JInstaller::getInstance();
+                            $installer->setPath('source', $path);
+                            if (!$adapter = $installer->setupInstall('update', true))
+                            {
+                                $installer->abort(\JText::_('JLIB_INSTALLER_ABORT_DETECTMANIFEST'));
+                                return false;
+                            }
+                            $script = new Com_AdmintoolsInstallerScript;
+                            $res = $script->preflight('update', $adapter);
+                            $post = $script->postflight('update', $adapter);*/
                             break;
-                        }
-                        $script->update($installer);
 
-                        $this->restoreVersion($xml_path, $new_version);
+                        case 'com_fabrik' :
+                            $script = new Com_FabrikInstallerScript;
+                            $script->preflight('update', $installer);
+                            $res = $script->update($installer);
+                            if ($script->postflight('update', $installer) === false) {
+                                $res = false;
+                            }
+                            break;
 
-                        $script->postflight('update', $installer);
+                        case 'com_jumi' :
+                            $script = new com_jumiInstallerScript();
+                            # Empty script
+                            $script->preflight('update', $installer);
+                            $script->update($installer);
+                            $script->postflight('update', $installer);
+                            break;
 
-                    } elseif ($elementArr['element'] == 'com_jce') {
-                        $installer = JInstaller::getInstance();
-                        $res = WFInstall::install($installer);
+                        case 'com_falang' :
+                            $script = new com_falangInstallerScript();
+                            $installer = JInstaller::getInstance();
+                            $installer->setPath('source', $path);
+                            if (!$adapter = $installer->setupInstall('update', true))
+                            {
+                                $installer->abort(\JText::_('JLIB_INSTALLER_ABORT_DETECTMANIFEST'));
+                                return false;
+                            }
+                            $script->preflight('update', $adapter);
+                            $script->update($installer);
+                            $script->postflight('update', $adapter);
+                            break;
+
+                        case 'com_emundus':
+                            $script = new com_emundusInstallerScript();
+                            $res = $script->update();
+                            break;
+
+                        case 'com_hikashop' :
+                            $script = new com_hikashopInstallerScript();
+                            $pre = $script->preflight('update', $installer);
+                            $up = $script->update($installer);
+                            $post = $script->postflight('update', $installer);
+                            if ($pre and $up and $post) {
+                                $res = true;
+                            }
+                            break;
+
+                        case 'com_securitycheckpro' :
+                            $script = new com_SecuritycheckproInstallerScript();
+                            $installer = JInstaller::getInstance();
+                            $installer->setPath('source', $path);
+                            if (!$adapter = $installer->setupInstall('update', true))
+                            {
+                                $installer->abort(\JText::_('JLIB_INSTALLER_ABORT_DETECTMANIFEST'));
+                                return false;
+                            }
+                            $script->preflight('update', $adapter);
+                            $script->update($adapter);
+                            $script->postflight('update', $adapter);
+                            break;
+
+                        case 'com_api' :
+                            # TODO : absent du projet core
+                            break;
+
+                        case 'com_dpcalendar' :
+                            $script = new Com_DPCalendarInstallerScript();
+                            # Restore previous xml version
+                            $new_version = (string)$this->manifest->version[0];
+                            $this->restoreVersion($xml_path, $manifest['version']);
+
+                            if ($script->preflight('update', $installer) === false) {
+                                $res = false;
+                                break;
+                            }
+                            $script->update($installer);
+
+                            $this->restoreVersion($xml_path, $new_version);
+
+                            $script->postflight('update', $installer);
+                            break;
+
+                        case 'com_jchoptimize' :
+                            $script = new Com_JchoptimizeInstallerScript();
+                            $installer = JInstaller::getInstance();
+                            $installer->setPath('source', $path);
+                            if (!$adapter = $installer->setupInstall('update', true))
+                            {
+                                $installer->abort(\JText::_('JLIB_INSTALLER_ABORT_DETECTMANIFEST'));
+                                return false;
+                            }
+                            $res = $script->preflight('update', $adapter);
+                            $script->postflight('update', $adapter);
+                            break;
+                        case 'com_dropfiles' :
+                            $script = new Com_DropfilesInstallerScript();
+                            $installer = JInstaller::getInstance();
+                            $installer->setPath('source', $path);
+                            if (!$adapter = $installer->setupInstall('update', true))
+                            {
+                                $installer->abort(\JText::_('JLIB_INSTALLER_ABORT_DETECTMANIFEST'));
+                                return false;
+                            }
+                            $script->update();
+                            $installer = JInstaller::getInstance();
+                            $res = $script->postflight("update", $adapter);
+                            break;
+
+                        case 'com_extplorer' :
+                            $script = new com_extplorerInstallerScript();
+                            $script->preflight('update', $installer);
+                            $res = $script->update($installer);
+                            $script->postflight('update', $installer);
+                            break;
+
+                        case 'com_hikamarket' :
+                            $script = new com_hikamarketInstallerScript();
+                            $pre = $script->preflight('update', $installer);
+                            $up = $script->update($installer);
+                            $post = $script->postflight('update', $installer);
+                            if ($pre and $up and $post) {
+                                $res = true;
+                            }
+                            break;
+
+                        case 'com_eventbooking' :
+                            $script = new com_eventbookingInstallerScript();
+                            $script->preflight('update', $installer);
+                            $script->postflight('update', $installer);
+                            break;
+
+                        case 'com_externallogin' :
+                            # TODO : find scriptfile
+                            break;
+
+                        case 'com_jce' :
+                            $installer = JInstaller::getInstance();
+                            $res = WFInstall::install($installer);
+                            break;
+
+                        case 'com_loginguard' :
+                            $script = new Com_LoginguardInstallerScript();
+                            $res = $script->preflight('update', $installer);
+                            $script->postflight('update', $installer);
+                            break;
+
+                        case 'com_fields' AND 'com_associations' AND 'com_gantry5' AND 'com_actionlogs' AND 'com_privacy' AND 'com_miniorange_saml':
+                            $this->out("-> " . $elementArr['element'] . " don't have custom script");
+                            break;
+
+                        default :
+                            $this->out("Extension non reconnue");
                     }
-                    # TODO : MiniOrange, LoginGuard
 
                     $schema_version = $this->getSchemaVersion($id);
 
@@ -543,7 +661,6 @@ class UpdateCli extends JApplicationCli
                     }
                 } catch (\Throwable $e) {
                     echo $e->getMessage();
-                    # TODO : if fail rollback update
                 }
 
             } else {
@@ -563,38 +680,42 @@ class UpdateCli extends JApplicationCli
         $executionStartTime = microtime(true);
         $this->db = JFactory::getDbo();
 
+        $short_options = "hlcu::";
+        $long_options = ["help", "list", "core", "update::"];
+        $options = getopt($short_options, $long_options);
+
         $args = (array) $GLOBALS['argv'];
 
         echo "Emundus Update Tool \n\n";
 
-        if ($this->input->get('h', $this->input->get('help'))) {
+        #if ($this->input->get('h', $this->input->get('help'))) {
+        if(isset($options["h"]) || isset($options["help"])) {
             $this->doEchoHelp();
         }
-
-        if ($this->input->get('l', $this->input->get('list'))) {
+        if(isset($options["l"]) || isset($options["list"])) {
+        #elseif ($this->input->get('l', $this->input->get('list'))) {
             $this->getUpdateList();
         }
-
-        if ($this->input->get('c', $this->input->get('core'))) {
+        if(isset($options["c"]) || isset($options["core"])) {
+        #elseif ($this->input->get('c', $this->input->get('core'))) {
             $this->updateJoomla();
         }
-
-        if ($this->input->get('u', $this->input->get('update'))) {
+        if(isset($options["u"]) || isset($options["update"])) {
+        #elseif ($this->input->get('u', $this->input->get('update'))) {
             # Array of components available for update
-            $availableComp = array('com_jch_optimize','com_emundus','com_fabrik','com_hikashop','com_hikamarket','com_falang',
+            $availableComp = array('com_emundus','com_fabrik','com_hikashop','com_hikamarket','com_falang',
                 'com_securitycheckpro','com_eventbooking','com_dpcalendar', 'com_dropfiles', 'com_extplorer',
-                'com_miniorange_saml', 'com_loginguard', 'com_jchoptimize', 'com_jce'); #, 'com_jch_optimize'
+                'com_miniorange_saml', 'com_loginguard', 'com_jchoptimize','com_jch_optimize', 'com_jce', 'com_admintools',
+                'com_jumi', 'com_associations', 'com_fields', 'com_api', 'com_gantry5', 'com_actionlogs',
+                'com_privacy', 'com_externallogin');
             $compArr = $this->getComponentsId('extensions', $availableComp);
 
-           /* foreach ($compArr as $comp) {
-                $this->refreshManifestCache($this->getExtensionId('extensions',$comp['element']));
-            }*/
             # Array of components with refreshed informations
             $this->components = $this->getComponentsId('extensions', $availableComp);
 
             if (sizeof($args) == 2) {
                 $this->updateComponents($compArr['extension_id']);
-            } elseif (sizeof($args) >= 3) {
+            } elseif (sizeof($args) > 2) {
 
                 $index = 2;
                 while ($index <= sizeof($args)-1) {
@@ -606,20 +727,14 @@ class UpdateCli extends JApplicationCli
             }
         }
 
+        else {
+            $this->out("Error : invalid option");
+            exit();
+        }
+
         $executionEndTime = microtime(true);
         $seconds = $executionEndTime - $executionStartTime;
         echo "\n" . "This script took $seconds to execute.";
-    }
-
-    private function restoreVersion($xml_path, $version)
-    {
-        $dom = new DOMDocument();
-        $dom->load($xml_path);
-        $dom->formatOutput = true;
-        $dom->getElementsByTagName("version")->item(0)->nodeValue = "";
-        $dom->getElementsByTagName("version")->item(0)->appendChild($dom->createTextNode($version));
-        $dom->save($xml_path);
-
     }
 }
 
