@@ -460,9 +460,14 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $tags = $m_files->getAllTags();
 
+        $params = JComponentHelper::getParams('com_emundus');
+        $show_tags_category = $params->get('com_emundus_show_tags_category', 0);
+
+
         echo json_encode((object)(array('status' => true,
             'tags' => $tags,
             'tag' => JText::_('COM_EMUNDUS_TAGS'),
+            'show_tags_category' => $show_tags_category,
             'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
         exit;
     }
