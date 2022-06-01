@@ -3488,44 +3488,216 @@ this.set(words.join(&quot; &quot;));
     }
 
     function enableRepeatGroup($gid){
-        $saved=false;
+        $saved = false;
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-        $query->select('jfg.*, jff.form_id AS form_id')
-            ->from('#__fabrik_groups AS jfg')
-            ->leftJoin('#__fabrik_formgroup AS jff ON jff.group_id = jfg.id')
-            ->where('jfg.id = ' . $db->quote($gid));
+        $user = JFactory::getUser()->id;
 
-        $db->setQuery($query);
-
-        try {
-            $group = $db->loadAssoc();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error at enabling repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-        }
+        $group = $this->getFabrikGroup($gid);
         if (!empty($group)) {
-
+            // Prepare Fabrik API
             JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-            require_once(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/group.php');
-            $groupModel = new FabrikAdminModelGroup;
-            $params = json_decode($group['params'], true);
-            $params['repeat_group_button'] = 1;
+            $groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+            $groupModel->setId(intval($gid));
+            $elements = $groupModel->getMyElements();
+            $listModel = $groupModel->getListModel();
+            $list = $listModel->getTable();
+            $db_table = $list->db_table_name;
+            $list_id = $list->id;
+            $form_id = $list->form_id;
 
-            $data = array(
-                'id' => $gid,
-                'label' => $group['label'],
-                'form' => $group['form_id'],
-                'name' => $group['name'],
-                'published' => $group['published'],
-                'is_join' => $group['is_join'],
-                'params' => $params,
-                'tags' => $group['tags']
-            );
+            $group_params = json_decode($group->params);
+            $group_params->repeat_group_button = 1;
 
-            $saved = $groupModel->save($data);
+            $query->clear()
+                ->update($db->quoteName('#__fabrik_groups'))
+                ->set($db->quoteName('is_join') . ' = ' . $db->quote(1))
+                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+            $db->setQuery($query);
+            $db->execute();
+
+            // Create the new table
+            $newtablename = $db_table . "_" . $gid . "_repeat";
+            $joins_params = '{"type":"group","pk":"`' . $newtablename . '`.`id`"}';
+
+            $query = "CREATE TABLE IF NOT EXISTS " . $newtablename . " (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            PRIMARY KEY (id)
+            ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+            $db->setQuery($query);
+            $db->execute();
+
+            // Create parent_id element
+            $query = $db->getQuery(true);
+            $params = $this->prepareElementParameters('field',0);
+            $params['validations'] = array();
+
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__fabrik_elements'))
+                ->where($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                ->order('ordering');
+            $db->setQuery($query);
+            $results = $db->loadObjectList();
+            $orderings = [];
+            foreach (array_values($results) as $result) {
+                if (!in_array($result->ordering, $orderings)) {
+                    $orderings[] = intval($result->ordering);
+                }
+            }
+
+            // Check if the ID and parent_id already exists in the group
+            $ignore_elms = [];
+            foreach ($elements as $element => $value) {
+                if ($value->element->name == 'parent_id' || $value->element->name == 'id') {
+                    $ignore_elms[] = $value->element->name;
+                }
+            }
+            // Insert parent_id in elements
+
+            if (!in_array('parent_id', $ignore_elms)) {
+                $query
+                    ->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('plugin') . ' = ' . $db->quote('field'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('checked_out') . ' = 0')
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                    ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('width') . ' = 0')
+                    ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('hidden') . ' = 1')
+                    ->set($db->quoteName('eval') . ' = 0')
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                    ->set($db->quoteName('parent_id') . ' = 0')
+                    ->set($db->quoteName('published') . ' = 1')
+                    ->set($db->quoteName('access') . ' = 1')
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            if (!in_array('id', $ignore_elms)) {
+                // Insert id in elements
+                $query
+                    ->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('plugin') . ' = ' . $db->quote('internalid'))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('checked_out') . ' = 0')
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('created_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('created_by_alias') . ' = ' . $db->quote('coordinator'))
+                    ->set($db->quoteName('modified') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('modified_by') . ' = ' . $db->quote($user))
+                    ->set($db->quoteName('width') . ' = 0')
+                    ->set($db->quoteName('default') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('hidden') . ' = 1')
+                    ->set($db->quoteName('eval') . ' = 0')
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(array_values($orderings)[strval(sizeof($orderings) - 1)] + 1))
+                    ->set($db->quoteName('parent_id') . ' = 0')
+                    ->set($db->quoteName('published') . ' = 1')
+                    ->set($db->quoteName('access') . ' = 1')
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            try {
+                $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
+                $db->setQuery($query);
+                $db->execute();
+
+                $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
+                $db->setQuery($query);
+                $db->execute();
+            } catch(Exception $e) {
+                // This means that the parent_id already exists in the table.
+            }
+
+            //verify if left join doesn't already exist;
+            $query = $db->getQuery(true);
+            $query->select('id')
+                ->from($db->quoteName('#__fabrik_joins'))
+                ->where($db->quoteName('table_join') . ' = ' . $db->quote($newtablename))
+                ->and($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+            $db->setQuery($query);
+            $left_join_exist = $db->loadObject();
+
+            if ($left_join_exist == NULL) {
+                $query->clear();
+                $query->insert($db->quoteName('#__fabrik_joins'));
+                $query->set($db->quoteName('list_id') . ' = ' . $db->quote($list_id))
+                    ->set($db->quoteName('element_id') . ' = ' . $db->quote(0))
+                    ->set($db->quoteName('join_from_table') . ' = ' . $db->quote($db_table))
+                    ->set($db->quoteName('table_join') . ' = ' . $db->quote($newtablename))
+                    ->set($db->quoteName('table_key') . ' = ' . $db->quote('id'))
+                    ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'))
+                    ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
+                    ->set($db->quoteName('group_id') . ' = ' . $db->quote($gid))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($joins_params));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            // Insert element present in the group
+            foreach ($elements as $element) {
+                if ($element->element->plugin === 'birthday') {
+                    $dbtype = 'DATE';
+                } elseif ($element->element->plugin === 'textarea') {
+                    $dbtype = 'TEXT';
+                } else {
+                    $dbtype = 'TEXT';
+                }
+
+
+                if (!empty($element->element->name)) {
+                    $query = "ALTER TABLE " . $newtablename . " ADD " . $element->element->name . " " . $dbtype . " NULL";
+                } else {
+                    $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";
+                }
+
+                $db->setQuery($query);
+                try {
+                    $db->execute();
+                } catch (Exception $e) {
+                    continue;
+                }
+            }
+
+            $saved = true;
         }
 
         return $saved;
+    }
+
+    private function getFabrikGroup($gid) {
+        $group = null; 
+        
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from($db->quoteName('#__fabrik_groups'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+        $db->setQuery($query);
+        try {
+            $group = $db->loadObject();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/formbuilder | Cannot get group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $group;
     }
 
     function disableRepeatGroup($gid){
