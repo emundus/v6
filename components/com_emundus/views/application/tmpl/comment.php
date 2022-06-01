@@ -7,10 +7,8 @@
  */
 JFactory::getSession()->set('application_layout', 'comment');
 
-$offset = JFactory::getApplication()->get('offset', 'UTC');
-$dateTime = new DateTime(gmdate('Y-m-d H:i:s'), new DateTimeZone($offset));
-$now = $dateTime->format(JText::_('DATE_FORMAT_LC2'));
-
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+$now = EmundusHelperDate::displayDate(date('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0);
 ?>
 
 <style type="text/css">
@@ -189,7 +187,10 @@ $(document).on('click', '#form .btn.btn-success', function(f) {
 			    $('#form').empty();
 				if (result.status) {
 
-				    $('#form').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
+				    $('#form').append('<p class="text-success" id="comment_added"><strong>'+result.msg+'</strong></p>');
+                    setTimeout(() => {
+                        document.getElementById('comment_added').remove();
+                    },3000);
 					var li = ' <li class="list-group-item" id="'+result.id+'">'+
 						'<div class="row">'+
 							'<div class="col-xs-10 col-md-11">'+
