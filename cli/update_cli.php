@@ -1,5 +1,6 @@
 <?php
 
+use Joomla\CMS\Log\Log;
 use Joomla\Utilities\ArrayHelper;
 
 const _JEXEC = 1;
@@ -15,9 +16,19 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/update.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/install.php';
 require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/discover.php';
 
-
-JLog::addLogger(array('text_file' => 'update_cli_errors.log.php'), JLog::ALL, array('jerror'));
-JLog::addLogger(array('text_file' => 'update_cli_queries.log.php'), JLog::INFO, array('Update'));
+# TODO : need better logs -> check how to list all queries executed
+Log::addLogger(
+    array(
+        'text_file' => 'update_cli_errors.log.php',
+        #'text_entry_format' => '{DATETIME} {PRIORITY} {MESSAGE} {CATEGORY}'
+    ),
+    JLog::ALL, array('jerror'));
+Log::addLogger(
+    array(
+        'text_file' => 'update_cli_queries.log.php',
+        #'text_entry_format' => '{DATETIME} {PRIORITY} {MESSAGE} {CATEGORY}'
+    ),
+    JLog::ALL, array('update'));
 
 
 class UpdateCli extends JApplicationCli
@@ -28,7 +39,6 @@ class UpdateCli extends JApplicationCli
         $query = $this->db->getQuery(true);
         $query->select('*')
             ->from('#__' . $table)
-            //Exclude Joomla & Gantry5
             ->where($this->db->quoteName('extension_id') . " IN (" . implode(',', $ids) . ')');
         $this->db->setQuery($query);
         return $this->db->loadAssocList('',);
@@ -268,7 +278,7 @@ class UpdateCli extends JApplicationCli
 
                 // Graceful exit and rollback if read not successful
                 if ($buffer === false) {
-                    \JLog::add(\JText::sprintf('Error SQL Read buffer'), \JLog::WARNING, 'jerror');
+                    Log::add($element . " : " . $file . ".sql  --> Error SQL Read buffer", Log::ERROR, 'jerror');
                     return array(0, 0);
                 }
 
@@ -290,8 +300,8 @@ class UpdateCli extends JApplicationCli
                     try {
                         $db->execute();
                     } catch (\JDatabaseExceptionExecuting $e) {
-                        \JLog::add(\JText::sprintf($e->getMessage()), \JLog::WARNING, 'jerror');
-                        \JLog::add(\JText::sprintf("[FAIL] " . $element . " : " . $file . ".sql  -->" . $queryString), \JLog::INFO, 'Update');
+                        Log::add($e->getMessage(), Log::ERROR, 'jerror');
+                        Log::add("[FAIL] " . $element . " : " . $file . ".sql  -->" . $queryString, Log::ERROR, 'update');
 
                         $this->out("-> Error : " . $e->getMessage());
                         $installer->abort($e->getMessage(), $db->stderr(true));
@@ -303,7 +313,7 @@ class UpdateCli extends JApplicationCli
                     $queryString = (string)$query;
                     # Change third parameter of substr for changing length of query log
                     $queryString = str_replace(array("\r", "\n"), array('', ' '), substr($queryString, 0, 120));
-                    \JLog::add(\JText::sprintf("[EXEC] " . $element . " : " . $file . ".sql  -->" . $queryString), \JLog::INFO, 'Update');
+                    Log::add("[EXEC] " . $element . " : " . $file . ".sql  -->" . $queryString, Log::INFO, 'update');
 
                     $update_count++;
                 }
@@ -437,7 +447,6 @@ class UpdateCli extends JApplicationCli
             }
             $path = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/';
 
-            $installer->setPath('source', $path);
 
             $path_bis = JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
             if (!is_dir($path)) {
@@ -447,8 +456,8 @@ class UpdateCli extends JApplicationCli
             if (file_exists($xml_path)) {
                 $this->manifest = simplexml_load_file($xml_path);
 
-                # Try to find& import the scriptfile, except for some extensions who don't need one
-                $ext_without_scriptfile = array("11852", "13487");
+                # Try to find & import the scriptfile, except for some extensions who don't need one
+                $ext_without_scriptfile = array("11852", "13487", "13338");
                 if (!in_array($id, $ext_without_scriptfile) or $this->manifest->scriptfile) {
                     try {
                         if ($this->manifest->scriptfile) {
@@ -463,9 +472,9 @@ class UpdateCli extends JApplicationCli
                         }
                     } catch (Exception $e) {
                         $this->out($e->getMessage());
-                        \JLog::add(\JText::sprintf($e->getMessage()), \JLog::WARNING, 'jerror');
-                        continue;
-                        #exit();
+                        Log::add($e->getMessage(), Log::WARNING, 'jerror');
+                        #continue;
+                        exit();
                     }
                 }
                 # Step 1 : Execute SQL files for update
@@ -481,6 +490,8 @@ class UpdateCli extends JApplicationCli
                 $this->out("\nCustom updates...");
 
                 # Setup adapter
+                $installer->setPath('source', $path);
+
                 if (!$adapter = $installer->setupInstall('update', true)) {
                     $installer->abort(\JText::_("Impossible de détecter le fichier manifest"));
                     return false;
@@ -497,9 +508,10 @@ class UpdateCli extends JApplicationCli
                             case 'com_fabrik' :
                             case 'com_jumi':
                             case 'com_falang':
-                            case 'com_securitycheckpro':
+                            #case 'com_securitycheckpro':
                             case 'com_hikashop':
                             case 'com_hikamarket':
+                            # TODO : set emundus version to 1.xx on the first run
                             case 'com_emundus' :
                             case 'com_jchoptimize':
                             case 'com_loginguard':
@@ -507,7 +519,7 @@ class UpdateCli extends JApplicationCli
                             case 'com_extplorer' :
                             case 'com_eventbooking' :
                             case 'com_externallogin' :
-                            case 'com_api' :
+                            #case 'com_api' :
                                 try {
                                     if (method_exists($scriptClass, 'preflight')) {
                                         $script->preflight('update', $adapter);
@@ -525,7 +537,26 @@ class UpdateCli extends JApplicationCli
                                     return false;
                                 }
                                 break;
+                            case 'com_securitycheckpro':
+                                try {
+                                    $installer->setPath('source', JPATH_ROOT);
 
+                                    if (method_exists($scriptClass, 'preflight')) {
+                                        $script->preflight('update', $adapter);
+                                    }
+                                    if (method_exists($scriptClass, 'update')) {
+                                        $script->update($adapter);
+                                    }
+                                    if (method_exists($scriptClass, 'postflight')) {
+                                        $script->postflight('update', $adapter);
+                                    }
+                                } catch (\RuntimeException $e) {
+                                    // Install failed, roll back changes
+                                    $this->out($e);
+                                    $installer->abort($e->getMessage());
+                                    return false;
+                                }
+                                break;
 
                             case 'com_dpcalendar' :
                                 # Restore previous xml version before & after update because dpcalendar based on xml for version setting
@@ -606,9 +637,9 @@ class UpdateCli extends JApplicationCli
         if (isset($options["u"]) || isset($options["update"])) {
             # Array of components available for update
             $availableComp = array('com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang',
-                'com_securitycheckpro', 'com_eventbooking', 'com_dpcalendar', 'com_dropfiles', 'com_extplorer',
+                'com_eventbooking', 'com_dpcalendar', 'com_dropfiles', 'com_extplorer',
                 'com_miniorange_saml', 'com_loginguard', 'com_jce', 'com_admintools',
-                'com_jumi', 'com_api', 'com_gantry5', 'com_externallogin'); #, 'com_jchoptimize'
+                'com_jumi', 'com_gantry5', 'com_externallogin'); #, 'com_jchoptimize','com_securitycheckpro', 'com_api'
             $compArr = $this->getComponentsId('extensions', $availableComp);
 
             # Array of components with refreshed informations
