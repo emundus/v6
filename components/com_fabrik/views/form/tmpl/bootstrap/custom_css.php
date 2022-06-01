@@ -437,12 +437,13 @@ form#member-profile .form-horizontal .control-label {
 }*/
 
 
-.view-registration .icon-star.small {
+.view-registration .icon-star.small,
+.view-form.em-formRegistrationCenter .icon-star.small {
     margin-top: 0px;
     padding-top: 0px;
     position: relative;
     padding-left: 2px;
-    color: #c30505;
+    color: #e5283B;
     font-size: 5px;
     order: 2;
     top: -10px;
@@ -1602,6 +1603,11 @@ a.btn-attach:active {
      .view-form .em-formRegistrationCenter div.em-heading-registration {
          padding: 80px 24px 32px 24px;
          width: 100%;
+    }
+    
+    .view-registration .icon-star.small,
+    .view-form.em-formRegistrationCenter .icon-star.small {
+        margin-top: 10px;
     }
     
 }
