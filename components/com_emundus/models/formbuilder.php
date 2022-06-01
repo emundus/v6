@@ -988,7 +988,8 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $app = JFactory::getApplication();
+        $label = json_decode($label,true);
+        $intro = json_decode($intro,true);
 
         $lang = JFactory::getLanguage();
         $actualLanguage = substr($lang->getTag(), 0 , 2);

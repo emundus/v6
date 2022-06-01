@@ -348,16 +348,14 @@ export default {
 
         const formData = new FormData();
         Object.keys(params).forEach(key => {
-            formData.append(key, params[key]);
+            formData.append(key, JSON.stringify(params[key]));
         });
 
         try {
-            const response = await client().post(
+            return await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=createmenu',
                 formData
             );
-
-            return response;
         } catch (e) {
             return {
                 status: false,

@@ -2,7 +2,7 @@
   <div id="form-builder-pages">
     <p class="form-builder-title em-flex-row em-s-justify-content-center em-flex-space-between em-p-16">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
-      <span class="material-icons em-pointer" @click="addPage"> add </span>
+      <span class="material-icons em-pointer" @click="$emit('open-page-properties')"> add </span>
     </p>
     <draggable
         v-model="pages"

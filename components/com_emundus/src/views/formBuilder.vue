@@ -86,6 +86,7 @@
                   @select-page="selectPage($event)"
                   @add-page="getPages(currentPage.id)"
                   @delete-page="selectedPage = pages[0].id;"
+                  @open-page-properties="onOpenPageProperties"
               ></form-builder-pages>
               <hr>
               <form-builder-documents
@@ -95,6 +96,12 @@
                   @open-create-document="onOpenCreateDocument"
               ></form-builder-documents>
             </div>
+            <form-builder-page-properties
+                v-if="showInRightPanel == 'page-properties'"
+                @close="onClosePageProperties"
+                :profile_id="profile_id"
+            >
+            </form-builder-page-properties>
             <form-builder-element-properties
                 v-if="showInRightPanel == 'element-properties'"
                 @close="onCloseElementProperties"
@@ -121,6 +128,7 @@
 import FormBuilderElements  from "../components/FormBuilder/FormBuilderElements";
 import FormBuilderElementProperties  from "../components/FormBuilder/FormBuilderElementProperties";
 import FormBuilderPage      from "../components/FormBuilder/FormBuilderPage";
+import FormBuilderPageProperties from "../components/FormBuilder/FormBuilderPageProperties";
 import FormBuilderPages     from "../components/FormBuilder/FormBuilderPages";
 import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
 import FormBuilderDocumentList from "../components/FormBuilder/FormBuilderDocumentList";
@@ -132,6 +140,7 @@ import formService from '../services/form.js';
 export default {
   name: 'FormBuilder',
   components: {
+    FormBuilderPageProperties,
     FormBuilderElements,
     FormBuilderElementProperties,
     FormBuilderPage,
@@ -229,6 +238,10 @@ export default {
       this.selectedElement = event;
       this.showInRightPanel = 'element-properties';
     },
+    onOpenPageProperties()
+    {
+      this.showInRightPanel = 'page-properties';
+    },
     onCloseCreateDocument()
     {
       this.showInRightPanel = 'hierarchy';
@@ -238,6 +251,14 @@ export default {
       this.selectedElement = null;
       this.showInRightPanel = 'hierarchy';
       this.$refs.formBuilderPage.getSections();
+    },
+    onClosePageProperties(page = null)
+    {
+      if(page) {
+        this.pages.push(page);
+        this.selectedPage = page.id;
+      }
+      this.showInRightPanel = 'hierarchy';
     },
     onOpenCreateDocument()
     {
