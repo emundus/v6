@@ -3949,6 +3949,7 @@ button.swal2-cancel.goback-btn {
               select.inputbox {
                  @include multiple-select;
                  @include body-16;
+                 width: 100%;
               }
 
 
@@ -4280,6 +4281,10 @@ button.swal2-cancel.goback-btn {
 
           form.fabrikForm {
             width: 90%;
+          }
+
+          .icon-star.small {
+            top: 0 !important;
           }
         }
       }

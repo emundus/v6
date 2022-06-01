@@ -321,6 +321,7 @@ $font:'Inter', sans-serif;
   background-size: 8px;
   background-repeat: no-repeat;
   height: 48px !important;
+  padding: 0 32px 0 12px !important;
 }
 
 @mixin multiple-select {
@@ -331,7 +332,7 @@ $font:'Inter', sans-serif;
   background-size: 8px;
   background-repeat: no-repeat;
   height: 48px !important;
-  padding: 0 16px;
+  padding: 0 32px 0 12px;
 }
 
 @mixin select-button-default {
