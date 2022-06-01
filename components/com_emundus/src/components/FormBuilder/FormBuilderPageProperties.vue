@@ -61,6 +61,10 @@ export default {
       type: Number,
       required: true
     },
+    pages: {
+      type: Array,
+      required: true
+    }
   },
   mixins: [formBuilderMixin],
   data() {
@@ -98,12 +102,21 @@ export default {
     },
     addPage() {
       this.errors = [];
+
       if(this.page.label.fr === '' || this.page.label.en === '') {
         this.errors.push('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ERROR_LABEL_EMPTY');
         document.getElementById('page-label').focus();
       }
 
-      if(this.page.label.fr !== '' && this.page.label.en !== '') {
+      let stop = false;
+      this.pages.forEach((page) => {
+        if((page.label === this.page.label.fr || page.label === this.page.label.en) && !stop) {
+          this.errors.push('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ERROR_LABEL_EXISTS');
+          stop = true;
+        }
+      });
+
+      if(this.errors.length === 0) {
         formBuilderService.addPage(this.page).then(response => {
           this.$emit('close', response.data);
           this.updateLastSave();
@@ -114,6 +127,7 @@ export default {
   computed: {},
   watch: {
     'page.label.fr': function(newValue, oldValue) {
+      this.errors = [];
       this.page.label.en = newValue;
       if(newValue.length >= 50 || newValue.length < 3) {
         document.getElementById('page-label').style.borderColor = '#DB333E';

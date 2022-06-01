@@ -100,6 +100,7 @@
                 v-if="showInRightPanel == 'page-properties'"
                 @close="onClosePageProperties"
                 :profile_id="profile_id"
+                :pages="pages"
             >
             </form-builder-page-properties>
             <form-builder-element-properties
