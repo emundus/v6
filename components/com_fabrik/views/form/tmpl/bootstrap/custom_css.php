@@ -1600,12 +1600,7 @@ a.btn-attach:active {
          padding: 80px 24px 32px 24px;
          width: 100%;
     }
-    
-   .view-registration .icon-star.small,
-  .view-form.em-formRegistrationCenter .icon-star.small {
-       top: 0px !important;
-    }
-    
+        
 }
 
 @media all and (min-width 480px) and (max-width: 767px) {
