@@ -4837,12 +4837,14 @@ $(document).ready(function() {
                             '<div><form class="em-flex-row">'+
                             '<input type="radio" name="em-tags" id="em-tags" value="0" checked>' +Joomla.JText._('COM_EMUNDUS_APPLICATION_ADD_TAGS')+
                             '&ensp;&ensp;&ensp;<input type="radio" name="em-tags" id="em-tags" value="1">' +Joomla.JText._('COM_EMUNDUS_TAGS_DELETE_TAGS')+ '<br>'+
-                            '</form></div></div>'+
+                            '</form></div></div>';
 
-                            '<label class="col-lg-2 control-label">' +Joomla.JText._('COM_EMUNDUS_TAGS_CATEGORIES')+ '</label>' +
-                            '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>' +
+                        if(result.show_tags_category == 1) {
+                            tags += '<label class="col-lg-2 control-label">' +Joomla.JText._('COM_EMUNDUS_TAGS_CATEGORIES')+ '</label>' +
+                                '<select class="col-lg-7 modal-chzn-select" name="em-action-tag-category" id="em-action-tag-category"></select>';
+                        }
 
-                            '<label class="col-lg-2 control-label em-mt-16">'+result.tag+'</label>' +
+                        tags += '<label class="col-lg-2 control-label em-mt-16">'+result.tag+'</label>' +
                             '<select class="col-lg-7 modal-chzn-select" name="em-action-tag" id="em-action-tag" multiple="multiple"></select>' +
                             '</div>';
 
@@ -4856,24 +4858,26 @@ $(document).ready(function() {
                             select1.append(added_option);
                         });
 
-                        /** Create category dropdown **/
-                        let tag_categories = [... new Set(result.tags.filter(tag => {
-                            return (typeof tag.category == 'string' && tag.category !== '')
-                        }).map(cat => cat.category))];
+                        if(result.show_tags_category == 1) {
+                            /** Create category dropdown **/
+                            let tag_categories = [...new Set(result.tags.filter(tag => {
+                                return (typeof tag.category == 'string' && tag.category !== '')
+                            }).map(cat => cat.category))];
 
-                        let added_option = document.createElement('option');
-                        let select1 = document.getElementById('em-action-tag-category');
-                        added_option.value = "";
-                        added_option.innerHTML =Joomla.JText._('PLEASE_SELECT');
-                        select1.append(added_option);
-
-                        tag_categories.forEach((tag_category)=> {
                             let added_option = document.createElement('option');
                             let select1 = document.getElementById('em-action-tag-category');
-                            added_option.value = tag_category;
-                            added_option.innerHTML = tag_category;
+                            added_option.value = "";
+                            added_option.innerHTML = Joomla.JText._('PLEASE_SELECT');
                             select1.append(added_option);
-                        });
+
+                            tag_categories.forEach((tag_category) => {
+                                let added_option = document.createElement('option');
+                                let select1 = document.getElementById('em-action-tag-category');
+                                added_option.value = tag_category;
+                                added_option.innerHTML = tag_category;
+                                select1.append(added_option);
+                            });
+                        }
 
                         $('.modal-chzn-select').chosen({width:'75%'});
 

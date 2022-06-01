@@ -33,6 +33,9 @@ class EmundusHelperMenu {
 		INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
 		WHERE (menu.published = 0 OR menu.published = 1) AND menu.parent_id !=1 '.$and_level;
+		if(!empty($formids) && $formids[0] != "") {
+			$query .= ' AND fbtables.form_id IN(' . implode(',', $formids) . ')';
+		}
 		$query .= ' ORDER BY menu.lft';
 
 		try {
