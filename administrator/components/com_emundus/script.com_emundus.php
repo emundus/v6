@@ -16,7 +16,7 @@ class com_emundusInstallerScript
     }
 
 
-    public function install()
+    public function install($type, $parent)
     {
     }
 
@@ -27,13 +27,13 @@ class com_emundusInstallerScript
     }
 
 
-    public function updateSQL()
+    public function update($parent)
     {
         $manifest = json_decode($this->db->loadObject()->manifest_cache);
         $version = null;
         if ($manifest) {
             // First run condition
-            if (version_compare($manifest->version, '6.9.0', '=')) {
+            if (version_compare($manifest->version, '6.9.0', '<')) {
                 echo "\n--> Update function from script.com_emundus : 6.9.0";
                 $version = '6.9.0';
             }
@@ -53,14 +53,14 @@ class com_emundusInstallerScript
 
 
 
-    public function preflight()
+    public function preflight($type, $parent)
     {
 
     }
 
 
-    function postflight()
+    function postflight($type, $parent)
     {
-
+        echo '<strong>Installation terminée avec succès</strong>';
     }
 }
