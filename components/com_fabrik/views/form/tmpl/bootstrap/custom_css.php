@@ -446,7 +446,7 @@ form#member-profile .form-horizontal .control-label {
     color: #e5283B;
     font-size: 5px;
     order: 2;
-    top: -10px;
+    top: -7px;
 }
 
 .icon-.small {
@@ -1224,10 +1224,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
   content: '';
 }
 
-label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.small {
-  top: -9px; 
-}
-
 .view-login .form-horizontal,
 .view-registration form .row-fluid,
 .form-validate .control-group {
@@ -1605,9 +1601,9 @@ a.btn-attach:active {
          width: 100%;
     }
     
-    .view-registration .icon-star.small,
-    .view-form.em-formRegistrationCenter .icon-star.small {
-        margin-top: 10px;
+   .view-registration .icon-star.small,
+  .view-form.em-formRegistrationCenter .icon-star.small {
+       top: 0px !important;
     }
     
 }
