@@ -47,9 +47,19 @@ $mod_em_homepage_details_start_date_display = $params->get('mod_em_homepage_deta
 $mod_em_homepage_details_end_date_display = $params->get('mod_em_homepage_details_end_date_display');
 //
 
+/*
 if(in_array('banner', $mod_em_homepage_sections)) {
     if(file_exists(JPATH_BASE.'/'.$mod_em_homepage_banner_image)) {
         $mod_em_homepage_banner_image = JPATH_BASE.'/'.$mod_em_homepage_banner_image;
+    } else {
+        $mod_em_homepage_banner_image = false;
+    }
+}*/
+
+
+if(in_array('banner', $mod_em_homepage_sections)) {
+    if(file_exists($mod_em_homepage_banner_image)) {
+        $mod_em_homepage_banner_image;
     } else {
         $mod_em_homepage_banner_image = false;
     }

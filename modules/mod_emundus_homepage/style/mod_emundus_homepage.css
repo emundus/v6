@@ -1,0 +1,65 @@
+/* Style du module */
+
+/* Page d'accueil */
+.homepage .g-container {
+  width: 100%;
+  padding: 0 !important;
+}
+
+/* Container du module */
+.homepage-container {
+    width: 100%;
+}
+
+/* Bannière */
+.homepage-container__banner {
+    height: 15vh;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.homepage-container__banner h1 {
+    color: #fff;
+    width: 50%;
+    font-size: 48px;
+}
+
+
+/* Barre de recherche */
+.homepage-container__filter {
+
+}
+
+/* Texte d'introduction */
+.homepage-container__intro {
+   width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Campagnes */
+.homepage-container__campaigns {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.homepage-container__campaign {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 32.61%);
+    gap: 16px;
+}
+
+.homepage-container__campaign--pinned {
+    width: 100%;
+    background: #fff;
+}
+
+.homepage-container__campaign-block {
+    background: #fff;
+    padding: 16px;
+}
