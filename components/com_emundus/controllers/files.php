@@ -435,9 +435,27 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
+                $comment_content = array(
+                    'applicant_id' => $aid,
+                    'user_id' => $user,
+                    'reason' => $title,
+                    'comment_body' => $comment,
+                    'fnum' => $fnum,
+                    'status_from' => -1,
+                    'status_to' => -1
+                );
+
+                JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
                 if (empty($res)) {
                     $fnumErrorList[] = $fnum;
+                } else {
+                    $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
                 }
             } else {
                 $fnumErrorList[] = $fnum;
