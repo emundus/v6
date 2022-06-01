@@ -1851,53 +1851,76 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function tagFile($fnums, $tags) {
+        $app = JFactory::getApplication();
 
-        try {
+        if (!empty($fnums) && !empty($tags)) {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
 
-            $query_associated_tags = $db->getQuery(true);
-            $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
+            if (!empty($user)) {
+                $query = $db->getQuery(true);
 
-            if (!empty($fnums) && !empty($tags)) {
-                $logsParams = array('created' => []);
                 foreach ($fnums as $fnum) {
-                    // Get tags already associated to this fnum by the current user
-                    $query_associated_tags->clear()
-                        ->select('id_tag')
-                        ->from($db->quoteName('#__emundus_tag_assoc'))
-                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
-                        ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user));
-                    $db->setQuery($query_associated_tags);
-                    $tags_already_associated = $db->loadColumn();
+                    if (!empty($fnum)) {
+                        $logsData = array('created' => []);
 
-                    // Insert valid tags
-                    foreach ($tags as $tag) {
-                        if(!in_array($tag,$tags_already_associated)) {
-                            $query .= '("' . $fnum . '", ' . $tag . ',' . $user . '),';
-                            $query_log = 'SELECT label
-                                FROM #__emundus_setup_action_tag
-                                WHERE id =' . $tag;
-                            $db->setQuery($query_log);
-                            $log_tag = $db->loadResult();
-                            array_push($logsParams['created'], $log_tag);
+                        $query->clear()
+                            ->select('id_tag')
+                            ->from($db->quoteName('#__emundus_tag_assoc'))
+                            ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+                            ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user));
+
+                        $db->setQuery($query);
+
+                        $already_associated_tags = [];
+                        try {
+                            $already_associated_tags = $db->loadColumn();
+                        } catch (Exception $e) {
+                            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                            return false;
                         }
+
+                        $query->clear()
+                            ->insert('#__emundus_tag_assoc')
+                            ->columns('fnum, id_tag, user_id');
+                        foreach ($tags as $tag) {
+                            if (!in_array($tag, $already_associated_tags)) {
+                                $query->values('"' . $fnum . '", ' . $tag . ', ' . $user);
+
+                                $sub_query = $db->getQuery(true);
+                                $sub_query->select('label')
+                                    ->from($db->quoteName('#__emundus_setup_action_tag'))
+                                    ->where($db->quoteName('id') . ' = ' . $tag);
+
+                                $db->setQuery($sub_query);
+
+                                try {
+                                    $logsData['created'][] = $db->loadResult();
+                                } catch (Exception $e) {
+                                    JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                                }
+                            }
+                        }
+
+                        $db->setQuery($query);
+
+                        try {
+                            $inserted = $db->execute();
+                        } catch (Exception $e) {
+                            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                            return false;
+                        }
+
+                        EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsData, JSON_UNESCAPED_UNICODE));
+                        return $inserted;
                     }
-                    // Log the tags in the eMundus logging system.
-                    EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
 
-                $query = substr_replace($query, ";", -1);
-                $db->setQuery($query);
-                $db->execute();
+            } else {
+                $app->enqueueMessage(JText::_('User not logged in'), 'error');
+                JLog::add('User not logged in', JLog::ERROR, 'com_emundus');
+                return false;
             }
-
-            return true;
-        }
-        catch (Exception $e)
-        {
-            JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
-            return false;
         }
     }
 
