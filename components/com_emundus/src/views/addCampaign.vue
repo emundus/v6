@@ -469,7 +469,7 @@ export default {
         limit_files_number: false,
         limit_status: false
       }
-      if(this.form.label.fr == "" && this.form.label.en == ""){
+      if(this.form.label[this.actualLanguage] === '' || this.form.label[this.actualLanguage] == null || typeof this.form.label[this.actualLanguage] === 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.errors.label = true;
         return 0;
