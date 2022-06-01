@@ -2322,18 +2322,13 @@ this.set(words.join(&quot; &quot;));
         try {
             $db->setQuery($query);
             $db_element = $db->loadObject();
-            //
 
             // Default parameters
             $dbnull = 'NULL';
-            //
 
             switch ($element['plugin']) {
                 case 'birthday':
                     $dbtype = 'DATE';
-                    break;
-                case 'textarea':
-                    $dbtype = 'TEXT';
                     break;
                 case 'date':
                     $dbtype = 'DATETIME';
@@ -2344,9 +2339,8 @@ this.set(words.join(&quot; &quot;));
                 case 'databasejoin':
                     $dbtype = 'INT';
                     break;
+                case 'textarea':
                 case 'display':
-                    $dbtype = 'TEXT';
-                    break;
                 default:
                     $dbtype = 'TEXT';
             }
@@ -2422,8 +2416,6 @@ this.set(words.join(&quot; &quot;));
                         $db->setQuery($query);
                         $db->execute();
                     }
-
-
 
                     $element['plugin'] = 'databasejoin';
                 } else {
@@ -2515,7 +2507,6 @@ this.set(words.join(&quot; &quot;));
                         $element['params']['validations']['show_icon'][] = "0";
                     }
                 } else {
-                    //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("isemail")));
                     $key = array_search("isemail", $element['params']['validations']['plugin']);
                     if($key !== false && $key !== null) {
                         unset($element['params']['validations']['plugin'][$key]);
@@ -2555,7 +2546,12 @@ this.set(words.join(&quot; &quot;));
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            if (gettype($query) == 'string') {
+                JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/"," ",$query .' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            } else {
+                JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
+
             return false;
         }
     }
