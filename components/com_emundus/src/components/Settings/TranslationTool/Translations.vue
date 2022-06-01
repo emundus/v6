@@ -205,7 +205,9 @@ export default {
       ).then(async (response) => {
         this.datas = response.data;
 
-        if(value.table.load_all === 'true') {
+        console.log(value.table);
+
+        if (value.table.load_all === 'true') {
           let fields = [];
           await this.asyncForEach(this.object.fields.Fields, async (field) => {
             fields.push(field.Name);
@@ -233,6 +235,8 @@ export default {
             this.loading = false;
           }
           await build();
+        } else if (value.table.load_first_data === 'true') {
+          this.data = this.datas[0];
         } else {
           this.loading = false;
         }
@@ -300,6 +304,10 @@ export default {
             children_existing = true;
             translationsService.getChildrens(field.Label,this.data.id,field.Name).then((response) => {
               this.childrens = response.data;
+
+              if (this.object.table.load_first_child === 'true') {
+                this.children = this.childrens[0];
+              }
               this.loading = false;
             });
           }
