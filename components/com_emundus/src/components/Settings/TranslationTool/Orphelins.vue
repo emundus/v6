@@ -48,8 +48,8 @@
             <div class="em-flex-space-between em-mt-16 em-grid-50">
               <p class="em-neutral-700-color">{{ translation.override }}</p>
               <div>
-                <input class="mb-0 em-input em-w-100" type="text" :value="translation.override"/>
-                <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="saveTranslation(translation.override,translation,index)">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELIN_CONFIRM_TRANSLATION') }}</a>
+                <input class="mb-0 em-input em-w-100" type="text" :value="translation.override" :ref="'translation-' + index + ''"/>
+                <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="saveTranslation(translation, index)">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELIN_CONFIRM_TRANSLATION') }}</a>
               </div>
             </div>
           </div>
@@ -121,8 +121,10 @@ export default {
       }
     },
 
-    async saveTranslation(value,translation,index){
+    async saveTranslation(translation, index) {
       this.saving = true;
+      const value = this.$refs['translation-' + index].value;
+
       translationsService.insertTranslation(value,'override', this.lang.lang_code, translation.reference_id, translation.tag, translation.reference_table).then((response) => {
         this.last_save = this.formattedDate('','LT');
         this.saving = false;
