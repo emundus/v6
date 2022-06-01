@@ -165,7 +165,7 @@ export default {
       this.menus[2].access = 1;
       this.menus[3].access = parseInt(this.em_params.translations);
       this.menus[4].access = parseInt(this.em_params.attachment_storage);
-      this.menus[5].access = parseInt(this.em_params.dashboard_settings);
+      this.menus[5].access = (parseInt(this.em_params.dashboard_settings) === 1 && parseInt(this.$store.state.global.datas.sysadminaccess.value) === 1) ? 1 : 0;
       //
 
       this.loading = false;

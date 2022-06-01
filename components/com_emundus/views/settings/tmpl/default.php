@@ -279,12 +279,14 @@ if(count($languages) > 1){
 
 $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
+$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 ?>
 
 <div id="em-component-vue"
      component="settings"
      actualLanguage="<?= $actualLanguage ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
+     sysadminAccess="<?= $sysadmin_access ?>"
      manyLanguages="<?= $many_languages ?>"
 ></div>
 
