@@ -14,12 +14,12 @@
 }
 
 .em-infoComp li {
-    padding: 10px 1.5rem;
+    padding: 10px 0;
 }
 
 .em-infoComp li i {
     margin-left: 10px;
-    color:#de6339;
+    color: #de6339;
 }
 
 .em-infoComp li {
@@ -32,16 +32,15 @@
 }
 
 .em-infoComp .g-title {
-    border:none !important;
-    position:relative;
+    border: none !important;
+    position: relative;
+    margin-bottom: 24px;
 }
 
-.em-infoComp .g-title::after {
-    content: '';
-    position: absolute;
-    margin-top: 35px;
-    left: 0;
-    width: 2.7rem;
-    height: 0.2rem;
-    background: #de6339;
+
+.view-programme .em-infoComp {
+ padding: 24px;
 }
+
+
+
