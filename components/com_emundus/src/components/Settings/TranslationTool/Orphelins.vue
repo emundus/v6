@@ -48,7 +48,7 @@
             <div class="em-flex-space-between em-mt-16 em-grid-50">
               <p class="em-neutral-700-color">{{ translation.override }}</p>
               <div>
-                <input class="mb-0 em-input em-w-100" type="text" :value="translation.override" @focusout="saveTranslation($event.target.value,translation,index)" />
+                <input class="mb-0 em-input em-w-100" type="text" :value="translation.override"/>
                 <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="saveTranslation(translation.override,translation,index)">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELIN_CONFIRM_TRANSLATION') }}</a>
               </div>
             </div>
