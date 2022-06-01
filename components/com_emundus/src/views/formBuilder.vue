@@ -256,7 +256,7 @@ export default {
     onClosePageProperties(page = null)
     {
       if(page) {
-        this.pages.push(page);
+        this.pages.splice(this.pages.length-1,0, page)
         this.selectedPage = page.id;
       }
       this.showInRightPanel = 'hierarchy';

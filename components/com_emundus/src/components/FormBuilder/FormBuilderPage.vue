@@ -5,7 +5,7 @@
         ref="pageTitle"
         @focusout="updateTitle"
         @keyup.enter="updateTitle"
-        @keydown="(event) => checkMaxlength(event, 50)"
+        @keydown="(event) => checkMaxMinlength(event, 50, 3)"
         contenteditable="true"
     >
       {{ translate(title) }}

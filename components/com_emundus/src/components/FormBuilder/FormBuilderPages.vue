@@ -107,44 +107,48 @@ export default {
     selectPage(id) {
       this.$emit('select-page', id);
     },
-    addPage() {
-      formBuilderService.addPage({
-        label: 'Nouvelle page',
-        intro: '',
-        prid: this.profile_id,
-        modelid: -1,
-        template: 0
-      }).then(response => {
-        this.$emit('add-page');
-        this.updateLastSave();
-      });
-    },
     deletePage(page) {
-      Swal.fire({
-        title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION') + page.label,
-        text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
-        type: "warning",
-        showCancelButton: true,
-        confirmButtonText: this.translate("COM_EMUNDUS_ACTIONS_DELETE"),
-        cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-        reverseButtons: true,
-        customClass: {
-          title: 'em-swal-title',
-          cancelButton: 'em-swal-cancel-button',
-          confirmButton: 'em-swal-delete-button',
-        },
-      }).then(result => {
-        if (result.value) {
-          formBuilderService.deletePage(page.id).then(response => {
-            let deletedPage = this.pages.findIndex(p => p.id === page.id);
-            this.pages.splice(deletedPage, 1);
-            if(this.selected == page.id) {
-              this.$emit('delete-page');
-            }
-            this.updateLastSave();
-          });
-        }
-      });
+      if(this.pages.length > 2) {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION') + page.label,
+          text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_CONFIRMATION_TEXT'),
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonText: this.translate("COM_EMUNDUS_ACTIONS_DELETE"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-delete-button',
+          },
+        }).then(result => {
+          if (result.value) {
+            formBuilderService.deletePage(page.id).then(response => {
+              let deletedPage = this.pages.findIndex(p => p.id === page.id);
+              this.pages.splice(deletedPage, 1);
+              if (this.selected == page.id) {
+                this.$emit('delete-page');
+              }
+              this.updateLastSave();
+            });
+          }
+        });
+      } else {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_ERROR'),
+          text: this.translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE_ERROR_TEXT'),
+          type: "error",
+          showCancelButton: false,
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            confirmButton: 'em-swal-confirm-button',
+            actions: "em-swal-single-action",
+          },
+        });
+      }
     },
     onDragEnd() {
       const newOrder = this.pages.map((page, index) => {
