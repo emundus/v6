@@ -117,7 +117,6 @@
                 v-model="form.short_description"
                 @keyup="checkMaxlength('campResume')"
                 @focusout="removeBorderFocus('campResume')"
-
             />
           </div>
 
@@ -663,5 +662,9 @@ export default {
   height: 24px;
   width: 24px;
   padding: unset;
+}
+
+#campResume {
+  height: 85px !important;
 }
 </style>
