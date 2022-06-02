@@ -96,6 +96,7 @@ plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 
 
 ## event booking ##
+administrator/components/com_eventbooking/assets/css/style.css
 images/com_eventbooking/
 media/com_eventbooking/assets/css/custom.css
 media/com_eventbooking/assets/css/true

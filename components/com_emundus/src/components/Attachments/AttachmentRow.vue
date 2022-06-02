@@ -113,23 +113,7 @@ export default {
 	},
 	mounted() {
 		this.categories = this.$store.state.attachment.categories;
-		if (Object.entries(this.categories).length < 1) {
-			this.getAttachmentCategories()
-				.then((response) => {
-					this.categories = response;
-					this.category = this.categories[this.attachment.category]
-						? this.categories[this.attachment.category]
-						: "";
-				})
-				.catch((error) => {
-					this.categories = {};
-				});
-		} else {
-			this.category = this.categories[this.attachment.category]
-				? this.categories[this.attachment.category]
-				: "";
-		}
-
+    this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
 		this.checkedAttachments = this.checkedAttachmentsProp;
 	},
 	methods: {
@@ -160,6 +144,10 @@ export default {
 		"$store.state.attachment.checkedAttachments": function () {
 			this.checkedAttachments = this.$store.state.attachment.checkedAttachments;
 		},
+    "$store.state.attachment.categories": function () {
+      this.categories = this.$store.state.attachment.categories;
+      this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
+    },
 	},
 };
 </script>

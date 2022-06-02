@@ -435,9 +435,27 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
+                $comment_content = array(
+                    'applicant_id' => $aid,
+                    'user_id' => $user,
+                    'reason' => $title,
+                    'comment_body' => $comment,
+                    'fnum' => $fnum,
+                    'status_from' => -1,
+                    'status_to' => -1
+                );
+
+                JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
                 if (empty($res)) {
                     $fnumErrorList[] = $fnum;
+                } else {
+                    $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
                 }
             } else {
                 $fnumErrorList[] = $fnum;
@@ -460,9 +478,14 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $tags = $m_files->getAllTags();
 
+        $params = JComponentHelper::getParams('com_emundus');
+        $show_tags_category = $params->get('com_emundus_show_tags_category', 0);
+
+
         echo json_encode((object)(array('status' => true,
             'tags' => $tags,
             'tag' => JText::_('COM_EMUNDUS_TAGS'),
+            'show_tags_category' => $show_tags_category,
             'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
         exit;
     }
@@ -1153,7 +1176,7 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
             }
-            $msg = JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
+            $msg = JText::_('COM_EMUNDUS_APPLICATION_PUBLISHED_STATE_SUCCESS');
         } else $msg = JText::_('STATE_ERROR');
 
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -3900,13 +3923,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcamp = count($campaigns);
         foreach ($campaigns as $c) {
             if ($nbcamp == 1) {
-                $html .= '<option value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'" value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             } else {
-                $html .= '<option value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'"  value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             }
         }
 
-        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp)));
+        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp, 'campaigns' => $campaigns)));
         exit;
     }
 

@@ -1,7 +1,7 @@
 <template>
-  <div id="em-attachments">
-    <div class="head">
-      <div class="displayed-user">
+  <div id="em-attachments" class="em-w-100">
+    <div class="head em-w-100 em-flex-row em-flex-space-between">
+      <div class="displayed-user em-flex-row em-flex-start">
         <p class="name">
           {{ canSee ? displayedUser.firstname + " " + displayedUser.lastname : displayedFnum}}
         </p>
@@ -9,10 +9,10 @@
 
         <p class="attachment-progress" v-if="progress">  - {{ progress }}% {{ translate('COM_EMUNDUS_ATTACHMENTS_COMPLETED') }}</p>
       </div>
-      <div class="prev-next-files">
+      <div class="prev-next-files em-flex-row em-flex-space-between">
         <div
             v-if="fnums.length > 1"
-            class="prev"
+            class="prev em-flex-row em-flex-center"
             :class="{ active: fnumPosition > 0 }"
             @click="changeFile(fnumPosition - 1)"
         >
@@ -20,7 +20,7 @@
         </div>
         <div
             v-if="fnums.length > 1"
-            class="next"
+            class="next em-flex-row em-flex-center"
             :class="{ active: fnumPosition < fnums.length - 1 }"
             @click="changeFile(fnumPosition + 1)"
         >
@@ -29,7 +29,7 @@
       </div>
     </div>
     <div class="wrapper" :class="{ loading: loading}">
-      <div id="filters">
+      <div id="filters" class="em-flex-row em-flex-space-between">
         <div class="searchbar-wrapper">
           <input
               id="searchbar"
@@ -39,9 +39,9 @@
               @input="searchInFiles"
           />
           <span class="material-icons search">search</span>
-          <span class="material-icons clear" @click="resetSearch">clear</span>
+          <span class="material-icons clear em-pointer" @click="resetSearch">clear</span>
         </div>
-        <div class="actions">
+        <div class="actions em-flex-row">
           <select
               v-if="Object.entries(thisAttachmentCategories).length > 0"
               name="category"
@@ -68,7 +68,7 @@
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <span
-              class="material-icons refresh"
+              class="material-icons refresh em-pointer"
               @click="refreshAttachments(true)"
               :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')"
           >
@@ -236,52 +236,37 @@
     <modal
         id="edit-modal"
         name="edit"
-        height="70%"
-        width="70%"
-        :minWidth="690"
-        :minHeight="550"
+        height="100vh"
+        width="100vw"
         styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
     >
-      <div class="modal-head">
-        <div class="flex-start">
+      <div class="modal-head em-w-100 em-flex-row em-flex-space-between">
+        <div id="actions-left" class="em-flex-row em-flex-start">
           <span>{{ selectedAttachment.filename }}</span>
         </div>
-        <div class="flex-end">
-          <a
-              :href="attachmentPath"
-              class="download btn-icon-text"
-              download
-              v-if="canDownload"
-          >
+        <div id="actions-right" class="em-flex-row">
+          <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text em-mr-24">
             <span class="material-icons"> file_download </span>
             <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD") }}</span>
           </a>
-          <div class="prev-next-attachments">
+          <div class="prev-next-attachments em-flex-row em-flex-space-between em-mr-8">
             <div
-                class="prev"
+                class="prev em-flex-row"
                 :class="{ active: selectedAttachmentPosition > 0 }"
                 @click="changeAttachment(selectedAttachmentPosition - 1, true)"
             >
               <span class="material-icons"> navigate_before </span>
             </div>
-            <span class="lvl"
-            >{{ selectedAttachmentPosition + 1 }} /
-							{{ displayedAttachments.length }}</span
-            >
+            <span class="lvl">{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span>
             <div
-                class="next"
-                :class="{
-								active:
-									selectedAttachmentPosition < displayedAttachments.length - 1,
-							}"
+                class="next em-flex-row"
+                :class="{active: selectedAttachmentPosition < displayedAttachments.length - 1}"
                 @click="changeAttachment(selectedAttachmentPosition + 1)"
             >
               <span class="material-icons"> navigate_next </span>
             </div>
           </div>
-          <span class="material-icons em-pointer" @click="closeModal">
-					  close
-					</span>
+          <span class="material-icons em-pointer" @click="closeModal">close</span>
         </div>
       </div>
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
@@ -475,12 +460,7 @@ export default {
         });
 
         const categoriesResponse = await this.getAttachmentCategories();
-
-        if (categoriesResponse) {
-          this.categories = categoriesResponse;
-        } else {
-          this.categories = {};
-        }
+        this.categories = categoriesResponse ? categoriesResponse : {};
       } else {
         this.displayErrorMessage(
             this.translate("COM_EMUNDUS_ATTACHMENTS_ERROR_GETTING_ATTACHMENTS")
@@ -932,10 +912,6 @@ export default {
   font-size: 14px;
 
   .head {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
     margin-top: 1px;
     padding: 10px;
@@ -943,9 +919,6 @@ export default {
     background-color: var(--night-blue);
 
     .displayed-user {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
       align-items: baseline;
 
       p {
@@ -965,19 +938,12 @@ export default {
     }
 
     .prev-next-files {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
       align-items: center;
       margin-right: 12px;
       width: 75px;
 
       > div {
         pointer-events: none;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
         color: transparent;
         transition: all 0.3s;
 
@@ -1013,10 +979,6 @@ export default {
 
   #filters {
     margin-bottom: 20px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
 
     .searchbar-wrapper {
       position: relative;
@@ -1030,7 +992,6 @@ export default {
         position: absolute;
         top: 11px;
         right: 10px;
-        cursor: pointer;
       }
 
       #searchbar {
@@ -1041,8 +1002,6 @@ export default {
     }
 
     .actions {
-      display: flex;
-      flex-direction: row;
       align-items: center;
       justify-content: flex-end;
 
@@ -1072,7 +1031,6 @@ export default {
 
     .refresh {
       transition: transform 0.6s;
-      cursor: pointer;
       margin: 0 0 0 8px;
 
       &:hover {
@@ -1184,33 +1142,20 @@ export default {
 
   .modal-head {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
     padding: 16px;
     border-bottom: 1px solid var(--border-color);
 
-    .flex-start {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-      align-items: center;
-
+    #actions-left {
       span:first-child {
         margin: 0 8px 0 20px;
         cursor: pointer;
       }
     }
 
-    .flex-end {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      align-items: center;
-
+    #actions-right {
       .download {
         height: 32px;
-        margin-right: 24px;
         color: black;
 
         .material-icons {
@@ -1224,12 +1169,6 @@ export default {
       }
 
       .prev-next-attachments {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        margin: 0 8px 0 0;
-
         .lvl {
           padding: 6px 8px 7px 8px;
           background-color: var(--grey-bg-color);
@@ -1247,10 +1186,7 @@ export default {
 
         .prev,
         .next {
-          display: flex;
-          flex-direction: row;
           justify-content: center;
-          align-items: center;
           pointer-events: none;
           height: 32px;
           width: 32px;
@@ -1298,15 +1234,10 @@ export default {
   }
 
   .modal-body {
-    height: 100%;
-    width: 100%;
-    max-height: 100%;
+    height: calc(100vh - 65px);
+    width: 100vw;
     display: flex;
     padding: 0;
   }
-}
-
-#em-attachments{
-  width: 100%;
 }
 </style>

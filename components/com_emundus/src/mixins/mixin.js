@@ -53,7 +53,8 @@ var mixin = {
 				delete response.categories[''];
 
 				this.$store.dispatch('attachment/setCategories', response.categories);
-				return this.$store.state.attachment.categories;
+
+				return response.categories;
 			} else {
 				return {};
 			}

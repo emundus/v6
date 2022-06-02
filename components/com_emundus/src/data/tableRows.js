@@ -37,10 +37,6 @@ export default {
 			value: 'category',
 		},
 		{
-			label: "COM_EMUNDUS_ONBOARD_STATUS",
-			value: 'published',
-		},
-		{
 			label: '',
 			value: 'actions',
 		}

@@ -85,7 +85,7 @@
 
 
 .faq-widget .faq-intro {
-   max-width: 250px; 
+   max-width: 250px;
 }
 
 .faq-widget {
@@ -136,4 +136,8 @@
   align-items: center;
   justify-content: space-between;
   margin-top: 10%;
+}
+
+#g-container-main .g-container{
+  width: 90%;
 }
