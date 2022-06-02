@@ -13,7 +13,6 @@
         @closed="beforeClose"
         @before-open="beforeOpen"
     >
-
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <span class="em-h4">
           {{translations.affectCampaigns}}
@@ -25,15 +24,6 @@
 
       <div>
         <p v-if="campaigns.length === 0" class="em-mb-16">{{translations.campaignsEmpty}}</p>
-<!--        <div class="em-mb-16">
-          <div class="search em-flex-row">
-            <input type="text" class="searchTerm" :placeholder="translations.Search" v-model="searchTerm" @keyup="searchCampaignByTerm">
-            <button type="button" class="searchButton" @click="searchCampaignByTerm">
-              <em class="fas fa-search"></em>
-            </button>
-          </div>
-        </div>-->
-
         <div class="em-mb-16">
           <div v-for="(campaign, index) in campaigns" :key="index" class="user-item">
               <input type="checkbox" class="form-check-input bigbox" v-model="affectedCampaigns[campaign.id]">
@@ -48,7 +38,7 @@
         <button
             type="button"
             class="em-secondary-button em-w-auto"
-            @click="window.location.href = 'index.php?option=com_emundus&view=form'">
+            @click="redirect('index.php?option=com_emundus&view=form')">
           {{ translations.BackWithoutAssociation }}
         </button>
         <button type="button"
@@ -158,6 +148,9 @@ export default {
           .then(response => {
             this.campaigns = response.data.data;
           });
+    },
+    redirect(link) {
+      window.location.href = link;
     },
   },
 };
