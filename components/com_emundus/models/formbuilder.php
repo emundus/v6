@@ -3578,6 +3578,14 @@ this.set(words.join(&quot; &quot;));
                     ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
                 $db->setQuery($query);
                 $db->execute();
+            } else {
+                $query->clear()
+                    ->update('#__fabrik_elements')
+                    ->set('published = 1')
+                    ->where('group_id = ' . $db->quote($gid))
+                    ->andWhere('name = ' . $db->quote('parent_id'));
+                $db->setQuery($query);
+                $db->execute();
             }
 
             if (!in_array('id', $ignore_elms)) {
@@ -3678,8 +3686,8 @@ this.set(words.join(&quot; &quot;));
     }
 
     private function getFabrikGroup($gid) {
-        $group = null; 
-        
+        $group = null;
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -3738,6 +3746,15 @@ this.set(words.join(&quot; &quot;));
                     ->update('#__fabrik_groups')
                     ->set('is_join = 0')
                     ->where('id = ' . $db->quote($gid));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                $query->clear()
+                    ->update('#__fabrik_elements')
+                    ->set('published = 0')
+                    ->where('group_id = ' . $db->quote($gid))
+                    ->andWhere('name = ' . $db->quote('parent_id'));
 
                 $db->setQuery($query);
                 $db->execute();
