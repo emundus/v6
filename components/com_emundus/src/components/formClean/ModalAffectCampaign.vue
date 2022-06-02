@@ -48,7 +48,7 @@
         <button
             type="button"
             class="em-secondary-button em-w-auto"
-            onclick="history.back()">
+            @click="window.location.href = 'index.php?option=com_emundus&view=form'">
           {{ translations.BackWithoutAssociation }}
         </button>
         <button type="button"
@@ -117,7 +117,7 @@ export default {
           })
         }).then(() => {
           if(!this.testing) {
-            history.back();
+            window.location.href = 'index.php?option=com_emundus&view=form';
           } else {
             if(campaigns.length > 0){
               this.$emit("testForm");
@@ -127,7 +127,7 @@ export default {
         });
       } else {
         if(!this.testing) {
-          history.back();
+          window.location.href = 'index.php?option=com_emundus&view=form';
         } else {
           this.$modal.hide('modalAffectCampaign');
         }
