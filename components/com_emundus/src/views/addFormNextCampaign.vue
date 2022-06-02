@@ -22,9 +22,9 @@
         <p>
           <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
-          <strong>{{form.start_date}}</strong>
+          <strong>{{ form.start_date }}</strong>
           {{translations.To}}
-          <strong>{{form.end_date}}</strong>
+          <strong>{{ form.end_date }}</strong>
         </p>
       </div>
 
@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import mixin from '../mixins/mixin';
 import moment from "moment";
 import axios from "axios";
 
@@ -132,6 +133,7 @@ export default {
   props: {
     index: Number,
   },
+  mixins: [mixin],
 
   data: () => ({
     campaignId: 0,
@@ -254,13 +256,11 @@ export default {
     initDates(campaign){
       this.form.start_date = campaign.start_date;
       this.form.end_date = campaign.end_date;
-      this.form.start_date = moment(this.form.start_date).format(
-          this.translations.DATE_FORMAT
-      );
+      this.form.start_date = this.formattedDate(this.form.start_date, 'LLL');
       if (this.form.end_date === "0000-00-00 00:00:00") {
         this.form.end_date = null;
       } else {
-        this.form.end_date = moment(this.form.end_date).format(this.translations.DATE_FORMAT);
+        this.form.end_date = this.formattedDate(this.form.end_date, 'LLL');
       }
     },
 
