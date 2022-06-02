@@ -6569,9 +6569,15 @@ $(document).ready(function() {
                             $('.modal-body').empty();
 
                             Swal.fire({
-                                position: 'center',
-                                type: 'warning',
-                                title: result.msg
+                                title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
+                                text: '',
+                                type: "error",
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                                reverseButtons: true,
+                                customClass: {
+                                    title: 'em-swal-title'
+                                },
                             });
                         }
 

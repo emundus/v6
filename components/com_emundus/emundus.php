@@ -46,6 +46,7 @@ JText::script('IN');
 JText::script('ALL');
 JText::script('USERNAME');
 JText::script('EMAIL');
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
 
 JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
