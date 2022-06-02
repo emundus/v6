@@ -118,7 +118,7 @@ class PlgEmundusReferent_status extends JPlugin {
                             'UPLOAD_URL' => $link_upload,
                             'SITE_URL' => JURI::base(),
                         );
-                        $tags = $m_emails->setTags($applicant->id, $post);
+                        $tags = $m_emails->setTags($applicant->id, $post, null, '', $email->emailfrom.$email->name.$email->subject.$email->message);
 
                         $from = preg_replace($tags['patterns'], $tags['replacements'], $email->emailfrom);
                         $from_id = 62;

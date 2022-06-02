@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -28,71 +28,6 @@ use Joomla\CMS\Uri\Uri as JUri;
  */
 class File
 {
-	/**
-	 * Delete a file or array of files
-	 *
-	 * @param mixed   $file               The file name or an array of file names
-	 * @param boolean $show_messages      Whether or not to show error messages
-	 * @param int     $min_age_in_minutes Minimum last modified age in minutes
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @since   11.1
-	 */
-	public static function delete($file, $show_messages = false, $min_age_in_minutes = 0)
-	{
-		$FTPOptions = JClientHelper::getCredentials('ftp');
-		$pathObject = new JPath;
-
-		$files = is_array($file) ? $file : [$file];
-
-		if ($FTPOptions['enabled'] == 1)
-		{
-			// Connect the FTP client
-			$ftp = JFtpClient::getInstance($FTPOptions['host'], $FTPOptions['port'], [], $FTPOptions['user'], $FTPOptions['pass']);
-		}
-
-		foreach ($files as $file)
-		{
-			$file = $pathObject->clean($file);
-
-			if ( ! is_file($file))
-			{
-				continue;
-			}
-
-			if ($min_age_in_minutes && floor((time() - filemtime($file)) / 60) < $min_age_in_minutes)
-			{
-				continue;
-			}
-
-			// Try making the file writable first. If it's read-only, it can't be deleted
-			// on Windows, even if the parent folder is writable
-			@chmod($file, 0777);
-
-			if ($FTPOptions['enabled'] == 1)
-			{
-				$file = $pathObject->clean(str_replace(JPATH_ROOT, $FTPOptions['root'], $file), '/');
-
-				if ( ! $ftp->delete($file))
-				{
-					// FTP connector throws an error
-					return false;
-				}
-			}
-
-			// Try the unlink twice in case something was blocking it on first try
-			if ( ! @unlink($file) && ! @unlink($file))
-			{
-				$show_messages && JLog::add(JText::sprintf('JLIB_FILESYSTEM_DELETE_FAILED', basename($file)), JLog::WARNING, 'jerror');
-
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	/**
 	 * Delete a folder.
 	 *
@@ -195,6 +130,71 @@ class File
 		return true;
 	}
 
+	/**
+	 * Delete a file or array of files
+	 *
+	 * @param mixed   $file               The file name or an array of file names
+	 * @param boolean $show_messages      Whether or not to show error messages
+	 * @param int     $min_age_in_minutes Minimum last modified age in minutes
+	 *
+	 * @return  boolean  True on success
+	 *
+	 * @since   11.1
+	 */
+	public static function delete($file, $show_messages = false, $min_age_in_minutes = 0)
+	{
+		$FTPOptions = JClientHelper::getCredentials('ftp');
+		$pathObject = new JPath;
+
+		$files = is_array($file) ? $file : [$file];
+
+		if ($FTPOptions['enabled'] == 1)
+		{
+			// Connect the FTP client
+			$ftp = JFtpClient::getInstance($FTPOptions['host'], $FTPOptions['port'], [], $FTPOptions['user'], $FTPOptions['pass']);
+		}
+
+		foreach ($files as $file)
+		{
+			$file = $pathObject->clean($file);
+
+			if ( ! is_file($file))
+			{
+				continue;
+			}
+
+			if ($min_age_in_minutes && floor((time() - filemtime($file)) / 60) < $min_age_in_minutes)
+			{
+				continue;
+			}
+
+			// Try making the file writable first. If it's read-only, it can't be deleted
+			// on Windows, even if the parent folder is writable
+			@chmod($file, 0777);
+
+			if ($FTPOptions['enabled'] == 1)
+			{
+				$file = $pathObject->clean(str_replace(JPATH_ROOT, $FTPOptions['root'], $file), '/');
+
+				if ( ! $ftp->delete($file))
+				{
+					// FTP connector throws an error
+					return false;
+				}
+			}
+
+			// Try the unlink twice in case something was blocking it on first try
+			if ( ! @unlink($file) && ! @unlink($file))
+			{
+				$show_messages && JLog::add(JText::sprintf('JLIB_FILESYSTEM_DELETE_FAILED', basename($file)), JLog::WARNING, 'jerror');
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public static function getBaseName($url, $lowercase = false)
 	{
 		$url = StringHelper::normalize($url);
@@ -220,20 +220,6 @@ class File
 		return rtrim(dirname($url), '/');
 	}
 
-	public static function getExtension($url)
-	{
-		$info = pathinfo($url);
-
-		if ( ! isset($info['extension']))
-		{
-			return '';
-		}
-
-		$ext = explode('?', $info['extension']);
-
-		return strtolower($ext[0]);
-	}
-
 	public static function getFileName($url, $lowercase = false)
 	{
 		$url = StringHelper::normalize($url);
@@ -249,6 +235,166 @@ class File
 
 		return $filename;
 	}
+
+	/**
+	 * Find a matching media file in the different possible extension media folders for given type
+	 *
+	 * @param string $type (css/js/...)
+	 * @param string $file
+	 *
+	 * @return bool|string
+	 */
+	public static function getMediaFile($type, $file)
+	{
+		// If http is present in filename
+		if (strpos($file, 'http') === 0 || strpos($file, '//') === 0)
+		{
+			return $file;
+		}
+
+		$files = [];
+
+		// Detect debug mode
+		if (JFactory::getConfig()->get('debug') || JFactory::getApplication()->input->get('debug'))
+		{
+			$files[] = str_replace(['.min.', '-min.'], '.', $file);
+		}
+
+		$files[] = $file;
+
+		/*
+		 * Loop on 1 or 2 files and break on first find.
+		 * Add the content of the MD5SUM file located in the same folder to url to ensure cache browser refresh
+		 * This MD5SUM file must represent the signature of the folder content
+		 */
+		foreach ($files as $check_file)
+		{
+			$file_found = self::findMediaFileByFile($check_file, $type);
+
+			if ( ! $file_found)
+			{
+				continue;
+			}
+
+			return $file_found;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Find a matching media file in the different possible extension media folders for given type
+	 *
+	 * @param string $file
+	 * @param string $type (css/js/...)
+	 *
+	 * @return bool|string
+	 */
+	private static function findMediaFileByFile($file, $type)
+	{
+		$template = JFactory::getApplication()->getTemplate();
+
+		// If the file is in the template folder
+		$file_found = self::getFileUrl('/templates/' . $template . '/' . $type . '/' . $file);
+		if ($file_found)
+		{
+			return $file_found;
+		}
+
+		// Try to deal with system files in the media folder
+		if (strpos($file, '/') === false)
+		{
+			$file_found = self::getFileUrl('/media/system/' . $type . '/' . $file);
+
+			if ( ! $file_found)
+			{
+				return false;
+			}
+
+			return $file_found;
+		}
+
+		$paths = [];
+
+		// If the file contains any /: it can be in a media extension subfolder
+		// Divide the file extracting the extension as the first part before /
+		[$extension, $file] = explode('/', $file, 2);
+
+		$paths[] = '/media/' . $extension . '/' . $type;
+		$paths[] = '/templates/' . $template . '/' . $type . '/system';
+		$paths[] = '/media/system/' . $type;
+		$paths[] = '';
+
+		foreach ($paths as $path)
+		{
+			$file_found = self::getFileUrl($path . '/' . $file);
+
+			if ( ! $file_found)
+			{
+				continue;
+			}
+
+			return $file_found;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the url for the file
+	 *
+	 * @param string $path
+	 *
+	 * @return bool|string
+	 */
+	private static function getFileUrl($path)
+	{
+		if ( ! file_exists(JPATH_ROOT . $path))
+		{
+			return false;
+		}
+
+		return JUri::root(true) . $path;
+	}
+
+
+	// some/url/to/a/file.ext
+	// > some/url/to/a
+
+	public static function isDocument($url)
+	{
+		return self::isMedia($url, self::getFileTypes('documents'));
+	}
+
+	// some/url/to/a/file.ext
+	// > file.ext
+
+	public static function isMedia($url, $filetypes = [])
+	{
+		$filetype = self::getExtension($url);
+
+		if ( ! $filetype)
+		{
+			return false;
+		}
+
+		if ( ! is_array($filetypes))
+		{
+			$filetypes = [$filetypes];
+		}
+
+		if (count($filetypes) == 1 && strpos($filetypes[0], ',') !== false)
+		{
+			$filetypes = ArrayHelper::toArray($filetypes[0]);
+		}
+
+		$filetypes = ($filetypes ?? null) ?: self::getFileTypes();
+
+		return in_array($filetype, $filetypes);
+	}
+
+	// some/url/to/a/file.ext
+	// > file
 
 	public static function getFileTypes($type = 'images')
 	{
@@ -379,63 +525,40 @@ class File
 		}
 	}
 
-	/**
-	 * Find a matching media file in the different possible extension media folders for given type
-	 *
-	 * @param string $type (css/js/...)
-	 * @param string $file
-	 *
-	 * @return bool|string
-	 */
-	public static function getMediaFile($type, $file)
+	// some/url/to/a/file.ext
+	// > ext
+
+	public static function getExtension($url)
 	{
-		// If http is present in filename
-		if (strpos($file, 'http') === 0 || strpos($file, '//') === 0)
+		$info = pathinfo($url);
+
+		if ( ! isset($info['extension']))
 		{
-			return $file;
+			return '';
 		}
 
-		$files = [];
+		$ext = explode('?', $info['extension']);
 
-		// Detect debug mode
-		if (JFactory::getConfig()->get('debug') || JFactory::getApplication()->input->get('debug'))
-		{
-			$files[] = str_replace(['.min.', '-min.'], '.', $file);
-		}
-
-		$files[] = $file;
-
-		/*
-		 * Loop on 1 or 2 files and break on first find.
-		 * Add the content of the MD5SUM file located in the same folder to url to ensure cache browser refresh
-		 * This MD5SUM file must represent the signature of the folder content
-		 */
-		foreach ($files as $check_file)
-		{
-			$file_found = self::findMediaFileByFile($check_file, $type);
-
-			if ( ! $file_found)
-			{
-				continue;
-			}
-
-			return $file_found;
-		}
-
-		return false;
+		return strtolower($ext[0]);
 	}
 
-
-	// some/url/to/a/file.ext
-	// > some/url/to/a
-
-	public static function isDocument($url)
+	public static function isExternalVideo($url)
 	{
-		return self::isMedia($url, self::getFileTypes('documents'));
+		return (strpos($url, 'youtu.be') !== false
+			|| strpos($url, 'youtube.com') !== false
+			|| strpos($url, 'vimeo.com') !== false
+		);
 	}
 
-	// some/url/to/a/file.ext
-	// > file.ext
+	public static function isImage($url)
+	{
+		return self::isMedia($url, self::getFileTypes('images'));
+	}
+
+	public static function isInternal($url)
+	{
+		return ! self::isExternal($url);
+	}
 
 	public static function isExternal($url)
 	{
@@ -450,54 +573,6 @@ class File
 		return ! (strpos(RegEx::replace('^.*?://', '', $url), $hostname) === 0);
 	}
 
-	// some/url/to/a/file.ext
-	// > file
-
-	public static function isExternalVideo($url)
-	{
-		return (strpos($url, 'youtu.be') !== false
-			|| strpos($url, 'youtube.com') !== false
-			|| strpos($url, 'vimeo.com') !== false
-		);
-	}
-
-	// some/url/to/a/file.ext
-	// > ext
-
-	public static function isImage($url)
-	{
-		return self::isMedia($url, self::getFileTypes('images'));
-	}
-
-	public static function isInternal($url)
-	{
-		return ! self::isExternal($url);
-	}
-
-	public static function isMedia($url, $filetypes = [])
-	{
-		$filetype = self::getExtension($url);
-
-		if ( ! $filetype)
-		{
-			return false;
-		}
-
-		if ( ! is_array($filetypes))
-		{
-			$filetypes = [$filetypes];
-		}
-
-		if (count($filetypes) == 1 && strpos($filetypes[0], ',') !== false)
-		{
-			$filetypes = ArrayHelper::toArray($filetypes[0]);
-		}
-
-		$filetypes = ($filetypes ?? null) ?: self::getFileTypes();
-
-		return in_array($filetype, $filetypes);
-	}
-
 	public static function isVideo($url)
 	{
 		return self::isMedia($url, self::getFileTypes('videos'));
@@ -506,80 +581,5 @@ class File
 	public static function trimFolder($folder)
 	{
 		return trim(str_replace(['\\', '//'], '/', $folder), '/');
-	}
-
-	/**
-	 * Find a matching media file in the different possible extension media folders for given type
-	 *
-	 * @param string $file
-	 * @param string $type (css/js/...)
-	 *
-	 * @return bool|string
-	 */
-	private static function findMediaFileByFile($file, $type)
-	{
-		$template = JFactory::getApplication()->getTemplate();
-
-		// If the file is in the template folder
-		$file_found = self::getFileUrl('/templates/' . $template . '/' . $type . '/' . $file);
-		if ($file_found)
-		{
-			return $file_found;
-		}
-
-		// Try to deal with system files in the media folder
-		if (strpos($file, '/') === false)
-		{
-			$file_found = self::getFileUrl('/media/system/' . $type . '/' . $file);
-
-			if ( ! $file_found)
-			{
-				return false;
-			}
-
-			return $file_found;
-		}
-
-		$paths = [];
-
-		// If the file contains any /: it can be in a media extension subfolder
-		// Divide the file extracting the extension as the first part before /
-		[$extension, $file] = explode('/', $file, 2);
-
-		$paths[] = '/media/' . $extension . '/' . $type;
-		$paths[] = '/templates/' . $template . '/' . $type . '/system';
-		$paths[] = '/media/system/' . $type;
-		$paths[] = '';
-
-		foreach ($paths as $path)
-		{
-			$file_found = self::getFileUrl($path . '/' . $file);
-
-			if ( ! $file_found)
-			{
-				continue;
-			}
-
-			return $file_found;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Get the url for the file
-	 *
-	 * @param string $path
-	 *
-	 * @return bool|string
-	 */
-	private static function getFileUrl($path)
-	{
-		if ( ! file_exists(JPATH_ROOT . $path))
-		{
-			return false;
-		}
-
-		return JUri::root(true) . $path;
 	}
 }

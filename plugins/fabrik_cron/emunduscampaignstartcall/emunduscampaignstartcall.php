@@ -111,7 +111,7 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                         'SITE_URL'       => JURI::base(),
                     ];
 
-                    $tags = $m_model->setTags($user_to_notified->user_id, $post);
+                    $tags = $m_model->setTags($user_to_notified->user_id, $post, null, '', $obj->emailfrom.$obj->name.$obj->subject.$obj->message);
 
                     $to = $user_to_notified->email;
                     $subject = preg_replace($tags['patterns'], $tags['replacements'], $obj->subject);

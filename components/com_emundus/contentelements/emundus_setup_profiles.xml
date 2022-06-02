@@ -5,7 +5,7 @@
   <version>1.0</version>
   <description>COM_EMUNDUS_CONTENTELEMENTS_SETUP_PROFILES_DESC</description>
   <reference>
-  	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="override" load_all="false">
+  	<table name="emundus_setup_profiles" reference="id" label="label" filters="published,status" type="override" load_all="false" load_first_data="true" load_first_child="true">
   		<field type="children" name="label">fabrik_forms</field>
         <section label="Formulaire" name="fabrik_forms" table="fabrik_forms">
             <field name="label" type="field" section="fabrik_forms" table="fabrik_forms">Titre</field>

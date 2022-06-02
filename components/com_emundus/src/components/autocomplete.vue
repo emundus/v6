@@ -10,6 +10,7 @@
       @keydown.enter="onEnter"
       :placeholder="year !== '' ? year : name"
       :class="year !== '' ? '' : 'placeholder'"
+      class="em-w-100"
     />
     <ul v-show="isOpen" class="autocomplete-results">
       <li

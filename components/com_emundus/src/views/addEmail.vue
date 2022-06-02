@@ -20,6 +20,7 @@
               <label>{{translations.emailName}} <span style="color: #E5283B">*</span></label>
               <input
                   type="text"
+                  class="em-w-100"
                   v-model="form.subject"
                   :class="{ 'is-invalid': errors.subject}"
               />
@@ -69,6 +70,7 @@
               <label>{{translations.receiverName}}</label>
               <input
                   type="text"
+                  class="em-w-100"
                   v-model="form.name"
               />
             </div>
@@ -77,6 +79,7 @@
               <label>{{translations.emailAddress}}</label>
               <input
                   type="text"
+                  class="em-w-100"
                   v-model="form.emailfrom"
               />
             </div>

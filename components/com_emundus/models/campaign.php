@@ -717,7 +717,7 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
@@ -825,7 +825,7 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
@@ -908,13 +908,6 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quoteName('sp.code') .
                 ' LIKE ' .
                 $this->_db->quoteName('sc.training')
-            )
-            ->leftJoin(
-                $this->_db->quoteName('#__falang_content', 'fc') .
-                ' ON ' .
-                $this->_db->quoteName('fc.reference_id') .
-                ' LIKE ' .
-                $this->_db->quoteName('sc.id') . ' AND reference_table LIKE ' . $this->_db->quote('emundus_setup_campaigns')
             )
             ->where($filterDate)
             ->andWhere($fullRecherche)
@@ -1637,7 +1630,7 @@ class EmundusModelCampaign extends JModelList {
         $date = new Date();
 
         // Get affected programs
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
         $m_programme = new EmundusModelProgramme;
         $programs = $m_programme->getUserPrograms($this->_user->id);
@@ -2207,5 +2200,34 @@ class EmundusModelCampaign extends JModelList {
             JLog::add('Error updating form document in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
         }
+    }
+
+    /**
+     * @param $emundusUser
+     *
+     * @return false|object False if error, object containing emundus_campaign_workflow id, start date and end_date if success
+     *
+     * @since version 1.30.0
+     */
+    public function getCurrentCampaignWorkflow($emundusUser) {
+        $current_phase = null;
+
+        if (!empty($emundusUser->fnum) && !empty($emundusUser->fnums[$emundusUser->fnum])) {
+            $query = $this->_db->getQuery(true);
+            $query->select('id, start_date, end_date, status')
+                ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
+                ->where('campaign =' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->campaign_id))
+                ->andWhere('status = ' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->status));
+
+            $this->_db->setQuery($query);
+
+            try {
+                $current_phase = $this->_db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $current_phase;
     }
 }

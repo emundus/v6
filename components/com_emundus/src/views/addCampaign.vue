@@ -1,7 +1,7 @@
 <template>
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined'">
-      <div class="em-flex-row em-mt-16 em-pointer" onclick="history.back()">
+      <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
@@ -15,7 +15,7 @@
     </div>
 
     <div>
-      <form @submit.prevent="submit" v-if="ready">
+      <form @submit.prevent="submit" v-if="ready" class="fabrikForm">
         <div>
           <div class="em-red-500-color em-mb-8">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</div>
 
@@ -27,6 +27,7 @@
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
+                class="form-control fabrikinput"
                 @focusout="onFormChange()"
             />
           </div>
@@ -42,6 +43,7 @@
                     v-model="form.start_date"
                     id="startDate"
                     type="datetime"
+                    class="em-w-100"
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_STARTDATE')"
                     :input-id="'start_date'"
                     :phrases="{ok: translate('COM_EMUNDUS_ONBOARD_OK'), cancel: translate('COM_EMUNDUS_ONBOARD_CANCEL')}"
@@ -56,6 +58,7 @@
                     v-model="form.end_date"
                     id="endDate"
                     type="datetime"
+                    class="em-w-100"
                     :placeholder="translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ENDDATE') + ' *'"
                     :input-id="'end_date'"
                     :min-datetime="minDate"
@@ -110,10 +113,10 @@
                 id="campResume"
                 maxlength="500"
                 placeholder=" "
+                class="form-control fabrikinput"
                 v-model="form.short_description"
                 @keyup="checkMaxlength('campResume')"
                 @focusout="removeBorderFocus('campResume')"
-
             />
           </div>
 
@@ -142,7 +145,7 @@
           <div class="em-flex-row em-mb-16">
             <select
                 id="select_prog"
-                class="em-w-100"
+                class="form-control fabrikinput"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -169,9 +172,9 @@
                   <input
                       type="text"
                       id="prog_label"
+                      class="form-control fabrikinput"
                       placeholder=" "
                       v-model="programForm.label"
-                      @keyup="updateCode"
                       :class="{ 'is-invalid': errors.progLabel }"
                   />
                 </div>
@@ -416,25 +419,6 @@ export default {
       this.year.programmes = e.target.options[e.target.options.selectedIndex].dataset.category;
       this.programForm = this.programs.find(program => program.code == this.form.training);
     },
-    updateCode() {
-      if(this.programForm.label !== ''){
-        this.programForm.code = this.programForm.label.toUpperCase().replace(/[^a-zA-Z0-9]/g,'_').substring(0,10) + '_00';
-        if(Object.keys(this.programs).length !== 0) {
-          this.programs.forEach((element) => {
-            if (this.programForm.code == element.code) {
-              let newCode = parseInt(element.code.split('_')[1]) + 1;
-              if (newCode > 10) {
-                this.programForm.code = this.programForm.label.toUpperCase() + '_' + newCode;
-              } else {
-                this.programForm.code = this.programForm.label.toUpperCase() + '_0' + newCode;
-              }
-            }
-          });
-        }
-      } else {
-        this.programForm.code = '';
-      }
-    },
 
     getStatus() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
@@ -458,8 +442,9 @@ export default {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         data: qs.stringify({body: programForm})
-      }).then(() => {
-        this.form.training = programForm.code;
+      }).then((rep) => {
+        this.form.progid = rep.data.data.programme_id;
+        this.form.training = rep.data.data.programme_code;
         this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
         this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
@@ -483,7 +468,7 @@ export default {
         limit_files_number: false,
         limit_status: false
       }
-      if(this.form.label.fr == "" && this.form.label.en == ""){
+      if(this.form.label[this.actualLanguage] === '' || this.form.label[this.actualLanguage] == null || typeof this.form.label[this.actualLanguage] === 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this.errors.label = true;
         return 0;
@@ -518,14 +503,10 @@ export default {
       }
 
       if (this.form.training == "") {
-        if(this.isHiddenProgram){
+        if (this.isHiddenProgram) {
           if (this.programForm.label == "") {
             this.errors.progLabel = true;
             document.getElementById('prog_label').focus();
-            return 0;
-          } else if (this.programForm.code == "") {
-            this.errors.progCode = true;
-            document.getElementById('prog_code').focus();
             return 0;
           }
         } else {
@@ -533,7 +514,6 @@ export default {
           return 0;
         }
       }
-      //
 
       // Set year object values
       this.year.label = this.form.label;
@@ -564,7 +544,12 @@ export default {
             "Content-Type": "application/x-www-form-urlencoded"
           },
           data: qs.stringify(params)
-        }).then(() => {
+        }).then((response) => {
+          if (task === 'createprogram') {
+            this.programForm.code = response.data.data.programme_code;
+            this.form.progid = response.data.data.programme_id;
+          }
+
           this.form.training = this.programForm.code;
           this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
           this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
@@ -677,5 +662,9 @@ export default {
   height: 24px;
   width: 24px;
   padding: unset;
+}
+
+#campResume {
+  height: 85px !important;
 }
 </style>

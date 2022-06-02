@@ -28,7 +28,6 @@ require_once (JPATH_COMPONENT.DS.'models'.DS.'interview.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'logs.php');
 require_once (JPATH_COMPONENT.DS.'models'.DS.'campaign.php');
 
-
 class EmundusViewApplication extends JViewLegacy {
     protected $_user = null;
     var $_db = null;
@@ -86,19 +85,13 @@ class EmundusViewApplication extends JViewLegacy {
                             'APPLICATION_PROGRESS' => $fnum
                         );
 
-                        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum);
+                        $tags = $m_email->setTags(intval($fnumInfos['applicant_id']), $tag, $fnum, '', $program->synthesis);
 
                         $synthesis->program = $program;
                         $synthesis->camp = $campaignInfo;
                         $synthesis->fnum = $fnum;
                         $synthesis->block = preg_replace($tags['patterns'], $tags['replacements'], $program->synthesis);
-                        // replace {fabrik_element_ids} in body
-
-                        $element_ids = $m_email->getFabrikElementIDs($synthesis->block);
-                        if (count(@$element_ids[0]) > 0) {
-                            $element_values = $m_email->getFabrikElementValues($fnum, $element_ids[1]);
-                            $synthesis->block = $m_email->setElementValues($synthesis->block, $element_values);
-                        }
+                        $synthesis->block = $m_email->setTagsFabrik($synthesis->block, array($fnum));
                     }
                     $this->assignRef('synthesis', $synthesis);
                     break;

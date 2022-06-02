@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Date\Date as JDate;
 use Joomla\CMS\Factory as JFactory;
 use Joomla\CMS\Language\Text as JText;
+use RegularLabs\Library\Field;
 use RegularLabs\Library\StringHelper as RL_String;
 
 if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
@@ -23,9 +24,49 @@ if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
 
 require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 
-class JFormFieldRL_TextAreaPlus extends \RegularLabs\Library\Field
+class JFormFieldRL_TextAreaPlus extends Field
 {
 	public $type = 'TextAreaPlus';
+
+	protected function getInput()
+	{
+		$width  = $this->get('width', 600);
+		$height = $this->get('height', 80);
+		$class  = ' class="' . trim('rl_textarea ' . $this->get('class')) . '"';
+		$type   = $this->get('texttype');
+		$hint   = $this->get('hint');
+
+		if (is_array($this->value))
+		{
+			$this->value = trim(implode("\n", $this->value));
+		}
+
+		if ($type == 'html')
+		{
+			// Convert <br> tags so they are not visible when editing
+			$this->value = str_replace('<br>', "\n", $this->value);
+		}
+		else if ($type == 'regex')
+		{
+			// Protects the special characters
+			$this->value = str_replace('[:REGEX_ENTER:]', '\n', $this->value);
+		}
+
+		if ($this->get('translate') && $this->get('translate') !== 'false')
+		{
+			$this->value = JText::_($this->value);
+			$hint        = JText::_($hint);
+		}
+
+		$this->value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
+
+		$hint = $hint ? ' placeholder="' . $hint . '"' : '';
+
+		return
+			'<textarea name="' . $this->name . '" cols="' . (round($width / 7.5)) . '" rows="' . (round($height / 15)) . '"'
+			. ' style="width:' . (($width == '600') ? '100%' : $width . 'px') . ';height:' . $height . 'px"'
+			. ' id="' . $this->id . '"' . $class . $hint . '>' . $this->value . '</textarea>';
+	}
 
 	protected function getLabel()
 	{
@@ -74,45 +115,5 @@ class JFormFieldRL_TextAreaPlus extends \RegularLabs\Library\Field
 		$html .= '</label>';
 
 		return $html;
-	}
-
-	protected function getInput()
-	{
-		$width  = $this->get('width', 600);
-		$height = $this->get('height', 80);
-		$class  = ' class="' . trim('rl_textarea ' . $this->get('class')) . '"';
-		$type   = $this->get('texttype');
-		$hint   = $this->get('hint');
-
-		if (is_array($this->value))
-		{
-			$this->value = trim(implode("\n", $this->value));
-		}
-
-		if ($type == 'html')
-		{
-			// Convert <br> tags so they are not visible when editing
-			$this->value = str_replace('<br>', "\n", $this->value);
-		}
-		else if ($type == 'regex')
-		{
-			// Protects the special characters
-			$this->value = str_replace('[:REGEX_ENTER:]', '\n', $this->value);
-		}
-
-		if ($this->get('translate') && $this->get('translate') !== 'false')
-		{
-			$this->value = JText::_($this->value);
-			$hint        = JText::_($hint);
-		}
-
-		$this->value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
-
-		$hint = $hint ? ' placeholder="' . $hint . '"' : '';
-
-		return
-			'<textarea name="' . $this->name . '" cols="' . (round($width / 7.5)) . '" rows="' . (round($height / 15)) . '"'
-			. ' style="width:' . (($width == '600') ? '100%' : $width . 'px') . ';height:' . $height . 'px"'
-			. ' id="' . $this->id . '"' . $class . $hint . '>' . $this->value . '</textarea>';
 	}
 }

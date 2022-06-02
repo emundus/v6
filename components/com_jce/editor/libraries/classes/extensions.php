@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
- * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @copyright     Copyright (c) 2009-2021 Ryan Demmer. All rights reserved
+ * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses
  */
-defined('_JEXEC') or die('RESTRICTED');
+defined('JPATH_PLATFORM') or die;
 // set as an extension parent
 if (!defined('_WF_EXT')) {
     define('_WF_EXT', 1);
@@ -36,14 +36,14 @@ class WFExtension extends JObject
      * @return object WFExtension
      */
     /* public static function getInstance()
-      {
-      static $instance;
+    {
+    static $instance;
 
-      if (!is_object($instance)) {
-      $instance = new WFExtension();
-      }
-      return $instance;
-      } */
+    if (!is_object($instance)) {
+    $instance = new WFExtension();
+    }
+    return $instance;
+    } */
 
     /**
      * Display the extension.
@@ -71,7 +71,7 @@ class WFExtension extends JObject
         }
 
         // core extensions path
-        $path = $config['base_path'].'/extensions';
+        $path = $config['base_path'] . '/extensions';
 
         // cast as array
         $types = (array) $types;
@@ -88,12 +88,7 @@ class WFExtension extends JObject
                 }
 
                 // set path
-                $p->path = JPATH_PLUGINS.'/jce/'.$p->name;
-
-                // Joomla 1.5
-                if (!defined('JPATH_PLATFORM')) {
-                    $p->path = JPATH_PLUGINS.'/jce';
-                }
+                $p->path = JPATH_PLUGINS . '/jce/' . $p->name;
 
                 // get type and name
                 $parts = explode('-', $p->name);
@@ -110,7 +105,8 @@ class WFExtension extends JObject
                     continue;
                 }
 
-                $language->load('plg_jce_'.$p->name, JPATH_ADMINISTRATOR);
+                $language->load('plg_jce_' . $p->name, JPATH_ADMINISTRATOR);
+                $language->load('plg_jce_' . $p->name, $p->path);
 
                 // add to array
                 $extensions[$p->extension] = $p;
@@ -118,10 +114,33 @@ class WFExtension extends JObject
         }
 
         // get legacy extensions
-        $legacy = JFolder::folders(WF_EDITOR.'/extensions', '.', false, true);
+        $legacy = JFolder::folders(WF_EDITOR . '/extensions', '.', false, true);
+
+        $core = array(
+            'aggregator' => array(
+                'dailymotion', 'vimeo', 'youtube',
+            ),
+            'filesystem' => array(
+                'joomla',
+            ),
+            'links' => array(
+                'joomlalinks',
+            ),
+            'popups' => array(
+                'jcemediabox',
+            ),
+            'search' => array(
+                'link',
+            ),
+        );
 
         foreach ($legacy as $item) {
             $type = basename($item);
+
+            // unknown type
+            if (array_key_exists($type, $core) === false) {
+                continue;
+            }
 
             // load the correct type if set
             if (!empty($types) && !in_array($type, $types)) {
@@ -129,7 +148,7 @@ class WFExtension extends JObject
             }
 
             // specific extension
-            if ($extension && !JFile::exists($item.'/'.$extension.'.php')) {
+            if ($extension && !JFile::exists($item . '/' . $extension . '.php')) {
                 continue;
             }
 
@@ -139,13 +158,18 @@ class WFExtension extends JObject
                     continue;
                 }
 
-                $files = array($item.'/'.$extension.'.xml');
+                $files = array($item . '/' . $extension . '.xml');
             } else {
                 $files = JFolder::files($item, '\.xml$', false, true);
             }
 
             foreach ($files as $file) {
                 $extension = basename($file, '.xml');
+
+                // unknown extension
+                if (!in_array($extension, $core[$type])) {
+                    continue;
+                }
 
                 $object = new stdClass();
                 $object->folder = $type;
@@ -198,16 +222,16 @@ class WFExtension extends JObject
                 $path = $item->path;
 
                 if ($name) {
-                    $root = $path.'/'.basename($path).'.php';
+                    $root = $path . '/' . basename($path) . '.php';
 
                     // store name in item object
                     $item->name = $name;
 
                     // legacy - clean defined path for Windows!!
                     if (WFUtility::cleanPath(dirname($path)) === WFUtility::cleanPath(WF_EDITOR_EXTENSIONS)) {
-                        $root = $path.'/'.$name.'.php';
+                        $root = $path . '/' . $name . '.php';
                         // redefine path
-                        $item->path = $path.'/'.$name;
+                        $item->path = $path . '/' . $name;
                     }
 
                     if (file_exists($root)) {
@@ -238,16 +262,16 @@ class WFExtension extends JObject
     /**
      * Return a parameter for the current plugin / group.
      *
-     * @param object $param   Parameter name
+     * @param object $key   Parameter name
      * @param object $default Default value
      *
      * @return string Parameter value
      */
-    public function getParam($param, $default = '')
+    public function getParam($key, $default = '')
     {
-        $wf = WFEditor::getInstance();
+        $wf = WFApplication::getInstance();
 
-        return $wf->getParam($param, $default);
+        return $wf->getParam($key, $default);
     }
 
     public function getView($options = array())

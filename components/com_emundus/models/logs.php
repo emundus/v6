@@ -23,7 +23,7 @@ class EmundusModelLogs extends JModelList {
 	 */
 	public function __construct() {
 		parent::__construct();
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'date.php');
 
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
@@ -307,7 +307,11 @@ class EmundusModelLogs extends JModelList {
 			case ('u'):
 				$action_name = $action_category . '_UPDATE';
 				foreach ($params->updated as $value) {
-					$action_details .= '<p>"' . $value->old . '" -> "' . $value->new . '"</p>';
+					$action_details .= '<div class="em-flex-row">
+                        <span class="label label-default">' . $value->old . '</span>
+                        <span class="material-icons">arrow_forward</span>
+                        <span class="label label-default">' . $value->new . '</span>
+                    </div>';
 				}
 			break;
 			case ('d'):

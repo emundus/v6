@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -18,26 +18,6 @@ use Joomla\CMS\Plugin\PluginHelper as JPluginHelper;
 
 class Application
 {
-	static function getThemesDirectory()
-	{
-		if (JFactory::getApplication()->get('themes.base'))
-		{
-			return JFactory::getApplication()->get('themes.base');
-		}
-
-		if (defined('JPATH_THEMES'))
-		{
-			return JPATH_THEMES;
-		}
-
-		if (defined('JPATH_BASE'))
-		{
-			return JPATH_BASE . '/themes';
-		}
-
-		return __DIR__ . '/themes';
-	}
-
 	public function render()
 	{
 		$app      = JFactory::getApplication();
@@ -80,5 +60,24 @@ class Application
 		// Causes issues, so commented out.
 		// JDEBUG ? $app->profiler->mark('afterRender') : null;
 	}
-}
 
+	static function getThemesDirectory()
+	{
+		if (JFactory::getApplication()->get('themes.base'))
+		{
+			return JFactory::getApplication()->get('themes.base');
+		}
+
+		if (defined('JPATH_THEMES'))
+		{
+			return JPATH_THEMES;
+		}
+
+		if (defined('JPATH_BASE'))
+		{
+			return JPATH_BASE . '/themes';
+		}
+
+		return __DIR__ . '/themes';
+	}
+}

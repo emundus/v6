@@ -1,27 +1,17 @@
 ##✨ New features ✨
-- Visual harmonization of the product
-  - Use of Tchooz graphic charter for buttons, links and alerts
-  - Improvement of the form builder
-- Possibility to edit RGPD articles (legal notices, data privacy policy,...)
-- Reordering of file statuses
-- Implementation of a new module for language settings
-  - New quick access to the platform translations (forms, campaigns, documents, statuses)
-  - Change of the default language
-  - Possibility to transmit from the manager part a request to add a new language
-- Move the Need Help menu to the bottom right help menu
+- This version continues the visual harmonization on the applicant form
+- Integration of an interconnection module with the Apogee system
+- Improved interconnection with the CAS system.
+  - It is now possible to retrieve all attributes defined by the CAS
+  - The retrieval of these attributes corrects the problem reported for compound names
+- Improvement of the management of phases
+  - You can now define start and end dates for each phase
 
 ##🔥 Major corrections 🔥
-- Visualization now possible of a logo when adding
-- Automatic update of the list of documents associated to a folder when adding a new document
-- Various corrections made on the construction of forms
-  - Changing the order of the options in a drop-down menu could cause problems
-  - An error occurred when a repeatable group was modified
-  - It is now possible to use data repositories on radiobuttons
-- FAQ items are now displayed in the corresponding tab of the campaign information, they were previously displayed randomly on the page
-- Reactivation of the functionality to upload previous document(s)
-- Added missing English translations
-
-##⚠️ Temporarily removed some features ⚠️
-The following features have been temporarily removed due to the receipt of several error reports, which are currently being fixed.
-- Removal of evaluation forms
-- Removal of the file element type in the form creation
+- The generation of the program code could cause problems when copying/pasting when creating a campaign
+- When changing status the information that a mail is going to be sent was in some cases wrong
+- Optimization of the global performances
+  - Implementation of a queue when a certain number of connections is exceeded (defined at 5000 connections by default)
+  - The recovery time of dynamic tags was proportional to the number of tags in the platform
+- When copying a folder, some data were not copied to the new one
+- Document preview: compatibility problem with the latest version of Safari

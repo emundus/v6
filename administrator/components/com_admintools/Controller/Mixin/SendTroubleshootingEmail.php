@@ -1,20 +1,20 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Controller\Mixin;
 
+defined('_JEXEC') || die;
+
 use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
 use Exception;
-use FOF30\Container\Container;
-use FOF30\Factory\Exception\ModelNotFound;
+use FOF40\Container\Container;
+use FOF40\Factory\Exception\ModelNotFound;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-
-defined('_JEXEC') or die;
 
 trait SendTroubleshootingEmail
 {
@@ -42,7 +42,7 @@ trait SendTroubleshootingEmail
 		}
 
 		$wafConfig = $configModel->getConfig();
-		$sendEmail = isset($wafConfig['troubleshooteremail']) ? $wafConfig['troubleshooteremail'] : 1;
+		$sendEmail = $wafConfig['troubleshooteremail'] ?? 1;
 
 		if (!$sendEmail)
 		{

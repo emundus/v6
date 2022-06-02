@@ -1106,7 +1106,7 @@ class EmundusModelUsers extends JModelList {
      * Function to get Evaluators Infos for the mailing evaluators
      */
     public function getEvalutorByFnums($fnums) {
-        include_once(JPATH_BASE.'/components/com_emundus/models/files.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/files.php');
         $files = new EmundusModelFiles;
 
         $fnums_info = $files->getFnumsInfos($fnums);
@@ -2161,7 +2161,7 @@ class EmundusModelUsers extends JModelList {
             'USER_EMAIL' => $user->email
         ];
 
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $subject.$body);
 
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 

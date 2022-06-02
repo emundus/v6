@@ -1,15 +1,15 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
-use FOF30\Model\Model;
+use FOF40\Model\Model;
 use Joomla\CMS\Client\ClientHelper;
 use Joomla\CMS\Client\FtpClient;
 use Joomla\CMS\Filesystem\Folder;
@@ -22,6 +22,16 @@ class CleanTempDirectory extends Model
 
 	/** @var int Numbers of folders already processed */
 	public $doneFolders = 0;
+
+	/**
+	 * Minimum age (in seconds) of files and folders to delete.
+	 *
+	 * Default: 60 seconds.
+	 *
+	 * @var   int
+	 * @since 6.1.0
+	 */
+	private $minAge = 60;
 
 	/** @var float The time the process started */
 	private $startTime = null;
@@ -39,12 +49,18 @@ class CleanTempDirectory extends Model
 	 */
 	public function getDirectories($root = null)
 	{
-		$jreg   = $this->container->platform->getConfig();
-		$tmpdir = $jreg->get('tmp_path');
+		$jreg       = $this->container->platform->getConfig();
+		$tmpdir     = $jreg->get('tmp_path');
+		$cutoffTime = PHP_INT_MAX;
 
 		if (empty($root))
 		{
 			$root = $tmpdir;
+		}
+
+		if ($root === $tmpdir)
+		{
+			$cutoffTime = time() - $this->minAge;
 		}
 
 		$folders = Folder::folders($root, '.', false, true, []);
@@ -56,6 +72,11 @@ class CleanTempDirectory extends Model
 
 		$this->totalFolders += count($folders);
 
+		// Filter folders by date
+		$folders = array_filter($folders, function ($folder) use ($cutoffTime) {
+			return (@filemtime($folder) ?: (@filemtime($folder . '/.') ?: 0)) < $cutoffTime;
+		});
+
 		if (count($folders))
 		{
 			foreach ($folders as $folder)
@@ -63,7 +84,7 @@ class CleanTempDirectory extends Model
 				$this->getDirectories($folder);
 				$this->getFiles($folder);
 
-				$this->folderStack = array_merge($this->folderStack, $folders);
+				$this->folderStack[] = $folder;
 			}
 		}
 	}
@@ -75,12 +96,18 @@ class CleanTempDirectory extends Model
 	 */
 	public function getFiles($root = null)
 	{
-		$jreg   = $this->container->platform->getConfig();
-		$tmpdir = $jreg->get('tmp_path');
+		$jreg       = $this->container->platform->getConfig();
+		$tmpdir     = $jreg->get('tmp_path');
+		$cutoffTime = PHP_INT_MAX;
 
 		if (empty($root))
 		{
 			$root = $tmpdir;
+		}
+
+		if ($root === $tmpdir)
+		{
+			$cutoffTime = time() - $this->minAge;
 		}
 
 		if (empty($root))
@@ -91,38 +118,36 @@ class CleanTempDirectory extends Model
 		$root   = rtrim($root, '/');
 		$tmpdir = rtrim($tmpdir, '/');
 
-		$folders = Folder::files($root, '.', false, true, [], [], true);
+		$files = Folder::files($root, '.', false, true, [], [], true);
 
-		if (empty($folders))
+		if (empty($files))
 		{
-			$folders = [];
+			$files = [];
 		}
+
+		// Filter files by modified date
+		$files = array_filter($files, function ($file) use ($cutoffTime) {
+			return (@filemtime($file) ?: 0) < $cutoffTime;
+		});
 
 		if ($root == $tmpdir)
 		{
-			if (count($folders))
+			foreach ($files as $file)
 			{
-				foreach ($folders as $folder)
+				if (in_array(basename($file), ['index.html', 'index.htm', '.htaccess', 'web.config']))
 				{
-					if (basename($folder) == 'index.html')
-					{
-						continue;
-					}
-					if (basename($folder) == '.htaccess')
-					{
-						continue;
-					}
-
-					$this->filesStack[] = $folder;
+					continue;
 				}
+
+				$this->filesStack[] = $file;
 			}
 		}
 		else
 		{
-			$this->filesStack = array_merge($this->filesStack, $folders);
+			$this->filesStack = array_merge($this->filesStack, $files);
 		}
 
-		$this->totalFolders += count($folders);
+		$this->totalFolders += count($files);
 	}
 
 	public function startScanning()
@@ -151,10 +176,8 @@ class CleanTempDirectory extends Model
 		{
 			return true;
 		}
-		else
-		{
-			return $this->run(false);
-		}
+
+		return $this->run(false);
 	}
 
 	public function run($resetTimer = true)
@@ -167,6 +190,7 @@ class CleanTempDirectory extends Model
 		$this->loadStack();
 
 		$result = true;
+
 		while ($result && $this->haveEnoughTime())
 		{
 			$result = $this->RealRun();
@@ -178,21 +202,11 @@ class CleanTempDirectory extends Model
 	}
 
 	/**
-	 * Returns the current timestampt in decimal seconds
-	 */
-	private function microtime_float()
-	{
-		[$usec, $sec] = explode(" ", microtime());
-
-		return ((float) $usec + (float) $sec);
-	}
-
-	/**
 	 * Starts or resets the internal timer
 	 */
 	private function resetTimer()
 	{
-		$this->startTime = $this->microtime_float();
+		$this->startTime = microtime(true);
 	}
 
 	/**
@@ -203,7 +217,7 @@ class CleanTempDirectory extends Model
 	 */
 	private function haveEnoughTime()
 	{
-		$now     = $this->microtime_float();
+		$now     = microtime(true);
 		$elapsed = abs($now - $this->startTime);
 
 		return $elapsed < 2;

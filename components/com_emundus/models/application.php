@@ -587,7 +587,6 @@ class EmundusModelApplication extends JModelList
     {
         $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
         $nb = 0;
-        $formLst = array();
 
         if (empty($forms)) {
             return 100;
@@ -599,8 +598,6 @@ class EmundusModelApplication extends JModelList
             $cpt = $this->_db->loadResult();
             if ($cpt == 1) {
                 $nb++;
-            } else {
-                $formLst[] = $form->label;
             }
         }
 
@@ -616,6 +613,37 @@ class EmundusModelApplication extends JModelList
             ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
         $this->_db->setQuery($query);
         return $this->_db->execute();
+    }
+
+
+    public function getFilesProgress($fnum = null)
+    {
+        if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
+            return false;
+        }
+
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        if (!is_array($fnum)) {
+            $fnum = [$fnum];
+        }
+
+        $result = array();
+        foreach ($fnum as $f) {
+            $query->clear()
+                ->select('attachment_progress, form_progress')
+                ->from('#__emundus_campaign_candidature')
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+            $db->setQuery($query);
+
+            $progress = $db->loadObject();
+
+            $result['attachments'][$f] = $progress->attachment_progress;
+            $result['forms'][$f] = $progress->form_progress;
+        }
+
+        return $result;
     }
 
     /**
@@ -3865,7 +3893,7 @@ class EmundusModelApplication extends JModelList
 			            $new_file = $fnumInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
 
                         // try to copy file with new name
-                        $copied = copy(JPATH_BASE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_BASE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $new_file);
+                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $new_file);
                         if (!$copied) {
                             JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
                         }
@@ -4433,7 +4461,7 @@ class EmundusModelApplication extends JModelList
             "update" => false
         ];
 
-        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
 
         if (isset($data['file'])) {
             // replace content of current attachment
@@ -4517,7 +4545,7 @@ class EmundusModelApplication extends JModelList
                 $preview['content'] = '<div class="wrapper" style="max-width: 100%;margin: 5px;padding: 20px;background-color: white;"><pre style="white-space: break-spaces;">' . $content . '</pre></div>';
             } else if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
                 $mimeType = mime_content_type($extension);
-                $content = base64_encode(file_get_contents(JPATH_BASE . DS . $filePath));
+                $content = base64_encode(file_get_contents(JPATH_SITE . DS . $filePath));
                 $preview['content'] = '<div class="wrapper" style="height: 100%;display: flex;justify-content: center;align-items: center;"><img src="data:'. $mimeType .';base64,' . $content . '" style="display: block;max-width:100%;max-height:100%;width: auto;height: auto;" /></div>';
             } else if (in_array($extension, ['doc', 'docx', 'odt', 'rtf'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
@@ -4535,7 +4563,7 @@ class EmundusModelApplication extends JModelList
                         $class = 'Word2007';
                 }
 
-                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_BASE . DS . $filePath, $class);
+                $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_SITE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
                 $content = $htmlWriter->getContent();
 
@@ -4553,7 +4581,7 @@ class EmundusModelApplication extends JModelList
             } else if (in_array($extension, ['xls', 'xlsx', 'ods', 'csv'])) {
                 require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
-                $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_BASE . DS . $filePath);
+                $phpSpreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(JPATH_SITE . DS . $filePath);
                 $htmlWriter = new \PhpOffice\PhpSpreadsheet\Writer\Html($phpSpreadsheet);
                 $htmlWriter->setGenerateSheetNavigationBlock(true);
                 $htmlWriter->setSheetIndex(null);
