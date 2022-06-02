@@ -1,7 +1,7 @@
 <template>
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined'">
-      <div class="em-flex-row em-mt-16 em-pointer" onclick="history.back()">
+      <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
         <span class="material-icons">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
