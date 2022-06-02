@@ -12,6 +12,6 @@
 - Lors d'un changement de statut l'information qu'un mail va être envoyé était dans certains cas erronée
 - Optimisation des performances globales
   - Mise en place d'une file d'attente lors d'un certain nombre de connexions dépassées (définis à 5000 connexions par défaut)
-  - Le temps de récupération des balises dynamique était proportionnelle au nombre de balises dynamique
+  - Le temps de récupération des balises dynamiques était proportionnelle au nombre de balises que comportait la plateforme
 - A la copie d'un dossier certaines données n'étaient pas copiées sur le nouveau
 - Prévisualisation des documents : problème de compatibilité avec la dernière version de Safari
