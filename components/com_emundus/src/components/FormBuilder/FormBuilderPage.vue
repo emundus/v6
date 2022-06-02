@@ -101,12 +101,31 @@ export default {
       });
     },
     addSection() {
-      formBuilderService.createSimpleGroup(this.page.id, 'Nouvelle section').then(response => {
-        if (response.status) {
-          this.getSections();
-          this.updateLastSave();
-        }
-      });
+      if(this.sections.length < 10) {
+        formBuilderService.createSimpleGroup(this.page.id, {
+          fr: 'Nouvelle section',
+          en: 'New section'
+        }).then(response => {
+          if (response.status) {
+            this.getSections();
+            this.updateLastSave();
+          }
+        });
+      } else {
+        Swal.fire({
+          title: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE'),
+          text: this.translate('COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT'),
+          type: "error",
+          showCancelButton: false,
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          reverseButtons: true,
+          customClass: {
+            title: 'em-swal-title',
+            confirmButton: 'em-swal-confirm-button',
+            actions: 'em-swal-single-action'
+          },
+        });
+      }
     },
     updateTitle()
     {

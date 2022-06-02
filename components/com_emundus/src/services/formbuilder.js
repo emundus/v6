@@ -47,14 +47,12 @@ export default {
         try {
             const formData = new FormData();
             formData.append('fid', fid);
-            formData.append('label', label);
+            formData.append('label', JSON.stringify(label));
 
-            const response = await client().post(
+            return await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=createsimplegroup',
                 formData
             );
-
-            return response;
         } catch (e) {
             return {
                 status: false,

@@ -1471,6 +1471,8 @@ class EmundusModelFormbuilder extends JModelList {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
+        $label = json_decode($label, true);
+
         // Prepare languages
         $path_to_file = basename(__FILE__) . '/../language/overrides/';
         $path_to_files = array();
