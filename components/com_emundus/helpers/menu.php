@@ -34,7 +34,7 @@ class EmundusHelperMenu {
 		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
 		WHERE (menu.published = 0 OR menu.published = 1) AND menu.parent_id !=1 '.$and_level;
 		if(!empty($formids) && $formids[0] != "") {
-			$query .= ' AND fbtables.form_id IN(' . implode(',', $formids) . ')';
+			$query .= ' AND fbtables.id IN(' . implode(',', $formids) . ')';
 		}
 		$query .= ' ORDER BY menu.lft';
 
