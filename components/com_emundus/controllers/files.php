@@ -698,15 +698,23 @@ class EmundusControllerFiles extends JControllerLegacy
                 foreach ($fnums as $fnum) {
                     //$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
                     $fnumList .= '<li><a href="'.JURI::base().'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    $campaign_label = $fnums[$fnum['fnum']]['label'];
+                    $campaign_start_date = $fnums[$fnum['fnum']]['start_date'];
+                    $campaign_end_date = $fnums[$fnum['fnum']]['end_date'];
+                    $campaign_year = $fnums[$fnum['fnum']]['year'];
                 }
                 $fnumList .= '</ul>';
 
                 $post = [
                     'FNUMS' => $fnumList,
                     'NAME' => $eval->name,
-                    'SITE_URL' => JURI::base()
+                    'SITE_URL' => JURI::base(),
+                    'CAMPAIGN_LABEL' => $campaign_label,
+                    'CAMPAIGN_YEAR' => $campaign_year,
+                    'CAMPAIGN_START' => $campaign_start_date,
+                    'CAMPAIGN_END' => $campaign_end_date
                 ];
-                $c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id);
+                $c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id, null, $fnum['fnum']);
             }
         }
 
