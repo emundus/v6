@@ -496,11 +496,15 @@ p,
   background: transparent;
 
   .g-container {
-    padding: 10px;
     width: 100%;
     margin: auto !important;
     position: fixed;
     background: #fff;
+    height: 87px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 8px !important;
   }
 
   #header-a {
@@ -1025,6 +1029,14 @@ body>.g-container {
   .blog-featuredhomepage {
     margin-bottom: 50px;
     margin-top: 50px;
+  }
+
+  .homepage-container__filter{
+    background: $base-primary-color;
+
+    .homepage-search_button{
+      background: $base-secondary-color;
+    }
   }
 
   /* MODULE EMUNDUS CAMPAIGN */

@@ -518,6 +518,7 @@ $user = JFactory::getUser();
 $secret = JFactory::getConfig()->get('secret');
 
 $name = $app->input->get('view', '', 'CMD');
+$controller_input = $app->input->get('controller', '', 'WORD');
 $task = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token = $app->input->get('token', '', 'ALNUM');
@@ -536,7 +537,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
     $controller->execute($task);
 } elseif($user->guest && (($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && $secret === $token) {
     $controller->execute($task);
-} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
+} elseif ($user->guest && $name != 'emailalert' && $name !='programme' && $controller_input != 'guest' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign' && $json != 'json') && $task != 'passrequest') {
     $controller->setRedirect('index.php', JText::_("ACCESS_DENIED"), 'error');
 } else {
     if ($name != 'search_engine') {

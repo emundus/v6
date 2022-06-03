@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_homepage/style/mod_emundus_homepage.css" );
+$document->addStyleSheet('https://fonts.googleapis.com/icon?family=Material+Icons' );
 
 // INCLUDES
 require_once(dirname(__FILE__).DS.'helper.php');

@@ -827,13 +827,15 @@ class EmundusModelCampaign extends JModelList {
         // Get affected programs
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
-        $m_programme = new EmundusModelProgramme;
-        $programs = $m_programme->getUserPrograms($this->_user->id);
+        if(!$this->_user->guest) {
+            $m_programme = new EmundusModelProgramme;
+            $programs = $m_programme->getUserPrograms($this->_user->id);
 
-        if ($program != "all") {
-            $programs= array_filter($programs,function($value) use ($program) {
-                return $value == $program;
-            });
+            if ($program != "all") {
+                $programs = array_filter($programs, function ($value) use ($program) {
+                    return $value == $program;
+                });
+            }
         }
         //
 
@@ -917,9 +919,11 @@ class EmundusModelCampaign extends JModelList {
                 $this->_db->quoteName('sc.id') . ' AND reference_table LIKE ' . $this->_db->quote('emundus_setup_campaigns')
             )
             ->where($filterDate)
-            ->andWhere($fullRecherche)
-            ->andWhere($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')')
-            ->group($sortDb)
+            ->andWhere($fullRecherche);
+            if(!$this->_user->guest) {
+                $query->andWhere($this->_db->quoteName('sc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
+            }
+            $query->group($sortDb)
             ->order($sortDb . $sort);
 
         try {
