@@ -3372,10 +3372,14 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             /// remove unzipped folder
-            $_deleteFolders = glob($mergeZipAllPath . DS . '*');
-            foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-            rmdir($mergeZipAllPath);
-            $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
+            if (!empty($mergeZipAllPath)) {
+                $_deleteFolders = glob($mergeZipAllPath . DS . '*');
+                foreach($_deleteFolders as $_deleteFolder) {
+                    $this->deleteAll($_deleteFolder);
+                }
+                rmdir($mergeZipAllPath);
+                $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
+            }
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
@@ -3500,17 +3504,24 @@ class EmundusModelEvaluation extends JModelList {
                 rmdir($dir_Name_Path);
             }
 
-            if($mergeMode == 1) {
-                $_deleteFolders = glob($zip_All_Merge_Path . DS . '*');
-                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-                $this->deleteAll($zip_All_Merge_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
-
+            if ($mergeMode == 1) {
+                if (!empty($zip_All_Merge_Path)) {
+                    $_deleteFolders = glob($zip_All_Merge_Path . DS . '*');
+                    foreach($_deleteFolders as $_deleteFolder) {
+                        $this->deleteAll($_deleteFolder);
+                    }
+                    $this->deleteAll($zip_All_Merge_Path);
+                    $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
+                }
             } else {
-                $_deleteFolders = glob($zip_All_Path . DS . '*');
-                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-                $this->deleteAll($zip_All_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
+                if (!empty($zip_All_Path)) {
+                    $_deleteFolders = glob($zip_All_Path . DS . '*');
+                    foreach ($_deleteFolders as $_deleteFolder) {
+                        $this->deleteAll($_deleteFolder);
+                    }
+                    $this->deleteAll($zip_All_Path);
+                    $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
+                }
             }
         }
 
