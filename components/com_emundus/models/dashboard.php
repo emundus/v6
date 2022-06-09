@@ -227,7 +227,7 @@ class EmundusModelDashboard extends JModelList
             $this->_db->setQuery($query);
             $value = $this->_db->loadResult();
 
-            $request = explode('|', $value);
+            $request = explode('php|', $value);
             return eval("$request[1]");
         } catch (Exception $e){
             JLog::add('component/com_emundus/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
