@@ -1,13 +1,13 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
-use FOF30\Utils\Ip;
+use FOF40\IP\IPHelper as Ip;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 class AtsystemUtilFilter
 {
@@ -26,7 +26,7 @@ class AtsystemUtilFilter
 			// This function is invoked all other Admin Tools workflow. Since sometimes we divert from the regular path
 			// (ie rescue URL feature), it MAY happen that FOF is not included. So let's manually check that this is
 			// included and defined before attempting to use the Utils\Ip class
-			if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+			if (!defined('FOF40_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof40/include.php'))
 			{
 				throw new RuntimeException('FOF is currently not installed');
 			}

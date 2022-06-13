@@ -19,8 +19,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 <div class="reset-confirm<?php echo $this->pageclass_sfx; ?>">
 
 		<div class="page-header">
-            <div class="icon-title resetpwd"></div>
-                <h1>
+               <h1>
                     <?php echo $this->escape($this->params->get('page_heading')); ?>
                 </h1>
 		</div>

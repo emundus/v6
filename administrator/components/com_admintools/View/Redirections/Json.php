@@ -1,15 +1,15 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\View\Redirections;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
-class Json extends \FOF30\View\DataView\Json
+class Json extends \FOF40\View\DataView\Json
 {
 
 }

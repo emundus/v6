@@ -298,6 +298,9 @@ class EmundusModelTranslations extends JModelList
                     $object->table->filters = trim($tableElement->getAttribute( 'filters' ));
                     $object->table->load_all = trim($tableElement->getAttribute( 'load_all' ));
                     $object->table->type = trim($tableElement->getAttribute( 'type' ));
+                    $object->table->load_first_data = trim($tableElement->getAttribute( 'load_first_data' ));
+                    $object->table->load_first_child = trim($tableElement->getAttribute( 'load_first_child' ));
+
                     $tableFields = $tableElement->getElementsByTagName( 'field' );
                     $tableSections = $tableElement->getElementsByTagName( 'section' );
 

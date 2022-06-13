@@ -594,6 +594,12 @@ class EmundusModelProgramme extends JModelList {
             $data = null;
         }
 
+        $data['code'] = preg_replace('/[^A-Za-z0-9]/', '', $data['label']);
+        $data['code'] = str_replace(' ', '_', $data['code']);
+        $data['code'] = substr($data['code'], 0, 10);
+        $data['code'] = strtolower($data['code']);
+        $data['code'] = uniqid($data['code']. '-');
+
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JEventDispatcher::getInstance();
         $dispatcher->trigger('callEventHandler', ['onBeforeProgramCreate', ['data' => $data]]);
@@ -661,7 +667,10 @@ class EmundusModelProgramme extends JModelList {
                 // Call plugin triggers
                 $dispatcher->trigger('callEventHandler', ['onAfterProgramCreate', ['programme' => $programme]]);
 
-                return $prog_id;
+                return array(
+                    'programme_id' => $prog_id,
+                    'programme_code' => $programme->code
+                );
             } catch(Exception $e) {
                 JLog::add('component/com_emundus/models/program | Error when creating a program : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 return $e->getMessage();

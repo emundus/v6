@@ -1,15 +1,15 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Controller\Mixin;
 
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
-use FOF30\Inflector\Inflector;
+use FOF40\Inflector\Inflector;
 use Joomla\CMS\Language\Text;
 use RuntimeException;
 

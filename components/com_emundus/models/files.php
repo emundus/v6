@@ -1851,7 +1851,6 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function tagFile($fnums, $tags) {
-
         try {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
@@ -2525,6 +2524,20 @@ class EmundusModelFiles extends JModelLegacy
                             $sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
 
                             $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
+                        } elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                            $select = $elt->table_join.'.'.$elt->element_name;
+                            $element_attribs = json_decode($elt->element_attribs);
+                            foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                                if(empty($first_replace)) {
+                                    $select = "REPLACE(" . $select . ",'" . $value . "','" . $element_attribs->sub_options->sub_labels[$key] . "')";
+                                } else {
+                                    $select .= ",REPLACE(" . $select . ",'" . $value . "','" . $element_attribs->sub_options->sub_labels[$key] . "')";
+                                }
+                            }
+                            $query .= ', '.$select.' AS '. $elt->table_join.'___'.$elt->element_name;
+                            if (!in_array($elt->table_join, $lastTab)) {
+                                $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                            }
                         } else {
                             $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
                             if (!in_array($elt->table_join, $lastTab)) {
@@ -2604,6 +2617,23 @@ class EmundusModelFiles extends JModelLegacy
                                 WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
 
                             $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
+                        } elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                            $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
+                            if($raw == 1){
+                                $select = $select;
+                            } else{
+                                $element_attribs = json_decode($elt->element_attribs);
+                                foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                                    $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                    $endif .= ')';
+                                }
+                                $select = implode(',', $if) . ',' . $select . $endif;
+                            }
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$select.') SEPARATOR ", ")
+                                FROM '.$tableAlias[$elt->tab_name].'
+                                LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
+                            $query .= ', ' . $select . ' AS ' . $elt->tab_name . '___' . $elt->element_name;
                         } elseif ($elt->element_plugin == 'yesno') {
                             $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
                             if($raw == 1){
@@ -3446,13 +3476,20 @@ class EmundusModelFiles extends JModelLegacy
     }
 
     /**
-     * Find all variables like ${var} in string.
+     * Find all variables like ${var} or [var] in string.
      *
      * @param string $str
+     * @param int $type type of bracket default CURLY else SQUARE
      * @return string[]
      */
-    public function getVariables($str) {
-        preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+    public function getVariables($str, $type='CURLY') {
+        if($type == 'CURLY') {
+            preg_match_all('/\$\{(.*?)}/i', $str, $matches);
+        } elseif ($type == 'SQUARE') {
+            preg_match_all('/\[(.*?)]/i', $str, $matches);
+        } else {
+            preg_match_all('/\{(.*?)}/i', $str, $matches);
+        }
         return $matches[1];
     }
 

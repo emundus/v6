@@ -1,33 +1,33 @@
 <template>
   <div id="textareaF">
     <div class="row rowmodal">
-      <div class="form-group dpflex">
-        <input type="checkbox" class="form__input field-general w-input" value="1" v-model="wysiwyg" />
-        <label class="ml-10px mb-0">{{UseAdvancedEditor}}</label>
+      <div class="em-flex-row">
+        <input type="checkbox" value="1" v-model="wysiwyg" />
+        <label class="em-ml-8">{{UseAdvancedEditor}}</label>
       </div>
       <div class="form-group">
         <label>{{heightext}} :</label>
-        <input type="number" class="form__input field-general w-input" v-model="element.params.height" min="3"/>
+        <input type="number" class="em-w-100" v-model="element.params.height" min="3"/>
       </div>
       <div class="form-group">
         <label>{{placeholdertext}} :</label>
         <input
           type="text"
-          class="form__input field-general w-input"
+          class="em-w-100"
           v-model="element.params.textarea_placeholder"
         />
       </div>
       <div class="form-group">
         <label>{{helptext}} :</label>
-        <input type="text" class="form__input field-general w-input" v-model="element.params.rollover" />
+        <input type="text" class="em-w-100" v-model="element.params.rollover" />
       </div>
       <div class="form-group">
         <label>{{maxlength}} :</label>
-        <input type="number" min="1" class="form__input field-general w-input" v-model="element.params['textarea-maxlength']" />
+        <input type="number" min="1" class="em-w-100" v-model="element.params['textarea-maxlength']" />
       </div>
-      <div class="form-group dpflex">
-        <input type="checkbox" class="form__input field-general w-input" style="margin: 0 !important;" value="1" v-model="showmax" />
-        <label class="ml-10px mb-0">{{DisplayMaxLength}}</label>
+      <div class="em-flex-row">
+        <input type="checkbox" class="em-w-100" style="margin: 0 !important;" value="1" v-model="showmax" />
+        <label class="em-ml-8">{{DisplayMaxLength}}</label>
       </div>
     </div>
   </div>

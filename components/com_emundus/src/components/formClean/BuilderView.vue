@@ -47,8 +47,13 @@
                 <div class="em-flex-row">
                   <span v-show="hoverGroup && indexGroup == group.group_id" class="material-icons-outlined handle em-handle-group">drag_indicator</span>
 
-                  <legend @click="enableUpdatingGroup(group)" v-if="group.group_showLegend" class="legend">
-                    <span class="em-ml-32">{{group.group_showLegend}}</span>
+                  <legend @click="enableUpdatingGroup(group)" class="legend">
+                    <span
+                        class="em-ml-32"
+                        :class="{'em-opacity-low': !group.group_showLegend}"
+                    >
+                      {{ group.group_showLegend ? group.group_showLegend : translate('COM_EMUNDUS_FORM_BUILDER_ADD_TITLE')}}
+                    </span>
                   </legend>
                 </div>
 
@@ -1174,11 +1179,7 @@ export default {
     },
     enableTranslationLabel(eid) {
       this.can_translate.label = !this.can_translate.label;
-      if(this.can_translate.label) {
-        /*setTimeout(() => {
-          document.getElementById('label_en_' + eid).focus();
-        },100);*/
-      } else {
+      if(!this.can_translate.label) {
         setTimeout(() => {
           document.getElementById('label_' + eid).focus();
         },100);
@@ -1204,11 +1205,7 @@ export default {
     },
     enableTranslationPage(pid) {
       this.can_translate.label_page = !this.can_translate.label_page;
-      if(this.can_translate.label_page) {
-        /*setTimeout(() => {
-          document.getElementById('label_page_en_' + pid).focus();
-        },100);*/
-      } else {
+      if(!this.can_translate.label_page) {
         setTimeout(() => {
           document.getElementById('update_input_' + pid).focus();
         },100);
@@ -1216,11 +1213,7 @@ export default {
     },
     enableTranslationPageIntro(pid) {
       this.can_translate.intro_page = !this.can_translate.intro_page;
-      if(this.can_translate.intro_page) {
-        /*setTimeout(() => {
-          document.getElementById('label_page_en_' + pid).focus();
-        },100);*/
-      } else {
+      if(!this.can_translate.intro_page) {
         setTimeout(() => {
           document.getElementById('update_intro_' + pid).focus();
         },100);
@@ -1235,16 +1228,9 @@ export default {
         }, 100);
       }
     },
-    enableUpdatingIntroGroup(group) {
-
-    },
     enableTranslationGroup(gid) {
       this.can_translate.label_group = !this.can_translate.label_group;
-      if(this.can_translate.label_group) {
-        /*setTimeout(() => {
-          document.getElementById('label_group_en_' + gid).focus();
-        },100);*/
-      } else {
+      if(!this.can_translate.label_group) {
         setTimeout(() => {
           document.getElementById('update_input_' + gid).focus();
         },100);
@@ -1269,9 +1255,6 @@ export default {
       }
     },
     startGroupDrag() {
-      /*Object.keys(this.openGroup).forEach((group,key) => {
-        this.openGroup[group] = false;
-      });*/
       this.draggable = true;
     },
     //
@@ -1335,7 +1318,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .em-handle-group{
   position: absolute;
 }
@@ -1361,5 +1344,9 @@ export default {
 .unpublished {
   background: #C5C8CE;
   border-radius: 5px;
+}
+
+.radio.btn-radio.btn-group label span{
+  margin-top: 0 !important;
 }
 </style>

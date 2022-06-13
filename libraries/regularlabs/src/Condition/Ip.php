@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -35,23 +35,6 @@ class Ip extends Condition
 		return $this->_($pass);
 	}
 
-	private function checkIP($range)
-	{
-		if (empty($range))
-		{
-			return false;
-		}
-
-		if (strpos($range, '-') !== false)
-		{
-			// Selection is an IP range
-			return $this->checkIPRange($range);
-		}
-
-		// Selection is a single IP (part)
-		return $this->checkIPPart($range);
-	}
-
 	private function checkIPList()
 	{
 		foreach ($this->selection as $range)
@@ -70,35 +53,22 @@ class Ip extends Condition
 		return false;
 	}
 
-	private function checkIPPart($range)
+	private function checkIP($range)
 	{
-		$ip = $this->getIP();
-
-		// Return if no IP address can be found (shouldn't happen, but who knows)
-		if (empty($ip))
+		if (empty($range))
 		{
 			return false;
 		}
 
-		$ip_parts    = explode('.', $ip);
-		$range_parts = explode('.', trim($range));
-
-		// Trim the IP to the part length of the range
-		$ip = implode('.', array_slice($ip_parts, 0, count($range_parts)));
-
-		// Return false if ip does not match the range
-		if ($range != $ip)
+		if (strpos($range, '-') !== false)
 		{
-			return false;
+			// Selection is an IP range
+			return $this->checkIPRange($range);
 		}
 
-		return true;
+		// Selection is a single IP (part)
+		return $this->checkIPPart($range);
 	}
-
-	/* Fill the max range by prefixing it with the missing parts from the min range
-	 * So 101.102.103.104-201.202 becomes:
-	 * max: 101.102.201.202
-	 */
 
 	private function checkIPRange($range)
 	{
@@ -130,20 +100,34 @@ class Ip extends Condition
 		return true;
 	}
 
-	private function fillMaxRange($max, $min)
-	{
-		$max_parts = explode('.', $max);
+	/* Fill the max range by prefixing it with the missing parts from the min range
+	 * So 101.102.103.104-201.202 becomes:
+	 * max: 101.102.201.202
+	 */
 
-		if (count($max_parts) == 4)
+	private function checkIPPart($range)
+	{
+		$ip = $this->getIP();
+
+		// Return if no IP address can be found (shouldn't happen, but who knows)
+		if (empty($ip))
 		{
-			return $max;
+			return false;
 		}
 
-		$min_parts = explode('.', $min);
+		$ip_parts    = explode('.', $ip);
+		$range_parts = explode('.', trim($range));
 
-		$prefix = array_slice($min_parts, 0, count($min_parts) - count($max_parts));
+		// Trim the IP to the part length of the range
+		$ip = implode('.', array_slice($ip_parts, 0, count($range_parts)));
 
-		return implode('.', $prefix) . '.' . implode('.', $max_parts);
+		// Return false if ip does not match the range
+		if ($range != $ip)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	private function getIP()
@@ -160,10 +144,26 @@ class Ip extends Condition
 
 		if ( ! empty($_SERVER['HTTP_CLIENT_IP']) && $this->isValidIp($_SERVER['HTTP_CLIENT_IP']))
 		{
-			$_SERVER['HTTP_CLIENT_IP'];
+			return $_SERVER['HTTP_CLIENT_IP'];
 		}
 
 		return $_SERVER['REMOTE_ADDR'];
+	}
+
+	private function fillMaxRange($max, $min)
+	{
+		$max_parts = explode('.', $max);
+
+		if (count($max_parts) == 4)
+		{
+			return $max;
+		}
+
+		$min_parts = explode('.', $min);
+
+		$prefix = array_slice($min_parts, 0, count($min_parts) - count($max_parts));
+
+		return implode('.', $prefix) . '.' . implode('.', $max_parts);
 	}
 
 	private function isValidIp($string)

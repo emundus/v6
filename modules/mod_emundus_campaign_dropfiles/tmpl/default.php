@@ -5,7 +5,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 
 <div class="em-infoComp">
-    <h3 class="g-title campaign-documents">"><?php echo $module->title; ?></h3>
+    <h3 class="g-title campaign-documents"><?php echo $module->title; ?></h3>
     <p><?php echo $mod_em_dropfile_desc; ?></p>
     <ul>
         <?php foreach($files as $file) { ?>

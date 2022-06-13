@@ -458,7 +458,6 @@ class EmundusControllerEvaluation extends JControllerLegacy
          $fnums  = $jinput->getString('fnums', null);
          $tags    = $jinput->getVar('tag', null);
 
-         //var_dump($fnums);
          $fnums = ($fnums=='all')?'all':(array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
          $m_files = $this->getModel('Files');
@@ -634,7 +633,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 							    $mailer = JFactory::getMailer();
 
 							    $post = array('FNUM' => $file['fnum']);
-							    $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
+							    $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 							    $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 							    $from_id    = 62;
@@ -685,8 +684,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
 					    foreach ($trigger['to']['recipients'] as $key => $recipient) {
 						    $mailer = JFactory::getMailer();
 
-						    $post = array();
-						    $tags = $m_email->setTags($recipient['id'], $post);
+						    $tags = $m_email->setTags($recipient['id'], array(), null, '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 						    $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 						    $from_id    = 62;

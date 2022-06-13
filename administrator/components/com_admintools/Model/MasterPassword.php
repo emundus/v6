@@ -1,16 +1,16 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
-use FOF30\Model\Model;
+use FOF40\Model\Model;
 
 class MasterPassword extends Model
 {
@@ -47,6 +47,7 @@ class MasterPassword extends Model
 		'ScanAlerts'                 => 'COM_ADMINTOOLS_TITLE_SCANALERTS_MASTERPW',
 		'SecurityExceptions'         => 'COM_ADMINTOOLS_TITLE_LOG',
 		'UnblockIP'                  => 'COM_ADMINTOOLS_TITLE_UNBLOCKIP',
+		'TempSuperUsers'             => 'COM_ADMINTOOLS_TITLE_TEMPSUPERUSERS',
 	];
 
 	/**
@@ -59,8 +60,7 @@ class MasterPassword extends Model
 	 */
 	public function accessAllowed($view = null)
 	{
-		$params = Storage::getInstance();
-
+		// Is this a view protected by the Master Password feature?
 		if (empty($view))
 		{
 			$view = $this->input->get('view', 'ControlPanel');
@@ -74,30 +74,59 @@ class MasterPassword extends Model
 			return true;
 		}
 
+		// Do we have a Master Password?
+		$params     = Storage::getInstance();
 		$masterHash = $params->getValue('masterpassword', '');
 
-		if (!empty($masterHash))
+		if (empty($masterHash))
 		{
-			$masterHash = md5($masterHash);
+			return true;
+		}
 
-			// Compare the master pw with the one the user entered
-			$userHash = $this->container->platform->getSessionVar('userpwhash', '', 'admintools');
+		// Compare the master pw with the one the user entered
+		$masterHash = md5($masterHash);
+		$userHash   = $this->container->platform->getSessionVar('userpwhash', '', 'admintools');
 
-			if ($userHash != $masterHash)
-			{
-				// The login is invalid. If the view is locked I'll have to kick the user out.
-				$lockedviews_raw = $params->getValue('lockedviews', '');
+		if ($userHash === $masterHash)
+		{
+			// The password matches, we are allowed to access everything
+			return true;
+		}
 
-				if (!empty($lockedviews_raw))
-				{
-					$lockedViews = explode(",", $lockedviews_raw);
+		// The login is invalid. If the view is locked I'll have to kick the user out.
+		$lockedviews_raw = $params->getValue('lockedviews', '');
 
-					if (in_array($view, $lockedViews) || in_array($altView, $lockedViews))
-					{
-						return false;
-					}
-				}
-			}
+		if (empty($lockedviews_raw))
+		{
+			// There are no locked views.
+			return true;
+		}
+
+		$lockedViews = explode(",", $lockedviews_raw);
+
+		if (empty($lockedViews))
+		{
+			// This shouldn't happen. There are no locked views.
+			return true;
+		}
+
+		// Special case: view=SecurityExceptions, task=browse, format=json (graphs) is always allowed.
+		$task   = $this->input->get('task', '');
+		$format = $this->input->get('format', 'html');
+
+		if (
+			(($view == 'SecurityExceptions') || ($altView == 'SecurityExceptions')) &&
+			($format == 'json') &&
+			($task == 'browse')
+		)
+		{
+			return true;
+		}
+
+		// Check if the view is locked.
+		if (in_array($view, $lockedViews) || in_array($altView, $lockedViews))
+		{
+			return false;
 		}
 
 		return true;

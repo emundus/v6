@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -20,67 +20,6 @@ use RegularLabs\Library\ParametersNew as Parameters;
 
 class Form
 {
-	public static function getAddToLoadAjaxListScript($field, $name, $value, $id, $attributes = [], $simple = false)
-	{
-		$attributes['field'] = $field;
-		$attributes['name']  = $name;
-		$attributes['value'] = $value;
-		$attributes['id']    = $id;
-
-		$url = 'index.php?option=com_ajax&plugin=regularlabs&format=raw'
-			. '&' . Uri::createCompressedAttributes(json_encode($attributes));
-
-		$remove_spinner = "$('#" . $id . "_spinner').remove();";
-		$replace_field  = "$('#" . $id . "').replaceWith(data);";
-		$init_chosen    = 'document.getElementById("' . $id . '") && document.getElementById("' . $id . '").nodeName == "SELECT" && $("#' . $id . '").chosen();';
-
-		$success = $replace_field;
-
-		if ($simple)
-		{
-			$success .= $init_chosen;
-		}
-		else
-		{
-			Document::script('regularlabs/multiselect.min.js');
-			Document::stylesheet('regularlabs/multiselect.min.css');
-
-			$success .= "if(data.indexOf('rl_multiselect') > -1)\{RegularLabsMultiSelect.init($('#" . $id . "'));\} else { " . $init_chosen . "}";
-		}
-
-//		$success .= "console.log('#" . $id . "');";
-//		$success .= "console.log(data);";
-
-		$error   = $remove_spinner;
-		$success = "if(data)\{" . $success . "\}" . $remove_spinner;
-
-		$script = "jQuery(document).ready(function() {"
-			. "RegularLabsScripts.addToLoadAjaxList("
-			. "'" . addslashes($url) . "',"
-			. "'" . addslashes($success) . "',"
-			. "'" . addslashes($error) . "'"
-			. ")"
-			. "});";
-
-		return '<script>' . $script . '</script>';
-	}
-
-	public static function getOptionsCount($options)
-	{
-		$count = 0;
-
-		foreach ($options as $option)
-		{
-			$count++;
-			if ( ! empty($option->links))
-			{
-				$count += self::getOptionsCount($option->links);
-			}
-		}
-
-		return $count;
-	}
-
 	/**
 	 * Prepare the string for a select form field item
 	 *
@@ -137,6 +76,25 @@ class Form
 		}
 
 		return $string;
+	}
+
+	/**
+	 * Render a simple select list
+	 *
+	 * @param array  $options
+	 * @param        $string $name
+	 * @param string $value
+	 * @param string $id
+	 * @param int    $size
+	 * @param bool   $multiple
+	 * @param bool   $readonly
+	 * @param bool   $ignore_max_count
+	 *
+	 * @return string
+	 */
+	public static function selectListSimple(&$options, $name, $value, $id, $size = 0, $multiple = false, $readonly = false, $ignore_max_count = false)
+	{
+		return self::selectlist($options, $name, $value, $id, $size, $multiple, true, $readonly, $ignore_max_count);
 	}
 
 	/**
@@ -461,73 +419,6 @@ class Form
 	}
 
 	/**
-	 * Render a select list loaded via Ajax
-	 *
-	 * @param string $field
-	 * @param string $name
-	 * @param string $value
-	 * @param string $id
-	 * @param array  $attributes
-	 * @param bool   $simple
-	 *
-	 * @return string
-	 */
-	public static function selectListAjax($field, $name, $value, $id, $attributes = [], $simple = false)
-	{
-		JHtml::_('jquery.framework');
-
-		$script = self::getAddToLoadAjaxListScript($field, $name, $value, $id, $attributes, $simple);
-
-		if (is_array($value))
-		{
-			$value = implode(',', $value);
-		}
-
-		Document::script('regularlabs/script.min.js');
-		Document::stylesheet('regularlabs/style.min.css');
-
-		$input = '<textarea name="' . $name . '" id="' . $id . '" cols="40" rows="5">' . $value . '</textarea>'
-			. '<div id="' . $id . '_spinner" class="rl_spinner"></div>';
-
-		return $input . $script;
-	}
-
-	/**
-	 * Render a simple select list
-	 *
-	 * @param array  $options
-	 * @param        $string $name
-	 * @param string $value
-	 * @param string $id
-	 * @param int    $size
-	 * @param bool   $multiple
-	 * @param bool   $readonly
-	 * @param bool   $ignore_max_count
-	 *
-	 * @return string
-	 */
-	public static function selectListSimple(&$options, $name, $value, $id, $size = 0, $multiple = false, $readonly = false, $ignore_max_count = false)
-	{
-		return self::selectlist($options, $name, $value, $id, $size, $multiple, true, $readonly, $ignore_max_count);
-	}
-
-	/**
-	 * Render a simple select list loaded via Ajax
-	 *
-	 * @param string $field
-	 * @param string $name
-	 * @param string $value
-	 * @param string $id
-	 * @param array  $attributes
-	 *
-	 * @return string
-	 */
-	public static function selectListSimpleAjax($field, $name, $value, $id, $attributes = [])
-	{
-		return self::selectListAjax($field, $name, $value, $id, $attributes, true);
-	}
-
-	/**
 	 * Replace style placeholders with actual style attributes
 	 *
 	 * @param string $string
@@ -583,5 +474,114 @@ class Form
 		);
 
 		return $string;
+	}
+
+	public static function getOptionsCount($options)
+	{
+		$count = 0;
+
+		foreach ($options as $option)
+		{
+			$count++;
+			if ( ! empty($option->links))
+			{
+				$count += self::getOptionsCount($option->links);
+			}
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Render a simple select list loaded via Ajax
+	 *
+	 * @param string $field
+	 * @param string $name
+	 * @param string $value
+	 * @param string $id
+	 * @param array  $attributes
+	 *
+	 * @return string
+	 */
+	public static function selectListSimpleAjax($field, $name, $value, $id, $attributes = [])
+	{
+		return self::selectListAjax($field, $name, $value, $id, $attributes, true);
+	}
+
+	/**
+	 * Render a select list loaded via Ajax
+	 *
+	 * @param string $field
+	 * @param string $name
+	 * @param string $value
+	 * @param string $id
+	 * @param array  $attributes
+	 * @param bool   $simple
+	 *
+	 * @return string
+	 */
+	public static function selectListAjax($field, $name, $value, $id, $attributes = [], $simple = false)
+	{
+		JHtml::_('jquery.framework');
+
+		$script = self::getAddToLoadAjaxListScript($field, $name, $value, $id, $attributes, $simple);
+
+		if (is_array($value))
+		{
+			$value = implode(',', $value);
+		}
+
+		Document::script('regularlabs/script.min.js');
+		Document::stylesheet('regularlabs/style.min.css');
+
+		$input = '<textarea name="' . $name . '" id="' . $id . '" cols="40" rows="5">' . $value . '</textarea>'
+			. '<div id="' . $id . '_spinner" class="rl_spinner"></div>';
+
+		return $input . $script;
+	}
+
+	public static function getAddToLoadAjaxListScript($field, $name, $value, $id, $attributes = [], $simple = false)
+	{
+		$attributes['field'] = $field;
+		$attributes['name']  = $name;
+		$attributes['value'] = $value;
+		$attributes['id']    = $id;
+
+		$url = 'index.php?option=com_ajax&plugin=regularlabs&format=raw'
+			. '&' . Uri::createCompressedAttributes(json_encode($attributes));
+
+		$remove_spinner = "$('#" . $id . "_spinner').remove();";
+		$replace_field  = "$('#" . $id . "').replaceWith(data);";
+		$init_chosen    = 'document.getElementById("' . $id . '") && document.getElementById("' . $id . '").nodeName == "SELECT" && $("#' . $id . '").chosen();';
+
+		$success = $replace_field;
+
+		if ($simple)
+		{
+			$success .= $init_chosen;
+		}
+		else
+		{
+			Document::script('regularlabs/multiselect.min.js');
+			Document::stylesheet('regularlabs/multiselect.min.css');
+
+			$success .= "if(data.indexOf('rl_multiselect') > -1)\{RegularLabsMultiSelect.init($('#" . $id . "'));\} else { " . $init_chosen . "}";
+		}
+
+//		$success .= "console.log('#" . $id . "');";
+//		$success .= "console.log(data);";
+
+		$error   = $remove_spinner;
+		$success = "if(data)\{" . $success . "\}" . $remove_spinner;
+
+		$script = "jQuery(document).ready(function() {"
+			. "RegularLabsScripts.addToLoadAjaxList("
+			. "'" . addslashes($url) . "',"
+			. "'" . addslashes($success) . "',"
+			. "'" . addslashes($error) . "'"
+			. ")"
+			. "});";
+
+		return '<script>' . $script . '</script>';
 	}
 }

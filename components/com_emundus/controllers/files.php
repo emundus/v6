@@ -435,9 +435,27 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
+                $comment_content = array(
+                    'applicant_id' => $aid,
+                    'user_id' => $user,
+                    'reason' => $title,
+                    'comment_body' => $comment,
+                    'fnum' => $fnum,
+                    'status_from' => -1,
+                    'status_to' => -1
+                );
+
+                JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
                 if (empty($res)) {
                     $fnumErrorList[] = $fnum;
+                } else {
+                    $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
                 }
             } else {
                 $fnumErrorList[] = $fnum;
@@ -460,9 +478,14 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $tags = $m_files->getAllTags();
 
+        $params = JComponentHelper::getParams('com_emundus');
+        $show_tags_category = $params->get('com_emundus_show_tags_category', 0);
+
+
         echo json_encode((object)(array('status' => true,
             'tags' => $tags,
             'tag' => JText::_('COM_EMUNDUS_TAGS'),
+            'show_tags_category' => $show_tags_category,
             'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
         exit;
     }
@@ -675,15 +698,23 @@ class EmundusControllerFiles extends JControllerLegacy
                 foreach ($fnums as $fnum) {
                     //$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
                     $fnumList .= '<li><a href="'.JURI::base().'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    $campaign_label = $fnums[$fnum['fnum']]['label'];
+                    $campaign_start_date = $fnums[$fnum['fnum']]['start_date'];
+                    $campaign_end_date = $fnums[$fnum['fnum']]['end_date'];
+                    $campaign_year = $fnums[$fnum['fnum']]['year'];
                 }
                 $fnumList .= '</ul>';
 
                 $post = [
                     'FNUMS' => $fnumList,
                     'NAME' => $eval->name,
-                    'SITE_URL' => JURI::base()
+                    'SITE_URL' => JURI::base(),
+                    'CAMPAIGN_LABEL' => $campaign_label,
+                    'CAMPAIGN_YEAR' => $campaign_year,
+                    'CAMPAIGN_START' => $campaign_start_date,
+                    'CAMPAIGN_END' => $campaign_end_date
                 ];
-                $c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id);
+                $c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id, null, $fnum['fnum']);
             }
         }
 
@@ -745,16 +776,14 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function getExistEmailTrigger() {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'messages.php');
 
         $app    = JFactory::getApplication();
         $jinput = $app->input;
         $state  = $jinput->getInt('state', null);
         $fnums  = $jinput->getString('fnums', null);
-
+        $to_applicant = $jinput->getString('to_applicant', '0,1');
 
         $m_email = new EmundusModelEmails();
-        $m_messages = new EmundusModelMessages();
         $m_files = $this->getModel('Files');
 
         if($fnums == "all") {
@@ -788,7 +817,7 @@ class EmundusControllerFiles extends JControllerLegacy
             $code[] = $fnum['training'];
         }
 
-        $trigger_emails = $m_email->getEmailTrigger($state, $code, '0,1');
+        $trigger_emails = $m_email->getEmailTrigger($state, $code, $to_applicant);
 
         echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => JText::_('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO'))));
         exit;
@@ -953,7 +982,7 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer = JFactory::getMailer();
 
                                 $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
-                                $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum']);
+                                $tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                                 $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                                 $from_id    = 62;
@@ -1036,7 +1065,7 @@ class EmundusControllerFiles extends JControllerLegacy
                             $mailer = JFactory::getMailer();
 
                             $post = array();
-                            $tags = $m_email->setTags($recipient['id'], $post);
+                            $tags = $m_email->setTags($recipient['id'], $post, null, '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                             $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                             $from_id    = 62;
@@ -1155,7 +1184,7 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
             }
-            $msg = JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
+            $msg = JText::_('COM_EMUNDUS_APPLICATION_PUBLISHED_STATE_SUCCESS');
         } else $msg = JText::_('STATE_ERROR');
 
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -2272,7 +2301,7 @@ class EmundusControllerFiles extends JControllerLegacy
                     'FNUM' => $fnum,
                     'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                 );
-                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum);
+                $tags = $m_emails->setTags($fnumsInfo[$fnum]['applicant_id'], $post, $fnum, '', $application_form_name);
 
                 // Format filename
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
@@ -2909,8 +2938,8 @@ class EmundusControllerFiles extends JControllerLegacy
                     'FNUM' => $fnum,
                     'CAMPAIGN_YEAR' => $fnumsInfo[$fnum]['year']
                 );
-                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum);
                 $application_form_name = $eMConfig->get('application_form_name', "application_form_pdf");
+                $tags = $m_emails->setTags($users[$fnum]->id, $post, $fnum, '', $application_form_name);
                 $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
                 $application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 
@@ -3279,7 +3308,7 @@ class EmundusControllerFiles extends JControllerLegacy
                         ];
 
                         // Generate PDF
-                        $tags = $m_emails->setTags($fnumsInfos[$fnum]['applicant_id'], $post, $fnum);
+                        $tags = $m_emails->setTags($fnumsInfos[$fnum]['applicant_id'], $post, $fnum, '', $tmpl[0]["body"]);
 
                         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                         $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -3902,13 +3931,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcamp = count($campaigns);
         foreach ($campaigns as $c) {
             if ($nbcamp == 1) {
-                $html .= '<option value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'" value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             } else {
-                $html .= '<option value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'"  value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             }
         }
 
-        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp)));
+        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp, 'campaigns' => $campaigns)));
         exit;
     }
 

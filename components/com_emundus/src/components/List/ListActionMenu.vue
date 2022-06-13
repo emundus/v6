@@ -87,7 +87,7 @@ export default {
 		transform: rotate(90deg);
 	}
 }
-.material-icons{
+.material-icons, .material-icons-outlined{
   font-size: 24px !important;
 }
 </style>
