@@ -337,9 +337,37 @@ function tableOrder(order) {
     });
 }
 
-// Open Application file
-function openFiles(fnum, page = 0, vue = false) {
+// check if someone else is editing the same file
+function doesSomeoneElseEditFile(fnum)
+{
+    if (fnum !== undefined && fnum !== null && fnum !== '') {
+        return new Promise(function(resolve, reject) {
+            let xhr = new XMLHttpRequest();
 
+            xhr.open('GET', 'index.php?option=com_emundus&controller=files&task=checkIfSomeoneElseIsEditing&format=json&fnum=' + fnum, true);
+
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    resolve(JSON.parse(this.response));
+                } else {
+                    reject(false);
+                }
+            };
+
+            xhr.onerror = function() {
+                reject(false);
+            };
+
+            xhr.send();
+        });
+    }
+
+    return false;
+};
+
+// Open Application file
+function openFiles(fnum, page = 0, vue = false)
+{
     jQuery("html, body").animate({ scrollTop: 0 }, 300);
     // Run the reload actions function without waiting for return.
     setTimeout(function () {

@@ -190,8 +190,17 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
 <script type="text/javascript">
-    function checkurl() {
+    async function checkIfSomeoneIsEditing(fnum)
+    {
+        console.log('checkIfSomeoneIsEditing');
+        let editing = await doesSomeoneElseEditFile(fnum);
 
+        if (editing) {
+
+        }
+    }
+
+    function checkurl() {
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
@@ -216,6 +225,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                             var fnumInfos = result.fnumInfos;
                             fnum.name = fnumInfos.name;
                             fnum.label = fnumInfos.label;
+                            checkIfSomeoneIsEditing(fnumInfos.fnum);
                             openFiles(fnum);
                         } else {
                             $('.em-dimmer').remove();

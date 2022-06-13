@@ -3968,4 +3968,46 @@ class EmundusModelFiles extends JModelLegacy
             JLog::add('component/com_emundus/models/files | Error when get tags by status ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
     }
+
+    public function checkIfSomeoneElseIsEditing($fnum)
+    {
+        //$exceptions = array(JFactory::getUser()->id);
+        $logged_in_users = $this->getLoggedInUsers([2, 6], $exceptions);
+
+        foreach ($logged_in_users as $session) {
+            $session = explode(':', $session)[2];
+
+            if (!empty($session)) {
+                $session = base64_decode($session);
+            }
+        }
+    }
+
+    private function getLoggedInUsers($profiles = [], $exceptions)
+    {
+        $logged_in_users = [];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('js.data')
+            ->from($db->quoteName('#__session', 'js'))
+            ->leftJoin('#__emundus_users AS eu ON eu.user_id = js.userid')
+            ->where('js.guest = 0')
+            ->andWhere('eu.profile IN (' . implode(',', $profiles) . ')');
+
+        if (!empty($exceptions)) {
+            $query->andWhere('js.userid NOT IN (' . implode(',', $exceptions) . ')');
+        }
+
+        $db->setQuery($query);
+
+        try {
+            $logged_in_users = $db->loadColumn();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/files | Error when get logged in users ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $logged_in_users;
+    }
 }
