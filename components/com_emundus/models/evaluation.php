@@ -2102,7 +2102,7 @@ class EmundusModelEvaluation extends JModelList {
             $query->clear()
                 ->select('ff.form_id')
                 ->from('#__fabrik_formgroup AS ff')
-                ->where('ff.group_id like '.$this->_db->quote($group_id));
+                ->where('ff.group_id IN ('.$this->_db->quote($group_id).')');
 
             $this->_db->setQuery($query);
 
