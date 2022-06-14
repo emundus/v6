@@ -3972,6 +3972,7 @@ class EmundusModelFiles extends JModelLegacy
     public function checkIfSomeoneElseIsEditing($fnum)
     {
         //$exceptions = array(JFactory::getUser()->id);
+        $exceptions = array();
         $logged_in_users = $this->getLoggedInUsers([2, 6], $exceptions);
 
         foreach ($logged_in_users as $session) {
@@ -3979,11 +3980,12 @@ class EmundusModelFiles extends JModelLegacy
 
             if (!empty($session)) {
                 $session = base64_decode($session);
+                $session = (object)$session;
             }
         }
     }
 
-    private function getLoggedInUsers($profiles = [], $exceptions)
+    private function getLoggedInUsers($profiles = [], $exceptions = [])
     {
         $logged_in_users = [];
 
