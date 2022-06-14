@@ -170,12 +170,12 @@ export default {
     onDragEnd() {
       const newOrder = this.pages.map((page, index) => {
         return {
-          id: page.id,
-          order: index
+          rgt: index,
+          link: page.link
         };
       });
 
-      formBuilderService.reorderMenu(newOrder);
+      formBuilderService.reorderMenu(newOrder,this.$props.profile_id);
     }
   },
   watch: {

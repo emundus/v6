@@ -2910,18 +2910,35 @@ this.set(words.join(&quot; &quot;));
         }
     }
 
-    function reorderMenu($link, $rgt) {
+    function reorderMenu($menus,$profile) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
         try {
+            $rgt = 2;
+            foreach ($menus as $key => $menu) {
+                $rgt = $menu->rgt + $key + 3;
+                $lft = $menu->rgt + $key + 2;
+
+                $query->clear()
+                    ->update($db->quoteName('#__menu'))
+                    ->set('rgt = ' . $db->quote($rgt))
+                    ->set('lft = ' . $db->quote($lft))
+                    ->where('link = ' . $db->quote($menu->link));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
             $query->clear()
                 ->update($db->quoteName('#__menu'))
-                ->set('rgt = ' . $db->quote($rgt))
-                ->set('lft = ' . $db->quote($rgt - 1))
-                ->where('link = ' . $db->quote($link));
+                ->set('lft = ' . $db->quote(1))
+                ->set('rgt = ' . $db->quote($rgt - 1))
+                ->where('menutype = ' . $db->quote('menu-profile'.$profile))
+                ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
             $db->setQuery($query);
-            return $db->execute();
+            $db->execute();
+
+            return true;
         } catch (Exception $e){
             JLog::add('component/com_emundus/models/formbuilder | Error at reorder the menu with link ' . $link . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return false;

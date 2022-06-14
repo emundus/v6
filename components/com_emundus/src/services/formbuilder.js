@@ -315,20 +315,18 @@ export default {
             };
         }
     },
-    async reorderMenu(params)
+    async reorderMenu(params,profile_id)
     {
         const formData = new FormData();
-        Object.keys(params).forEach(key => {
-            formData.append(key, params[key]);
-        });
+        formData.append('menus', JSON.stringify(params));
+        formData.append('profile', profile_id);
 
         try {
-            const response = await client().post(
+            return await client().post(
                 'index.php?option=com_emundus&controller=formbuilder&task=reordermenu',
                 formData
             );
 
-            return response;
         } catch (e) {
             return {
                 status: false,

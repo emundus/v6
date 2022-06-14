@@ -591,10 +591,10 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $rgt = $jinput->getInt('rgt');
-            $link = $jinput->getString('link');
+            $menus = json_decode($_POST['menus']);
+            $profile = $jinput->getInt('profile');
 
-            $changeresponse = $this->m_formbuilder->reorderMenu($link, $rgt);
+            $changeresponse = $this->m_formbuilder->reorderMenu($menus,$profile);
         }
         echo json_encode((object)$changeresponse);
         exit;
