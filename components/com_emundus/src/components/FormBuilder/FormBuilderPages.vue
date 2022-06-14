@@ -15,6 +15,7 @@
         <div
             class="em-font-weight-500 em-pointer"
             v-for="page in pages"
+            v-if="page.type !== 'submission'"
             :key="page.id"
             :class="{
               selected: page.id === selected,
@@ -59,6 +60,22 @@
         </div>
       </transition-group>
     </draggable>
+
+    <transition-group>
+      <div
+          class="em-font-weight-500 em-pointer"
+          v-for="page in pages"
+          v-if="page.type === 'submission'"
+          :key="page.id"
+          :class="{
+              selected: page.id === selected,
+            }"
+      >
+        <div class="em-flex-row em-flex-space-between">
+          <p  @click="selectPage(page.id)" class="em-w-100 em-p-16 em-main-500-color">{{ page.label }}</p>
+        </div>
+      </div>
+    </transition-group>
   </div>
 </template>
 

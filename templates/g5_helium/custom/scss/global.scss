@@ -3622,11 +3622,13 @@ button.swal2-cancel.goback-btn {
     }
 
     /* INTRO FORMULAIRE */
-     p:first-of-type:not(.accept_terms),
-     p.form-intro {
-      @include body-16;
-      color: $neutral-600;
-      margin-top: 8px;
+    .applicant-form {
+      p:first-of-type:not(.accept_terms),
+      p.form-intro {
+        @include body-16;
+        color: $neutral-600;
+        margin-top: 8px;
+      }
     }
 
     /* FORMULAIRE */
