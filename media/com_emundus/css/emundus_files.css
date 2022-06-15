@@ -1303,8 +1303,8 @@ textarea>.input-group-btn>.btn {
 
 label {
     color: #000;
-    margin-bottom: 5px !important;
-    font-weight: bold !important;
+    margin-bottom: 8px !important;
+    font-weight: bold;
     display: inline;
 }
 

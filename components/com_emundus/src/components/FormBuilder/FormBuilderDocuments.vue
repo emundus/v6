@@ -1,6 +1,6 @@
 <template>
   <div id="form-builder-documents">
-    <div id="form-builder-title" class="em-flex-row em-flex-space-between em-p-16">
+    <div id="form-builder-title" class="em-pointer em-flex-row em-flex-space-between em-p-16" @click="$emit('show-documents')">
       <span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>
       <span
           class="material-icons em-pointer"

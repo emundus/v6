@@ -37,7 +37,7 @@
         </div>
       </header>
       <div class="body em-flex-row em-flex-space-between">
-        <aside class="left-panel em-flex-row em-flex-start em-h-100">
+        <aside class="left-panel em-flex-row em-flex-start em-h-100" v-if="showInSection !== 'documents'">
           <div class="tabs em-flex-column em-flex-start em-h-100">
             <div class="tab" v-for="(tab, index) in leftPanel.tabs" :key="index" :class="{ active: tab.active }">
               <span
@@ -288,6 +288,9 @@ export default {
       this.setSectionShown('page');
     },
     setSectionShown(section) {
+      if(section === 'documents'){
+        this.selectedPage = null;
+      }
       this.showInSection = section;
     },
     goTo(url, blank = false) {

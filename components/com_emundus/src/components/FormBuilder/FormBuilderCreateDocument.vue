@@ -1,7 +1,7 @@
 <template>
   <div id="form-builder-create-document">
     <div class="em-flex-row em-flex-space-between em-p-16">
-      <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES") }}</p>
+      <p class="em-font-weight-500">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES") }}</p>
       <span class="material-icons em-pointer" @click="$emit('close')">close</span>
     </div>
     <!--<div class="em-p-16">
@@ -22,37 +22,72 @@
       ></editor>
     </div>-->
     <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">
-      <li @click="activeTab = 'general'">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL") }}</li>
-      <li @click="activeTab = 'advanced'">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED") }}</li>
+      <li
+          v-for="tab in tabs"
+          :key="tab.id"
+          :class="{ 'is-active': tab.active, 'is-no-active': !tab.active }"
+          class="em-p-16 em-pointer em-font-weight-500"
+          @click="selectTab(tab)"
+      >
+        {{ translate(tab.label) }}
+      </li>
     </ul>
-    <section id="general-properties" v-if="activeTab === 'general'">
-      <label for="title">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
-      <input type="text" id="title" v-model="document.name.fr">
 
-      <label>{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
-      <div v-for="(filetype, index) in fileTypes" :key="filetype.value">
-        <input
-          type="checkbox"
-          name="filetypes"
-          :id="filetype.value"
-          :value="filetype.value"
-          @change="checkFileType"
-        >
-        <label :for="filetype.value"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
+    <div id="general-properties" class="em-p-16" v-if="tabs[0].active">
+      <div class="em-mb-16 em-flex-row em-flex-space-between">
+        <label class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</label>
+        <div class="em-toggle">
+          <input type="checkbox" class="em-toggle-check" v-model="document.mandatory" @click="document.mandatory != document.mandatory">
+          <strong class="b em-toggle-switch"></strong>
+          <strong class="b em-toggle-track"></strong>
+        </div>
       </div>
 
-      <label for="nbmax">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NBMAX") }}</label>
-      <input type="number" id="nbmax" v-model="document.nbmax">
-
-      <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_REQUIRED") }}</label>
-      <div class="em-toggle">
-        <input type="checkbox" class="em-toggle-check" v-model="document.mandatory" @click="document.mandatory != document.mandatory">
-        <strong class="b em-toggle-switch"></strong>
-        <strong class="b em-toggle-track"></strong>
+      <div class="em-mb-16">
+        <label for="title" class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
+        <multiselect
+            v-model="document.type"
+            label="value"
+            track-by="id"
+            id="title"
+            :options="models"
+            :multiple="false"
+            :taggable="false"
+            select-label=""
+            selected-label=""
+            deselect-label=""
+            :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES_SELECT_TYPE')"
+            :close-on-select="true"
+            :clear-on-select="false"
+            :searchable="true"
+            :allow-empty="true"
+        ></multiselect>
+<!--        <input type="text" class="em-w-100" id="title" v-model="document.name.fr">-->
       </div>
-    </section>
-    <section id="advanced-properties" v-if="activeTab === 'advanced'">
-      <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_CATEGORY") }}</label>
+
+      <div class="em-mb-16">
+        <label class="em-font-weight-400">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
+        <div v-for="(filetype, index) in fileTypes" :key="filetype.value" class="em-flex-row em-mb-4">
+          <input
+            type="checkbox"
+            name="filetypes"
+            :id="filetype.value"
+            :value="filetype.value"
+            v-model="document.selectedTypes[filetype.value]"
+            @change="checkFileType"
+          >
+          <label :for="filetype.value" class="em-font-weight-400 em-mb-0-important"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
+        </div>
+      </div>
+
+      <div class="em-mb-16">
+        <label for="nbmax" class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NBMAX") }}</label>
+        <input type="number" id="nbmax" class="em-w-100" v-model="document.nbmax">
+      </div>
+    </div>
+
+    <div id="advanced-properties" class="em-p-16" v-if="tabs[1].active">
+<!--      <label>{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_CATEGORY") }}</label>
       <select id="document-category">
         <option v-for="category in categories" :value="category.id">{{ category.title }}</option>
       </select>
@@ -80,9 +115,12 @@
             <input type="number" id="max-height" min="0" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_MAXIMUM')">
           </div>
         </div>
-      </div>
-    </section>
-    <button class="em-primary-button"  @click="updateDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_DOCUMENT') }}</button>
+      </div>-->
+    </div>
+
+    <div class="em-p-16">
+      <button class="em-primary-button"  @click="updateDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}</button>
+    </div>
   </div>
 </template>
 
@@ -90,6 +128,7 @@
 import formService from '../../services/form';
 import campaignService from '../../services/campaign';
 import editor from '../editor.vue';
+import Multiselect from 'vue-multiselect';
 
 export default {
   name: 'FormBuilderCreateDocument',
@@ -104,12 +143,15 @@ export default {
     }
   },
   components: {
-    editor
+    editor,
+    Multiselect
   },
   data() {
     return {
       models: [],
       document: {
+        id: null,
+        type: {},
         mandatory: true,
         nbmax: 1,
         description: {
@@ -132,6 +174,18 @@ export default {
       },
       fileTypes: [],
       activeTab: 'general',
+      tabs: [
+        {
+          id: 0,
+          label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
+          active: true,
+        },
+        {
+          id: 1,
+          label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED",
+          active: false,
+        }
+      ]
     };
   },
   created(){
@@ -139,6 +193,12 @@ export default {
     this.getFileTypes();
   },
   methods: {
+    selectTab(tab) {
+      this.tabs.forEach(t => {
+        t.active = false;
+      });
+      tab.active = true;
+    },
     getDocumentModels() {
       formService.getDocumentModels().then(response => {
         if (response.status) {
@@ -166,10 +226,35 @@ export default {
     selectModel(event) {
       if (event.target.value !== 'none') {
         const model = this.models.find(model => model.id == event.target.value);
+        this.document.id = model.id;
+        this.document.type = model;
         this.document.mandatory = model.mandatory;
         this.document.nbmax = model.nbmax;
         this.document.description = model.description;
         this.document.name = model.name;
+
+        this.fileTypes.forEach(filetype => {
+          this.document.selectedTypes[filetype.value] = false;
+        });
+
+        let types = model.allowed_types.split(';');
+        types.forEach((type) => {
+          if(['pdf'].includes(type)) {
+            this.document.selectedTypes['pdf'] = true;
+          }
+          if(['pdf'].includes(type)) {
+            this.document.selectedTypes['pdf'] = true;
+          }
+          if(['jpeg','jpg','png','gif'].includes(type)) {
+            this.document.selectedTypes['jpeg;jpg;png;gif'] = true;
+          }
+          if(['doc','docx','odt','ppt','pptx'].includes(type)) {
+            this.document.selectedTypes['doc;docx;odt;ppt;pptx'] = true;
+          }
+          if(['xls','xlsx','odf'].includes(type)) {
+            this.document.selectedTypes['xls;xlsx;odf'] = true;
+          }
+        });
       }
     },
     updateDocument()

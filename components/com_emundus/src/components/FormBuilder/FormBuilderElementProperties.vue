@@ -201,7 +201,7 @@ export default {
   li {
     text-align: center;
     width: 50%;
-    border-bottom: 2px solid transparent;
+    border-bottom: 2px solid #EDEDED;
     transition: all .3s;
 
     &.is-active {
