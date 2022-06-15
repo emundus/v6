@@ -3971,45 +3971,31 @@ class EmundusModelFiles extends JModelLegacy
 
     public function checkIfSomeoneElseIsEditing($fnum)
     {
-        //$exceptions = array(JFactory::getUser()->id);
-        $exceptions = array();
-        $logged_in_users = $this->getLoggedInUsers([2, 6], $exceptions);
+        $result = false;
+        $user = JFactory::getUser();
 
-        foreach ($logged_in_users as $session) {
-            $session = explode(':', $session)[2];
-
-            if (!empty($session)) {
-                $session = base64_decode($session);
-                $session = (object)$session;
-            }
-        }
-    }
-
-    private function getLoggedInUsers($profiles = [], $exceptions = [])
-    {
-        $logged_in_users = [];
-
-        $db = JFactory::getDbo();
+        $actions = array(1,4,5,10,11,12,13,14);
+        $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('js.data')
-            ->from($db->quoteName('#__session', 'js'))
-            ->leftJoin('#__emundus_users AS eu ON eu.user_id = js.userid')
-            ->where('js.guest = 0')
-            ->andWhere('eu.profile IN (' . implode(',', $profiles) . ')');
-
-        if (!empty($exceptions)) {
-            $query->andWhere('js.userid NOT IN (' . implode(',', $exceptions) . ')');
-        }
+        $query->select('DISTINCT ju.id, ju.name')
+            ->from('#__users as ju')
+            ->leftJoin('#__emundus_logs as jel ON ju.id = jel.user_id_from')
+            ->where($db->quoteName('jel.fnum_to') . ' = ' . $db->quote($fnum))
+            ->andWhere('action_id IN (' . implode(',', $actions) . ')')
+            ->andWhere('jel.timestamp > ' . $db->quote(date('Y-m-d H:i:s', strtotime('-2 minutes'))))
+            ->andWhere('jel.user_id_from != ' . $user->id);
 
         $db->setQuery($query);
 
         try {
-            $logged_in_users = $db->loadColumn();
+            $result = $db->loadObjectList();
+
+            $result = $result;
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/files | Error when get logged in users ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/files | Error when check if someone else is editing ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
 
-        return $logged_in_users;
+        return $result;
     }
 }

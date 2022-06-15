@@ -365,9 +365,40 @@ function doesSomeoneElseEditFile(fnum)
     return false;
 };
 
+async function checkIfSomeoneIsEditing(fnum)
+{
+    const response = await doesSomeoneElseEditFile(fnum);
+
+    if (response.status && response.data) {
+        let text = '';
+
+        response.data.forEach(function(user) {
+           text += user.name +  ' ';
+        });
+
+        if (response.data.length > 1) {
+            text += ' ' + Joomla.JText._('COM_EMUNDUS_FILES_ARE_EDITED_BY_OTHER_USERS');
+        } else {
+            text += ' ' + Joomla.JText._('COM_EMUNDUS_FILES_IS_EDITED_BY_OTHER_USER');
+        }
+
+        Swal.fire({
+            title: Joomla.JText._('COM_EMUNDUS_FILE_EDITED_BY_ANOTHER_USER'),
+            text: text,
+            customClass: {
+                title: 'em-swal-title',
+                confirmButton: 'em-swal-confirm-button',
+                actions: "em-swal-single-action"
+            },
+        });
+    }
+};
+
 // Open Application file
 function openFiles(fnum, page = 0, vue = false)
 {
+    checkIfSomeoneIsEditing(fnum.fnum);
+
     jQuery("html, body").animate({ scrollTop: 0 }, 300);
     // Run the reload actions function without waiting for return.
     setTimeout(function () {
@@ -1572,6 +1603,10 @@ $(document).ready(function() {
             dataType: 'html',
             data: ({id: id}),
             success: function (result) {
+                const urlUsed = new URL(window.location.origin + url);
+                let fnumUsed = urlUsed.searchParams.get('fnum');
+
+                checkIfSomeoneIsEditing(fnumUsed);
                 $('#em-appli-block').empty();
                 $('#em-appli-block').append(result);
             },
