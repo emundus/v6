@@ -69,7 +69,7 @@ class SoapConnect {
         # write log file
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.apogee.php'], JLog::ALL, ['com_emundus']);
-        
+
         # send request
         try {
             $db = JFactory::getDbo();
@@ -79,10 +79,20 @@ class SoapConnect {
             $response = curl_exec($curl_obj);
             $info = curl_getinfo($curl_obj, CURLINFO_HTTP_CODE);
 
+            $doc = new DOMDocument();
+            $doc->loadXML($response);
+            $faultString = $doc->getElementsByTagName('faultstring');
+
+//            echo '<pre>'; var_dump($faultString); echo '</pre>'; die;
+
             if(false === curl_exec($curl_obj) || $info !== 200) {
-                $doc = new DOMDocument();
-                $doc->loadXML($response);
-                $response_message = $doc->getElementsByTagName('faultstring')->item(0)->nodeValue;
+                /* $doc = new DOMDocument();
+                $doc->loadXML($response); */
+                $response_message = "";
+
+                if($faultString->length > 0) {
+                    $response_message = $doc->getElementsByTagName('faultstring')->item(0)->nodeValue;
+                }
 
                 /// insert the status FAILED to table "jos_emundus_apogee_status"
                 $data = array(
@@ -95,12 +105,22 @@ class SoapConnect {
 
                 JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $response_message, JLog::ERROR, 'com_emundus');
             } else {
-                $data = array(
-                    'date_time' => date('Y-m-d H:i:s'),
-                    'applicant_id' => $fnum_infos['applicant_id'],
-                    'fnum'      => $fnum,
-                    'status'    => 1
-                );
+                if($faultString->length == 0) {
+                    $data = array(
+                        'date_time' => date('Y-m-d H:i:s'),
+                        'applicant_id' => $fnum_infos['applicant_id'],
+                        'fnum' => $fnum,
+                        'status' => 1
+                    );
+                } else {
+                    $data = array(
+                        'date_time' => date('Y-m-d H:i:s'),
+                        'applicant_id' => $fnum_infos['applicant_id'],
+                        'fnum'      => $fnum,
+                        'status'    => 0,
+                        'params'    => $doc->getElementsByTagName('faultstring')->item(0)->nodeValue
+                    );
+                }
 
             }
 
@@ -121,7 +141,7 @@ class SoapConnect {
             $query->clear()->insert($db->quoteName('#__emundus_apogee_status'))
                 ->columns($db->quoteName(array_keys($data)))
                 ->values(implode(',', $db->quote(array_values($data))));
-            
+
             $db->setQuery($query);
             $db->execute();
         }

@@ -85,6 +85,12 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+
+			<field name="log_date"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_DATE_DESC"
+				   label="PLG_APOGEE_REQUEST_DATE"
+			/>
 		</fieldset>
 
 		<fieldset name="plg-cron-emundusapogee-offset" label="PLG_APOGEE_REQUEST_SENDING_OFFSET">

@@ -39,9 +39,9 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
 
         /// first, get fnum info
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-        $_mFile = new EmundusModelFiles;
 
-        $fnum_infos = $_mFile->getFnumInfos($fnum);
+        $applicant_id = EmundusModelFiles::getFnumInfos($fnum)['applicant_id'];
+        $campaign_id = EmundusModelFiles::getFnumInfos($fnum)['campaign_id'];
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -57,7 +57,16 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
             $db->setQuery($query);
             $lastOpi = $db->loadResult();       // (1) row or (null)
 
-            # check FNUM exists
+            # check student id exists in table "jos_emundus_final_grade"
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('#__emundus_final_grade'))
+                ->where($db->quoteName('#__emundus_final_grade.student_id') . ' LIKE ' . $db->quote($applicant_id));
+
+            $db->setQuery($query);
+            $checkApplicant = $db->loadObject();
+
+            # check student fnum exists in table "jos_emundus_final_grade"
             $query->clear()
                 ->select('*')
                 ->from($db->quoteName('#__emundus_final_grade'))
@@ -78,12 +87,12 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
             }
 
             //////////////////////////
-            if(is_null($checkFnum)) {
-                /// fnum does not exist --> create new decision with OPI
+            if(is_null($checkApplicant)) {
+                /// applicant does not exist --> create new decision (++ new OPI if user does not already exist / otherwise, keep the user OPI)
                 $_rawData = array('time_date' => date('Y-m-d H:i:s'),
                     'user' => $user,
-                    'student_id' => $fnum_infos['applicant_id'],
-                    'campaign_id' => $fnum_infos['id'],
+                    'student_id' => $applicant_id,
+                    'campaign_id' => $campaign_id,
                     'fnum' => $fnum,
                     'code_opi' => $opi_full_code
                 );
@@ -92,12 +101,48 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
                     ->columns($db->quoteName(array_keys($_rawData)))
                     ->values(implode(',', $db->quote(array_values($_rawData))));
             } else {
-                /// fnum already exists, but code_opi does not exists (call another SQL query)
-                if (is_null($checkFnum->code_opi)) {
-                    $query->clear()
-                        ->update($db->quoteName('#__emundus_final_grade'))
-                        ->set($db->quoteName('code_opi') . ' = ' . $db->quote($opi_full_code))
-                        ->where($db->quoteName('#__emundus_final_grade.fnum') . ' LIKE ' . $db->quote($fnum));
+                /// get the applicant OPI
+                $query->clear()
+                    ->select('code_opi')
+                    ->from($db->quoteName('#__emundus_final_grade'))
+                    ->where($db->quoteName('#__emundus_final_grade.student_id') . ' LIKE ' . $db->quote($applicant_id))
+                    ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . "IS NOT NULL")
+                    ->andWhere($db->quoteName('#__emundus_final_grade.code_opi') . "<> ''");
+
+                # get the applicant OPI
+                $db->setQuery($query);
+                $applicant_opi = $db->loadResult();
+
+                if(!($checkApplicant->code_opi)) {
+                    if (!$checkFnum) {
+                        $_rawData = array('time_date' => date('Y-m-d H:i:s'),
+                            'user' => $user,
+                            'student_id' => $applicant_id,
+                            'campaign_id' => $campaign_id,
+                            'fnum' => $fnum,
+                            'code_opi' => $opi_full_code
+                        );
+                        $query->clear()->insert($db->quoteName('#__emundus_final_grade'))
+                            ->columns($db->quoteName(array_keys($_rawData)))
+                            ->values(implode(',', $db->quote(array_values($_rawData))));
+                    } else {
+                        $query->clear()->update($db->quoteName('#__emundus_final_grade'))->set($db->quoteName('code_opi') . ' = ' . $db->quote($opi_full_code))->where($db->quoteName('#__emundus_final_grade.fnum') . ' LIKE ' . $db->quote($fnum));
+                    }
+                } else {
+                    if (!$checkFnum) {
+                        $_rawData = array('time_date' => date('Y-m-d H:i:s'),
+                            'user' => $user,
+                            'student_id' => $applicant_id,
+                            'campaign_id' => $campaign_id,
+                            'fnum' => $fnum,
+                            'code_opi' => $applicant_opi
+                        );
+                        $query->clear()->insert($db->quoteName('#__emundus_final_grade'))
+                            ->columns($db->quoteName(array_keys($_rawData)))
+                            ->values(implode(',', $db->quote(array_values($_rawData))));
+                    } else {
+                        $query->clear()->update($db->quoteName('#__emundus_final_grade'))->set($db->quoteName('code_opi') . ' = ' . $db->quote($applicant_opi))->where($db->quoteName('#__emundus_final_grade.fnum') . ' LIKE ' . $db->quote($fnum));
+                    }
                 }
             }
 
