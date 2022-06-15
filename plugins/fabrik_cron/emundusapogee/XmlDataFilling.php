@@ -40,7 +40,7 @@ class XmlDataFilling {
 
     /// get data mapping description
     public function getDataMapping() {
-        return json_decode(file_get_contents(dirname(EMUNDUS_PATH_ABS) . DS . 'letters' . DS . $this->jsonDataFile));
+        return json_decode(file_get_contents(JPATH_SITE . $this->jsonDataFile));
     }
 
     /// fill tree if no subdata and no repeat data
