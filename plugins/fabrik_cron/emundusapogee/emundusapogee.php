@@ -97,68 +97,83 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # get specific date from logs section # by defaut : set CURRENT_DATE()
         $specific_date = $params->get('log_date', 'CURRENT_DATE()');
 
-        # if no status is defined, we get all
+        # if no status is defined, we get all [#sync status]
         if(!empty(trim($sending_status))) {
-            if(strpos($query, '{{status}}')) {
-                // replace the template syntax {{status}} by SQL query
-                $query = preg_replace('/{{status}}/', "jos_emundus_campaign_candidature.status IN (" . $sending_status . ")", $query);
-            }
-            else {
-                if (!strpos($query, 'WHERE') && !strpos($query, 'where')) {
+            if(strpos($query, strtolower('{{sync_status}}'))) {
+                // replace the template syntax {{sync_status}} by list of synchronize status
+                $query = preg_replace('/{{sync_status}}/', $sending_status, $query);
+            } else {
+                if (!strpos($query, strtoupper('where'))) {
                     $query .= " WHERE";
                 } else {
                     $query .= " AND";
                 }
-                $query .= " #__emundus_campaign_candidature.status IN (" . $sending_status . ")";
+                $query .= " jos_emundus_campaign_candidature.status IN (" . $sending_status . ")";
             }
         } else {
-            if(strpos($query, '{{status}}'))
-                $query = preg_replace('/{{status}}/', "", $query);
+            if(strpos($query, '{{sync_status}}'))
+                $query = preg_replace('/{{sync_status}}/', "", $query);
         }
 
-        # build logs string
+        # build #sync logs
         if (!empty(trim($sending_logs))) {
-            if(strpos($query, '{{logs_actions}}')) {
-                $query = preg_replace('/{{logs_actions}}/', "jos_emundus_logs.action_id IN (" . $sending_logs . ')', $query);
+            if(strpos($query, strtolower('{{sync_log_actions}}'))) {
+                $query = preg_replace('/{{sync_log_actions}}/', $sending_logs , $query);
             }
             else {
-                $query .= " AND #__emundus_logs.action_id IN (" . $sending_logs . ')';
+                if (!strpos($query, strtoupper('where'))) {
+                    $query .= " WHERE";
+                } else {
+                    $query .= " AND";
+                }
+                $query .= " jos_emundus_logs.action_id IN (" . $sending_logs . ')';
             }
         } else {
-            if(strpos($query, '{{logs_actions}}'))
-                $query = preg_replace('/{{logs_actions}}/', "", $query);
+            if(strpos($query, '{{sync_log_actions}}'))
+                $query = preg_replace('/{{sync_log_actions}}/', "", $query);
         }
 
-        # build actions string
+        # build #sync crud
         if(!empty(trim($sending_actions))) {
             $actions = "";
             foreach (explode(',', $sending_actions) as $action) {
                 $actions .= "'" . $action . "',";
             }
             $actions = substr($actions, 0, -1);
-            if(strpos($query, '{{logs_verbs}}')) {
-                $query = preg_replace('/{{logs_verbs}}/', "jos_emundus_logs.verb IN (" . $actions . ')', $query);
+
+            if(strpos($query, '{{sync_log_verbs}}')) {
+                //$query = preg_replace('/{{sync_log_verbs}}/', "jos_emundus_logs.verb IN (" . $actions . ')', $query);
+                $query = preg_replace('/{{sync_log_verbs}}/', $actions , $query);
             } else {
-                $query .= " AND #__emundus_logs.verb IN (" . $actions . ')';
+                if (!strpos($query, strtoupper('where'))) {
+                    $query .= " WHERE";
+                } else {
+                    $query .= " AND";
+                }
+                $query .= " jos_emundus_logs.verb IN (" . $actions . ')';
             }
         } else {
-            if(strpos($query, '{{logs_verbs}}'))
-                $query = preg_replace('/{{logs_verbs}}/', "", $query);
-
+            if(strpos($query, '{{sync_log_verbs}}'))
+                $query = preg_replace('/{{sync_log_verbs}}/', "", $query);
         }
 
-        # build sending date string
+        # build #sync date
         if($sending_date == "1") {
             $specific_date = strpos($specific_date,'CURRENT_DATE()') === 0 ? $specific_date : $db->quote($specific_date);
 
-            if(strpos($query, '{{logs_date}}')) {
-                $query = preg_replace('/{{logs_date}}/', "DATE (jos_emundus_logs.timestamp) = " . $specific_date, $query);
+            if(strpos($query, '{{sync_log_date}}')) {
+                $query = preg_replace('/{{sync_log_date}}/', $specific_date, $query);
             } else {
-                $query .= "DATE (jos_emundus_logs.timestamp) = " . $specific_date;
+                if (!strpos($query, strtoupper('where'))) {
+                    $query .= " WHERE";
+                } else {
+                    $query .= " AND";
+                }
+                $query .= " DATE(jos_emundus_logs.timestamp) = " . $specific_date;
             }
         } else {
-            if(strpos($query, '{{logs_date}}'))
-                $query = preg_replace('/{{logs_date}}/', "", $query);
+            if(strpos($query, '{{sync_log_date}}'))
+                $query = preg_replace('/{{sync_log_date}}/', "", $query);
         }
 
         # next, we request description (schema) - json file
@@ -175,8 +190,6 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
         $chunks = array_chunk($available_fnums, $offset_limit);
-
-//        echo '<pre>'; var_dump($available_fnums); echo '</pre>'; die;
 
         foreach($chunks as $chunked_fnums) {
             foreach ($chunked_fnums as $fnum) {
