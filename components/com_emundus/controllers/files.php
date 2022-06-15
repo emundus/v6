@@ -4520,14 +4520,20 @@ class EmundusControllerFiles extends JControllerLegacy
     {
         $jinput = JFactory::getApplication()->input;
         $format = $jinput->get->getString('format', 'json');
-        $fnum = $jinput->get->getString('fnum', '');
         $data = [];
         $status = false;
 
-        if (!empty($fnum)) {
-            $m_files = $this->getModel('Files');
-            $data = $m_files->checkIfSomeoneElseIsEditing($fnum);
-            $status = !empty($data);
+        $config = JComponentHelper::getParams('com_emundus');
+        $display_other_user_editing_same_file = $config->get('display_other_user_editing_same_file', 0);
+
+        if ($display_other_user_editing_same_file) {
+            $fnum = $jinput->get->getString('fnum', '');
+
+            if (!empty($fnum)) {
+                $m_files = $this->getModel('Files');
+                $data = $m_files->checkIfSomeoneElseIsEditing($fnum);
+                $status = !empty($data);
+            }
         }
 
         if ($format == 'json') {
