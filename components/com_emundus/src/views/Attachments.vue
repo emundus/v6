@@ -1238,6 +1238,7 @@ export default {
     width: 100vw;
     display: flex;
     padding: 0;
+    max-height: unset !important;
   }
 }
 </style>
