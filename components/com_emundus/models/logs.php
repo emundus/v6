@@ -337,4 +337,44 @@ class EmundusModelLogs extends JModelList {
 
 		return $details;
 	}
+
+    public function exportLogs($fnum)
+    {
+        $actions = $this->getActionsOnFnum($fnum);
+
+        if (!empty($actions)) {
+            $lines = ["Date", "User did", "Action", "to User", "Message"];
+            foreach ($actions as $action) {
+                $date = JHtml::_('date', $action->timestamp, JText::_('DATE_FORMAT_LC2'));
+                $lines[] = [
+                    $date,
+                    $action->user_id_from,
+                    $action->action_id,
+                    $action->user_id_to,
+                    $action->message
+                ];
+            }
+
+            // create csv file from each lines
+            $csv_file = '';
+            foreach ($lines as $line) {
+                $csv_file .= implode(',', $line) . "\n";
+            }
+
+            // create a csv file at tmp folder
+            $file = JPATH_ROOT . '/tmp/' . $fnum . '_logs.csv';
+
+            $fp = fopen($file, 'w');
+            if ($fp) {
+                fwrite($fp, $csv_file);
+                fclose($fp);
+
+                return $file;
+            } else {
+                JLog::add('Could not create csv file in model logs', JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return false;
+    }
 }

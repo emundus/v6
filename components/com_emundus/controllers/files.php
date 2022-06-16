@@ -4515,4 +4515,21 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((array('status' => $status, 'anonyme' => $anonyme, 'msg' => $msg)));
         exit;
     }
+
+    public function exportLogs()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', '');
+
+        if (!empty($fnum)) {
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            $m_logs = new EmundusModelLogs;
+            $res = $m_logs->exportLogs($fnum);
+        } else {
+            $res = array('status' => false, 'msg' => JText::_('INVALID_PARAMETERS'));
+        }
+
+        echo json_encode($res);
+        exit;
+    }
 }

@@ -33,8 +33,12 @@ JFactory::getSession()->set('application_layout', 'logs');
 
             </div>
             <div class="panel-body em-container-comment-body">
-                <?php
-                if (count($this->fileLogs) > 0) { ?>
+            <?php if (count($this->fileLogs) > 0) { ?>
+                <button class="em-w-33 em-secondary-button em-mt-16 em-mb-16"
+                    onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)"
+                >
+                    <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
+                </button>
                 <table class="table table-hover logs_table">
                     <caption class="hidden"><?= JText::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
                     <thead>
@@ -73,41 +77,62 @@ JFactory::getSession()->set('application_layout', 'logs');
 
 <script type="text/javascript">
     var offset = 100;
-$(document).on('click', '#show-more', function(e)
-    {
+    $(document).on('click', '#show-more', function(e) {
         if(e.handle === true) {
             e.handle = false;
             var fnum = "<?php echo $this->fnum; ?>";
 
             url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum';
-            $.ajax(
-                {
-                    type:'POST',
-                    url:url,
-                    dataType:'json',
-                    data:({fnum: fnum, offset: offset}),
-                    success: function(result) {
-                        if (result.status) {
-                            var tr = ''
-                            if (result.res.length < 100) {
-                                $('.show-more').hide();
-                            }
-                            for (let i = 0; i < result.res.length; i++) {
-                                tr = '<tr>' +
-                                    '<td>'+ result.res[i].date + '</td>' +
-                                    '<td>'+ result.res[i].firstname + ' ' + result.res[i].lastname + '</td>' +
-                                    '<td>'+ result.details[i].action_category + '</td>' +
-                                    '<td>'+ result.details[i].action_name + '</td>' +
-                                    '<td>'+ result.details[i].action_details + '</td>' +
-                                '</tr>'
-                                $('#logs_list').append(tr);
-                            }
-                            offset += 100;
+            $.ajax({
+                type:'POST',
+                url:url,
+                dataType:'json',
+                data:({fnum: fnum, offset: offset}),
+                success: function(result) {
+                    if (result.status) {
+                        var tr = ''
+                        if (result.res.length < 100) {
+                            $('.show-more').hide();
                         }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log(jqXHR.responseText);
+                        for (let i = 0; i < result.res.length; i++) {
+                            tr = '<tr>' +
+                                '<td>'+ result.res[i].date + '</td>' +
+                                '<td>'+ result.res[i].firstname + ' ' + result.res[i].lastname + '</td>' +
+                                '<td>'+ result.details[i].action_category + '</td>' +
+                                '<td>'+ result.details[i].action_name + '</td>' +
+                                '<td>'+ result.details[i].action_details + '</td>' +
+                                '</tr>'
+                            $('#logs_list').append(tr);
+                        }
+                        offset += 100;
                     }
-                });
-            }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+        }
     });
+
+    function exportLogs(fnum)
+    {
+        xhr = new XMLHttpRequest();
+        xhr.open('POST', 'index.php?option=com_emundus&controller=files&task=exportLogs', true);
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    const response = JSON.parse(xhr.response);
+                    console.log(response);
+                } else {
+                    alert('Error: ' + xhr.status);
+                }
+            }
+        };
+
+        let body = new FormData();
+        body.append('fnum', String(fnum));
+
+        xhr.send(body);
+    }
+</script>
