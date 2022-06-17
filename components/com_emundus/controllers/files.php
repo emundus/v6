@@ -4515,4 +4515,32 @@ class EmundusControllerFiles extends JControllerLegacy
         echo json_encode((array('status' => $status, 'anonyme' => $anonyme, 'msg' => $msg)));
         exit;
     }
+
+    public function checkIfSomeoneElseIsEditing()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $format = $jinput->get->getString('format', 'json');
+        $data = [];
+        $status = false;
+
+        $config = JComponentHelper::getParams('com_emundus');
+        $display_other_user_editing_same_file = $config->get('display_other_user_editing_same_file', 0);
+
+        if ($display_other_user_editing_same_file) {
+            $fnum = $jinput->get->getString('fnum', '');
+
+            if (!empty($fnum)) {
+                $m_files = $this->getModel('Files');
+                $data = $m_files->checkIfSomeoneElseIsEditing($fnum);
+                $status = !empty($data);
+            }
+        }
+
+        if ($format == 'json') {
+            echo json_encode((array('status' => $status, 'data' => $data)));
+            exit;
+        }
+
+        return !empty($data) ? $data : false;
+    }
 }
