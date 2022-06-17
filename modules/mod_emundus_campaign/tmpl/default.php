@@ -62,7 +62,9 @@ if ($locallang == "fr-FR") {
         <div class="rt-grid-1"></div>
     </div>
 
+    <?php if (!empty($mod_em_filter_from_fabrik_element)) : ?>
 
+    <?php endif; ?>
     <div class="tab-content">
         <?php if (in_array('current',$mod_em_campaign_list_tab)) :?>
         <div id="current" class="tab-pane fade in active">

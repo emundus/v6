@@ -55,6 +55,22 @@ $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
 // END PARAMS
 
+$mod_em_filter_from_fabrik_element = $params->get('mod_em_filter_from_fabrik_element');
+if (!empty($mod_em_filter_from_fabrik_elementd_)) {
+    $elements = explode(',', $mod_em_filter_from_fabrik_element);
+    $specific_filters = array();
+
+    foreach ($elements as $element) {
+        // TODO: find all informations needed to filter the campaigns from element id
+        // get element name
+        // get group
+        // get form
+        // get bd table from list
+        // get all different values from element
+
+        // get join with campaign table
+    }
+}
 
 $condition ='';
 
