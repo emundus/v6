@@ -157,7 +157,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
                 $query = preg_replace('/{{sync_log_verbs}}/', "", $query);
         }
 
-        # build #sync date
+        # build #sync crud
         if($sending_date == "1") {
             $specific_date = strpos($specific_date,'CURRENT_DATE()') === 0 ? $specific_date : $db->quote($specific_date);
 
@@ -199,7 +199,7 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
                 if(is_null($profile)) {
                     continue;
                 } else {
-                    $json_request_data = $params->get('xml_data_json') . '_' . $profile . '.json';
+                    $json_request_data = $params->get('xml_data_json') . $profile . '.json';
                 }
 
                 # now, we fill data into XML request (using data description file)
