@@ -174,10 +174,11 @@ class EmundusModelLogs extends JModelList {
 	 * @param int $action
 	 * @param string $crud
 	 * @param int $offset
+     * @param int $limit
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and an array of objects on success.
 	 */
-	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null) {
+	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!empty($user_from) && !is_numeric($user_from)) {
@@ -202,7 +203,7 @@ class EmundusModelLogs extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
 			->order($db->QuoteName('lg.id') . ' DESC')
-			->setLimit(100, $offset);
+			->setLimit($limit, $offset);
 
 		$db->setQuery($query);
 		$results = $db->loadObjectList();
@@ -340,28 +341,37 @@ class EmundusModelLogs extends JModelList {
 
     public function exportLogs($fnum)
     {
-        $actions = $this->getActionsOnFnum($fnum);
-
+        $actions = $this->getActionsOnFnum($fnum, null, null, null, null, 1000);
         if (!empty($actions)) {
-            $lines = ["Date", "User did", "Action", "to User", "Message"];
+            $lines = [
+                [
+                    JText::_('DATE'),
+                    JText::_('USER'),
+                    "to User",
+                    JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'),
+                    JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS')
+                ]
+            ];
             foreach ($actions as $action) {
-                $date = JHtml::_('date', $action->timestamp, JText::_('DATE_FORMAT_LC2'));
+                $details = $this->setActionDetails($action->action_id, $action->verb, $action->params);
+                $action_details = strip_tags($details['action_details']);
+                $action_details = str_replace("\n", "", $action_details);
+                $action_details = str_replace("arrow_forward", " -> ", $action_details);
+
                 $lines[] = [
-                    $date,
-                    $action->user_id_from,
-                    $action->action_id,
-                    $action->user_id_to,
-                    $action->message
+                    JHtml::_('date', $action->timestamp, JText::_('DATE_FORMAT_LC2')),
+                    $action->firstname . ' ' . $action->lastname,
+                    $fnum,
+                    JText::_($action->message),
+                    trim($action_details)
                 ];
             }
 
-            // create csv file from each lines
             $csv_file = '';
             foreach ($lines as $line) {
-                $csv_file .= implode(',', $line) . "\n";
+                $csv_file .= implode(';', $line) . "\n";
             }
 
-            // create a csv file at tmp folder
             $file = JPATH_ROOT . '/tmp/' . $fnum . '_logs.csv';
 
             $fp = fopen($file, 'w');
@@ -369,7 +379,7 @@ class EmundusModelLogs extends JModelList {
                 fwrite($fp, $csv_file);
                 fclose($fp);
 
-                return $file;
+                return JURI::base() . '/tmp/' . $fnum . '_logs.csv';
             } else {
                 JLog::add('Could not create csv file in model logs', JLog::ERROR, 'com_emundus');
             }

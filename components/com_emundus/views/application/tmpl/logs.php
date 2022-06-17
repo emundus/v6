@@ -34,11 +34,11 @@ JFactory::getSession()->set('application_layout', 'logs');
             </div>
             <div class="panel-body em-container-comment-body">
             <?php if (count($this->fileLogs) > 0) { ?>
-                <button class="em-w-33 em-secondary-button em-mt-16 em-mb-16"
-                    onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)"
-                >
-                    <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
-                </button>
+                <div id="export-logs" class="em-flex-row">
+                    <button class="em-w-33 em-secondary-button em-mt-16 em-mb-16 em-ml-8 em-mr-8" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
+                        <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
+                    </button>
+                </div>
                 <table class="table table-hover logs_table">
                     <caption class="hidden"><?= JText::_('COM_EMUNDUS_LOGS_CAPTION'); ?></caption>
                     <thead>
@@ -123,7 +123,28 @@ JFactory::getSession()->set('application_layout', 'logs');
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
                     const response = JSON.parse(xhr.response);
-                    console.log(response);
+
+                    if (response) {
+                        const exportLogsWrapper = document.getElementById('export-logs');
+                        const old_file_link = document.getElementById('file-link');
+
+                        if (old_file_link) {
+                            old_file_link.remove();
+                        }
+
+                        let file_link = document.createElement('a');
+                        file_link.id = 'file-link';
+                        file_link.href = response;
+                        file_link.download = fnum + '_logs.csv';
+                        file_link.innerText = Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD');
+                        exportLogsWrapper.appendChild(file_link);
+                    } else {
+                        Swal.fire({
+                            title: Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR'),
+                            type: 'error',
+                            confirmButtonText: Joomla.JText._('OK')
+                        });
+                    }
                 } else {
                     alert('Error: ' + xhr.status);
                 }

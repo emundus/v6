@@ -476,6 +476,10 @@ JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
 
+// LOGS
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD');
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR');
+
 // ONBOARD
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
