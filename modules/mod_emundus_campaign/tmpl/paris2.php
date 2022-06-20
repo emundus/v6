@@ -93,8 +93,8 @@ if (!empty($formation_type_input)) {
 <?= $mod_em_campaign_intro; ?>
 
 <form action="index.php" method="post" id="search_program">
-    <div class="em-w-100">
-        <select id="select_formation_types" name="formation_types">
+    <div class="em-w-100 em-flex-row" style="justify-content:end;">
+        <select id="select_formation_types" name="formation_types" style="width:275px;">
             <option value="">-- <?= JText::_('MOD_EMUNDUS_CAMPAIGN_SELECT_FORMATION_TYPE'); ?> --</option>
             <?php
             foreach ($formation_types as $formation_type) {
