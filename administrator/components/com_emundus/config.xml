@@ -26,6 +26,12 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="alert_editing_time" type="number" label="DISPLAY_OTHER_USER_EDITING_TIME" default="2"></field>
+		<field name="filter_order" type="text" label="COM_EMUNDUS_FILES_FILTER_ORDER" default="c.id"></field>
+		<field name="filter_order_dir" type="list" label="COM_EMUNDUS_FILES_FILTER_ORDER_DIR" default="desc">
+			<option value="asc">COM_EMUNDUS_ASCENDING</option>
+			<option value="desc">COM_EMUNDUS_DESCENDING</option>
+		</field>
+
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">

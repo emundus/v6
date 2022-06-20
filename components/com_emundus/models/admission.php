@@ -59,17 +59,17 @@ class EmundusModelAdmission extends JModelList
         $em_blocks_names = explode(',', $menu_params->get('em_blocks_names'));
         $session = JFactory::getSession();
 
-        if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id') {
+        if (!$session->has('filter_order') || $session->get('filter_order') == 'c.id' || $session->get('filter_order') == 'id') {
             if (in_array('overall', $em_blocks_names)) {
-
                 $session->set('filter_order', 'overall');
                 $session->set('filter_order_Dir', 'desc');
-
             } else {
+                $params = JComponentHelper::getParams('com_emundus');
+                $filter_order = $params->get('filter_order', 'c.id');
+                $filter_order_dir = $params->get('filter_order_dir', 'desc');
 
-                $session->set('filter_order', 'c.id');
-                $session->set('filter_order_Dir', 'desc');
-
+                $session->set('filter_order', $filter_order);
+                $session->set('filter_order_Dir', $filter_order_dir);
             }
         }
 
