@@ -40,8 +40,9 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
         /// first, get fnum info
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
-        $applicant_id = EmundusModelFiles::getFnumInfos($fnum)['applicant_id'];
-        $campaign_id = EmundusModelFiles::getFnumInfos($fnum)['campaign_id'];
+        $fnum_infos = EmundusModelFiles::getFnumInfos($fnum);
+        $applicant_id = !empty($fnum_infos['applicant_id']) ? $fnum_infos['applicant_id'] : 0;
+        $campaign_id = !empty($fnum_infos['campaign_id']) ? $fnum_infos['campaign_id'] : 0;
 
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
