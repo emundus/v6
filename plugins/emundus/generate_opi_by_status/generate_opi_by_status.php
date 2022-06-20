@@ -126,7 +126,7 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
                             ->columns($db->quoteName(array_keys($_rawData)))
                             ->values(implode(',', $db->quote(array_values($_rawData))));
                     } else {
-                        $query->clear()->update($db->quoteName('#__emundus_final_grade'))->set($db->quoteName('code_opi') . ' = ' . $db->quote($opi_full_code))->where($db->quoteName('#__emundus_final_grade.fnum') . ' LIKE ' . $db->quote($fnum));
+                        $query->clear()->update($db->quoteName('#__emundus_final_grade'))->set($db->quoteName('code_opi') . ' = ' . $db->quote($applicant_opi))->where($db->quoteName('#__emundus_final_grade.fnum') . ' LIKE ' . $db->quote($fnum));
                     }
                 } else {
                     if (!$checkFnum) {
