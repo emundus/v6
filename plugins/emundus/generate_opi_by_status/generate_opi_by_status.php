@@ -114,6 +114,10 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
                 $db->setQuery($query);
                 $applicant_opi = $db->loadResult();
 
+                if(empty($applicant_opi)) {
+                    $applicant_opi = $opi_full_code;
+                }
+
                 if(!($checkApplicant->code_opi)) {
                     if (!$checkFnum) {
                         $_rawData = array('time_date' => date('Y-m-d H:i:s'),
@@ -121,7 +125,7 @@ class PlgEmundusGenerate_opi_by_status extends JPlugin {
                             'student_id' => $applicant_id,
                             'campaign_id' => $campaign_id,
                             'fnum' => $fnum,
-                            'code_opi' => $opi_full_code
+                            'code_opi' => $applicant_opi
                         );
                         $query->clear()->insert($db->quoteName('#__emundus_final_grade'))
                             ->columns($db->quoteName(array_keys($_rawData)))
