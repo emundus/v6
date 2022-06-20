@@ -83,16 +83,8 @@ class SoapConnect {
             $doc->loadXML($response);
             $faultString = $doc->getElementsByTagName('faultstring');
 
-//            echo '<pre>'; var_dump($faultString); echo '</pre>'; die;
-
-            if(false === curl_exec($curl_obj) || $info !== 200) {
-                /* $doc = new DOMDocument();
-                $doc->loadXML($response); */
-                $response_message = "";
-
-                if($faultString->length > 0) {
-                    $response_message = $doc->getElementsByTagName('faultstring')->item(0)->nodeValue;
-                }
+            if ($response === false || $info !== 200) {
+                $response_message = $faultString->length > 0 ? $doc->getElementsByTagName('faultstring')->item(0)->nodeValue : "";
 
                 /// insert the status FAILED to table "jos_emundus_apogee_status"
                 $data = array(
