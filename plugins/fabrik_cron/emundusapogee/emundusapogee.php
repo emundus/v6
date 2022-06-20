@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 require_once "SoapConnect.php";
 require_once "XmlSchema.php";
 require_once "XmlDataFilling.php";
@@ -93,43 +94,90 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         $offset_limit = $params->get('offset_to_send_request', 20);              # set offset max 20 by default
         $offset_interval = $params->get('time_offset_to_send_request', 150);     # set offset interval 150 by default (2,5 min)
 
+        # get specific date from logs section # by defaut : set CURRENT_DATE()
+        $specific_date = $params->get('log_date', 'CURRENT_DATE()');
 
-        # if no status is defined, we get all
+        # if no status is defined, we get all [#sync status]
         if(!empty(trim($sending_status))) {
-            if (!strpos($query, 'WHERE') && !strpos($query, 'where')) {
-                $query .= " WHERE";
+            if(strpos($query, strtolower('{{sync_status}}'))) {
+                // replace the template syntax {{sync_status}} by list of synchronize status
+                $query = preg_replace('/{{sync_status}}/', $sending_status, $query);
             } else {
-                $query .= " AND";
+                if (!strpos($query, strtoupper('where'))) {
+                    $query .= " WHERE";
+                } else {
+                    $query .= " AND";
+                }
+                $query .= " jos_emundus_campaign_candidature.status IN (" . $sending_status . ")";
             }
-
-            $query .= " #__emundus_campaign_candidature.status IN (" . $sending_status . ")";
+        } else {
+            if(strpos($query, '{{sync_status}}'))
+                $query = preg_replace('/{{sync_status}}/', "", $query);
         }
 
-        # build logs string
+        # build #sync logs
         if (!empty(trim($sending_logs))) {
-            $query .= " AND #__emundus_logs.action_id IN (" . $sending_logs . ')';
+            if(strpos($query, strtolower('{{sync_log_actions}}'))) {
+                $query = preg_replace('/{{sync_log_actions}}/', $sending_logs , $query);
+            }
+            else {
+                if (!strpos($query, strtoupper('where'))) {
+                    $query .= " WHERE";
+                } else {
+                    $query .= " AND";
+                }
+                $query .= " jos_emundus_logs.action_id IN (" . $sending_logs . ')';
+            }
+        } else {
+            if(strpos($query, '{{sync_log_actions}}'))
+                $query = preg_replace('/{{sync_log_actions}}/', "", $query);
         }
 
-        # build actions string
+        # build #sync crud
         if(!empty(trim($sending_actions))) {
             $actions = "";
             foreach (explode(',', $sending_actions) as $action) {
                 $actions .= "'" . $action . "',";
             }
             $actions = substr($actions, 0, -1);
-            $query .= " AND #__emundus_logs.verb IN (" . $actions . ')';
+
+            if(strpos($query, '{{sync_log_verbs}}')) {
+                //$query = preg_replace('/{{sync_log_verbs}}/', "jos_emundus_logs.verb IN (" . $actions . ')', $query);
+                $query = preg_replace('/{{sync_log_verbs}}/', $actions , $query);
+            } else {
+                if (!strpos($query, strtoupper('where'))) {
+                    $query .= " WHERE";
+                } else {
+                    $query .= " AND";
+                }
+                $query .= " jos_emundus_logs.verb IN (" . $actions . ')';
+            }
+        } else {
+            if(strpos($query, '{{sync_log_verbs}}'))
+                $query = preg_replace('/{{sync_log_verbs}}/', "", $query);
         }
 
-        # build sending date string
+        # build #sync crud
         if($sending_date == "1") {
-            $query .= " AND DATE (#__emundus_logs.timestamp) = CURRENT_DATE()";
+            $specific_date = strpos($specific_date,'CURRENT_DATE()') === 0 ? $specific_date : $db->quote($specific_date);
+
+            if(strpos($query, '{{sync_log_date}}')) {
+                $query = preg_replace('/{{sync_log_date}}/', $specific_date, $query);
+            } else {
+                if (!strpos($query, strtoupper('where'))) {
+                    $query .= " WHERE";
+                } else {
+                    $query .= " AND";
+                }
+                $query .= " DATE(jos_emundus_logs.timestamp) = " . $specific_date;
+            }
+        } else {
+            if(strpos($query, '{{sync_log_date}}'))
+                $query = preg_replace('/{{sync_log_date}}/', "", $query);
         }
 
         # next, we request description (schema) - json file
         $json_request_schema = $params->get('xml_description_json');
-
-        # and, data description (data mapping schema) - json file
-        $json_request_data = $params->get('xml_data_json');
 
         # now, it's time to build XML request
         $xmlSchemaObj = new XmlSchema($json_request_schema);
@@ -139,15 +187,29 @@ class PlgFabrik_Cronemundusapogee extends PlgFabrik_Cron {
         # $_xmlCustomSchema_schema = new ApogeeCustom($_xmlSchemaRequest);
         # $_xmlCustomSchema_schema->buildCustomSchema();
 
-        # now, we fill data into XML request (using data description file)
-        $xmlDataObj = new XmlDataFilling($json_request_data);
-
         $db->setQuery($query);
         $available_fnums = $db->loadColumn();
         $chunks = array_chunk($available_fnums, $offset_limit);
 
         foreach($chunks as $chunked_fnums) {
             foreach ($chunked_fnums as $fnum) {
+                $profile = (EmundusModelFiles::getFnumInfos($fnum))['profile_id'];
+
+                # and, data description (data mapping schema) - json file
+                if(is_null($profile)) {
+                    continue;
+                } else {
+                    $json_request_data = $params->get('xml_data_json') . $profile . '.json';
+                }
+
+                # now, we fill data into XML request (using data description file)
+                $xmlDataObj = new XmlDataFilling($json_request_data);
+
+                if(!$xmlDataObj->getDataMapping()) {
+                    JLog::add('[emundusApogee] Json data mapping file not found: ' . $json_request_data, JLog::ERROR, 'com_emundus');
+                    continue;
+                }
+
                 # filling data for each fnum
                 $xmlDataRequest = $xmlDataObj->fillData($xmlSchemaRequest, $xmlSchemaObj->getSchemaDescription(), $fnum);
 
