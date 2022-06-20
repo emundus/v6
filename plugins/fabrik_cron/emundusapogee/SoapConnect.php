@@ -83,7 +83,7 @@ class SoapConnect {
             $doc->loadXML($response);
             $faultString = $doc->getElementsByTagName('faultstring');
 
-            if ($response === false || $info !== 200) {
+            if ($response === false || !in_array($info, array(200,201,202,203,204,205,206,207,208,226))) {
                 $response_message = $faultString->length > 0 ? $doc->getElementsByTagName('faultstring')->item(0)->nodeValue : "";
 
                 /// insert the status FAILED to table "jos_emundus_apogee_status"
