@@ -388,6 +388,12 @@
 		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
 		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
 
+		<field name="spacer9" type="spacer" hr="true"/>
+		<field name="saml_integration" type="note" label="COM_EMUNDUS_SAML_INTEGRATION"/>
+		<fieldset label="COM_EMUNDUS_SAML_INTEGRATION">
+			<field name="saml_default_profile" label="COM_EMUNDUS_SAML_INTEGRATION_DEFAULT_PROFILE" type="text"></field>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"
