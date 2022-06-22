@@ -43,7 +43,7 @@ class EmundusModelLogs extends JModelList {
 	 */
 	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
         if (empty($user_from)) {
-            JLog::add('empty user_from in EmundusModelLogs::log. User_id_from can not be null', JLog::WARN, 'com_emundus');
+            JLog::add('empty user_from in EmundusModelLogs::log. User_id_from can not be null', JLog::WARNING, 'com_emundus');
             return false;
         }
 
