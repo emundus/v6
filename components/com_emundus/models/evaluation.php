@@ -1496,7 +1496,7 @@ class EmundusModelEvaluation extends JModelList {
         if (empty($current_fnum)) {
             $query .= ' WHERE c.status > 0 ';
         } else {
-            $query .= ' WHERE c.fnum like '.$current_fnum;
+            $query .= ' WHERE c.fnum like '. $dbo->quote($current_fnum) . ' ';
         }
 
         $query .= ' AND esc.published = 1 ';
