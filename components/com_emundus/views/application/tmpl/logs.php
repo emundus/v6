@@ -125,19 +125,12 @@ JFactory::getSession()->set('application_layout', 'logs');
                     const response = JSON.parse(xhr.response);
 
                     if (response) {
-                        const exportLogsWrapper = document.getElementById('export-logs');
-                        const old_file_link = document.getElementById('file-link');
-
-                        if (old_file_link) {
-                            old_file_link.remove();
-                        }
-
                         let file_link = document.createElement('a');
                         file_link.id = 'file-link';
                         file_link.href = response;
                         file_link.download = fnum + '_logs.csv';
                         file_link.innerText = Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD');
-                        exportLogsWrapper.appendChild(file_link);
+                        file_link.click();
                     } else {
                         Swal.fire({
                             title: Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR'),
