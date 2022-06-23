@@ -40,7 +40,7 @@ class XmlDataFilling {
 
     /// get data mapping description
     public function getDataMapping() {
-        return json_decode(file_get_contents(dirname(EMUNDUS_PATH_ABS) . DS . 'letters' . DS . $this->jsonDataFile));
+        return json_decode(file_get_contents(JPATH_SITE . $this->jsonDataFile));
     }
 
     /// fill tree if no subdata and no repeat data
@@ -53,10 +53,10 @@ class XmlDataFilling {
                     if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
                         $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                     } else {
-                        $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                        $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql, false,$fnum);
                     }
                 } else {
-                    $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                    $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql, false,$fnum);
                 }
             }
         }
@@ -66,22 +66,29 @@ class XmlDataFilling {
     public function fillTreeOnlySub($xmlDocument,$pr_name,$js_key,$jsonDataBody,$jsonDescriptionBody, $fnum) {
         $inSubData = in_array($pr_name, array_keys((array)$jsonDescriptionBody->subData));
 
-        if ($inSubData) {
-            // get all subProps
+        if($inSubData) {
             $_subProps = $jsonDescriptionBody->subData->$pr_name;             /// array
             foreach ($_subProps as $_sp) {
-                if(!is_null($jsonDataBody->$js_key->$pr_name->$_sp->default)) {
-                    if (is_null($jsonDataBody->$js_key->$pr_name->$_sp->sql) or ($jsonDataBody->$js_key->$pr_name->$_sp->sql === "")) {
-                        $_sp->nodeValue = $jsonDataBody->$js_key->$pr_name->$_sp->default;
-                    } else {
-                        $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
+                $childNode = $xmlDocument->getElementsByTagName($_sp);
+
+                foreach ($childNode as $_cn) {
+
+                    if ($_cn->parentNode->nodeName === $pr_name) {
+                        $tagName = $_cn->tagName;
+
+                        if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
+                            if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
+                                $_cn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
+                            } else {
+                                $this->buildSql($xmlDocument, $_cn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql, true,$fnum);
+                            }
+                        } else {
+                            $this->buildSql($xmlDocument, $_cn, null,  $jsonDataBody->$js_key->$pr_name->$_sp->sql, false,$fnum);
+                        }
                     }
-                } else {
-                    $this->buildSql($xmlDocument, null, $_sp, $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
                 }
             }
-        }
-        else {
+        } else {
             $childNode = $xmlDocument->getElementsByTagName($pr_name);
 
             foreach($childNode as $_ch) {
@@ -90,10 +97,10 @@ class XmlDataFilling {
                         if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
                             $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                         } else {
-                            $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                            $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql, true,$fnum);
                         }
                     } else {
-                        $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                        $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false,fnum);
                     }
                 }
             }
@@ -102,6 +109,9 @@ class XmlDataFilling {
 
     /// fill tree with repeat data but no subdata
     public function fillTreeOnlyRepeat($xmlDocument,$pr_name,$js_key,$jsonDataBody,$jsonDescriptionBody, $rootNode, $propertyName, $fnum) {
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.apogee.php'], JLog::ALL, ['com_emundus']);
+
         $inRepeatData = in_array($pr_name, array_keys((array)$jsonDescriptionBody->repeat));            /// bool
         $repeat_times = $jsonDescriptionBody->repeat->$pr_name->occurrence;                           /// int
 
@@ -129,10 +139,10 @@ class XmlDataFilling {
                                             if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
                                                 $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                             } else {
-                                                $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                                                $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql, false,$fnum);
                                             }
                                         } else {
-                                            $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                                            $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql, false,$fnum);
                                         }
                                     }
                                 }
@@ -161,10 +171,10 @@ class XmlDataFilling {
                                             if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
                                                 $_scn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
                                             } else {
-                                                $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
+                                                $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql, true,$fnum);
                                             }
                                         } else {
-                                            $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
+                                            $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql, true,$fnum);
                                         }
                                     }
                                 }
@@ -184,21 +194,29 @@ class XmlDataFilling {
             foreach ($pr_names as $p_key => $p_val) {
                 /// check if SQL query exists
                 if(!is_null($p_val->sql) && ($p_val->sql) !== "") {
-                    $p_sql = $p_val->sql . $fnum;
+                    $p_sql = $p_val->sql;
+                    // find template syntaxe {{fnum}}
+                    if(strpos($p_sql,strtolower('{{fnum}}'))) {
+                        // replace {{fnum}} by fnum
+                        $p_sql = preg_replace('/{{fnum}}/', $this->db->quote($fnum), $p_sql);
+                    }
 
                     // run SQL query
                     $this->db->setQuery($p_sql);
 
                     /// if CONCAT is in $p_sql, use loadResult(). Otherwise, use loadColumn()
-                    if(strpos($p_sql, 'CONCAT') or strpos($p_sql, 'concat')) {
-                        $result = $this->db->loadResult();      /// may be many columns
-                        // stock value into $sql_array
-                        $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
-                    } else {
-                        $result = $this->db->loadColumn();      /// just one column, but many rows
-                        // stock value into $sql_array
-//                                                $sql_array[$p_key] = implode('>>> SPLIT <<<', $result);
-                        $sql_array[$p_key] = $result;
+                    try {
+                        if (strpos($p_sql, strtolower('CONCAT'))) {
+                            $result = $this->db->loadResult();      /// may be many columns
+                            // stock value into $sql_array
+                            $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                        } else {
+                            $result = $this->db->loadColumn();      /// just one column, but many rows
+                            // stock value into $sql_array
+                            $sql_array[$p_key] = $result;
+                        }
+                    } catch(Exception $e) {
+                        JLog::add('[emundusApogee] [repeat case] Cannot run SQL query : ' . $p_sql . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                     }
                 }
                 else {
@@ -232,6 +250,9 @@ class XmlDataFilling {
 
     /// fill tree with subdata and repeat data
     public function fillTreeWithSubAndRepeat($xmlDocument,$pr_name, $js_key, $jsonDataBody, $jsonDescriptionBody, $rootNode, $propertyName, $fnum) {
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.apogee.php'], JLog::ALL, ['com_emundus']);
+
         $inSubData = in_array($pr_name, array_keys((array)$jsonDescriptionBody->subData));
         $inRepeatData = in_array($pr_name, array_keys((array)$jsonDescriptionBody->repeat));
 
@@ -260,10 +281,10 @@ class XmlDataFilling {
                                                 if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
                                                     $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                                 } else {
-                                                    $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                                                    $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql . $fnum . ')', false);
                                                 }
                                             } else {
-                                                $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                                                $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql . $fnum . ')', false);
                                             }
                                         }
                                     }
@@ -292,10 +313,10 @@ class XmlDataFilling {
                                                 if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
                                                     $_scn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
                                                 } else {
-                                                    $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, false);
+                                                    $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql, false,$fnum);
                                                 }
                                             } else {
-                                                $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, false);
+                                                $this->buildSql($xmlDocument, $_scn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql, false,$fnum);
                                             }
                                         }
                                     }
@@ -314,21 +335,28 @@ class XmlDataFilling {
                 foreach ($pr_names as $p_key => $p_val) {
                     /// check if SQL query exists
                     if(!is_null($p_val->sql) && ($p_val->sql) !== "") {
-                        $p_sql = $p_val->sql . $fnum;
+                        $p_sql = $p_val->sql;
+
+                        if(strpos($p_sql,strtolower('{{fnum}}'))) {
+                            // replace {{fnum}} by fnum
+                            $p_sql = preg_replace('/{{fnum}}/', $this->db->quote($fnum), $p_sql);
+                        }
 
                         // run SQL query
                         $this->db->setQuery($p_sql);
-
-                        /// if CONCAT is in $p_sql, use loadResult(). Otherwise, use loadColumn()
-                        if(strpos($p_sql, 'CONCAT') or strpos($p_sql, 'concat')) {
-                            $result = $this->db->loadResult();      /// may be many columns
-                            // stock value into $sql_array
-                            $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
-                        } else {
-                            $result = $this->db->loadColumn();      /// just one column, but many rows
-                            // stock value into $sql_array
-//                                                $sql_array[$p_key] = implode('>>> SPLIT <<<', $result);
-                            $sql_array[$p_key] = $result;
+                        try {
+                            /// if CONCAT is in $p_sql, use loadResult(). Otherwise, use loadColumn()
+                            if (strpos($p_sql, 'CONCAT') or strpos($p_sql, 'concat')) {
+                                $result = $this->db->loadResult();      /// may be many columns
+                                // stock value into $sql_array
+                                $sql_array[$p_key] = explode('>>> SPLIT <<<', $result);
+                            } else {
+                                $result = $this->db->loadColumn();      /// just one column, but many rows
+                                // stock value into $sql_array
+                                $sql_array[$p_key] = $result;
+                            }
+                        } catch(Exception $e) {
+                            JLog::add('[emundusApogee] [repeat case] Cannot run SQL query : ' . $p_sql . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
                         }
                     }
                     else {
@@ -380,10 +408,10 @@ class XmlDataFilling {
                                 if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
                                     $_cn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
                                 } else {
-                                    $this->buildSql($xmlDocument, $_cn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql . $fnum, true);
+                                    $this->buildSql($xmlDocument, $_cn, null, $jsonDataBody->$js_key->$pr_name->$tagName->sql, true,$fnum);
                                 }
                             } else {
-                                $this->buildSql($xmlDocument, $_cn, null,  $jsonDataBody->$js_key->$pr_name->$_sp->sql . $fnum, false);
+                                $this->buildSql($xmlDocument, $_cn, null,  $jsonDataBody->$js_key->$pr_name->$_sp->sql, false,$fnum);
                             }
                         }
                     }
@@ -397,10 +425,10 @@ class XmlDataFilling {
                             if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
                                 $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                             } else {
-                                $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, true);
+                                $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql, true,$fnum);
                             }
                         } else {
-                            $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql . $fnum, false);
+                            $this->buildSql($xmlDocument, $_ch, null, $jsonDataBody->$js_key->$pr_name->sql, false,$fnum);
                         }
                     }
                 }
@@ -458,26 +486,43 @@ class XmlDataFilling {
     }
 
     //// run SQL query and assign to node
-    public function buildSql($xmlTree, $property=null, $domNode=null, $sql, $isRepeat=false) : void {
-        $this->db->setQuery($sql);
-        $result = $this->db->loadResult();
+    public function buildSql($xmlTree, $property=null, $domNode=null, $sql, $isRepeat=false,$fnum) : void {
+        # write log file
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.apogee.php'], JLog::ALL, ['com_emundus']);
 
-        if(!is_null($result)) {
-            if ($isRepeat) {
-                $result = reset(explode('>>> SPLIT <<<', $result));
+        try {
+            // find template syntaxe {{fnum}} into SQL query string
+
+            if(strpos($sql,strtolower('{{fnum}}')) > 0) {
+                // replace {{fnum}} by fnum
+                $sql = preg_replace('/{{fnum}}/', "'" . $fnum . "'", $sql);
             }
 
-            if ($domNode !== null) {
-                /// get node from $domNode
-                $_node = $xmlTree->getElementsByTagName($domNode)->item(0);
-                // bind value to node
-                $_node->nodeValue = $result;
+            $this->db->setQuery($sql);
+            $result = $this->db->loadResult();
+
+            if (!is_null($result)) {
+                if ($isRepeat) {
+                    $result = reset(explode('>>> SPLIT <<<', $result));
+                }
+
+                if ($domNode !== null) {
+                    /// get node from $domNode
+                    $_node = $xmlTree->getElementsByTagName($domNode)->item(0);
+                    // bind value to node
+                    $_node->nodeValue = $result;
+                }
+            } else {
+                $property->nodeValue = '';
             }
-        } else {
-            $property->nodeValue = '';
+
+            if ($property !== null) {
+                $property->nodeValue = $result;
+            }
+        } catch(Exception $e) {
+            JLog::add('[emundusApogee] Cannot run SQL query : ' . $sql . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
-
-        if($property !== null) { $property->nodeValue = $result; }
     }
 
     public function pruneXML($xml) {

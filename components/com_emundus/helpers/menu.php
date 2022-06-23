@@ -16,12 +16,12 @@ defined('_JEXEC') or die('Restricted access');
 
 class EmundusHelperMenu {
 
-	function buildMenuQuery($profile, $formids=null, $checklevel=true) {
+	function buildMenuQuery($profile, $formids = null, $checklevel=true) {
 	    if (empty($profile)) {
 	        return false;
         }
 		$user   = JFactory::getUser();
-		if($checklevel) {
+		if ($checklevel) {
 			$levels = JAccess::getAuthorisedViewLevels($user->id);
 			$and_level =  'AND menu.access IN ('.implode(',', $levels).')';
 		}
@@ -33,16 +33,17 @@ class EmundusHelperMenu {
 		INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
 		WHERE (menu.published = 0 OR menu.published = 1) AND menu.parent_id !=1 '.$and_level;
-		if(!empty($formids) && $formids[0] != "") {
-			$query .= ' AND fbtables.id IN(' . implode(',', $formids) . ')';
-		}
+
+		/*if (!empty($formids) && $formids[0] != "") {
+			$query .= ' AND fbtables.form_id IN(' . implode(',', $formids) . ')';
+		}*/
 		$query .= ' ORDER BY menu.lft';
 
 		try {
-            $_db->setQuery( $query );
-	        return $_db->loadObjectList();
+			$_db->setQuery( $query );
+			return $_db->loadObjectList();
 	    } catch(Exception $e) {
-	        throw new $e->getMessage();
+			throw new $e->getMessage();
 	    }
 	}
 
@@ -57,8 +58,9 @@ class EmundusHelperMenu {
 		INNER JOIN #__fabrik_forms AS fbforms ON fbforms.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 		LEFT JOIN #__fabrik_lists AS fbtables ON fbtables.form_id = fbforms.id
 		WHERE menu.published = 1 AND menu.parent_id != 1 AND menu.access IN ('.implode(',', $levels).')';
-		if (!empty($formids) && $formids[0] != "")
+		if (!empty($formids) && $formids[0] != "") {
 			$query .= ' AND fbtables.form_id IN('.implode(',',$formids).')';
+		}
 		$query .= ' ORDER BY menu.lft';
 
 		try {

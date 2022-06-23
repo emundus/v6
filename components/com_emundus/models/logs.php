@@ -42,6 +42,10 @@ class EmundusModelLogs extends JModelList {
 	 * @since 3.8.8
 	 */
 	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
+        if (empty($user_from)) {
+            JLog::add('empty user_from in EmundusModelLogs::log. User_id_from can not be null', JLog::WARNING, 'com_emundus');
+            return false;
+        }
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
@@ -63,7 +67,6 @@ class EmundusModelLogs extends JModelList {
 					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params)];
 
 					try {
-
                         $query->insert($db->quoteName('#__emundus_logs'))
                             ->columns($db->quoteName($columns))
                             ->values(implode(',', $values));

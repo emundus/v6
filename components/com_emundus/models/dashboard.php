@@ -176,12 +176,16 @@ class EmundusModelDashboard extends JModelList
                     }
                 }
 
-                $query->clear()
-                    ->select('id,name,label,params,size,size_small,class,type,chart_type,article_id,params')
-                    ->from($this->_db->quoteName('#__emundus_widgets'))
-                    ->where($this->_db->quoteName('name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')');
-                $this->_db->setQuery($query);
-                $widgets = $this->_db->loadObjectList();
+                if (!empty($widgets)) {
+                    $query->clear()
+                        ->select('id,name,label,params,size,size_small,class,type,chart_type,article_id,params')
+                        ->from($this->_db->quoteName('#__emundus_widgets'))
+                        ->where($this->_db->quoteName('name') . ' IN (' . implode(',', $this->_db->quote($widgets)) . ')');
+                    $this->_db->setQuery($query);
+
+
+                    $widgets = $this->_db->loadObjectList();
+                }
             }
 
             if (!empty($widgets)) {

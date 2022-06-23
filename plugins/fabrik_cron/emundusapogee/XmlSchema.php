@@ -69,7 +69,7 @@ class XmlSchema implements AbstractXmlInterface {
 
     # JSON decode request schema description
     public function getSchemaDescription() {
-        return json_decode(file_get_contents(dirname(EMUNDUS_PATH_ABS) . DS . 'letters' . DS . $this->description));
+        return json_decode(file_get_contents(JPATH_SITE . $this->description));
     }
 
     # build SoapRequest
