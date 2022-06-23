@@ -43,13 +43,13 @@
       </div>
 
       <div v-else>
-        <div v-for="(translation,index) in translations" :key="index">
+        <div v-for="translation in translations" :key="translation.id">
           <div class="em-mb-32 em-neutral-100-box em-p-24">
             <div class="em-flex-space-between em-mt-16 em-grid-50">
               <p class="em-neutral-700-color">{{ translation.override }}</p>
               <div>
-                <input class="mb-0 em-input" type="text" :value="translation.override" @focusout="saveTranslation($event.target.value,translation,index)" />
-                <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="saveTranslation(translation.override,translation,index)">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELIN_CONFIRM_TRANSLATION') }}</a>
+                <input class="mb-0 em-input em-w-100" type="text" :value="translation.override" :ref="'translation-' + translation.id + ''"/>
+                <a class="em-pointer em-blue-500-color em-mt-16 em-font-size-12 em-hover-blue-500" @click="saveTranslation(translation)">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELIN_CONFIRM_TRANSLATION') }}</a>
               </div>
             </div>
           </div>
@@ -121,13 +121,19 @@ export default {
       }
     },
 
-    async saveTranslation(value,translation,index){
+    async saveTranslation(translation) {
       this.saving = true;
-      translationsService.insertTranslation(value,'override', this.lang.lang_code, translation.reference_id, translation.tag, translation.reference_table).then((response) => {
-        this.last_save = this.formattedDate('','LT');
-        this.saving = false;
-        this.translations.splice(index,1);
-      });
+      const value = this.$refs['translation-' + translation.id][0].value;
+
+      if (value) {
+        translationsService.insertTranslation(value,'override', this.lang.lang_code, translation.reference_id, translation.tag, translation.reference_table).then((response) => {
+          this.last_save = this.formattedDate('','LT');
+          this.saving = false;
+          this.translations = this.translations.filter(function(item) {
+             return item.id !== translation.id;
+          });
+        });
+      }
     }
   },
 

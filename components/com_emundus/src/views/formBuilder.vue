@@ -134,7 +134,7 @@
           <div v-show="updateFormLabel">
             <div class="em-flex-row">
               <input v-model="profileLabel" @keyup.enter="updateLabelForm()" :id="'update_label_form_' + prid"/>
-              <span class="material-icons-outlined em-ml-8">done</span>
+              <span class="material-icons-outlined em-ml-8 em-pointer" @click="updateLabelForm()">done</span>
             </div>
           </div>
         </div>

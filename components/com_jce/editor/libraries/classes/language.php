@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @copyright 	Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
- * @license   	GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+ * @copyright     Copyright (c) 2009-2021 Ryan Demmer. All rights reserved
+ * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
@@ -10,14 +10,18 @@
  */
 abstract class WFLanguage
 {
-    protected static $tag;
+    /* Map language code to generic tag */
+    protected static $map = array(
+        'de' => 'de-DE',
+        'fr' => 'fr-FR',
+    );
 
     /*
-     * Check a lnagueg file exists and is the correct version
+     * Check a language file exists and is the correct version
      */
-    protected static function check($tag)
+    protected static function isValid($tag)
     {
-        return file_exists(JPATH_SITE.'/language/'.$tag.'/'.$tag.'.com_jce.ini');
+        return file_exists(JPATH_SITE . '/language/' . $tag . '/' . $tag . '.com_jce.ini');
     }
 
     /**
@@ -27,15 +31,7 @@ abstract class WFLanguage
      */
     public static function getDir()
     {
-        $language = JFactory::getLanguage();
-
-        $tag = self::getTag();
-
-        if ($language->getTag() == $tag) {
-            return $language->isRTL() ? 'rtl' : 'ltr';
-        }
-
-        return 'ltr';
+        return JFactory::getLanguage()->isRTL() ? 'rtl' : 'ltr';
     }
 
     /**
@@ -47,15 +43,17 @@ abstract class WFLanguage
     {
         $tag = JFactory::getLanguage()->getTag();
 
-        if (!isset(self::$tag)) {
-            if (self::check($tag)) {
-                self::$tag = $tag;
-            } else {
-                self::$tag = 'en-GB';
-            }
+        $code = substr($tag, 0, strpos($tag, '-'));
+
+        if (array_key_exists($code, self::$map)) {
+            $tag = self::$map[$code];
         }
 
-        return self::$tag;
+        if (false == self::isValid($tag)) {
+            return 'en-GB';
+        }
+
+        return $tag;
     }
 
     /**

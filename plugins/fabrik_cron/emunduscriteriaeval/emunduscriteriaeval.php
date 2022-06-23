@@ -87,7 +87,7 @@ class PlgFabrik_Cronemunduscriteriaeval extends PlgFabrik_Cron {
 
                 if($applicant->end_date < $effectiveDate){
 
-                    $tags = $m_model->setTags($applicant->id,['FNUM'=>$applicant->fnum]); //Récupération des tags et remplacement du tags fnum
+                    $tags = $m_model->setTags($applicant->id, null, $applicant->fnum, ''); //Récupération des tags et remplacement du tags fnum
 
                     foreach ($tags['patterns'] as $key=>$value) {
                         $tags['patterns'][$key] = str_replace('/','',stripslashes($value)); //suppression des slash et backslash dans la valeur

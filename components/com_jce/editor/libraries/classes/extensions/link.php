@@ -1,16 +1,14 @@
 <?php
 
 /**
- * @copyright     Copyright (c) 2009-2019 Ryan Demmer. All rights reserved
+ * @copyright     Copyright (c) 2009-2021 Ryan Demmer. All rights reserved
  * @license       GNU/GPL 2 or later - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  * JCE is free software. This version may have been modified pursuant
  * to the GNU General Public License, and as distributed it includes or
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses
  */
-defined('_JEXEC') or die('RESTRICTED');
-
-wfimport('editor.libraries.classes.extensions');
+defined('JPATH_PLATFORM') or die;
 
 class WFLinkExtension extends WFExtension
 {
@@ -89,11 +87,11 @@ class WFLinkExtension extends WFExtension
         $list = $this->getLists();
 
         if (empty($list)) {
-            return "";
+            return '';
         }
 
         $view = $this->getView(array('name' => 'links', 'layout' => 'links'));
-        $view->assign('list', implode("\n", $list));
+        $view->list = implode("\n", $list);
         $view->display();
     }
 
@@ -120,13 +118,12 @@ class WFLinkExtension extends WFExtension
         }
         $array = array();
         $result = array();
-
         if (isset($items)) {
             foreach ($items as $item) {
                 $array[] = array(
-                    'id'    => isset($item['id']) ? self::xmlEncode($item['id']) : '',
-                    'url'   => isset($item['url']) ? self::xmlEncode($item['url']) : '',
-                    'name'  => self::xmlEncode($item['name']), 'class' => $item['class'],
+                    'id' => isset($item['id']) ? self::xmlEncode($item['id']) : '',
+                    'url' => isset($item['url']) ? self::xmlEncode($item['url']) : '',
+                    'name' => self::xmlEncode($item['name']), 'class' => $item['class'],
                 );
             }
             $result = array('folders' => $array);
@@ -155,51 +152,33 @@ class WFLinkExtension extends WFExtension
         $version = new JVersion();
         $language = $version->isCompatible('3.0') ? ', language' : '';
 
-        if (method_exists('JUser', 'getAuthorisedViewLevels')) {
-            $where[] = 'parent_id = ' . (int) $parent;
-            $where[] = 'extension = ' . $db->Quote($section);
+        $where[] = 'parent_id = ' . (int) $parent;
+        $where[] = 'extension = ' . $db->Quote($section);
 
-            if (!$user->authorise('core.admin')) {
-                $where[] = 'access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')';
-            }
+        if (!$user->authorise('core.admin')) {
+            $where[] = 'access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')';
+        }
 
-            if (!$wf->checkAccess('static', 1)) {
-                $where[] = 'path != ' . $db->Quote('uncategorised');
-            }
-        } else {
-            $where[] = 'section = ' . $db->Quote($section);
-
-            if ($user->get('gid') != 25) {
-                $where[] = 'access <= ' . (int) $user->get('aid');
-            }
+        if (!$wf->checkAccess('static', 1)) {
+            $where[] = 'path != ' . $db->Quote('uncategorised');
         }
 
         $case = '';
 
         if ($wf->getParam('category_alias', 1) == 1) {
-            if (is_object($query)) {
-                //sqlsrv changes
-                $case = ', CASE WHEN ';
-                $case .= $query->charLength('alias', '!=', '0');
-                $case .= ' THEN ';
-                $a_id = $query->castAsChar('id');
-                $case .= $query->concatenate(array($a_id, 'alias'), ':');
-                $case .= ' ELSE ';
-                $case .= $a_id . ' END as slug';
-            } else {
-                $case .= ', CASE WHEN CHAR_LENGTH(alias) THEN CONCAT_WS(":", id, alias) ELSE id END as slug';
-            }
+            //sqlsrv changes
+            $case = ', CASE WHEN ';
+            $case .= $query->charLength('alias', '!=', '0');
+            $case .= ' THEN ';
+            $a_id = $query->castAsChar('id');
+            $case .= $query->concatenate(array($a_id, 'alias'), ':');
+            $case .= ' ELSE ';
+            $case .= $a_id . ' END as slug';
         }
 
-        if (is_object($query)) {
-            $where[] = 'published = 1';
-            $query->select('id AS slug, id AS id, title, alias, access' . $language . $case)->from('#__categories')->where($where)->order('title');
-        } else {
-            $query = 'SELECT id AS slug, id AS id, title, alias, access' . $case;
-            $query .= ' FROM #__categories';
-            $query .= ' WHERE ' . implode(' AND ', $where);
-            $query .= ' ORDER BY title';
-        }
+        $where[] = 'published = 1';
+        $query->select('id AS slug, id AS id, title, alias, access' . $language . $case)->from('#__categories')->where($where)->order('title');
+
         $db->setQuery($query);
 
         return $db->loadObjectList();
@@ -213,7 +192,7 @@ class WFLinkExtension extends WFExtension
      *
      * @return Category list object
      */
-    public static function getItemId($component, $needles = array())
+    public function getItemId($component, $needles = array())
     {
         $match = null;
 
@@ -241,29 +220,6 @@ class WFLinkExtension extends WFExtension
         }
 
         return $match ? '&Itemid=' . $match : '';
-    }
-
-    /**
-     * Translates an internal Joomla URL to a humanly readible URL.
-     *
-     * @param string $url Absolute or Relative URI to Joomla resource
-     *
-     * @return The translated humanly readible URL
-     */
-    public static function route($url)
-    {
-        $app = JApplication::getInstance('site');
-        $router = $app->getRouter('site');
-
-        if (!$router) {
-            return $url;
-        }
-
-        $uri = $router->build($url);
-        $url = $uri->toString();
-        $url = str_replace('/administrator/', '/', $url);
-
-        return $url;
     }
 
     /**

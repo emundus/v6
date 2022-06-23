@@ -1,15 +1,16 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
-use FOF30\Model\Model;
+use FOF40\Model\Model;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Language\Text;
 
@@ -96,15 +97,20 @@ class EmergencyOffline extends Model
 			$jreg     = $this->container->platform->getConfig();
 			$message  = Text::_($jreg->get('offline_message'));
 			$sitename = $jreg->get('sitename');
+			$langTag  = Factory::getApplication()->getLanguage()->getTag();
 
 			$fileContents = <<<ENDHTML
-<html>
+<html lang="$langTag">
 <head>
-	<title></title>
+	<title>$sitename</title>
+	<meta name="color-scheme" content="light dark">
+	<style>
+		body{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"}h1{font-size:1.5em;padding-bottom:0.5em;border-bottom:thin solid rgba(0,0,0,.1)}.container{padding:0;height:99vh;width:99vw;display:flex;justify-content:center;align-items:center}.banner{min-width:100px;max-width:800px;text-align:center;background:rgba(0,0,0,.2);padding:1em 3em;border:thin solid rgba(0,0,0,.3);border-radius:1em}@media (prefers-color-scheme: dark){h1{border-color:rgba(255,255,255,.3)}.banner{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}}
+    </style>
 </head>
-<body style="margin:10em;">
-	<div style="border: thin solid #333; border-radius: 5px; width: 70%; margin: 0 15%; padding: 2em; background-color: #e0e0e0; font-size: 14pt;">
-		<img src="images/joomla_logo_black.jpg" align="middle" />
+<body>
+<div class="container">
+	<div class="banner">
 		<h1>
 			$sitename
 		</h1>
@@ -112,6 +118,7 @@ class EmergencyOffline extends Model
 			$message
 		</p>
 	</div>
+</div>
 </body>
 </html>
 ENDHTML;

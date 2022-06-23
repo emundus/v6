@@ -1,18 +1,17 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 // Protect from unauthorized access
-defined('_JEXEC') or die();
+defined('_JEXEC') || die();
 
 use Akeeba\AdminTools\Admin\Helper\Storage;
 use Akeeba\AdminTools\Admin\Model\ConfigureWAF;
 use Akeeba\AdminTools\Admin\Model\Stats;
-use FOF30\Container\Container;
-use FOF30\Utils\InstallScript;
+use FOF40\Container\Container;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Installer\Adapter\ComponentAdapter;
@@ -21,19 +20,19 @@ use Joomla\CMS\Table\Table;
 use Joomla\Registry\Registry;
 
 // Load FOF if not already loaded
-if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+if (!defined('FOF40_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof40/include.php'))
 {
-	throw new RuntimeException('This component requires FOF 3.0.');
+	throw new RuntimeException('This extension requires FOF 4.');
 }
 
-class Com_AdmintoolsInstallerScript extends InstallScript
+class Com_AdmintoolsInstallerScript extends \FOF40\InstallScript\Component
 {
 	/**
 	 * The component's name
 	 *
 	 * @var   string
 	 */
-	protected $componentName = 'com_admintools';
+	public $componentName = 'com_admintools';
 
 	/**
 	 * The title of the component (printed on installation and uninstallation messages)
@@ -47,7 +46,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '7.1.0';
+	protected $minimumPHPVersion = '7.2.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension
@@ -189,26 +188,26 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 			// Pro features
 			'administrator/components/com_admintools/Model/Scanner',
 
-			'administrator/components/com_admintools/View/AutoBannedAddresses',
-			'administrator/components/com_admintools/View/BadWords',
-			'administrator/components/com_admintools/View/BlacklistedAddresses',
-			'administrator/components/com_admintools/View/ConfigureWAF',
-			'administrator/components/com_admintools/View/ExceptionsFromWAF',
-			'administrator/components/com_admintools/View/GeographicBlocking',
-			'administrator/components/com_admintools/View/HtaccessMaker',
-			'administrator/components/com_admintools/View/ImportAndExport',
-			'administrator/components/com_admintools/View/IPAutoBanHistories',
-			'administrator/components/com_admintools/View/NginXConfMaker',
-			'administrator/components/com_admintools/View/QuickStart',
-			'administrator/components/com_admintools/View/ScanAlerts',
-			'administrator/components/com_admintools/View/Scans',
-			'administrator/components/com_admintools/View/SchedulingInformation',
-			'administrator/components/com_admintools/View/SecurityExceptions',
-			'administrator/components/com_admintools/View/WAFBlacklistedRequests',
-			'administrator/components/com_admintools/View/WAFEmailTemplates',
-			'administrator/components/com_admintools/View/WebApplicationFirewall',
-			'administrator/components/com_admintools/View/WebConfigMaker',
-			'administrator/components/com_admintools/View/WhitelistedAddresses',
+			'administrator/components/com_admintools/tmpl/AutoBannedAddresses',
+			'administrator/components/com_admintools/tmpl/BadWords',
+			'administrator/components/com_admintools/tmpl/BlacklistedAddresses',
+			'administrator/components/com_admintools/tmpl/ConfigureWAF',
+			'administrator/components/com_admintools/tmpl/ExceptionsFromWAF',
+			'administrator/components/com_admintools/tmpl/GeographicBlocking',
+			'administrator/components/com_admintools/tmpl/HtaccessMaker',
+			'administrator/components/com_admintools/tmpl/ImportAndExport',
+			'administrator/components/com_admintools/tmpl/IPAutoBanHistories',
+			'administrator/components/com_admintools/tmpl/NginXConfMaker',
+			'administrator/components/com_admintools/tmpl/QuickStart',
+			'administrator/components/com_admintools/tmpl/ScanAlerts',
+			'administrator/components/com_admintools/tmpl/Scans',
+			'administrator/components/com_admintools/tmpl/SchedulingInformation',
+			'administrator/components/com_admintools/tmpl/SecurityExceptions',
+			'administrator/components/com_admintools/tmpl/WAFBlacklistedRequests',
+			'administrator/components/com_admintools/tmpl/WAFEmailTemplates',
+			'administrator/components/com_admintools/tmpl/WebApplicationFirewall',
+			'administrator/components/com_admintools/tmpl/WebConfigMaker',
+			'administrator/components/com_admintools/tmpl/WhitelistedAddresses',
 
 			// Frontend pro features
 			'components/com_admintools/Controller',
@@ -261,36 +260,17 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 
 			// Moving to FEF
 			'administrator/components/com_admintools/Helper/Coloriser.php',
-			'administrator/components/com_admintools/View/ScanAlerts/tmpl/form.default.xml',
 			'administrator/components/com_admintools/View/ScanAlerts/Form.php',
-			'administrator/components/com_admintools/View/Scans/tmpl/form.default.xml',
-			'administrator/components/com_admintools/View/Scans/tmpl/form.form.xml',
 			'administrator/components/com_admintools/View/Scans/Form.php',
 			'administrator/components/com_admintools/View/WAFEmailTemplates/Form.php',
-			'administrator/components/com_admintools/View/WAFEmailTemplates/tmpl/form.default.xml',
 			'administrator/components/com_admintools/View/IPAutoBanHistories/Form.php',
-			'administrator/components/com_admintools/View/IPAutoBanHistories/tmpl/form.default.xml',
 			'administrator/components/com_admintools/View/AutoBannedAddresses/Form.php',
-			'administrator/components/com_admintools/View/AutoBannedAddresses/tmpl/form.default.xml',
 			'administrator/components/com_admintools/View/ExceptionsFromWAF/Form.php',
-			'administrator/components/com_admintools/View/ExceptionsFromWAF/tmpl/form.default.xml',
-			'administrator/components/com_admintools/View/ExceptionsFromWAF/tmpl/form.form.xml',
 			'administrator/components/com_admintools/View/WAFBlacklistedRequests/Form.php',
-			'administrator/components/com_admintools/View/WAFBlacklistedRequests/tmpl/form.default.xml',
-			'administrator/components/com_admintools/View/WAFBlacklistedRequests/tmpl/form.form.xml',
 			'administrator/components/com_admintools/View/WhitelistedAddresses/Form.php',
-			'administrator/components/com_admintools/View/WhitelistedAddresses/tmpl/form.default.xml',
-			'administrator/components/com_admintools/View/WhitelistedAddresses/tmpl/form.form.xml',
 			'administrator/components/com_admintools/View/SecurityExceptions/Form.php',
-			'administrator/components/com_admintools/View/SecurityExceptions/tmpl/form.default.xml',
 			'administrator/components/com_admintools/View/BadWords/Form.php',
-			'administrator/components/com_admintools/View/BadWords/tmpl/form.default.xml',
-			'administrator/components/com_admintools/View/BadWords/tmpl/form.form.xml',
 			'administrator/components/com_admintools/View/BlacklistedAddresses/Form.php',
-			'administrator/components/com_admintools/View/BlacklistedAddresses/tmpl/form.default.xml',
-			'administrator/components/com_admintools/View/BlacklistedAddresses/tmpl/form.form.xml',
-			'administrator/components/com_admintools/View/Redirections/tmpl/form.form.xml',
-			'administrator/components/com_admintools/View/Redirections/tmpl/form.default.xml',
 			'administrator/components/com_admintools/View/Redirections/Form.php',
 
 			// Replace jQplot with Chart.js
@@ -301,11 +281,6 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 			'administrator/components/com_admintools/media/js/jqplot.barRenderer.min.js',
 			'administrator/components/com_admintools/media/js/jqplot.pieRenderer.min.js',
 			'administrator/components/com_admintools/media/js/jqplot.hermite.min.js',
-			'administrator/components/com_admintools/media/js/cpanelgraphs.min.js',
-
-			// Change config.ini to config.json
-			'administrator/components/com_admintools/Platform/Filescan/Archiver/jfscan.ini',
-			'administrator/components/com_admintools/Platform/Filescan/Config/config.ini',
 
 			// Obsolete eAccelerator warning
 			"administrator/components/com_admintools/View/eaccelerator.php",
@@ -319,8 +294,27 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 			'administrator/components/com_admintools/Model/GeographicBlocking.php',
 			'plugins/system/admintools/feature/geoblock.php',
 
-			// CSRFShield
-			'plugins/system/admintools/feature/customadminfolder.php',
+			// Changelog PNG images
+			'administrator/components/com_admintools/media/icons/changelog.png',
+
+			// Moving to FEF 2
+			'administrator/components/com_admintools/media/js/namespace.min.js',
+			'administrator/components/com_admintools/media/js/namespace.min.map',
+			'administrator/components/com_admintools/media/js/Modal.min.js',
+			'administrator/components/com_admintools/media/js/Modal.min.map',
+			'administrator/components/com_admintools/media/js/Tooltip.min.js',
+			'administrator/components/com_admintools/media/js/Tooltip.min.map',
+			'administrator/components/com_admintools/media/js/cpanelgraphs.min.js',
+			'administrator/components/com_admintools/media/js/cpanelgraphs.min.map',
+
+			// Update Charts.js
+			'administrator/components/com_admintools/media/js/Chart.bundle.min.js',
+
+			// Remove “Convert all links to HTTPS”
+			'plugins/system/admintools/feature/httpsizer.php',
+
+			// This was never meant to be a Blade template
+			"administrator/components/com_admintools/tmpl/ControlPanel/phpversion_warning.blade.php",
 		],
 		'folders' => [
 			// Obsolete folders from AT 1.x, 2.x and 3.x
@@ -359,6 +353,42 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 
 			// Removed Geographic IP blocking
 			'administrator/components/com_admintools/View/GeographicBlocking',
+
+			// Moving to FOF 4 and Blade views
+			'administrator/components/com_admintools/View/AdminPassword/tmpl',
+			'administrator/components/com_admintools/View/AutoBannedAddresses/tmpl',
+			'administrator/components/com_admintools/View/BadWords/tmpl',
+			'administrator/components/com_admintools/View/BlacklistedAddresses/tmpl',
+			'administrator/components/com_admintools/View/ChangeDBCollation/tmpl',
+			'administrator/components/com_admintools/View/CheckTempAndLogDirectories/tmpl',
+			'administrator/components/com_admintools/View/CleanTempDirectory/tmpl',
+			'administrator/components/com_admintools/View/ConfigureFixPermissions/tmpl',
+			'administrator/components/com_admintools/View/ConfigureWAF/tmpl',
+			'administrator/components/com_admintools/View/ControlPanel/tmpl',
+			'administrator/components/com_admintools/View/DatabaseTools/tmpl',
+			'administrator/components/com_admintools/View/EmergencyOffline/tmpl',
+			'administrator/components/com_admintools/View/ExceptionsFromWAF/tmpl',
+			'administrator/components/com_admintools/View/FixPermissions/tmpl',
+			'administrator/components/com_admintools/View/HtaccessMaker/tmpl',
+			'administrator/components/com_admintools/View/IPAutoBanHistories/tmpl',
+			'administrator/components/com_admintools/View/ImportAndExport/tmpl',
+			'administrator/components/com_admintools/View/MasterPassword/tmpl',
+			'administrator/components/com_admintools/View/NginXConfMaker/tmpl',
+			'administrator/components/com_admintools/View/QuickStart/tmpl',
+			'administrator/components/com_admintools/View/Redirections/tmpl',
+			'administrator/components/com_admintools/View/SEOAndLinkTools/tmpl',
+			'administrator/components/com_admintools/View/ScanAlerts/tmpl',
+			'administrator/components/com_admintools/View/Scans/tmpl',
+			'administrator/components/com_admintools/View/SchedulingInformation/tmpl',
+			'administrator/components/com_admintools/View/SecurityExceptions/tmpl',
+			'administrator/components/com_admintools/View/TempSuperUsers/tmpl',
+			'administrator/components/com_admintools/View/UnblockIP/tmpl',
+			'administrator/components/com_admintools/View/WAFBlacklistedRequests/tmpl',
+			'administrator/components/com_admintools/View/WAFEmailTemplates/tmpl',
+			'administrator/components/com_admintools/View/WebApplicationFirewall/tmpl',
+			'administrator/components/com_admintools/View/WebConfigMaker/tmpl',
+			'administrator/components/com_admintools/View/WhitelistedAddresses/tmpl',
+			'administrator/components/com_admintools/ViewTemplates',
 		],
 	];
 
@@ -407,16 +437,11 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 	 *
 	 * @return  boolean  True to let the installation proceed, false to halt the installation
 	 */
-	public function preflight($type, $parent)
+	public function preflight(string $type, ComponentAdapter $parent): bool
 	{
 		$this->isPaid = is_dir($parent->getParent()->getPath('source') . '/backend/engine');
 
-		$result = parent::preflight($type, $parent);
-
-		if (!$result)
-		{
-			return $result;
-		}
+		return parent::preflight($type, $parent);
 	}
 
 	/**
@@ -427,13 +452,13 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 	 *
 	 * @return  boolean  True to let the installation proceed, false to halt the installation
 	 */
-	function postflight($type, $parent)
+	public function postflight(string $type, ComponentAdapter $parent): void
 	{
 		// Let's install common tables
 		$container = null;
 		$model     = null;
 
-		if (class_exists('FOF30\\Container\\Container'))
+		if (class_exists('FOF40\\Container\\Container'))
 		{
 			try
 			{
@@ -445,7 +470,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 			}
 		}
 
-		if (is_object($container) && class_exists('FOF30\\Container\\Container') && ($container instanceof Container))
+		if (is_object($container) && class_exists('FOF40\\Container\\Container') && ($container instanceof Container))
 		{
 			/** @var Stats $model */
 			try
@@ -474,7 +499,12 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 		// Remove the FOF 2.x update sites (annoying leftovers)
 		$this->removeFOFUpdateSites();
 
-		// If this is an update set the configuration wizard flag on update (so as not to bother existing users)
+		/**
+		 * Actions to take ONLY on update
+		 *
+		 * - Set the quick start wizard flag on update (so as not to bother existing users)
+		 * - Update the server config makers
+		 */
 		if (!defined('ADMINTOOLS_THIS_IS_INSTALLATION_FROM_SCRATCH'))
 		{
 			if (!class_exists('Akeeba\\AdminTools\\Admin\\Helper\\Storage'))
@@ -487,6 +517,8 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 				$params = new Storage();
 				$params->load();
 				$params->setValue('quickstart', 1, true);
+
+				$this->updateConfigMaker($params);
 			}
 		}
 
@@ -496,6 +528,8 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 
 		if (!defined('ADMINTOOLS_THIS_IS_INSTALLATION_FROM_SCRATCH'))
 		{
+			$this->_removeDefaultSuperUsersStorage();
+
 			$this->_upgradeDisableMonitorSuperUsers($parent);
 
 			$this->_upgradeRemoveObsoleteLoginSecurityLogEntries($parent);
@@ -512,7 +546,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 	/**
 	 * Renders the post-installation message
 	 */
-	public function renderPostInstallation($parent)
+	protected function renderPostInstallation(ComponentAdapter $parent): void
 	{
 		try
 		{
@@ -572,7 +606,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 		$container = null;
 		$model     = null;
 
-		if (class_exists('FOF30\\Container\\Container'))
+		if (class_exists('FOF40\\Container\\Container'))
 		{
 			try
 			{
@@ -584,7 +618,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 			}
 		}
 
-		if (is_object($container) && class_exists('FOF30\\Container\\Container') && ($container instanceof Container))
+		if (is_object($container) && class_exists('FOF40\\Container\\Container') && ($container instanceof Container))
 		{
 			/** @var Stats $model */
 			try
@@ -617,7 +651,7 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 		}
 	}
 
-	protected function renderPostUninstallation($parent)
+	protected function renderPostUninstallation(ComponentAdapter $parent): void
 	{
 		?>
 		<h2>Admin Tools Uninstallation Status</h2>
@@ -694,6 +728,26 @@ class Com_AdmintoolsInstallerScript extends InstallScript
 			{
 				// Do not fail in this case
 			}
+		}
+	}
+
+	private function _removeDefaultSuperUsersStorage()
+	{
+		if (class_exists('FOF40\\Container\\Container'))
+		{
+			try
+			{
+				$container = Container::getInstance('com_admintools');
+			}
+			catch (Exception $e)
+			{
+				$container = null;
+			}
+		}
+
+		if (is_object($container) && class_exists('FOF40\\Container\\Container') && ($container instanceof Container))
+		{
+			$container->params->set('default_super_user_groups', null);
 		}
 	}
 
@@ -1053,4 +1107,105 @@ HTML;
 		}
 	}
 
+	private function updateConfigMaker(Storage $storage)
+	{
+		$storageKeys = [
+			'htconfig',
+			'nginxconfig',
+			'wcconfig',
+		];
+
+		$dirty = false;
+
+		foreach ($storageKeys as $storageKey)
+		{
+			// Get the saved server config settings
+			$savedConfig = $storage->getValue($storageKey, '');
+
+			// No settings for this server config maker; skip over
+			if (empty(trim($savedConfig)))
+			{
+				continue;
+			}
+
+			// Decode server config settings
+			if (function_exists('base64_encode') && function_exists('base64_encode'))
+			{
+				$savedConfig = @base64_decode($savedConfig);
+			}
+
+			$savedConfig = @json_decode($savedConfig, true);
+
+			//  If decoding failed, skip over this server config maker.
+			if (empty($savedConfig))
+			{
+				continue;
+			}
+
+			// Flag the need to save changes
+			$dirty = true;
+
+			/**
+			 * Update files exempted from the server front- and backend protection.
+			 * - REMOVE: administrator/components/com_admintools/restore.php
+			 * - ADD: administrator/components/com_akeebabackup/restore.php
+			 * - ADD: administrator/components/com_joomlaupdate/restore.php
+			 * - ADD: administrator/components/com_joomlaupdate/extract.php
+			 */
+			$remove = [
+				'administrator/components/com_admintools/restore.php'
+			];
+			$add = [
+				"administrator/components/com_akeebabackup/restore.php",
+				"administrator/components/com_joomlaupdate/restore.php",
+				"administrator/components/com_joomlaupdate/extract.php",
+			];
+			$savedConfig['exceptionfiles'] = array_merge($savedConfig['exceptionfiles'] ?: [], $add);
+			$savedConfig['exceptionfiles'] = array_diff($savedConfig['exceptionfiles'] ?: [], $remove);
+			$savedConfig['exceptionfiles'] = array_unique($savedConfig['exceptionfiles']);
+
+			// Update backend file types
+			$savedConfig['bepextypes'] = array_merge($savedConfig['bepextypes'] ?: [], [
+				'jpe', 'jpg', 'jpeg', 'jp2', 'jpe2', 'png', 'gif', 'bmp', 'css', 'js',
+				'swf', 'html', 'mpg', 'mp3', 'mpeg', 'mp4', 'avi', 'wav', 'ogg', 'ogv',
+				'xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx', 'zip', 'rar', 'pdf', 'xps',
+				'txt', '7z', 'svg', 'odt', 'ods', 'odp', 'flv', 'mov', 'htm', 'ttf',
+				'woff', 'woff2', 'eot', 'webp',
+				'JPG', 'JPEG', 'PNG', 'GIF', 'CSS', 'JS', 'TTF', 'WOFF', 'WOFF2', 'EOT', 'WEBP',
+			]);
+			$savedConfig['bepextypes'] = array_unique($savedConfig['bepextypes']);
+
+			// Update frontend file types
+			$savedConfig['fepextypes'] = array_merge($savedConfig['fepextypes'] ?: [], [
+				'jpe', 'jpg', 'jpeg', 'jp2', 'jpe2', 'png', 'gif', 'bmp', 'css', 'js',
+				'swf', 'html', 'mpg', 'mp3', 'mpeg', 'mp4', 'avi', 'wav', 'ogg', 'ogv',
+				'xls', 'xlsx', 'doc', 'docx', 'ppt', 'pptx', 'zip', 'rar', 'pdf', 'xps',
+				'txt', '7z', 'svg', 'odt', 'ods', 'odp', 'flv', 'mov', 'ico', 'htm',
+				'ttf', 'woff', 'woff2', 'eot', 'webp',
+				'JPG', 'JPEG', 'PNG', 'GIF', 'CSS', 'JS', 'TTF', 'WOFF', 'WOFF2', 'EOT', 'WEBP',
+			]);
+			$savedConfig['fepextypes'] = array_unique($savedConfig['fepextypes']);
+
+			// Update directories where everything except .php files are allowed
+			$savedConfig['exceptiondirs'] = array_merge($savedConfig['exceptiondirs'] ?: [], [
+				'.well-known'
+			]);
+			$savedConfig['exceptiondirs'] = array_unique($savedConfig['exceptiondirs']);
+
+			// Save the configuration back to the database
+			$savedConfig       = json_encode($savedConfig);
+
+			if (function_exists('base64_encode') && function_exists('base64_encode'))
+			{
+				$savedConfig = base64_encode($savedConfig);
+			}
+
+			$storage->setValue($storageKey, $savedConfig);
+		}
+
+		if ($dirty)
+		{
+			$storage->save();
+		}
+	}
 }

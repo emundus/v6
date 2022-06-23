@@ -152,7 +152,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             if (!empty($current_phase) && !empty($current_phase->status)) {
                 $edit_status[] = $current_phase->status;
             }
-            $edit_status[] = explode(',', $this->getParam('applicationsent_status', 0));
+            $edit_status = array_merge(explode(',', $this->getParam('applicationsent_status', 0)), $edit_status);
             $is_app_sent = !in_array(@$user->status, $edit_status);
             $can_edit = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
             $can_read = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);

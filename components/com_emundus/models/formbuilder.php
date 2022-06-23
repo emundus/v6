@@ -2322,18 +2322,13 @@ this.set(words.join(&quot; &quot;));
         try {
             $db->setQuery($query);
             $db_element = $db->loadObject();
-            //
 
             // Default parameters
             $dbnull = 'NULL';
-            //
 
             switch ($element['plugin']) {
                 case 'birthday':
                     $dbtype = 'DATE';
-                    break;
-                case 'textarea':
-                    $dbtype = 'TEXT';
                     break;
                 case 'date':
                     $dbtype = 'DATETIME';
@@ -2344,9 +2339,8 @@ this.set(words.join(&quot; &quot;));
                 case 'databasejoin':
                     $dbtype = 'INT';
                     break;
+                case 'textarea':
                 case 'display':
-                    $dbtype = 'TEXT';
-                    break;
                 default:
                     $dbtype = 'TEXT';
             }
@@ -2422,8 +2416,6 @@ this.set(words.join(&quot; &quot;));
                         $db->setQuery($query);
                         $db->execute();
                     }
-
-
 
                     $element['plugin'] = 'databasejoin';
                 } else {
@@ -2515,7 +2507,6 @@ this.set(words.join(&quot; &quot;));
                         $element['params']['validations']['show_icon'][] = "0";
                     }
                 } else {
-                    //$element['params']['validations']['plugin'] = array_merge(array_diff($element['params']['validations']['plugin'], array("isemail")));
                     $key = array_search("isemail", $element['params']['validations']['plugin']);
                     if($key !== false && $key !== null) {
                         unset($element['params']['validations']['plugin'][$key]);
@@ -2555,7 +2546,12 @@ this.set(words.join(&quot; &quot;));
             $db->setQuery($query);
             return $db->execute();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            if (gettype($query) == 'string') {
+                JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/"," ",$query .' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            } else {
+                JLog::add('component/com_emundus/models/formbuilder | Error at updating the element ' . $element['id'] . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
+
             return false;
         }
     }
@@ -3488,34 +3484,23 @@ this.set(words.join(&quot; &quot;));
     }
 
     function enableRepeatGroup($gid){
+        $saved = false;
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $user = JFactory::getUser()->id;
 
-        // Prepare Fabrik API
-        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-        $groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
-        $groupModel->setId(intval($gid));
-        $elements = $groupModel->getMyElements();
-        //
-
-        try {
-            $query->select('*')
-                ->from($db->quoteName('#__fabrik_groups'))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $group = $db->loadObject();
-
-            $query->clear()
-                ->select('fl.db_table_name as dbtable, fl.form_id as formid, fl.id as listid')
-                ->from($db->quoteName('#__fabrik_formgroup', 'fg'))
-                ->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('fg.form_id'))
-                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $object = $db->loadObject();
-            $db_table = $object->dbtable;
-            $form_id = $object->formid;
-            $list_id = $object->listid;
+        $group = $this->getFabrikGroup($gid);
+        if (!empty($group)) {
+            // Prepare Fabrik API
+            JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+            $groupModel = JModelLegacy::getInstance('Group', 'FabrikFEModel');
+            $groupModel->setId(intval($gid));
+            $elements = $groupModel->getMyElements();
+            $listModel = $groupModel->getListModel();
+            $list = $listModel->getTable();
+            $db_table = $list->db_table_name;
+            $list_id = $list->id;
+            $form_id = $list->form_id;
 
             $group_params = json_decode($group->params);
             $group_params->repeat_group_button = 1;
@@ -3538,7 +3523,6 @@ this.set(words.join(&quot; &quot;));
             ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
             $db->setQuery($query);
             $db->execute();
-            //
 
             // Create parent_id element
             $query = $db->getQuery(true);
@@ -3594,6 +3578,14 @@ this.set(words.join(&quot; &quot;));
                     ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)));
                 $db->setQuery($query);
                 $db->execute();
+            } else {
+                $query->clear()
+                    ->update('#__fabrik_elements')
+                    ->set('published = 1')
+                    ->where('group_id = ' . $db->quote($gid))
+                    ->andWhere('name = ' . $db->quote('parent_id'));
+                $db->setQuery($query);
+                $db->execute();
             }
 
             if (!in_array('id', $ignore_elms)) {
@@ -3626,7 +3618,6 @@ this.set(words.join(&quot; &quot;));
             }
 
             try {
-
                 $query = "ALTER TABLE " . $newtablename . " ADD COLUMN parent_id int(11) NULL AFTER id";
                 $db->setQuery($query);
                 $db->execute();
@@ -3634,13 +3625,11 @@ this.set(words.join(&quot; &quot;));
                 $query = "CREATE INDEX fb_parent_fk_parent_id_INDEX ON " . $newtablename . " (parent_id);";
                 $db->setQuery($query);
                 $db->execute();
-
             } catch(Exception $e) {
                 // This means that the parent_id already exists in the table.
             }
 
-
-            //verify if left join dosn't already exist;
+            //verify if left join doesn't already exist;
             $query = $db->getQuery(true);
             $query->select('id')
                 ->from($db->quoteName('#__fabrik_joins'))
@@ -3663,12 +3652,7 @@ this.set(words.join(&quot; &quot;));
                     ->set($db->quoteName('params') . ' = ' . $db->quote($joins_params));
                 $db->setQuery($query);
                 $db->execute();
-                //
             }
-
-
-            // Insert leftjoin in fabrik
-
 
             // Insert element present in the group
             foreach ($elements as $element) {
@@ -3680,7 +3664,13 @@ this.set(words.join(&quot; &quot;));
                     $dbtype = 'TEXT';
                 }
 
-                $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";
+
+                if (!empty($element->element->name)) {
+                    $query = "ALTER TABLE " . $newtablename . " ADD " . $element->element->name . " " . $dbtype . " NULL";
+                } else {
+                    $query = "ALTER TABLE " . $newtablename . " ADD e_" . $form_id . "_" . $element->element->id . " " . $dbtype . " NULL";
+                }
+
                 $db->setQuery($query);
                 try {
                     $db->execute();
@@ -3688,46 +3678,90 @@ this.set(words.join(&quot; &quot;));
                     continue;
                 }
             }
-            //
 
-            return true;
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Cannot enable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+            $saved = true;
         }
+
+        return $saved;
+    }
+
+    private function getFabrikGroup($gid) {
+        $group = null;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('*')
+            ->from($db->quoteName('#__fabrik_groups'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
+        $db->setQuery($query);
+        try {
+            $group = $db->loadObject();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/formbuilder | Cannot get group ' . $gid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $group;
     }
 
     function disableRepeatGroup($gid){
+        $saved=false;
         $db = $this->getDbo();
         $query = $db->getQuery(true);
+        $query->select('jfg.*, jff.form_id AS form_id')
+            ->from('#__fabrik_groups AS jfg')
+            ->leftJoin('#__fabrik_formgroup AS jff ON jff.group_id = jfg.id')
+            ->where('jfg.id = ' . $db->quote($gid));
+
+        $db->setQuery($query);
 
         try {
-            $query->select('*')
-                ->from($db->quoteName('#__fabrik_groups'))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $group = $db->loadObject();
-
-            // Disable group repeat
-            $query->clear()
-                ->select('fl.db_table_name as dbtable')
-                ->from($db->quoteName('#__fabrik_formgroup','fg'))
-                ->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('fg.form_id'))
-                ->where($db->quoteName('fg.group_id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            $group_params = json_decode($group->params);
-            $group_params->repeat_group_button = 0;
-
-            $query->clear()
-                ->update($db->quoteName('#__fabrik_groups'))
-                ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($group_params)))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($gid));
-            $db->setQuery($query);
-            return $db->execute();
+            $group = $db->loadAssoc();
         } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Cannot disable repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+            JLog::add('component/com_emundus/models/formbuilder | Error at enabling repeat group ' . $gid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
+
+        if (!empty($group)) {
+            JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+            require_once(JPATH_ADMINISTRATOR . '/components/com_fabrik/models/group.php');
+            $groupModel = new FabrikAdminModelGroup;
+            $params = json_decode($group['params'], true);
+            $params['repeat_group_button'] = 0;
+
+            $data = array(
+                'id' => $gid,
+                'label' => $group['label'],
+                'form' => $group['form_id'],
+                'name' => $group['name'],
+                'published' => $group['published'],
+                'is_join' => $group['is_join'],
+                'params' => $params,
+                'tags' => $group['tags']
+            );
+
+            $saved = $groupModel->save($data);
+
+            if ($saved) {
+                $query->clear()
+                    ->update('#__fabrik_groups')
+                    ->set('is_join = 0')
+                    ->where('id = ' . $db->quote($gid));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                $query->clear()
+                    ->update('#__fabrik_elements')
+                    ->set('published = 0')
+                    ->where('group_id = ' . $db->quote($gid))
+                    ->andWhere('name = ' . $db->quote('parent_id'));
+
+                $db->setQuery($query);
+                $db->execute();
+            }
+        }
+
+        return $saved;
     }
 
     function displayHideGroup($gid){

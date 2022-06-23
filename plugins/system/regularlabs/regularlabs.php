@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -71,44 +71,6 @@ if ( ! in_array($config->error_reporting, ['none', '0'])
 
 class PlgSystemRegularLabs extends JPlugin
 {
-	public function getAjaxClass($field, $field_type = '')
-	{
-		if (empty($field))
-		{
-			return false;
-		}
-
-		if ($field_type)
-		{
-			return $this->getFieldClass($field, $field_type);
-		}
-
-		$file = JPATH_LIBRARIES . '/regularlabs/fields/' . strtolower($field) . '.php';
-
-		if ( ! file_exists($file))
-		{
-			return $this->getFieldClass($field, $field);
-		}
-
-		require_once $file;
-
-		return 'JFormFieldRL_' . ucfirst($field);
-	}
-
-	public function getFieldClass($field, $field_type)
-	{
-		$file = JPATH_PLUGINS . '/fields/' . strtolower($field_type) . '/fields/' . strtolower($field) . '.php';
-
-		if ( ! file_exists($file))
-		{
-			return false;
-		}
-
-		require_once $file;
-
-		return 'JFormField' . ucfirst($field);
-	}
-
 	public function onAfterDispatch()
 	{
 		if ( ! is_file(JPATH_LIBRARIES . '/regularlabs/autoload.php'))
@@ -145,6 +107,30 @@ class PlgSystemRegularLabs extends JPlugin
 		AdminMenu::addHelpItem();
 
 		DownloadKey::cloak();
+	}
+
+	private function fixQuotesInTooltips()
+	{
+		$html = JFactory::getApplication()->getBody();
+
+		if ($html == '')
+		{
+			return;
+		}
+
+		if (strpos($html, '&amp;quot;rl-code&amp;quot;') === false
+			&& strpos($html, '&amp;quot;rl_code&amp;quot;') === false)
+		{
+			return;
+		}
+
+		$html = str_replace(
+			['&amp;quot;rl-code&amp;quot;', '&amp;quot;rl_code&amp;quot;'],
+			'&quot;rl-code&quot;',
+			$html
+		);
+
+		JFactory::getApplication()->setBody($html);
 	}
 
 	public function onAfterRoute()
@@ -199,6 +185,44 @@ class PlgSystemRegularLabs extends JPlugin
 		return $class->$method($attributes);
 	}
 
+	public function getAjaxClass($field, $field_type = '')
+	{
+		if (empty($field))
+		{
+			return false;
+		}
+
+		if ($field_type)
+		{
+			return $this->getFieldClass($field, $field_type);
+		}
+
+		$file = JPATH_LIBRARIES . '/regularlabs/fields/' . strtolower($field) . '.php';
+
+		if ( ! file_exists($file))
+		{
+			return $this->getFieldClass($field, $field);
+		}
+
+		require_once $file;
+
+		return 'JFormFieldRL_' . ucfirst($field);
+	}
+
+	public function getFieldClass($field, $field_type)
+	{
+		$file = JPATH_PLUGINS . '/fields/' . strtolower($field_type) . '/fields/' . strtolower($field) . '.php';
+
+		if ( ! file_exists($file))
+		{
+			return false;
+		}
+
+		require_once $file;
+
+		return 'JFormField' . ucfirst($field);
+	}
+
 	public function onInstallerBeforePackageDownload(&$url, &$headers)
 	{
 		$uri  = JUri::getInstance($url);
@@ -229,29 +253,4 @@ class PlgSystemRegularLabs extends JPlugin
 
 		return true;
 	}
-
-	private function fixQuotesInTooltips()
-	{
-		$html = JFactory::getApplication()->getBody();
-
-		if ($html == '')
-		{
-			return;
-		}
-
-		if (strpos($html, '&amp;quot;rl-code&amp;quot;') === false
-			&& strpos($html, '&amp;quot;rl_code&amp;quot;') === false)
-		{
-			return;
-		}
-
-		$html = str_replace(
-			['&amp;quot;rl-code&amp;quot;', '&amp;quot;rl_code&amp;quot;'],
-			'&quot;rl-code&quot;',
-			$html
-		);
-
-		JFactory::getApplication()->setBody($html);
-	}
 }
-

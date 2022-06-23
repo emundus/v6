@@ -219,6 +219,10 @@ export default {
 		"$store.state.attachment.checkedAttachments": function () {
 			this.checkedAttachments = this.$store.state.attachment.checkedAttachments;
 		},
+    "$store.state.attachment.categories": function () {
+      this.categories = this.$store.state.attachment.categories;
+      this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
+    },
 	},
 };
 </script>

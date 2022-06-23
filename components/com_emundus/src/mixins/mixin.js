@@ -5,11 +5,17 @@ import attachmentService from '../services/attachment.js';
 var mixin = {
 	methods: {
 		formattedDate: function (date = '',format = 'LLLL') {
-			if(date !== '') {
-				return moment(date).format(format);
-			} else {
-				return moment().format(format);
+			let formattedDate = '';
+
+			if (date !== null) {
+				if (date !== '') {
+					formattedDate = moment(date).format(format);
+				} else {
+					formattedDate = moment().format(format);
+				}
 			}
+
+			return formattedDate;
 		},
 		strippedHtml: function (html) {
 			if (html === null || html === undefined) {
@@ -50,10 +56,11 @@ var mixin = {
 				});
 
 				// remove empty categories
-				delete response.categories[""];
+				delete response.categories[''];
 
 				this.$store.dispatch('attachment/setCategories', response.categories);
-				return this.$store.state.attachment.categories;
+
+				return response.categories;
 			} else {
 				return {};
 			}

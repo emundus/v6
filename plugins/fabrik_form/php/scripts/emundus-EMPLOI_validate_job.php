@@ -57,10 +57,9 @@ $post = array(  'FICHE_EMPLOI'              => $intitule_poste,
                 'FICHE_EMPLOI_VALIDE'       => $valide,
                 'FICHE_EMPLOI_VALIDE_COMITE'=> $valide_comite
 );
-$tags = $emails->setTags($deposant->id, $post);
 $email = $emails->getEmail("validate_job");
 
-$tags = $emails->setTags($deposant->id, $post);
+$tags = $emails->setTags($deposant->id, $post, null, '', $email->message);
 // Mail
 $from = $email->emailfrom;
 $from_id = 62;

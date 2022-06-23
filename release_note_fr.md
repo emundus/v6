@@ -1,27 +1,17 @@
 ##✨ Nouvelles fonctionnalités ✨
-- Harmonisation visuelle du produit
-  - Utilisation de la charte graphique Tchooz pour les boutons, les liens et les alertes
-  - Amélioration du constructeur de formulaires
-- Possibilité d'éditer les articles RGPD (mentions légales, politique de confidentialité des données,...)
-- Réordonnancement des statuts de dossier
-- Mise en place d'un nouveau module de paramétrage des langues
-    - Nouvel accès rapide aux traductions de la plateforme (formulaires, campagnes, documents, statuts)
-    - Changement de la langue par défaut
-    - Possibilité de transmettre depuis la partie gestionnaire une demande d'ajout d'une nouvelle langue
-- Déplacement du menu Besoin d'aide dans le menu d'aide en bas à droite
+- Cette version continue l'harmonisation visuelle sur le formulaire candidat
+- Intégration d'un module d'interconnexion avec le système Apogée
+- Amélioration de l'interconnexion avec le système CAS
+  - Il est maintenant possible de récupérer tous les attributs définis par le CAS
+  - La récupération de ces attributs permet de corriger le problème reporté pour les noms composés
+- Amélioration de la gestion des phases
+  - Vous pouvez dorénavant définir des dates de début et de fin pour chaque phase 
 
 ##🔥 Corrections majeures 🔥
-- Visualisation désormais possible d'un logo lors de l'ajout
-- Actualisation automatique de la liste des documents associés à un dossier lors de l'ajout d'un nouveau document
-- Corrections diverses apportées sur la construction des formulaires
-  - Changer l'ordre des options d'un menu déroulant pouvait poser problème
-  - Une erreur survenait lorsqu'un groupe répétable était modifié
-  - Il est dorénavant possible d'utiliser les référentiels de données sur des boutons radios
-- Affichage des articles FAQ dans l'onglet correspondant des informations de la campagne, ceux-si s'affichaient auparavant de manière aléatoire sur la page
-- Réactivation de la fonctionnalité de dépôt de(s) document(s) préalable(s)
-- Ajout des traductions anglaises manquantes
-
-##⚠️ Retrait temporaire de certaines fonctionnalités ⚠️
-Les fonctionnalités suivantes ont été momentanément retirées à la suite de la réception de plusieurs rapports d'erreurs, qui sont en cours de correction.
-- Retrait des formulaires d'évaluation
-- Retrait du type d'élément fichier dans la création de formulaire
+- La génération du code programme pouvait poser problème lors d'un copier/coller à la création d'une campagne
+- Lors d'un changement de statut l'information qu'un mail va être envoyé était dans certains cas erronée
+- Optimisation des performances globales
+  - Mise en place d'une file d'attente lors d'un certain nombre de connexions dépassées (définis à 5000 connexions par défaut)
+  - Le temps de récupération des balises dynamiques était proportionnelle au nombre de balises que comportait la plateforme
+- A la copie d'un dossier certaines données n'étaient pas copiées sur le nouveau
+- Prévisualisation des documents : problème de compatibilité avec la dernière version de Safari

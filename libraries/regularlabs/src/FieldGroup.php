@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -39,13 +39,6 @@ class FieldGroup extends Field
 		return $this->selectList($options, $name, $value, $id, $size, $multiple, $simple);
 	}
 
-	public function getGroup()
-	{
-		$this->params = $this->element->attributes();
-
-		return $this->get('group', $this->default_group ?: $this->type);
-	}
-
 	public function getOptions($group = false)
 	{
 		$group = $group ?: $this->getGroup();
@@ -57,6 +50,13 @@ class FieldGroup extends Field
 		}
 
 		return $data[$id];
+	}
+
+	public function getGroup()
+	{
+		$this->params = $this->element->attributes();
+
+		return $this->get('group', $this->default_group ?: $this->type);
 	}
 
 	protected function getInput()

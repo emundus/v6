@@ -1686,12 +1686,22 @@ class EmundusModelUsers extends JModelList {
         if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
-
+  
         $db = JFactory::getDBO();
-        $db->setQuery('UPDATE #__emundus_users SET firstname = '.$db->Quote($user['firstname']).',
-                                                    lastname = '.$db->Quote($user['lastname']).',
-                                                    profile = '.(int)$user['profile'].',
-                                                    university_id = '.$user['university_id'].' WHERE user_id = '.(int)$user['id']);
+        $query = $db->getQuery(true);
+        $query->update($db->quoteName('#__emundus_users'))
+            ->set('firstname = ' . $db->quote($user['firstname']))
+            ->set('lastname = ' . $db->quote($user['lastname']))
+            ->set('profile = ' . $db->quote((int)$user['profile']));
+
+        if (!empty($user['university_id'])) {
+            $query->set('university_id = ' . $db->quote($user['university_id']));
+        }
+
+        $query->where('user_id = ' . $db->quote($user['id']));
+
+        $db->setQuery($query);
+
 	    try {
             $db->execute();
 	    } catch(Exception $e) {
@@ -2151,7 +2161,7 @@ class EmundusModelUsers extends JModelList {
             'USER_EMAIL' => $user->email
         ];
 
-        $tags = $m_emails->setTags($user->id, $post);
+        $tags = $m_emails->setTags($user->id, $post, null, '', $subject.$body);
 
         $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
 

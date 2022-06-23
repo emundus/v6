@@ -198,7 +198,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			}
 
 			$m_emails = new EmundusModelEmails();
-			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
+			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $chat_contact_request->message);
 			$chat_contact_request = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_request->message);
 
             // Send a chat message as folder 3 to the user in order to start a conversation thread.
@@ -352,9 +352,9 @@ class EmundusControllerCifre extends JControllerLegacy {
 				'OFFER_NAME' => $offerInformation->titre,
 				'CONTACT_ID' => $contact_id,
 			];
-			$tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum']);
 
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+            $tags = $m_emails->setTags($fnum['applicant_id'], $post, $fnum['fnum'], '', $chat_contact_accept->message);
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
 			$m_messages->deleteSystemMessages($fnum['applicant_id'], $this->user->id);
 			$m_messages->sendMessage($this->user->id, $chat_contact_accept, $fnum['applicant_id'], true);
@@ -425,8 +425,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 			];
 
 			$fnum = $this->m_files->getFnumInfos($link->fnum_from);
-			$tags = $m_emails->setTags($this->user->id, $post, $fnum['fnum']);
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+            $tags = $m_emails->setTags($this->user->id, $post, $fnum['fnum'], '', $chat_contact_accept->message);
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
 			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
 			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
@@ -480,7 +480,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 			];
 
 			// Tags are replaced with their corresponding values using the PHP preg_replace function.
-			$tags    = $m_emails->setTags($user_from->id, $post);
+			$tags    = $m_emails->setTags($user_from->id, $post, null, '', $template->subject.$template->message);
 			$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
 			$body    = $template->message;
 			if ($template != false)
@@ -497,8 +497,8 @@ class EmundusControllerCifre extends JControllerLegacy {
 			$mailer->Encoding = 'base64';
 			$mailer->setBody($body);
 
-			$tags = $m_emails->setTags($this->user->id, $post);
 			$chat_contact_accept = $m_messages->getEmail('chat_contact_accept');
+            $tags = $m_emails->setTags($this->user->id, $post, null, '', $chat_contact_accept->message);
 			$chat_contact_accept = preg_replace($tags['patterns'], $tags['replacements'], $chat_contact_accept->message);
 			$m_messages->deleteSystemMessages($link->user_to, $link->user_from);
 			$m_messages->sendMessage($link->user_from, $chat_contact_accept, $link->user_to, true);
@@ -694,7 +694,7 @@ class EmundusControllerCifre extends JControllerLegacy {
 				];
 
 				// Tags are replaced with their corresponding values using the PHP preg_replace function.
-				$tags    = $m_emails->setTags($user_from->id, $post);
+				$tags    = $m_emails->setTags($user_from->id, $post, null, '', $template->subject.$template->message);
 				$subject = preg_replace($tags['patterns'], $tags['replacements'], $template->subject);
 				$body    = $template->message;
 				if ($template != false) {

@@ -587,7 +587,6 @@ class EmundusModelApplication extends JModelList
     {
         $forms = @EmundusHelperMenu::getUserApplicationMenu($profile_id);
         $nb = 0;
-        $formLst = array();
 
         if (empty($forms)) {
             return 100;
@@ -599,8 +598,6 @@ class EmundusModelApplication extends JModelList
             $cpt = $this->_db->loadResult();
             if ($cpt == 1) {
                 $nb++;
-            } else {
-                $formLst[] = $form->label;
             }
         }
 
@@ -616,6 +613,37 @@ class EmundusModelApplication extends JModelList
             ->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
         $this->_db->setQuery($query);
         return $this->_db->execute();
+    }
+
+
+    public function getFilesProgress($fnum = null)
+    {
+        if (empty($fnum) || (!is_array($fnum) && !is_numeric($fnum))) {
+            return false;
+        }
+
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        if (!is_array($fnum)) {
+            $fnum = [$fnum];
+        }
+
+        $result = array();
+        foreach ($fnum as $f) {
+            $query->clear()
+                ->select('attachment_progress, form_progress')
+                ->from('#__emundus_campaign_candidature')
+                ->where($db->quoteName('fnum') . ' = ' . $db->quote($f));
+            $db->setQuery($query);
+
+            $progress = $db->loadObject();
+
+            $result['attachments'][$f] = $progress->attachment_progress;
+            $result['forms'][$f] = $progress->form_progress;
+        }
+
+        return $result;
     }
 
     /**
@@ -1816,7 +1844,12 @@ class EmundusModelApplication extends JModelList
                                             } elseif ($element->plugin == 'internalid') {
                                                 $elt = '';
                                             } elseif ($element->plugin == 'yesno') {
-                                                $elt = ($element->content == 1) ? JText::_('JYES') : JText::_('JNO');
+                                                $elt = '';
+                                                if($element->content === '1'){
+                                                    $elt = JText::_('JYES');
+                                                } elseif ($element->content === '0') {
+                                                    $elt = JText::_('JNO');
+                                                }
                                             } elseif ($element->plugin == 'field') {
                                                 $params = json_decode($element->params);
 
@@ -1829,8 +1862,6 @@ class EmundusModelApplication extends JModelList
                                                 } else {
                                                     $elt = $element->content;
                                                 }
-                                            } elseif ($element->plugin == 'yesno') {
-                                                $elt = ($element->content == 1) ? JText::_("JYES") : JText::_("JNO");
                                             } elseif ($element->plugin == 'emundus_fileupload') {
                                                 $params = json_decode($element->params);
 
@@ -2971,7 +3002,8 @@ class EmundusModelApplication extends JModelList
     public function getAttachmentsByFnum($fnum, $ids=null, $attachment_id=null) {
         try {
 
-            $query = "SELECT eu.*, sa.value FROM #__emundus_uploads as eu
+            $query = "SELECT eu.*, sa.value 
+                        FROM #__emundus_uploads as eu
                         LEFT JOIN #__emundus_setup_attachments as sa on sa.id = eu.attachment_id
                         WHERE fnum like ".$this->_db->quote($fnum);
 
@@ -4505,8 +4537,8 @@ class EmundusModelApplication extends JModelList
 
             // create preview based on filetype
             if ($extension == 'pdf') {
-                $content = base64_encode(file_get_contents($filePath));
-                $preview['content'] = '<object width="100%" height="100%" style="border:none;"><embed width="100%" height="100%" src="data:application/pdf;base64,' . $content . '" type="application/pdf"></object>';
+                $siteUrl = JURI::base();
+                $preview['content'] = '<iframe src="' . $siteUrl . $filePath . '" style="width:100%;height:100%;" frameborder="0"></iframe>';
             } else if ($extension == 'txt') {
                 $content = file_get_contents($filePath);
                 $preview['overflowY'] = true;
@@ -4530,13 +4562,6 @@ class EmundusModelApplication extends JModelList
                     default:
                         $class = 'Word2007';
                 }
-
-                // ? Check if render as pdf would be a better solution
-                // $rendererName = \PhpOffice\PhpWord\Settings::PDF_RENDERER_TCPDF;
-                // \PhpOffice\PhpWord\Settings::setPdfRenderer($rendererName, JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf');
-                // $pdf = new \PhpOffice\PhpWord\Writer\PDF($phpWord);
-                // $pdf->save($fileName . '.pdf');
-                // $preview['content'] = '<iframe src="' . JPATH_SITE . DS . $fileName . '.pdf" width="99%" height="99%"></iframe>';
 
                 $phpWord = \PhpOffice\PhpWord\IOFactory::load(JPATH_SITE . DS . $filePath, $class);
                 $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);

@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -52,60 +52,6 @@ class ActionLogPlugin extends JCMSPlugin
 		$this->option = $this->option ?: 'com_' . $this->alias;
 	}
 
-	public function onContentAfterDelete($context, $table)
-	{
-		if (strpos($context, $this->option) === false)
-		{
-			return;
-		}
-
-		if ( ! ArrayHelper::find(['*', 'delete'], $this->events))
-		{
-			return;
-		}
-
-		$item = $this->getItem($context);
-
-		$title = $table->title ?? $table->name ?? $table->id;
-
-		$message = [
-			'type'  => $item->title,
-			'id'    => $table->id,
-			'title' => $title,
-		];
-
-		Log::delete($message, $context);
-	}
-
-	public function onContentAfterSave($context, $table, $isNew)
-	{
-		if (strpos($context, $this->option) === false)
-		{
-			return;
-		}
-
-		$event = $isNew ? 'create' : 'update';
-
-		if ( ! ArrayHelper::find(['*', $event], $this->events))
-		{
-			return;
-		}
-
-		$item = $this->getItem($context);
-
-		$title    = $table->title ?? $table->name ?? $table->id;
-		$item_url = str_replace('{id}', $table->id, $item->url);
-
-		$message = [
-			'type'     => $item->title,
-			'id'       => $table->id,
-			'title'    => $title,
-			'itemlink' => $item_url,
-		];
-
-		Log::save($message, $context, $isNew);
-	}
-
 	public function onContentChangeState($context, $ids, $value)
 	{
 		if (strpos($context, $this->option) === false)
@@ -148,102 +94,6 @@ class ActionLogPlugin extends JCMSPlugin
 
 			Log::changeState($message, $context, $value);
 		}
-	}
-
-	public function onExtensionAfterDelete($context, $table)
-	{
-		self::onContentAfterDelete($context, $table);
-	}
-
-	public function onExtensionAfterInstall($installer, $eid)
-	{
-		// Prevent duplicate logs
-		if (in_array('install_' . $eid, self::$ids))
-		{
-			return;
-		}
-
-		$context = JFactory::getApplication()->input->get('option');
-
-		if (strpos($context, $this->option) === false)
-		{
-			return;
-		}
-
-		if ( ! ArrayHelper::find(['*', 'install'], $this->events))
-		{
-			return;
-		}
-
-		$extension = Extension::getById($eid);
-
-		if (empty($extension->manifest_cache))
-		{
-			return;
-		}
-
-		$manifest = json_decode($extension->manifest_cache);
-
-		if (empty($manifest->name))
-		{
-			return;
-		}
-
-		self::$ids[] = 'install_' . $eid;
-
-		$message = [
-			'id'             => $eid,
-			'extension_name' => JText::_($manifest->name),
-		];
-
-		Log::install($message, 'com_regularlabsmanager', $manifest->type);
-	}
-
-	public function onExtensionAfterSave($context, $table, $isNew)
-	{
-		self::onContentAfterSave($context, $table, $isNew);
-	}
-
-	public function onExtensionAfterUninstall($installer, $eid, $result)
-	{
-		// Prevent duplicate logs
-		if (in_array('uninstall_' . $eid, self::$ids))
-		{
-			return;
-		}
-
-		$context = JFactory::getApplication()->input->get('option');
-
-		if (strpos($context, $this->option) === false)
-		{
-			return;
-		}
-
-		if ( ! ArrayHelper::find(['*', 'uninstall'], $this->events))
-		{
-			return;
-		}
-
-		if ($result === false)
-		{
-			return;
-		}
-
-		$manifest = $installer->get('manifest');
-
-		if ($manifest === null)
-		{
-			return;
-		}
-
-		self::$ids[] = 'uninstall_' . $eid;
-
-		$message = [
-			'id'             => $eid,
-			'extension_name' => JText::_($manifest->name),
-		];
-
-		Log::uninstall($message, 'com_regularlabsmanager', $manifest->attributes()->type);
 	}
 
 	private function getItem($context)
@@ -299,5 +149,155 @@ class ActionLogPlugin extends JCMSPlugin
 		}
 
 		return $item;
+	}
+
+	public function onExtensionAfterDelete($context, $table)
+	{
+		self::onContentAfterDelete($context, $table);
+	}
+
+	public function onContentAfterDelete($context, $table)
+	{
+		if (strpos($context, $this->option) === false)
+		{
+			return;
+		}
+
+		if ( ! ArrayHelper::find(['*', 'delete'], $this->events))
+		{
+			return;
+		}
+
+		$item = $this->getItem($context);
+
+		$title = $table->title ?? $table->name ?? $table->id;
+
+		$message = [
+			'type'  => $item->title,
+			'id'    => $table->id,
+			'title' => $title,
+		];
+
+		Log::delete($message, $context);
+	}
+
+	public function onExtensionAfterInstall($installer, $eid)
+	{
+		// Prevent duplicate logs
+		if (in_array('install_' . $eid, self::$ids))
+		{
+			return;
+		}
+
+		$context = JFactory::getApplication()->input->get('option');
+
+		if (strpos($context, $this->option) === false)
+		{
+			return;
+		}
+
+		if ( ! ArrayHelper::find(['*', 'install'], $this->events))
+		{
+			return;
+		}
+
+		$extension = Extension::getById($eid);
+
+		if (empty($extension->manifest_cache))
+		{
+			return;
+		}
+
+		$manifest = json_decode($extension->manifest_cache);
+
+		if (empty($manifest->name))
+		{
+			return;
+		}
+
+		self::$ids[] = 'install_' . $eid;
+
+		$message = [
+			'id'             => $eid,
+			'extension_name' => JText::_($manifest->name),
+		];
+
+		Log::install($message, 'com_regularlabsmanager', $manifest->type);
+	}
+
+	public function onExtensionAfterSave($context, $table, $isNew)
+	{
+		self::onContentAfterSave($context, $table, $isNew);
+	}
+
+	public function onContentAfterSave($context, $table, $isNew)
+	{
+		if (strpos($context, $this->option) === false)
+		{
+			return;
+		}
+
+		$event = $isNew ? 'create' : 'update';
+
+		if ( ! ArrayHelper::find(['*', $event], $this->events))
+		{
+			return;
+		}
+
+		$item = $this->getItem($context);
+
+		$title    = $table->title ?? $table->name ?? $table->id;
+		$item_url = str_replace('{id}', $table->id, $item->url);
+
+		$message = [
+			'type'     => $item->title,
+			'id'       => $table->id,
+			'title'    => $title,
+			'itemlink' => $item_url,
+		];
+
+		Log::save($message, $context, $isNew);
+	}
+
+	public function onExtensionAfterUninstall($installer, $eid, $result)
+	{
+		// Prevent duplicate logs
+		if (in_array('uninstall_' . $eid, self::$ids))
+		{
+			return;
+		}
+
+		$context = JFactory::getApplication()->input->get('option');
+
+		if (strpos($context, $this->option) === false)
+		{
+			return;
+		}
+
+		if ( ! ArrayHelper::find(['*', 'uninstall'], $this->events))
+		{
+			return;
+		}
+
+		if ($result === false)
+		{
+			return;
+		}
+
+		$manifest = $installer->get('manifest');
+
+		if ($manifest === null)
+		{
+			return;
+		}
+
+		self::$ids[] = 'uninstall_' . $eid;
+
+		$message = [
+			'id'             => $eid,
+			'extension_name' => JText::_($manifest->name),
+		];
+
+		Log::uninstall($message, 'com_regularlabsmanager', $manifest->attributes()->type);
 	}
 }

@@ -99,7 +99,7 @@ if (!empty($status)) {
                         $mailer = JFactory::getMailer();
 
                         $post = array('FNUM' => $fnumsInfos['fnum'],'CAMPAIGN_LABEL' => $fnumsInfos['label'], 'CAMPAIGN_END' => $fnumsInfos['end_date']);
-                        $tags = $m_emails->setTags($fnumsInfos['applicant_id'], $post, $fnumsInfos['fnum']);
+                        $tags = $m_emails->setTags($fnumsInfos['applicant_id'], $post, $fnumsInfos['fnum'], '', $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
                         $from       = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
                         $from_id    = 62;
