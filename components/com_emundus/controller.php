@@ -1474,7 +1474,7 @@ class EmundusController extends JControllerLegacy {
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
 
-            if(empty($fileInfo) && EmundusHelperAccess::isApplicant($current_user->id)){
+            if(empty($fileInfo) && EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)){
                 $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
                 $query.= " WHERE fnum IN (". implode(',',$db->quote($fnums)) . ')';
                 $query .= " AND filename like " . $db->Quote($file);
