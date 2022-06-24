@@ -4516,6 +4516,31 @@ class EmundusControllerFiles extends JControllerLegacy
         exit;
     }
 
+    public function exportLogs()
+    {
+        $user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', '');
+
+        if (!empty($fnum)) {
+            if (EmundusHelperAccess::asAccessAction(37, 'r', $user->id, $fnum)) {
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+                $m_logs = new EmundusModelLogs;
+                $res = $m_logs->exportLogs($fnum);
+            } else {
+                $res = array(
+                    'status' => false,
+                    'msg' =>''
+                );
+            }
+        } else {
+            $res = array('status' => false, 'msg' => JText::_('INVALID_PARAMETERS'));
+        }
+
+        echo json_encode($res);
+        exit;
+    }
+
     public function checkIfSomeoneElseIsEditing()
     {
         $jinput = JFactory::getApplication()->input;
