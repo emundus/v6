@@ -564,7 +564,7 @@ export default {
       if (this.canExport) {
         attachmentService
             .exportAttachments(
-                this.displayedUser.id,
+                this.displayedUser.user_id,
                 this.displayedFnum,
                 this.checkedAttachments
             )
@@ -633,7 +633,7 @@ export default {
         // delete all checkedAttachments
         const response = await attachmentService.deleteAttachments(
             this.displayedFnum,
-            this.displayedUser.id,
+            this.displayedUser.user_id,
             this.checkedAttachments
         );
 
