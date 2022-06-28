@@ -43,7 +43,10 @@ export default {
   mixins: [mixin],
   props:{
     site: String,
-    level_max: Number
+    level_max: {
+      type: Number,
+      default: 3
+    }
   },
   data() {
     return {

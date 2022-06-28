@@ -33,7 +33,10 @@ export default {
   name: "Tree",
   props:{
     node: Object,
-    level_max: Number,
+    level_max: {
+      type: Number,
+      default: 3
+    },
     emundus_tags: Array,
   },
   data() {
