@@ -606,7 +606,7 @@ export default {
       if (this.canExport) {
         attachmentService
             .exportAttachments(
-                this.displayedUser.id,
+                this.displayedUser.user_id,
                 this.displayedFnum,
                 this.checkedAttachments
             )
@@ -677,14 +677,14 @@ export default {
           syncService.deleteAttachments(this.checkedAttachments).then(async (response) => {
             response = await attachmentService.deleteAttachments(
                 this.displayedFnum,
-                this.displayedUser.id,
+                this.displayedUser.user_id,
                 this.checkedAttachments
             );
           });
         } else {
           response = await attachmentService.deleteAttachments(
               this.displayedFnum,
-              this.displayedUser.id,
+              this.displayedUser.user_id,
               this.checkedAttachments
           );
         }

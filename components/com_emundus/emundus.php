@@ -485,6 +485,10 @@ JText::script('COM_EMUNDUS_FILE_EDITED_BY_ANOTHER_USER');
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
 
+// LOGS
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD');
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR');
+JText::script('COM_EMUNDUS_LOGS_EXPORT');
 // ONBOARD
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
