@@ -527,7 +527,6 @@ class FileSynchronizer
 
                     if (!empty($response->entry->id)) {
                         $exists = true;
-                        $this->updateUploadSyncState($upload_id, $nodeId);
                     }
                 }
                 break;
