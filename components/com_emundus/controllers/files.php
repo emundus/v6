@@ -435,9 +435,27 @@ class EmundusControllerFiles extends JControllerLegacy
         foreach ($fnums as $fnum) {
             if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                 $aid = intval(substr($fnum, 21, 7));
+                $comment_content = array(
+                    'applicant_id' => $aid,
+                    'user_id' => $user,
+                    'reason' => $title,
+                    'comment_body' => $comment,
+                    'fnum' => $fnum,
+                    'status_from' => -1,
+                    'status_to' => -1
+                );
+
+                JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onBeforeCommentAdd', [$comment_content]);
+                $dispatcher->trigger('callEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
+
                 $res = $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum, 'status_from' => -1, 'status_to' => -1,)));
                 if (empty($res)) {
                     $fnumErrorList[] = $fnum;
+                } else {
+                    $dispatcher->trigger('onAfterCommentAdd', [$comment_content]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterCommentAdd', ['comment' => $comment_content]]);
                 }
             } else {
                 $fnumErrorList[] = $fnum;
@@ -460,9 +478,14 @@ class EmundusControllerFiles extends JControllerLegacy
         $m_files = $this->getModel('Files');
         $tags = $m_files->getAllTags();
 
+        $params = JComponentHelper::getParams('com_emundus');
+        $show_tags_category = $params->get('com_emundus_show_tags_category', 0);
+
+
         echo json_encode((object)(array('status' => true,
             'tags' => $tags,
             'tag' => JText::_('COM_EMUNDUS_TAGS'),
+            'show_tags_category' => $show_tags_category,
             'select_tag' => JText::_('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'))));
         exit;
     }
@@ -675,15 +698,23 @@ class EmundusControllerFiles extends JControllerLegacy
                 foreach ($fnums as $fnum) {
                     //$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
                     $fnumList .= '<li><a href="'.JURI::base().'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
+                    $campaign_label = $fnums[$fnum['fnum']]['label'];
+                    $campaign_start_date = $fnums[$fnum['fnum']]['start_date'];
+                    $campaign_end_date = $fnums[$fnum['fnum']]['end_date'];
+                    $campaign_year = $fnums[$fnum['fnum']]['year'];
                 }
                 $fnumList .= '</ul>';
 
                 $post = [
                     'FNUMS' => $fnumList,
                     'NAME' => $eval->name,
-                    'SITE_URL' => JURI::base()
+                    'SITE_URL' => JURI::base(),
+                    'CAMPAIGN_LABEL' => $campaign_label,
+                    'CAMPAIGN_YEAR' => $campaign_year,
+                    'CAMPAIGN_START' => $campaign_start_date,
+                    'CAMPAIGN_END' => $campaign_end_date
                 ];
-                $c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id);
+                $c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id, null, $fnum['fnum']);
             }
         }
 
@@ -1153,7 +1184,7 @@ class EmundusControllerFiles extends JControllerLegacy
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
             }
-            $msg = JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
+            $msg = JText::_('COM_EMUNDUS_APPLICATION_PUBLISHED_STATE_SUCCESS');
         } else $msg = JText::_('STATE_ERROR');
 
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -3900,13 +3931,13 @@ class EmundusControllerFiles extends JControllerLegacy
         $nbcamp = count($campaigns);
         foreach ($campaigns as $c) {
             if ($nbcamp == 1) {
-                $html .= '<option value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'" value="'.$c->id.'" selected>'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             } else {
-                $html .= '<option value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
+                $html .= '<option data-year="'. $c->year .'" data-training="'. $c->training .'"  value="'.$c->id.'">'.$c->label.' - '.$c->training.' ('.$c->year.')</option>';
             }
         }
 
-        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp)));
+        echo json_encode((object)(array('status' => true, 'html' => $html, 'nbcamp' => $nbcamp, 'campaigns' => $campaigns)));
         exit;
     }
 
@@ -4483,5 +4514,58 @@ class EmundusControllerFiles extends JControllerLegacy
 
         echo json_encode((array('status' => $status, 'anonyme' => $anonyme, 'msg' => $msg)));
         exit;
+    }
+
+    public function exportLogs()
+    {
+        $user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', '');
+
+        if (!empty($fnum)) {
+            if (EmundusHelperAccess::asAccessAction(37, 'r', $user->id, $fnum)) {
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+                $m_logs = new EmundusModelLogs;
+                $res = $m_logs->exportLogs($fnum);
+            } else {
+                $res = array(
+                    'status' => false,
+                    'msg' =>''
+                );
+            }
+        } else {
+            $res = array('status' => false, 'msg' => JText::_('INVALID_PARAMETERS'));
+        }
+
+        echo json_encode($res);
+        exit;
+    }
+
+    public function checkIfSomeoneElseIsEditing()
+    {
+        $jinput = JFactory::getApplication()->input;
+        $format = $jinput->get->getString('format', 'json');
+        $data = [];
+        $status = false;
+
+        $config = JComponentHelper::getParams('com_emundus');
+        $display_other_user_editing_same_file = $config->get('display_other_user_editing_same_file', 0);
+
+        if ($display_other_user_editing_same_file) {
+            $fnum = $jinput->get->getString('fnum', '');
+
+            if (!empty($fnum)) {
+                $m_files = $this->getModel('Files');
+                $data = $m_files->checkIfSomeoneElseIsEditing($fnum);
+                $status = !empty($data);
+            }
+        }
+
+        if ($format == 'json') {
+            echo json_encode((array('status' => $status, 'data' => $data)));
+            exit;
+        }
+
+        return !empty($data) ? $data : false;
     }
 }

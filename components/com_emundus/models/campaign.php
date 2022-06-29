@@ -909,13 +909,6 @@ class EmundusModelCampaign extends JModelList {
                 ' LIKE ' .
                 $this->_db->quoteName('sc.training')
             )
-            ->leftJoin(
-                $this->_db->quoteName('#__falang_content', 'fc') .
-                ' ON ' .
-                $this->_db->quoteName('fc.reference_id') .
-                ' LIKE ' .
-                $this->_db->quoteName('sc.id') . ' AND reference_table LIKE ' . $this->_db->quote('emundus_setup_campaigns')
-            )
             ->where($filterDate)
             ->andWhere($fullRecherche)
             ->andWhere($this->_db->quoteName('sc.training') . ' IN (' . implode(',',$this->_db->quote($programs)) . ')')

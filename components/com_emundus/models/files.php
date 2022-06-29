@@ -1851,7 +1851,6 @@ class EmundusModelFiles extends JModelLegacy
      * @return bool|mixed
      */
     public function tagFile($fnums, $tags) {
-
         try {
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
@@ -2525,6 +2524,20 @@ class EmundusModelFiles extends JModelLegacy
                             $sub_query  = preg_replace('#{shortlang}#', $locales, $sub_query);
 
                             $query .= ', ('.$sub_query.') AS '. $elt->table_join.'___'.$elt->element_name;
+                        } elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                            $select = $elt->table_join.'.'.$elt->element_name;
+                            $element_attribs = json_decode($elt->element_attribs);
+                            foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                                if(empty($first_replace)) {
+                                    $select = "REPLACE(" . $select . ",'" . $value . "','" . $element_attribs->sub_options->sub_labels[$key] . "')";
+                                } else {
+                                    $select .= ",REPLACE(" . $select . ",'" . $value . "','" . $element_attribs->sub_options->sub_labels[$key] . "')";
+                                }
+                            }
+                            $query .= ', '.$select.' AS '. $elt->table_join.'___'.$elt->element_name;
+                            if (!in_array($elt->table_join, $lastTab)) {
+                                $leftJoinMulti .= ' left join '.$elt->table_join.' on '.$elt->table_join.'.parent_id='.$elt->tab_name.'.id ';
+                            }
                         } else {
                             $query .= ', '.$elt->table_join.'.'.$elt->element_name.' AS '. $elt->table_join.'___'.$elt->element_name;
                             if (!in_array($elt->table_join, $lastTab)) {
@@ -2604,6 +2617,23 @@ class EmundusModelFiles extends JModelLegacy
                                 WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
 
                             $query .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
+                        } elseif ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                            $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
+                            if($raw == 1){
+                                $select = $select;
+                            } else{
+                                $element_attribs = json_decode($elt->element_attribs);
+                                foreach ($element_attribs->sub_options->sub_values as $key => $value) {
+                                    $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                    $endif .= ')';
+                                }
+                                $select = implode(',', $if) . ',' . $select . $endif;
+                            }
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$select.') SEPARATOR ", ")
+                                FROM '.$tableAlias[$elt->tab_name].'
+                                LEFT JOIN '.$repeat_join_table.' ON '.$repeat_join_table.'.parent_id = '.$tableAlias[$elt->tab_name].'.id
+                                WHERE '.$tableAlias[$elt->tab_name].'.fnum=jos_emundus_campaign_candidature.fnum)';
+                            $query .= ', ' . $select . ' AS ' . $elt->tab_name . '___' . $elt->element_name;
                         } elseif ($elt->element_plugin == 'yesno') {
                             $select = 'REPLACE(`'.$elt->table_join . '`.`' . $elt->element_name.'`, "\t", "" )';
                             if($raw == 1){
@@ -3937,5 +3967,35 @@ class EmundusModelFiles extends JModelLegacy
         catch (Exception $e){
             JLog::add('component/com_emundus/models/files | Error when get tags by status ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
+    }
+
+    public function checkIfSomeoneElseIsEditing($fnum)
+    {
+        $result = false;
+        $user = JFactory::getUser();
+        $config = JComponentHelper::getParams('com_emundus');
+        $editing_time = $config->get('alert_editing_time', 2);
+
+        $actions = array(1,4,5,10,11,12,13,14);
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('DISTINCT ju.id, ju.name')
+            ->from('#__users as ju')
+            ->leftJoin('#__emundus_logs as jel ON ju.id = jel.user_id_from')
+            ->where($db->quoteName('jel.fnum_to') . ' = ' . $db->quote($fnum))
+            ->andWhere('action_id IN (' . implode(',', $actions) . ')')
+            ->andWhere('jel.timestamp > ' . $db->quote(date('Y-m-d H:i:s', strtotime('-' . $editing_time . ' minutes'))))
+            ->andWhere('jel.user_id_from != ' . $user->id);
+
+        $db->setQuery($query);
+
+        try {
+            $result = $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/files | Error when check if someone else is editing ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $result;
     }
 }

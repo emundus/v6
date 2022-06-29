@@ -46,6 +46,7 @@ JText::script('IN');
 JText::script('ALL');
 JText::script('USERNAME');
 JText::script('EMAIL');
+JText::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
 
 JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');
@@ -477,10 +478,17 @@ JText::script('COM_EMUNDUS_ACTIONS_SEARCH');
 
 JText::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
 JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
+JText::script('COM_EMUNDUS_FILES_ARE_EDITED_BY_OTHER_USERS');
+JText::script('COM_EMUNDUS_FILES_IS_EDITED_BY_OTHER_USER');
+JText::script('COM_EMUNDUS_FILE_EDITED_BY_ANOTHER_USER');
 
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
 
+// LOGS
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD');
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR');
+JText::script('COM_EMUNDUS_LOGS_EXPORT');
 // ONBOARD
 
 JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');

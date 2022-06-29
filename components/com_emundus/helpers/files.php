@@ -398,7 +398,7 @@ class EmundusHelperFiles
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label
         FROM #__emundus_setup_profiles esp
-        WHERE esp.status=1';
+        WHERE esp.status=1 and esp.id <> 1';
         $db->setQuery( $query );
         return $db->loadObjectList('id');
     }
@@ -2006,11 +2006,11 @@ class EmundusHelperFiles
         $user = JFactory::getUser();
         $db = JFactory::getDBO();
         if (is_null($id) && !empty($itemid)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND constraints LIKE "%col%" AND item_id='.$itemid;
+            $query = 'SELECT * FROM #__emundus_filters WHERE user='.$user->id.' AND constraints LIKE "%col%" AND item_id='.$itemid.' ORDER BY name';
             $db->setQuery( $query );
             return $db->loadObjectlist();
         } elseif (!empty($id)) {
-            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id.' AND constraints LIKE "%col%"';
+            $query = 'SELECT * FROM #__emundus_filters WHERE id='.$id.' AND constraints LIKE "%col%" ORDER BY name';
             $db->setQuery( $query );
             return $db->loadObject();
         } else {
@@ -2023,9 +2023,9 @@ class EmundusHelperFiles
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
             if (!isset($tagsList[$fnum])) {
-                $tagsList[$fnum] = '<a class="item"><div style="width: 100%" class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] = '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
             } else {
-                $tagsList[$fnum] .= '<a class="item"><div style="width: 100%" class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
+                $tagsList[$fnum] .= '<a class="item"><div class="ui mini '.$tag['class'].' horizontal label">'.$tag['label'].'</div></a> ';
             }
         }
         return $tagsList;

@@ -409,6 +409,7 @@ class plgUserEmundus extends JPlugin
                         if (isset($user['lastname'])) {
                             $query->set($db->quoteName('lastname') . ' = ' . $db->quote($user['lastname']));
                         }
+                        $query->where($db->quoteName('user_id') . ' = ' . $user_id);
 
                         $db->setQuery($query);
                         $db->execute();

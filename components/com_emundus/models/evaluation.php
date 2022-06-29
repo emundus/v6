@@ -1496,7 +1496,7 @@ class EmundusModelEvaluation extends JModelList {
         if (empty($current_fnum)) {
             $query .= ' WHERE c.status > 0 ';
         } else {
-            $query .= ' WHERE c.fnum like '.$current_fnum;
+            $query .= ' WHERE c.fnum like '. $dbo->quote($current_fnum) . ' ';
         }
 
         $query .= ' AND esc.published = 1 ';
@@ -2073,7 +2073,7 @@ class EmundusModelEvaluation extends JModelList {
     * 	@return int
     */
     function getEvaluationFormByProgramme($code = null) {
-
+        $form = 0;
         if ($code === NULL) {
             $session = JFactory::getSession();
             if ($session->has('filt_params')) {
@@ -2084,20 +2084,37 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
+        $group_id = 0;
+        $query = $this->_db->getQuery(true);
+        $query->select('fabrik_group_id')
+            ->from('#__emundus_setup_programmes')
+            ->where('code like '.$this->_db->Quote($code));
+
+        $this->_db->setQuery($query);
         try {
-            $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
-//die(str_replace('#_', 'jos', $query));
-            $this->_db->setQuery($query);
-
-            return $this->_db->loadResult();
-
+            $group_id = $this->_db->loadResult();
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+
+        if (!empty($group_id)) {
+            $query->clear()
+                ->select('ff.form_id')
+                ->from('#__fabrik_formgroup AS ff')
+                ->where('ff.group_id IN ('.$this->_db->quote($group_id).')');
+
+            $this->_db->setQuery($query);
+
+            try {
+                $form = $this->_db->loadResult();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $form;
     }
 
     /*
@@ -3373,10 +3390,14 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             /// remove unzipped folder
-            $_deleteFolders = glob($mergeZipAllPath . DS . '*');
-            foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-            rmdir($mergeZipAllPath);
-            $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
+            if (!empty($mergeZipAllPath)) {
+                $_deleteFolders = glob($mergeZipAllPath . DS . '*');
+                foreach($_deleteFolders as $_deleteFolder) {
+                    $this->deleteAll($_deleteFolder);
+                }
+                rmdir($mergeZipAllPath);
+                $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
+            }
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
@@ -3501,17 +3522,24 @@ class EmundusModelEvaluation extends JModelList {
                 rmdir($dir_Name_Path);
             }
 
-            if($mergeMode == 1) {
-                $_deleteFolders = glob($zip_All_Merge_Path . DS . '*');
-                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-                $this->deleteAll($zip_All_Merge_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
-
+            if ($mergeMode == 1) {
+                if (!empty($zip_All_Merge_Path)) {
+                    $_deleteFolders = glob($zip_All_Merge_Path . DS . '*');
+                    foreach($_deleteFolders as $_deleteFolder) {
+                        $this->deleteAll($_deleteFolder);
+                    }
+                    $this->deleteAll($zip_All_Merge_Path);
+                    $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
+                }
             } else {
-                $_deleteFolders = glob($zip_All_Path . DS . '*');
-                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-                $this->deleteAll($zip_All_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
+                if (!empty($zip_All_Path)) {
+                    $_deleteFolders = glob($zip_All_Path . DS . '*');
+                    foreach ($_deleteFolders as $_deleteFolder) {
+                        $this->deleteAll($_deleteFolder);
+                    }
+                    $this->deleteAll($zip_All_Path);
+                    $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
+                }
             }
         }
 
@@ -3636,11 +3664,17 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     private function deleteAll($dir) {
-        foreach(glob($dir . '/*') as $file) {
-            if(is_dir($file)) { deleteAll($file); }
-            else { unlink($file); }
+        if(!empty($dir) && strpos($dir,JPATH_BASE . DS . 'tmp/') !== false) {
+            foreach (glob($dir . '/*') as $file) {
+                if (is_dir($file)) {
+                    $this->deleteAll($file);
+                } else {
+                    unlink($file);
+                }
+            }
+            rmdir($dir);
+            return 0;
         }
-        rmdir($dir);
         return 0;
     }
 }

@@ -758,6 +758,25 @@ input:focus + .em-slider {
   align-items: start;
 }
 
+/*
+  OPACITY
+*/
+
+.em-opacity-high {
+  opacity: 1;
+}
+
+.em-opacity-medium {
+    opacity: 0.5;
+}
+
+.em-opacity-low {
+  opacity: 0.3;
+}
+
+.em-opacity-none {
+  opacity: 0;
+}
 
 /*
   BORDERS
@@ -996,7 +1015,7 @@ button.em-swal-cancel-button{
     box-shadow: unset !important;
   }
 }
-.swal2-actions{
+.swal2-actions:not(.em-flex-center){
   justify-content: space-between !important;
 }
 .em-swal-single-action{

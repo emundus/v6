@@ -67,17 +67,16 @@ class plgSystemEmunduswaitingroom extends JPlugin
             $force_redirect = $params->get('force_redirect','1');
             $redirection_url = $params->get('redirection_url','waiting-queue');
             $message_displayed = $params->get('message_displayed','PLG_EMUNDUSWAITINGROOM_MAX_SESSIONS_REACHED');
-            $max_sessions = $params->get('max_sessions','5000');
-            $active_session = 0;
+            $max_sessions = $params->get('max_sessions', '5000');
 
             $db = JFactory::getDBo();
             $query = $db->getQuery(true);
+            $query->select('count(userid)')
+                ->from($db->quoteName('#__session'))
+                ->where($db->quoteName('guest').' = 0');
+            $db->setQuery($query);
+            
             try {
-
-                $query->select('count(userid)')
-                    ->from($db->quoteName('#__session'))
-                    ->where($db->quoteName('guest').' = 0');
-                $db->setQuery($query);
                 $active_session = $db->loadResult();
             } catch (Exception $e) {
                 JLog::add('Error getting count session plugins/system/emunduswaitingroom:' .  $query->___toString(), JLog::ERROR, 'com_emundus');
@@ -85,7 +84,14 @@ class plgSystemEmunduswaitingroom extends JPlugin
 
             if ($active_session > $max_sessions) {
                 if ($force_redirect) {
-                    $app->redirect('/'.$redirection_url);
+                    $uri = JUri::getInstance();
+                    $current_url = $uri->toString();
+                    $parsed_url = parse_url($current_url);
+                    $current_path = $parsed_url['path'];
+
+                    if ($current_path !== '/' . $redirection_url) {
+                        $app->redirect('/' . $redirection_url);
+                    }
                 } else {
                     $app->enqueueMessage(JText::_($message_displayed), 'warning');
                 }

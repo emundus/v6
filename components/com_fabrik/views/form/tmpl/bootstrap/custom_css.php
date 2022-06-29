@@ -113,7 +113,8 @@ echo <<<EOT
 }
 
 
-.view-form.view-registration .fabrikGroup {
+.view-form.view-registration .fabrikGroup, 
+.view-form.em-formRegistrationCenter .fabrikGroup {
     padding: 0px !important;
 }
 
@@ -436,15 +437,16 @@ form#member-profile .form-horizontal .control-label {
 }*/
 
 
-.view-registration .icon-star.small {
+.view-registration .icon-star.small,
+.view-form.em-formRegistrationCenter .icon-star.small {
     margin-top: 0px;
     padding-top: 0px;
     position: relative;
     padding-left: 2px;
-    color: #c30505;
+    color: #e5283B;
     font-size: 5px;
     order: 2;
-    top: -10px;
+    top: -7px;
 }
 
 .icon-.small {
@@ -515,7 +517,7 @@ form#member-profile .form-horizontal .control-label {
     margin-top: 0 !important; 
 }
 
-.view-registration .login.em-formRegistrationCenter,  .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) {
+.view-registration .login.em-formRegistrationCenter {
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -523,13 +525,31 @@ form#member-profile .form-horizontal .control-label {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 150px;
+    margin-top: 92px;
     border-radius: 16px;
 }
+
+ .view-form.em-formRegistrationCenter:not(.view-registration) .em-formRegistrationCenter:not(.componentheading) {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 32px;
+    border-radius: 16px;
+}
+
 
 .view-registration .login.em-formRegistrationCenter .row-fluid {
     background: #fff;
 }
+
+.view-form.view-registration #system-message {
+     top: 95px;
+}
+
  .view-form.em-formRegistrationCenter form.fabrikForm .fabrikActions.form-actions .span4 .btn-group {
         width: 100% !important; 
 }
@@ -578,6 +598,7 @@ button.register {
     padding: 0px 64px 80px 64px;
     margin-top: 0px !important;
     border-radius: 0 0 16px 16px;
+    width: 100%;
   }
 
 .view-registration fieldset {
@@ -1203,10 +1224,6 @@ form#form_102 select#jos_emundus_campaign_candidature___campaign_id {
   content: '';
 }
 
-label[for="jos_emundus_users___terms_and_conditions_0_input_0"]  i.icon-star.small {
-  top: -9px; 
-}
-
 .view-login .form-horizontal,
 .view-registration form .row-fluid,
 .form-validate .control-group {
@@ -1455,15 +1472,13 @@ a.btn-attach:active {
 
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
     background: #fff;
-    width: 60%;
+    width: 50%;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-bottom: 50px !important;
-    margin-top: 85px !important; 
+    padding-bottom: 80px !important;
+    margin-top: 137px !important;
+
 }
 
 .view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form {
@@ -1472,12 +1487,43 @@ a.btn-attach:active {
     border-radius: 0;
     background: #fff;
     border-radius: 0;
-    padding: 0px !important;
+    padding: 32px 64px 0 64px;
     box-shadow: none;
-    width: 59%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
 }
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form  .controls input {
+    border-radius: 4px;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    padding: 0 12px 0 12px;
+    border: 1px solid #E3E3E3;
+    box-shadow: none;
+    margin-top: 12px;
+}
+
+.view-form.em-formRegistrationCenter .moduletable.em-formRegistrationCenter form#login-form .controls label {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 19px;
+    letter-spacing: 0.0015em;
+    text-align: left;
+    margin-bottom: 0px;
+    color: #2B2B2B;
+}
+
 
 /*** MEDIA QUERY SECTION ***/
 
@@ -1554,7 +1600,7 @@ a.btn-attach:active {
          padding: 80px 24px 32px 24px;
          width: 100%;
     }
-    
+        
 }
 
 @media all and (min-width 480px) and (max-width: 767px) {

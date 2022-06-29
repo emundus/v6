@@ -4,7 +4,7 @@
       <transition :name="'slide-down'" type="transition">
         <div>
           <div>
-              <div>
+              <div v-if="data.type !== 'email'">
                   <div class="filter-subtitle">
                     <div>{{ translations.Filter }}</div>
                   </div>

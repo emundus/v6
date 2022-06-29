@@ -291,7 +291,7 @@ class EmundusModelEmails extends JModelList {
                             'user_id_from' => $from_id,
                             'user_id_to' => $to_id,
                             'subject' => $subject,
-                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('COM_EMUNDUS_APPLICATION_SENT').' '.JText::_('COM_EMUNDUS_TO').' '.$to.'</i><br>'.$body
+                            'message' => '<i>'.JText::_('MESSAGE').' '.JText::_('SENT').' '.JText::_('TO').' '.$to.'</i><br>'.$body
                         );
                         $this->logEmail($message);
                     }
@@ -1343,7 +1343,7 @@ class EmundusModelEmails extends JModelList {
      */
     public function get_messages_to_from_user($user_id) {
 
-        $query = 'SELECT * FROM #__messages WHERE (user_id_to ='.$user_id.' OR user_id_from ='.$user_id.') AND folder_id <> 2 ORDER BY date_time desc';
+        $query = 'SELECT * FROM #__messages WHERE user_id_to ='.$user_id.' AND folder_id <> 2 ORDER BY date_time desc';
 
         try {
 
