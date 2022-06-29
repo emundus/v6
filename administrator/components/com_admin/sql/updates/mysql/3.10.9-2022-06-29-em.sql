@@ -81,3 +81,12 @@ WHERE menutype = 'onboardingmenu' AND link LIKE 'index.php?option=com_emundus&vi
 SELECT @settings_id:=id FROM jos_menu WHERE menutype = 'onboardingmenu' AND link LIKE 'index.php?option=com_emundus&view=settings';
 UPDATE jos_falang_content SET value = JSON_REPLACE(value, '$.menu_image', '/images/emundus/menus/parametres.svg')
 WHERE reference_table LIKE 'menu' and reference_field LIKE 'params' and reference_id = @settings_id;
+
+
+SELECT @campaigns_module:=GROUP_CONCAT(id) FROM jos_modules WHERE module LIKE 'mod_emundus_campaign';
+UPDATE jos_falang_content
+SET value = JSON_REPLACE(value, '$.mod_em_campaign_date_format', 'd\/m\/Y à H\\hi')
+WHERE reference_table LIKE 'modules' and reference_field LIKE 'params' and language_id = 2 and reference_id IN (@campaigns_module);
+UPDATE jos_falang_content
+SET value = JSON_REPLACE(value, '$.mod_em_campaign_date_format', 'd\/m\/Y at H:i')
+WHERE reference_table LIKE 'modules' and reference_field LIKE 'params' and language_id = 1 and reference_id IN (@campaigns_module);
