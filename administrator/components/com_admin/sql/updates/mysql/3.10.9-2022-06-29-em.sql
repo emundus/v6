@@ -90,3 +90,15 @@ WHERE reference_table LIKE 'modules' and reference_field LIKE 'params' and langu
 UPDATE jos_falang_content
 SET value = JSON_REPLACE(value, '$.mod_em_campaign_date_format', 'd\/m\/Y at H:i')
 WHERE reference_table LIKE 'modules' and reference_field LIKE 'params' and language_id = 1 and reference_id IN (@campaigns_module);
+
+UPDATE jos_content
+SET title = 'Indicateurs',introtext = '<h1>Bienvenue sur la page indicateurs</h1>'
+WHERE id = 50;
+UPDATE jos_menu SET params = JSON_REPLACE(params, '$.show_title', '0')
+WHERE menutype = 'coordinatormenu' AND link LIKE 'index.php?option=com_content&view=article&id=50';
+UPDATE jos_falang_content
+SET value = 'Indicators'
+WHERE reference_table LIKE 'content' and reference_field LIKE 'title' and language_id = 1 and reference_id = 50;
+UPDATE jos_falang_content
+SET value = '<h1>Welcome to the indicators page</h1>'
+WHERE reference_table LIKE 'content' and reference_field LIKE 'introtext' and language_id = 1 and reference_id = 50
