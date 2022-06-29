@@ -1003,15 +1003,15 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .notifications-counter{
-    background: red;
+    background: #DB333E;
     padding: 10px;
-    border-radius: 50%;
     width: 20px;
     height: 20px;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
+    border-radius: 0.25em !important;
 }
 
 .list-group-item b {
@@ -1402,6 +1402,21 @@ thead th:hover {
     white-space: nowrap !important;
     vertical-align: baseline !important;
     border-radius: .25em !important;
+}
+
+.panel-title .label.label-info {
+    display: inline !important;
+    font-size: 100% !important;
+    line-height: 1 !important;
+    color: #ffffff !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    vertical-align: baseline !important;
+    border-radius: .25em !important;
+    width: 20px;
+    height: 20px;
+    padding: 2px 0px !important;
+    font-weight: normal !important;
 }
 
 .label[href]:hover,
