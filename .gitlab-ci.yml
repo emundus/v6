@@ -94,7 +94,7 @@ release-job:
     reports:
       dotenv: release.env
   only: 
-    - main
+    - master
 
 # publish-job:
 #   stage: publish
