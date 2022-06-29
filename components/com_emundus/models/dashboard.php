@@ -158,7 +158,7 @@ class EmundusModelDashboard extends JModelList
         $query = $this->_db->getQuery(true);
 
         try {
-            $query->select('ew.id,ew.name,ew.label,ew.params,ew.size,ew.size_small,ew.type,ew.class,esdr.position,ew.chart_type,ew.article_id')
+            $query->select('ew.*,esdr.position')
                 ->from($this->_db->quoteName('#__emundus_widgets_repeat_access','esdr'))
                 ->leftJoin($this->_db->quoteName('#__emundus_widgets','ew').' ON '.$this->_db->quoteName('ew.id').' = '.$this->_db->quoteName('esdr.parent_id'))
                 ->where($this->_db->quoteName('esdr.default') . ' = ' . $this->_db->quote(1))
@@ -245,6 +245,36 @@ class EmundusModelDashboard extends JModelList
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/dashboard | Error when try to get widgets by profile : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];
+        }
+    }
+
+    public function removeWidget($widget,$profile){
+        $query = $this->_db->getQuery(true);
+
+        try {
+            $query->select('esdr.id')
+                ->from($this->_db->quoteName('#__emundus_setup_dashboard','esd'))
+                ->leftJoin($this->_db->quoteName('#__emundus_setup_dashbord_repeat_widgets','esdr').' ON '.$this->_db->quoteName('esdr.parent_id').' = '.$this->_db->quoteName('esd.id'))
+                ->where($this->_db->quoteName('esd.profile') . ' = ' . $this->_db->quote($profile))
+                ->andWhere($this->_db->quoteName('esdr.widget') . ' = ' . $this->_db->quote($widget));
+            $this->_db->setQuery($query);
+            $widgets_to_delete = $this->_db->loadColumn();
+
+            $query->clear()
+                ->delete('#__emundus_setup_dashbord_repeat_widgets')
+                ->where($this->_db->quoteName('id') . ' IN (' . implode(',',$widgets_to_delete) . ')');
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+
+            $query->clear()
+                ->delete('#__emundus_widgets_repeat_access')
+                ->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($widget))
+                ->andWhere($this->_db->quoteName('profile') . ' = ' . $this->_db->quote($profile));
+            $this->_db->setQuery($query);
+            return $this->_db->execute();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/dashboard | Error when try to remove widget in profile : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
         }
     }
 

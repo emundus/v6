@@ -124,6 +124,23 @@ class EmundusControllerDashboard extends JControllerLegacy
         exit;
     }
 
+    public function removewidget(){
+        try {
+            $jinput = JFactory::getApplication()->input;
+
+            $widget = $jinput->get('widget');
+            $profile = $jinput->get('profile');
+
+            $result = $this->model->removeWidget($widget,$profile);
+
+            $tab = array('status' => 0, 'msg' => 'success', 'data' => $result);
+        } catch (Exception $e) {
+            $tab = array('status' => 0, 'msg' => $e->getMessage(), 'data' => null);
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getallwidgetsbysize(){
         try {
             $user = JFactory::getUser();

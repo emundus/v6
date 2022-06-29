@@ -23,7 +23,7 @@
           v-bind="dragOptions">
         <transition-group type="transition" :value="!drag ? 'flip-list' : null" style="display: block;min-height: 200px">
           <div v-for="(widget,index) in widgets" class="em-shadow-cards handle em-grab" style="height: auto" :key="'widget_' + widget.id">
-            <span class="material-icons-outlined em-pointer">remove_circle_outline</span>
+            <span class="material-icons-outlined em-pointer" @click="removeWidget(widget.id)">remove_circle_outline</span>
             <div>
               <ChartRender :widget="widget" :index="index" />
             </div>
@@ -114,6 +114,12 @@ export default {
             this.getDefaultDashoard(this.selectedProfile);
           });
         }
+      });
+    },
+    removeWidget(value){
+      dashboardService.removeWidget(value,this.selectedProfile).then(() => {
+        const index = this.widgets.findIndex(item => item.id === value);
+        this.widgets.splice(index,1);
       });
     }
   },

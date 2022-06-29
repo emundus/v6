@@ -118,6 +118,26 @@ export default {
         }
     },
 
+    async removeWidget(widget,profile){
+        try {
+            return await client().delete(`index.php?option=com_emundus&controller=dashboard&task=removewidget`,
+                {
+                    params: {
+                        widget: widget,
+                        profile: profile
+                    },
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+        } catch (e) {
+            return {
+                status: false,
+                msg: e.message
+            };
+        }
+    },
+
     create_UUID(){
         var dt = new Date().getTime();
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
