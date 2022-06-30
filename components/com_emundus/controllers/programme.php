@@ -222,7 +222,7 @@ class EmundusControllerProgramme extends JControllerLegacy {
 
             $result = $this->m_programme->addProgram($data);
 
-            if ($result) {
+            if (is_array($result)) {
                 $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_ADDED'), 'data' => $result);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_PROGRAMS'), 'data' => $result);

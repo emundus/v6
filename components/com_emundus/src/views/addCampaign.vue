@@ -210,6 +210,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import axios from "axios";
 import { Datetime } from "vue-datetime";
 import { DateTime as LuxonDateTime, Settings } from "luxon";
@@ -443,15 +444,30 @@ export default {
         },
         data: qs.stringify({body: programForm})
       }).then((rep) => {
-        this.form.progid = rep.data.data.programme_id;
-        this.form.training = rep.data.data.programme_code;
-        this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-        this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+        if (rep.data.status) {
+          this.form.progid = rep.data.data.programme_id;
+          this.form.training = rep.data.data.programme_code;
+          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
-        campaignService.createCampaign(this.form).then((response) => {
-          this.campaignId = response.data.data;
-          this.quitFunnelOrContinue(this.quit);
-        });
+          campaignService.createCampaign(this.form).then((response) => {
+            this.campaignId = response.data.data;
+            this.quitFunnelOrContinue(this.quit);
+          });
+        } else {
+          Swal.fire({
+            title: this.translate(rep.data.msg),
+            text: rep.data.data,
+            type: "error",
+            confirmButtonText: this.translate("OK"),
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-flex-center',
+            }
+          });
+
+          this.submitted = false;
+        }
       });
     },
 
