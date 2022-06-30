@@ -1321,6 +1321,37 @@ class EmundusControllerMessages extends JControllerLegacy {
 			}
 			return false;
 		} else {
+            $user_id_to = !empty($user_id) ? $user_id : null;
+
+            if ($user_id_to === null) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $query->select('id')
+                    ->from('#__users')
+                    ->where('email = ' . $db->quote($email_address));
+
+                $db->setQuery($query);
+
+                try {
+                    $user_id_to = $db->loadResult();
+                } catch (Exception $e) {
+                    JLog::add('error trying to find user_id_to ' . $e->getMessage(), JLog::ERROR);
+                }
+            }
+
+            if (!empty($user_id_to)) {
+                // Logs send email
+                $log = [
+                    'user_id_from'  => 62,
+                    'user_id_to'    => null,
+                    'subject'       => $subject,
+                    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$email_address.'</i><br>'.$body,
+                    'type'          => $template->type
+                ];
+                $m_emails = new EmundusModelEmails();
+                $m_emails->logEmail($log);
+            }
+
 			return true;
 		}
 	}
