@@ -103,5 +103,4 @@ UPDATE jos_falang_content
 SET value = '<h1>Welcome to the indicators page</h1>'
 WHERE reference_table LIKE 'content' and reference_field LIKE 'introtext' and language_id = 1 and reference_id = 50
 
-
 UPDATE jos_modules SET published = 0 WHERE title LIKE 'User menu phone';
