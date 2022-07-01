@@ -1343,7 +1343,7 @@ class EmundusControllerMessages extends JControllerLegacy {
                 // Logs send email
                 $log = [
                     'user_id_from'  => 62,
-                    'user_id_to'    => null,
+                    'user_id_to'    => $user_id_to,
                     'subject'       => $subject,
                     'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$email_address.'</i><br>'.$body,
                     'type'          => $template->type
