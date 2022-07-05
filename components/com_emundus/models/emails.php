@@ -95,7 +95,7 @@ class EmundusModelEmails extends JModelList {
         if(!is_null($to_current_user)) {
             $query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
         }
-        $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode('","', $this->_db->quote($code)) .')')
+        $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($code)) .')')
             ->group('eset.id');
         $this->_db->setQuery( $query );
         $results = $this->_db->loadObjectList();
