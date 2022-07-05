@@ -135,6 +135,12 @@ if($user != null) {
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if(document.getElementById('profile_chzn') != null){
+            document.getElementById('profile_chzn').style.display = 'none';
+            document.getElementById('profile').style.display = 'block';
+        }
+    });
     function displayUserOptions(){
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
