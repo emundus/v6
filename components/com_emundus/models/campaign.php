@@ -879,11 +879,7 @@ class EmundusModelCampaign extends JModelList {
             $fullRecherche = '(' .
                 $this->_db->quoteName('sc.label') .
                 ' LIKE ' .
-                $this->_db->quote('%' . $recherche . '%') . ' OR ' .
-                $this->_db->quoteName('fc.value') .
-                ' LIKE ' .
-                $this->_db->quote('%' . $recherche . '%')
-            . ')';
+                $this->_db->quote('%' . $recherche . '%') . ')';
         }
 
         $query
