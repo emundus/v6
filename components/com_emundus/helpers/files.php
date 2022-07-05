@@ -200,22 +200,21 @@ class EmundusHelperFiles
             $codes = $m_files->getAssociatedProgrammes($current_user->id);
 
             // ONLY FILES LINKED TO MY GROUP
-	        $programme = null;
-            if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) || $filts_details['programme'] !== NULL) {
-	            $programme = !empty($m_files->code) ? $m_files->code : '';
+            $programme = null;
+            if (!empty($filts_details['programme']) || $filts_details['programme'] !== NULL) {
+                $programme = !empty($m_files->code) ? $m_files->code : '';
             }
 
-            //////////////////////////////////////////
-            if ((is_array($filts_details['programme']) && count(@$params['programme']) == 0) || @$params['programme'][0] == '%') {
+            if ((is_array($filts_details['programme']) && !empty($params['programme']))) {
                 $params['programme'] = $programme;
-                $filts_details['programme'] = $programme;
-            } elseif ((is_array($filts_details['programme']) && count($filts_details['programme']) == 0) || empty($filts_details['programme'])) {
-                $filts_details['programme'] = $programme;
             }
-            if ((is_array($codes) && count($codes)) > 0 && isset($code)) {
+            $filts_details['programme'] = $programme;
+
+            // TODO: code is never set so we were never passing here ? What was it used for ?
+            /*if ((is_array($codes) && count($codes)) > 0 && isset($code)) {
                 $params['programme'] = array_merge($params['programme'], $codes);
                 $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
-            }
+            }*/
         }
 
 
