@@ -5287,7 +5287,7 @@ $(document).ready(function() {
                                 '<div id="email-preview" class="email___message_body_item">' +
                                 '<div class="form-group em-form-subject">' +
                                 '<span class="label label-grey" for="mail_from" >' + Joomla.JText._('EMAIL_SUBJECT') + ':' + '</span>' +
-                                '<input type="text" id="email-preview-label" style="height:35px; font-weight: bold;">'+
+                                '<input type="text" id="email-preview-label" style="height:35px; font-weight: bold; width: 100%">'+
                                 '</div>'+
                                 '</div>' +
 
