@@ -75,10 +75,10 @@ export default {
     },
     methods: {
         async retriveListData() {
-            console.log('******$')
+
             try {
                 const response = await ListService.getListAndDataContains();
-                console.log(response);
+
                 this.listColumns = response.data.listColumns;
                 this.listData = response.data.listData;
             } catch (e) {
