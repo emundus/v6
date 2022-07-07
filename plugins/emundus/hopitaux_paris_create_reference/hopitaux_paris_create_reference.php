@@ -79,15 +79,16 @@ class PlgEmundusHopitaux_paris_create_reference extends JPlugin {
 
                 if (!empty($reference)) {
                     $query->clear()
-                        ->select('reference')
+                        ->select('cast(substring_index(reference,'/',-1) as signed) as reference_number')
                         ->from($db->quoteName('data_references_dossiers'))
-                        ->where($db->quoteName('reference') . ' LIKE ' . $db->quote($reference . '%'));
+                        ->where($db->quoteName('reference') . ' LIKE ' . $db->quote($reference . '%'))
+                        ->order('reference_number');
                     $db->setQuery($query);
                     $references = $db->loadColumn();
 
                     if (!empty($references)) {
-                        $last = explode('/', end($references));
-                        $new_reference_number = (int)end($last) + 1;
+                        $last = end($references);
+                        $new_reference_number = (int)$last + 1;
                     } else {
                         $new_reference_number = 1;
                     }
