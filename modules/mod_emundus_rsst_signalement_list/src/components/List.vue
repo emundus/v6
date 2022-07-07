@@ -19,7 +19,14 @@
             </tr>
             </thead>
             <tbody>
-            <Row/>
+            <Row
+                v-for="data in listData"
+                :key="data.id"
+                :rowData="data"
+                :listColumns="listColumns"
+
+
+            />
             </tbody>
         </table>
 

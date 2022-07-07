@@ -61,6 +61,7 @@ class EmundusModelList extends JModelList
                         $data->index = $i;
                         $data->content = $response;*/
                         $params = json_decode($response->params,true);
+                        $response->column_real_name= $column_name;
                         $column = $response->table_join.'.'.$params["join-label"];
                         array_push($databaseJoinsKeysAndColumns,$response);
                         array_push($listColumns,$column);
@@ -94,7 +95,7 @@ class EmundusModelList extends JModelList
 
             $listDataResult = $this->db->loadObjectList();
 
-            $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaJoinElementInList($databaseJoinsKeysAndColumns,$listDataResult);
+            $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns,$listDataResult);
 
 
         } catch (Exception $e) {
@@ -130,12 +131,18 @@ class EmundusModelList extends JModelList
 
     }
 
-    public function removeForeignKeyValueFormDataLoadedIfExistingDatabaJoinElementInList($databasejoinColumnsList, $listData){
+    public function removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databasejoinColumnsList, $listData){
         if(count($databasejoinColumnsList)>0) {
             foreach ($databasejoinColumnsList as $dbJoin) {
                 foreach ($listData as $data) {
-                    $property = (json_decode($dbJoin->params, true)["join-label"]) . '_pk';
+                    $params = json_decode($dbJoin->params, true);
+                    $property = $params["join-label"] . '_pk';
+                    $real_name = $dbJoin->column_real_name;
+                    $join_name =  $params["join-label"];
+                    //rename column join to his real name on the object
+                     $data->$real_name = $data->$join_name ;
                     unset($data->$property);
+                    unset($data->$join_name);
                 }
             }
             return $listData;

@@ -42,7 +42,7 @@ class EmundusControllerList extends JControllerLegacy {
             $listId = $jinput->getInt('listId');
 
 
-            $listData = $this->m_list->getList(375);
+            $listData = $this->m_list->getList(317);
 
             if (!empty($listData)) {
                 $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
