@@ -12,76 +12,19 @@ workflow:
     - when: never
 
 stages:
-  - build
-  # - test
   - release
-  # - publish
-  # - deploy
 
 variables:
   GIT_SUBMODULE_STRATEGY: normal
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: 1
 
-build-to-test-job:
-  stage: build
+connect-to-registry:
+  stage: release
   before_script: 
     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
   script:
-    - echo "coming soon"
-#     - docker pull $CI_REGISTRY/tchooz-build:latest || true
-#     - docker build --cache-from $CI_REGISTRY/tchooz-build:latest -t $CI_REGISTRY/tchooz:latest -t $CI_REGISTRY/tchooz-build:$CI_COMMIT_SHORT_SHA --build-arg=BUILDKIT_INLINE_CACHE=1 --build-arg xdebug=1 --build-arg jest=1 .
-#     - docker push $CI_REGISTRY/tchooz-build:$CI_COMMIT_SHORT_SHA
-#     - docker push $CI_REGISTRY/tchooz-build:latest
-
-# lint-job:
-#   stage: test
-#   image: docker/compose:1.29.2
-#   before_script: 
-#     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-#     - docker-compose up -d
-#   script:
-#     - echo "Linting code..."
-#     - echo "No lint issues found."
-#   after_script:
-#     - docker-compose down
-
-# phpunit-job:
-#   stage: test
-#   image: docker/compose:1.29.2
-#   before_script: 
-#     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-#     - docker-compose up -d
-#   script:
-#     - docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/sh -c "/var/www/html/libraries/emundus/phpunit.phar -c /var/www/html/phpunit.xml --coverage-text"
-#   after_script:
-#     - docker-compose down
-
-# jest-job:
-#   stage: test
-#   image: docker/compose:1.29.2
-#   before_script: 
-#     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-#     - docker-compose up -d
-#   script:
-#     - echo "Multiple Vue.js unit tests no longer work ! -> DevTask"
-#     #- docker exec web-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID /bin/bash -c "cd /var/www/html/components && yarn run test:unit com_emundus/ --verbose"
-#   after_script:
-#     - docker-compose down
-
-# selenium-job:
-#   stage: test
-#   image: docker/compose:1.29.2
-#   before_script: 
-#     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-#     - docker-compose up -d
-#   script:
-#     - echo "Running functionnal tests..."
-#     - echo "Your application is ready"
-#   after_script:
-#     - docker-compose down
-#   only:
-#     - schedules
+    - echo "Connected to $CI_REGISTRY repository"
 
 release-job:
   stage: release
@@ -96,32 +39,12 @@ release-job:
   only: 
     - master
 
-# publish-job:
-#   stage: publish
-#   before_script: 
-#     - echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-#   script:
-#     - echo "$NEW_VERSION"
-#     - docker build --compress -t $CI_REGISTRY/tchooz:$NEW_VERSION -t $CI_REGISTRY/tchooz:latest .
-#     - docker push $CI_REGISTRY/tchooz:$NEW_VERSION
-#     - docker push $CI_REGISTRY/tchooz:latest
-#   needs:
-#     - release-job
-#   only:
-#     - main
-
-# deploy-staging-job:
-#   stage: deploy
-#   script:
-#     - echo "Deploying application.."
-#     - echo "Application successfully deployed."
-#   only:
-#     - staging
-
-# deploy-prod-job:
-#   stage: deploy
-#   script:
-#     - echo "Deploying application..."
-#     - echo "Application successfully deployed."
-#   only:
-#     - main
+sync-documentation-job:
+  stage: release
+  image: $CI_REGISTRY/emundus-sync-documentation:1.0.0
+  script:
+    - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
+  needs:
+    - release-job
+  only: 
+    - master
