@@ -1875,13 +1875,16 @@ $(document).ready(function() {
         var fnums = getUserCheckArray();
 
         if (fnums !== 'all') {
+            var fnums_list = [];
             var fnums_json = JSON.parse(fnums);
+
             if (fnums_json.length === 1) {
                 var fnum = fnums_json[0].fnum;
                 var cid = fnums_json[0].cid;
                 var sid = fnums_json[0].sid;
+                fnums_list.push(fnums_json[0].fnum);
+                fnums_list = fnums_list.join(',');
             } else {
-                var fnums_list = [];
                 for(const value of fnums_json){
                     if(value.fnum !== 'em-check-all'){
                         fnums_list.push(value.fnum);

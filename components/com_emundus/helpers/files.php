@@ -108,7 +108,7 @@ class EmundusHelperFiles
             'institution'       => NULL,
             'spam_suspect'      => NULL,
             'not_adv_filter'    => NULL,
-	        'tag'               => NULL
+            'tag'               => NULL
         ];
         $filts_options  = [
             'profile'           => NULL,
@@ -130,7 +130,7 @@ class EmundusHelperFiles
             'institution'       => NULL,
             'spam_suspect'      => NULL,
             'not_adv_filter'    => NULL,
-	        'tag'               => NULL
+            'tag'               => NULL
         ];
 
         $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users', 'group', 'institution', 'tag');
@@ -143,31 +143,31 @@ class EmundusHelperFiles
                     $params[$filt_name] = explode('|', $filts_values[$key]);
                     $params[$filt_name] = array_unique($params[$filt_name]);
                 } else {
-                	$params[$filt_name] = $filts_values[$key];
+                    $params[$filt_name] = $filts_values[$key];
                 }
             }
 
             if (array_key_exists($key, $filts_values)) {
                 if (in_array($filt_name, $filter_multi_list)) {
-	                $filts_details[$filt_name] = explode('|', $filts_values[$key]);
+                    $filts_details[$filt_name] = explode('|', $filts_values[$key]);
                 } else {
-	                $filts_details[$filt_name] = $filts_values[$key];
+                    $filts_details[$filt_name] = $filts_values[$key];
                 }
             } else {
-            	$filts_details[$filt_name] = '';
+                $filts_details[$filt_name] = '';
             }
 
             if (array_key_exists($key, $filts_types)) {
                 if ($filts_types[$key] == "hidden") {
                     if (in_array($filt_name, $filter_multi_list)) {
-	                    $params[$filt_name] = explode('|', $filts_values[$key]);
+                        $params[$filt_name] = explode('|', $filts_values[$key]);
                     } else {
-	                    $params[$filt_name] = $filts_values[$key];
+                        $params[$filt_name] = $filts_values[$key];
                     }
                 }
                 $filts_options[$filt_name] = $filts_types[$key];
             } else {
-            	$filts_options[$filt_name] = '';
+                $filts_options[$filt_name] = '';
             }
 
         }
@@ -179,17 +179,17 @@ class EmundusHelperFiles
             $filts_details['status'] = $fd_with_param;
         }
         */
-		if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
-			$fd_with_param          = $params['group'] + $filts_details['group'];
-			$params['group']        = $filts_details['group'];
-			$filts_details['group'] = $fd_with_param;
-		}
+        if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
+            $fd_with_param          = $params['group'] + $filts_details['group'];
+            $params['group']        = $filts_details['group'];
+            $filts_details['group'] = $fd_with_param;
+        }
 
-	    if (is_array($filts_details['institution']) && count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
+        if (is_array($filts_details['institution']) && count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
             $fd_with_param = $params['institution'] + $filts_details['institution'];
             $params['institution'] = $filts_details['institution'];
             $filts_details['institution'] = $fd_with_param;
-	    }
+        }
 
         // Else statement is present due to the fact that programmes are group limited
         if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
@@ -220,7 +220,7 @@ class EmundusHelperFiles
 
         // Used for adding default columns when no programme is loaded.
         if (empty($params['programme'])) {
-	        $params['programme'] = ["%"];
+            $params['programme'] = ["%"];
         }
 
 
