@@ -194,6 +194,16 @@ class plgSystemEmundus_caslogin extends JPlugin
                 $sid = $app->getUserState('com_externallogin.server');
             }
 
+            if(empty($sid)){
+                $query = $db->getQuery(true);
+
+                $query->select('id')
+                    ->from($db->quoteName('#__externallogin_servers'))
+                    ->where($db->quoteName('published') . ' = 1');
+                $db->setQuery($query);
+                $sid = $db->loadResult();
+            }
+
             if (!empty($ticket) && !empty($sid)) {
                 // Load the server
                 $server = JTable::getInstance('Server', 'ExternalloginTable');
