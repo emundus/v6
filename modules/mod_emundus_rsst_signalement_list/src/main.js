@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import App from './App.vue';
 import translate from '../../../components/com_emundus/src/mixins/translate';
 import store from '../../../components/com_emundus/src/store/index.js';
+import './mixins';
 
 import { VPopover} from 'v-tooltip';
 
