@@ -1,23 +1,26 @@
 <template>
-    <tr class="list-row" >
+    <tr class="list-row">
         <td>
-            <input type="checkbox" class="em-switch input">
+            <input type="checkbox" class="em-switch input" v-model = 'checkedRows.rows' :value ='rowData' checked = 'true'>
         </td>
+
         <td v-for="column in listColumns" :key="column.label">
 
-            {{rowData[column.column_name]}}
-        </td>
+            <template v-if="column.column_name != 'etat' || column.column_name != 'publication'">
+                <template v-if="column.plugin =='date'">
+                    {{ formattedDate(rowData[column.column_name]) }}
+                </template>
+                <template v-else>
+                    {{ rowData[column.column_name] }}
+                </template>
+            </template>
+            <template v-else>
+                <span :class="classFromValue(rowData[column.column_name])">
+                        {{ texteFromValue(rowData[column.column_name]) }}
+                </span>
+            </template>
 
-        <!--<td>
-            <div class="tag done">
-                Fait
-            </div>
-        </td>-->
-        <!--<td>
-            <div class="tag done">
-                Fait
-            </div>
-        </td>-->
+        </td>
         <td>
 			<span>
 				<list-action-menu></list-action-menu>
@@ -39,10 +42,65 @@ export default {
         listColumns: {
             type: Array,
             required: true
+        },
+        checkedRows:{
+            type: Object,
+            required : true
         }
     },
     components: {
         'list-action-menu': ListActionMenu
+    },
+    methods: {
+        classFromValue(val) {
+            let className = '';
+            switch (val) {
+                case 'a_faire':
+                    className = 'tag todo';
+                    break;
+                case 'en_cours':
+                    className = 'tag inprogress';
+                    break;
+                case 'fait' :
+                    className = 'tag done';
+                    break;
+                case 'sand_objet' :
+                    className = 'tag todo';
+                    break;
+                case '1' :
+                    className = 'tag done';
+                    break;
+                case '0' :
+                    className = 'to do';
+
+            }
+            return className;
+        },
+        texteFromValue(val) {
+
+            let texte = '';
+            switch (val) {
+                case 'a_faire':
+                    texte = 'À faire';
+                    break;
+                case 'en_cours':
+                    texte = 'En cours';
+                    break;
+                case 'fait' :
+                    texte = 'Fait';
+                    break;
+                case 'sans_objet' :
+                    texte = 'Sans objet';
+                    break;
+                case '1' :
+                    texte = 'Publié';
+                    break;
+                case '0' :
+                    texte = 'Non publié';
+
+            }
+            return texte;
+        }
     }
 }
 </script>
@@ -69,8 +127,8 @@ export default {
         }
 
         &.inprogress {
-            color: #FFFFFF;
-            background: #080C12;
+
+            background: #FFFBDB;
         }
     }
 
