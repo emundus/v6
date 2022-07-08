@@ -37,7 +37,7 @@ class EmundusModelList extends JModelList
     {
 
         $query = $this->db->getQuery(true);
-        $query->select('DISTINCT jfe.name as column_name, jfe.plugin, jfe.label,jfe.id, jfl.db_table_name as db_table_name')
+        $query->select('DISTINCT jfe.name as column_name, jfe.plugin,jfe.filter_type, jfe.label,jfe.id, jfl.db_table_name as db_table_name')
             ->from($this->db->quoteName('#__fabrik_lists', 'jfl'))
             ->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jfl.form_id') . ' = ' . $this->db->quoteName('jffg.form_id'))
             ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
