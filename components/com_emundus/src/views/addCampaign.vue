@@ -329,8 +329,9 @@ export default {
 
     let now = new Date();
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
-    this.getLanguages();
-    this.getCampaignById();
+    this.getLanguages().then(() => {
+      this.getCampaignById();
+    });
   },
   methods: {
     getCampaignById() {
@@ -407,13 +408,17 @@ export default {
 
       this.getStatus();
     },
-    getLanguages() {
-      axios({
+    async getLanguages() {
+      const response = await axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages"
-      }).then(response => {
-        this.languages = response.data.data;
       });
+
+      if (response) {
+        this.languages = response.data.data;
+      }
+
+      return response;
     },
 
     setCategory(e) {
