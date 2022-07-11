@@ -2416,9 +2416,14 @@ class EmundusModelFiles extends JModelLegacy
             foreach ($elements as $elt) {
                 $params_group = json_decode($elt->group_attribs);
 
-                $query_isjoin = 'select is_join from jos_fabrik_groups where id = '.$elt->group_id;
-                $db->setQuery($query_isjoin);
-                $is_join = $db->loadResult();
+                try{
+                    $query_isjoin = 'select is_join from jos_fabrik_groups where id = '.$elt->group_id;
+                    $db->setQuery($query_isjoin);
+                    $is_join = $db->loadResult();
+                } catch(Exception $e){
+                    JLog::add('Error when get param is_join from group : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+
 
                 if (!array_key_exists($elt->tab_name, $tableAlias)) {
 
