@@ -1389,7 +1389,7 @@ class EmundusModelApplication extends JModelList
                     $forms .= '</div>';
 
                     // liste des groupes pour le formulaire d'une table
-                    $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params
+                    $query = 'SELECT ff.id, ff.group_id, fg.id, fg.label, fg.params, fg.is_join
 	                            FROM #__fabrik_formgroup ff, #__fabrik_groups fg
 	                            WHERE ff.group_id = fg.id AND fg.published = 1 AND
 	                                  ff.form_id = "' . $itemt->form_id . '"
@@ -1430,7 +1430,7 @@ class EmundusModelApplication extends JModelList
                         if (count($elements) > 0) {
 
 
-                            if ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1) {
+                            if ((int)$g_params->repeated === 1 || (int)$g_params->repeat_group_button === 1 || (int)$itemg->is_join === 1) {
 
                                 $query = 'SELECT table_join FROM #__fabrik_joins WHERE list_id=' . $itemt->table_id . ' AND group_id=' . $itemg->group_id . ' AND table_join_key like "parent_id"';
                                 try {
