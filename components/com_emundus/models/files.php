@@ -2416,6 +2416,10 @@ class EmundusModelFiles extends JModelLegacy
             foreach ($elements as $elt) {
                 $params_group = json_decode($elt->group_attribs);
 
+                $query_isjoin = 'select is_join from jos_fabrik_groups where id = '.$elt->group_id;
+                $db->setQuery($query_isjoin);
+                $is_join = $db->loadResult();
+
                 if (!array_key_exists($elt->tab_name, $tableAlias)) {
 
                     $tableAlias[$elt->tab_name] = $elt->tab_name;
@@ -2430,7 +2434,7 @@ class EmundusModelFiles extends JModelLegacy
                     $lastTab[] = $elt->tab_name;
                 }
 
-                if ($params_group->repeat_group_button == 1) {
+                if ($params_group->repeat_group_button == 1 || $is_join == 1) {
                     // Get the table repeat table name using this query
                     $repeat_join_table_query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $elt->group_id . ' AND table_join_key like "parent_id"';
                     try {
