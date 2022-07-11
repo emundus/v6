@@ -63,17 +63,17 @@
                   </span>
 
                   <v-popover :popoverArrowClass="'custom-popover-arrow'">
-                    <button class="tooltip-target b3 card-button"></button>
+                    <span class="tooltip-target material-icons-outlined">more_vert</span>
 
                     <template slot="popover">
                       <div class="container-2 w-container" style="max-width: unset">
                         <transition :name="'slide-down'" type="transition">
                           <div>
-                            <nav aria-label="action" class="actions-dropdown pointer">
-                              <a v-on:click="enableUpdatingGroup(group)" class="action-submenu">
+                            <nav aria-label="action" class="em-flex-column em-align-start pointer">
+                              <a v-on:click="enableUpdatingGroup(group)" class="em-p-8-0 em-neutral-700-color">
                                 {{translations.EditName}}
                               </a>
-                              <a v-on:click="displayHideGroup(group)" class="action-submenu">
+                              <a v-on:click="displayHideGroup(group)" class="em-p-8-0 em-neutral-700-color">
                                 {{translations.DisplayHide}}
                               </a>
                               <a @click="deleteAGroup(group,index_group)" class="action-submenu" v-if="files == 0 && !group.cannot_delete" :title="translations.Delete">
@@ -154,7 +154,7 @@
                           <div v-if="element.element" :class="element.errorClass" v-html="element.element"></div>
                           <span v-if="element.tipSide" v-html="element.tipSide"></span>
                         </div>
-                        <div v-else class="fabrikElement" v-html="element.element"></div>
+                        <div v-else class="fabrikElement" :class="'plugin-'+element.plugin" v-html="element.element"></div>
                         <span v-if="element.tipSide" v-html="element.tipSide"></span>
                         <span v-if="element.tipBelow" v-html="element.tipBelow"></span>
                       </div>
@@ -1353,5 +1353,10 @@ export default {
 
 .radio.btn-radio.btn-group label span{
   margin-top: 0 !important;
+}
+
+.fabrikElement.plugin-display .fabrikinput {
+  height: auto !important;
+  border: unset !important;
 }
 </style>
