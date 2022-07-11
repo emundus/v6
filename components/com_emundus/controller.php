@@ -92,7 +92,7 @@ class EmundusController extends JControllerLegacy {
         if($profile == null) {
             $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
         }
-        
+
         $h_menu = new EmundusHelperMenu;
         $getformids = $h_menu->getUserApplicationMenu($profile);
 
@@ -1461,26 +1461,23 @@ class EmundusController extends JControllerLegacy {
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
         if (!empty(JFactory::getUser($uid)->id)) {
-
             $db = JFactory::getDBO();
-            $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
-            if(!empty($fnum)){
-                $query.= " WHERE fnum like ". $db->quote($fnum);
-            } else{
-                $query.= " WHERE user_id = " . $uid;
-            }
-            $query .= " OR filename like " . $db->Quote($file);
 
-            $db->setQuery($query);
-            $fileInfo = $db->loadObject();
-
-            if(empty($fileInfo) && EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)){
+            if(EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)){
                 $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
                 $query.= " WHERE fnum IN (". implode(',',$db->quote($fnums)) . ')';
                 $query .= " AND filename like " . $db->Quote($file);
-                $db->setQuery($query);
-                $fileInfo = $db->loadObject();
+            } else {
+                $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
+                if (!empty($fnum)) {
+                    $query .= " WHERE fnum like " . $db->quote($fnum);
+                } else {
+                    $query .= " WHERE user_id = " . $uid;
+                }
+                $query .= " OR filename like " . $db->Quote($file);
             }
+            $db->setQuery($query);
+            $fileInfo = $db->loadObject();
 
             $first_part_of_filename = explode('_', $file)[0];
             if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28) {
