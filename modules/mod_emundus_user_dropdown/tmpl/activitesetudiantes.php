@@ -139,6 +139,13 @@ if($user != null) {
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if(document.getElementById('profile_chzn') != null){
+            document.getElementById('profile_chzn').style.display = 'none';
+            document.getElementById('profile').style.display = 'block';
+        }
+    });
+
     function displayUserOptions(){
         var dropdown = document.getElementById('userDropdown');
         var icon = document.getElementById('userDropdownIcon');
@@ -171,21 +178,6 @@ if($user != null) {
         e.stopPropagation();
         displayUserOptions();
     });
-
-    /*document.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var dropdown = document.getElementById('userDropdown');
-        var icon = document.getElementById('userDropdownIcon');
-
-        if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
-            setTimeout(() => {
-                dropdown.classList.remove('open');
-                jQuery("#userDropdownMenu").css("transform","unset")
-                icon.classList.remove('active');
-            },300);
-        }
-    });*/
 
     function postCProfile() {
         var current_fnum = document.getElementById("profile").value;
@@ -237,7 +229,7 @@ if($user != null) {
                 download(file,'carte_acces.pdf')
             },
             error : function (jqXHR, status, err) {
-                alert("Error switching porfiles.");
+                alert("Une erreur est survenue à la génération de votre carte d'accès. Veuillez contactez un administrateur");
             }
         });
     }
