@@ -1321,6 +1321,11 @@ body>.g-container {
     display: contents;
   }
 
+  .fabrikForm .plg-calc span {
+    border:none !important;
+    padding: 15px 0;
+  }
+
   .form-actions .row-fluid .span4 .btn-group .register {
     color: $base-primary-color;
     border: 1px solid $base-primary-color;
