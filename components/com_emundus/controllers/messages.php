@@ -1580,7 +1580,8 @@ class EmundusControllerMessages extends JControllerLegacy {
         $fnum = $jinput->post->getRaw('fnum', null);
 
         $raw = $jinput->post->getRaw('raw', null);
-
+        $template_email_id = $jinput->post->getString('tmpl', null);
+        
         if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
             die(JText::_("ACCESS_DENIED"));
         }
@@ -1711,7 +1712,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $mailer->addAttachment($file_path);
         $send = $mailer->Send();
-
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger('onAfterEmailSend', ['fnum', 'template_id']);
+        $dispatcher->trigger('callEventHandler', ['onAfterEmailSend', ['fnum' => $fnum, 'template_id' => $template_email_id]]);
         /* track the log of email */
         if ($send !== true) {
             $failed[] = $fnum_info['email'];
