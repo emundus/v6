@@ -191,7 +191,6 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 <script type="text/javascript">
     function checkurl() {
-
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
