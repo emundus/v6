@@ -1,7 +1,11 @@
 <template>
     <div id="actions-list-table">
-
-        <div class="em-flex-row-start em-flex-space-between em-w-auto em-mb-32">
+        <div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
+            <input class="em-input withSearchIco" type="search" placeholder="Rechercher" v-model="searchTerm"
+                   @keyup="searchInAllListColumn">
+            <span class="material-icons reload-icons" @click="reloadData">loop</span>
+        </div>
+        <div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
             <template v-for="data in listColumns">
                 <template v-if="data.filter_type ==='field' || data.filter_type ==='dropdown' ">
                     <filter-item :id="data.id+'_'+data.filter_type" :key="data.id+'_'+data.filter_type"
@@ -17,11 +21,12 @@
 
         </div>
 
-        <table :aria-describedby="'Table of actions lists '">
+        <table :class="{ loading: loading }" :aria-describedby="'Table of actions lists '">
             <thead class="list-table-head">
             <tr>
                 <th>
-                    <!--<input type="checkbox" v-model="checkedRows.rows" class="em-switch input" :value="listData" > --></th>
+                    <!--<input type="checkbox" v-model="checkedRows.rows" class="em-switch input" :value="listData" > -->
+                </th>
                 <th v-for="data in listColumns" :id="data.column_name" :key="data.id"
                     @click="orderBy(data.column_name)">
                     <span
@@ -35,6 +40,11 @@
 
                     {{ translate(data.label) }}
                 </th>
+                <th>
+                    <span>
+                        <list-action-menu :actionColumnId="ListActionColumn" :listId="listId"></list-action-menu>
+                    </span>
+                </th>
 
             </tr>
             </thead>
@@ -45,14 +55,19 @@
                 :rowData="data"
                 :listColumns="listColumns"
                 :checkedRows='checkedRows'
+                :actionColumnId="ListActionColumn"
+                :listId="listId"
             />
             <tr v-if="items.length == 0">
-                <td :colspan="listColumns.length" >
-                    {{translate('COM_EMUNDUS_MOD_RSST_LIST_NO_DATA')}}
+                <td :colspan="listColumns.length+2" class="em-text-align-center">
+                    {{ translate('COM_EMUNDUS_MOD_RSST_LIST_NO_DATA') }}
                 </td>
             </tr>
             </tbody>
         </table>
+        <div v-if="loading">
+            <div class="em-page-loader"></div>
+        </div>
     </div>
 </template>
 
@@ -61,13 +76,24 @@
 import Row from './Row.vue';
 import Filter from './Filter.vue';
 import ListService from '../services/list';
-
+import ListActionMenu from './ListActionMenu.vue';
 
 export default {
     name: "List",
     components: {
         Row,
         'filter-item': Filter,
+        'list-action-menu': ListActionMenu
+    },
+    props:{
+        listId:{
+            type: String,
+            required: true,
+        },
+        ListActionColumn: {
+            type:String,
+            required: false
+        }
     },
     data: () => ({
         loading: true,
@@ -83,16 +109,27 @@ export default {
         checkedRows: {
             rows: []
         },
+        searchTerm: ''
 
     }),
     created() {
+        console.log("hello he is "+  this.listId);
         this.retriveListData();
     },
     methods: {
+        reloadData(){
+            this.loading = true;
+            this.listColumns =[];
+            this.listData =[];
+            this.items = [];
+            this.filters = [];
+            this.retriveListData();
+
+        },
         async retriveListData() {
 
             try {
-                const response = await ListService.getListAndDataContains();
+                const response = await ListService.getListAndDataContains(this.listId);
 
                 this.listColumns = response.data.listColumns;
 
@@ -101,8 +138,11 @@ export default {
 
                 this.filtersInitialize();
 
+                this.loading = false;
+
 
             } catch (e) {
+                this.loading = false;
                 console.log(e);
             }
         },
@@ -164,6 +204,7 @@ export default {
             this.filtering();
 
         },
+
         filtering() {
 
             this.items = this.listData.filter(item => {
@@ -172,6 +213,28 @@ export default {
                 })
             })
 
+        },
+
+        searchInAllListColumn() {
+            this.items = this.listData.filter(item => {
+                return Object.keys(item).some(key => {
+                    if (item[key] !== null) {
+
+                        return item[key].toLowerCase().includes(this.searchTerm.toLowerCase());
+                    } else {
+                        return false;
+                    }
+                })
+            })
+        },
+
+        clearFilters() {
+
+            this.filters.map(el => {
+                return {...el, filterValue: ''}
+            })
+
+            this.filtering();
         }
 
 
@@ -179,6 +242,78 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+input.withSearchIco {
+    height: 35px !important;
+    display: block;
+    padding: 9px 4px 9px 45px !important;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
+}
+.reload-icons{
+    font-size: 30px!important;
+    cursor: grab;
+    transform: rotate(90deg);
+}
+
+table {
+
+    &.loading {
+        visibility: hidden;
+    }
+
+    border: 0;
+
+    tr {
+        th:first-of-type {
+            width: 39px;
+
+            input {
+                margin-right: 0px;
+            }
+        }
+    }
+
+    tr,
+    th {
+        height: 49px;
+        background: transparent;
+        background-color: transparent;
+    }
+
+    td,
+    th {
+        width: fit-content;
+    }
+
+    th.desc,
+    td.desc {
+        max-width: 300px;
+        width: initial;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    th.status,
+    td.status {
+        min-width: 100px;
+        white-space: nowrap;
+    }
+
+    thead {
+        tr {
+            th {
+                border-top: 1px solid #e0e0e0;
+                border-bottom: 1px solid #e0e0e0;
+
+                .material-icons {
+                    transform: translateY(3px);
+                }
+            }
+        }
+    }
+}
+
 
 </style>

@@ -16,6 +16,8 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field name="fabrik_list_id" type="number" label="Fabrik list ID"></field>
+                <field name="fabrik_list_particular_action_column" type="number" label="Fabrick List Action Column"></field>
             </fieldset>
         </fields>
     </config>

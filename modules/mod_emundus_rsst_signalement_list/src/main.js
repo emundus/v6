@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import App from './App.vue';
-import translate from '../../../components/com_emundus/src/mixins/translate';
 import store from '../../../components/com_emundus/src/store/index.js';
 import './mixins';
 
@@ -15,7 +14,6 @@ Vue.component('v-popover', VPopover);
 
 Vue.use(Vuex);
 
-Vue.mixin(translate);
 
 const modRsstSignalementList =  document.getElementById('em-rsst-signalement-list-vue');
 if (modRsstSignalementList) {
@@ -25,7 +23,9 @@ if (modRsstSignalementList) {
     render(h) {
       return h(App, {
         props: {
-          currentUser: modRsstSignalementList.getAttribute('user')
+          currentUser: modRsstSignalementList.getAttribute('user'),
+          fabrikListId: modRsstSignalementList.getAttribute('listId'),
+          fabrikListActionColumn: modRsstSignalementList.getAttribute('listActionColumn'),
         }
       });
     }

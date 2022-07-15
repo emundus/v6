@@ -1,13 +1,12 @@
 <template>
-  <div>
-      <label >{{translate(columnNameLabel)}}</label>
-       <select class="list-vue-select em-mt-4" v-if="filterType =='dropdown'" v-model="filterValue" >
-           <option value="all"> {{translate('COM_EMUNDUS_ALL')}}</option>
-           <option v-for="(data,index) in filterDatas" :key="data+'_'+index" :value="data"> {{data}}</option>
-       </select>
+    <div>
+        <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='dropdown'" v-model="filterValue" style="width: max-content">
+            <option value="all" selected > {{translate(columnNameLabel) }}</option>
+            <option v-for="(data,index) in filterDatas" :key="data+'_'+index" :value="data"> {{ data }}</option>
+        </select>
 
-       <input type="text"  placeholder="Good day " v-if="filterType =='field'" v-model="filterValue"/>
-  </div>
+        <input type="text" placeholder="Good day " v-if="filterType =='field'" v-model="filterValue" class="list-vue-input em-input" :placeholder="translate(columnNameLabel)"/>
+    </div>
 </template>
 
 <script>
@@ -23,23 +22,24 @@ export default {
             required: true
         },
         columnName: {
-            type:String,
-            require:true
+            type: String,
+            require: true
         },
-        columnNameLabel:{
-            type:String,
-            required:true
+        columnNameLabel: {
+            type: String,
+            required: true
         }
     },
-    data: ()=>({
-        filterValue:''
+    data: () => ({
+        filterValue: ''
     }),
     created() {
+        this.filterValue = this.filterType == 'dropdown' ? 'all' :'';
     },
-    watch : {
-        filterValue: function(val){
+    watch: {
+        filterValue: function (val) {
 
-            this.$emit('filterValue', val,this.columnName);
+            this.$emit('filterValue', val, this.columnName);
 
         }
     }
@@ -47,6 +47,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.list-vue-select, .list-vue-input {
+    height: 35px;
+}
+.list-vue-select{
+    width: 206px!important;
 
+}
 </style>

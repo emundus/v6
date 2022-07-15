@@ -1,8 +1,8 @@
 <template>
-  <div id="app">
+    <div id="app">
 
-    <List />
-  </div>
+        <List :listId="fabrikListId" :listActionColumn="fabrikListActionColumn"/>
+    </div>
 </template>
 
 <script>
@@ -10,10 +10,20 @@
 import List from './components/List.vue';
 
 export default {
-  name: 'App',
-  components: {
-    List
-  }
+    name: 'App',
+    components: {
+        List
+    },
+    props: {
+        fabrikListId: {
+            type: String,
+            required:true
+        },
+        fabrikListActionColumn: {
+            type: String,
+            required: false
+        },
+    }
 }
 </script>
 
@@ -21,13 +31,14 @@ export default {
 @import url("../../../components/com_emundus/src/assets/css/main.scss");
 
 #app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 60px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    margin-top: 60px;
 }
-#g-container-main .g-container{
-  width: 90%;
+
+#g-container-main .g-container {
+    width: 90%;
 }
 
 </style>

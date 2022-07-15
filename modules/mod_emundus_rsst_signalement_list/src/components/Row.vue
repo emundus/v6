@@ -23,7 +23,7 @@
         </td>
         <td>
 			<span>
-				<list-action-menu></list-action-menu>
+				<list-action-menu :actionColumnId="ListActionColumn" :listId="listId"></list-action-menu>
 			</span>
         </td>
     </tr>
@@ -46,7 +46,15 @@ export default {
         checkedRows:{
             type: Object,
             required : true
-        }
+        },
+        ListActionColumn: {
+            type:String,
+            required: false
+        },
+        listId:{
+            type: String,
+            required: true,
+        },
     },
     components: {
         'list-action-menu': ListActionMenu

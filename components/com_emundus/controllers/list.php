@@ -41,8 +41,28 @@ class EmundusControllerList extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $listId = $jinput->getInt('listId');
 
+            $listData = $this->m_list->getList($listId);
 
-            $listData = $this->m_list->getList(317);
+            if (!empty($listData)) {
+                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+    public function getListActions() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $listId = $jinput->getInt('listId');
+            $lisActionColumnId=  $jinput->getInt('listActionColumnId');
+            $listData = $this->m_list->getListActions($listId,$lisActionColumnId);
 
             if (!empty($listData)) {
                 $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
