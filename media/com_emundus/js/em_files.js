@@ -5362,7 +5362,7 @@ $(document).ready(function() {
                                 url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
                                 async: false,
                                 dataType: 'JSON',
-                                data: { fnum: fnum, raw: raw },
+                                data: { fnum: fnum, raw: raw, tmpl: email_recap.id},
                                 success: function(result) {
                                     var dest = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent" style="overflow-y: unset"><i>' + result.email + '</i></ul>';
                                     $.ajax({
