@@ -112,6 +112,7 @@ class SoapConnect {
                         'status'    => 0,
                         'params'    => $doc->getElementsByTagName('faultstring')->item(0)->nodeValue
                     );
+                    JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $doc->getElementsByTagName('faultstring')->item(0)->nodeValue, JLog::ERROR, 'com_emundus');
                 }
 
             }
