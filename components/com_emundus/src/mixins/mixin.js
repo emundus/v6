@@ -2,6 +2,8 @@ import moment from 'moment';
 import userService from '../services/user.js';
 import attachmentService from '../services/attachment.js';
 
+import mimeTypes from '../data/mimeTypes';
+
 var mixin = {
 	methods: {
 		formattedDate: function (date = '',format = 'LLLL') {
@@ -70,6 +72,12 @@ var mixin = {
 				await callback(array[index], index, array);
 			}
 		},
+		getMimeTypeFromExtension(extension){
+			if (mimeTypes.mimeTypes.hasOwnProperty(extension)) {
+				return mimeTypes.mimeTypes[extension];
+			}
+			return false;
+		}
 	}
 };
 

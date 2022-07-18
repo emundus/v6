@@ -272,7 +272,7 @@ export default {
 #customdropzone {
   letter-spacing: 0.2px;
   background: #fff;
-  color: #777;
+  color: #C5C8CE;
   transition: background-color .2s linear;
   height: 200px;
   padding: 40px;

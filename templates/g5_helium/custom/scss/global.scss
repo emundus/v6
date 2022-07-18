@@ -477,7 +477,7 @@ p,
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
-      align-items: flex-start;
+      align-items: center;
 
       .platform-content {
         margin: 0px 10px;
@@ -750,7 +750,7 @@ body>.g-container {
     display: flex;
     justify-content: center;
     border: unset !important;
-    margin: 0 10px 10px 10px;
+    margin: 0 10px 0 10px;
   }
 
   #userDropdownMenu {
@@ -2015,6 +2015,7 @@ body>.g-container {
       background-color: $base-secondary-color;
       color: #fff;
       outline: none;
+      border-color: unset;
     }
   }
 
@@ -3618,7 +3619,8 @@ button.swal2-cancel.goback-btn {
 .view-form,
 .view-form.view-registration,
 .view-form.em-formRegistrationCenter,
-.gantry.contentpane.modal {
+.gantry.contentpane.modal,
+.view-users.layout-edit {
 
   /* BLOC FORMULAIRE */
   .span12  {
@@ -3639,7 +3641,7 @@ button.swal2-cancel.goback-btn {
     }
 
     /* FORMULAIRE */
-     form  {
+     form, .em-form  {
       margin-top: 32px;
 
       /* GROUPE */
@@ -3720,8 +3722,8 @@ button.swal2-cancel.goback-btn {
           .fabrikLabel {
             @include body-16-medium;
             color: $neutral-800;
-            margin-bottom: 0;
-            padding-top: 0;
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
 
               /* ETOILE */
               .icon-star.small {
@@ -4177,6 +4179,24 @@ button.swal2-cancel.goback-btn {
   /* MOBILE */
   @media all and (max-width: 479px) {
 
+    #drawer{
+      padding: 8px;
+    }
+
+    .view-form,.em-form .fabrikGroup {
+      padding: 48px 32px 48px 32px !important;
+      .fabrikElement {
+        #mceu_57-body {
+          display: flex;
+          flex-wrap: wrap;
+        }
+      }
+    }
+
+    .view-users #g-container-main .g-container {
+      width: 100% !important;
+    }
+
     /* FORMULAIRES  */
     .view-registration form.fabrikForm,
     .view-form .em-formRegistrationCenter form.fabrikForm {
@@ -4237,7 +4257,7 @@ button.swal2-cancel.goback-btn {
     }
 
     #g-container-main .g-container {
-      padding: 0px 15px;
+      padding: 0px 4px;
     }
 
     #g-navigation .g-container #header-c {
@@ -4521,6 +4541,9 @@ button.swal2-cancel.goback-btn {
   }
 
   @media all and (min-width: 480px) and (max-width: 767px) {
+    .view-users #g-container-main .g-container {
+      width: 100% !important;
+    }
     .gantry #g-feature {
       margin-top: 100px;
     }
@@ -5107,7 +5130,7 @@ button.swal2-cancel.goback-btn {
 
   @media all and (max-width: 1024px) {
     #g-container-main {
-      padding: 20px 20px 20px 75px;
+      padding: 20px 20px 20px 20px;
     }
   }
 
@@ -5146,16 +5169,6 @@ button.swal2-cancel.goback-btn {
   justify-content: center;
   width: max-content;
   margin-right: 4px;
-}
-
-.multiselect__placeholder{
-  font-size: 14px;
-  color: $neutral-600 !important;
-  padding: 0 4px !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
 }
 
 fieldset[disabled] .multiselect {
@@ -5222,9 +5235,9 @@ fieldset[disabled] .multiselect {
   display: block;
   position: relative;
   width: 100%;
-  min-height: 40px;
+  height: 48px;
   text-align: left;
-  color: #35495e;
+  color: #a4a4a4;
 }
 
 .multiselect * {
@@ -5253,7 +5266,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect--active .multiselect__select {
-  transform: rotateZ(180deg);
+  transform: rotate(180deg);
 }
 
 .multiselect--above.multiselect--active .multiselect__current,
@@ -5263,7 +5276,32 @@ fieldset[disabled] .multiselect {
   border-top-right-radius: 0;
 }
 
-.multiselect__input,
+.multiselect__input {
+  height: 46px !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 95%;
+  position: relative;
+  display: flex !important;
+  align-content: center;
+  min-height: 20px;
+  line-height: 20px !important;
+  border: none !important;
+  border-radius: 5px !important;
+  background-color: rgb(255, 255, 255);
+  -webkit-transition: border .1s ease;
+  transition: border .1s ease !important;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box !important;
+  vertical-align: top !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  left: 0 !important;
+  white-space: nowrap;
+  width: 95%;
+  font-size: 14px !important;
+}
+
 .multiselect__single {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -5318,11 +5356,12 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__tags {
-  min-height: 50px;
+  height: 48px;
   display: block;
-  padding: 16px 40px 0 8px;
+  padding: 0 16px;
   border-radius: 4px;
-  border: 1px solid $neutral-300;
+  margin-top: 12px;
+  border: 1px solid $neutral-400;
   background: #fff;
   font-size: 14px;
 }
@@ -5401,9 +5440,7 @@ fieldset[disabled] .multiselect {
   display: block;
   position: absolute;
   box-sizing: border-box;
-  width: 40px;
-  height: 38px;
-  right: 1px;
+  right: 8px;
   top: 1px;
   padding: 4px 8px;
   margin: 0;
@@ -5411,25 +5448,28 @@ fieldset[disabled] .multiselect {
   text-align: center;
   cursor: pointer;
   transition: transform 0.2s ease;
+  background-position-x: 75%;
+  background-position-y: 50%;
+  -webkit-appearance: none;
+  background-image: url(/images/emundus/arrow.svg);
+  background-size: 8px;
+  background-repeat: no-repeat;
+  height: 48px !important;
 }
 
-.multiselect__select:before {
-  position: relative;
-  right: 0;
-  top: 65%;
-  color: #999;
-  margin-top: 4px;
-  border-style: solid;
-  border-width: 5px 5px 0 5px;
-  border-color: #999999 transparent transparent transparent;
-  content: "";
-}
 
 .multiselect__placeholder {
-  color: #adadad;
-  display: inline-block;
-  margin-bottom: 10px;
-  padding-top: 5px;
+  height: 46px;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: $neutral-600 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .multiselect--active .multiselect__placeholder {

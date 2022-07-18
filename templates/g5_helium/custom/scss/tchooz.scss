@@ -250,6 +250,11 @@ input:focus + .em-slider {
   }
 }
 
+.em-tip{
+  font-size: 14px;
+  color: #727272;
+}
+
 /* LOADING */
 .em-loader {
   border: 5px solid #f3f3f4;
@@ -342,6 +347,13 @@ input:focus + .em-slider {
   align-items: start;
   height: 100%;
 }
+.em-flex-col-end{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
+  height: 100%;
+}
 
 .em-errors-alert .alert{
   margin: unset;
@@ -351,6 +363,10 @@ input:focus + .em-slider {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.em-grid-simple {
+  display: grid;
 }
 
 .em-grid {
@@ -438,8 +454,16 @@ input:focus + .em-slider {
   height: auto !important;
 }
 
+.em-h-maxcontent{
+  height: max-content;
+}
+
 .em-h-25{
   height: 25px;
+}
+
+.em-h-40{
+  height: 40px;
 }
 
 .em-min-height-100{
@@ -449,7 +473,9 @@ input:focus + .em-slider {
 .em-max-height-20{
   max-height: 20px;
 }
-
+.em-max-width-75{
+  max-width: 75%;
+}
 .em-max-width-48{
   max-width: 48%;
 }
@@ -561,6 +587,9 @@ input:focus + .em-slider {
 }
 .em-bg-main-500{
   background: $main-500;
+}
+.em-white-bg{
+  background: white;
 }
 
 /* MARGINS */
@@ -1072,6 +1101,39 @@ button.em-swal-cancel-button{
 }
 /** **/
 
+/** PROFILE UTILITIES **/
+.em-profile-picture{
+  width: 45px;
+  height: 45px;
+  min-width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: solid 5px white;
+  transition: all 0.3s ease-in-out;
+  &:hover{
+    filter: brightness(80%);
+  }
+}
+.em-profile-picture-big{
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: solid 5px white;
+  transition: all 0.3s ease-in-out;
+  &:hover{
+    filter: brightness(80%);
+  }
+}
 /**
   MEDIA QUERIES
 **/
@@ -1150,13 +1212,23 @@ button.em-swal-cancel-button{
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 850px) {
   .em-input-icon {
     left: 85%;
   }
 
+  .em-m-xs-0{
+    margin: 0;
+  }
+
   .em-mt-xs-8{
     margin-top: 8px;
+  }
+
+  .em-grid-2{
+    display: grid;
+    grid-gap: 24px;
+    grid-template-columns: repeat(1, 1fr);
   }
 
   .em-grid-3{
@@ -1169,5 +1241,18 @@ button.em-swal-cancel-button{
     display: grid;
     grid-gap: 24px;
     grid-template-columns: repeat(1, 1fr);
+  }
+
+  .em-small-flex-column{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .em-small-align-items-end{
+    align-items: end;
+  }
+
+  .em-small-align-items-start{
+    align-items: start;
   }
 }

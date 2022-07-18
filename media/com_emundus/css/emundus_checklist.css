@@ -74,7 +74,9 @@ button#back:hover, button#back:active, button#back:focus,
     display: flex;
     justify-content: center;
 }
-.em_module.need_ok a::before {
+.em_module.need_ok a::before,
+#attachment_list legend .need_ok::before
+{
     font-family: FontAwesome;
     content: "\f058";
     color: #55ce47;
