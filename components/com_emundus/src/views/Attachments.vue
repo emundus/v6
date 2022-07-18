@@ -49,12 +49,8 @@
               ref="categoryFilter"
               @change="filterByCategory"
           >
-            <option value="all">{{ translate("COM_EMUNDUS_EMAILS_SELECT_CATEGORY") }}</option>
-            <option
-                v-for="(category, key) in thisAttachmentCategories"
-                :key="key"
-                :value="key"
-            >
+            <option value="all">{{ translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY") }}</option>
+            <option v-for="(category, key) in thisAttachmentCategories" :key="key" :value="key">
               {{ category }}
             </option>
           </select>
@@ -354,6 +350,7 @@ export default {
     }.bind(this));
   },
   mounted() {
+    console.log('here');
     this.loading = true;
     this.getFormProgress();
     this.getFnums()
