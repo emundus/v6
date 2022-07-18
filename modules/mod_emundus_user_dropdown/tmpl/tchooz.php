@@ -85,14 +85,56 @@ if($user != null) {
     .dropdown-menu > li > a{
         padding: unset;
     }
+
+        .userDropdown-tip{
+            position: fixed;
+            width: 100vw !important;
+            height: 100vw;
+            left: 0;
+            top: 0;
+            background-color: rgba(60, 60, 60, 0.65);
+        }
+        .userDropdownLabel-tip{
+            position: fixed;
+            right: 0;
+            top: 18px;
+            z-index: 999999;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+        #g-navigation .g-container #header-c .userDropdownIcon-tip{
+            margin-bottom: 0 !important;
+        }
+        .em-user-dropdown-tip{
+            background: white;
+            position: fixed;
+            right: 280px;
+            padding: 10px;
+            border-radius: 2px;
+            top: 15px;
+            transition: opacity 0.2s ease-in-out;
+        }
+    .em-user-dropdown-tip-link{
+        float: right;
+        color: #20835F;
+        cursor: pointer;
+    }
 </style>
 
 <?= $intro; ?>
 
 <!-- Button which opens up the dropdown menu. -->
-<div class='dropdown' id="userDropdown" style="float: right;">
-    <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
+<div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
+    <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+        <?php if($first_logged) : ?>
+        <div class="em-user-dropdown-tip" id="userDropdownTip">
+            <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
+            <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
+        </div>
+        <?php endif ;?>
+        <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" class="<?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
     </div>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
@@ -135,6 +177,9 @@ if($user != null) {
 </div>
 
 <script>
+    <?php if($first_logged) : ?>
+        displayUserOptions();
+    <?php endif ?>
     document.addEventListener('DOMContentLoaded', function () {
         if(document.getElementById('profile_chzn') != null){
             document.getElementById('profile_chzn').style.display = 'none';
@@ -204,6 +249,29 @@ if($user != null) {
             success: function (result) {
                 window.location.href = url;
                 //location.reload(true);
+            },
+            error : function (jqXHR, status, err) {
+                alert("Error switching porfiles.");
+            }
+        });
+    }
+
+    function closeTip() {
+        jQuery.ajax({
+            type: 'POST',
+            url: 'index.php?option=com_emundus&controller=users&task=updateemundussession',
+            data: ({
+                param: 'first_logged',
+                value: 0,
+            }),
+            success: function (result) {
+                document.getElementById('userDropdown').classList.remove('userDropdown-tip');
+                document.getElementById('userDropdownLabel').classList.remove('userDropdownLabel-tip');
+                document.getElementById('userDropdownIcon').classList.remove('userDropdownIcon-tip');
+                document.getElementById('userDropdownTip').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('userDropdownTip').style.display = 'none';
+                },300)
             },
             error : function (jqXHR, status, err) {
                 alert("Error switching porfiles.");
