@@ -246,18 +246,12 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
     }
 
     public function getJTEXT() {
-        $user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $getJtext = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
+        $toJTEXT = $jinput->getString('toJTEXT');
 
-            $toJTEXT = $jinput->getString('toJTEXT');
+        $getJtext = $this->m_formbuilder->getJTEXT($toJTEXT);
 
-            $getJtext = $this->m_formbuilder->getJTEXT($toJTEXT);
-        }
         echo json_encode((string)$getJtext);
         exit;
     }

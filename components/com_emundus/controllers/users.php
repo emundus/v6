@@ -873,7 +873,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function getuserbyid()
 	{
-		$id = JFactory::getApplication()->input->getInt('id', null);
+		$id = JFactory::getApplication()->input->getInt('id', JFactory::getUser()->id);
 		$m_users = new EmundusModelUsers();
 		$user = $m_users->getUserById($id);
 
@@ -898,6 +898,195 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo json_encode(array('status' => true, 'rights' => $rights));
 		exit;
 	}
+
+    public function getprofileform() {
+        $m_users = new EmundusModelUsers();
+        $form = $m_users->getProfileForm();
+
+        echo json_encode(array('status' => true, 'form' => $form));
+        exit;
+    }
+
+    public function getprofilegroups() {
+        $formid = JFactory::getApplication()->input->getInt('formid', null);
+        if(!empty($formid)) {
+            $m_users = new EmundusModelUsers();
+            $groups = $m_users->getProfileGroups($formid);
+        } else {
+            $groups = [];
+        }
+
+        echo json_encode(array('status' => true, 'groups' => $groups));
+        exit;
+    }
+
+    public function getprofileelements(){
+        $groupid = JFactory::getApplication()->input->getInt('groupid', null);
+        if(!empty($groupid)) {
+            $m_users = new EmundusModelUsers();
+            $elements = $m_users->getProfileElements($groupid);
+        } else {
+            $elements = [];
+        }
+
+        echo json_encode(array('status' => true, 'elements' => $elements));
+        exit;
+    }
+
+    public function saveuser() {
+        $user = json_decode(file_get_contents('php://input'));
+
+        $current_user = JFactory::getUser();
+
+        if(!empty($user)) {
+            $m_users = new EmundusModelUsers();
+            $result = $m_users->saveUser($user,$current_user->id);
+        } else {
+            $result = false;
+        }
+
+        echo json_encode(array('status' => $result));
+        exit;
+    }
+
+    public function getprofileattachments(){
+        $m_users = new EmundusModelUsers();
+        $attachments = $m_users->getProfileAttachments(JFactory::getUser()->id);
+
+        echo json_encode(array('status' => true, 'attachments' => $attachments));
+        exit;
+    }
+
+    public function getprofileattachmentsallowed() {
+        $m_users = new EmundusModelUsers();
+        $attachments = $m_users->getProfileAttachmentsAllowed();
+
+        echo json_encode(array('status' => true, 'attachments' => $attachments));
+        exit;
+    }
+
+    public function uploaddefaultattachment() {
+        $user = JFactory::getUser();
+
+        $jinput = JFactory::getApplication()->input;
+        $file = $jinput->files->get('file');
+        $attachment_id = $jinput->getInt('attachment_id');
+        $attachment_label = $jinput->getString('attachment_lbl');
+
+        if(isset($file)) {
+            $root_dir = "images/emundus/files/" . $user->id;
+            $target_dir = $root_dir . '/default_attachments/';
+
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+            if(!file_exists($target_dir)){
+                mkdir($target_dir);
+            }
+
+            $target_file = $target_dir . basename($user->id . '-' . $attachment_id . '-' .strtolower(substr($attachment_label,1)) . '-'  . time() . '.' . $ext);
+
+            if (move_uploaded_file($file["tmp_name"], $target_file)) {
+                $m_users = new EmundusModelUsers();
+                $uploaded = $m_users->addDefaultAttachment($user->id,$attachment_id,$target_file);
+
+                $result = array('status' => $uploaded);
+            } else {
+                $result = array('status' => false);
+            }
+        } else {
+            $result = array('status' => false);
+        }
+        echo json_encode((object)$result);
+        exit;
+    }
+
+    public function deleteprofileattachment(){
+        $jinput = JFactory::getApplication()->input;
+        $id = $jinput->getInt('id', null);
+        $filename = $jinput->getString('filename');
+
+        if(!empty($id)) {
+            $m_users = new EmundusModelUsers();
+            $deleted = $m_users->deleteProfileAttachment($id);
+
+            if($deleted && !empty($filename)){
+                unlink(JPATH_SITE . DS . $filename);
+            }
+        } else {
+            $deleted = false;
+        }
+
+        echo json_encode(array('status' => true, 'deleted' => $deleted));
+        exit;
+    }
+
+    public function uploadprofileattachmenttofile(){
+        $jinput = JFactory::getApplication()->input;
+        $aids = $jinput->getString('aids');
+
+        $current_user = JFactory::getUser();
+
+        if(!empty($aids)) {
+            $m_users = new EmundusModelUsers();
+            $copied = $m_users->uploadProfileAttachmentToFile($this->_user->fnum,$aids,$current_user->id);
+        } else {
+            $copied = false;
+        }
+
+        echo json_encode(array('status' => true, 'copied' => $copied));
+        exit;
+    }
+
+    public function uploadfileattachmenttoprofile(){
+        $jinput = JFactory::getApplication()->input;
+        $aid = $jinput->getInt('aid');
+
+        $current_user = JFactory::getUser();
+
+        if(!empty($aid)) {
+            $m_users = new EmundusModelUsers();
+            $copied = $m_users->uploadFileAttachmentToProfile($this->_user->fnum,$aid,$current_user->id);
+        } else {
+            $copied = false;
+        }
+
+        echo json_encode(array('status' => true, 'copied' => $copied));
+        exit;
+    }
+
+    public function updateprofilepicture() {
+        $user = JFactory::getUser();
+
+        $jinput = JFactory::getApplication()->input;
+        $file = $jinput->files->get('file');
+
+        if(isset($file)) {
+            $root_dir = "images/emundus/files/" . $user->id;
+            $target_dir = $root_dir . '/profile/';
+
+            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+            if(!file_exists($target_dir)){
+                mkdir($target_dir);
+            }
+
+            $target_file = $target_dir . basename('profile.' . $ext);
+
+            if (move_uploaded_file($file["tmp_name"], $target_file)) {
+                $m_users = new EmundusModelUsers();
+                $uploaded = $m_users->updateProfilePicture($user->id,$target_file);
+
+                $result = array('status' => $uploaded, 'profile_picture' => $target_file);
+            } else {
+                $result = array('status' => false);
+            }
+        } else {
+            $result = array('status' => false);
+        }
+        echo json_encode((object)$result);
+        exit;
+    }
+
 
     public function updateemundussession(){
         $jinput = JFactory::getApplication()->input;

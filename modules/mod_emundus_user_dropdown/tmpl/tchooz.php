@@ -127,15 +127,21 @@ if($user != null) {
 
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
+    <?php if(!empty($profile_picture)): ?>
+    <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
+         style="background-image:url('<?php echo $profile_picture ?>');right: 15px">
+    </div>
+    <?php else : ?>
     <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <?php if($first_logged) : ?>
-        <div class="em-user-dropdown-tip" id="userDropdownTip">
-            <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-            <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-        </div>
+            <div class="em-user-dropdown-tip" id="userDropdownTip">
+                <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
+                <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
+            </div>
         <?php endif ;?>
         <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" class="<?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
     </div>
+    <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <?php
@@ -170,7 +176,7 @@ if($user != null) {
         <?php if ($show_update == '1') :?>
             <hr style="width: 100%">
             <?php
-            echo '<li><a class="edit-button-user" href="index.php?option=com_users&view=profile&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
+            echo '<li><a class="edit-button-user" href="/index.php?option=com_emundus&view=users&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
             ?>
         <?php endif; ?>
     </ul>
@@ -199,7 +205,9 @@ if($user != null) {
             setTimeout(() => {
                 dropdown.classList.remove('open');
                 jQuery("#userDropdownMenu").css("transform","unset")
-                icon.classList.remove('active');
+                if(icon !== null) {
+                    icon.classList.remove('active');
+                }
             },300);
         } else {
             // remove message classes if message module is on page
@@ -209,7 +217,9 @@ if($user != null) {
                 messageIcon.classList.remove('open');
             }
             dropdown.classList.add('open');
-            icon.classList.add('open');
+            if(icon !== null) {
+                icon.classList.add('open');
+            }
         }
     }
 

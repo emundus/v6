@@ -1205,6 +1205,10 @@ class EmundusController extends JControllerLegacy {
                 $db->execute();
                 $id = $db->insertid();
 
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
+                $dispatcher->trigger('callEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
+
                 if ($format == "raw") {
                     echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"}';
                 } else {
@@ -1447,7 +1451,11 @@ class EmundusController extends JControllerLegacy {
 
         // Split the URL into different parts.
         $cpt = count($urltab);
-        $uid = $urltab[$cpt-2];
+        $uid = (int)$urltab[$cpt-2];
+        if(empty($uid)) {
+            // Manage subdirectories
+            $uid = (int)$urltab[$cpt-3];
+        }
         $file = $urltab[$cpt-1];
 
         $current_user = JFactory::getSession()->get('emundusUser');
@@ -1488,7 +1496,7 @@ class EmundusController extends JControllerLegacy {
 
         // Check if the user is an applicant and it is his file.
         if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
-            if ($fileInfo->can_be_viewed != 1) {
+            if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo)) {
                 die (JText::_('ACCESS_DENIED'));
             }
         }

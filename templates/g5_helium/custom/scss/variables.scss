@@ -195,7 +195,7 @@ $font:'Inter', sans-serif;
   font-family: $font;
   font-size: 16px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 500 !important;
   line-height: 19px;
   letter-spacing: 0.0015em;
   text-align: left;
