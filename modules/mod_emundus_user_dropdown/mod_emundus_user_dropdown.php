@@ -66,4 +66,8 @@ $menu = $app->getMenu();
 $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;
 
+if(!$only_applicant) {
+    $first_logged = $user->first_logged;
+}
+
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

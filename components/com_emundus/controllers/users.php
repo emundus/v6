@@ -898,4 +898,19 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo json_encode(array('status' => true, 'rights' => $rights));
 		exit;
 	}
+
+    public function updateemundussession(){
+        $jinput = JFactory::getApplication()->input;
+        $param = $jinput->getString('param', null);
+        $value = $jinput->getBool('value', null);
+
+        $session = JFactory::getSession();
+        $e_session = $session->get('emundusUser');
+
+        $e_session->{$param} = $value;
+        $session->set('emundusUser', $e_session);
+
+        echo json_encode(array('status' => true));
+        exit;
+    }
 }

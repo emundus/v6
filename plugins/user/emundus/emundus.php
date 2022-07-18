@@ -547,10 +547,16 @@ class plgUserEmundus extends JPlugin
             $m_profile = new EmundusModelProfile;
             $m_profile->initEmundusSession();
 
+
             // Log the action of signing in.
             // No id exists in jos_emundus_actions for signin so we use -2 instead.
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
             $user = JFactory::getSession()->get('emundusUser');
+            $user->just_logged = true;
+            if(empty($user->lastvisitDate)){
+                $user->first_logged = true;
+            }
+            JFactory::getSession()->set('emundusUser', $user);
             EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
 
             if ($options['redirect'] === 0) {
