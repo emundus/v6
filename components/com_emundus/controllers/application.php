@@ -493,6 +493,46 @@ class EmundusControllerApplication extends JControllerLegacy
         $sid = $jinput->post->getInt('student_id', null);
         $form_post = $jinput->post->getVar('forms', null);
 
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
+        $m_form = new EmundusModelForm;
+        $m_profile = new EmundusModelProfile;
+        $m_files = new EmundusModelFiles;
+
+        $fnumInfos = $m_files->getFnumInfos($fnum);
+        $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+
+        if(empty($form_post)){
+            $form_post = array();
+
+            $forms = $m_form->getFormsByProfileId($profile['profile_id']);
+            foreach ($forms as $form){
+                if(!in_array($form->id,$form_post)){
+                    $form_post[] = $form->id;
+                }
+            }
+        }
+
+        if(empty($ids)){
+            $ids = array();
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+            $m_application = new EmundusModelApplication;
+
+            $profile = $m_profile->getProfileByCampaign($fnumInfos['campaign_id']);
+            $attachments_by_profile = $m_form->getDocumentsByProfile($profile['profile_id']);
+            $aids_allowed = array();
+            foreach($attachments_by_profile as $attachment){
+                $aids_allowed[] =  $attachment->attachment_id;
+            }
+            $attachments = $m_application->getAttachmentsByFnum($fnum);
+            foreach($attachments as $attachment){
+                if(in_array($attachment->attachment_id,$aids_allowed)) {
+                    $ids[] = $attachment->id;
+                }
+            }
+        }
+
         if(EmundusHelperAccess::asAccessAction(8, 'c', JFactory::getUser()->id, $fnum)) {
             $exports = array();
             $tmpArray = array();
