@@ -68,7 +68,10 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD');
 
 $user = JFactory::getSession()->get('emundusUser');
-
+$label = $params->get('label', 'Mes dossiers à évaluer');
+if(!empty($label)){
+    echo '<span class="em-h3 em-mb-16">'.$label.'</span>';
+}
 echo '<div id="em-evaluations-vue" user="'. $user->id . '" module="' . $module->id . '"></div>';
 ?>
 

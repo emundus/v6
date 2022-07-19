@@ -35,7 +35,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
-  margin-top: 60px;
+  margin: 60px 20px 0 20px;
 }
 #g-container-main .g-container{
   width: 90%;
