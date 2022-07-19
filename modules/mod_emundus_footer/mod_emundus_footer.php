@@ -15,6 +15,8 @@ JLoader::register('ModLoginHelper', __DIR__ . '/helper.php');
 $document 	= JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_footer/css/mod_emundus_footer.css" );
 
+include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+
 $params->def('greeting', 1);
 
 $mod_emundus_footer_texte_col_1=$params->get('mod_emundus_footer_texte_col_1', '');

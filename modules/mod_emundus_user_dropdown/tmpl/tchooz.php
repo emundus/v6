@@ -190,6 +190,7 @@ if($user != null) {
         if(document.getElementById('profile_chzn') != null){
             document.getElementById('profile_chzn').style.display = 'none';
             document.getElementById('profile').style.display = 'block';
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
         }
     });
     function displayUserOptions(){
@@ -297,4 +298,10 @@ if($user != null) {
 	<?php } ?>
 </div>
     <a class="forgotten_password_header" href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+        });
+    </script>
 <?php } ?>
