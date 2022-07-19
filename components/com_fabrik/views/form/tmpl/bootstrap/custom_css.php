@@ -132,6 +132,7 @@ echo <<<EOT
 
 .view-form.view-registration .size-100 .size-100 .fabrikGroup {
     background: #fff;
+    margin-bottom: 32px;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -525,7 +526,8 @@ form#member-profile .form-horizontal .control-label {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 92px;
+    margin-top: 0;
+    margin-bottom: 64px;
     border-radius: 16px;
 }
 
@@ -575,7 +577,7 @@ form#member-profile .form-horizontal .control-label {
 
   .view-registration .login div.em-heading-registration,  .view-form .em-formRegistrationCenter div.em-heading-registration  {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
@@ -595,7 +597,7 @@ button.register {
     border-radius: 0;
     background: #fff;
     box-shadow: none;
-    padding: 0px 64px 80px 64px;
+    padding: 0px 64px 16px 64px;
     margin-top: 0px !important;
     border-radius: 0 0 16px 16px;
     width: 100%;

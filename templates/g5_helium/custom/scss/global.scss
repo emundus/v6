@@ -805,7 +805,28 @@ body>.g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
-
+.view-registration{
+  .control-group.fabrikElementContainer.fb_el_jos_emundus_users___campaign_id{
+      display: none;
+  }
+}
+.view-registration,.view-login,.view-reset,.view-form.em-formRegistrationCenter{
+  #g-page-surround{
+    background: white;
+  }
+  #g-navigation #header-c{
+    display: none;
+  }
+  footer#g-footer{
+    display: none;
+  }
+  .em-heading-registration h1{
+    color: $neutral-900;
+  }
+  #jos_emundus_users___password_check{
+    display: none;
+  }
+}
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
 .view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
   background-color: $base-secondary-color;
@@ -823,8 +844,21 @@ body>.g-container {
   }
 }
 
-.view-registration .em-register-warning {
-  border: 1px solid $base-primary-color;
+.view-registration {
+  .fb_el_jos_emundus_users___terms_and_conditions{
+    margin-top: 24px !important;
+  }
+  .fabrikElementContainer .fabrikEmptyLabel {
+    display: none !important;
+  }
+  #jos_emundus_users___password_tip {
+    margin-top: -60px;
+    margin-left: -10px;
+  }
+
+  .em-register-warning {
+    border: 1px solid $base-primary-color;
+  }
 }
 
 /* MODAL INSCRIPTION*/
@@ -1201,7 +1235,7 @@ body>.g-container {
   form#user-registration.form-validate.form-horizontal.well .control-group .controls button {
     width: 100%;
     height: 50px;
-    text-transform: capitalize;
+    text-transform: unset;
     margin-right: 0;
     border-radius: 4px;
     padding: 8px 12px;
@@ -1361,6 +1395,10 @@ body>.g-container {
       background-color: darken(#F5F5F5, 10%);
     }
   }
+
+.plg-calc span{
+  border:none !important;
+}
 
   /* EMUNDUS FILEUPLOAD */
 .fabrik_element___emundus_file_upload_parent{
@@ -2521,6 +2559,9 @@ body>.g-container {
     color: #fff;
     //font-family: "Lato", sans-serif;
     text-transform: capitalize;
+    width: 100%;
+    height: 48px;
+    margin-bottom: 0;
 
     &:hover,
     &:active,
@@ -3732,7 +3773,7 @@ button.swal2-cancel.goback-btn {
            }
 
           /* TEXTE D AIDE */
-          span:not(.badge) {
+          span:not(.badge):not([class^="material-icons"]):not(.icon-handle) {
             @include body-14;
             color: $neutral-600;
             display: flex;
@@ -4306,6 +4347,7 @@ button.swal2-cancel.goback-btn {
           div.em-heading-registration {
             width: 100%;
             padding: 80px 24px 32px 24px;
+            text-align: center;
           }
 
           form.fabrikForm {

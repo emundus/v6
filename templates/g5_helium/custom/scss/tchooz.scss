@@ -508,6 +508,10 @@ input:focus + .em-slider {
   width: 90rem;
 }
 
+.em-w-50{
+  width: 50%;
+}
+
 .em-w-80{
   width: 80%;
 }
@@ -536,6 +540,9 @@ input:focus + .em-slider {
   width: max-content;
 }
 
+.em-text-underline{
+  text-decoration: underline;
+}
 .em-color-white{
   color: white;
 }
@@ -554,6 +561,12 @@ input:focus + .em-slider {
 .em-blue-color{
   color: $em-blue;
 }
+.em-blue-300-color{
+  color: $blue-300;
+}
+.em-blue-400-color{
+  color: $blue-400;
+}
 .em-blue-500-color{
   color: $blue-500;
 }
@@ -565,6 +578,9 @@ input:focus + .em-slider {
 }
 .em-text-neutral-600{
   color: $neutral-600;
+}
+.em-text-neutral-300{
+  color: $neutral-300;
 }
 .em-text-neutral-900{
   color: $neutral-900;
@@ -863,7 +879,7 @@ input:focus + .em-slider {
 .em-h3{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 32px;
   line-height: 40px;
   color: $neutral-900;
@@ -1098,6 +1114,19 @@ button.em-swal-cancel-button{
     resize: none;
     height: 100%;
   }
+}
+/** **/
+
+/** Circles **/
+.em-circle-blue-100{
+  border-radius: 50%;
+  padding: 12px;
+  background: $blue-100;
+}
+.em-circle-blue-200{
+  border-radius: 50%;
+  padding: 12px;
+  background: $blue-200;
 }
 /** **/
 
