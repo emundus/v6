@@ -581,7 +581,7 @@ class EmundusController extends JControllerLegacy {
 
 	    $m_profile->initEmundusSession($fnum);
 
-	    if (empty($redirect)) {
+        if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
             if (empty($confirm)) {
                 $redirect = $m_application->getFirstPage();
