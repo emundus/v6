@@ -2532,4 +2532,30 @@ class EmundusModelUsers extends JModelList {
             return false;
         }
     }
+
+    public function addApplicantProfile($user_id){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id,label,published,status')
+                ->from($db->quoteName('#__emundus_setup_profiles'))
+                ->where($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $app_profile = $db->loadResult();
+
+            $query->clear()
+                ->insert('#__emundus_users_profile')
+                ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($app_profile->id));
+            $db->setQuery($query);
+            $db->execute();
+
+            return $app_profile;
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot add applicant profile for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
 }

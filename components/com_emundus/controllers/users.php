@@ -1102,4 +1102,38 @@ class EmundusControllerUsers extends JControllerLegacy {
         echo json_encode(array('status' => true));
         exit;
     }
+
+    public function addapplicantprofile(){
+        $user = JFactory::getUser();
+
+        $session = JFactory::getSession();
+        $e_session = $session->get('emundusUser');
+
+        $already_applicant = false;
+        foreach ($e_session->emProfiles as $profile){
+            if($profile->published == 1){
+                $already_applicant = true;
+                $app_profile = $profile;
+                break;
+            }
+        }
+
+        if(!$already_applicant) {
+            $m_users = new EmundusModelUsers();
+            $app_profile = $m_users->addApplicantProfile($user->id);
+
+            $e_session->profile = $app_profile->id;
+            $e_session->emProfiles[] = $app_profile;
+            $e_session->menutype = null;
+            $e_session->first_logged = true;
+            $session->set('emundusUser', $e_session);
+        } else {
+            $e_session->profile = $app_profile->id;
+            $e_session->menutype = null;
+            $session->set('emundusUser', $e_session);
+        }
+
+        echo json_encode(array('status' => true));
+        exit;
+    }
 }
