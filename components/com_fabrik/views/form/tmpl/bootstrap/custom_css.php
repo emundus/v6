@@ -217,7 +217,6 @@ label {
     flex-direction:row;
 }
 
-
 #g-navigation .g-main-nav .g-dropdown > .g-dropdown-column {
     border: none;
 }
@@ -1131,10 +1130,6 @@ body.em-formRegistrationCenter  {
     overflow-x: hidden;
 }
 
-.view-form .fabrikElement div a.chzn-single {
-   border-radius: 0px; 
-}
-
 .view-form .fabrikElement div a.chzn-single span {
    display: inline; 
 }
@@ -1143,10 +1138,6 @@ body.em-formRegistrationCenter  {
 
 .import-csv-page h1, .import-csv-page legend { 
     color: #000 !important; 
-}
-
-.import-csv-page select { 
-   border: 2px solid #ccc!important;
 }
 
 /* RAPPRT ERREUR */ 

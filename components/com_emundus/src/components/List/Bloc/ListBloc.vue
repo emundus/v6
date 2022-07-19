@@ -312,7 +312,7 @@ export default {
 	.title {
 		h3 {
 			font-size: 18px;
-			font-weight: 800;
+			font-weight: 600;
 			line-height: 23px;
 			color: #080C12;
 			margin-bottom: 8px;

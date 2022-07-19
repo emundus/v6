@@ -104,6 +104,7 @@ export default {
 
 		h2 {
 			margin: 0;
+      font-weight: 600;
 		}
 	}
 }

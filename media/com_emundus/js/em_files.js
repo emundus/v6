@@ -6695,14 +6695,14 @@ $(document).ready(function() {
                             $('.modal-body').empty();
 
                             $('#can-val').append(
-                                '<button id="em-download-btn" style="margin-left:5px;background: #16afe1; border: 2px solid #16afe1; border-radius: 25px !important; color: #fff" type="button" class="btn btn-danger">' +
-                                '<a style="color:#fff" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
+                                '<button id="em-download-btn" type="button" class="btn btn-success">' +
+                                '<a  style=color:#fff;"" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
                                 '</button>');
 
                             /// render recapitulatif
                             let recal = result.data.recapitulatif_count;
                             var recal_table =
-                                "<h4 style='color:#16afe1 !important'>" +
+                                "<h4>" +
                                 Joomla.JText._('AFFECTED_CANDIDATS') + result.data.affected_users +
                                 "</h4>" +
                                 "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
