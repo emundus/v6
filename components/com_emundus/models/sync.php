@@ -15,6 +15,7 @@ jimport('joomla.application.component.model');
 class EmundusModelSync extends JModelList {
 
     public function __construct($config = array()) {
+        JLog::addLogger(['text_file' => 'com_emundus.sync.php'], JLog::ERROR, 'com_emundus.sync');
         parent::__construct($config);
     }
 
@@ -29,7 +30,7 @@ class EmundusModelSync extends JModelList {
             $db->setQuery($query);
             return $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/sync | Cannot get sync config for type ' . $type . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/sync | Cannot get sync config for type ' . $type . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
             return '[]';
         }
     }
@@ -63,7 +64,7 @@ class EmundusModelSync extends JModelList {
                 return $db->execute();
             }
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/sync | Cannot save sync config for type ' . $type . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/sync | Cannot save sync config for type ' . $type . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
             return false;
         }
     }
@@ -174,7 +175,7 @@ class EmundusModelSync extends JModelList {
             $db->setQuery($query);
             return $db->loadObjectList();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/sync | Cannot get documents synced config  : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/sync | Cannot get documents synced config  : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
             return [];
         }
     }
@@ -190,7 +191,7 @@ class EmundusModelSync extends JModelList {
             $db->setQuery($query);
             return $db->loadColumn();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/sync | Cannot get emundus tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/sync | Cannot get emundus tags : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
             return [];
         }
     }
@@ -206,7 +207,7 @@ class EmundusModelSync extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
             return false;
         }
     }
@@ -222,7 +223,7 @@ class EmundusModelSync extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync method : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            JLog::add('component/com_emundus/models/sync | Cannot update document ' . $did . ' sync method : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
             return false;
         }
     }
@@ -266,7 +267,7 @@ class EmundusModelSync extends JModelList {
                 }
             }
         } catch (Exception $e) {
-            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
+            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id '.$upload_id, JLog::ERROR, 'com_emundus.sync');
             return false;
         }
     }
@@ -301,7 +302,7 @@ class EmundusModelSync extends JModelList {
         try {
             return $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync state for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
+            JLog::add('[SYNC_FILE_PLUGIN] Error getting sync state for upload_id '.$upload_id, JLog::ERROR, 'com_emundus.sync');
             return false;
         }
     }
@@ -431,7 +432,7 @@ class EmundusModelSync extends JModelList {
                 }
             }
         } catch (Exception $e) {
-            JLog::add('Error getting attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $aspectsConfig;
@@ -466,7 +467,7 @@ class EmundusModelSync extends JModelList {
             $db->setQuery($query);
             $saved = $db->execute();
         } catch (Exception $e) {
-            JLog::add('Error saving attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('Error saving attachment aspects config for attachment id ' . $attachment_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $saved;
