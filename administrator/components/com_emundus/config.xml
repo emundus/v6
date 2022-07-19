@@ -166,6 +166,12 @@
 			<option value="fnum">FNUM</option>
 			<option value="status">STATUS</option>
 		</field>
+
+		<field
+				name="spacer1"
+				type="spacer"
+				hr="true"
+		/>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_EXPORTS" name="exports" description="COM_EMUNDUS_EXPORTS_DESC">
@@ -393,6 +399,24 @@
 
 		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
 		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
+
+		<field
+				name="spacer8"
+				type="spacer"
+				hr="true"
+		/>
+		<field
+				name="flywire_integration"
+				type="note"
+				label="COM_EMUNDUS_PAYMENT_FLYWIRE"
+		/>
+		<fieldset label="COM_EMUNDUS_PAYMENT_FLYWIRE">
+			<field name="flywire_recipient" label="COM_EMUNDUS_PAYMENT_FLYWIRE_RECIPIENT_LABEL" type="text"></field>
+			<field name="flywire_mode" label="COM_EMUNDUS_PAYMENT_FLYWIRE_MODE_LABEL" type="list">
+				<option value="demo">Démo</option>
+				<option value="production">Production</option>
+			</field>
+		</fieldset>
 
 	</fieldset>
 	<fieldset

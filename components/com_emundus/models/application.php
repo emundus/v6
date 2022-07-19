@@ -4176,7 +4176,6 @@ class EmundusModelApplication extends JModelList
 	        }
 
         } else {
-
 	        if (empty($user->menutype)) {
 		        return $redirect;
 	        }

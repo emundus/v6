@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="1.0.0" client="site" method="upgrade">
+    <name>mod_emundus_payment</name>
+    <author>LEGENDRE Jérémy</author>
+    <creationDate>May 2022</creationDate>
+    <copyright>Copyright (C) 2022 eMundus. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>jeremy.legendre@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>1.0.0</version>
+    <description></description>
+    <files>
+        <filename module="mod_emundus_payment" label="MOD_EMUNDUS_PAYMENT">mod_emundus_payment.php</filename>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+        <filename>helper.php</filename>
+        <filename>mod_emundus_payment.xml</filename>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="payment_method" type="list" default="flywire">
+                    <option value="flywire">Flywire</option>
+                    <option value="hikashop">Hikashop</option>
+                </field>
+                <field
+                   name="confirmed_state"
+                   type="sql"
+                   multiple="false"
+                   query="SELECT id, step, value FROM #__emundus_setup_status GROUP BY ordering"
+                   default="1"
+                   label="MOD_EMUNDUS_MODULES_PAYMENT_FIELD_CONFIRMED_STATE"
+                   key_field="step"
+                   value_field="value"
+                >
+                </field>
+            </fieldset>
+            <fieldset name="flywire" label="MOD_EMUNDUS_FLYWIRE_FIELDSET_LABEL">
+                <field name="MOD_EMUNDUS_FLYWIRE_FIELDSET_DESC" type="spacer"></field>
+                <field name="contact_support" label="MOD_EMUNDUS_FLYWIRE_CONTACT_SUPPORT" type="text"></field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
