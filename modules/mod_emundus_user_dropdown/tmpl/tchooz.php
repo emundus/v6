@@ -63,18 +63,19 @@ if($user != null) {
         text-align: left;
     }
     .select .profile-select{
-        height: 36px;
-        padding: 0 5px;
+        height: 48px;
+        padding: 0 32px 0 12px !important;
         border: 1px solid #e5e5e5;
-        background-color: white !important;
-        background-image: url(/images/emundus/arrow-2.png) !important;
-        background-size: 25px !important;
-        background-repeat: no-repeat !important;
-        background-position-x: 98% !important;
-        background-position-y: 54% !important;
+        background-position-x: 95%;
+        background-position-y: 54%;
+        -webkit-appearance: none;
+        background-image: url('../../../../images/emundus/arrow.svg');
+        background-size: 8px;
+        background-repeat: no-repeat;
         -moz-appearance: none;
         -webkit-appearance: none;
         width: 200px;
+        color: #353544;
     }
     .select .profile-select:hover{
         background-color: white !important;

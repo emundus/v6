@@ -23,6 +23,20 @@
   height: 40px;
   color: white;
   background-color: $main-500;
+
+  &:hover {
+    background-color: white;
+    color: $main-500;
+    border: 1px solid $main-500;
+
+    .material-icons {
+      color: $main-500 !important;
+    }
+  }
+
+  .material-icons {
+    color: $white;
+  }
 }
 
 .em-primary-disabled{
@@ -40,7 +54,7 @@
   border: solid 1px $neutral-300;
   height: 40px;
   background: transparent;
-  color: $neutral-900;
+  color: $night-blue;
 }
 
 .em-tertiary-button{
@@ -54,7 +68,7 @@
   border: unset;
   height: 40px;
   background: transparent;
-  color: $neutral-900;
+  color: $night-blue;
 }
 
 .em-radio-button{
@@ -443,6 +457,12 @@ input:focus + .em-slider {
 .em-hover-blue-500{
   &:hover{
     color: $blue-500;
+  }
+}
+
+.em-hover-main-600{
+  &:hover{
+    color: $main-600;
   }
 }
 
@@ -863,18 +883,18 @@ input:focus + .em-slider {
 .em-h1{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 56px;
   line-height: 70px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h2{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 48px;
   line-height: 60px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h3{
   font-family: 'Inter', sans-serif;
@@ -882,31 +902,31 @@ input:focus + .em-slider {
   font-weight: 600;
   font-size: 32px;
   line-height: 40px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h4{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 24px;
   line-height: 30px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h5{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 20px;
   line-height: 25px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h6{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 18px;
   line-height: 23px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 
 .em-caption{
@@ -1045,7 +1065,7 @@ button.em-swal-cancel-button{
   border: solid 1px $neutral-300 !important;
   height: 40px !important;
   background: transparent !important;
-  color: $neutral-900 !important;
+  color: $night-blue !important;
   &:focus{
     box-shadow: unset !important;
   }
