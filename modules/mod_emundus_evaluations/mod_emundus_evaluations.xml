@@ -16,6 +16,12 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
+                <field name="label"
+                       type="text"
+                       default=""
+                       label="Titre"
+                       description="">
+                </field>
                 <field name="status"
                        type="sql"
                        multiple="true"
@@ -35,6 +41,29 @@
                        description="Étiquettes que doit posséder les dossiers afin d'être évalués"
                        key_field="id"
                        value_field="label">
+                </field>
+                <field name="more_elements"
+                       type="text"
+                       default=""
+                       label="Colonnes supplémentaires"
+                       description="Colonnes supplémentaires à afficher, indiquer les ids des éléments fabrik. Les tables doivent contenir la colonne fnum afin de retrouver la donnée">
+                </field>
+                <field name="more_elements_campaign"
+                       type="repeatable"
+                       icon="list"
+                       description=""
+                       label="Colonnes supplémentaires par campgne"
+                >
+                    <field name="campaign" type="sql"
+                           key_field="id" value_field="label"
+                           query="SELECT id, label FROM #__emundus_setup_campaigns"
+                           label="Campagnes" description=""/>
+                    <field name="elements"
+                           type="text"
+                           default=""
+                           label="Ids des éléments"
+                           description="Ids des éléments fabrik. Les tables doivent contenir la colonne fnum afin de retrouver la donnée">
+                    </field>
                 </field>
             </fieldset>
         </fields>
