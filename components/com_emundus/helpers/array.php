@@ -37,4 +37,20 @@ class EmundusHelperArray {
 
         return array_values(array_intersect_key($array, $unique_array));
     }
+
+    static function mergeAndSumPropertyOfSameObjects($array,$property_unique,$property_to_sum){
+        return array_reduce($array, function($carry, $item) use ($property_unique,$property_to_sum) {
+            $idx = null;
+            // trying to find the object that has the same property as the current item
+            foreach($carry as $k => $v)
+                if($v->{$property_unique} == $item->{$property_unique}) {
+                    $idx = $k;
+                    break;
+                }
+            // if nothing found, add $item to the result array, otherwise sum the points attributes
+            $idx === null ? $carry[] = $item:$carry[$idx]->{$property_to_sum} = $item->{$property_to_sum};
+            // return the result array for the next iteration
+            return $carry;
+        }, []);
+    }
 }
