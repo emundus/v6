@@ -1905,6 +1905,53 @@ body>.g-container {
     }
   }
 
+// EM FRONT PRIMARY & SECONDARY BUTTONS NOT NEEDING CONTEXT
+.em-front-btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0 $p-16;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  height: 40px;
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+.em-front-primary-btn {
+  background-color: $base-primary-color;
+  border-color: $base-primary-color;
+  color: #fff;
+
+  &:hover:not(:disabled),
+  &:active:not(:disabled),
+  &:focus:not(:disabled) {
+    background-color: transparent;
+    color: $base-primary-color;
+    border-color: $base-primary-color;
+  }
+}
+
+.em-front-secondary-btn {
+  background-color: $base-secondary-color;
+  border-color: $base-secondary-color;
+  color: #fff;
+
+  &:hover:not(:disabled),
+  &:active:not(:disabled),
+  &:focus:not(:disabled) {
+    background-color: transparent;
+    color: $base-secondary-color;
+    border-color: $base-secondary-color;
+  }
+}
+
+//
+
   button.save-btn,
   .btn-success,
   button.save,

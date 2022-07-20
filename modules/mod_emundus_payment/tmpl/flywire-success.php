@@ -55,6 +55,6 @@ $contact = $params['contact_support'];
     </p>
 
     <div id="payment-actions" class="em-w-100 em-mt-16 em-flex-row-end">
-        <a href="/" class="em-primary-button em-w-33"><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_GO_TO_HOMEPAGE') ?></a>
+        <a href="/" class="em-front-btn em-front-primary-btn em-w-33"><?= JText::_('MOD_EMUNDUS_PAYMENT_FLYWIRE_GO_TO_HOMEPAGE') ?></a>
     </div>
 </div>

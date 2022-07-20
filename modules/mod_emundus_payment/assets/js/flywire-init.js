@@ -85,8 +85,8 @@ window.addEventListener('click', function (e) {
                     document.getElementById('modify-payer-infos').classList.remove('hidden');
                     const submitPayerInfos = document.getElementById('submit-payer-infos');
                     submitPayerInfos.setAttribute('disabled', 'disabled');
-                    submitPayerInfos.classList.add('em-secondary-button');
-                    submitPayerInfos.classList.remove('em-primary-button');
+                    submitPayerInfos.classList.add('em-front-secondary-btn');
+                    submitPayerInfos.classList.remove('em-front-primary-btn');
 
                     inputs.forEach(function(input) {
                         input.setAttribute('disabled', 'disabled');
