@@ -3702,6 +3702,7 @@ class EmundusModelEvaluation extends JModelList {
                 ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1))
                 ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
                 ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
             if (isset($params->status) && $params->status !== '') {
                 $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
             }
@@ -3710,6 +3711,11 @@ class EmundusModelEvaluation extends JModelList {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
             }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+            $query->order('ecc.date_submitted');
             $db->setQuery($query);
             $files_users_associated = $db->loadObjectList();
 
@@ -3731,6 +3737,11 @@ class EmundusModelEvaluation extends JModelList {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
             }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+            $query->order('ecc.date_submitted');
             $db->setQuery($query);
             $files_groups_associated = $db->loadObjectList();
 
@@ -3839,6 +3850,7 @@ class EmundusModelEvaluation extends JModelList {
                 ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
                 ->andWhere($db->quoteName('ecc.published') . ' = 1')
                 ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1));
+
             if (isset($params->status) && $params->status !== '') {
                 $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
             }
@@ -3846,6 +3858,10 @@ class EmundusModelEvaluation extends JModelList {
             if (isset($params->tags) && $params->tags !== '') {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
             }
             $query->group('esc.id');
             $db->setQuery($query);
@@ -3869,12 +3885,16 @@ class EmundusModelEvaluation extends JModelList {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
             }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
             $query->group('esc.id');
             $db->setQuery($query);
             $campaigns_groups_assoc = $db->loadObjectList();
 
             $campaigns = array_merge($campaigns_users_assoc,$campaigns_groups_assoc);
-            return $h_array->removeDuplicateObjectsByProperty($campaigns,'id');
+            return $h_array->mergeAndSumPropertyOfSameObjects($campaigns,'id','files');
         } catch (Exception $e) {
             JLog::add('Problem to get campaigns to evaluate for user '.$user.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return array();
