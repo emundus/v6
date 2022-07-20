@@ -1088,6 +1088,63 @@ class EmundusControllerUsers extends JControllerLegacy {
     }
 
 
+    public function activation()
+    {
+        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
+        $m_user = new EmundusModelUser();
+
+        $body = json_decode(file_get_contents('php://input'), true);
+        $uid = $body['user'];
+        $email = $body['email'];
+
+        $user = JFactory::getUser($uid);
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('count(id)')
+            ->from($db->quoteName('#__users'))
+            ->where($db->quoteName('email') . ' LIKE ' . $db->quote($email))
+            ->andWhere($db->quoteName('id') . ' <> ' . $db->quote($uid));
+        $db->setQuery($query);
+
+        try {
+            $email_alreay_use = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting email already use: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_TRYING_TO_GET_EMAIL_ALREADY_USE'))));
+            exit();
+        }
+
+        if (!$email_alreay_use) {
+            $query->clear()
+                ->select($db->quoteName('params'))
+                ->from($db->quoteName('#__users'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($uid));
+            $db->setQuery($query);
+            $result = $db->loadObject();
+
+            $token = json_decode($result->params);
+            $token = $token->emailactivation_token;
+
+            $emailSent = $m_user->sendActivationEmail($user->getProperties(), $token, $email);
+
+            if ($user->email != $email) {
+                $m_user->updateEmailUser($user->id, $email);
+            }
+            if ($emailSent) {
+                echo json_encode((object)(array('status' => true, 'msg' => JText::_('COM_EMUNDUS_MAIL_SUCCESSFULLY_SENT'))));
+                exit();
+            } else {
+                echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ERROR_AT_SEND'))));
+                exit();
+            }
+        } else {
+            echo json_encode((object)(array('status' => false, 'msg' => JText::_('COM_EMUNDUS_MAIL_ALREADY_USE'))));
+            exit();
+        }
+    }
+
     public function updateemundussession(){
         $jinput = JFactory::getApplication()->input;
         $param = $jinput->getString('param', null);
@@ -1098,6 +1155,40 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         $e_session->{$param} = $value;
         $session->set('emundusUser', $e_session);
+
+        echo json_encode(array('status' => true));
+        exit;
+    }
+
+    public function addapplicantprofile(){
+        $user = JFactory::getUser();
+
+        $session = JFactory::getSession();
+        $e_session = $session->get('emundusUser');
+
+        $already_applicant = false;
+        foreach ($e_session->emProfiles as $profile){
+            if($profile->published == 1){
+                $already_applicant = true;
+                $app_profile = $profile;
+                break;
+            }
+        }
+
+        if(!$already_applicant) {
+            $m_users = new EmundusModelUsers();
+            $app_profile = $m_users->addApplicantProfile($user->id);
+
+            $e_session->profile = $app_profile->id;
+            $e_session->emProfiles[] = $app_profile;
+            $e_session->menutype = null;
+            $e_session->first_logged = true;
+            $session->set('emundusUser', $e_session);
+        } else {
+            $e_session->profile = $app_profile->id;
+            $e_session->menutype = null;
+            $session->set('emundusUser', $e_session);
+        }
 
         echo json_encode(array('status' => true));
         exit;

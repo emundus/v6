@@ -882,7 +882,7 @@ export default {
 
 .image-resolution-tooltips {
   font-size: smaller;
-  color: #16AFE1;
+  color: #20835F;
 }
 
 </style>

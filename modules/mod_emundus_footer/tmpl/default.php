@@ -26,7 +26,9 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
             </div>
 
             <div class="em-col-2-footer">
-                <p><?= $mod_emundus_footer_texte_col_2; ?></p>
+                <div class="em-col-2-footer-texte">
+                    <p><?= $mod_emundus_footer_texte_col_2; ?></p>
+                </div>
             </div>
 
            <div class="em-col-3-footer">

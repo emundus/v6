@@ -47,7 +47,7 @@ h6 {
   color: $base-primary-color;
   margin-top: 50px;
   margin-bottom: 50px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -57,7 +57,7 @@ h6 {
   h4,
   h5,
   h6 {
-    color: #000;
+    color: $night-blue;
   }
 }
 
@@ -74,26 +74,37 @@ h1 {
   display: none !important;
 }
 
-input[type="text"],
-input[type="password"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="date"],
-input[type="month"],
-input[type="time"],
-input[type="week"],
-input[type="number"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input[type="tel"],
-input[type="color"],
-.uneditable-input,
-select{
-  margin-bottom: 0;
-  border-radius: 4px;
-  border-color: #ccc;
-  height: 50px;
+.g-back-office-emundus-tableau {
+  input[type="text"],
+  input[type="password"],
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="month"],
+  input[type="time"],
+  input[type="week"],
+  input[type="number"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="color"],
+  .uneditable-input,
+  select{
+    margin-bottom: 0;
+    border-radius: 4px;
+    border-color: #ccc;
+    height: 50px;
+    color: $night-blue;
+  }
+}
+
+.gantry input:focus  {
+  @include input-focus;
+}
+
+.gantry input:hover  {
+  @include input-hover;
 }
 
 h2 {
@@ -120,6 +131,10 @@ a:focus {
 
 a {
   color: $base-secondary-color;
+  &:hover {
+   color: $base-secondary-color;
+    text-decoration: underline;
+  }
 }
 
 .hidden {
@@ -222,6 +237,12 @@ ul {
   flex-direction: column !important;
 }
 
+/* ARTICLE */
+
+.view-article #g-main-mainbody .span12 .item-page {
+  margin-top: 40px;
+}
+
 .modal {
   position: relative;
   background-color: #fff;
@@ -277,14 +298,14 @@ ul {
 .contentpane.modal form .fabrikActions.form-actions button.btn {
   background: $dark-grey !important;
   background-color: $dark-grey !important;
-  border: 2px solid $dark-grey !important;
+  border: 1px solid $dark-grey !important;
   border-radius: 4px !important;
   color: #fff;
 
   &:active, &:focus, &:hover {
     background: $grey!important;
     background-color: $grey!important;
-    border: 2px solid $grey !important;
+    border: 1px solid $grey !important;
     border-radius: 4px !important;
     color: $white !important;
   }
@@ -293,30 +314,38 @@ ul {
 .files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"]  {
   background: $dark-grey !important;
   background-color: $dark-grey !important;
-  border: 2px solid $dark-grey !important;
+  border: 1px solid $dark-grey !important;
   border-radius: 4px !important;
-  color: #fff !important;
+  color: $white !important;
 
   &:active, &:focus, &:hover {
     background: $grey !important;
     background-color: $grey !important;
-    border: 2px solid $grey !important;
+    border: 1px solid $grey !important;
     border-radius: 4px !important;
     color: $white !important;
   }
 }
 
 .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
-  background: $dark-blue !important;
-  background-color: $dark-blue !important;
-  border: 1px solid $dark-blue !important;
-  color: #fff !important;
+  background: $red-500 !important;
+  background-color: $red-500 !important;
+  border: 1px solid $red-500 !important;
+  color: $white !important;
 
   &:active, &:focus, &:hover {
     background: transparent !important;
     background-color: transparent !important;
-    border: 1px solid $dark-blue !important;
-    color: $dark-blue !important;
+    border: 1px solid $red-500 !important;
+    color: $red-500 !important;
+
+    .material-icons {
+      color: $red-500;
+    }
+  }
+
+  .material-icons {
+    color: $white;
   }
 }
 
@@ -528,14 +557,13 @@ p,
 /* FOOTER */
 
 .em-container-footer-cand .em-col-3-footer a:hover {
-  color: $base-secondary-color !important;
-  text-decoration: none !important;
   font-weight: 500 ;
+  text-decoration: underline !important;
 }
 
 .em-container-footer-gest .em-block-footer a:hover {
-  color: $dark-blue !important;
-  text-decoration: none !important;
+  color: $night-blue !important;
+  text-decoration: underline !important;
   font-weight: 500 ;
 }
 
@@ -695,7 +723,7 @@ body>.g-container {
 
   a {
     color: $base-secondary-color;
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
 
@@ -805,7 +833,20 @@ body>.g-container {
 }
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
-
+.view-registration,.view-login,.view-reset,.view-form.em-formRegistrationCenter{
+  #g-page-surround{
+    background: white;
+  }
+  #g-navigation #header-c{
+    display: none;
+  }
+  footer#g-footer{
+    display: none;
+  }
+  .em-heading-registration h1{
+    color: $neutral-900;
+  }
+}
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
 .view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
   background-color: $base-secondary-color;
@@ -823,8 +864,21 @@ body>.g-container {
   }
 }
 
-.view-registration .em-register-warning {
-  border: 1px solid $base-primary-color;
+.view-registration {
+  .fb_el_jos_emundus_users___terms_and_conditions{
+    margin-top: 24px !important;
+  }
+  .fabrikElementContainer .fabrikEmptyLabel {
+    display: none !important;
+  }
+  #jos_emundus_users___password_tip {
+    margin-top: -60px;
+    margin-left: -10px;
+  }
+
+  .em-register-warning {
+    border: 1px solid $base-primary-color;
+  }
 }
 
 /* MODAL INSCRIPTION*/
@@ -1201,7 +1255,7 @@ body>.g-container {
   form#user-registration.form-validate.form-horizontal.well .control-group .controls button {
     width: 100%;
     height: 50px;
-    text-transform: capitalize;
+    text-transform: unset;
     margin-right: 0;
     border-radius: 4px;
     padding: 8px 12px;
@@ -1230,8 +1284,8 @@ body>.g-container {
 /* LISTES  */
 
 .nav .dropdown-toggle .caret {
-  border-top-color: $dark-blue;
-  border-bottom-color: $dark-blue;
+  border-top-color: $night-blue;
+  border-bottom-color: $night-blue;
 }
 
 // remove
@@ -1241,6 +1295,10 @@ body>.g-container {
 
 .fabrikNav .list-footer .limit .input-prepend.input-append {
   display: flex;
+
+  small {
+    color: #353544;
+  }
 }
 
 /* DOCUMENTS OBLIGATOIRES */
@@ -1295,7 +1353,7 @@ body>.g-container {
     background: #fff;
   }
 
-  .fabrikForm .controls .btn-danger:hover,
+.fabrikForm .controls .btn-danger:hover,
   #em-modal-actions .modal-content .modal-header .btn-danger:hover {
     color: $base-primary-color;
     background-color: transparent;
@@ -1361,6 +1419,10 @@ body>.g-container {
       background-color: darken(#F5F5F5, 10%);
     }
   }
+
+.plg-calc span{
+  border:none !important;
+}
 
   /* EMUNDUS FILEUPLOAD */
 .fabrik_element___emundus_file_upload_parent{
@@ -1527,7 +1589,7 @@ body>.g-container {
 
   .modal-dialog .modal-body #chargement a.btn.btn-link {
     background-color: $night-blue;
-    border: 2px solid $night-blue !important;
+    border: 1px solid $night-blue !important;
     border-radius: 5px !important;
     padding: 5px 30px !important;
     height: 36px;
@@ -1538,7 +1600,7 @@ body>.g-container {
     }
     &:hover, &:focus, &:active {
       background-color: $grey;
-      border: 2px solid $grey !important;
+      border: 1px solid $grey !important;
       border-radius: 5px !important;
       padding: 5px 30px !important;
       height: 36px;
@@ -1554,7 +1616,7 @@ body>.g-container {
  .modal-dialog .modal-body button#delfilter,
 .modal-dialog .modal-body button#delPDFfilter {
   background-color: $grey !important;
-  border: 2px solid $grey !important;
+  border: 1px solid $grey !important;
   border-radius: 5px !important;
   padding: 5px 30px !important;
   height: 36px;
@@ -1564,7 +1626,7 @@ body>.g-container {
   }
   &:hover, &:focus, &:active {
     background-color: $light-grey !important;
-    border: 2px solid $light-grey !important;
+    border: 1px solid $light-grey !important;
     border-radius: 5px !important;
     padding: 5px 30px !important;
     height: 36px;
@@ -1702,6 +1764,10 @@ body>.g-container {
 
 .modal-body .panel-body  .panel-primary>.panel-heading {
   background: #a5a5ad;
+}
+
+.modal-body ul li, .modal-body span strong,.modal-body form  {
+ color: $night-blue;
 }
 
   .btn-warning.active.focus,
@@ -1845,8 +1911,6 @@ body>.g-container {
   button.save_continue,
   button.send,
   a.btn-attach,
-  #trombi_preview,
-  #trombi_generate,
   .indicateurs-page .btn,
   .fabrik_filter_submit,
   button.importation,
@@ -1887,12 +1951,6 @@ body>.g-container {
   a.btn-attach:hover,
   a.btn-attach:active,
   a.btn-attach:focus,
-  #trombi_preview:hover,
-  #trombi_preview:active,
-  #trombi_preview:focus,
-  #trombi_generate:hover,
-  #trombi_generate:active,
-  #trombi_generate:focus,
   .indicateurs-page .btn:hover,
   .indicateurs-page .btn:active,
   .indicateurs-page .btn:focus,
@@ -2088,7 +2146,7 @@ body>.g-container {
 
   #em_select_filter #del-filter {
     background-color: transparent;
-    color: $red;
+    color: $red-500;
     border: none;
     span{
       color: $red-500;
@@ -2125,7 +2183,7 @@ body>.g-container {
       &:hover,
       &:active,
       &:focus {
-        color: $red-300;
+        color: $red-600;
       }
     }
 
@@ -2133,7 +2191,7 @@ body>.g-container {
     &:active,
     &:focus {
       background-color: transparent;
-      color: $red-300;
+      color: $red-600;
       border-color: transparent;
     }
   }
@@ -2188,7 +2246,7 @@ body>.g-container {
     &:active,
     &:focus {
       background-color: transparent;
-      color: $grey;
+      color: $neutral-800;
       border-color: transparent;
     }
     span {
@@ -2196,7 +2254,7 @@ body>.g-container {
       &:hover,
       &:active,
       &:focus {
-        color: $grey;
+        color: $neutral-800;
       }
     }
   }
@@ -2283,19 +2341,6 @@ body>.g-container {
 
   .glyphicon-ban-circle {
     color: #d94633;
-  }
-
-  /* GO TO TOP */
-  #gototop div::after {
-    content: "^";
-    transform: scale(2, 1.5);
-    font-size: 2em;
-    font-weight: 700;
-    color: $dark-green;
-  }
-
-  #gototop:hover div::after {
-    color: #ccc;
   }
 
   /* ALERT */
@@ -2474,7 +2519,7 @@ body>.g-container {
   }
 
   .g-main-nav .g-standard .g-sublevel .current a span {
-    color: $base-primary-color;
+    color: $main-500;
   }
 
   .g-main-nav .g-toplevel > li.active .g-menu-parent-indicator::after,
@@ -2512,6 +2557,7 @@ body>.g-container {
     &:focus,
     &:active {
       color: $base-secondary-color;
+      text-decoration: underline;
     }
   }
 
@@ -2521,6 +2567,9 @@ body>.g-container {
     color: #fff;
     //font-family: "Lato", sans-serif;
     text-transform: capitalize;
+    width: 100%;
+    height: 48px;
+    margin-bottom: 0;
 
     &:hover,
     &:active,
@@ -2563,31 +2612,46 @@ body>.g-container {
 
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
+.referents-sollicitation-page .calendarbutton {
+  background: #fff;
+  border-radius: 0 4px 4px 0 !important;
+  border: 1px solid #e0e0e5;
+  height: 41px;
+}
+
+.referents-sollicitation-page .calendarbutton i {
+  color: #333333;
+}
+
+.com_emundus h2 {
+  color: $night-blue;
+}
+
   .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
     background: $grey !important;
   }
 
   .import-csv-page .fabrikActions.form-actions button.importation {
     padding: 5px 30px;
-    border: 2px solid $dark-blue;
-    background: $dark-blue;
-    border-radius: 25px !important;
+    border: 1px solid $main-500;
+    background: $main-500;
+    border-radius: 4px !important;
 
     &:hover, &:active, &:focus {
-      border: 2px solid $dark-blue;
+      border: 1px solid $main-500;
       background: transparent;
-      color: $dark-blue;
+      color: $main-500;
     }
   }
 
   .form.em-decision-form .btn.btn-success {
     padding: 5px 30px;
-    border: 2px solid $dark-grey;
+    border: 1px solid $dark-grey;
     background: $dark-grey;
     border-radius: 4px !important;
 
     &:hover, &:active, &:focus {
-      border: 2px solid $grey;
+      border: 1px solid $grey;
       background: $grey;
       color: $white;
     }
@@ -2609,7 +2673,7 @@ body>.g-container {
   }
 
   .g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
-    color: $dark-blue !important;
+    color: $night-blue !important;
   }
 
   .panel-default .panel-heading h3.panel-title {
@@ -2737,20 +2801,20 @@ body>.g-container {
       &#search,
       &#clear-search,
       &#add-filter {
-        background: $dark-green none;
+        background: $main-500 none;
 
         &:hover,
         &:focus,
         &:active {
-          background: darken($dark-green, 10%) none;
+          background: darken($main-500, 10%) none;
         }
       }
 
       &#showhide {
-        background-color: $dark-green;
+        background-color: $main-500;
 
         &:hover {
-          background-color: darken($dark-green, 10%);
+          background-color: darken($main-500, 10%);
         }
       }
     }
@@ -2767,7 +2831,7 @@ body>.g-container {
     &:active,
     &:focus {
       color: #fff;
-      background: darken($dark-green, 10%) !important;
+      background: darken($main-500, 10%) !important;
     }
   }
 
@@ -2812,7 +2876,7 @@ body>.g-container {
       }
 
       span {
-        color: $red;
+        color: $red-500;
       }
     }
   }
@@ -2865,7 +2929,7 @@ body>.g-container {
   .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
     height: 36px;
     background-color: $night-blue;
-    border: 2px solid $night-blue !important;
+    border: 1px solid $night-blue !important;
     border-radius: 5px !important;
     padding: 5px 30px !important;
 
@@ -2874,7 +2938,7 @@ body>.g-container {
     &:focus {
       background-color: transparent !important;
       color: $night-blue;
-      border: 2px solid $night-blue;
+      border: 1px solid $night-blue;
     }
 
     i {
@@ -2931,28 +2995,67 @@ body>.g-container {
     .em-container-comment-body {
       .actions-edit-comment .cancel-edit-comment.btn-danger  {
         background: transparent;
-        border: 1px solid $red-500;
+        border: none;
         color: $red-500;
+
+        .material-icons {
+          color: $red-500;
+        }
+
         &:hover, &:focus, &:active {
-          background: $red-500;
-          border: 1px solid $red-500;
-          color: $neutral-100;
+          background: transparent;
+          border: none;
+          .material-icons {
+            color: $red-600;
+          }
         }
       }
 
       .actions-edit-comment .confirm-edit-comment.btn-success  {
         background: transparent;
-        border: 1px solid $night-blue;
-        color: $night-blue;
+        border: none;
+        color: $main-500;
+
+        .material-icons {
+          color: $main-500;
+        }
+
         &:hover, &:focus, &:active {
-          background: $night-blue;
-          border: 1px solid $night-blue;
-          color: $neutral-100;
+          background: transparent;
+          border: none;
+          .material-icons {
+            color: $main-600;
+          }
+        }
+      }
+
+      .em-decision-form-content {
+        padding: 24px;
+      }
+
+      div#em-appli-block .list-group-item .em-tags-action .btn-danger {
+        border: none;
+
+        .material-icons {
+          color: $red-500;
+        }
+
+        &:hover {
+          border: none;
+          background: transparent;
+
+          .material-icons {
+            color: $red-600;
+          }
         }
       }
 
       .comment-name, .comment-date a {
         color: $neutral-900;
+      }
+
+      .list-group-item .ctext {
+        color: $night-blue;
       }
 
       .em-list-status-date a {
@@ -2969,15 +3072,15 @@ body>.g-container {
 
 
       .edit-comment-container button.edit-comment {
-        background: $neutral-100;
-        border: 1px solid $neutral-100;
+        background: $white;
+        border: 1px solid $white;
         border-radius: 4px !important;
 
         span {
           color: $night-blue;
 
           &:hover {
-            color: $grey;
+            color: $neutral-800;
           }
         }
       }
@@ -2989,15 +3092,15 @@ body>.g-container {
 
     .edit-comment-container button.delete-comment,
     .em-container-tags-body button.btn-danger[title="Supprimer"]{
-      background: $neutral-100;
-      border: 1px solid $neutral-100;
+      background: $white;
+      border: 1px solid $white;
       border-radius: 4px !important;
 
       span {
         color: $red-500;
 
         &:hover {
-          color: $red-300;
+          color: $red-600;
         }
       }
     }
@@ -3080,71 +3183,99 @@ body>.g-container {
   .view-list form.form-search table {
     thead th.fabrik_actions .btn-group {
       a.delete {
-        background: $red;
-        border-color: $red;
+        background: $red-500;
+        border-color: $red-500;
+        margin-right: 5px;
+        color: #fff;
 
         &:hover,
         &:active,
         &:focus {
           background: #fff;
-          border-color: $red;
-          color: $red;
+          border-color: $red-500;
+          color: $red-500;
         }
       }
 
       a.listplugin.btn-default {
-        background: $dark-blue;
-        border-color: $dark-blue;
+        background: $night-blue;
+        border-color: $night-blue;
+        color: #fff;
 
         &:hover,
         &:active,
         &:focus {
           background: #fff;
-          border-color: $dark-blue;
-          color: $dark-blue;
+          border-color: $night-blue;
+          color: $night-blue;
         }
       }
     }
 
+    tbody.fabrik_groupdata tr.fabrik_row {
+      color: $night-blue;
+    }
+
     tbody td.fabrik_actions .btn-group {
-      a.delete {
-        background: $red;
-        border-color: $red;
+
+        a.delete {
+        background: $red-500;
+        border-color: $red-500;
+        margin-right: 5px;
+        color: #fff;
 
         &:hover,
         &:active,
         &:focus {
           background: #fff;
-          border-color: $red;
-          color: $red;
+          border-color: $red-500;
+          color: $red-500;
         }
       }
 
       a.fabrik_edit {
-        background: $dark-green;
-        border-color: $dark-green;
+        background: $main-500;
+        border-color: $main-500;
         margin-right: 5px;
+        color: #fff;
+
         &:hover,
         &:active,
         &:focus {
           background: #fff;
-          border-color: $dark-green;
-          color: $dark-green;
+          border-color: $main-500;
+          color: $main-500;
         }
       }
 
-      a.fabrik_view,
-      a.listplugin {
-        background: $dark-blue;
-        border-color: $dark-blue;
+      a.fabrik_view {
+        background: $main-600;
+        border-color: $main-600;
         margin-right: 5px;
+        color: #fff;
 
         &:hover,
         &:active,
         &:focus {
           background: #fff;
-          border-color: $dark-blue;
-          color: $dark-blue;
+          border-color: $main-600;
+          color: $main-600;
+        }
+      }
+
+
+      a.listplugin {
+        background: $night-blue;
+        border-color: $night-blue;
+        margin-right: 5px;
+        color: #fff;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background: #fff;
+          border-color: $night-blue;
+          color: $night-blue;
         }
       }
     }
@@ -3152,22 +3283,22 @@ body>.g-container {
 
   .com_fabrik.view-list.task-list\.view {
     .page-header h1 {
-      color: #000;
+      color: $night-blue;
     }
 
     form .filtertable input.fabrik_filter_submit {
-      border-radius: 25px;
-      padding: 5px 30px;
-      border: 2px solid #16afe1;
-      background: #16afe1;
-      color: #fff;
+      border-radius: 4px;
+      padding: 8px 12px;
+      border: 1px solid $main-500;
+      background: $night-blue;
+      color: $white;
 
       &:active, &:focus, &:hover {
-        border-radius: 25px;
-        padding: 5px 30px;
-        border: 2px solid $dark-blue;
+        border-radius: 4px;
+        padding: 8px 12px;
+        border: 1px solid $main-500;
         background: transparent;
-        color: $dark-blue;
+        color: $night-blue;
       }
     }
   }
@@ -3177,17 +3308,19 @@ body>.g-container {
 
     .fabrik___heading  a.fabrikorder,
     .fabrik___heading  a.fabrikorder-desc,
-    .fabrik___heading a.fabrikorder-asc {
-      color: $dark-blue;
+    .fabrik___heading a.fabrikorder-asc,
+    table .fabrik___heading th.heading,
+    .emptyDataMessage {
+      color: $night-blue;
     }
 
     .fabrik_filter_submit.button {
-      background: $dark-blue;
-      border-color: $dark-blue;
+      background: $main-500;
+      border-color: $main-500;
       &:hover, &:active, &:focus {
         background: #fff;
-        border-color: $dark-blue;
-        color: $dark-blue;
+        border-color: $main-500;
+        color: $main-500;
       }
     }
 
@@ -3197,12 +3330,12 @@ body>.g-container {
         th,
         i,
         a {
-          color: $dark-blue;
+          color: $night-blue;
         }
       }
 
       tbody tr > td {
-        color: $dark-blue;
+        color: $night-blue;
       }
     }
 
@@ -3210,27 +3343,25 @@ body>.g-container {
 
       a,
       i {
-        color: $dark-blue;
+        color: $night-blue;
       }
 
       b.caret {
-        color: $dark-blue;
-      }
-
-      b.caret {
-        color: $dark-blue;
+        color: $night-blue;
+        border-top-color: $night-blue;
+        border-bottom-color: $night-blue;
       }
 
       a:hover b.caret,
       a:hover b.caret,
       a:hover b.caret {
-        color: $dark-blue;
-        border-top-color: $dark-blue;
-        border-bottom-color: $dark-blue;
+        color: $night-blue;
+        border-top-color: $night-blue;
+        border-bottom-color: $night-blue;
       }
 
       ul.dropdown-menu li a {
-        color: $dark-blue;
+        color: $night-blue;
 
         &:hover, &:focus, &:active {
           color: #fff;
@@ -3251,14 +3382,14 @@ body>.g-container {
 
       .fabrik_groupdata,
       thead {
-        border-color: $dark-blue;
+        border-color: $night-blue;
       }
 
       thead tr.fabrik___heading {
 
         th span a,
         th span a i {
-          color: $dark-blue;
+          color: $night-blue;
         }
       }
     }
@@ -3283,6 +3414,13 @@ body>.g-container {
     background: #dddddd !important;
   }
 
+.table-hover tbody tr,
+.table-hover tbody tr {
+  a {
+    color : $night-blue;
+  }
+}
+
   .files-board .table-hover thead th:hover {
     background-color: #fafafa;
     cursor: pointer;
@@ -3305,91 +3443,91 @@ body>.g-container {
     }
 
     .etiquette label {
-      color: $dark-blue;
+      color: $night-blue;
     }
 
     .etiquette p {
-      color: $dark-blue;
+      color: $night-blue;
     }
 
     #validation {
-      background: $dark-green;
-      border: 2px solid $dark-green;
+      background: $main-500;
+      border: 1px solid $main-500;
 
       &:hover, &:active, &:focus {
         background: transparent;
-        border: 2px solid $dark-green;
-        color: $dark-green;
+        border: 1px solid $main-500;
+        color: $main-500;
       }
     }
 
     .btnQueryBuilder,
     .swal2-confirm {
-      background: $dark-blue;
-      border: 2px solid $dark-blue;
+      background: $main-500;
+      border: 1px solid $main-500;
     }
 
     .btnConsulter {
-      background: $dark-blue;
-      border: 2px solid $dark-blue;
+      background: $main-500;
+      border: 1px solid $main-500;
     }
 
     .btnConsulter:hover {
-      color: $dark-blue;
-      border: 2px solid $dark-blue;
+      color: $main-500;
+      border: 1px solid $main-500;
       background: transparent;
 
     }
 
     .btnQueryBuilder:hover,
     .swal2-confirm:hover {
-      color: $dark-blue;
-      border: 2px solid $dark-blue;
+      color: $main-500;
+      border: 1px solid $main-500;
       background: transparent;
     }
 
     .btnExport,
     .swal2-cancel {
-      color: $dark-blue;
-      border: 2px solid $dark-blue;
+      color: $night-blue;
+      border: 1px solid $night-blue;
       background: transparent;
     }
 
     .btnExport:hover,
     .swal2-cancel:hover {
       color: #fff;
-      border: 2px solid $dark-blue;
-      background: $dark-blue;
+      border: 1px solid $night-blue;
+      background: $night-blue;
     }
 
     .g-content h1::after,
     .swal2-title::after {
-      background: $dark-blue !important;
+      background: $night-blue !important;
     }
 
     .swal2-progress-step,
     .swal2-progress-steps .swal2-progress-step-line,
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-      background: $dark-blue;
+      background: $night-blue;
     }
 
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
-      border-top: 1px solid $dark-blue;
-      border-bottom: 1px solid $dark-blue;
+      border-top: 1px solid $night-blue;
+      border-bottom: 1px solid $night-blue;
     }
 
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
-      color: $dark-blue;
-      border: 1px solid $dark-blue;
+      color: $night-blue;
+      border: 1px solid $night-blue;
     }
 
     .input .modif,
     .input .delete {
-      color: $dark-blue;
+      color: $night-blue;
     }
 
     .btnConsulter:hover a {
-      color: $dark-blue;
+      color: $main-500;
     }
   }
 
@@ -3397,89 +3535,101 @@ body>.g-container {
 
   .experts-synchro-page button.btn.btn-primary.ignore {
     background: transparent;
-    border: 1px solid $base-secondary-color;
-    color: $base-secondary-color;
+    border: 1px solid $night-blue;
+    color: $night-blue;
+
+    &:hover {
+      background: $night-blue;
+      border: 1px solid $night-blue;
+      color: #fff;
+    }
   }
 
-  .experts-synchro-page button.btn.btn-primary.ignore:hover {
-    background: $base-secondary-color;
-    border: 1px solid $base-secondary-color;
-    color: #fff;
+.experts-synchro-page button.btn.btn-primary[ng-click="validAll()"] {
+  background: $main-500;
+  border: 1px solid $main-500;
+  color: #fff;
+
+  &:hover {
+    background: transparent;
+    border: 1px solid $main-500;
+    color: $main-500;
   }
+}
 
   /* EXPERTS */
 
   .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"] {
-    background: $dark-green;
-    border: 1px solid $dark-green;
+    background: $main-500;
+    border: 1px solid $main-500;
     color: #fff;
     margin-left: 10px;
 
     &:hover,
     &:active,
     &:focus {
-      color: $dark-green;
-      border: 1px solid $dark-green;
+      color: $main-500;
+      border: 1px solid $main-500;
       background: #fff;
     }
   }
 
   .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"] {
-    background: $dark-green;
-    border: 1px solid $dark-green;
+    background: $main-500;
+    border: 1px solid $main-500;
     color: #fff;
     margin-left: 10px;
 
     &:hover,
     &:active,
     &:focus {
-      color: $dark-green;
-      border: 1px solid $dark-green;
+      color: $main-500;
+      border: 1px solid $main-500;
       background-color: #fff;
     }
   }
 
   .experts-page .ct-view.contact .panel-heading div.btn.btn-default.btn.xs.pull-right:nth-child(3) {
-    background: $dark-blue;
-    border: 1px solid $dark-blue;
+    background: $night-blue;
+    border: 1px solid $night-blue;
     color: #fff;
     margin-left: 10px;
 
     &:hover,
     &:active,
     &:focus {
-      color: $dark-blue;
-      border: 1px solid $dark-blue;
+      color: $night-blue;
+      border: 1px solid $night-blue;
       background: #fff;
     }
   }
 
   .experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right:first-of-type {
-    background: $dark-green;
-    border: 1px solid $dark-green;
+    background: $main-500;
+    border: 1px solid $main-500;
     color: #fff;
     margin-left: 10px;
 
     &:hover,
     &:active,
     &:focus {
-      color: $dark-green;
-      border: 1px solid $dark-green;
+      color: $main-500;
+      border: 1px solid $main-500;
       background: #fff;
     }
   }
 
   .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="switchSearch()"] {
-    background: $dark-blue;
-    border: 1px solid $dark-blue;
+    background: $night-blue;
+    border: 1px solid $night-blue;
     color: #fff;
     margin-left: 10px;
 
     &:hover,
     &:active,
     &:focus {
-      color: $dark-blue;
-      border: 1px solid $dark-blue;
+      color: $night-blue;
+      border: 1px solid $night-blue;
       background: #fff;
     }
   }
@@ -3489,12 +3639,12 @@ body>.g-container {
   }
 
   .experts-page ul.contact-group li.contact-group-item.bg-warning a.row {
-    color: $dark-blue !important;
+    color: $night-blue !important;
 
     &:hover,
     &:active,
     &:focus {
-      color: $dark-blue !important;
+      color: $night-blue !important;
     }
   }
 
@@ -3616,7 +3766,7 @@ button.swal2-cancel.goback-btn {
   }
 }
 
-.view-form,
+.view-form:not(.com_emundus),
 .view-form.view-registration,
 .view-form.em-formRegistrationCenter,
 .gantry.contentpane.modal,
@@ -3673,6 +3823,48 @@ button.swal2-cancel.goback-btn {
           }
         }
 
+       /** DATABASEJOIN - RADIO - CHECKBOX - AUTRES **/
+
+        .row-fluid[data-role="fabrik-rowopts"] {
+
+          div[data-role="suboption"] {
+            margin-top: 12px;
+            min-height: auto;
+          }
+
+          label.radio {
+
+            input[type="radio"] {
+              @include radio;
+              margin-left: 0px !important;
+
+              &:checked {
+                background-color: initial;
+                appearance: auto;
+                height: 16px !important;
+                width: 16px !important;
+              }
+            }
+
+            span {
+              height: auto !important;
+              color: #2B2B2B !important;
+              margin-top: 0 !important;
+              padding: 0 !important;
+              display: flex;
+              flex-direction: row;
+              flex-wrap: wrap;
+            }
+          }
+
+          label.checkbox {
+
+            input[type="checkbox"] {
+              @include checkbox;
+              margin-left: 0px !important;
+            }
+          }
+        }
 
         /* BLOC ELEMENT */
         .row-fluid .fabrikElementContainer.control-group {
@@ -3686,7 +3878,7 @@ button.swal2-cancel.goback-btn {
             .fabrikElement input:not([type="radio"]),
             .fabrikElement textarea,
             .fabrikElement select {
-            @include input-error;
+              @include input-error;
             }
           }
 
@@ -3696,13 +3888,13 @@ button.swal2-cancel.goback-btn {
             color: $neutral-800 !important;
           }
 
-          .fabrikErrorMessage  {
+          .fabrikErrorMessage {
             @include body-14;
-            color: $red;
+            color: $red-500;
             margin-top: 8px;
 
             &.help-inline {
-              color: $red;
+              color: $red-500;
               padding: 0;
 
               i.icon-warning {
@@ -3725,20 +3917,20 @@ button.swal2-cancel.goback-btn {
             margin-bottom: 0 !important;
             padding-top: 0 !important;
 
-              /* ETOILE */
-              .icon-star.small {
-                @include star;
-              }
-           }
+            /* ETOILE */
+            .icon-star.small {
+              @include star;
+            }
+          }
 
           /* TEXTE D AIDE */
-          span:not(.badge) {
+          span:not(.badge):not([class^="material-icons"]):not(.icon-handle) {
             @include body-14;
             color: $neutral-600;
             display: flex;
             margin-top: 12px;
 
-            &:empty{
+            &:empty {
               margin-top: 0;
             }
 
@@ -3751,15 +3943,23 @@ button.swal2-cancel.goback-btn {
           .fabrikElement {
             width: 100%;
 
+            /* INDICATIF */
+            .chzn-container-single a.chzn-single {
+              @include input-default;
+              padding: 3px 12px 0 12px;
+            }
+
             /* CAPCHA */
 
             .captcha_input {
               input {
                 @include input-default;
                 width: 100%;
+
                 &:focus {
                   @include input-focus;
                 }
+
                 &:hover {
                   @include input-hover;
                 }
@@ -3768,7 +3968,7 @@ button.swal2-cancel.goback-btn {
 
             /* INPUT */
             .fabrikinput:not(textarea) {
-                @include input-default;
+              @include input-default;
 
               &:hover {
                 @include input-hover;
@@ -3807,6 +4007,7 @@ button.swal2-cancel.goback-btn {
 
               &[type="file"] {
                 padding-left: 0;
+
                 &::-webkit-file-upload-button {
                   border: none;
                   margin-right: 20px;
@@ -3820,6 +4021,11 @@ button.swal2-cancel.goback-btn {
               margin-top: 12px !important;
               resize: both;
 
+
+              &.input-medium, &.input-small {
+                width: 100%;
+              }
+
               &:hover {
                 @include input-hover;
               }
@@ -3831,27 +4037,29 @@ button.swal2-cancel.goback-btn {
 
             /* LIMITE */
             .label-info, .badge-info {
-                background: $focus !important;
+              background: $focus !important;
             }
+
             .label, .badge {
               background: $neutral-600;
             }
 
             /* SELECT */
-             select {
+            select {
               @include select-default;
-               color: $neutral-800 !important;
+              color: $neutral-800 !important;
 
-               option {
-                  @include body-16;
-                 color: $neutral-800;
-               }
-             }
+              option {
+                @include body-16;
+                color: $neutral-800;
+              }
+            }
 
             /* SELECTION MULTIPLE */
 
             .chzn-container-multi.chzn-container {
               width: 100% !important;
+
               .chzn-choices {
                 @include select-default;
                 box-shadow: none;
@@ -3859,7 +4067,7 @@ button.swal2-cancel.goback-btn {
                 margin-top: 12px;
                 padding-left: 8px;
 
-                li.search-choice  {
+                li.search-choice {
                   border: $neutral-400;
                   background: $neutral-200;
                   @include body-14;
@@ -3871,7 +4079,7 @@ button.swal2-cancel.goback-btn {
                 }
 
                 li.search-field {
-                  input  {
+                  input {
                     margin-top: 6px;
                     @include body-14;
                     font-size: 13px !important;
@@ -3879,8 +4087,9 @@ button.swal2-cancel.goback-btn {
                 }
               }
 
-             .chzn-drop .chzn-results li {
+              .chzn-drop .chzn-results li {
                 @include body-14;
+
                 &.highlighted {
                   background: $neutral-200;
                   color: $neutral-900;
@@ -3894,16 +4103,16 @@ button.swal2-cancel.goback-btn {
               fieldset.btn-radio {
 
                 label.btn-default.btn.btn-success.active {
-                    @include yes-no;
-                    border: 1px solid $main-500;
-                    background: $main-500;
-                    border-radius: 0 4px 4px 0 !important;
-                     width:55px !important;
+                  @include yes-no;
+                  border: 1px solid $main-500;
+                  background: $main-500;
+                  border-radius: 0 4px 4px 0 !important;
+                  width: 55px !important;
 
-                    &:hover {
-                      border: 1px solid $main-600;
-                      background: $main-600;
-                    }
+                  &:hover {
+                    border: 1px solid $main-600;
+                    background: $main-600;
+                  }
 
                   span {
                     @include body-16-medium;
@@ -3931,7 +4140,7 @@ button.swal2-cancel.goback-btn {
                   }
                 }
 
-                label.btn-default.btn:not(.active)  {
+                label.btn-default.btn:not(.active) {
                   @include yes-no;
                   border: 1px solid $neutral-200;
                   background: $neutral-200;
@@ -3943,6 +4152,7 @@ button.swal2-cancel.goback-btn {
                   &:hover {
                     border: 1px solid $neutral-300;
                     background: $neutral-300;
+
                     span, input {
                       margin-left: 0 !important;
                     }
@@ -3951,16 +4161,16 @@ button.swal2-cancel.goback-btn {
                   span {
                     @include body-16-medium;
                     margin-top: 0;
-                    color: $neutral-900 ;
+                    color: $neutral-900;
                   }
                 }
               }
 
               /* BIRTHDAY */
               select.inputbox {
-                 @include multiple-select;
-                 @include body-16;
-                 width: auto;
+                @include multiple-select;
+                @include body-16;
+                width: auto;
               }
 
 
@@ -3969,9 +4179,11 @@ button.swal2-cancel.goback-btn {
                 display: flex;
                 flex-direction: row;
                 justify-content: flex-end;
+
                 input {
                   border-radius: 4px 0 0 4px;
                 }
+
                 button.calendarbutton,
                 button.timeButton {
                   border: 1px solid $neutral-400;
@@ -3993,6 +4205,7 @@ button.swal2-cancel.goback-btn {
                   &:hover {
                     @include input-hover;
                   }
+
                   &:focus {
                     @include input-focus;
                   }
@@ -4001,22 +4214,23 @@ button.swal2-cancel.goback-btn {
             }
 
 
-          .fabrikMainError.alert.alert-error.fabrikError {
-            border-color: $red;
-            color: $red;
-          }
-          .fabrikMainError.alert.alert-error.fabrikError .close{
-            color: $red !important;
-          }
+            .fabrikMainError.alert.alert-error.fabrikError {
+              border-color: $red-500;
+              color: $red-500;
+            }
+
+            .fabrikMainError.alert.alert-error.fabrikError .close {
+              color: $red-500 !important;
+            }
 
 
-           /* WYZYWYSIWYG */
+            /* WYZYWYSIWYG */
             .js-editor-tinymce {
               margin-top: 12px;
             }
 
 
-              /* CHECKBOX - RADIO */
+            /* CHECKBOX - RADIO */
             .row-fluid .fabrikgrid_radio,
             .row-fluid .fabrikgrid_checkbox {
               margin-top: 12px;
@@ -4034,10 +4248,10 @@ button.swal2-cancel.goback-btn {
                 input[type="checkbox"] {
                   @include checkbox;
                   margin-left: 0px !important;
-                 }
+                }
               }
 
-              label.radio  {
+              label.radio {
                 padding: 0;
                 margin: 0;
                 min-height: auto;
@@ -4066,14 +4280,20 @@ button.swal2-cancel.goback-btn {
               }
             }
 
-            /* CALC */
+              /* CALC */
 
-            span.fabrikElementReadOnly {
-              @include body-16;
-              padding: 15px 12px;
+              span.fabrikElementReadOnly {
+                @include body-16;
+                padding: 15px 12px;
+                border: none;
+
+                &:focus, &:hover {
+                  border: none;
+                }
+              }
             }
-         }
-      }
+          }
+
 
 
 
@@ -4204,6 +4424,11 @@ button.swal2-cancel.goback-btn {
       width: 100%;
     }
 
+    .view-form .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group.plg-databasejoin.mode-dropdown {
+      display: flex;
+      justify-content: flex-end;
+    }
+
     /* FORMULAIRES  - GP REPEAT TABLEAU */
      .view-form .fabrikGroup .repeatGroupTable  {
        display: flex;
@@ -4269,6 +4494,9 @@ button.swal2-cancel.goback-btn {
 
       a.forgotten_password_header {
         float: unset;
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
 
@@ -4306,6 +4534,7 @@ button.swal2-cancel.goback-btn {
           div.em-heading-registration {
             width: 100%;
             padding: 80px 24px 32px 24px;
+            text-align: center;
           }
 
           form.fabrikForm {
@@ -4568,6 +4797,11 @@ button.swal2-cancel.goback-btn {
       .fabrikGroupRepeater {
         bottom: 0px !important;
       }
+    }
+
+    .view-form .span12 form .fabrikGroup .row-fluid .fabrikElementContainer.control-group.plg-databasejoin.mode-dropdown {
+      display: flex;
+      justify-content: flex-end;
     }
 
     /* BURGER */
@@ -4885,16 +5119,16 @@ button.swal2-cancel.goback-btn {
 
     /* RAPPORT D'ERREUR */
     .error-report-page button.submit {
-      background: $dark-blue;
-      border: 2px solid $dark-blue;
+      background: $main-500;
+      border: 1px solid $main-500;
       padding: 5px 30px !important;
       font-weight: 500 !important;
-      border-radius: 25px !important;
+      border-radius: 4px !important;
 
       &:active, &:focus, &:hover {
         background: transparent;
-        border: 2px solid $dark-blue;
-        color: $dark-blue;
+        border: 1px solid $main-500;
+        color: $main-500;
       }
     }
 

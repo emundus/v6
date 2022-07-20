@@ -42,6 +42,8 @@ class EmundusModelLogs extends JModelList {
 	 * @since 3.8.8
 	 */
 	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
+        $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
+
         if (empty($user_from)) {
             JLog::add('empty user_from in EmundusModelLogs::log. User_id_from can not be null', JLog::WARNING, 'com_emundus');
             return false;
@@ -62,9 +64,9 @@ class EmundusModelLogs extends JModelList {
 	
 					$db = JFactory::getDbo();
 					$query = $db->getQuery(true);
-	
-					$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params'];
-					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params)];
+
+                    $columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
+                    $values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
 
 					try {
                         $query->insert($db->quoteName('#__emundus_logs'))
