@@ -193,7 +193,7 @@ export default {
     grid-column: 1;
 
     .scrollable {
-      height: 89vh;
+      height: calc(100vh - 184px);
       overflow-y: scroll;
       overflow-x: hidden;
     }
