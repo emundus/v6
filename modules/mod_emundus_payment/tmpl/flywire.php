@@ -75,16 +75,16 @@ $lang = JFactory::getLanguage()->getTag();
         </select>
 
         <div class="em-w-100 em-flex-row-end em-justify-content-end em-mt-16">
-            <button id="submit-payer-infos" class="em-primary-button em-w-33">
+            <button id="submit-payer-infos" class="em-front-btn em-front-primary-btn em-w-33">
                 <?= JText::_('MOD_EMUNDUS_PAYMENT_SEND_CONF') ?>
             </button>
-            <button id="modify-payer-infos" class="hidden em-secondary-button em-w-33 em-ml-8">
+            <button id="modify-payer-infos" class="hidden em-front-btn em-front-secondary-btn em-w-33 em-ml-8">
                 <?= JText::_('MOD_EMUNDUS_PAYMENT_REEDIT_CONF') ?>
             </button>
         </div>
 
         <div id="open-flywire-div" class="hidden em-w-100 em-flex-row-end em-justify-content-end em-mt-16">
-            <button id="open-flywire" class="em-primary-button em-w-33">
+            <button id="open-flywire" class="em-front-btn em-front-primary-btn em-w-33">
                 <?= JText::_('MOD_EMUNDUS_PAYMENT_OPEN_FLYWIRE') ?>
             </button>
         </div>
