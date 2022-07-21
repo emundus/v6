@@ -52,16 +52,13 @@
 }
 
 hr.footer-separation {
-    width: 100%;
+    width: 64%;
     margin: 20px auto 10px auto;
 }
 
-.footer-rgpd {
-    align-items: center;
+.footer-rgpd-links {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
 }
 
 .footer-rgpd p {
