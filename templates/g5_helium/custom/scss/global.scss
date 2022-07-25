@@ -838,7 +838,9 @@ body>.g-container {
     background: white;
   }
   #g-navigation #header-c{
-    display: none;
+    .g-content {
+      display: none;
+    }
   }
   footer#g-footer{
     display: none;
