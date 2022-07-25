@@ -106,3 +106,4 @@ components/com_eventbooking/fields.xml
 ## unit test ##
 /components/com_emundus_onboard/unittest/logs/
 /.phpunit.*
+.phpunit.result.cache
