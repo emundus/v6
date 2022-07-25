@@ -63,18 +63,19 @@ if($user != null) {
         text-align: left;
     }
     .select .profile-select{
-        height: 36px;
-        padding: 0 5px;
+        height: 48px;
+        padding: 0 32px 0 12px !important;
         border: 1px solid #e5e5e5;
-        background-color: white !important;
-        background-image: url(/images/emundus/arrow-2.png) !important;
-        background-size: 25px !important;
-        background-repeat: no-repeat !important;
-        background-position-x: 98% !important;
-        background-position-y: 54% !important;
+        background-position-x: 95%;
+        background-position-y: 54%;
+        -webkit-appearance: none;
+        background-image: url('../../../../images/emundus/arrow.svg');
+        background-size: 8px;
+        background-repeat: no-repeat;
         -moz-appearance: none;
         -webkit-appearance: none;
         width: 200px;
+        color: #353544;
     }
     .select .profile-select:hover{
         background-color: white !important;
@@ -127,15 +128,21 @@ if($user != null) {
 
 <!-- Button which opens up the dropdown menu. -->
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
+    <?php if(!empty($profile_picture)): ?>
+    <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
+         style="background-image:url('<?php echo $profile_picture ?>');right: 15px">
+    </div>
+    <?php else : ?>
     <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
         <?php if($first_logged) : ?>
-        <div class="em-user-dropdown-tip" id="userDropdownTip">
-            <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
-            <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
-        </div>
+            <div class="em-user-dropdown-tip" id="userDropdownTip">
+                <p><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_TEXT') ?></p><br/>
+                <p class="em-user-dropdown-tip-link" onclick="closeTip()"><?php echo JText::_('COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_TIP_CLOSE') ?></p>
+            </div>
         <?php endif ;?>
         <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" class="<?php if($first_logged) : ?>userDropdownIcon-tip<?php endif; ?>" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
     </div>
+    <?php endif; ?>
     <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
     <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
         <?php
@@ -170,7 +177,7 @@ if($user != null) {
         <?php if ($show_update == '1') :?>
             <hr style="width: 100%">
             <?php
-            echo '<li><a class="edit-button-user" href="index.php?option=com_users&view=profile&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
+            echo '<li><a class="edit-button-user" href="/index.php?option=com_emundus&view=users&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
             ?>
         <?php endif; ?>
     </ul>
@@ -184,6 +191,7 @@ if($user != null) {
         if(document.getElementById('profile_chzn') != null){
             document.getElementById('profile_chzn').style.display = 'none';
             document.getElementById('profile').style.display = 'block';
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
         }
     });
     function displayUserOptions(){
@@ -199,7 +207,9 @@ if($user != null) {
             setTimeout(() => {
                 dropdown.classList.remove('open');
                 jQuery("#userDropdownMenu").css("transform","unset")
-                icon.classList.remove('active');
+                if(icon !== null) {
+                    icon.classList.remove('active');
+                }
             },300);
         } else {
             // remove message classes if message module is on page
@@ -209,7 +219,9 @@ if($user != null) {
                 messageIcon.classList.remove('open');
             }
             dropdown.classList.add('open');
-            icon.classList.add('open');
+            if(icon !== null) {
+                icon.classList.add('open');
+            }
         }
     }
 
@@ -287,4 +299,10 @@ if($user != null) {
 	<?php } ?>
 </div>
     <a class="forgotten_password_header" href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+        });
+    </script>
 <?php } ?>

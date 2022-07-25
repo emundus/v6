@@ -1,10 +1,8 @@
 <template>
   <div>
     <EvaluationModal v-if="currentFile" :file="currentFile" :evaluation_form="Number(files.evaluation_form)" @reload-list="getMyEvaluations" />
-    <span class="em-h3 em-mb-16">{{ translate('MOD_EMUNDUS_EVALUATIONS_MY_EVALUATIONS')}}</span>
-    <p class="em-mt-8" v-if="campaigns.length > 0 && !loading">{{ translate('MOD_EMUNDUS_EVALUATIONS_SELECT_A_CAMPAIGN') }}</p>
 
-    <div class="em-mt-16" v-if="campaigns.length > 0 && !loading">
+    <div v-if="campaigns.length > 0 && !loading">
       <select v-model="currentCampaign" style="width: max-content">
         <option value="0">{{ translate('MOD_EMUNDUS_EVALUATIONS_PLEASE_SELECT') }}</option>
         <option v-for="campaign in campaigns" :value="campaign.id">{{ campaign.label }} - {{ campaign.files }} {{ translate('MOD_EMUNDUS_EVALUATIONS_FILES_TO_EVALUATE') }}</option>

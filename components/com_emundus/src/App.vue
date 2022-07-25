@@ -26,6 +26,7 @@ import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
+import editprofile from "./views/Users/Edit"
 
 export default {
 	props: {
@@ -54,6 +55,7 @@ export default {
     settings,
     messagescoordinator,
     messages,
+    editprofile,
 	},
   beforeCreate() {
     fileService.isDataAnonymized().then(response => {
@@ -136,7 +138,8 @@ export default {
 .view-campaigns #g-container-main .g-container,
 .view-emails #g-container-main .g-container,
 .view-form #g-container-main .g-container,
-.view-settings #g-container-main .g-container{
+.view-settings #g-container-main .g-container,
+.view-users #g-container-main .g-container{
   width: 90%;
 }
 

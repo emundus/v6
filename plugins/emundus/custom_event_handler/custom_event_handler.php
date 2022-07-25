@@ -17,20 +17,23 @@ class plgEmundusCustom_event_handler extends JPlugin {
     }
 
 
-    function callEventHandler(String $event, array $args = null): void {
+    function callEventHandler(String $event, array $args = null): array
+    {
         $params = json_decode($this->params);
         $event_handlers = json_decode($params->event_handlers);
         $events = array_keys($event_handlers->event, $event);
-
+        $returned_values = [];
         
         foreach ($events as $caller_index) {
             try {
-                $this->_runPHP($event_handlers->code[$caller_index], $args);
+                $returned_values[$caller_index] = $this->_runPHP($event_handlers->code[$caller_index], $args);
             } catch (ParseError $p) {
                 JLog::add('Error while running event ' . $event_handlers->event[$caller_index] . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
                 continue;
             }
         }
+
+        return $returned_values;
     }
 
     private function _runPHP($code = '', $data = null) {
@@ -45,7 +48,7 @@ class plgEmundusCustom_event_handler extends JPlugin {
             if ($php_result === false) {
                 return false;
             }
-            return true;
+            return $php_result;
         } catch (ParseError $p) {
             JLog::add('Error while running event ' . $code . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
             return false;

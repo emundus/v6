@@ -23,6 +23,20 @@
   height: 40px;
   color: white;
   background-color: $main-500;
+
+  &:hover {
+    background-color: white;
+    color: $main-500;
+    border: 1px solid $main-500;
+
+    .material-icons {
+      color: $main-500 !important;
+    }
+  }
+
+  .material-icons {
+    color: $white;
+  }
 }
 
 .em-primary-disabled{
@@ -40,7 +54,7 @@
   border: solid 1px $neutral-300;
   height: 40px;
   background: transparent;
-  color: $neutral-900;
+  color: $night-blue;
 }
 
 .em-tertiary-button{
@@ -54,7 +68,7 @@
   border: unset;
   height: 40px;
   background: transparent;
-  color: $neutral-900;
+  color: $night-blue;
 }
 
 .em-radio-button{
@@ -250,6 +264,11 @@ input:focus + .em-slider {
   }
 }
 
+.em-tip{
+  font-size: 14px;
+  color: #727272;
+}
+
 /* LOADING */
 .em-loader {
   border: 5px solid #f3f3f4;
@@ -342,6 +361,13 @@ input:focus + .em-slider {
   align-items: start;
   height: 100%;
 }
+.em-flex-col-end{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
+  height: 100%;
+}
 
 .em-errors-alert .alert{
   margin: unset;
@@ -351,6 +377,10 @@ input:focus + .em-slider {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.em-grid-simple {
+  display: grid;
 }
 
 .em-grid {
@@ -430,6 +460,12 @@ input:focus + .em-slider {
   }
 }
 
+.em-hover-main-600{
+  &:hover{
+    color: $main-600;
+  }
+}
+
 .em-z-index-10{
   z-index: 10;
 }
@@ -438,8 +474,16 @@ input:focus + .em-slider {
   height: auto !important;
 }
 
+.em-h-maxcontent{
+  height: max-content;
+}
+
 .em-h-25{
   height: 25px;
+}
+
+.em-h-40{
+  height: 40px;
 }
 
 .em-min-height-100{
@@ -449,7 +493,9 @@ input:focus + .em-slider {
 .em-max-height-20{
   max-height: 20px;
 }
-
+.em-max-width-75{
+  max-width: 75%;
+}
 .em-max-width-48{
   max-width: 48%;
 }
@@ -482,6 +528,10 @@ input:focus + .em-slider {
   width: 90rem;
 }
 
+.em-w-50{
+  width: 50%;
+}
+
 .em-w-80{
   width: 80%;
 }
@@ -510,6 +560,9 @@ input:focus + .em-slider {
   width: max-content;
 }
 
+.em-text-underline{
+  text-decoration: underline;
+}
 .em-color-white{
   color: white;
 }
@@ -528,6 +581,12 @@ input:focus + .em-slider {
 .em-blue-color{
   color: $em-blue;
 }
+.em-blue-300-color{
+  color: $blue-300;
+}
+.em-blue-400-color{
+  color: $blue-400;
+}
 .em-blue-500-color{
   color: $blue-500;
 }
@@ -539,6 +598,9 @@ input:focus + .em-slider {
 }
 .em-text-neutral-600{
   color: $neutral-600;
+}
+.em-text-neutral-300{
+  color: $neutral-300;
 }
 .em-text-neutral-900{
   color: $neutral-900;
@@ -561,6 +623,9 @@ input:focus + .em-slider {
 }
 .em-bg-main-500{
   background: $main-500;
+}
+.em-white-bg{
+  background: white;
 }
 
 /* MARGINS */
@@ -818,50 +883,50 @@ input:focus + .em-slider {
 .em-h1{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 56px;
   line-height: 70px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h2{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 48px;
   line-height: 60px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h3{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 32px;
   line-height: 40px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h4{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 24px;
   line-height: 30px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h5{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 20px;
   line-height: 25px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 .em-h6{
   font-family: 'Inter', sans-serif;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 18px;
   line-height: 23px;
-  color: $neutral-900;
+  color: $night-blue;
 }
 
 .em-caption{
@@ -1000,7 +1065,7 @@ button.em-swal-cancel-button{
   border: solid 1px $neutral-300 !important;
   height: 40px !important;
   background: transparent !important;
-  color: $neutral-900 !important;
+  color: $night-blue !important;
   &:focus{
     box-shadow: unset !important;
   }
@@ -1072,6 +1137,52 @@ button.em-swal-cancel-button{
 }
 /** **/
 
+/** Circles **/
+.em-circle-blue-100{
+  border-radius: 50%;
+  padding: 12px;
+  background: $blue-100;
+}
+.em-circle-blue-200{
+  border-radius: 50%;
+  padding: 12px;
+  background: $blue-200;
+}
+/** **/
+
+/** PROFILE UTILITIES **/
+.em-profile-picture{
+  width: 45px;
+  height: 45px;
+  min-width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: solid 5px white;
+  transition: all 0.3s ease-in-out;
+  &:hover{
+    filter: brightness(80%);
+  }
+}
+.em-profile-picture-big{
+  width: 100px;
+  height: 100px;
+  min-width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: solid 5px white;
+  transition: all 0.3s ease-in-out;
+  &:hover{
+    filter: brightness(80%);
+  }
+}
 /**
   MEDIA QUERIES
 **/
@@ -1150,13 +1261,23 @@ button.em-swal-cancel-button{
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 850px) {
   .em-input-icon {
     left: 85%;
   }
 
+  .em-m-xs-0{
+    margin: 0;
+  }
+
   .em-mt-xs-8{
     margin-top: 8px;
+  }
+
+  .em-grid-2{
+    display: grid;
+    grid-gap: 24px;
+    grid-template-columns: repeat(1, 1fr);
   }
 
   .em-grid-3{
@@ -1169,5 +1290,18 @@ button.em-swal-cancel-button{
     display: grid;
     grid-gap: 24px;
     grid-template-columns: repeat(1, 1fr);
+  }
+
+  .em-small-flex-column{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .em-small-align-items-end{
+    align-items: end;
+  }
+
+  .em-small-align-items-start{
+    align-items: start;
   }
 }

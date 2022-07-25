@@ -1892,4 +1892,31 @@ class EmundusModelForm extends JModelList {
         }
     }
 
+    function getDatabaseJoinOptions($table, $column, $value,$concat_value = null, $where = null){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $current_shortlang = explode('-',JFactory::getLanguage()->getTag())[0];
+
+        try {
+            $value_select = $value . ' as value';
+            if(!empty($concat_value)){
+                $concat_value = str_replace('{thistable}', $table, $concat_value);
+                $concat_value = str_replace('{shortlang}', $current_shortlang, $concat_value);
+
+                $value_select = 'CONCAT('.$concat_value.') as value';
+            }
+            $query->select(array($db->quoteName($column,'primary_key'),$value_select))
+                ->from($db->quoteName($table));
+            if(!empty($where)){
+                $query->where(str_replace('WHERE','',$where));
+            }
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/form | Error at getDatabaseJoinOptions : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
 }

@@ -52,7 +52,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 		<?php foreach ($this->form->getFieldsets() as $group => $fieldset) : ?>
 			<?php $fields = $this->form->getFieldset($group); ?>
 			<?php if (count($fields)) : ?>
-				<fieldset>
+				<fieldset<?php if($fieldset->label == 'PLG_USER_EMUNDUS_PROFILE_SLIDER_LABEL') : ?> style="display: none"<?php endif; ?>>
 					<?php // If the fieldset has a label set, display it as the legend. ?>
 					<?php if (isset($fieldset->label)) : ?>
                         <div class="em-heading-form">
@@ -177,12 +177,21 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/profile/style/com_u
 	$user = JFactory::getSession()->get('emundusUser');
 ?>
 <script type="text/javascript">
-	document.getElementById("jform_emundus_profile_lastname").value = "<?php echo $user->lastname; ?>";
-	document.getElementById("jform_emundus_profile_firstname").value = "<?php echo $user->firstname; ?>";
+    if(document.getElementById("jform_emundus_profile_lastname") != null) {
+        document.getElementById("jform_emundus_profile_lastname").value = "<?php echo $user->lastname; ?>";
+    }
+    if(document.getElementById("jform_emundus_profile_firstname") != null) {
+        document.getElementById("jform_emundus_profile_firstname").value = "<?php echo $user->firstname; ?>";
+    }
+    if(document.getElementById("jform_emundus_profile_email") != null) {
+        document.getElementById("jform_emundus_profile_email").value = "<?php echo $user->email; ?>";
+        document.getElementById("jform_username").value = "<?php echo $user->email; ?>";
+    }
 
 
     // Update username when you change your email.
     jQuery('#jform_email1').keyup(function () {
         jQuery('#jform_username').val(this.value);
+        jQuery('#jform_emundus_profile_email').val(this.value);
     });
 </script>

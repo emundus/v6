@@ -3702,6 +3702,7 @@ class EmundusModelEvaluation extends JModelList {
                 ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1))
                 ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
                 ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
             if (isset($params->status) && $params->status !== '') {
                 $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
             }
@@ -3710,6 +3711,11 @@ class EmundusModelEvaluation extends JModelList {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
             }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+            $query->order('ecc.date_submitted');
             $db->setQuery($query);
             $files_users_associated = $db->loadObjectList();
 
@@ -3731,6 +3737,11 @@ class EmundusModelEvaluation extends JModelList {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
             }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+            $query->order('ecc.date_submitted');
             $db->setQuery($query);
             $files_groups_associated = $db->loadObjectList();
 
@@ -3759,18 +3770,23 @@ class EmundusModelEvaluation extends JModelList {
             $form_id = $db->loadResult();
 
             $query->clear()
-                ->select('fe.id,fe.name,fe.label,fe.show_in_list_summary')
+                ->select('fe.id,fe.name,fe.label,fe.show_in_list_summary,ffg.form_id')
                 ->from($db->quoteName('#__fabrik_elements','fe'))
-                ->where($db->quoteName('fe.group_id') . ' IN (' . implode(',',$eval_groups) . ')')
-                ->andWhere($db->quoteName('fe.published') . ' = 1');
+                ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+                ->where($db->quoteName('fe.group_id') . ' IN (' . implode(',',$eval_groups) . ')');
+            if (isset($params->more_elements) && $params->more_elements !== '') {
+                $query->orWhere($db->quoteName('fe.id') . ' IN (' . $params->more_elements . ')');
+            }
+            $query->andWhere($db->quoteName('fe.published') . ' = 1');
             $db->setQuery($query);
             $eval_elements = $db->loadObjectList('name');
 
-            foreach ($eval_elements as $key => $elt) {
-                $eval_elements[$key]->label = JText::_($elt->label);
+            $evaluations = array();
+            $more_elements_by_campaign = new stdClass;
+            if(isset($params->more_elements_campaign)) {
+                $more_elements_by_campaign = json_decode($params->more_elements_campaign);
             }
 
-            $evaluations = array();
             foreach ($files_associated as $file) {
                 $evaluation = new stdClass;
                 $evaluation->fnum = $file->fnum;
@@ -3778,9 +3794,27 @@ class EmundusModelEvaluation extends JModelList {
                 $evaluation->campaign_id = $file->campaign_id;
                 $evaluation->applicant_name = $file->name;
 
+                $key = false;
+                if(!empty($more_elements_by_campaign->campaign)){
+                    $key = array_search($file->campaign_id,$more_elements_by_campaign->campaign);
+                }
+
+                if($key !== false){
+                    $query->clear()
+                        ->select('fe.id,fe.name,fe.label,fe.show_in_list_summary,ffg.form_id')
+                        ->from($db->quoteName('#__fabrik_elements','fe'))
+                        ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+                        ->where($db->quoteName('fe.id') . ' IN (' . $more_elements_by_campaign->elements[$key] . ')');
+                    $db->setQuery($query);
+                    $more_elements = $db->loadObjectList('name');
+
+                    $eval_elements = array_merge($eval_elements,$more_elements);
+                }
+
                 foreach ($eval_elements as $key => $elt) {
+                    $eval_elements[$key]->label = JText::_($elt->label);
                     if (!in_array($elt->name,['fnum','student_id','campaign_id'])) {
-                        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum,$elt->id,$form_id);
+                        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum,$elt->id,$elt->form_id);
                     }
                 }
 
@@ -3816,6 +3850,7 @@ class EmundusModelEvaluation extends JModelList {
                 ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
                 ->andWhere($db->quoteName('ecc.published') . ' = 1')
                 ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1));
+
             if (isset($params->status) && $params->status !== '') {
                 $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
             }
@@ -3823,6 +3858,10 @@ class EmundusModelEvaluation extends JModelList {
             if (isset($params->tags) && $params->tags !== '') {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
             }
             $query->group('esc.id');
             $db->setQuery($query);
@@ -3846,12 +3885,16 @@ class EmundusModelEvaluation extends JModelList {
                 $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
                     ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
             }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
             $query->group('esc.id');
             $db->setQuery($query);
             $campaigns_groups_assoc = $db->loadObjectList();
 
             $campaigns = array_merge($campaigns_users_assoc,$campaigns_groups_assoc);
-            return $h_array->removeDuplicateObjectsByProperty($campaigns,'id');
+            return $h_array->mergeAndSumPropertyOfSameObjects($campaigns,'id','files');
         } catch (Exception $e) {
             JLog::add('Problem to get campaigns to evaluate for user '.$user.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return array();
