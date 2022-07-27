@@ -94,6 +94,7 @@ if($user != null) {
             left: 0;
             top: 0;
             background-color: rgba(60, 60, 60, 0.65);
+            z-index: 20;
         }
         .userDropdownLabel-tip{
             position: fixed;
@@ -106,7 +107,7 @@ if($user != null) {
             border-radius: 50%;
         }
         #g-navigation .g-container #header-c .userDropdownIcon-tip{
-            margin-bottom: 0 !important;
+            margin: 23px 30px !important;
         }
         .em-user-dropdown-tip{
             background: white;

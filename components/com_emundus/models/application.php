@@ -1922,7 +1922,7 @@ class EmundusModelApplication extends JModelList
     // @param   int applicant user id
     // @param   int fnum application file number
     // @return  string HTML to send to PDF librairie
-    public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null)
+    public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true)
     {
         /* COULEURS*/
         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -2604,11 +2604,13 @@ class EmundusModelApplication extends JModelList
         }
         $forms .= '</p></p>';
 
-        $upload_files = $this->getCountUploadedFile($fnum, $aid);
-        $forms .= $upload_files;
+        if($attachments) {
+            $upload_files = $this->getCountUploadedFile($fnum, $aid);
+            $forms .= $upload_files;
 
-        $list_upload_files = $this->getListUploadedFile($fnum, $aid);
-        $forms .= $list_upload_files;
+            $list_upload_files = $this->getListUploadedFile($fnum, $aid);
+            $forms .= $list_upload_files;
+        }
         return $forms;
     }
 
