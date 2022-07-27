@@ -74,7 +74,7 @@ class modEmundusPaymentHelper
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $query->select('jeh.*, jho.order_status')
+        $query->select('jeh.*, jho.order_status, jho.order_type')
             ->from('#__emundus_hikashop as jeh')
             ->leftJoin('#__hikashop_order as jho ON jho.order_id = jeh.order_id')
             ->where('jeh.fnum = ' . $db->quote($fnum));
@@ -88,6 +88,32 @@ class modEmundusPaymentHelper
         }
 
         return $payment;
+    }
+
+    /**
+     * @param $payment
+     * @return boolean
+     */
+    public function waitForValidation($payment): bool
+    {
+        $wait = false;
+
+        if ($payment->orderStatus == 'confirmed') {
+            return true;
+        }
+
+        switch ($payment->order_type) {
+            case 'flywire':
+                $params = json_decode($payment->params, true);
+                if ($params['initiator'] == 'flywire' && $params['flywire_status'] != 'cancelled') {
+                    $wait = true;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return $wait;
     }
 
     /**
@@ -263,5 +289,131 @@ class modEmundusPaymentHelper
         }
 
         return $status;
+    }
+
+    public function getAttachmentLabelFromId($attachmentId): string
+    {
+        $lbl = '';
+
+        if (!empty($attachmentId)) {
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+
+            $query->select('lbl')
+                ->from('jos_emundus_setup_attachments')
+                ->where('id = ' . $attachmentId);
+
+            $db->setQuery($query);
+
+            try {
+                $lbl = $db->loadResult();
+            } catch (Exception $e) {
+                $lbl = '';
+                JLog::add('Error getting attachment lbl : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_payment');
+            }
+        }
+
+        return $lbl;
+    }
+
+    public function getAttachmentAllowedExtTypes($attachmentId): array
+    {
+        $ext = array();
+
+        if (!empty($attachmentId)) {
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+
+            $query->select('allowed_types')
+                ->from('jos_emundus_setup_attachments')
+                ->where('id = ' . $attachmentId);
+
+            $db->setQuery($query);
+
+            try {
+                $allowed_types = $db->loadResult();
+            } catch (Exception $e) {
+                $allowed_types = '';
+                JLog::add('Error getting attachment ext : ' . $e->getMessage(), JLog::ERROR, 'com_emundus_payment');
+            }
+
+            if (!empty($allowed_types)) {
+                $types = explode(';', $allowed_types);
+
+                foreach ($types as $type) {
+                    $ext[$type] = $this->get_mime_type('test.' . $type);
+                }
+            }
+        }
+
+        return $ext;
+    }
+
+    function get_mime_type($filename) {
+        $mime_types = array(
+            'txt' => 'text/plain',
+            'htm' => 'text/html',
+            'html' => 'text/html',
+            'php' => 'text/html',
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'json' => 'application/json',
+            'xml' => 'application/xml',
+            'swf' => 'application/x-shockwave-flash',
+            'flv' => 'video/x-flv',
+
+            // images
+            'png' => 'image/png',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'bmp' => 'image/bmp',
+            'ico' => 'image/vnd.microsoft.icon',
+            'tiff' => 'image/tiff',
+            'tif' => 'image/tiff',
+            'svg' => 'image/svg+xml',
+            'svgz' => 'image/svg+xml',
+
+            // archives
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'exe' => 'application/x-msdownload',
+            'msi' => 'application/x-msdownload',
+            'cab' => 'application/vnd.ms-cab-compressed',
+
+            // audio/video
+            'mp3' => 'audio/mpeg',
+            'qt' => 'video/quicktime',
+            'mov' => 'video/quicktime',
+
+            // adobe
+            'pdf' => 'application/pdf',
+            'psd' => 'image/vnd.adobe.photoshop',
+            'ai' => 'application/postscript',
+            'eps' => 'application/postscript',
+            'ps' => 'application/postscript',
+
+            // ms office
+            'doc' => 'application/msword',
+            'rtf' => 'application/rtf',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint',
+
+            // open office
+            'odt' => 'application/vnd.oasis.opendocument.text',
+            'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+        );
+
+        $ext = strtolower(array_pop(explode('.',$filename)));
+        if (array_key_exists($ext, $mime_types)) {
+            return $mime_types[$ext];
+        }
+        elseif (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME);
+            $mimetype = finfo_file($finfo, $filename);
+            finfo_close($finfo);
+            return $mimetype;
+        } else return 'application/octet-stream';
     }
 }

@@ -63,7 +63,6 @@ window.addEventListener('click', function (e) {
             inputsValues.sender_last_name &&
             inputsValues.sender_address1 &&
             inputsValues.sender_city &&
-            inputsValues.sender_state &&
             selectsValues.sender_country && (inputsValues.sender_email || inputsValues.sender_phone))
         {
             getConfig({
@@ -75,7 +74,6 @@ window.addEventListener('click', function (e) {
                     config.sender_last_name &&
                     config.sender_address1 &&
                     config.sender_city &&
-                    config.sender_state &&
                     config.sender_country && (config.sender_email || config.sender_phone))
                 {
                     window.flywire.Checkout.render(config, '#open-flywire');
