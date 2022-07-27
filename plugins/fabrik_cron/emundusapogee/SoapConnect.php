@@ -95,7 +95,7 @@ class SoapConnect {
                     'params'    => $response_message
                 );
 
-                JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $response_message, JLog::ERROR, 'com_emundus');
+                //JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $response_message, JLog::ERROR, 'com_emundus');
             } else {
                 if($faultString->length == 0) {
                     $data = array(
@@ -112,7 +112,7 @@ class SoapConnect {
                         'status'    => 0,
                         'params'    => $doc->getElementsByTagName('faultstring')->item(0)->nodeValue
                     );
-                    JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $doc->getElementsByTagName('faultstring')->item(0)->nodeValue, JLog::ERROR, 'com_emundus');
+                    //JLog::add('[emundusApogee] Error when passing data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $doc->getElementsByTagName('faultstring')->item(0)->nodeValue, JLog::ERROR, 'com_emundus');
                 }
 
             }
@@ -127,7 +127,7 @@ class SoapConnect {
                 'params'    => $e->getMessage()
             );
 
-            JLog::add('[emundusApogee] Error when fetching data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            //JLog::add('[emundusApogee] Error when fetching data, applicant file number : ' . $fnum . ' at ' . date('Y-m-d H:i:s') . ', error message : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 
         finally {
