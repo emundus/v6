@@ -120,6 +120,16 @@ class EmundusModelCampaign extends JModelList {
 		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 		$m_profile = new EmundusModelProfile();
 		$userProfiles = $m_profile->getUserProfiles($uid);
+        $userEmundusProfiles = $m_profile->getProfileByApplicant($uid);
+
+        $newObjectProfiles = (object) array(
+            'id' => $userEmundusProfiles['profile'],
+            'label' => $userEmundusProfiles['profile_label'],
+            'published' => $userEmundusProfiles['published'],
+            'status' => $userEmundusProfiles['status'],
+        );
+
+        array_push($userProfiles,$newObjectProfiles);
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');

@@ -81,7 +81,7 @@ class EmundusModelProfile extends JModelList {
 
     function getProfileByApplicant($aid) {
         $query = 'SELECT eu.firstname, eu.lastname, eu.profile, eu.university_id,
-							esp.label AS profile_label, esp.menutype, esp.published
+							esp.label AS profile_label, esp.menutype, esp.published, esp.status
 						FROM #__emundus_users AS eu
 						LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
 						WHERE eu.user_id = '.$aid;
