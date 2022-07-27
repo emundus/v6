@@ -38,6 +38,16 @@
                        key_field="step"
                        value_field="value">
                 </field>
+                <field name="status_to_exclude"
+                       type="sql"
+                       multiple="true"
+                       query="SELECT id, step, value FROM #__emundus_setup_status GROUP BY ordering"
+                       default=""
+                       label="Statuts à exclure"
+                       description="Statuts que le dossier ne doit pas avoir"
+                       key_field="step"
+                       value_field="value">
+                </field>
                 <field name="tags"
                        type="sql"
                        multiple="true"
@@ -48,6 +58,17 @@
                        key_field="id"
                        value_field="label">
                 </field>
+                <field name="tags_to_exclude"
+                       type="sql"
+                       multiple="true"
+                       query="SELECT id, label FROM #__emundus_setup_action_tag"
+                       default=""
+                       label="Étiquettes à exclure"
+                       description="Étiquettes que ne doit pas posséder les dossiers afin d'être évalués"
+                       key_field="id"
+                       value_field="label">
+                </field>
+                <field name="campaign_to_exclude" type="text" label="Campagne(s) à exclure" description=""/>
                 <field name="more_elements"
                        type="text"
                        default=""
@@ -71,7 +92,17 @@
                            description="Ids des éléments fabrik. Les tables doivent contenir la colonne fnum afin de retrouver la donnée">
                     </field>
                 </field>
-                <field name="campaign_to_exclude" type="text" label="Campagne(s) à exclure" description=""/>
+                <field name="readonly_eval"
+                       type="radio"
+                       label="Lecture seule du formulaire d'évaluation"
+                       description="Mettre en lecture seule le formulaire d'évaluation quand on ouvre un dossier"
+                       class="btn-group btn-group-yesno"
+                       default="0"
+                       filter="integer"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
             </fieldset>
         </fields>
     </config>

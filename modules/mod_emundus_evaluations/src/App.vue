@@ -17,6 +17,10 @@ export default {
     module: {
       type: String,
       required: true
+    },
+    readonly: {
+      type: String,
+      required: true
     }
   },
   components: {

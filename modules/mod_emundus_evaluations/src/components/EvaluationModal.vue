@@ -87,6 +87,10 @@ export default {
     preview: {
       type: Boolean,
       default: false
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   mixins: [mixin],
@@ -168,7 +172,9 @@ export default {
       if (this.$props.file.student_id != null) {
         this.student_id = this.$props.file.student_id;
       }
-      this.url = 'index.php?option=com_fabrik&c=form&view=form&formid='+this.$props.evaluation_form+'&rowid='+this.rowid+'&jos_emundus_evaluations___student_id[value]='+this.student_id+'&jos_emundus_evaluations___campaign_id[value]='+this.$props.file.campaign_id+'&jos_emundus_evaluations___fnum[value]='+this.$props.file.fnum+'&student_id='+this.student_id+'&tmpl=component&iframe=1'
+      let view = this.$props.readonly ? 'details' : 'form';
+
+      this.url = 'index.php?option=com_fabrik&c=form&view=' + view + '&formid='+this.$props.evaluation_form+'&rowid='+this.rowid+'&jos_emundus_evaluations___student_id[value]='+this.student_id+'&jos_emundus_evaluations___campaign_id[value]='+this.$props.file.campaign_id+'&jos_emundus_evaluations___fnum[value]='+this.$props.file.fnum+'&student_id='+this.student_id+'&tmpl=component&iframe=1'
     },
   },
 

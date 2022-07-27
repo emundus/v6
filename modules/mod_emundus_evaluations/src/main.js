@@ -22,7 +22,8 @@ if (modEvaluation) {
       return h(App, {
         props: {
           currentUser: modEvaluation.getAttribute('user'),
-          module: modEvaluation.getAttribute('module')
+          module: modEvaluation.getAttribute('module'),
+          readonly: modEvaluation.getAttribute('readonly')
         }
       });
     }

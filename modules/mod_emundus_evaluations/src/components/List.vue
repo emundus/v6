@@ -1,6 +1,6 @@
 <template>
   <div>
-    <EvaluationModal v-if="currentFile" :file="currentFile" :evaluation_form="Number(files.evaluation_form)" @reload-list="getMyEvaluations" />
+    <EvaluationModal v-if="currentFile" :file="currentFile" :evaluation_form="Number(files.evaluation_form)" :readonly="this.$parent.$props.readonly == '1'" @reload-list="getMyEvaluations" />
 
     <div v-if="campaigns.length > 0 && !loading">
       <select v-model="currentCampaign" style="width: max-content">
@@ -47,7 +47,7 @@
           <tbody>
             <EvaluationRow
                 v-for="file in files.evaluations"
-                :key="file.id"
+                :key="file.fnum + '-' + file.id"
                 :file="file"
                 :elements="files.elements"
                 @open-modal="openModal"
@@ -93,6 +93,7 @@ export default {
     currentCampaign: 0,
   }),
   created() {
+    console.log(this.$parent.$props.readonly);
     this.getCampaigns();
   },
   methods: {
