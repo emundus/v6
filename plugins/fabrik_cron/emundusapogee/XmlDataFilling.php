@@ -46,7 +46,6 @@ class XmlDataFilling {
     /// fill tree if no subdata and no repeat data
     public function fillTreeNoSubNoRepeat($xmlDocument , $pr_name, $js_key, $jsonDataBody, $fnum) {
         $childNode = $xmlDocument->getElementsByTagName($pr_name);
-
         foreach($childNode as $_ch) {
             if ($_ch->parentNode->nodeName === $js_key) {
                 if(!is_null($jsonDataBody->$js_key->$pr_name->default)) {
@@ -281,10 +280,10 @@ class XmlDataFilling {
                                                 if (is_null($jsonDataBody->$js_key->$pr_name->sql) or ($jsonDataBody->$js_key->$pr_name->sql === "")) {
                                                     $_ch->nodeValue = $jsonDataBody->$js_key->$pr_name->default;
                                                 } else {
-                                                    $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql . $fnum . ')', false);
+                                                    $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql, false);
                                                 }
                                             } else {
-                                                $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql . $fnum . ')', false);
+                                                $this->buildSql($xmlDocument, null, $pr_name, $jsonDataBody->$js_key->$pr_name->sql, false);
                                             }
                                         }
                                     }
@@ -403,7 +402,6 @@ class XmlDataFilling {
 
                         if ($_cn->parentNode->nodeName === $pr_name) {
                             $tagName = $_cn->tagName;
-
                             if(!is_null($jsonDataBody->$js_key->$pr_name->$tagName->default)) {
                                 if (is_null($jsonDataBody->$js_key->$pr_name->$tagName->sql) or ($jsonDataBody->$js_key->$pr_name->$tagName->sql === "")) {
                                     $_cn->nodeValue = $jsonDataBody->$js_key->$pr_name->$tagName->default;
@@ -526,6 +524,8 @@ class XmlDataFilling {
     }
 
     public function pruneXML($xml) {
+        $unselectedNodes = ['soapenv:Header', 'soapenv:Body'];
+
         $doc = new DOMDocument;
         $doc->preserveWhiteSpace = false;
 
@@ -535,14 +535,22 @@ class XmlDataFilling {
 
         /* prune data body */
         foreach( $xpath->query('//*[not(node())]') as $node ) {
-            if($node->tagName == 'soapenv:Header' or $node->tagName == 'soapenv:Body') { continue; }
+            if(in_array($node->tagName,$unselectedNodes)) { continue; }
             else { $node->parentNode->removeChild($node); }
         }
 
-        /* prune schema body */
         foreach($doc->getElementsByTagName('*') as $elt) {
-            if(!$elt->hasChildNodes()) { $elt->parentNode->removeChild($elt); }
+            if(!$elt->hasChildNodes() and !in_array($elt->nodeName,$unselectedNodes)) {
+                $removeChilds[] = $elt->nodeName;
+            }
         }
+
+        foreach($removeChilds as $child) {
+            $cNode = $doc->getElementsByTagName($child)->item(0);
+            $pNode = $cNode->parentNode;
+            $pNode->removeChild($cNode);
+        }
+
 
         $doc->formatOutput = true;
         return $doc;
