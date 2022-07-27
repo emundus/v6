@@ -28,6 +28,10 @@ class EmundusModelLogs extends JModelList {
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
 		$this->db = JFactory::getDbo();
+
+        // write log file
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
 	}
 
 	/**
@@ -42,10 +46,9 @@ class EmundusModelLogs extends JModelList {
 	 * @since 3.8.8
 	 */
 	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
-        if (empty($user_from)) {
-            JLog::add('empty user_from in EmundusModelLogs::log. User_id_from can not be null', JLog::WARNING, 'com_emundus');
-            return false;
-        }
+        // write log file
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
 
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
@@ -55,6 +58,10 @@ class EmundusModelLogs extends JModelList {
 		if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
 			// Only log if action is not banned from logs
 			if (!in_array($action, explode(',',$log_actions_exclude))) {
+                if (empty($user_from)) {
+                    JLog::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::log', JLog::WARNING, 'com_emundus');
+                    return false;
+                }
 				// Only log if user is not banned from logs
 				if (!in_array($user_from, explode(',',$log_actions_exclude_user))) {
 					if (empty($user_to))
@@ -142,7 +149,7 @@ class EmundusModelLogs extends JModelList {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user_to)) {
-			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			JLog::add('Getting actions on user in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -184,7 +191,7 @@ class EmundusModelLogs extends JModelList {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!empty($user_from) && !is_numeric($user_from)) {
-			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			JLog::add('Getting actions on fnum in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -240,7 +247,7 @@ class EmundusModelLogs extends JModelList {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user1) || !is_numeric($user2)) {
-			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			JLog::add('Getting actions between users in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
