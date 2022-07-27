@@ -570,10 +570,11 @@ p,
 .footer-rgpd {
   align-items: center;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   height: 60px;
   flex-wrap: wrap;
+  width: 100%;
   p {
     padding: 0px 10px;
   }
