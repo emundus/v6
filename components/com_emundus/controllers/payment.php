@@ -40,7 +40,7 @@ class EmundusControllerPayment extends JControllerLegacy
         if (!empty($fnum)) {
             $params = JComponentHelper::getParams('com_emundus');
             $model = $this->getModel('payment');
-            $model->createPaymentOrder($fnum);
+            $model->createPaymentOrder($fnum, 'flywire');
 
             $response = array(
                 'success' => true,
@@ -99,5 +99,16 @@ class EmundusControllerPayment extends JControllerLegacy
         } else {
             JLog::add('Can not update payment infos : fnum or callback_id is empty, received : ' . json_encode($data), JLog::WARNING, 'com_emundus.payment');
         }
+    }
+
+    public function updateFileTransferPayment()
+    {
+        $emundusUser = JFactory::getSession()->get('emundusUser');
+
+        $model = $this->getModel('payment');
+        $updated = $model->updateFileTransferPayment($emundusUser);
+
+        echo json_encode(array('status' => $updated));
+        exit;
     }
 }
