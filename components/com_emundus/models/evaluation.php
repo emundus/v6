@@ -3715,6 +3715,27 @@ class EmundusModelEvaluation extends JModelList {
             if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
                 $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
             }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
             $query->order('ecc.date_submitted');
             $db->setQuery($query);
             $files_users_associated = $db->loadObjectList();
@@ -3741,11 +3762,32 @@ class EmundusModelEvaluation extends JModelList {
             if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
                 $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
             }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
             $query->order('ecc.date_submitted');
             $db->setQuery($query);
             $files_groups_associated = $db->loadObjectList();
 
-            $files_associated = array_merge($files_users_associated,$files_groups_associated);
+            $files_associated = array_merge($files_users_associated, $files_groups_associated);
 
             foreach ($files_associated as $file) {
                 if (!in_array($file->fnum, $fnums)) {
@@ -3863,6 +3905,27 @@ class EmundusModelEvaluation extends JModelList {
             if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
                 $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
             }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
             $query->group('esc.id');
             $db->setQuery($query);
             $campaigns_users_assoc = $db->loadObjectList();
@@ -3889,6 +3952,27 @@ class EmundusModelEvaluation extends JModelList {
             if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
                 $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
             }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
             $query->group('esc.id');
             $db->setQuery($query);
             $campaigns_groups_assoc = $db->loadObjectList();

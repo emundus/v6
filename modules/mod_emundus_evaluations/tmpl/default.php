@@ -70,13 +70,16 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD');
 $user = JFactory::getSession()->get('emundusUser');
 $label = $params->get('label', 'Mes dossiers à évaluer');
 $intro = $params->get('intro', 'Veuillez sélectionner une campagne afin de commencer l\'évaluation de vos dossiers');
-if(!empty($label)){
+$readonly = $params->get('readonly_eval', '0');
+
+if (!empty($label)) {
     echo '<span class="em-h3 em-mb-16">'.$label.'</span>';
 }
-if(!empty($intro)){
+
+if (!empty($intro)) {
     echo '<p class="em-mt-8">'.$intro.'</p>';
 }
-echo '<div id="em-evaluations-vue" user="'. $user->id . '" module="' . $module->id . '"></div>';
+echo '<div id="em-evaluations-vue" user="'. $user->id . '" module="' . $module->id . '" readonly="' . $readonly . '"></div>';
 ?>
 
 <script src="media/mod_emundus_evaluations/app.js"></script>
