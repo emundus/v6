@@ -10,8 +10,8 @@
          beStrictAboutTodoAnnotatedTests="true"
          convertDeprecationsToExceptions="true"
          failOnRisky="false"
-         failOnWarning="true"
-         verbose="false">
+         failOnWarning="false"
+         verbose="true">
     <testsuites>
         <testsuite name="default">
             <directory>components/com_emundus/unittest/</directory>
