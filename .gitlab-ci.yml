@@ -45,7 +45,6 @@ build-app-to-test-job:
     - docker push $CI_REGISTRY/tchooz-build-app:latest
   only:
     - merge_request
-    - branches
 
 build-db-to-test-job:
   stage: build
@@ -59,7 +58,6 @@ build-db-to-test-job:
     - docker push $CI_REGISTRY/tchooz-build-db:latest
   only:
     - merge_request
-    - branches
 
 phpunit-job:
   stage: test
@@ -77,7 +75,6 @@ phpunit-job:
     - docker-compose down
   only:
     - merge_request
-    - branches
 
 jest-job:
   stage: test
@@ -97,7 +94,6 @@ jest-job:
     - phpunit-job
   only:
     - merge_request
-    - branches
 
 release-job:
   stage: release
