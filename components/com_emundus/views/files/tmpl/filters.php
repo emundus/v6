@@ -18,3 +18,36 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <div id="em_filters">
 <?php echo $this->filters; ?>
 </div>
+
+<script>
+    var data = {};
+
+    $('select.testSelAll').on('sumo:opened', function(event) {
+        data[event.target.name] = [];
+
+        [...event.target.options].forEach((option) => {
+            if (option.selected) {
+                data[event.target.name].push(option.value);
+            };
+        });
+    });
+
+    $('select.testSelAll').on('sumo:closed', function(event) {
+        let newValues = [];
+        [...event.target.options].forEach((option) => {
+            if (option.selected) {
+                newValues.push(option.value);
+            };
+        });
+
+        let differences = newValues
+            .filter(newValue => !data[event.target.name].includes(newValue))
+            .concat(data[event.target.name].filter(oldVal => !newValues.includes(oldVal)));;
+
+        if (differences.length > 0) {
+            setFiltersSumo(event);
+        }
+
+        data = {};
+    });
+</script>

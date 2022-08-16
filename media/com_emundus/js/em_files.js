@@ -55,6 +55,7 @@ function getUrlParameter(url, sParam) {
 }
 
 function search() {
+    addLoader();
     var quick = [];
 
     $('#quick div[data-value]').each(function () {
@@ -138,7 +139,7 @@ function reloadData(view)
 {
     view = (typeof view === 'undefined') ? 'files' : view;
 
-    addDimmer();
+    addLoader();
     $.ajax({
         type: 'GET',
         url: 'index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
@@ -146,7 +147,7 @@ function reloadData(view)
         dataType: 'html',
         success: function(data)
         {
-            $('.em-dimmer').remove();
+            removeLoader();
 
             if($('.col-md-9 .panel.panel-default').length > 0) {
                 $('.col-md-9 .panel.panel-default').remove();
@@ -191,7 +192,7 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
     view = (typeof view === 'undefined') ? 'files' : view;
     fnum = (typeof fnum === 'undefined') ? 0 : fnum;
     async = (typeof async === 'undefined') ? false : async;
-    //addDimmer();
+    //addLoader();
 
     var multi = $('.em-check:checked').length;
     if (multi === 0 && fnum != 0 ) {
@@ -205,7 +206,7 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
         url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=' + display + '&fnum=' + fnum + '&multi=' + multi,
         dataType: 'html',
         success: function(data) {
-            //$('.em-dimmer').remove();
+            //removeLoader();
             //$(".col-md-9 .panel.panel-default").remove();
             $('.navbar.navbar-inverse').empty();
             $('.navbar.navbar-inverse').append(data);
@@ -220,8 +221,15 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
     });
 }
 
-function addDimmer() {
-    $('.row').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+function addLoader() {
+    if(document.getElementById('em-dimmer') === null) {
+        $('#g-main-mainbody').after('<div class="em-page-loader" id="em-dimmer"></div>');
+    }
+}
+function removeLoader() {
+    if(document.getElementById('em-dimmer') !== null) {
+        $('#em-dimmer').remove();
+    }
 }
 
 function addElement() {
@@ -538,7 +546,7 @@ function openFiles(fnum, page = 0, vue = false)
                             dataType:'html',
                             data:({fnum:fnum.fnum}),
                             success: function(result) {
-                                $('.em-dimmer').remove();
+                                removeLoader();
                                 $('#em-files-filters').hide();
                                 $(".main-panel .panel.panel-default").hide();
 
@@ -1086,6 +1094,59 @@ function getProgramCampaigns(code) {
     });
 }
 
+function setFiltersSumo(event){
+    $.ajaxQ.abortAll();
+
+    if (event.handle !== true) {
+        event.handle = true;
+
+        let id = event.currentTarget.id;
+        const my_element = $('#' + id);
+
+        if (id !== 'elements') {
+            let multi = false;
+            if (typeof my_element.attr('multiple') !== 'undefined') {
+                multi = true;
+            }
+
+            let test = id.split('-');
+            test.pop();
+            let elements_son = false;
+            if (test.join('-') === 'em-adv-fil') {
+                elements_son = true;
+            }
+
+            if (multi) {
+                let value = my_element.val();
+                if (value != null && value.length > 1 && value[0] === '%') {
+                    if ((lastVal.hasOwnProperty(id) && lastVal[id][0] !== '%')) {
+                        $('#' + id + ' option:selected').removeAttr('selected');
+                        $('#' + id + ' option')[0].selected = true;
+                        $('.chzn-select').trigger('chosen:updated');
+                    } else {
+                        $('#' + id + ' option')[0].selected = false;
+                        $('#' + id + ' option')[0].removeAttribute('selected');
+                        $('#' + id + '_chosen .chosen-choices .search-choice a[data-option-array-index="0"]').click();
+                    }
+                    lastVal[id] = $('#' + id).val();
+                }
+            }
+            if ($('#select_multiple_programmes').val() != null || $('#select_multiple_campaigns').val() != null) {
+                $('#em_adv_filters').show();
+            } else {
+                $('#em_adv_filters').hide();
+            }
+
+            search();
+        } else {
+            let father = my_element.parent('fieldset').attr('id');
+            console.log(father);
+            getSearchBox(my_element.val(), father);
+        }
+    }
+}
+
+
 $(document).ready(function() {
     $('#check').removeClass('em-check-all-all');
 
@@ -1097,54 +1158,14 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('change', '.em-filt-select', function(event) {
-        $.ajaxQ.abortAll();
-        if (event.handle !== true) {
-            event.handle = true;
-            var id = $(this).attr('id');
-
-            if (id != 'elements') {
-                if (typeof $('#' + id).attr('multiple') !== 'undefined') {
-                    var multi = true;
-                } else {
-                    var multi = false;
-                }
-
-                var test = id.split('-');
-                test.pop();
-                if (test.join('-') == 'em-adv-fil') {
-                    var elements_son = true;
-                } else {
-                    var elements_son = false;
-                }
-
-                if (multi) {
-                    var value = $('#' + id).val();
-                    if (value != null && value.length > 1 && value[0] === '%') {
-                        if ((lastVal.hasOwnProperty(id) && lastVal[id][0] !== '%')) {
-                            $('#' + id + ' option:selected').removeAttr('selected');
-                            $('#' + id + ' option')[0].selected = true;
-                            $('.chzn-select').trigger('chosen:updated');
-                        } else {
-                            $('#' + id + ' option')[0].selected = false;
-                            $('#' + id + ' option')[0].removeAttribute('selected');
-                            $('#' + id + '_chosen .chosen-choices .search-choice a[data-option-array-index="0"]').click();
-                        }
-                        lastVal[id] = $('#' + id).val();
-                    }
-                }
-                if ($('#select_multiple_programmes').val() != null || $('#select_multiple_campaigns').val() != null) {
-                    $('#em_adv_filters').show();
-                } else {
-                    $('#em_adv_filters').hide();
-                }
-
-                search();
-            } else {
-                var father = $(this).parent('fieldset').attr('id');
-                getSearchBox($(this).val(), father);
-            }
-        }
+    $(document).on('change', '#elements.em-filt-select', function(event) {
+        setFiltersSumo(event);
+    });
+    $(document).on('change', 'select[id^="em-adv"].em-filt-select', function(event) {
+        setFiltersSumo(event);
+    });
+    $(document).on('change', '#select_published', function(event) {
+        setFiltersSumo(event);
     });
 
     $(document).on('click', '#em-data thead th', function(e) {
@@ -1166,6 +1187,7 @@ $(document).ready(function() {
             switch (name) {
                 case 'clear-search':
                     lastVal = new Object();
+                    addLoader();
                     $.ajax({
                         type: 'POST',
                         url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=clear',
@@ -1384,7 +1406,7 @@ $(document).ready(function() {
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
-                    addDimmer();
+                    addLoader();
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
@@ -1441,7 +1463,7 @@ $(document).ready(function() {
                     $('.em-check:checked').prop('checked', false);
                     $('#'+fnum.fnum+'_check').prop('checked', true);
 
-                    addDimmer();
+                    addLoader();
                     fnum.sid = parseInt(fnum.fnum.substr(21, 7));
                     fnum.cid = parseInt(fnum.fnum.substr(14, 7));
 
@@ -1553,7 +1575,7 @@ $(document).ready(function() {
     $(document).on('click', '.em_file_open', function(e) {
         $.ajaxQ.abortAll();
         if (e.handle !== true) {
-            addDimmer();
+            addLoader();
             e.handle = true;
             var fnum = {};
             fnum.fnum = $(this).attr('id');
@@ -1834,6 +1856,7 @@ $(document).ready(function() {
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
+        removeLoader();
 
         if ($('.modal-dialog').hasClass('modal-lg')) {
             $('.modal-dialog').removeClass('modal-lg');
@@ -1862,6 +1885,7 @@ $(document).ready(function() {
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
+        removeLoader();
 
         if ($('.modal-dialog').hasClass('modal-lg')) {
             $('.modal-dialog').removeClass('modal-lg');
@@ -1964,10 +1988,11 @@ $(document).ready(function() {
             case 29 : $('#can-val').empty();
             case 32 :
                 $('#can-val').empty();
-                $('.modal-body').append('<div><img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/></div>');
+                addLoader();
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
                 $(".modal-body").empty();
+                removeLoader();
                 $(".modal-body").append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px; height:'+window.getHeight()*0.8+'px; border:none"></iframe>');
                 break;
 
@@ -1977,7 +2002,7 @@ $(document).ready(function() {
                 $('#can-val').append('<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_EXPORTS_GENERATE_EXCEL')+'</button>');
                 $('#can-val').show();
 
-                $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
+                addLoader();
                 $.ajax({
                     type:'get',
                     url: url,
@@ -1987,6 +2012,7 @@ $(document).ready(function() {
                         if (result.status) {
                             var nbprg = 0;
                             $('.modal-body').empty();
+                            removeLoader();
 
                             //**export excel filter */
                             $('.modal-body').append('<div id="data"></div>');
@@ -4663,10 +4689,7 @@ $(document).ready(function() {
                     '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
 
-                $('.modal-body').append(
-                    '<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 $('.modal-body').empty();
 
                 var regex = /type=\w+/gi;
@@ -4782,7 +4805,7 @@ $(document).ready(function() {
 
                 fnums = getUserCheckArray();
 
-                $('.modal-body').append('<div>' +'<img src="'+loadingLine+'" alt="'+Joomla.JText._('LOADING')+'"/>' +'</div>');
+                addLoader();
                 $('.modal-dialog').addClass('modal-lg');
                 $.ajax({
                     type: 'POST',
@@ -4792,6 +4815,7 @@ $(document).ready(function() {
                     },
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
                         $('.modal-body').append(result);
                     },
                     error: function (jqXHR) {
@@ -4835,6 +4859,7 @@ $(document).ready(function() {
                     dataType:'html',
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
                         $('.modal-body').append(result);
                         $('.modal-chzn-select').chosen({width:'75%'});
                     },
@@ -4851,9 +4876,7 @@ $(document).ready(function() {
                     '<button style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
 
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
 
                 $.ajax({
                     type:'get',
@@ -4861,6 +4884,7 @@ $(document).ready(function() {
                     dataType:'json',
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
 
                         var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-state" id="em-action-state" value="">';
 
@@ -4887,9 +4911,7 @@ $(document).ready(function() {
                     '<button id="success-ok" style="margin-left:5px;" type="button" class="btn btn-success" disabled="disabled">'+Joomla.JText._('COM_EMUNDUS_OK')+'</button>');
                 $('#can-val').show();
 
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 $('.modal-body').attr("style","height : 300px");
 
                 $.ajax({
@@ -4898,6 +4920,7 @@ $(document).ready(function() {
                     dataType:'json',
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
 
                         var tags = '<br/><div class="form-group" style="color:black !important">'+
                             '<div><form class="em-flex-row">'+
@@ -5002,12 +5025,11 @@ $(document).ready(function() {
             case 15:
             case 16:
                 $('#can-val').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').empty();
+                removeLoader();
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
@@ -5017,9 +5039,7 @@ $(document).ready(function() {
                 fnums = getUserCheckArray();
 
                 $('#can-val').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
                 $('.modal-body').empty();
@@ -5032,6 +5052,7 @@ $(document).ready(function() {
                     },
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
                         $('.modal-body').append(result);
                     },
                     error: function (jqXHR) {
@@ -5047,9 +5068,7 @@ $(document).ready(function() {
                 $('#can-val').show();
 
                 $('#em-modal-actions .modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 $('#em-modal-actions .modal-dialog').addClass('modal-lg');
                 $('#em-modal-actions .modal').show();
                 $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
@@ -5060,6 +5079,7 @@ $(document).ready(function() {
                     dataType:'html',
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
                         $('.modal-body').append(result);
                     },
                     error: function (jqXHR) {
@@ -5071,9 +5091,7 @@ $(document).ready(function() {
             // publication status od the application file
             case 28:
 
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
 
                 $.ajax({
                     type:'get',
@@ -5081,6 +5099,7 @@ $(document).ready(function() {
                     dataType:'json',
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
                         var status = '<br/><div class="form-group" style="color:black !important"><label class="col-lg-2 control-label">'+result.state+'</label><select class="col-lg-7 modal-chzn-select" data-placeholder="'+result.select_state+'" name="em-action-publish" id="em-action-publish" value="">';
 
                         for (var i in result.states) {
@@ -5106,13 +5125,12 @@ $(document).ready(function() {
             // trombinoscope
             case 31:
                 $('#can-val').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 $('.modal-footer').hide();
                 $('.modal-dialog').addClass('modal-lg');
                 //var url = 'index.php?option=com_emundus&view=email&tmpl=component&Itemid='+itemId+'&fnums='+encodeURIComponent(fnums)+'&desc=2';
                 $('.modal-body').empty();
+                removeLoader();
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
@@ -5184,6 +5202,7 @@ $(document).ready(function() {
         $('.modal-title').empty();
         $('.modal-title').append($(this).children('a').text());
         $('.modal-body').empty();
+        removeLoader();
 
         if ($('.modal-dialog').hasClass('modal-lg')) {
             $('.modal-dialog').removeClass('modal-lg');
@@ -5373,7 +5392,7 @@ $(document).ready(function() {
                                         data: { fnum: fnum , tmpl: email_recap.id },
                                         success: function(value) {
                                             if(value.status) {
-                                                addDimmer();
+                                                addLoader();
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
@@ -5418,7 +5437,7 @@ $(document).ready(function() {
                                         data: { fnum: fnum , tmpl: email_recap.id },
                                         success: function(value) {
                                             if(value.status) {
-                                                addDimmer();
+                                                addLoader();
                                                 $('#em-modal-sending-emails').css('display', 'none');
                                                 $('#em-modal-actions').modal('hide');
 
@@ -6194,7 +6213,7 @@ $(document).ready(function() {
                                                     $('#em-modal-sending-emails').css('display', 'none');
 
                                                     $('#em-modal-actions').modal('hide');
-                                                    addDimmer();
+                                                    addLoader();
 
                                                     reloadData();
                                                     reloadActions($('#view').val(), undefined, false);
@@ -6251,7 +6270,7 @@ $(document).ready(function() {
                                                     success: function(tags) {
                                                         $('#em-modal-sending-emails').css('display', 'none');
                                                         $('#em-modal-actions').modal('hide');
-                                                        addDimmer();
+                                                        addLoader();
 
                                                         reloadData();
                                                         reloadActions($('#view').val(), undefined, false);
@@ -6304,6 +6323,7 @@ $(document).ready(function() {
                     return;
                 }
                 $('.modal-body').empty();
+                removeLoader();
                 $('.modal-body').append('<div>' +'<p>'+Joomla.JText._('COMMENT_SENT')+'</p>' +'<img src="'+loadingLine+'" alt="loading"/>' +'</div>');
                 url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=addcomment';
                 $.ajax({
@@ -6313,6 +6333,7 @@ $(document).ready(function() {
                     data:({id:id, fnums:checkInput, title: title, comment:comment}),
                     success: function(result) {
                         $('.modal-body').empty();
+                        removeLoader();
 
                         if (result.status)
                             $('.modal-body').append('<p class="text-success"><strong>'+result.msg+'</strong></p>');
@@ -6413,6 +6434,7 @@ $(document).ready(function() {
                 let notifyEval = document.querySelector('#evaluator-email').checked;
                 actionsCheck = JSON.stringify(actionsCheck);
                 $('.modal-body').empty();
+                removeLoader();
                 $('.modal-body').append('<div>' +
                     '<p style="color:#000000;">'+Joomla.JText._('SHARE_PROGRESS')+'</p>' +
                     '<img src="'+loadingLine+'" alt="loading"/>' +
@@ -6434,6 +6456,7 @@ $(document).ready(function() {
 
                         if (result.status) {
                             $('.modal-body').empty();
+                            removeLoader();
                             Swal.fire({
                                 position: 'center',
                                 type: 'success',
@@ -6445,6 +6468,7 @@ $(document).ready(function() {
 
                         } else {
                             $('.modal-body').empty();
+                            removeLoader();
                             Swal.fire({
                                 position: 'center',
                                 type: 'warning',
@@ -6481,9 +6505,7 @@ $(document).ready(function() {
                     }),
                     success: function(result) {
                         $('.modal-body').empty();
-                        $('.modal-body').append('<div>' +
-                            '<img src="'+loadingLine+'" alt="loading"/>' +
-                            '</div>');
+                        addLoader();
                         url = 'index.php?option=com_emundus&controller=files&task=updatestate';
 
                         if(result.status) {
@@ -6512,6 +6534,7 @@ $(document).ready(function() {
                                             $('.modal-footer').hide();
                                             if (result.status) {
                                                 $('.modal-body').empty();
+                                                removeLoader();
                                                 Swal.fire({
                                                     position: 'center',
                                                     type: 'success',
@@ -6521,6 +6544,7 @@ $(document).ready(function() {
                                                 });
                                             } else {
                                                 $('.modal-body').empty();
+                                                removeLoader();
                                                 Swal.fire({
                                                     position: 'center',
                                                     type: 'warning',
@@ -6542,6 +6566,7 @@ $(document).ready(function() {
                                     });
                                 } else {
                                     $('.modal-body').empty();
+                                    removeLoader();
                                     $('#em-modal-actions').modal('hide');
                                     $('.modal-backdrop, .modal-backdrop.fade.in').css('display','none');
                                     $('body').removeClass('modal-open');
@@ -6558,6 +6583,7 @@ $(document).ready(function() {
                                     $('.modal-footer').hide();
                                     if (result.status) {
                                         $('.modal-body').empty();
+                                        removeLoader();
                                         Swal.fire({
                                             position: 'center',
                                             type: 'success',
@@ -6567,6 +6593,7 @@ $(document).ready(function() {
                                         });
                                     } else {
                                         $('.modal-body').empty();
+                                        removeLoader();
                                         Swal.fire({
                                             position: 'center',
                                             type: 'warning',
@@ -6602,9 +6629,7 @@ $(document).ready(function() {
                 var option = $('#em-tags:checked').val();
                 //console.log(option)
                 $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 var url="";
                 if (option == 1)
                     url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=deletetags';
@@ -6619,6 +6644,7 @@ $(document).ready(function() {
                     success: function(result) {
                         if (result.status) {
                             $('.modal-body').empty();
+                            removeLoader();
                             Swal.fire({
                                 position: 'center',
                                 type: 'success',
@@ -6633,6 +6659,7 @@ $(document).ready(function() {
                             }
                         } else {
                             $('.modal-body').empty();
+                            removeLoader();
 
                             Swal.fire({
                                 title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE'),
@@ -6683,7 +6710,7 @@ $(document).ready(function() {
 
                 $('.modal-body').empty();
                 // $('#em-download-btn').remove();
-                $('.modal-body').append('<div>' + '<img src="'+loadingLine+'" alt="loading"/>' + '</div>');
+                addLoader();
 
                 $.ajax({
                     type:'post',
@@ -6693,6 +6720,7 @@ $(document).ready(function() {
                     success: function(result) {
                         if (result.status) {
                             $('.modal-body').empty();
+                            removeLoader();
 
                             $('#can-val').append(
                                 '<button id="em-download-btn" type="button" class="btn btn-success">' +
@@ -6847,6 +6875,7 @@ $(document).ready(function() {
                             /* show export error */
                             $('#em-download-btn').remove();
                             $('.modal-body').empty();
+                            removeLoader();
                             $('.modal-body').append('<div id="model-err" style="color: red">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FAILED') + '</div>');
                         }
                     },
@@ -6860,9 +6889,7 @@ $(document).ready(function() {
             case 28:
                 var publish = $("#em-action-publish").val();
                 $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
                 url = 'index.php?option=com_emundus&controller=files&task=updatepublish';
                 $.ajax({
                     type:'POST',
@@ -6872,6 +6899,7 @@ $(document).ready(function() {
                     success: function(result) {
                         if (result.status) {
                             $('.modal-body').empty();
+                            removeLoader();
                             Swal.fire({
                                 position: 'center',
                                 type: 'success',
@@ -6887,6 +6915,7 @@ $(document).ready(function() {
                             $('body').removeClass('modal-open');
                         } else {
                             $('.modal-body').empty();
+                            removeLoader();
                             Swal.fire({
                                 position: 'center',
                                 type: 'warning',
@@ -6910,9 +6939,7 @@ $(document).ready(function() {
                 var tag = $("#em-action-tag").val();
 
                 $('.modal-body').empty();
-                $('.modal-body').append('<div>' +
-                    '<img src="'+loadingLine+'" alt="loading"/>' +
-                    '</div>');
+                addLoader();
 
                 url = 'index.php?option=com_emundus&controller=files&task=exportfile';
                 $.ajax({
@@ -6939,6 +6966,7 @@ $(document).ready(function() {
 
                                         if (result.status) {
                                             $('.modal-body').empty();
+                                            removeLoader();
                                             Swal.fire({
                                                 position: 'center',
                                                 type: 'success',
@@ -6950,6 +6978,7 @@ $(document).ready(function() {
                                         }
                                         else {
                                             $('.modal-body').empty();
+                                            removeLoader();
                                             Swal.fire({
                                                 position: 'center',
                                                 type: 'warning',
@@ -6977,6 +7006,7 @@ $(document).ready(function() {
 
                                         if (result.status) {
                                             $('.modal-body').empty();
+                                            removeLoader();
                                             Swal.fire({
                                                 position: 'center',
                                                 type: 'success',
@@ -6988,6 +7018,7 @@ $(document).ready(function() {
                                         }
                                         else {
                                             $('.modal-body').empty();
+                                            removeLoader();
                                             Swal.fire({
                                                 position: 'center',
                                                 type: 'warning',
@@ -7005,6 +7036,7 @@ $(document).ready(function() {
 
                             $('.modal-footer').hide();
                             $('.modal-body').empty();
+                            removeLoader();
                             Swal.fire({
                                 position: 'center',
                                 type: 'success',
@@ -7016,6 +7048,7 @@ $(document).ready(function() {
                         }
                         else {
                             $('.modal-body').empty();
+                            removeLoader();
                             Swal.fire({
                                 position: 'center',
                                 type: 'warning',

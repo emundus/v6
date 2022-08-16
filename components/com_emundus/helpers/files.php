@@ -1493,7 +1493,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $campaign .= '<div id="campaign" class="em-filter">
                             	<div class="em_label">
-                            		<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                            		<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')" onclick="clearchosen(\'#select_multiple_campaigns\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                             	</div>
                           		<div class="em_filtersElement">';
             }
@@ -1523,7 +1523,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $schoolyear .= '<div id="schoolyear" class="em-filter">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROFILES_SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROFILES_SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')" onclick="clearchosen(\'#select_multiple_schoolyears\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                                     </div>
                                    <div class="em_filtersElement">';
             }
@@ -1553,7 +1553,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $programme .= '<div id="programme" class="em-filter">
                     <div class="em_label">
-                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROGRAMME').'&ensp;<a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROGRAMME').'&ensp;<a href="javascript:clearchosen(\'#select_multiple_programmes\')" onclick="clearchosen(\'#select_multiple_programmes\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                     </div>
                     <div class="em_filtersElement">';
             }
@@ -1593,7 +1593,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $status .= '<div class="em_filters em-filter" id="status">
                     <div class="em_label">
-                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_STATUS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_status\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_STATUS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_status\')" onclick="clearchosen(\'#select_multiple_status\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                     </div>
                     <div class="em_filtersElement">';
             }
@@ -1658,7 +1658,7 @@ class EmundusHelperFiles
 	        if (!$hidden) {
 		        $tag .= '<div id="tag" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_TAGS_TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_TAGS_TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')" onclick="clearchosen(\'#select_multiple_tags\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
 	        }
@@ -1704,7 +1704,7 @@ class EmundusHelperFiles
 		    if (!$hidden) {
 			    $group_assoc .= '<div id="group_assoc" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_group_assoc\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_group_assoc\')" onclick="clearchosen(\'#select_multiple_group_assoc\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
 		    }
