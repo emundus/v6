@@ -396,114 +396,115 @@ export default {
 
 <style scoped lang="scss">
 #list{
-  width: 100%;
+  width: calc(100% - 75px) !important;
+  margin-left: auto;
 }
 h2 {
-  color: #de6339 !important;
+color: #de6339 !important;
 }
 
 .loading-form {
-  top: unset;
+top: unset;
 }
 
 .list-vue-select
 {
-  height: 43px;
+height: 43px;
 }
 
 
 .search-container{
-  display: flex;
-  align-items: center;
+display: flex;
+align-items: center;
 }
 
 .searchTerm {
-  width: 100%;
-  font-size: 14px !important;
-  padding: 8px 36px 8px 8px !important;
-  outline: none;
-  color: #9DBFAF;
-  right: 0;
-  height: 30px;
-  position: relative;
-  margin-bottom: 0 !important;
+width: 100%;
+font-size: 14px !important;
+padding: 8px 36px 8px 8px !important;
+outline: none;
+color: #9DBFAF;
+right: 0;
+height: 30px;
+position: relative;
+margin-bottom: 0 !important;
 
-  &:focus {
-     border-color: #16AFE1 !important;
-     box-shadow: unset !important;
-   }
+&:focus {
+ border-color: #20835F !important;
+ box-shadow: unset !important;
+}
 }
 
 #g-container-main .g-container{
-  width: 90% !important;
+width: 90% !important;
 }
 
 .pagination {
-  list-style: none;
-  padding: 8px;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  a,li{
-    border-radius: 50%;
-    color: #212121;
-    transition: 0.15s ease-in;
-    cursor: pointer;
-    text-decoration: none;
-  }
-  .pagination-number{
-    font-family: sans-serif;
-    padding: unset;
-    font-size: 14px;
-    text-align: center;
-    display: flex !important;
-    flex-direction: column;
-    justify-content: center;
-    line-height: 24px;
-    width: 35px;
-    height: 35px;
-    margin-right: 10px;
-    .current-number{
-      background: #12DB42;
-      color: #fff;
-      border: unset;
-    }
-  }
+list-style: none;
+padding: 8px;
+display: flex !important;
+justify-content: center;
+align-items: center;
+a,li{
+border-radius: 50%;
+color: #212121;
+transition: 0.15s ease-in;
+cursor: pointer;
+text-decoration: none;
+}
+.pagination-number{
+font-family: sans-serif;
+padding: unset;
+font-size: 14px;
+text-align: center;
+display: flex !important;
+flex-direction: column;
+justify-content: center;
+line-height: 24px;
+width: 35px;
+height: 35px;
+margin-right: 10px;
+.current-number{
+  background: #12DB42;
+  color: #fff;
+  border: unset;
+}
+}
 }
 .pagination-pages{
-  text-align: center;
+text-align: center;
 }
 .pagination a:hover {
-  background: rgba(27, 31, 60, 0.8);
-  color: white;
-  text-decoration: unset;
+background: rgba(27, 31, 60, 0.8);
+color: white;
+text-decoration: unset;
 }
 .pagination-arrow{
-  width: 35px;
-  height: 35px;
-  align-items: center;
-  display: flex !important;
-  justify-content: center;
+width: 35px;
+height: 35px;
+align-items: center;
+display: flex !important;
+justify-content: center;
 }
 .arrow-left {
-  margin-right: 10px !important;
+margin-right: 10px !important;
 }
 .noneDiscover {
-  font-size: 20px;
-  color: #1b1f3c;
-  width: 100%;
-  margin: 3% 0;
-  text-align: center;
+font-size: 20px;
+color: #1b1f3c;
+width: 100%;
+margin: 3% 0;
+text-align: center;
 }
 .email-sections{
-  width: 98% !important;
-  margin: 3% auto !important;
+width: 98% !important;
+margin: 3% auto !important;
 }
 .noPagination{
-  display: none;
+display: none;
 }
 .material-icons{
-  font-size: 24px !important;
+font-size: 24px !important;
 }
 
 </style>

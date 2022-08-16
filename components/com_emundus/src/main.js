@@ -28,7 +28,7 @@ import translate from './mixins/translate.js';
 Vue.mixin(translate);
 
 /** STORE **/
-import store from "./store";
+import store from './store';
 
 /** DIRECTIVES **/
 Vue.directive('tooltip', VTooltip);
@@ -36,49 +36,22 @@ Vue.directive('close-popover', VClosePopover);
 
 
 let mountApp = false;
-let elementId = "";
+let elementId = '';
 let data = {};
-let componentName = "";
+let componentName = '';
 
-if (document.getElementById("em-application-attachment")) {
-    const element = document.getElementById("em-application-attachment");
+if (document.getElementById('em-application-attachment')) {
+    const element = document.getElementById('em-application-attachment');
     Array.prototype.slice.call(element.attributes).forEach(function (attr) {
         data[attr.name] = attr.value;
     });
 
-    componentName = "attachments";
-    elementId = "#em-application-attachment";
+    componentName = 'attachments';
+    elementId = '#em-application-attachment';
     mountApp = true;
 
     if (mountApp) {
-        const items = document.querySelectorAll('#em-appli-menu .list-group-item');
-
-        // add eventlistener on changeFile
-        function changeFile(e) {
-            document.querySelector('#em-assoc-files .panel-body').empty();
-            const checkedEm = document.querySelector('.em-check:checked');
-            // uncheck element
-            if (checkedEm) {
-                checkedEm.checked = false;
-            }
-
-            // check element that have id equals to e.detail.fnum.fnum + "_check"
-            const check = document.getElementById(e.detail.fnum.fnum + "_check");
-            if (check) {
-                check.checked = true;
-            }
-
-            // update href fnum param
-            items.forEach(function (item) {
-                item.setAttribute('href', item.getAttribute('href').replace(/fnum=\d+/, 'fnum=' + e.detail.fnum.fnum));
-            });
-
-
-            openFiles(e.detail.fnum, "attachment", true);
-        }
-
-
-        const vue = new Vue({
+        new Vue({
             el: elementId,
             store,
             render(h) {
@@ -91,13 +64,11 @@ if (document.getElementById("em-application-attachment")) {
                     });
             },
         });
-
-        document.querySelector(".com_emundus_vue").addEventListener('changeFile', changeFile);
     }
 }
 
 if (document.getElementById("em-component-vue")) {
-    const vue = new Vue({
+    new Vue({
         el: '#em-component-vue',
         store,
         render(h) {

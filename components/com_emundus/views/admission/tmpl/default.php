@@ -123,7 +123,7 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
             var fnum = new Object();
             fnum.fnum = url[0];
             if (fnum != null && fnum.fnum != "close") {
-                addDimmer();
+                addLoader();
                 $.ajax({
                     type:'get',
                     url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
@@ -139,13 +139,13 @@ JFactory::getDocument()->addStyleSheet('https://use.fontawesome.com/releases/v5.
                             openFiles(fnum);
                         } else {
                             console.log(result);
-                            $('.em-dimmer').remove();
+                            removeLoader();
                             $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
-                        $('.em-dimmer').remove();
+                        removeLoader();
                         $("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }

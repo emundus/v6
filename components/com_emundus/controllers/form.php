@@ -767,5 +767,22 @@ class EmundusControllerForm extends JControllerLegacy {
         echo json_encode((object)$changeresponse);
         exit;
     }
+
+    public function getdatabasejoinoptions(){
+        $user = JFactory::getUser();
+
+        $jinput = JFactory::getApplication()->input;
+
+        $table_name = $jinput->getString('table_name');
+        $column_name = $jinput->getString('column_name');
+        $value = $jinput->getString('value');
+        $concat_value = $jinput->getString('concat_value');
+        $where_clause = $jinput->getString('where_clause');
+
+        $options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
+
+        echo json_encode((object)array('status' => 1, 'msg' => 'worked', 'options' => $options));
+        exit;
+    }
 }
 

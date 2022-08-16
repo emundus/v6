@@ -673,4 +673,42 @@ class EmundusControllerWebhook extends JControllerLegacy {
         echo json_encode($tab);
         exit;
     }
+
+    /**
+     * POST method
+     * Waiting for :
+     *  - callback_id
+     *  - amount
+     *  - at
+     *  - status
+     * @return string json_encoded
+     */
+    public function updateFlywirePaymentInfos()
+    {
+        $status = false;
+        $msg = JText::_('FLYWIRE_PAYMENT_INFOS_UPDATED_FAILED');
+
+        $post_data = file_get_contents('php://input');
+        $data = json_decode($post_data, true);
+
+        if (!empty($data['callback_id']) && !empty($data['status']) && !empty($data['amount'])) {
+            require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'payment.php');
+            $m_payment = new EmundusModelPayment;
+            $status = $m_payment->updateFlywirePaymentInfos($data['callback_id'], $data);
+
+            if ($status) {
+                $msg = JText::_('FLYWIRE_PAYMENT_INFOS_UPDATED_SUCCESSFULLY');
+            }
+        } else {
+            JLog::addLogger(['text_file' => 'com_emundus.payment.php'], JLog::ALL, array('com_emundus.payment'));
+            JLog::add('[updateFlywirePaymentInfos] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'] .  ' data : ' . json_encode($data), JLog::ERROR, 'com_emundus.payment');
+            header('HTTP/1.1 400 Bad Request');
+            echo 'Error 400 - Bad Request';
+            die();
+        }
+
+        header('Content-type: application/json');
+        echo json_encode(array('status' => $status, 'msg' => $msg));
+        exit;
+    }
 }

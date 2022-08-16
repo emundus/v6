@@ -44,7 +44,7 @@
               >
               </editor>
               <div class="em-mt-8">
-                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-blue-500" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
+                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-main-600" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
             <p v-if="errors.message" class="em-red-500-color em-mb-8">
@@ -716,6 +716,7 @@ export default {
 
 <style scoped>
 .emails__add-email{
-  width: 75rem !important;
+  width: calc(100% - 75px) !important;
+  margin-left: auto;
 }
 </style>

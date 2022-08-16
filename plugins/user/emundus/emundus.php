@@ -222,6 +222,7 @@ class plgUserEmundus extends JPlugin
             $campaign_id = @isset($details['emundus_profile']['campaign'])?$details['emundus_profile']['campaign']:@$details['campaign'];
             $lastname = @isset($details['emundus_profile']['lastname'])?$details['emundus_profile']['lastname']:@$details['name'];
             $firstname = @isset($details['emundus_profile']['firstname'])?$details['emundus_profile']['firstname']:@$details['firstname'];
+            $email = @isset($details['emundus_profile']['email'])?$details['emundus_profile']['email']:@$details['email'];
 
             if ($isnew) {
 
@@ -290,20 +291,29 @@ class plgUserEmundus extends JPlugin
                     }
                 }
 
-            } elseif (!empty($lastname) && !empty($firstname)) {
-                // Update name and firstname from #__users
-                $db->setQuery('UPDATE #__users SET name='.$db->quote(ucfirst($firstname) . ' ').' '.$db->quote(strtoupper($lastname)).' WHERE id='.$user['id']);
-                $db->execute();
-
-                $db->setQuery('UPDATE #__emundus_users SET lastname='.$db->quote(strtoupper($lastname)).', firstname='.$db->quote(ucfirst($firstname)).' WHERE user_id='.$user['id']);
-                $db->execute();
-
-                $db->setQuery('UPDATE #__emundus_personal_detail SET last_name='.$db->quote(strtoupper($lastname)).', first_name='.$db->quote(ucfirst($firstname)).' WHERE user='.$user['id']);
+            } else {
                 try {
-                    $db->execute();
+                    if(!empty($firstname) && !empty($lastname)) {
+                        // Update name and firstname from #__users
+                        $db->setQuery('UPDATE #__users SET name=' . $db->quote(ucfirst($firstname) . ' ') . ' ' . $db->quote(strtoupper($lastname)) . ' WHERE id=' . $user['id']);
+                        $db->execute();
+
+                        $db->setQuery('UPDATE #__emundus_users SET lastname='.$db->quote(strtoupper($lastname)).', firstname='.$db->quote(ucfirst($firstname)).' WHERE user_id='.$user['id']);
+                        $db->execute();
+
+                        $db->setQuery('UPDATE #__emundus_personal_detail SET last_name='.$db->quote(strtoupper($lastname)).', first_name='.$db->quote(ucfirst($firstname)).' WHERE user='.$user['id']);
+                        $db->execute();
+                    }
+
+                    if(!empty($email)) {
+                        $db->setQuery('UPDATE #__emundus_users SET email=' . $db->quote($email) . ' WHERE user_id=' . $user['id']);
+                        $db->execute();
+                    }
                 } catch (Exception $e) {
-                    // catch any database errors.
+                    JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
+
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
 
                 $this->onUserLogin($user);
             }
@@ -409,46 +419,49 @@ class plgUserEmundus extends JPlugin
                         if (isset($user['lastname'])) {
                             $query->set($db->quoteName('lastname') . ' = ' . $db->quote($user['lastname']));
                         }
-                        $query->where($db->quoteName('user_id') . ' = ' . $user_id);
+                        $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
 
                         $db->setQuery($query);
                         $db->execute();
                     }
 
 
-                    if (!empty($user['other_properties'])) {
-                        foreach ($user['other_properties'] as $key => $other_property) {
-                            if (!empty($other_property->values)) {
-                                $table = explode('___', $key)[0];
-                                $column = explode('___', $key)[1];
+                    if(isset($user['other_properties'])){
+                        if (!empty($user['other_properties'])) {
+                            foreach ($user['other_properties'] as $key => $other_property) {
+                                if (!empty($other_property->values)) {
+                                    $table = explode('___', $key)[0];
+                                    $column = explode('___', $key)[1];
 
-                                $query->clear()
-                                    ->select($db->quoteName($column))
-                                    ->from($db->quoteName($table))
-                                    ->where($db->quoteName('user_id') . ' = ' . $user_id);
-
-                                if ($other_property->method == 'insert') {
-                                    $query->andWhere($db->quoteName($column) . ' = ' . $other_property->values);
-                                }
-
-                                $db->setQuery($query);
-
-                                $result = $db->loadResult();
-
-                                if (empty($result)) {
-                                    $query->clear();
-
-                                    if ($other_property->method == 'update') {
-                                        $query->update($db->quoteName($table));
-                                        $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
-                                        $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
-                                    } else if ($other_property->method == 'insert') {
-                                        $query->insert($db->quoteName($table));
-                                        $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
-                                        $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+                                    $query->clear()
+                                        ->select($db->quoteName($column))
+                                        ->from($db->quoteName($table))
+                                        ->where($db->quoteName('user_id') . ' = ' . $user_id);
+                                    if ($other_property->method == 'insert') {
+                                        $query->andWhere($db->quoteName($column) . ' = ' . $other_property->values);
                                     }
                                     $db->setQuery($query);
-                                    $db->execute();
+                                    $result = $db->loadResult();
+
+                                    if (empty($result)) {
+                                        $query->clear();
+                                        if ($other_property->method == 'update') {
+                                            $query->update($db->quoteName($table));
+                                            }
+                                            if ($other_property->method == 'insert') {
+                                                $query->insert($db->quoteName($table));
+                                            }
+                                            $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
+
+                                            if ($other_property->method == 'update') {
+                                            $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+                                            }
+                                            if ($other_property->method == 'insert') {
+                                            $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
+                                        }
+                                        $db->setQuery($query);
+                                        $db->execute();
+                                    }
                                 }
                             }
                         }
@@ -547,22 +560,34 @@ class plgUserEmundus extends JPlugin
             $m_profile = new EmundusModelProfile;
             $m_profile->initEmundusSession();
 
+
             // Log the action of signing in.
             // No id exists in jos_emundus_actions for signin so we use -2 instead.
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
             $user = JFactory::getSession()->get('emundusUser');
+
             // if user_id is null -> there is no session data because the account is not activated yet, so don't log
             if ($user->id) {
                 EmundusModelLogs::log($user->id, $user->id, null, -2, '', 'COM_EMUNDUS_LOGS_USER_LOGIN');
             }
 
+            $user->just_logged = true;
+            if(empty($user->lastvisitDate)){
+                $user->first_logged = true;
+            }
+            JFactory::getSession()->set('emundusUser', $user);
+
             if ($options['redirect'] === 0) {
                 $previous_url = '';
             }
 
-            if (!empty($previous_url)) {
+            JPluginHelper::importPlugin('emundus', 'custom_event_handler');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+
+	        if (!empty($previous_url)) {
                 $app->redirect($previous_url);
-            }
+	        }
         }
         return true;
     }

@@ -216,7 +216,7 @@
     color: black;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
     &:hover {
-       color: #16AFE1;
+       color: #20835F;
      }
   }
 

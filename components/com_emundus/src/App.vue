@@ -4,6 +4,7 @@
 			v-if="componentName === 'attachments'"
 			:fnum="data.fnum"
 			:user="data.user"
+			:defaultAttachments="data.attachments ? data.attachments : null"
 		></Attachments>
 
     <transition v-else name="slide-right">
@@ -26,6 +27,7 @@ import evaluationbuilder from "./views/evaluationBuilder"
 import settings from "./views/globalSettings"
 import messagescoordinator from "./components/Messages/MessagesCoordinator";
 import messages from "./components/Messages/Messages";
+import editprofile from "./views/Users/Edit"
 
 export default {
 	props: {
@@ -54,6 +56,7 @@ export default {
     settings,
     messagescoordinator,
     messages,
+    editprofile,
 	},
   beforeCreate() {
     fileService.isDataAnonymized().then(response => {
@@ -64,6 +67,10 @@ export default {
   },
 
   created() {
+	  if (this.data.attachments) {
+		  this.data.attachments = JSON.parse(atob(this.data.attachments));
+	  }
+
     if(typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);
     }
@@ -88,10 +95,7 @@ export default {
 		moment.locale(this.$store.state.global.lang);
 
 		if (this.data.base) {
-			this.$store.dispatch(
-				"attachment/setAttachmentPath",
-				this.data.base + "/images/emundus/files/"
-			);
+			this.$store.dispatch("attachment/setAttachmentPath", this.data.base + "/images/emundus/files/");
 		}
 	},
 };
@@ -136,7 +140,8 @@ export default {
 .view-campaigns #g-container-main .g-container,
 .view-emails #g-container-main .g-container,
 .view-form #g-container-main .g-container,
-.view-settings #g-container-main .g-container{
+.view-settings #g-container-main .g-container,
+.view-users #g-container-main .g-container{
   width: 90%;
 }
 

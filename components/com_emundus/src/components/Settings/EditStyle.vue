@@ -26,7 +26,7 @@
         </div>
         <div class="em-w-100 em-ml-24">
           <div class="em-flex-row em-flex-space-between">
-            <h2 style="margin: 0">Logo</h2>
+            <h3 style="margin: 0">Logo</h3>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateLogo')">
               {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
             </a>
@@ -41,7 +41,7 @@
         </div>
         <div class="em-w-100 em-ml-24">
           <div class="em-flex-row em-flex-space-between">
-            <h2 style="margin: 0">{{Icon}}</h2>
+            <h3 style="margin: 0">{{Icon}}</h3>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateIcon')">
               {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
             </a>
@@ -57,7 +57,7 @@
         </div>
         <div class="em-w-100 em-ml-24">
           <div class="em-flex-row em-flex-space-between">
-            <h2 style="margin: 0">{{Colors}}</h2>
+            <h3 style="margin: 0">{{Colors}}</h3>
             <a class="pointer em-main-500-color" @click="$modal.show('modalUpdateColors')">
               {{ translate('COM_EMUNDUS_ONBOARD_MODIFY') }}
             </a>
@@ -257,4 +257,13 @@ export default {
   border-radius: 50%;
   width: 50px;
 }
+
+h3 {
+  color: #353544;
+}
+
+a.pointer:hover {
+  color: #106949;
+}
+
 </style>

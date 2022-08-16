@@ -3977,4 +3977,34 @@ class EmundusModelFiles extends JModelLegacy
             JLog::add('component/com_emundus/models/files | Error when get tags by status ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
     }
+
+    public function checkIfSomeoneElseIsEditing($fnum)
+    {
+        $result = false;
+        $user = JFactory::getUser();
+        $config = JComponentHelper::getParams('com_emundus');
+        $editing_time = $config->get('alert_editing_time', 2);
+
+        $actions = array(1,4,5,10,11,12,13,14);
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $query->select('DISTINCT ju.id, ju.name')
+            ->from('#__users as ju')
+            ->leftJoin('#__emundus_logs as jel ON ju.id = jel.user_id_from')
+            ->where($db->quoteName('jel.fnum_to') . ' = ' . $db->quote($fnum))
+            ->andWhere('action_id IN (' . implode(',', $actions) . ')')
+            ->andWhere('jel.timestamp > ' . $db->quote(date('Y-m-d H:i:s', strtotime('-' . $editing_time . ' minutes'))))
+            ->andWhere('jel.user_id_from != ' . $user->id);
+
+        $db->setQuery($query);
+
+        try {
+            $result = $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add('component/com_emundus/models/files | Error when check if someone else is editing ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
+
+        return $result;
+    }
 }

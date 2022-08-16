@@ -207,4 +207,12 @@ export default {
   border-radius: 5px;
   padding: 16px 24px;
 }
+
+a.em-pointer:nth-child(2) .material-icons {
+color: #DB333E;
+}
+
+a.em-pointer:nth-child(2):hover .material-icons {
+  color: #C31924;
+}
 </style>

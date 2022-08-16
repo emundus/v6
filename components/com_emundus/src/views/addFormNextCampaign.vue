@@ -1,5 +1,6 @@
 <template>
-  <div class="em-w-90rem">
+  <div class="em-w-custom">
+  <div>
     <ModalWarningFormBuilder
         :pid="getProfileId"
         :cid="campaignId"
@@ -20,7 +21,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: #20835F; font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
@@ -395,5 +396,18 @@ export default {
 .w--current{
   border: solid 1px #eeeeee;
   background: #eeeeee;
+}
+
+.w--current:hover{
+  color: #20835F;
+}
+
+.em-pointer:hover{
+  color: #20835F;
+}
+
+.em-w-custom {
+  width: calc(100% - 75px) !important;
+  margin-left: auto;
 }
 </style>

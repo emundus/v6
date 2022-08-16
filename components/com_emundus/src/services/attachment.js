@@ -154,5 +154,49 @@ export default {
         'Content-Type': 'multipart/form-data'
       }
     });
+  },
+
+  async getProfileAttachments(){
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=users&task=getprofileattachments');
+
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async getProfileAttachmentsAllowed(){
+    try {
+      const response = await client().get('index.php?option=com_emundus&controller=users&task=getprofileattachmentsallowed');
+
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
+  },
+
+  async deleteProfileAttachment(id,filename){
+    try {
+      const response = await client().delete('index.php?option=com_emundus&controller=users&task=deleteprofileattachment', {
+        params: {
+          id: id,
+          filename: filename,
+        }
+      });
+
+      return response.data;
+    } catch (e) {
+      return {
+        status: false,
+        msg: e.message
+      };
+    }
   }
 };

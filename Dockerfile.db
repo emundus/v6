@@ -1,0 +1,9 @@
+FROM mysql:8
+LABEL maintainer="DevOps Team <devops@emundus.io>"
+
+# Copy Tchooz database (fresh install) to docker-initdb-entrypoint
+COPY ["./media/com_emundus_vanilla/vanilla_emjmd.sql","/docker-entrypoint-initdb.d/init-vanilla.sql"] 
+
+# Copy MySQL configuration
+COPY ["./.ci/mysql/conf/my.cnf","/etc/mysql/conf.d/my.cnf"]
+RUN chmod 664 /etc/mysql/conf.d/my.cnf
