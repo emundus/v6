@@ -197,6 +197,28 @@ class EmundusModelApplication extends JModelList
             }
         }
 
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles;
+        $fnumInfos = $m_files->getFnumInfos($fnum);
+
+        foreach($attachments as $key => $attachment) {
+            // check if file is in server
+            if (!file_exists(EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS.$attachment->filename)) {
+                $attachment->existsOnServer = false;
+            } else {
+                $attachment->existsOnServer = true;
+            }
+
+            // do not display files that are printed by applicant
+            if ($attachment->lbl === '_application_form') {
+                unset($attachments[$key]);
+            }
+        }
+
+        if ($attachments !== array_values($attachments)) {
+            $attachments = array_values($attachments);
+        }
+
         return $attachments;
     }
 

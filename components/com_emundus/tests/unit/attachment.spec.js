@@ -13,9 +13,6 @@ localVue.mixin(translate);
 localVue.use(VModal);
 
 describe('Attachments.vue', () => {
-  // spy on getFnums and getUsers function to check if they have been called on created
-  const getFnums = jest.spyOn(Attachments.methods, 'getFnums');
-
   const wrapper = shallowMount(Attachments, {
     propsData: {
       user: "123",
@@ -23,10 +20,6 @@ describe('Attachments.vue', () => {
     },
     store: store,
     localVue
-  });
-
-  it('should call getFnums on mounted', () => {
-    expect(getFnums).toHaveBeenCalled();
   });
 
   it('displayedFnum data should be equal to fnum props', () => {
@@ -42,22 +35,6 @@ describe('Attachments.vue', () => {
   it('Expect table wrapper to exists if not empty attachments', () => {
     const table = wrapper.find('.table-wrapper');
     expect(table.exists()).toBe(true);
-  });
-
-  /**
-   * displayed-user should match the user firstname and lastname
-   */
-  it('Expect p.name content to be the user firstname and lastname', () => {
-    const name = wrapper.find('.displayed-user .name');
-    expect(name.text()).toBe(mockAttachment.users[0].firstname + ' ' + mockAttachment.users[0].lastname);
-  });
-
-  /**
-   * if more than one fnums, next button should be displayed
-   */
-  it('Expect navigateButtons to be displayed if more than one fnums', () => {
-    const navigateButtons = wrapper.find('.prev-next-files');
-    expect(navigateButtons.exists()).toBe(true);
   });
 
   /**
@@ -129,11 +106,12 @@ describe('Attachments.vue', () => {
    * category select should be displayed if more than one category
    */
   wrapper.vm.categories = {
-    "1": "category1",
-    "2": "category2",
-    "3": "category3",
-    "4": "category4"
-  }
+    '1': 'category1',
+    '2': 'category2',
+    '3': 'category3',
+    '4': 'category4'
+  };
+
   it('Expect category select to be displayed if there are category option available', () => {
     const categorySelect = wrapper.find('.category-select');
     expect(categorySelect.exists()).toBe(true);
@@ -145,16 +123,15 @@ describe('Attachments.vue', () => {
    * If option value equals all, all attachments should be displayed
    */
   it('Expect filterByCategory to show only attachments with selected category', () => {
-    // call  filterByCategory with e
     wrapper.vm.filterByCategory({
       target: {
-        value: "2"
+        value: '2'
       }
     });
 
     // check that only attachments with category 2 are displayed
     wrapper.vm.attachments.forEach(element => {
-      expect(element.show).toBe(element.category === "2");
+      expect(element.show).toBe(element.category === '2');
     });
   });
 
@@ -162,7 +139,7 @@ describe('Attachments.vue', () => {
     // call  filterByCategory with e
     wrapper.vm.filterByCategory({
       target: {
-        value: "all"
+        value: 'all'
       }
     });
 
@@ -185,23 +162,14 @@ describe('Attachments.vue', () => {
     const options = categorySelect.findAll('option');
     expect(options.length).toBe(uniqCategories.length + 1);
   });
-
-  /**
-   * on click on .next button, displayedFnum should be equal to next fnums
-   */
-  it('Expect displayedFnum to be equal to next fnum on click on .next', () => {
-    const next = wrapper.find('.next');
-    next.trigger('click');
-    expect(wrapper.vm.displayedFnum).toBe(mockAttachment.fnums[1]);
-  });
 });
 
 
 describe('Attachments.vue delete Methods', () => {
   const wrapper = shallowMount(Attachments, {
     propsData: {
-      user: "123",
-      fnum: "2021061714501700000010000123"
+      user: '123',
+      fnum: '2021061714501700000010000123'
     },
     store: store,
     localVue
@@ -243,8 +211,8 @@ describe('Attachments.vue delete Methods', () => {
 describe('Attachments.vue anonyme', () => {
   const wrapper = shallowMount(Attachments, {
     propsData: {
-      user: "123",
-      fnum: "2021061714501700000010000123"
+      user: '123',
+      fnum: '2021061714501700000010000123'
     },
     store: store,
     localVue
