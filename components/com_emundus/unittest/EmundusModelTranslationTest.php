@@ -129,4 +129,12 @@ class EmundusModelTranslationTest extends TestCase
     public function testgetOrphelins(){
         $this->assertIsArray($this->m_translations->getOrphelins('fr-FR','en-GB'));
     }
+
+    public function testCheckSetup(){
+        $this->assertNotNull($this->m_translations->checkSetup());
+    }
+
+    public function testGetPlatformLanguages(){
+        $this->assertNotEmpty($this->m_translations->getPlatformLanguages());
+    }
 }

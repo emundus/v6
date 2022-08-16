@@ -44,7 +44,6 @@ session_start();
 
 class EmundusModelFilesTest extends TestCase{
     private $m_files;
-    private $s_helper;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
@@ -52,12 +51,6 @@ class EmundusModelFilesTest extends TestCase{
         $this->m_files = new EmundusModelFiles;
 
         //$coordinator = @EmundusUnittestHelperSamples::createSampleUser(2,'gestionnaire@emundus.fr');
-    }
-
-    // simple test case (example)
-    public function testFoo() {
-        $foo = true;
-        $this->assertSame(true, $foo);
     }
 
     // Brice
