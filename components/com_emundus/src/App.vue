@@ -4,6 +4,7 @@
 			v-if="componentName === 'attachments'"
 			:fnum="data.fnum"
 			:user="data.user"
+			:defaultAttachments="data.attachments ? data.attachments : null"
 		></Attachments>
 
     <transition v-else name="slide-right">
@@ -66,6 +67,10 @@ export default {
   },
 
   created() {
+	  if (this.data.attachments) {
+		  this.data.attachments = JSON.parse(atob(this.data.attachments));
+	  }
+
     if(typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);
     }
@@ -90,10 +95,7 @@ export default {
 		moment.locale(this.$store.state.global.lang);
 
 		if (this.data.base) {
-			this.$store.dispatch(
-				"attachment/setAttachmentPath",
-				this.data.base + "/images/emundus/files/"
-			);
+			this.$store.dispatch("attachment/setAttachmentPath", this.data.base + "/images/emundus/files/");
 		}
 	},
 };

@@ -700,36 +700,10 @@ class EmundusControllerApplication extends JControllerLegacy
     public function getattachmentsbyfnum()
     {
         $m_application = $this->getModel('Application');
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-
-        $m_files = new EmundusModelFiles;
-
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getVar('fnum', null);
 
-        $fnumInfos = $m_files->getFnumInfos($fnum);
         $attachments = $m_application->getUserAttachmentsByFnum($fnum, NULL);
-
-        foreach($attachments as $key => $attachment)
-        {
-            // check if file is in server
-            if (!file_exists(EMUNDUS_PATH_ABS.$fnumInfos['applicant_id'].DS.$attachment->filename)) {
-                $attachment->existsOnServer = false;
-            } else {
-                $attachment->existsOnServer = true;
-            }
-
-            // do not display files that are printed by applicant
-            if ($attachment->lbl === '_application_form') {
-                unset($attachments[$key]);
-            }
-        }
-
-        // if array is associative, json encode will return an object
-        // it is supposed to recieve an array (response is checking type anyway)
-        if ($attachments !== array_values($attachments)) {
-            $attachments = array_values($attachments);
-        }
 
         echo json_encode(['status' => $attachments !== false ? true : false, 'attachments' => $attachments]);
         exit;
