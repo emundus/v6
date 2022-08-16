@@ -17,6 +17,7 @@ class EmundusModelTranslations extends JModelList
     var $_db = null;
 
     /**
+     * @codeCoverageIgnore
      * Constructor
      *
      * @since 1.5
@@ -45,10 +46,13 @@ class EmundusModelTranslations extends JModelList
                 ->from($this->_db->quoteName('#__emundus_setup_languages'));
             $this->_db->setQuery($query);
             return $this->_db->loadResult();
-        } catch (Exception $e) {
+        }
+        // @codeCoverageIgnoreStart
+        catch (Exception $e) {
             JLog::add('Problem when try to get setup translation tool with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -553,13 +557,14 @@ class EmundusModelTranslations extends JModelList
                     $parsed_file[$tag] = $override;
                     return JLanguageHelper::saveToIniFile($override_file, $parsed_file);
                 }
-            } else {
-                return false;
             }
-        } catch(Exception $e){
+        }
+        // @codeCoverageIgnoreStart
+        catch(Exception $e){
             JLog::add('Problem when try to insert translation into file ' . $location . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -609,8 +614,6 @@ class EmundusModelTranslations extends JModelList
                     } else {
                         return false;
                     }
-                } else {
-                    return false;
                 }
             } else {
                 $existing_translation = $this->getTranslations('override',$lang_code,'','','','',$tag);
@@ -620,10 +623,13 @@ class EmundusModelTranslations extends JModelList
                     return $this->updateTranslation($tag,$override,$lang_code);
                 }
             }
-        } catch(Exception $e){
+        }
+        // @codeCoverageIgnoreStart
+        catch(Exception $e){
             JLog::add('Problem when try to update translation ' . $tag . ' into file ' . $location . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -682,10 +688,13 @@ class EmundusModelTranslations extends JModelList
                 }
             }
             return true;
-        } catch (Exception $e) {
+        }
+        // @codeCoverageIgnoreStart
+        catch (Exception $e) {
             JLog::add('Problem when try to delete translation ' . $tag . ' with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -715,14 +724,16 @@ class EmundusModelTranslations extends JModelList
                 ->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($default));
             $this->_db->setQuery($query);
             return $this->_db->loadObject();
-        } catch (Exception $e) {
+        }
+        // @codeCoverageIgnoreStart
+        catch (Exception $e) {
             JLog::add('Problem when try to fet default language with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
             return false;
         }
+        // @codeCoverageIgnoreEnd
     }
 
     public function getPlatformLanguages() : array {
-
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -730,14 +741,16 @@ class EmundusModelTranslations extends JModelList
             ->select($db->quoteName('lang_code'))
             ->from($db->quoteName('#__languages'))
             ->where($db->quoteName('published') . ' = 1 ');
-
         $db->setQuery($query);
 
         try {
             return $db->loadColumn();
-        } catch (Exception $e) {
+        }
+        // @codeCoverageIgnoreStart
+        catch (Exception $e) {
             return [];
         }
+        // @codeCoverageIgnoreEnd
     }
 
     /**
