@@ -79,7 +79,7 @@ if (document.getElementById("em-component-vue")) {
                     currentLanguage: this.$el.attributes.currentLanguage.value,
                     shortLang: this.$el.attributes.shortLang.value,
                     manyLanguages: this.$el.attributes.manyLanguages.value,
-                    defaultLang: this.$el.attributes.defaultLang.value,
+                    defaultLang: this.$el.attributes.defaultLang ? this.$el.attributes.defaultLang.value : this.$el.attributes.currentLanguage.value,
                     coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
                     sysadminAccess: this.$el.attributes.sysadminAccess.value,
                 }
