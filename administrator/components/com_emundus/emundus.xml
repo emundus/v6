@@ -7,7 +7,7 @@
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>6.9.1</version>
+	<version>1.31.29</version>
 	<description>Online application component for Joomla!.</description>
 
 	<files folder="site">
@@ -72,7 +72,7 @@
 		</languages>
 	</administration>
 
-	<!-- START UPDATESERVERS 
+	<!-- START UPDATESERVERS
 	<updateservers>
 		<server type="collection" name="eMundus61">http://emundus.fr/update/emundus61/package_list.xml</server>
 	</updateservers>

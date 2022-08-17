@@ -1349,15 +1349,15 @@ td:first-child>.em-cell {
 .form-control {
     display: block !important;
     width: 100% !important;
-    height: 43px !important;
-    padding: 10px 15px !important;
-    font-size: 15px !important;
+    height: 43px;
+    padding: 10px 15px;
+    font-size: 15px;
     line-height: 1.42857 !important;
     color: rgb(44, 62, 80);
     background-color: rgb(255, 255, 255);
     background-image: none;
     border: 1px solid rgb(220, 228, 236);
-    border-radius: 0px !important;
+    border-radius: 0;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
 }
@@ -1413,8 +1413,8 @@ textarea>.input-group-btn>.btn {
 
 label {
     color: #000;
-    margin-bottom: 5px !important;
-    font-weight: bold !important;
+    margin-bottom: 8px !important;
+    font-weight: bold;
     display: inline;
 }
 

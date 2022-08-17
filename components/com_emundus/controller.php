@@ -24,7 +24,6 @@ class EmundusController extends JControllerLegacy {
     var $_db = null;
 
     function __construct($config = array()){
-
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');

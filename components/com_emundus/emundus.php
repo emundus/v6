@@ -504,27 +504,6 @@ JText::script('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR');
 JText::script('COM_EMUNDUS_LOGS_EXPORT');
 // ONBOARD
 
-JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
-JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-JHTML::script('media/com_emundus/js/em_files.js');
-JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
-JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
-
-JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
-JHtml::styleSheet('media/com_emundus/css/reset.css');
-JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
-JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
-JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
-JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
-JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
-JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
-
 $app = JFactory::getApplication();
 
 // Require specific controller if requested
@@ -551,7 +530,28 @@ $token = $app->input->get('token', '', 'ALNUM');
 
 if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+    JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
+    JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
+    JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
+    JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+    JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    JHTML::script('media/com_emundus/js/em_files.js');
+    JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
+    JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+
+    JHtml::styleSheet('media/com_emundus/css/reset.css');
+    JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
+    JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+    JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
+    JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
+    JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
+    JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 }
+JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
+
+JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
+JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).

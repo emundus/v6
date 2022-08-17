@@ -22,7 +22,8 @@ $fnum 	= $jinput->getString('fnum', null);
 $user = JFactory::getUser();
 
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0, 2);
+$short_lang = substr($lang->getTag(), 0 , 2);
+$current_lang = $lang->getTag();
 $languages = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {
     $many_languages = '1';
@@ -32,7 +33,12 @@ if (count($languages) > 1) {
 
 $coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
 
-?>
-<div id="em-component-vue" component="messagescoordinator" coordinatorAccess="<?= $coordinator_access ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>" fnum="<?= $fnum ?>" user="<?= $user->id ?>"></div>
+$xmlDoc = new DOMDocument();
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
 
-<script src="media/com_emundus_vue/app_emundus.js"></script>
+?>
+<div id="em-component-vue" component="messagescoordinator" coordinatorAccess="<?= $coordinator_access ?>" shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>" manyLanguages="<?= $many_languages ?>" fnum="<?= $fnum ?>" user="<?= $user->id ?>"></div>
+
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>

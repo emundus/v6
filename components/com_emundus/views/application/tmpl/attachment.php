@@ -17,6 +17,11 @@ JFactory::getSession()->set('application_layout', 'attachment');
 $can_export = EmundusHelperAccess::asAccessAction(8,'c', $this->_user->id, $this->fnum);
 $can_see_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
 $lang = JFactory::getLanguage();
+
+$xmlDoc = new DOMDocument();
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
 ?>
 
 
@@ -45,4 +50,4 @@ $lang = JFactory::getLanguage();
 >
 </div>
 
-<script src="media/com_emundus_vue/app_emundus.js?1"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>

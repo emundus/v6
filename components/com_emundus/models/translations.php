@@ -605,8 +605,8 @@ class EmundusModelTranslations extends JModelList
                     ->andWhere($this->_db->quoteName('type') . ' = ' . $this->_db->quote($type));
                 $this->_db->setQuery($query);
 
-                if($this->_db->execute()){
-                    $override_file = JPATH_SITE . '/language/overrides/' . $location;
+                if($this->_db->execute()) {
+                    $override_file = JPATH_BASE . '/language/overrides/' . $location;
                     if (file_exists($override_file)) {
                         $parsed_file = JLanguageHelper::parseIniFile($override_file);
                         $parsed_file[$tag] = $override;

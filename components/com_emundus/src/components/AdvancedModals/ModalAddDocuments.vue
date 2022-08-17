@@ -22,7 +22,7 @@
           {{translations.createDocument}}
         </span>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddDocuments')">
-          <span class="material-icons">close</span>
+          <span class="material-icons-outlined">close</span>
         </button>
       </div>
 

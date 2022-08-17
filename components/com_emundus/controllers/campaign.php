@@ -140,34 +140,6 @@ class EmundusControllerCampaign extends JControllerLegacy {
     }
 
     /**
-     * Get the number of campaigns with some filters
-     *
-     * @since version 1.0
-     */
-    public function getcampaigncount() {
-
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
-
-            $filterCount = $jinput->getString('filterCount');
-            $rechercheCount = $jinput->getString('rechercheCount');
-
-            $campaigns = $this->m_campaign->getCampaignCount($filterCount, $rechercheCount);
-
-            if ($campaigns > 0) {
-                $tab = array('status' => true, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
-            } else {
-                $tab = array('status' => false, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns);
-            }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
-    /**
      * Get the campaigns's list filtered
      *
      * @since version 1.0
@@ -185,9 +157,10 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $recherche = $jinput->getString('recherche');
             $lim = $jinput->getInt('lim');
             $page = $jinput->getInt('page');
-            $program=$jinput->getString('program');
+            $program = $jinput->getString('program');
+            $session = $jinput->getString('session');
 
-            $campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program);
+            $campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program,$session);
 
             if (count($campaigns) > 0) {
                 $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
@@ -522,8 +495,12 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $document = $jinput->getRaw('document');
-            $types = $jinput->getRaw('types');
+            $document = $jinput->getString('document');
+            $document = json_decode($document, true);
+
+            $types = $jinput->getString('types');
+            $types = json_decode($types, true);
+
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
 
@@ -552,21 +529,53 @@ class EmundusControllerCampaign extends JControllerLegacy {
             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
             $jinput = JFactory::getApplication()->input;
-            $document = $jinput->getRaw('document');
-            $types = $jinput->getRaw('types');
+            $document = $jinput->getString('document');
+            $document = json_decode($document, true);
+
+            $types = $jinput->getString('types');
+            $types = json_decode($types, true);
+
             $isModeleAndUpdate=$jinput->get('isModeleAndUpdate');
             $did = $jinput->getInt('did');
             $cid = $jinput->getInt('cid');
             $pid = $jinput->getInt('pid');
 
-            $result = $this->m_campaign->updateDocument($document,$types,$did,$pid,$isModeleAndUpdate);
+            $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => '');
 
-            if ($result) {
-                $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_UPDATED'), 'data' => $result);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_UPDATE_DOCUMENT'), 'data' => $result);
+            if (!empty($document)) {
+                $result = $this->m_campaign->updateDocument($document,$types,$did,$pid,$isModeleAndUpdate);
+
+                $tab['data'] = $result;
+                if ($result) {
+                    $tab['status'] = 1;
+                    $tab['msg'] = JText::_('DOCUMENT_UPDATED');
+                }
             }
         }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function updatedocumentmandatory() {
+         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+         } else {
+             $jinput = JFactory::getApplication()->input;
+
+             $did = $jinput->getInt('did');
+             $pid = $jinput->getInt('pid');
+             $mandatory = $jinput->getInt('mandatory');
+
+             if (!empty($did) && !empty($pid)) {
+                 $tab['status'] = $this->m_campaign->updatedDocumentMandatory($did, $pid, $mandatory);
+                 if ($tab['status']) {
+                     $tab['msg'] = JText::_('DOCUMENT_UPDATED');
+                 }
+             }
+         }
+
         echo json_encode((object)$tab);
         exit;
     }

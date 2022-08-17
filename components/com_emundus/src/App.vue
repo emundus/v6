@@ -33,9 +33,15 @@ export default {
 	props: {
     component: String,
     datas: Object,
-    actualLanguage: String,
+    currentLanguage: String,
+    shortLang: String,
     manyLanguages: String,
     coordinatorAccess: String,
+    sysadminAccess: String,
+		defaultLang: {
+			type: String,
+			default: ''
+		},
 		componentName: {
 			type: String,
 			required: true,
@@ -58,30 +64,40 @@ export default {
     messages,
     editprofile,
 	},
-  beforeCreate() {
-    fileService.isDataAnonymized().then(response => {
-      if (response.status !== false) {
-        this.$store.dispatch("global/setAnonyme", response.anonyme);
-      }
-    });
-  },
 
   created() {
-	  if (this.data.attachments) {
+    if (this.$props.component === 'attachments') {
+      fileService.isDataAnonymized().then(response => {
+        if (response.status !== false) {
+          this.$store.dispatch("global/setAnonyme", response.anonyme);
+        }
+      });
+    }
+
+    if (this.data.attachments) {
 		  this.data.attachments = JSON.parse(atob(this.data.attachments));
 	  }
 
     if(typeof this.$props.datas != 'undefined') {
       this.$store.commit("global/initDatas", this.$props.datas);
     }
-    if(typeof this.$props.actualLanguage != 'undefined') {
-      this.$store.commit("global/initCurrentLanguage", this.$props.actualLanguage);
+    if(typeof this.$props.currentLanguage != 'undefined') {
+      this.$store.commit("global/initCurrentLanguage", this.$props.currentLanguage);
+    }
+    if(typeof this.$props.shortLang != 'undefined') {
+      this.$store.commit("global/initShortLang", this.$props.shortLang);
     }
     if(typeof this.$props.manyLanguages != 'undefined') {
       this.$store.commit("global/initManyLanguages", this.$props.manyLanguages);
     }
+	  if(typeof this.$props.defaultLang != 'undefined') {
+		  this.$store.commit("global/initDefaultLang", this.$props.defaultLang);
+	  }
     if(typeof this.$props.coordinatorAccess != 'undefined') {
       this.$store.commit("global/initCoordinatorAccess", this.$props.coordinatorAccess);
+    }
+    if(typeof this.$props.coordinatorAccess != 'undefined') {
+      this.$store.commit("global/initSysadminAccess", this.$props.sysadminAccess);
     }
   },
 
@@ -109,10 +125,11 @@ export default {
     display: block;
     margin-bottom: 10px;
     padding: 8px 12px;
-    border: 2px solid #cccccc;
+    border: 1px solid #cccccc;
     border-radius: 4px;
     -webkit-transition: border-color 200ms linear;
     transition: border-color 200ms linear;
+    box-sizing: border-box !important;
     &:hover {
       border-color: #cecece;
     }
@@ -123,16 +140,16 @@ export default {
       box-shadow: 0 0 6px #e0f3f8;
     }
     &::-webkit-input-placeholder {
-      color: dimgrey;
+      color: #A4A4A4;
     }
     &:-ms-input-placeholder {
-      color: dimgrey;
+      color: #A4A4A4;
     }
     &::-ms-input-placeholder {
-      color: dimgrey;
+      color: #A4A4A4;
     }
     &::placeholder {
-      color: dimgrey;
+      color: #A4A4A4;
     }
   }
 }

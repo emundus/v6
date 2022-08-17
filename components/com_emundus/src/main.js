@@ -76,9 +76,12 @@ if (document.getElementById("em-component-vue")) {
                 props: {
                     component: this.$el.attributes.component.value,
                     datas: this.$el.attributes,
-                    actualLanguage: this.$el.attributes.actualLanguage.value,
+                    currentLanguage: this.$el.attributes.currentLanguage.value,
+                    shortLang: this.$el.attributes.shortLang.value,
                     manyLanguages: this.$el.attributes.manyLanguages.value,
+                    defaultLang: this.$el.attributes.defaultLang.value,
                     coordinatorAccess: this.$el.attributes.coordinatorAccess.value,
+                    sysadminAccess: this.$el.attributes.sysadminAccess.value,
                 }
             });
         }

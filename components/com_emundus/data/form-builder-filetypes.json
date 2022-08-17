@@ -1,0 +1,18 @@
+[
+  {
+    "title": "COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS",
+    "value": "pdf"
+  },
+  {
+    "title": "COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS",
+    "value": "jpeg;jpg;png;gif"
+  },
+  {
+    "title": "COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS",
+    "value": "doc;docx;odt;ppt;pptx"
+    },
+  {
+    "title": "COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS",
+    "value": "xls;xlsx;odf"
+  }
+]

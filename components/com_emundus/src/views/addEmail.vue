@@ -58,10 +58,10 @@
         <div>
           <div class="em-flex-row em-mb-16">
             <p class="em-h4">{{ translations.Advanced }}</p>
-            <button :title="translations.Advanced" type="button" class="em-transparent-button" @click="displayAdvanced" v-show="!displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button" v-show="displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button em-flex-column" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
@@ -364,7 +364,7 @@ export default {
     this.getAllTags();
     this.getAllDocumentLetter();
 
-    this.actualLanguage = this.$store.getters['global/actualLanguage'];
+    this.actualLanguage = this.$store.getters['global/shortLang'];
 
     axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
         .then(rep => {
