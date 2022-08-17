@@ -527,7 +527,8 @@ $font:'Inter', sans-serif;
     textarea {
       margin-top: 12px !important;
       resize: both;
-
+      color: $neutral-800;
+      @include body-16;
 
       &.input-medium, &.input-small {
         width: 100%;
