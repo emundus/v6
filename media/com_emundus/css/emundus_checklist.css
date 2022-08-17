@@ -289,12 +289,6 @@ button#back:hover, button#back:active, button#back:focus,
     color: #2E2E2E;
 }
 
-#g-sidebar .platform-content a {
-    color: #000;
-    display: flex;
-    align-items: center;
-}
-
 #g-sidebar a:focus {
     text-decoration: none !important;
 }
@@ -499,6 +493,14 @@ body.view-reset label#jform_username-lbl::after,
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
     line-height: 1.2rem;
+    color: #000;
+    display: flex;
+    align-items: center;
+}
+
+
+.applicant-form #g-sidebar .platform-content a:hover {
+  text-decoration: none;
 }
 
 .em-print-button, .em-send-button {
