@@ -1473,49 +1473,6 @@ class EmundusModelEmails extends JModelList {
     }
 
     /**
-     * @param $filter
-     * @param $recherche
-     *
-     * @return int
-     *
-     * @since version 1.0
-     */
-    function getEmailCount($filter, $recherche) {
-        $query = $this->_db->getQuery(true);
-
-        if ($filter == 'Publish') {
-            $filterCount = $this->_db->quoteName('se.published') . ' = 1';
-        } else if ($filter == 'Unpublish') {
-            $filterCount = $this->_db->quoteName('se.published') . ' = 0';
-        } else {
-            $filterCount = ('1');
-        }
-
-        if (empty($recherche)) {
-            $fullRecherche = 1;
-        } else {
-            $rechercheSubject = $this->_db->quoteName('se.subject') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheMessage = $this->_db->quoteName('se.message') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheEmail = $this->_db->quoteName('se.emailfrom') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheType = $this->_db->quoteName('se.type') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType;
-        }
-
-        $query->select('COUNT(se.id)')
-            ->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
-            ->where($filterCount)
-            ->where($fullRecherche);
-
-        try {
-            $this->_db->setQuery($query);
-            return $this->_db->loadResult();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/email | Error when try to get number of emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
-        }
-    }
-
-    /**
      * @param $lim
      * @param $page
      * @param $filter
@@ -1573,12 +1530,14 @@ class EmundusModelEmails extends JModelList {
             ->order($sortDb.$sort);
 
         try {
+            $this->_db->setQuery($query);
+            $count_emails  = sizeof($this->_db->loadObjectList());
             if(empty($lim)) {
                 $this->_db->setQuery($query, $offset);
             } else {
                 $this->_db->setQuery($query, $offset, $limit);
             }
-            return $this->_db->loadObjectList();
+            return array('datas' => $this->_db->loadObjectList(), 'count' => $count_emails);
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];

@@ -31,7 +31,10 @@ $mod_emundus_footer_cookies=$params->get('mod_emundus_footer_cookies', '1');
 
 
 // Get release version
-$file_version = file_get_contents('version.txt');
+$xmlDoc = new DOMDocument();
+if ($xmlDoc->load('administrator/components/com_emundus/emundus.xml')) {
+    $file_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
 //
 
 $lang = JFactory::getLanguage();

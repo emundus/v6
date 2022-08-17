@@ -172,6 +172,23 @@ class EmundusControllerProgramme extends JControllerLegacy {
         exit;
     }
 
+    public function getallsessions() {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $sessions = $this->m_programme->getAllSessions();
+
+            if (count((array)$sessions) > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_('PROGRAMS_RETRIEVED'), 'data' => $sessions);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_PROGRAMS'), 'data' => $sessions);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     public function getprogramcount() {
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;

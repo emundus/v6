@@ -63,7 +63,7 @@ if($user != null) {
         text-align: left;
     }
     .select .profile-select{
-        height: 48px;
+        height: 35px;
         padding: 0 32px 0 12px !important;
         border: 1px solid #e5e5e5;
         background-position-x: 95%;

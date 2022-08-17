@@ -90,7 +90,7 @@ describe('Attachments.vue', () => {
    * assert that delete button is not displayed if canDelete is false
    */
   it('Expect delete button to not be displayed if canDelete is false', () => {
-    const deleteButton = wrapper.find('.material-icons.delete');
+    const deleteButton = wrapper.find('.material-icons-outlined.delete');
     expect(deleteButton.exists()).toBe(false);
   });
 
@@ -98,7 +98,7 @@ describe('Attachments.vue', () => {
    * assert that export button is not displayed if canExport is false
    */
   it('Expect export button to not be displayed if canExport is false', () => {
-    const exportButton = wrapper.find('.material-icons.export');
+    const exportButton = wrapper.find('.material-icons-outlined.export');
     expect(exportButton.exists()).toBe(false);
   });
 
@@ -183,21 +183,21 @@ describe('Attachments.vue delete Methods', () => {
   wrapper.vm.canDelete = true;
 
   it('Expect delete button to be displayed if canDelete is true', () => {
-    const deleteButton = wrapper.find('.material-icons.delete');
+    const deleteButton = wrapper.find('.material-icons-outlined.delete');
     expect(deleteButton.exists()).toBe(true);
   });
 
-  // click on .material-icons.delete calls confirmDeleteAttachments
+  // click on .material-icons-outlined.delete calls confirmDeleteAttachments
   wrapper.vm.checkedAttachments = [wrapper.vm.attachments[0]['aid']];
   const confirmDeleteAttachments = jest.spyOn(wrapper.vm, 'confirmDeleteAttachments');
-  it('Expect confirmDeleteAttachments to be called on click on .material-icons.delete', () => {
-    const deleteButton = wrapper.find('.material-icons.delete');
+  it('Expect confirmDeleteAttachments to be called on click on .material-icons-outlined.delete', () => {
+    const deleteButton = wrapper.find('.material-icons-outlined.delete');
     deleteButton.trigger('click');
     expect(confirmDeleteAttachments).toHaveBeenCalled();
   });
 
   it('first click on .delete should not delete the attachment from the list', () => {
-    const deleteButton = wrapper.find('.material-icons.delete');
+    const deleteButton = wrapper.find('.material-icons-outlined.delete');
     deleteButton.trigger('click');
     expect(wrapper.vm.attachments.length).toBe(2);
   });

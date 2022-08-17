@@ -3250,6 +3250,15 @@ body>.g-container {
 
   /* TABLEAUX */
 
+  .view-list .form-search{
+    .nav{
+      .dropdown-menu{
+        a{
+          padding: 4px;
+        }
+      }
+    }
+  }
 
   .view-list form.form-search table {
     thead th.fabrik_actions .btn-group {
@@ -3854,11 +3863,13 @@ button.swal2-cancel.goback-btn {
     }
 
     /* INTRO FORMULAIRE */
-     p:first-of-type:not(.accept_terms),
-     p.form-intro {
-      @include body-16;
-      color: $neutral-600;
-      margin-top: 8px;
+    .applicant-form {
+      p:first-of-type:not(.accept_terms),
+      p.form-intro {
+        @include body-16;
+        color: $neutral-600;
+        margin-top: 8px;
+      }
     }
 
     /* FORMULAIRE */
@@ -3938,432 +3949,12 @@ button.swal2-cancel.goback-btn {
         }
 
         /* BLOC ELEMENT */
-        .row-fluid .fabrikElementContainer.control-group {
+        .row-fluid .fabrikElementContainer.control-group:not(.plg-display) {
           margin: 32px 0 16px 0;
           flex-direction: column;
 
-          /* ERROR */
-
-          &.error {
-
-            .fabrikElement input:not([type="radio"]),
-            .fabrikElement textarea,
-            .fabrikElement select {
-              @include input-error;
-            }
-          }
-
-          /* SUCCESS */
-          &.success input, &.has-success input {
-            @include input-valid;
-            color: $neutral-800 !important;
-          }
-
-          .fabrikErrorMessage {
-            @include body-14;
-            color: $red-500;
-            margin-top: 8px;
-
-            &.help-inline {
-              color: $red-500;
-              padding: 0;
-
-              i.icon-warning {
-                display: none;
-              }
-            }
-          }
-
-          /* DISPLAY */
-          &.plg-display .fabrikinput {
-            height: auto !important;
-            border: none !important;
-            padding: 0 !important;
-          }
-
-          /* LABEL */
-          .fabrikLabel {
-            @include body-16-medium;
-            color: $neutral-800;
-            margin-bottom: 0 !important;
-            padding-top: 0 !important;
-
-            /* ETOILE */
-            .icon-star.small {
-              @include star;
-            }
-          }
-
-          /* TEXTE D AIDE */
-          span:not(.badge):not([class^="material-icons"]):not(.icon-handle) {
-            @include body-14;
-            color: $neutral-600;
-            display: flex;
-            margin-top: 12px;
-
-            &:empty {
-              margin-top: 0;
-            }
-
-            .icon-question-sign {
-              display: none;
-            }
-          }
-
-
-          .fabrikElement {
-            width: 100%;
-
-            /* INDICATIF */
-            .chzn-container-single a.chzn-single {
-              @include input-default;
-              padding: 3px 12px 0 12px;
-            }
-
-            /* CAPCHA */
-
-            .captcha_input {
-              input {
-                @include input-default;
-                width: 100%;
-
-                &:focus {
-                  @include input-focus;
-                }
-
-                &:hover {
-                  @include input-hover;
-                }
-              }
-            }
-
-            /* INPUT */
-            .fabrikinput:not(textarea) {
-              @include input-default;
-
-              &:hover {
-                @include input-hover;
-              }
-
-              &:focus {
-                @include input-focus;
-              }
-
-              &.readonly {
-                @include input-readonly;
-              }
-
-              &:-internal-autofill-selected {
-                @include input-default;
-                @include body-16;
-                background: transparent !important;
-              }
-
-              &[placeholder] {
-                color: $neutral-500 !important;
-                @include body-16;
-              }
-
-              &[value] {
-                @include body-16;
-                color: $neutral-800;
-              }
-
-              &.input-medium,
-              &.input-large,
-              &.input-xlarge,
-              &.input-xxlarge {
-                width: 100%;
-              }
-
-              &[type="file"] {
-                padding-left: 0;
-
-                &::-webkit-file-upload-button {
-                  border: none;
-                  margin-right: 20px;
-                  @include select-button-default;
-                }
-              }
-            }
-
-            /* TEXTAREA */
-            textarea {
-              margin-top: 12px !important;
-              resize: both;
-
-
-              &.input-medium, &.input-small {
-                width: 100%;
-              }
-
-              &:hover {
-                @include input-hover;
-              }
-
-              &:focus {
-                @include input-focus;
-              }
-            }
-
-            /* LIMITE */
-            .label-info, .badge-info {
-              background: $focus !important;
-            }
-
-            .label, .badge {
-              background: $neutral-600;
-            }
-
-            /* SELECT */
-            select {
-              @include select-default;
-              color: $neutral-800 !important;
-
-              option {
-                @include body-16;
-                color: $neutral-800;
-              }
-            }
-
-            /* SELECTION MULTIPLE */
-
-            .chzn-container-multi.chzn-container {
-              width: 100% !important;
-
-              .chzn-choices {
-                @include select-default;
-                box-shadow: none;
-                width: 100%;
-                margin-top: 12px;
-                padding-left: 8px;
-
-                li.search-choice {
-                  border: $neutral-400;
-                  background: $neutral-200;
-                  @include body-14;
-
-                  span {
-                    margin: 0;
-                    padding: 7px;
-                  }
-                }
-
-                li.search-field {
-                  input {
-                    margin-top: 6px;
-                    @include body-14;
-                    font-size: 13px !important;
-                  }
-                }
-              }
-
-              .chzn-drop .chzn-results li {
-                @include body-14;
-
-                &.highlighted {
-                  background: $neutral-200;
-                  color: $neutral-900;
-                }
-              }
-            }
-
-            .fabrikSubElementContainer {
-
-              /* YES/NO */
-              fieldset.btn-radio {
-
-                label.btn-default.btn.btn-success.active {
-                  @include yes-no;
-                  border: 1px solid $main-500;
-                  background: $main-500;
-                  border-radius: 0 4px 4px 0 !important;
-                  width: 55px !important;
-
-                  &:hover {
-                    border: 1px solid $main-600;
-                    background: $main-600;
-                  }
-
-                  span {
-                    @include body-16-medium;
-                    margin-top: 0;
-                    color: $neutral-50;
-                  }
-                }
-
-                label.btn-default.btn.btn-danger.active {
-                  @include yes-no;
-                  border: 1px solid $red-500;
-                  background: $red-500;
-                  border-radius: 4px 0 0 4px !important;
-                  width: 55px !important;
-
-                  &:hover {
-                    border: 1px solid $red-600;
-                    background: $red-600;
-                  }
-
-                  span {
-                    @include body-16-medium;
-                    margin-top: 0;
-                    color: $neutral-50;
-                  }
-                }
-
-                label.btn-default.btn:not(.active) {
-                  @include yes-no;
-                  border: 1px solid $neutral-200;
-                  background: $neutral-200;
-                  border-radius: 4px !important;
-                  margin-left: -2px;
-                  z-index: 0;
-                  width: 55px !important;
-
-                  &:hover {
-                    border: 1px solid $neutral-300;
-                    background: $neutral-300;
-
-                    span, input {
-                      margin-left: 0 !important;
-                    }
-                  }
-
-                  span {
-                    @include body-16-medium;
-                    margin-top: 0;
-                    color: $neutral-900;
-                  }
-                }
-              }
-
-              /* BIRTHDAY */
-              select.inputbox {
-                @include multiple-select;
-                @include body-16;
-                width: auto;
-              }
-
-
-              /* DATE */
-              .input-append {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-end;
-
-                input {
-                  border-radius: 4px 0 0 4px;
-                }
-
-                button.calendarbutton,
-                button.timeButton {
-                  border: 1px solid $neutral-400;
-                  margin-top: 12px;
-                  width: 48px !important;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  height: 48px !important;
-                  background: $neutral-200;
-                  border-radius: 0 4px 4px 0 !important;
-                  color: $neutral-800;
-                  z-index: 10;
-
-                  i.icon-clock {
-                    margin: 0;
-                  }
-
-                  &:hover {
-                    @include input-hover;
-                  }
-
-                  &:focus {
-                    @include input-focus;
-                  }
-                }
-              }
-            }
-
-
-            .fabrikMainError.alert.alert-error.fabrikError {
-              border-color: $red-500;
-              color: $red-500;
-            }
-
-            .fabrikMainError.alert.alert-error.fabrikError .close {
-              color: $red-500 !important;
-            }
-
-
-            /* WYZYWYSIWYG */
-            .js-editor-tinymce {
-              margin-top: 12px;
-            }
-
-
-            /* CHECKBOX - RADIO */
-            .row-fluid .fabrikgrid_radio,
-            .row-fluid .fabrikgrid_checkbox {
-              margin-top: 12px;
-              min-height: auto;
-
-              &.span2 {
-                margin-right: 80px;
-              }
-
-              label.checkbox {
-                padding: 0;
-                margin: 0;
-                min-height: auto;
-
-                input[type="checkbox"] {
-                  @include checkbox;
-                  margin-left: 0px !important;
-                }
-              }
-
-              label.radio {
-                padding: 0;
-                margin: 0;
-                min-height: auto;
-
-                input[type="radio"] {
-                  @include radio;
-                  margin-left: 0px !important;
-
-                  &:checked {
-                    background-color: initial;
-                    appearance: auto;
-                    height: 16px !important;
-                    width: 16px !important;
-                  }
-                }
-              }
-
-              span {
-                height: auto !important;
-                color: $neutral-800;
-                margin-top: 0 !important;
-                padding: 0 !important;
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-              }
-            }
-
-              /* CALC */
-
-              span.fabrikElementReadOnly {
-                @include body-16;
-                padding: 15px 12px;
-                border: none;
-
-                &:focus, &:hover {
-                  border: none;
-                }
-              }
-            }
-          }
+          @include fabrik-elements;
+        }
 
 
 
@@ -5662,10 +5253,10 @@ fieldset[disabled] .multiselect {
 
 .multiselect__tags {
   height: 48px;
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 0 16px;
   border-radius: 4px;
-  margin-top: 12px;
   border: 1px solid $neutral-400;
   background: #fff;
   font-size: 14px;
@@ -5680,7 +5271,6 @@ fieldset[disabled] .multiselect {
   color: #fff;
   line-height: 1;
   background: #b5b4b4;
-  margin-bottom: 5px;
   white-space: nowrap;
   overflow: hidden;
   max-width: 100%;
@@ -6126,6 +5716,14 @@ fieldset[disabled] .multiselect {
 .tooltip {
   display: block !important;
   z-index: 10000;
+  border: unset;
+  padding: 0;
+  nav{
+    p:hover{
+      background: $neutral-300;
+      cursor: pointer;
+    }
+  }
 }
 
 .tooltip[x-placement^="top"] {
@@ -6193,7 +5791,7 @@ fieldset[disabled] .multiselect {
   .popover-inner {
     background: #f9f9f9;
     color: black;
-    padding: 16px 16px 16px 8px;
+    padding: 8px 0;
     border-radius: 5px;
     box-shadow: 0 5px 30px rgba(black, .1);
   }
@@ -6215,6 +5813,11 @@ fieldset[disabled] .multiselect {
   transition: opacity .15s;
 }
 /** END **/
+
+[contentEditable=true]:empty:before {
+  content: attr(placeholder);
+  opacity: 0.4;
+}
 
   /** ANIMATIONS **/
   /**

@@ -10,8 +10,8 @@
               :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
               @input="searchInFiles"
           />
-          <span class="material-icons search">search</span>
-          <span class="material-icons clear em-pointer" @click="resetSearch">clear</span>
+          <span class="material-icons-outlined search">search</span>
+          <span class="material-icons-outlined clear em-pointer" @click="resetSearch">clear</span>
         </div>
         <div class="actions em-flex-row">
           <select
@@ -32,11 +32,11 @@
               @click="exportAttachments"
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
-            <span class="material-icons export">file_upload</span>
+            <span class="material-icons-outlined export">file_upload</span>
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <span
-              class="material-icons refresh em-pointer"
+              class="material-icons-outlined refresh em-pointer"
               @click="refreshAttachments(true)"
               :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')"
           >
@@ -44,7 +44,7 @@
 					</span>
           <span
               v-if="canDelete"
-              class="material-icons delete"
+              class="material-icons-outlined delete"
               :class="{ disabled: checkedAttachments.length < 1 }"
               @click="confirmDeleteAttachments"
               :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')"
@@ -65,43 +65,43 @@
             <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
             <th id="name" @click="orderBy('value')">
               {{ translate("NAME") }}
-              <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="date" class="date" @click="orderBy('timedate')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}
-              <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="desc" class="desc" @click="orderBy('upload_description')">
               {{ translate("DESCRIPTION") }}
-              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="category" class="category" @click="orderBy('category')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}
-              <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="status" class="status" @click="orderBy('is_validated')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}
-              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="canSee" id="user" @click="orderBy('user_id')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
-              <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="canSee" id="modified_by" @click="orderBy('modified_by')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
-              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="modified" class="date" @click="orderBy('modified')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}
-              <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-              <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+              <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
           </tr>
@@ -779,13 +779,13 @@ export default {
 
     .searchbar-wrapper {
       position: relative;
-      .material-icons.search {
+      .material-icons-outlined.search {
         position: absolute;
         top: 11px;
         left: 18px;
       }
 
-      .material-icons.clear {
+      .material-icons-outlined.clear {
         position: absolute;
         top: 11px;
         right: 10px;
@@ -819,7 +819,7 @@ export default {
           color: var(--disabled-color);
           pointer-events: none;
 
-          .material-icons {
+          .material-icons, .material-icons-outlined {
             color: var(--disabled-color);
           }
         }
@@ -850,7 +850,7 @@ export default {
       min-height: 50vh;
     }
 
-    .material-icons.delete {
+    .material-icons-outlined.delete {
       transition: all 0.3s;
       width: 30px;
       color: var(--grey-color);
@@ -923,7 +923,7 @@ export default {
           border-bottom: 1px solid #e0e0e0;
           white-space: nowrap;
 
-          .material-icons {
+          .material-icons, .material-icons-outlined {
             transform: translateY(3px);
           }
         }
@@ -955,7 +955,7 @@ export default {
         height: 32px;
         color: black;
 
-        .material-icons {
+        .material-icons, .material-icons-outlined {
           font-size: 18px;
         }
 

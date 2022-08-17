@@ -7,7 +7,7 @@
     />
     <div>
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons">arrow_back</span>
+        <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
       <div class="em-flex-row em-mt-16">
@@ -208,7 +208,7 @@ export default {
   created () {
     // Get datas that we need with store
     this.campaignId = Number(this.$store.getters['global/datas'].campaignId.value);
-    this.actualLanguage = this.$store.getters['global/actualLanguage'];
+    this.actualLanguage = this.$store.getters['global/shortLang'];
     this.manyLanguages = Number(this.$store.getters['global/manyLanguages']);
     //
 
