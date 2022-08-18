@@ -172,7 +172,7 @@
       "helptext": "",
       "placeholder": "",
       "published": true,
-      "sysadmin_only": false
+      "sysadmin_only": true
     }
   ],
   "radiobutton": [
@@ -183,7 +183,7 @@
       "helptext": "",
       "placeholder": "",
       "published": true,
-      "sysadmin_only": false
+      "sysadmin_only": true
     }
   ],
   "birthday": [
