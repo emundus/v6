@@ -1,7 +1,7 @@
 <template>
 	<div class="com_emundus_vue em-flex-column em-flex-col-center">
 		<Attachments
-			v-if="componentName === 'attachments'"
+			v-if="component === 'attachments'"
 			:fnum="data.fnum"
 			:user="data.user"
 			:defaultAttachments="data.attachments ? data.attachments : null"
@@ -31,7 +31,6 @@ import editprofile from "./views/Users/Edit"
 
 export default {
 	props: {
-    component: String,
     datas: Object,
     currentLanguage: String,
     shortLang: String,
@@ -42,7 +41,7 @@ export default {
 			type: String,
 			default: ''
 		},
-		componentName: {
+		component: {
 			type: String,
 			required: true,
 		},

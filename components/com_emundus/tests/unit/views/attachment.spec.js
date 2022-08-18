@@ -1,10 +1,10 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils';
-import mockAttachment from '../mocks/attachments.mock';
-import Attachments from '../../src/views/Attachments.vue';
+import mockAttachment from '../../mocks/attachments.mock';
+import Attachments from '../../../src/views/Attachments';
 import Vuex from 'vuex';
 import VModal from 'vue-js-modal';
-import store from '../../src/store';
-import translate from '../mocks/mixins/translate';
+import store from '../../../src/store';
+import translate from '../../mocks/mixins/translate';
 
 const localVue = createLocalVue();
 
@@ -15,8 +15,8 @@ localVue.use(VModal);
 describe('Attachments.vue', () => {
   const wrapper = shallowMount(Attachments, {
     propsData: {
-      user: "123",
-      fnum: "2021061714501700000010000123"
+      user: '123',
+      fnum: '2021061714501700000010000123'
     },
     store: store,
     localVue
@@ -75,6 +75,7 @@ describe('Attachments.vue', () => {
 
     expect(wrapper.vm.attachments[0].show).toBe(true);
     expect(wrapper.vm.attachments[1].show).toBe(false);
+    expect(wrapper.vm.displayedAttachments.length).toBe(1);
   });
 
   it('Expect searchInFiles clear button to reset all attachments show value to true', () => {
