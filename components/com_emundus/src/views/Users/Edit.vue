@@ -1,7 +1,7 @@
 <template>
   <div class="em-w-90 em-container-profile-view" v-if="user">
     <div class="em-container-profile-view-pict em-flex-row em-flex-space-between em-mb-44 em-small-flex-column em-small-align-items-start">
-      <ProfilePicture :user="user" />
+      <ProfilePicture :user="user" @loading="updateLoading" />
     </div>
 
     <div class="em-container-profile-view-intro em-flex-row em-flex-space-between em-mb-24 em-small-flex-column em-small-align-items-start">
@@ -82,6 +82,9 @@ export default {
     },
     updateValue(element) {
       this.user[element.name] = element.value;
+    },
+    updateLoading(value){
+      this.loading = value;
     }
   },
   computed: {

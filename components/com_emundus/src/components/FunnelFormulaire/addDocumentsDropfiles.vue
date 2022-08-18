@@ -5,6 +5,7 @@
         <vue-dropzone
             ref="dropzone"
             id="customdropzone"
+            style="width: 100%"
             :include-styling="false"
             :options="dropzoneOptions"
             :useCustomSlot=true
