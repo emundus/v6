@@ -103,7 +103,7 @@ class EmundusModelTranslationTest extends TestCase
         $this->assertSame(true,$this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
 
         // TEST 3 - Failed waiting - Update the translations created before in portuguesh
-        $this->assertSame(false,$this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','pt-PT'));
+        $this->assertSame(false, $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','pt-PT'));
 
         // TEST 4 - Succes waiting - Update translations of com_emundus not possible so we insert it in override file
         //$this->assertSame(true,$this->m_translations->updateTranslation('COM_EMUNDUS_EMAIL','Un nouvel email','fr-FR','component'));
