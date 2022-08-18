@@ -205,11 +205,8 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
     margin-top: 20px;
     width: 60%;
     border: none;
-    background: #fafafa;
-}
-
-#g-main-mainbody div.logout.login {
-    background: #fafafa !important;
+    background: #fff;
+    box-shadow: none;
 }
 
 #g-main-mainbody div.logout.login .page-header h1 {

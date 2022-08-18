@@ -2588,6 +2588,21 @@ body>.g-container {
     }
   }
 
+  /* DECONNEXION */
+
+.logout-button input.btn.btn-primary {
+  border: 1px solid $red-500;
+  background: $red-500;
+  color: $neutral-50;
+  padding: 8px 12px;
+}
+
+.logout-button input.btn.btn-primary:hover {
+  border: 1px solid $red-500;
+  background: $neutral-50;
+  color: $red-500;
+}
+
   /* CONNEXION */
 
   ul.nav.nav-tabs.nav-stacked span {
