@@ -174,7 +174,7 @@ class EmundusModelFormbuilder extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
             } else {
-                $this->updateTranslation($labelTofind,$NewSubLabel);
+                $new_key = $this->updateTranslation($labelTofind, $NewSubLabel);
             }
             return $new_key;
         }  catch(Exception $e) {
