@@ -1060,8 +1060,8 @@ input:focus + .em-slider {
 }
 
 .em-logo-box{
-  min-width: 100px;
-  height: 100px;
+  min-width: 200px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1136,7 +1136,7 @@ button.em-swal-delete-button{
 }
 
 /** Vue Modal - Translation tool **/
-#translationTool,#contentTool,#filesTool, #formBuilder {
+#translationTool,#contentTool,#filesTool, #formBuilder, .full-width-modal {
   .v--modal-overlay {
     background: #0000002e !important;
     overflow-y: auto !important;

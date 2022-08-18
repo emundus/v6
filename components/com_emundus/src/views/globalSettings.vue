@@ -2,13 +2,6 @@
   <div class="em-w-100 em-mt-80">
     <div>
 
-      <!-- HEADER -->
-      <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%" @click="menuHighlight = 0">
-        <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
-      </div>
-      <h2 class="em-m-24" v-if="menuHighlight === 0 && !modal_ready" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h2>
-      <h2 class="em-m-24" v-else-if="menuHighlight !== 0 && menuHighlight !== 9 && menuHighlight !== 2 && menuHighlight !== 3" style="margin-left: 10%">{{ translate(currentTitle) }}</h2>
-
       <!--- MENU --->
       <transition name="slide-right">
         <div class="em-grid-3" style="margin-left: 10%" v-if="menuHighlight === 0">
@@ -22,10 +15,11 @@
 
       <!-- COMPONENTS -->
       <transition name="fade">
-        <editStyle
+        <StyleTool
             v-if="menuHighlight === 1"
-            ref="styling"
-        ></editStyle>
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        ></StyleTool>
 
         <ContentTool
             v-if="menuHighlight === 2"
@@ -53,10 +47,10 @@
 <script>
 import EditStatus from "../components/Settings/FilesTool/EditStatus";
 import EditTags from "../components/Settings/FilesTool/EditTags";
-import EditStyle from "../components/Settings/EditStyle";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 import ContentTool from "../components/Settings/Content/ContentTool";
 import FilesTool from "../components/Settings/FilesTool/FilesTool";
+import StyleTool from "../components/Settings/Style/StyleTool";
 
 const qs = require("qs");
 
@@ -64,12 +58,12 @@ export default {
   name: "globalSettings",
 
   components: {
+    StyleTool,
     FilesTool,
     ContentTool,
     TranslationTool,
     EditStatus,
-    EditTags,
-    EditStyle
+    EditTags
   },
 
   props: {
@@ -134,6 +128,10 @@ export default {
       this.modal_ready = false;
       setTimeout(() => {
         switch (value){
+          case 1:
+            this.$modal.show('styleTool');
+            this.modal_ready = true;
+            break;
           case 2:
             this.$modal.show('contentTool');
             this.modal_ready = true;
