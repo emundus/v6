@@ -22,9 +22,6 @@
                   <transition :name="'slide-down'" type="transition">
                     <div>
                       <nav aria-label="action" class="em-flex-col-start">
-                        <p @click="" class="em-p-8-12 em-w-100">
-                          {{ translate('COM_EMUNDUS_FORM_BUILDER_DUPLICATE_PAGE') }}
-                        </p>
                         <p @click="deletePage(page)" class="em-p-8-12 em-w-100 em-red-500-color">
                           {{ translate('COM_EMUNDUS_FORM_BUILDER_DELETE_PAGE') }}
                         </p>

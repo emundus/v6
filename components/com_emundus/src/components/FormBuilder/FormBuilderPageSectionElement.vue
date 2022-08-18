@@ -74,7 +74,8 @@ export default {
     updateElement()
     {
       formBuilderService.updateParams(this.element);
-      this.updateLastSave();
+	    this.$emit('update-element');
+			this.updateLastSave();
     },
     deleteElement() {
       this.swalConfirm(
@@ -105,7 +106,7 @@ export default {
         timer: 1500
       });
     },
-    triggerElementProperties(){
+    triggerElementProperties() {
       this.$emit('open-element-properties');
     },
     cancelDelete(event) {
