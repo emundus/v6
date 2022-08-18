@@ -483,6 +483,7 @@ $font:'Inter', sans-serif;
 
       &:focus {
         @include input-focus;
+        color: $neutral-800 !important;
       }
 
       &.readonly {
