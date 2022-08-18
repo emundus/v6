@@ -85,10 +85,12 @@ export default {
     },
 
     updateProfilePicture(file){
+      this.$emit('loading',true)
       user.updateProfilePicture(file).then(response => {
         this.profile_picture = window.location.origin + '/' + response.data.profile_picture;
         this.background_pp = 'background-image:url(' + window.location.origin + '/' + response.data.profile_picture + ')';
         document.getElementById('userDropdownLabel').style.backgroundImage = 'url(' + window.location.origin + '/' + response.data.profile_picture + ')';
+        this.$emit('loading',false)
       });
     }
   },
