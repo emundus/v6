@@ -2177,6 +2177,7 @@ label[for="em-file_to_upload"]:hover {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 0 !important;
 }
 
 .tooltipSelectAttachments{
