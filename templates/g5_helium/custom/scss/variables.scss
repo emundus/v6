@@ -486,6 +486,10 @@ $font:'Inter', sans-serif;
         color: $neutral-800 !important;
       }
 
+      &.inputbox:focus {
+        color: $neutral-800 !important;
+      }
+      
       &.readonly {
         @include input-readonly;
       }
