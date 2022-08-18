@@ -365,13 +365,16 @@ export default {
 
   .input-group {
     margin-top: 10px;
-
     display: flex;
     flex-direction: column;
 
     [type="checkbox"] {
       width: fit-content;
     }
+
+	  input {
+		  height: fit-content !important;
+	  }
   }
 
 	.valid-state {

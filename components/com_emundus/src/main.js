@@ -55,13 +55,12 @@ if (document.getElementById('em-application-attachment')) {
             el: elementId,
             store,
             render(h) {
-                return h(
-                    App, {
-                        props: {
-                            componentName: componentName,
-                            data: data
-                        },
-                    });
+                return h(App, {
+                    props: {
+                        component: componentName,
+                        data: data
+                    },
+                });
             },
         });
     }
