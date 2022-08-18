@@ -526,7 +526,7 @@ $font:'Inter', sans-serif;
     /* TEXTAREA */
     textarea {
       margin-top: 12px !important;
-      resize: both;
+      resize: vertical;
       color: $neutral-800;
       @include body-16;
 
@@ -748,7 +748,7 @@ $font:'Inter', sans-serif;
     }
 
 
-    /* WYZYWYSIWYG */
+    /* WYSIWYG */
     .js-editor-tinymce {
       margin-top: 12px;
     }
