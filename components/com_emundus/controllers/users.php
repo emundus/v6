@@ -559,6 +559,51 @@ class EmundusControllerUsers extends JControllerLegacy {
 		exit;
 	}
 
+    public function changeactivation() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+            return;
+        }
+
+        $jinput = JFactory::getApplication()->input;
+        $users 	= $jinput->getString('users', null);
+        $state 	= $jinput->getInt('state', null);
+
+        if($state == 0){
+            $state = 1;
+        } else {
+            $state = -1;
+        }
+
+        $m_users = new EmundusModelUsers();
+
+
+        if ($users === 'all') {
+
+            $us = $m_users->getUsers(0,0);
+            $users = array();
+
+            foreach ($us as $u) {
+                $users[] = $u->id;
+            }
+
+        } else {
+            $users = (array) json_decode(stripslashes($users));
+        }
+
+        $res = $m_users->changeActivation($users, $state);
+
+        if ($res !== false) {
+            $res = true;
+            $msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT');
+        } else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
+
+        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+        exit;
+    }
+
 	public function affectgroups() {
 		$jinput = JFactory::getApplication()->input;
 		$users = $jinput->getString('users', null);

@@ -14,3 +14,12 @@ INSERT INTO jos_emundus_setup_languages (tag, lang_code, override, original_text
 VALUES ('COM_USERS_SUBMIT_RESET', 'fr-FR', 'Réinitialiser mon mot de passe', 'Réinitialiser mon mot de passe', MD5('Réinitialiser mon mot de passe'), MD5('Réinitialiser mon mot de passe'), 'fr-FR.override.ini', 'override', null, 'fabrik_elements', 'label', 1, 62, '2022-06-30 08:28:03', null, null);
 INSERT INTO jos_emundus_setup_languages (tag, lang_code, override, original_text, original_md5, override_md5, location, type, reference_id, reference_table, reference_field, published, created_by, created_date, modified_by, modified_date)
 VALUES ('COM_USERS_SUBMIT_RESET', 'en-GB', 'Reset my password', 'Reset my password', MD5('Reset my password'), MD5('Reset my password'), 'en-GB.override.ini', 'override', null, 'fabrik_elements', 'label', 1, 62, '2022-06-30 08:28:03', null, null);
+
+UPDATE jos_menu SET title = 'Activer le compte utilisateur', link = 'index.php?option=com_emundus&controller=users&task=changeactivation&Itemid={Itemid}' WHERE note LIKE '12|u|1|21';
+SELECT @block_menu_id := id FROM jos_menu WHERE note LIKE '12|u|1|22';
+UPDATE jos_menu SET title = 'Bloquer le compte utilisateur', link = 'index.php?option=com_emundus&controller=users&task=changeblock&Itemid={Itemid}' WHERE id = @block_menu_id;
+UPDATE jos_falang_content SET value = 'Block the user account' WHERE reference_id = @block_menu_id AND reference_table LIKE 'menu' AND reference_field LIKE 'title' AND language_id = 1;
+UPDATE jos_falang_content SET value = 'Bloquer le compte utilisateur' WHERE reference_id = @block_menu_id AND reference_table LIKE 'menu' AND reference_field LIKE 'title' AND language_id = 2;
+INSERT INTO jos_menu (menutype, title, alias, note, path, link, type, published, parent_id, level, component_id, checked_out, checked_out_time, browserNav, access, img, template_style_id, params, lft, rgt, home, language, client_id)
+VALUES ('actions-users', 'Débloquer le compte utilisateur', '2022-08-18-10-04-46', '12|u|1|21', '2014-10-02-10-01-44/2022-08-18-10-04-46', 'index.php?option=com_emundus&controller=users&task=changeblock&Itemid={Itemid}', 'url', 1, 1389, 2, 0, 0, '2022-06-30 08:28:03', 0, 7, ' ', 0, '{"menu-anchor_title":"","menu-anchor_css":"","menu-anchor_rel":"","menu_image":"","menu_image_css":"","menu_text":1,"menu_show":1}', 10, 11, 0, '*', 0);
+
