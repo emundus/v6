@@ -267,7 +267,9 @@ export default {
     getEmailModels() {
       axios.get("index.php?option=com_emundus&controller=email&task=getallemail")
 		      .then(response => {
-			      this.models = response.data.datas;
+						if (response.data.status) {
+							this.models = response.data.data.datas;
+						}
 		      });
     },
     getStatus() {
