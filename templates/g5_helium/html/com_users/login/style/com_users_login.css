@@ -42,7 +42,7 @@ button.btn-primary:hover{
     padding: 0;
 }
 
-#g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
+#g-container-main div.em-formRegistrationCenter {
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -53,6 +53,26 @@ button.btn-primary:hover{
     width: 50%;
     margin-left: auto;
     margin-right: auto;
+}
+
+
+#g-container-main div.login {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    margin-top: 50px;
+    border-radius: 16px;
+    padding: 80px 64px 80px 64px;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#g-container-main div.login .control-group .controls button.btn.btn-primary {
+    text-transform: initial;
+    height: 48px;
+    width: 100%;
 }
 
 .invalid {
@@ -100,10 +120,13 @@ ul.nav.nav-tabs.nav-stacked {
     display: inline-flex;
     align-items: center;
 }
-.view-login  .form-horizontal .control-label {
+.view-login .form-horizontal .control-label {
     width: 100%;
     text-align: left;
     padding-top: 0px;
+}
+.login .form-horizontal .control-label {
+    width: 100%;
 }
 .view-login .form-horizontal .control-group {
     display: flex;
@@ -111,6 +134,18 @@ ul.nav.nav-tabs.nav-stacked {
     flex-direction: column;
     margin-bottom: 32px;
 }
+
+.login form.form-horizontal .control-group {
+    flex-direction: column;
+}
+
+.login form.form-horizontal .control-label {
+    width: 100%;
+}
+.login form.form-horizontal .controls {
+    width: 100%;
+}
+
 footer div{
     line-height:1.5em;
 }
