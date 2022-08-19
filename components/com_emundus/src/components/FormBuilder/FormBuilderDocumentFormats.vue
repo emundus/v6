@@ -65,10 +65,9 @@ export default {
         const confirm = this.translate('COM_EMUNDUS_FORM_BUILDER_CONTACT_ADD_FORMAT');
 
         this.swalConfirm(title, text, confirm, cancel, () => {
-          // TODO: specify contact mail
           const contact = "support@emundus.fr";
           window.open("mailto:" + contact);
-        });
+        },true,true);
       }
     },
     setCloneFormat(format) {

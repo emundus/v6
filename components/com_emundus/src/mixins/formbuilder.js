@@ -7,8 +7,8 @@ export default {
             moment.locale('fr');
             this.$store.dispatch('formBuilder/updateLastSave', moment().format('LT'));
         },
-        async swalConfirm(title, text, confirm, cancel, callback = null, showCancelButton = true) {
-            return Swal.fire({
+        async swalConfirm(title, text, confirm, cancel, callback = null, showCancelButton = true, html = false) {
+            let options = {
                 title: title,
                 text: text,
                 type: 'warning',
@@ -21,7 +21,13 @@ export default {
                     cancelButton: 'em-swal-cancel-button',
                     confirmButton: 'em-swal-confirm-button',
                 },
-            }).then((result) => {
+            };
+            if(html){
+                options.html = text;
+            } else {
+                options.text = text;
+            }
+            return Swal.fire(options).then((result) => {
                 if (result.value) {
                     if (callback != null) {
                         callback();
