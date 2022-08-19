@@ -186,7 +186,7 @@ defined('_JEXEC') or die;
     <?php endforeach; ?>
 </div>
 <?php else :
-    echo JText::_('NO_FILE');
+    echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
     echo '<hr>';
 endif; ?>
 

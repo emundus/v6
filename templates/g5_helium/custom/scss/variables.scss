@@ -553,6 +553,11 @@ $font:'Inter', sans-serif;
       background: $focus !important;
     }
 
+    /* TINYMCE */
+    .mce-container-body .mce-resizehandle{
+      display: none;
+    }
+
     .label, .badge {
       background: $neutral-600;
     }
