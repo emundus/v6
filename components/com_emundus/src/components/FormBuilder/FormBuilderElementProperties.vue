@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
+        <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16" v-show="this.element.plugin !== 'display'">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED") }}</span>
           <div class="em-toggle">
             <input type="checkbox" class="em-toggle-check" v-model="element.FRequire" @click="element.FRequire = !element.FRequire;">
