@@ -31,6 +31,27 @@ class EmundusModelUser extends JModelList
         }
         $activation_url = $baseURL . $activation_url_rel;
 
+        $template   = JFactory::getApplication()->getTemplate(true);
+        $params     = $template->params;
+        if (!empty($params->get('logo')->custom->image)) {
+            $logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
+            $logo = !empty($logo['path']) ? JURI::base().$logo['path'] : "";
+
+        } else {
+            $logo_module = JModuleHelper::getModuleById('90');
+            preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
+            $pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
+        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
+
+            if ((bool) preg_match($pattern, $tab[1])) {
+                $tab[1] = parse_url($tab[1], PHP_URL_PATH);
+            }
+
+            $logo = JURI::base().$tab[1];
+        }
+
         $post = [
             'CIVILITY' => $civility,
             'USER_NAME' => $data['name'],
@@ -40,7 +61,8 @@ class EmundusModelUser extends JModelList
             'ACTIVATION_URL_REL' => $activation_url_rel,
             'BASE_URL' => $baseURL,
             'USER_LOGIN' => $email,
-            'USER_PASSWORD' => $password
+            'USER_PASSWORD' => $password,
+            'LOGO' => $logo
         ];
 
         return $c_messages->sendEmailNoFnum($email, 'registration_email', $post);
