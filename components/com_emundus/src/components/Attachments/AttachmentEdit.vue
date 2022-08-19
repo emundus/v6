@@ -356,6 +356,7 @@ export default {
 
   .actions {
     align-self: flex-end;
+    margin-right: 20px;
 
     button {
       transition: all 0.3s;
@@ -417,7 +418,7 @@ export default {
 		.not-displayed {
 			position: absolute;
 			bottom: 0;
-			right: 2px;
+			right: 15px;
 			padding: 10px;
 			background: white;
 			border-top-left-radius: 4px;
