@@ -601,7 +601,19 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res !== false) {
 			$res = true;
-			$msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT');
+            if(count($users) > 1){
+                if($state === 1) {
+                    $msg = JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_MULTI');
+                } else {
+                    $msg = JText::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_MULTI');
+                }
+            } else {
+                if($state === 1) {
+                    $msg = JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE');
+                } else {
+                    $msg = JText::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_SINGLE');
+                }
+            }
 		} else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
@@ -646,7 +658,11 @@ class EmundusControllerUsers extends JControllerLegacy {
 
         if ($res !== false) {
             $res = true;
-            $msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT');
+            if(count($users) > 1){
+                $msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_MULTI');
+            } else {
+                $msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE');
+            }
         } else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 
         echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
