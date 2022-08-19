@@ -203,7 +203,7 @@
       ],
       "helptext": "",
       "placeholder": "",
-      "published": true,
+      "published": false,
       "sysadmin_only": false
     },
     {
@@ -259,18 +259,6 @@
         {
           "value": "d/m/Y",
           "label": "21/12/2022"
-        },
-        {
-          "value": "D. month YYYY",
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_MONTH_YYYY"
-        },
-        {
-          "value": "D month YYYY",
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_MONTH_YYYY_2"
-        },
-        {
-          "value": "Month d, YYYY",
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_MONTH_D_YYYY"
         },
         {
           "value": "d m",
