@@ -827,6 +827,10 @@ $font:'Inter', sans-serif;
           border-radius: 4px 0 0 4px;
         }
 
+        input[id$='cal'].inputbox{
+          color: black !important;
+        }
+
         button.calendarbutton,
         button.timeButton {
           border: 1px solid $neutral-400;
