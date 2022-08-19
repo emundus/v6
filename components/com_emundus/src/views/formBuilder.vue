@@ -78,6 +78,7 @@
               :campaign_id="campaign_id"
               @add-document="onOpenCreateDocument"
               @edit-document="onEditDocument"
+              @delete-document="onDeleteDocument"
             ></form-builder-document-list>
           </transition>
         </section>
@@ -339,6 +340,11 @@ export default {
     {
       this.selectedDocument = document;
       this.showInRightPanel = 'create-document';
+      this.setSectionShown('documents');
+    },
+    onDeleteDocument(){
+      this.selectedDocument = null;
+      this.showInRightPanel = 'hierarchy';
       this.setSectionShown('documents');
     },
     selectTab(title) {

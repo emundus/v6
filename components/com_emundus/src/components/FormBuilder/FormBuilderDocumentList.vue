@@ -14,7 +14,7 @@
                 :totalDocuments="requiredDocuments.length"
                 :profile_id="profile_id"
                 @edit-document="editDocument(document)"
-                @delete-document="getDocuments"
+                @delete-document="deleteDocument"
                 @move-document="moveDocument"
             >
             </form-builder-document-list-element>
@@ -45,7 +45,7 @@
               :totalDocuments="optionalDocuments.length"
               :profile_id="profile_id"
               @edit-document="editDocument(document)"
-              @delete-document="getDocuments"
+              @delete-document="deleteDocument"
               @move-document="moveDocument"
             >
             </form-builder-document-list-element>
@@ -231,6 +231,10 @@ export default {
     },
     editDocument (document) {
       this.$emit('edit-document', document);
+    },
+    deleteDocument () {
+      this.$emit('delete-document');
+      this.getDocuments();
     },
   },
   computed: {
