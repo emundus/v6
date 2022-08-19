@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group">
+    <div v-for="param in params" v-if="(param.published && !param.sysadmin_only) || (sysadmin && param.sysadmin_only && param.published)" class="form-group em-mb-8">
       <label>{{ translate(param.label) }}</label>
 
       <!-- DROPDOWN -->
@@ -15,7 +15,7 @@
 
       <!-- DATABASEJOIN -->
       <div v-else-if="param.type === 'databasejoin'">
-        <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100">
+        <select v-model="element.params[param.name]" :key="reloadOptions" :id="param.name" @change="updateDatabasejoinParams" class="em-w-100" :class="databasejoin_description ? 'em-mb-4' : ''">
           <option v-for="option in param.options" :value="option.database_name">{{ option.label }}</option>
         </select>
         <label v-if="databasejoin_description" style="font-size: small">{{ databasejoin_description }}</label>

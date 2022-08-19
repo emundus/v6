@@ -1806,6 +1806,10 @@ class EmundusModelFormbuilder extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     }
+
+                    if($element['params']['database_join_show_please_select'] == 1) {
+                        $element['params']['database_join_noselectionlabel'] = 'PLEASE_SELECT';
+                    }
                 } else {
                     $sub_values = [];
                     $sub_labels = [];
