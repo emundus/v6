@@ -3890,6 +3890,7 @@ button.swal2-cancel.goback-btn {
 .view-form.em-formRegistrationCenter,
 .gantry.contentpane.modal,
 .view-users.layout-edit {
+  @include calendar;
 
   /* BLOC FORMULAIRE */
   .span12  {
