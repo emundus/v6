@@ -380,6 +380,9 @@ input:focus + .em-slider {
   flex-direction: row;
   align-items: center;
 }
+.em-flex-align-start{
+  align-items: start;
+}
 
 .em-grid-simple {
   display: grid;

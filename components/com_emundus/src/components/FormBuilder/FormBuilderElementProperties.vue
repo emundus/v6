@@ -1,7 +1,10 @@
 <template>
   <div id="form-builder-element-properties">
-    <div class="em-flex-row em-flex-space-between em-p-16">
-      <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
+    <div class="em-flex-row em-flex-space-between em-p-16 em-flex-align-start">
+      <div>
+        <p>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES") }}</p>
+        <span class="em-font-size-14 em-neutral-700-color">{{ element.label[shortDefaultLang] }}</span>
+      </div>
       <span class="material-icons-outlined em-pointer" @click="$emit('close')">close</span>
     </div>
     <ul id="properties-tabs" class="em-flex-row em-flex-space-between em-p-16 em-w-90">

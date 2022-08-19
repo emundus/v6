@@ -1,5 +1,7 @@
 <template>
-  <div class="form-builder-page-section-element" v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)" :class="{'unpublished': !element.publish || element.hidden}">
+  <div class="form-builder-page-section-element"
+       v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
+       :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
     <div class="em-flex-row em-flex-space-between em-w-100">
       <label class="em-flex-row fabrikLabel control-label fabrikTip" @click="triggerElementProperties">
         <i v-if="element.FRequire" data-isicon="true" class="icon-star small "></i>
@@ -127,6 +129,13 @@ export default {
     },
     displayOptions: function(){
       return this.$parent.$parent.$parent.$parent.$parent.$parent.optionsSelectedElement;
+    },
+    propertiesOpened: function(){
+      if(this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement !== null) {
+        return this.$parent.$parent.$parent.$parent.$parent.$parent.selectedElement.id;
+      } else {
+        return 0;
+      }
     }
   }
 }
@@ -153,6 +162,10 @@ export default {
 
   &.unpublished {
     opacity: 0.5;
+  }
+
+  &.properties-active{
+    border: 2px solid #1C6EF2 !important;
   }
 
   &:hover {
