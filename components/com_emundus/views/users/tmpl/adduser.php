@@ -79,7 +79,7 @@ $applicant_option_others = false;
 				<?php foreach ($this->profiles as $profile)  {
                     if($profile->published && !$applicant_option) {
                     ?>
-					<option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && (in_array($this->user['profile'],$this->app_prof))){echo 'selected="true"';}?>><?= JText::_('APPLICANT'); ?></option>
+					<option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && (in_array($this->user['profile'],$this->app_prof))){echo 'selected="true"';}?>><?= JText::_('COM_EMUNDUS_APPLICANT'); ?></option>
                 <?php
                     $applicant_option = true;
                     } elseif(!$profile->published) { ?>
@@ -94,7 +94,7 @@ $applicant_option_others = false;
 					<?php foreach ($this->profiles as $otherprofile)  {
                         if($otherprofile->published && !$applicant_option_others) {
                         ?>
-						<option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>" pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && $other_profiles_applicant === true)?'selected="true"':''; ?>><?= JText::_('APPLICANT'); ?></option>
+						<option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>" pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && $other_profiles_applicant === true)?'selected="true"':''; ?>><?= JText::_('COM_EMUNDUS_APPLICANT'); ?></option>
                     <?php
                         $applicant_option_others = true;
                         } elseif (!$otherprofile->published) { ?>
