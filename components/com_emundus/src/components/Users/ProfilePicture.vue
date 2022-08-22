@@ -87,10 +87,28 @@ export default {
     updateProfilePicture(file){
       this.$emit('loading',true)
       user.updateProfilePicture(file).then(response => {
-        this.profile_picture = window.location.origin + '/' + response.data.profile_picture;
-        this.background_pp = 'background-image:url(' + window.location.origin + '/' + response.data.profile_picture + ')';
-        document.getElementById('userDropdownLabel').style.backgroundImage = 'url(' + window.location.origin + '/' + response.data.profile_picture + ')';
-        this.$emit('loading',false)
+				if (response.data.status) {
+					const date = new Date();
+					const newProfileUrl =  window.location.origin + '/' + response.data.profile_picture + '?' + date.getTime();
+					this.profile_picture = newProfileUrl;
+					this.background_pp = 'background-image:url(' + newProfileUrl + ')';
+					document.getElementById('userDropdownLabel').style.backgroundImage = 'url(' + newProfileUrl + ')';
+				} else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE'),
+						text: this.translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT'),
+						type: "error",
+						confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+						timer: 4000,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: "em-swal-single-action",
+						},
+					});
+				}
+
+        this.$emit('loading',false);
       });
     }
   },

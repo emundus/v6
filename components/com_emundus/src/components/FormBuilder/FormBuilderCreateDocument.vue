@@ -42,7 +42,7 @@
             v-model="document.selectedTypes[filetype.value]"
             @change="checkFileType"
           >
-          <label :for="filetype.value" class="em-font-weight-400 em-mb-0-important"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
+          <label :for="filetype.value" class="em-font-weight-400 em-mb-0-important em-ml-8"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
         </div>
       </div>
 
@@ -167,6 +167,7 @@ export default {
     };
   },
   created() {
+		console.log(this.mandatory);
     this.document.mandatory = this.mandatory;
     this.getDocumentModels();
     this.getFileTypes();
@@ -250,6 +251,12 @@ export default {
           }
           if(['xls','xlsx','odf'].includes(type)) {
             this.document.selectedTypes['xls;xlsx;odf'] = true;
+          }
+          if(['mp3'].includes(type)) {
+            this.document.selectedTypes['mp3'] = true;
+          }
+          if(['mp4'].includes(type)) {
+            this.document.selectedTypes['mp4'] = true;
           }
         });
 

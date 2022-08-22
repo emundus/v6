@@ -380,6 +380,9 @@ input:focus + .em-slider {
   flex-direction: row;
   align-items: center;
 }
+.em-flex-align-start{
+  align-items: start;
+}
 
 .em-grid-simple {
   display: grid;
@@ -580,6 +583,9 @@ input:focus + .em-slider {
 }
 .em-main-100-color{
   color: $main-100;
+}
+.em-main-400-color{
+  color: $main-400;
 }
 .em-main-500-color{
   color: $main-500;
@@ -1206,6 +1212,16 @@ button.em-swal-delete-button{
   border-radius: 50%;
   padding: 12px;
   background: $blue-200;
+}
+.em-circle-main-100{
+  border-radius: 50%;
+  padding: 12px;
+  background: $main-100;
+}
+.em-circle-main-200{
+  border-radius: 50%;
+  padding: 12px;
+  background: $main-200;
 }
 /** **/
 

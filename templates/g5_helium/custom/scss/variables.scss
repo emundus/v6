@@ -378,6 +378,115 @@ $font:'Inter', sans-serif;
   box-shadow: none;
 }
 
+@mixin calendar {
+  .calendar{
+    border-radius: 5px;
+    border: solid 1px #e6e6e6;
+    box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px #ffffff;
+    padding: 10px;
+    width: 250px;
+    background: white;
+    table{
+      border: unset;
+      background: white;
+
+      thead {
+        tr:first-child {
+          td {
+            padding-bottom: 6px;
+          }
+
+          td:first-child {
+            display: none;
+          }
+
+          td.title {
+            background: transparent;
+            color: black;
+            font-size: 12px;
+            position: absolute;
+            top: 17px;
+            right: 0;
+            width: 100%;
+            text-align: center;
+
+            &:first-letter {
+              text-transform: capitalize;
+            }
+          }
+
+          td.button {
+            display: none;
+          }
+        }
+
+        tr.headrow {
+          background: white;
+
+          td {
+            padding-bottom: 6px;
+          }
+
+          td:nth-child(3) {
+            opacity: 0;
+          }
+
+          td.nav {
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+          }
+        }
+
+        tr.daynames {
+          background: white;
+
+          td {
+            padding: 6px;
+          }
+
+          .day {
+            border: unset;
+          }
+
+          td.hilite, td.active{
+            background: transparent;
+          }
+        }
+      }
+
+      tbody{
+        .rowhilite{
+          td {
+            background: transparent;
+            color: black;
+          }
+        }
+        td{
+          border: unset;
+          text-align: center;
+          padding: 6px
+        }
+        td.selected{
+          border-radius: 5px;
+          background: $neutral-800;
+          color: white;
+        }
+        td.hilite{
+          background: $neutral-400;
+          border-radius: 5px;
+          color: black !important;
+        }
+      }
+
+      tfoot{
+        display: none;
+      }
+    }
+  }
+}
+
 @mixin fabrik-elements {
   /* ERROR */
   &.error {
@@ -553,6 +662,11 @@ $font:'Inter', sans-serif;
       background: $focus !important;
     }
 
+    /* TINYMCE */
+    .mce-container-body .mce-resizehandle{
+      display: none;
+    }
+
     .label, .badge {
       background: $neutral-600;
     }
@@ -713,6 +827,10 @@ $font:'Inter', sans-serif;
           border-radius: 4px 0 0 4px;
         }
 
+        input[id$='cal'].inputbox{
+          color: black !important;
+        }
+
         button.calendarbutton,
         button.timeButton {
           border: 1px solid $neutral-400;
@@ -793,8 +911,8 @@ $font:'Inter', sans-serif;
           &:checked {
             background-color: initial;
             appearance: auto;
-            height: 16px !important;
-            width: 16px !important;
+            height: 12px !important;
+            width: 12px !important;
           }
         }
       }

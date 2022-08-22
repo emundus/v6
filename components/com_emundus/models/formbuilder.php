@@ -1806,6 +1806,10 @@ class EmundusModelFormbuilder extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     }
+
+                    if($element['params']['database_join_show_please_select'] == 1) {
+                        $element['params']['database_join_noselectionlabel'] = 'PLEASE_SELECT';
+                    }
                 } else {
                     $sub_values = [];
                     $sub_labels = [];
@@ -1821,6 +1825,7 @@ class EmundusModelFormbuilder extends JModelList {
                         }
                     }
 
+                    // TODO: use a specific function for sub_options only (instead of updating all element, only update the sub_options)
                     foreach ($element['params']['sub_options']['sub_values'] as $index => $sub_value) {
                         if ($old_params['sub_options']) {
                             $new_label = array(
@@ -1829,7 +1834,7 @@ class EmundusModelFormbuilder extends JModelList {
                             );
                             if ($old_params['sub_options']['sub_labels'][$index]) {
                                 if($old_params['sub_options']['sub_labels'][$index] != 'PLEASE_SELECT'){
-                                    $this->updateTranslation($old_params['sub_options']['sub_labels'][$index], $new_label);
+                                    $this->updateTranslation($old_params['sub_options']['sub_labels'][$index], $new_label, 'fabrik_elements', $element['id']);
                                     $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
                                     $sub_values[] = $sub_value;
                                 }

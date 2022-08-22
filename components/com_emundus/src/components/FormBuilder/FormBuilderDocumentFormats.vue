@@ -9,6 +9,7 @@
         :group="{ name: 'form-builder-documents', pull: 'clone', put: false }"
         :sort="false"
         :clone="setCloneFormat"
+        @start="$emit('dragging-element')"
         @end="onDragEnd"
     >
       <transition-group>
@@ -16,11 +17,12 @@
             v-for="format in publishedFormats"
             :key="format.id"
             class="em-flex-row em-flex-space-between draggable-element em-mt-8 em-mb-8 em-p-16"
+            :style="format.value == 'other' ? 'cursor: pointer' : ''"
             @click="onClickOnFormat(format)"
         >
           <span class="material-icons-outlined">{{ format.icon }}</span>
           <span class="em-w-100 em-p-16">{{ translate(format.name) }}</span>
-          <span class="material-icons-outlined"> drag_indicator </span>
+          <span v-show="format.value != 'other'" class="material-icons-outlined"> drag_indicator </span>
         </div>
       </transition-group>
     </draggable>
@@ -64,10 +66,9 @@ export default {
         const confirm = this.translate('COM_EMUNDUS_FORM_BUILDER_CONTACT_ADD_FORMAT');
 
         this.swalConfirm(title, text, confirm, cancel, () => {
-          // TODO: specify contact mail
-          const contact = "";
+          const contact = "support@emundus.fr";
           window.open("mailto:" + contact);
-        });
+        },true,true);
       }
     },
     setCloneFormat(format) {

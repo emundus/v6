@@ -192,12 +192,23 @@ class EmundusViewChecklist extends JViewLegacy {
                 $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
                 $now = $dateTime->setTimezone(new DateTimeZone($offset))->format("Y-m-d");
 
-                $is_dead_line_passed = $end_date < $now;
-
                 // Check campaign limit, if the limit is obtained, then we set the deadline to true
                 $m_campaign = new EmundusModelCampaign;
+                $current_phase = $m_campaign->getCurrentCampaignWorkflow($this->_user);
+
+                if (!empty($current_phase) && !empty($current_phase->end_date)) {
+                    $current_end_date = $current_phase->end_date;
+                    $current_start_date = $current_phase->start_date;
+                }  else if (!empty($is_admission)) {
+                    $current_end_date = $this->_user->fnums[$this->_user->fnum]->admission_end_date;
+                    $current_start_date = $this->_user->fnums[$this->_user->fnum]->admission_start_date;
+                } else {
+                    $current_end_date = !empty($this->_user->fnums[$this->_user->fnum]->end_date) ? $this->_user->fnums[$this->_user->fnum]->end_date : $this->_user->end_date;
+                    $current_start_date = $this->_user->fnums[$this->_user->fnum]->start_date;
+                }
 
                 $isLimitObtained = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id);
+                $is_dead_line_passed = $current_end_date < $now;
 
                 if (($is_dead_line_passed || $isLimitObtained === true) && $eMConfig->get('can_edit_after_deadline', 0) == 0) {
                     $m_checklist->setDelete(0, $this->_user);
@@ -205,6 +216,7 @@ class EmundusViewChecklist extends JViewLegacy {
                     $m_checklist->setDelete(1, $this->_user);
                 }
 
+                $this->assignRef('current_phase', $current_phase);
                 $this->assignRef('is_dead_line_passed', $is_dead_line_passed);
                 $this->assignRef('isLimitObtained', $isLimitObtained);
                 $this->assignRef('user', $this->_user);

@@ -580,7 +580,12 @@ class EmundusModelTranslations extends JModelList
      *
      * @since version
      */
-    public function updateTranslation($tag,$override,$lang_code,$type = 'override',$reference_table = '',$reference_id = 0){
+    public function updateTranslation($tag, $override, $lang_code, $type = 'override', $reference_table = '', $reference_id = 0) {
+        if (empty($tag)) {
+            JLog::add("Problem when try to update translation into file, missing tag for this override $override, $lang_code",JLog::ERROR, 'com_emundus.translations');
+            return false;
+        }
+
         $query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
 
