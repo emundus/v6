@@ -4061,7 +4061,7 @@ button.swal2-cancel.goback-btn {
 
             input[type="radio"] {
               @include radio;
-              margin-left: 0px !important;
+              margin-left: 0 !important;
 
               &:checked {
                 background-color: initial;
@@ -4086,11 +4086,11 @@ button.swal2-cancel.goback-btn {
 
             input[type="checkbox"] {
               @include checkbox;
-              margin-left: 0px !important;
+              margin-left: 0 !important;
+            }
 
-              span {
-                margin-top: 0px !important;
-              }
+            span {
+              margin-top: 0 !important;
             }
           }
         }
