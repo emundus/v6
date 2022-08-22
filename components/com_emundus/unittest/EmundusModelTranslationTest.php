@@ -96,16 +96,25 @@ class EmundusModelTranslationTest extends TestCase
     }
 
     public function testUpdateTranslations() {
+        $override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
+
+
         // TEST 1 - Update the translations created before in french
-        $this->assertSame(true,$this->m_translations->updateTranslation('ELEMENT_TEST','Mon élement modifié','fr-FR'));
+        $this->assertSame(true, $this->m_translations->updateTranslation('ELEMENT_TEST','Mon élement modifié','fr-FR'));
 
         // TEST 2 - Update the translations created before in english
-        $this->assertSame(true,$this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
+        $this->assertSame(true, $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
 
         // TEST 3 - Failed waiting - Update the translations created before in portuguesh
         $this->assertSame(false, $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','pt-PT'));
 
-        // TEST 4 - Succes waiting - Update translations of com_emundus not possible so we insert it in override file
+        // TEST 4 - If no tag given, traduction should return false, request sould not work
+        $this->assertSame(false, $this->m_translations->updateTranslation('','My updated element','fr-FR'), 'Make sure that we can\'t add empty tag into override file');
+
+        $override_new_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
+        $this->assertGreaterThanOrEqual($override_original_file_size, $override_new_file_size, 'New override file size is greater or equal than original override file (make sure override file is not destroyed)');
+
+        // TEST 6 - Succes waiting - Update translations of com_emundus not possible so we insert it in override file
         //$this->assertSame(true,$this->m_translations->updateTranslation('COM_EMUNDUS_EMAIL','Un nouvel email','fr-FR','component'));
     }
 

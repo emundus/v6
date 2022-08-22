@@ -27,6 +27,7 @@
           v-if="['radiobutton', 'checkbox'].includes(element.plugin) || displayOptions && element.plugin === 'dropdown'"
           :element="element"
           :type="element.plugin == 'radiobutton' ? 'radio' : element.plugin"
+          @update-element="$emit('update-element')"
       ></form-builder-element-options>
       <form-builder-element-wysiwig v-else-if="element.plugin === 'display'" :element="element" type="display" @update-element="$emit('update-element')"></form-builder-element-wysiwig>
       <div v-else v-html="element.element" class="fabrikElement"></div>

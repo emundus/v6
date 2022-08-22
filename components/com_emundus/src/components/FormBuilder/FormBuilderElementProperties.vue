@@ -52,13 +52,6 @@
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
         <FormBuilderElementParams :element="element" :params="params" :key="element.id" :databases="databases" />
-<!--        <component
-            :is="componentType"
-            :element="element"
-            :prid="profile_id"
-            :databases="databases"
-            @subOptions="setElementSubOptions"
-        ></component>-->
       </div>
     </div>
     <div class="em-flex-row em-flex-space-between actions em-m-16">
@@ -132,22 +125,33 @@ export default {
         }
       });
     },
-    setElementSubOptions(subOptions) {
-      if (typeof this.element.params.sub_options !== 'undefined') {
-        this.element.params.sub_options.sub_labels = subOptions.map(value => value.sub_label);
-        this.element.params.sub_options.sub_values = subOptions.map(value => value.sub_value);
-      }
-    },
-    saveProperties()
-    {
+    saveProperties() {
       this.loading = true;
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
-      formBuilderService.updateParams(this.element).then(response => {
-        if (response.status) {
-          this.loading = false;
-          this.$emit('close');
-        }
-      });
+
+	    if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
+		    formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
+					if (response) {
+						this.element.params.sub_options.sub_labels.forEach((label, index) => {
+							this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
+						});
+
+						formBuilderService.updateParams(this.element).then(response => {
+							if (response.status) {
+								this.loading = false;
+								this.$emit('close');
+							}
+						});
+					}
+				});
+	    } else {
+		    formBuilderService.updateParams(this.element).then(response => {
+			    if (response.status) {
+				    this.loading = false;
+				    this.$emit('close');
+			    }
+		    });
+	    }
     },
     togglePublish() {
       this.element.publish = !this.element.publish;
