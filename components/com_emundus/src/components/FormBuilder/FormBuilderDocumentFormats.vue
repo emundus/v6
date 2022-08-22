@@ -9,6 +9,7 @@
         :group="{ name: 'form-builder-documents', pull: 'clone', put: false }"
         :sort="false"
         :clone="setCloneFormat"
+        @start="$emit('dragging-element')"
         @end="onDragEnd"
     >
       <transition-group>

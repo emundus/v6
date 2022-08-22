@@ -55,6 +55,7 @@
                 v-else-if="leftPanelActiveTab === 'Documents'"
                 :profile_id="profile_id"
                 @document-created="onDocumentCreated"
+                @dragging-element="onCloseCreateDocument"
             >
             </form-builder-document-formats>
           </div>
