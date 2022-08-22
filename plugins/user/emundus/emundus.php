@@ -159,6 +159,7 @@ class plgUserEmundus extends JPlugin
         $option = $jinput->get->get('option', null);
         $controller = $jinput->get->get('controller', null);
         $task = $jinput->get->get('task', null);
+        $view = $jinput->get->get('view', null);
 
         // If the details are empty, we are probably signing in via LDAP for the first time.
         if ($isnew && empty($details) && empty($fabrik)) {
@@ -313,7 +314,9 @@ class plgUserEmundus extends JPlugin
                     JLog::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
 
-                JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
+                if ($view != 'reset') {
+                    JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_SUCCESS_TEXT'));
+                }
 
                 $this->onUserLogin($user);
             }
