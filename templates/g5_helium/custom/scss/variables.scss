@@ -828,7 +828,8 @@ $font:'Inter', sans-serif;
         }
 
         input[id$='cal'].inputbox{
-          color: black !important;
+          color: $neutral-800 !important;
+          margin-right: 0px !important;
         }
 
         button.calendarbutton,
