@@ -67,6 +67,7 @@
 <script>
 import formBuilderService from '../../services/formbuilder';
 import elementParams from '../../../data/form-builder-elements-params.json'
+import formBuilderMixin from "../../mixins/formbuilder";
 
 import FormBuilderElementParams from "./FormBuilderElements/FormBuilderElementParams";
 
@@ -85,6 +86,7 @@ export default {
       required: true
     },
   },
+	mixins: [formBuilderMixin],
   data() {
     return {
       databases: [],
@@ -139,6 +141,7 @@ export default {
 						formBuilderService.updateParams(this.element).then(response => {
 							if (response.status) {
 								this.loading = false;
+								this.updateLastSave();
 								this.$emit('close');
 							}
 						});
@@ -148,6 +151,7 @@ export default {
 		    formBuilderService.updateParams(this.element).then(response => {
 			    if (response.status) {
 				    this.loading = false;
+				    this.updateLastSave();
 				    this.$emit('close');
 			    }
 		    });

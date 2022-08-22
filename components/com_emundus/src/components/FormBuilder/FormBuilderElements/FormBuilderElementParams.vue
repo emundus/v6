@@ -91,10 +91,10 @@ export default {
   },
   methods: {
     updateDatabasejoinParams(){
-      if(!this.sysadmin) {
+      if (!this.sysadmin) {
         const index = this.databases.map(e => e.database_name).indexOf(this.element.params['join_db_name']);
-        console.log(index);
-        if(index !== -1) {
+
+        if (index !== -1) {
           let database = this.databases[index];
           this.element.params['join_key_column'] = database.join_column_id;
           this.element.params['database_join_where_sql'] = 'order by {thistable}.' + database.join_column_id;

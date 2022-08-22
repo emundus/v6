@@ -3,18 +3,20 @@
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
        :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
     <div class="em-flex-row em-flex-space-between em-w-100">
-      <label class="em-flex-row fabrikLabel control-label fabrikTip" @click="triggerElementProperties">
-        <i v-if="element.FRequire" data-isicon="true" class="icon-star small "></i>
-        <div
-            v-if="element.label_value && element.labelsAbove != 2"
-            ref="label"
-            class="element-title editable-data em-cursor-text"
-            contenteditable="true"
-            @focusout="updateLabel"
-            @keyup.enter="updateLabelKeyup"
-        >
-          {{ element.label[shortDefaultLang] }}
-        </div>
+      <label class="em-w-100 em-flex-row fabrikLabel control-label fabrikTip" @click="triggerElementProperties">
+        <i v-if="element.FRequire" data-isicon="true" class="icon-star small"></i>
+	      <input
+			      v-if="element.label_value && element.labelsAbove != 2"
+			      :ref="'element-label-' + element.id"
+			      :id="'element-label-' + element.id"
+			      class="element-title editable-data"
+			      :name="'element-label-' + element.id"
+			      type="text"
+			      v-model="element.label[shortDefaultLang]"
+			      :value="element.label[shortDefaultLang]"
+			      @focusout="updateLabel"
+			      @keyup.enter="updateLabelKeyup"
+	      />
       </label>
       <div id="element-action-icons" class="em-flex-row">
         <span class="icon-handle"><span class="material-icons-outlined handle em-grab">drag_indicator</span></span>
@@ -57,15 +59,13 @@ export default {
   data() {
     return {
       keysPressed: [],
-
       options_enabled: false,
     }
   },
   methods: {
     updateLabel()
     {
-      this.element.label[this.shortDefaultLang] = this.$refs.label.innerText.trim().replace(/[\r\n]/gm, "");
-      this.$refs.label.innerText = this.$refs.label.innerText.trim().replace(/[\r\n]/gm, "");
+      this.element.label[this.shortDefaultLang] = this.$refs['element-label-' + this.element.id].value.trim().replace(/[\r\n]/gm, "");
 
       formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
       this.updateLastSave();
@@ -76,9 +76,10 @@ export default {
     },
     updateElement()
     {
-      formBuilderService.updateParams(this.element);
-	    this.$emit('update-element');
-			this.updateLastSave();
+      formBuilderService.updateParams(this.element).then((response) => {
+	      this.$emit('update-element');
+	      this.updateLastSave();
+      });
     },
     deleteElement() {
       this.swalConfirm(
@@ -156,6 +157,15 @@ export default {
   border-radius: 4px;
   transition: 0.3s all;
   border: 2px solid transparent;
+
+	.element-title {
+		border: none !important;
+		width: 100% !important;
+
+		&:hover {
+			border: none !important;
+		}
+	}
 
   .element-field:not(.fabrikElementdisplay) {
     @include fabrik-elements;
