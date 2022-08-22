@@ -329,13 +329,13 @@ export default {
     onOpenCreateDocument(mandatory = "1")
     {
       this.selectedDocument = null;
-      this.showInRightPanel = 'create-document';
-      this.setSectionShown('documents');
-      if (this.$refs.formBuilderCreateDocument) {
-        this.$refs.formBuilderCreateDocument.document.mandatory = mandatory;
-      } else {
-        this.createDocumentMandatory = mandatory;
-      }
+	    if (this.$refs.formBuilderCreateDocument) {
+		    this.$refs.formBuilderCreateDocument.document.mandatory = mandatory;
+	    } else {
+		    this.createDocumentMandatory = mandatory;
+	    }
+	    this.showInRightPanel = 'create-document';
+	    this.setSectionShown('documents');
     },
     onEditDocument(document)
     {

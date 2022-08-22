@@ -167,6 +167,7 @@ export default {
     };
   },
   created() {
+		console.log(this.mandatory);
     this.document.mandatory = this.mandatory;
     this.getDocumentModels();
     this.getFileTypes();
