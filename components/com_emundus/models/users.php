@@ -2539,7 +2539,7 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    public function updateProfilePicture($user_id,$target_file){
+    public function updateProfilePicture($user_id, $target_file){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -2550,7 +2550,7 @@ class EmundusModelUsers extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add(' com_emundus/models/users.php | Cannot update profile picture for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add("com_emundus/models/users.php | Cannot update profile picture for user $user_id :"  . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;
         }
     }
