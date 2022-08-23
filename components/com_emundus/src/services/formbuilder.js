@@ -400,7 +400,7 @@ export default {
         if (!params.prid) {
             return {
                 status: false,
-                message: 'Missing prid'
+                msg: 'Missing prid'
             };
         }
 
@@ -417,7 +417,7 @@ export default {
         } catch (e) {
             return {
                 status: false,
-                message: e.message
+                msg: e.message
             };
         }
     },
