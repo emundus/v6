@@ -444,7 +444,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('pids', $json);
 
                         $this->assignRef('defaultpid', $dpid);
-
+                        
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);
 

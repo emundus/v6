@@ -56,14 +56,6 @@ if (!empty($user->fnum)) {
 
     // We redirect to the "send application" form, this form will redirect to payment if required.
     $confirm_form_url = $m_checklist->getConfirmUrl().'&usekey=fnum&rowid='.$user->fnum;
-    $uri = JUri::getInstance();
-    $is_confirm_url = false;
-
-    if (preg_match('/formid=[0-9]+&/', $confirm_form_url, $matches)) {
-        if (!empty($matches) && strpos($uri->getQuery(), $matches[0]) !== false) {
-            $is_confirm_url = true;
-        }
-    }
 
     $app = JFactory::getApplication();
     $offset = $app->get('offset', 'UTC');
@@ -84,14 +76,8 @@ if (!empty($user->fnum)) {
             $is_dead_line_passed = strtotime(date($now)) > strtotime($user->admission_end_date);
         }
     }
-
-    if (!empty($current_phase)) {
-        $is_app_sent = $user->status != $current_phase->status;
-
-        if (!in_array($current_phase->status, $status_for_send)) {
-            $status_for_send[] = $current_phase->status;
-        }
-    } else if (!empty($user->status)) {
+		
+    if (!empty($user->status)) {
         $is_app_sent = $user->status != 0;
     }
 

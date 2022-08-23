@@ -5,7 +5,6 @@
         <vue-dropzone
             ref="dropzone"
             id="customdropzone"
-            style="width: 100%"
             :include-styling="false"
             :options="dropzoneOptions"
             :useCustomSlot=true
@@ -35,7 +34,7 @@
                  :key="document.id"
                  class="em-document-dropzone-card em-grab">
               <button type="button" class="em-float-right em-transparent-button" @click="deleteDoc(indexDoc,document.id)">
-                <span class="material-icons-outlined">close</span>
+                <span class="material-icons">close</span>
               </button>
               <div class="em-flex-row em-w-100 em-flex-center">
                 <div class="em-flex-column em-edit-cursor" @click="editName(document)">
@@ -110,7 +109,7 @@ export default {
         addRemoveLinks: true,
         thumbnailWidth: null,
         thumbnailHeight: null,
-        acceptedFiles: 'image/*,application/pdf,.doc,.csv,.xls,.xlsx,.docx,.odf,.zip',
+        acceptedFiles: 'image/*,application/pdf,.doc,.csv,.xls,.xlsx,.docx,.odf',
         previewTemplate: getTemplate(),
         dictCancelUpload: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD"),
         dictCancelUploadConfirmation: this.translate("COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION"),
@@ -273,7 +272,7 @@ export default {
 #customdropzone {
   letter-spacing: 0.2px;
   background: #fff;
-  color: #C5C8CE;
+  color: #777;
   transition: background-color .2s linear;
   height: 200px;
   padding: 40px;

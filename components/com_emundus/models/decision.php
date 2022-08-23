@@ -13,10 +13,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-include_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
 
 class EmundusModelDecision extends JModelList
 {
@@ -46,8 +46,6 @@ class EmundusModelDecision extends JModelList
 		// Get current menu parameters
 		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
-
-		$current_user = JFactory::getUser();
 		/*
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
 		*/

@@ -14,7 +14,7 @@
 			<span
 				v-for="viewTypeOption in viewTypeOptions"
 				:key="viewTypeOption.value"
-				class="material-icons-outlined"
+				class="material-icons"
 				:class="{'active': viewTypeOption.value === viewType}"
 				@click="changeViewType(viewTypeOption)"
 			>
@@ -182,7 +182,7 @@ export default {
 	}
 }
 
-.material-icons, .material-icons-outlined{
+.material-icons{
   font-size: 24px !important;
 }
 </style>

@@ -2323,19 +2323,4 @@ class EmundusModelProgramme extends JModelList {
         }
     }
 
-    function getAllSessions(){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $query->select('distinct year')
-                ->from($db->quoteName('#__emundus_setup_campaigns'));
-            $db->setQuery($query);
-            return $db->loadColumn();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/program | Error at getting sessions : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
-        }
-    }
-
 }

@@ -20,7 +20,7 @@
         <div v-for="(statu, index) in status" class="em-mb-24" :title="'step_' + statu.step"  :key="statu.step" :id="'step_' + statu.step" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
           <div class="em-flex-row em-flex-row-start em-w-100">
             <span class="handle em-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
-              <span class="material-icons-outlined">drag_indicator</span>
+              <span class="material-icons">drag_indicator</span>
             </span>
             <div class="status-field">
               <div>
@@ -40,10 +40,10 @@
                   popover-y="top"
               ></v-swatches>
               <a type="button" v-if="statu.edit == 1 && statu.step != 0 && statu.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(statu,index)" class="em-flex-row em-ml-8 em-pointer">
-                <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+                <span class="material-icons em-red-500-color">delete_outline</span>
               </a>
               <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="em-flex-row em-ml-8 em-pointer">
-                <span class="material-icons-outlined em-text-neutral-600">delete_outline</span>
+                <span class="material-icons em-text-neutral-600">delete_outline</span>
               </a>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default {
 
   created() {
     this.getStatus();
-    this.actualLanguage = this.$store.getters['global/shortLang'];
+    this.actualLanguage = this.$store.getters['global/actualLanguage'];
   },
 
   methods: {

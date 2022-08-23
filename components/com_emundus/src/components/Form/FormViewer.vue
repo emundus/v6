@@ -184,10 +184,6 @@ export default {
   border-radius: 5px;
 }
 
-#FormViewer h1, #FormViewer legend {
-color: #2B2B2B;
-}
-
 .loading-form{
   top: 10vh;
 }

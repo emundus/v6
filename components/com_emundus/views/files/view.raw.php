@@ -40,6 +40,7 @@ class EmundusViewFiles extends JViewLegacy
 
 	public function display($tpl = null)
 	{
+
 		$current_user = JFactory::getUser();
 		$h_files = new EmundusHelperFiles;
 

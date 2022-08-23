@@ -1,6 +1,6 @@
 /* view export select columns */
 .view-export_select_columns .panel-info > .panel-heading label{
-    color:#353544 !important;
+    color:#fff!important;
     margin:0!important;
 }
 .component-content legend {
@@ -20,31 +20,12 @@
 .panel-info.excel {
     min-height: inherit!important;
 }
-
-a.btn.btn-info,
-button.btn.btn-primary {
-    background: #20835F;
-    border: 1px solid #20835F;
-    text-shadow: none;
-    text-transform: initial;
-    padding: 8px 12px;
-}
-
-a.btn.btn-info:hover, a.btn.btn-info:focus, a.btn.btn-info:active,
-button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-primary:active {
-    background-color: transparent;
-    color: #20835F;
-    outline: none;
-    border: 1px solid #20835F;
-}
-
 .panel-primary {
     border-color: #00316b;
 }
 .panel-primary.excel>.panel-heading {
-    background-color: #353544;
+    background-color: #00316b;
 }
-
 .panel-heading label {
     color: #FFFFFF!important;
     font-weight: bold!important;
@@ -103,9 +84,4 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 #result h1,
 #other-result h1 {
     font-size: 20px;
-    color: #353544;
-}
-
-.view-export_select_columns h1 {
-   color: #353544;
 }

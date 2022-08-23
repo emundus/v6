@@ -1,23 +1,17 @@
 const state = {
     lang: '',
     datas: [],
-    currentLanguage: '',
-    shortLang: '',
+    actualLanguage: '',
     manyLanguages: '',
-    defaultLang: '',
     coordinatorAccess: '',
-    sysadminAccess: false,
     anonyme: false,
 };
 
 const getters = {
     datas: state => state.datas,
-    currentLanguage: state => state.currentLanguage,
-    shortLang: state => state.shortLang,
+    actualLanguage: state => state.actualLanguage,
     manyLanguages: state => state.manyLanguages,
-    defaultLang: state => state.defaultLang,
     coordinatorAccess: state => state.coordinatorAccess,
-    sysadminAccess: state => state.sysadminAccess,
 };
 
 const actions = {
@@ -40,13 +34,8 @@ const mutations = {
     },
 
     initCurrentLanguage(state, language) {
-        state.currentLanguage = language;
-        return state.currentLanguage;
-    },
-
-    initShortLang(state, language) {
-        state.shortLang = language;
-        return state.shortLang;
+        state.actualLanguage = language;
+        return state.actualLanguage;
     },
 
     initManyLanguages(state, result) {
@@ -54,18 +43,9 @@ const mutations = {
         return state.manyLanguages;
     },
 
-    initDefaultLang(state, lang) {
-        state.defaultLang = lang;
-        return state.defaultLang;
-    },
-
-    initCoordinatorAccess(state, access) {
+    initCoordinatorAccess(state, access){
         state.coordinatorAccess = access;
         return state.coordinatorAccess;
-    },
-    initSysadminAccess(state, access) {
-        state.sysadminAccess = access;
-        return state.sysadminAccess;
     },
 
     setAnonyme(state, anonyme) {

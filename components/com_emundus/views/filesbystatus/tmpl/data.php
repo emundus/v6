@@ -157,7 +157,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
             var fnum = new Object();
             fnum.fnum = url[0];
             if (fnum != null && fnum.fnum != "close") {
-                addLoader();
+                addDimmer();
                 $.ajax({
                     type:'get',
                     url:'index.php?option=com_emundus&controller=files&task=getfnuminfos',
@@ -174,13 +174,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
                             openFiles(fnum);
                         } else {
                             console.log(result);
-                            removeLoader();
+                            $('.em-dimmer').remove();
                             $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR, textStatus, errorThrown)
                     {
-                        removeLoader();
+                        $('.em-dimmer').remove();
                         $("<div class=\"alert alert-warning\"><?php echo JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }

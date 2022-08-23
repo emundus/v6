@@ -126,11 +126,6 @@ export default {
   background-color: #ffffff;
 }
 
-.autocomplete input {
-	height: 50px;
-	margin-bottom: 0px;
-}
-
 .autocomplete-results {
   padding: 0;
   margin: 0;
@@ -144,7 +139,7 @@ export default {
 .autocomplete-result {
   list-style: none;
   text-align: left;
-  padding: 16px 6px;
+  padding: 4px 2px;
   cursor: pointer;
 }
 

@@ -20,12 +20,12 @@
       </div>
       <div class="actions">
         <div class="btn-primary-vue" @click="addFilter">
-          <span class="material-icons-outlined"> add </span>
+          <span class="material-icons"> add </span>
           Ajouter un filtre
         </div>
       </div>
     </div>
-    <span class="material-icons-outlined delete" @click="removeGroup">
+    <span class="material-icons delete" @click="removeGroup">
       clear
     </span>
   </div>

@@ -1,50 +1,6 @@
 import client from './axiosClient';
 
 export default {
-    async updateDocument(params, create = false) {
-        const formData = new FormData();
-        Object.keys(params).forEach(key => {
-            formData.append(key, params[key]);
-        });
-
-        const task = create ? 'createdocument' : 'updatedocument';
-
-        try {
-            const response = await client().post(
-                'index.php?option=com_emundus&controller=campaign&task=' + task,
-                formData
-            );
-            
-            return response.data;
-        } catch (e) {
-            return {
-                status: false,
-                msg: e.message
-            };
-        }
-    },
-
-    async setDocumentMandatory(params) {
-        const formData = new FormData();
-        Object.keys(params).forEach(key => {
-            formData.append(key, params[key]);
-        });
-
-        try {
-            const response = await client().post(
-                'index.php?option=com_emundus&controller=campaign&task=updatedocumentmandatory' ,
-                formData
-            );
-
-            return response.data;
-        } catch (e) {
-            return {
-                status: false,
-                msg: e.message
-            };
-        }
-    },
-    
     async getAllCampaigns(filter = '',sort = 'DESC',recherche = '',lim = 9999,page = 0,program = 'all') {
         try {
             const response = await client().get('index.php?option=com_emundus&controller=campaign&task=getallcampaign', {

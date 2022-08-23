@@ -32,7 +32,7 @@
 
 <script>
 import ListActionMenu from '../ListActionMenu.vue';
-import rows from '../../../../data/tableRows';
+import rows from '../../../data/tableRows';
 import moment from "moment";
 import axios from "axios";
 
@@ -67,7 +67,7 @@ export default {
 	},
 	mounted() {
 		this.tds = typeof rows[this.type] !== undefined ? rows[this.type] : [];
-		this.lang = this.$store.getters['global/shortLang'];
+		this.lang = this.$store.getters['global/actualLanguage'];
 	},
 	methods: {
 		formattedDataFromTd(td) {

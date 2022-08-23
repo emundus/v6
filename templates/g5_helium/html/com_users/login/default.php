@@ -16,11 +16,8 @@ $redirect = base64_decode($jinput->get->getBase64('redirect'));
 if (!empty($cookieLogin) || $this->user->get('guest'))
 {
     // Get campaign ID and course from url
-    $this->campaign = $jinput->get('cid');
-    $this->course   = $jinput->get('course');
-
-    JFactory::getSession()->set('cid',$this->campaign);
-    JFactory::getSession()->set('course', $this->course);
+    $this->campaign = $jinput->get->get('cid');
+    $this->course   = $jinput->get->get('course');
 
 	// The user is not logged in or needs to provide a password.
 	echo $this->loadTemplate('login');

@@ -31,7 +31,7 @@
                 popover-y="top"
             ></v-swatches>
             <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="em-flex-row em-ml-8 em-pointer">
-              <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+              <span class="material-icons em-red-500-color">delete_outline</span>
             </a>
           </div>
         </div>
@@ -88,7 +88,7 @@ export default {
 
   created() {
     this.getTags();
-    this.actualLanguage = this.$store.getters['global/shortLang'];
+    this.actualLanguage = this.$store.getters['global/actualLanguage'];
   },
 
   methods: {
