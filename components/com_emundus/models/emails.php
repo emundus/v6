@@ -396,7 +396,7 @@ class EmundusModelEmails extends JModelList {
      * @throws Exception
      * @since version v6
      */
-    public function setConstants($user_id, $post=null, $passwd='') {
+    public function setConstants($user_id, $post=null, $passwd='', $fnum=null) {
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
         $user           = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
@@ -439,6 +439,23 @@ class EmundusModelEmails extends JModelList {
             JURI::base()."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, JURI::base(), $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
+
+        if(!empty($fnum)){
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $m_files = new EmundusModelFiles();
+            $status = $m_files->getStatusByFnums([$fnum]);
+
+            $patterns[] = '/\[APPLICATION_STATUS\]/';
+            $replacements[] = $status[$fnum]['value'];
+
+            $tags = $m_files->getTagsByFnum([$fnum]);
+            $tags_label = [];
+            foreach ($tags as $tag){
+                $tags_label[] = $tag['label'];
+            }
+            $patterns[] = '/\[APPLICATION_TAGS\]/';
+            $replacements[] = implode(',', $tags_label);
+        }
 
         if(isset($post)) {
             foreach ($post as $key => $value) {
@@ -493,7 +510,7 @@ class EmundusModelEmails extends JModelList {
             return array('patterns' => array() , 'replacements' => array());
         }
 
-        $constants = $this->setConstants($user_id, $post, $passwd);
+        $constants = $this->setConstants($user_id, $post, $passwd, $fnum);
 
         $patterns = $constants['patterns'];
         $replacements = $constants['replacements'];

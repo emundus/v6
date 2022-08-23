@@ -14,7 +14,7 @@
                 :totalDocuments="requiredDocuments.length"
                 :profile_id="profile_id"
                 @edit-document="editDocument(document)"
-                @delete-document="getDocuments"
+                @delete-document="deleteDocument"
                 @move-document="moveDocument"
             >
             </form-builder-document-list-element>
@@ -30,7 +30,7 @@
           </transition-group>
         </draggable>
       </div>
-      <button id="add-document" class="em-secondary-button" @click="addDocument">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}</button>
+      <button id="add-document" class="em-secondary-button" @click="addDocument('1')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}</button>
     </div>
     <div id="optional-documents" class="em-w-100 em-mb-32 em-mt-32">
       <p class="em-font-size-24 em-font-weight-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_OPTIONAL_DOCUMENTS') }}</p>
@@ -45,7 +45,7 @@
               :totalDocuments="optionalDocuments.length"
               :profile_id="profile_id"
               @edit-document="editDocument(document)"
-              @delete-document="getDocuments"
+              @delete-document="deleteDocument"
               @move-document="moveDocument"
             >
             </form-builder-document-list-element>
@@ -61,7 +61,7 @@
           </transition-group>
         </draggable>
       </div>
-      <button id="add-document" class="em-secondary-button" @click="addDocument(false)">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}</button>
+      <button id="add-document" class="em-secondary-button" @click="addDocument('0')">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}</button>
     </div>
   </div>
 </template>
@@ -226,11 +226,15 @@ export default {
         }
       }
     },
-    addDocument (mandatory = true) {
+    addDocument (mandatory = "1") {
       this.$emit('add-document', mandatory);
     },
     editDocument (document) {
       this.$emit('edit-document', document);
+    },
+    deleteDocument () {
+      this.$emit('delete-document');
+      this.getDocuments();
     },
   },
   computed: {

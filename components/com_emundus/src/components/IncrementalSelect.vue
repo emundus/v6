@@ -8,7 +8,7 @@
       <div v-if="!isNewVal" id="existing-value" class="em-w-100">
 	      <div class="em-w-100 em-flex-row em-flex-space-between">
 		      <input type="text" class="em-w-100 em-mb-0-important em-border-main-500 important" v-model="newExistingLabel" @focusout="emitValueChanges"/>
-		      <span @click="unselectExistingValue" class="material-icons-outlined em-pointer" @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
+		      <span v-if="!locked" @click="unselectExistingValue" class="material-icons-outlined em-pointer" @mouseenter="hoverUnselect = true" @mouseleave="hoverUnselect = false">close</span>
 	      </div>
 	      <i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE') }})</i>
       </div>
@@ -37,7 +37,11 @@ export default {
     defaultValue: {
       type: Number,
       required: false
-    }
+    },
+	  locked: {
+			type: Boolean,
+		  default: false
+	  }
   },
   data() {
     return {

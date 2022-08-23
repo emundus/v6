@@ -65,7 +65,7 @@
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
-          <div v-if="displayAdvancedParameters">
+          <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
             <div class="form-group">
               <label>{{translations.receiverName}}</label>
               <input
@@ -93,7 +93,7 @@
               />
             </div>
 
-            <div class="form-group" id="receivers_cc">
+            <div class="form-group em-mb-8" id="receivers_cc">
               <label>{{ translations.ReceiversCC }}</label>
               <multiselect
                   v-model="selectedReceiversCC"
@@ -114,7 +114,7 @@
             </div>
 
             <!-- Email -- BCC (in form of email adress or fabrik element -->
-            <div class="form-group" id="receivers_bcc">
+            <div class="form-group em-mb-8" id="receivers_bcc">
               <label>{{ translations.ReceiversBCC }}</label>
               <multiselect
                   v-model="selectedReceiversBCC"
@@ -135,7 +135,7 @@
             </div>
 
             <!-- Email -- Associated letters (in form of email adress or fabrik element -->
-            <div class="form-group" id="attached_letters" v-if="attached_letters">
+            <div class="form-group em-mb-8" id="attached_letters" v-if="attached_letters">
               <label>{{ translations.Letters }}</label>
               <multiselect
                   v-model="selectedLetterAttachments"
@@ -154,7 +154,7 @@
             </div>
 
             <!-- Email -- Action tags -->
-            <div class="form-group" v-if="tags">
+            <div class="form-group em-mb-8" v-if="tags">
               <label>{{ translations.Tags }}</label>
               <multiselect
                   v-model="selectedTags"
@@ -173,7 +173,7 @@
             </div>
 
             <!-- Email -- Candidat attachments -->
-            <div class="form-group" id="">
+            <div class="form-group em-mb-8">
               <label>{{ translations.CandidateAttachments }}</label>
               <multiselect
                   v-model="selectedCandidateAttachments"
@@ -193,7 +193,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between">
+        <div class="em-flex-row em-flex-space-between em-mt-16">
           <button
               type="button"
               class="em-secondary-button em-w-auto"

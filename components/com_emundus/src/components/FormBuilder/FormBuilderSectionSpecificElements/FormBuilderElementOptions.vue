@@ -74,26 +74,28 @@ export default {
     };
   },
   created () {
-    this.getSubOptionsTranslation();
+	  this.getSubOptionsTranslation();
   },
   methods: {
     async getSubOptionsTranslation() {
       this.loading = true;
 
       formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
-        this.element.params.sub_options.sub_labels.forEach((label, index) => {
-          this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-        });
+				if (response) {
+					this.element.params.sub_options.sub_labels.forEach((label, index) => {
+						this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
+					});
 
-        this.element.params.sub_options.sub_values.forEach((value, i) => {
-          let object = {
-            'sub_value' : value,
-            'sub_label' : this.element.params.sub_options.sub_labels[i],
-          };
-          this.arraySubValues.push(object);
-        });
+					this.arraySubValues = this.element.params.sub_options.sub_values.map((value, i) => {
+						return {
+							'sub_value' : value,
+							'sub_label' : Object.values(response.data)[i],
+						};
+					});
 
-        this.$forceUpdate();
+					this.$forceUpdate();
+				}
+
         this.loading = false;
       });
     },
@@ -109,12 +111,16 @@ export default {
         this.arraySubValues.push(object);
 
         this.newOption = '';
-        formBuilderService.updateParams(this.element);
-      }
+	      formBuilderService.updateParams(this.element).then((response) => {
+					if (response.data.scalar) {
+						this.$emit('update-element');
+					}
+	      });
+			}
     },
     updateOption(index, option) {
       this.element.params.sub_options.sub_labels[index] = option;
-      formBuilderService.updateParams(this.element);
+	    formBuilderService.updateParams(this.element);
     },
     updateOrder() {
       let new_sub_values = [];
@@ -126,14 +132,13 @@ export default {
 
       this.element.params.sub_options.sub_labels = new_sub_labels;
       this.element.params.sub_options.sub_values = new_sub_values;
-      formBuilderService.updateParams(this.element);
+	    formBuilderService.updateParams(this.element);
     },
     removeOption(index) {
       this.arraySubValues.splice(index,1);
       this.element.params.sub_options.sub_labels.splice(index,1);
       this.element.params.sub_options.sub_values.splice(index,1);
-
-      formBuilderService.updateParams(this.element);
+	    formBuilderService.updateParams(this.element);
     }
   },
   watch: {

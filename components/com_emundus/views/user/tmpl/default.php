@@ -8,9 +8,9 @@ $current_user = JFactory::getUser();
         <section class="info">
             <div class="infoContainer">
                 <div class="em-flex-column">
-                    <div class="em-circle-blue-100 em-flex-column">
-                        <div class="em-circle-blue-200 em-flex-column">
-                            <span class="material-icons-outlined em-font-size-48 em-blue-400-color">mail</span>
+                    <div class="em-circle-main-100 em-flex-column">
+                        <div class="em-circle-main-200 em-flex-column">
+                            <span class="material-icons-outlined em-font-size-48 em-main-400-color">mail</span>
                         </div>
                     </div>
                 </div>

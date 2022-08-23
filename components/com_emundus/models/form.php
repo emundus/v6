@@ -831,6 +831,10 @@ class EmundusModelForm extends JModelList {
             );
             $formbuilder->createSubmittionPage($label,$intro,$newprofile);
 
+            // Create checklist menu
+            $this->addChecklistMenu($newprofile);
+            //
+
             $user = JFactory::getUser();
             $settings->onAfterCreateForm($user->id);
 

@@ -676,10 +676,26 @@ div#em-modal-form {
     width: 100%;
 }
 
+div#em-modal-actions {
+    overflow: hidden;
+}
+
+div#em-modal-actions .modal-dialog {
+    max-height: 90vh !important;
+}
+
 .modal-dialog .modal-body {
     max-height: unset;
     min-height: 400px;
     height: auto !important;
+}
+
+div#em-modal-actions .modal-dialog .modal-content {
+    max-height: 90vh !important;
+}
+
+div#em-modal-actions .modal-dialog .modal-body {
+    max-height: calc(90vh - 182px) !important;
 }
 
 #em-add-user .em-hidden-nonapli-fields .chosen-container .chosen-drop {
@@ -2177,6 +2193,7 @@ label[for="em-file_to_upload"]:hover {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 0 !important;
 }
 
 .tooltipSelectAttachments{

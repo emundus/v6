@@ -28,7 +28,14 @@
 
       <div class="em-mb-16">
         <label for="title" class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
-        <incremental-select v-if="models.length > 0" :options="documentList" :defaultValue="incSelectDefaultValue" @update-value="updateDocumentSelectedValue"></incremental-select>
+        <incremental-select
+		        v-if="models.length > 0"
+		        :options="documentList"
+		        :defaultValue="incSelectDefaultValue"
+		        :locked="mode != 'create'"
+		        @update-value="updateDocumentSelectedValue"
+        >
+        </incremental-select>
       </div>
 
       <div class="em-mb-16">
@@ -42,7 +49,7 @@
             v-model="document.selectedTypes[filetype.value]"
             @change="checkFileType"
           >
-          <label :for="filetype.value" class="em-font-weight-400 em-mb-0-important"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
+          <label :for="filetype.value" class="em-font-weight-400 em-mb-0-important em-ml-8"> {{ translate(filetype.title) }} ({{ filetype.value }})</label>
         </div>
       </div>
 
@@ -113,7 +120,11 @@ export default {
     mandatory: {
       type: Boolean,
       default: true
-    }
+    },
+		mode: {
+			type: String,
+			default: "create"
+		}
   },
   components: {
     IncrementalSelect,
@@ -251,6 +262,12 @@ export default {
           if(['xls','xlsx','odf'].includes(type)) {
             this.document.selectedTypes['xls;xlsx;odf'] = true;
           }
+          if(['mp3'].includes(type)) {
+            this.document.selectedTypes['mp3'] = true;
+          }
+          if(['mp4'].includes(type)) {
+            this.document.selectedTypes['mp4'] = true;
+          }
         });
 
 	      this.hasImgFormat();
@@ -290,7 +307,7 @@ export default {
 		      document: JSON.stringify(this.document)
 	      };
 
-	      if (this.modelsUsage[this.document.id].usage > 1) {
+	      if (Object.keys(this.modelsUsage).includes(this.document.id) && this.modelsUsage[this.document.id].usage > 1) {
 					this.swalConfirm(
 							this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED'),
 							this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED_TEXT') + ' : ' + this.modelsUsage[this.document.id].profiles.map((profile) => {

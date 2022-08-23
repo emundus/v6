@@ -356,6 +356,7 @@ export default {
 
   .actions {
     align-self: flex-end;
+    margin-right: 20px;
 
     button {
       transition: all 0.3s;
@@ -365,13 +366,16 @@ export default {
 
   .input-group {
     margin-top: 10px;
-
     display: flex;
     flex-direction: column;
 
     [type="checkbox"] {
       width: fit-content;
     }
+
+	  input {
+		  height: fit-content !important;
+	  }
   }
 
 	.valid-state {
@@ -414,7 +418,7 @@ export default {
 		.not-displayed {
 			position: absolute;
 			bottom: 0;
-			right: 2px;
+			right: 15px;
 			padding: 10px;
 			background: white;
 			border-top-left-radius: 4px;

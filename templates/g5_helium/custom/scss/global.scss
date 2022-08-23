@@ -31,10 +31,6 @@ body {
 
   p {
     margin: 0;
-
-    a:hover {
-      text-decoration: underline;
-    }
   }
 }
 
@@ -133,7 +129,6 @@ a {
   color: $base-secondary-color;
   &:hover {
    color: $base-secondary-color;
-    text-decoration: underline;
   }
 }
 
@@ -392,6 +387,17 @@ legend {
 .g-content {
   padding: 0 !important;
   margin: 0 !important;
+}
+
+#g-top{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  .g-container{
+    margin: 0;
+    width: 100%;
+  }
 }
 
 #g-utility{
@@ -1374,6 +1380,114 @@ body>.g-container {
 
 .fabrikFilterContainer .fabrik_actions > div {
  text-align: end !important;
+}
+
+.view-list{
+  @include calendar;
+}
+div.fabrikFilterContainer{
+  .span6{
+    width: 100%;
+  }
+  thead{
+    display: flex;
+    th:first-child{
+      display: none;
+    }
+  }
+  tbody{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    tr{
+      min-width: 200px;
+    }
+    tr:last-child{
+      align-items: end;
+      display: flex;
+    }
+    tr.fabrik_row{
+      td:first-child{
+        font-weight: bold;
+      }
+      td{
+        .chzn-container{
+          width: auto !important;
+          .chzn-single{
+            display: flex;
+            align-items: center;
+          }
+        }
+        .fabrikListFilterCheckbox{
+          .fabrikgrid_checkbox{
+            input{
+              height: auto;
+            }
+          }
+        }
+      }
+    }
+    td{
+      display: flex;
+      flex-direction: column;
+      background: transparent !important;
+      border: unset;
+      input, select{
+        width: auto;
+        height: 40px;
+      }
+      .fabrik_filter_submit{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 0 16px;
+        border-radius: 4px;
+        border: unset;
+        height: 40px;
+        color: white;
+        background-color: $main-500;
+        &:hover {
+          background-color: white;
+          color: $main-500;
+          border: 1px solid $main-500;
+          text-decoration: none;
+
+          .material-icons {
+            color: $main-500 !important;
+          }
+        }
+      }
+      .fabrikDateListFilterRange{
+        display: flex;
+        .calendarbutton{
+          height: 40px;
+          color: black;
+          border: solid 1px #ececee;
+          border-radius: 0 4px 4px 0;
+        }
+        .input-append:first-child{
+          margin-right: 6px;
+        }
+        .input-append:last-child{
+          margin-left: 6px;
+        }
+      }
+      img[id$='_loading']{
+        display: none;
+      }
+    }
+  }
+}
+tr.fabrikFilterContainer{
+  th{
+    .listfilter{
+      input,select{
+        height: 40px;
+      }
+    }
+  }
 }
 
   .fabrikForm legend {
@@ -2588,6 +2702,34 @@ body>.g-container {
     }
   }
 
+  /* DECONNEXION */
+
+.logout-button input.btn.btn-primary {
+  border: 1px solid $base-secondary-color;
+  background: $base-secondary-color;
+  color: $neutral-50;
+  padding: 8px 12px;
+}
+
+.logout-button input.btn.btn-primary:hover {
+  border: 1px solid $base-secondary-color;
+  background: $neutral-50;
+  color: $base-secondary-color;
+}
+
+#g-container-main div.login .control-group .controls button.btn.btn-primary:hover {
+  border: 1px solid $base-secondary-color;
+  background: $base-secondary-color;
+  color: $neutral-50;
+  padding: 8px 12px;
+}
+
+#g-container-main div.login .control-group .controls button.btn.btn-primary {
+  border: 1px solid $base-secondary-color;
+  background: $neutral-50;
+  color: $base-secondary-color;
+}
+
   /* CONNEXION */
 
   ul.nav.nav-tabs.nav-stacked span {
@@ -2618,7 +2760,7 @@ body>.g-container {
     border-color: $base-secondary-color;
     color: #fff;
     //font-family: "Lato", sans-serif;
-    text-transform: capitalize;
+    text-transform: initial;
     width: 100%;
     height: 48px;
     margin-bottom: 0;
@@ -3851,6 +3993,7 @@ button.swal2-cancel.goback-btn {
 .view-form.em-formRegistrationCenter,
 .gantry.contentpane.modal,
 .view-users.layout-edit {
+  @include calendar;
 
   /* BLOC FORMULAIRE */
   .span12  {
@@ -3918,7 +4061,7 @@ button.swal2-cancel.goback-btn {
 
             input[type="radio"] {
               @include radio;
-              margin-left: 0px !important;
+              margin-left: 0 !important;
 
               &:checked {
                 background-color: initial;
@@ -3943,7 +4086,11 @@ button.swal2-cancel.goback-btn {
 
             input[type="checkbox"] {
               @include checkbox;
-              margin-left: 0px !important;
+              margin-left: 0 !important;
+            }
+
+            span {
+              margin-top: 0 !important;
             }
           }
         }

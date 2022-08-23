@@ -1,11 +1,12 @@
 <template>
   <div class="em-flex-row em-small-flex-column em-small-align-items-start">
     <div class="em-profile-picture-big em-pointer"
+         :key="dynamicPP"
          @click="openBrowser()"
-         :style="profile_picture != null ? 'background-image:url(' + profile_picture + ')' : 'background-image:url(' + window.location.origin + '/media/com_emundus/images/profile/default-profile.jpg)'"
+         :style="background_pp"
          @mouseover="displayEdit = true"
          @mouseleave="displayEdit = false">
-      <span class="em-flex-row" v-show="displayEdit" v-model="profilePicture">
+      <span class="em-flex-row" v-show="displayEdit">
         <span class="material-icons-outlined em-mr-8">edit</span>
         {{ translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE') }}
       </span>
@@ -30,11 +31,16 @@ export default {
     }
   },
   data: () => ({
+    dynamicPP: 0,
     displayEdit: false,
     profile_picture : null,
+    background_pp: 'background-image:url(' + window.location.origin + '/media/com_emundus/images/profile/default-profile.jpg)',
   }),
   created() {
     this.profile_picture = window.location.origin + '/' + this.$props.user.profile_picture;
+    if(this.$props.user.profile_picture != null){
+      this.background_pp = 'background-image:url(' + window.location.origin + '/' + this.$props.user.profile_picture + ')';
+    }
   },
   methods: {
     openBrowser() {
@@ -79,12 +85,39 @@ export default {
     },
 
     updateProfilePicture(file){
+      this.$emit('loading',true)
       user.updateProfilePicture(file).then(response => {
-        this.profile_picture = window.location.origin + '/' + response.data.profile_picture;
+				if (response.data.status) {
+					const date = new Date();
+					const newProfileUrl =  window.location.origin + '/' + response.data.profile_picture + '?' + date.getTime();
+					this.profile_picture = newProfileUrl;
+					this.background_pp = 'background-image:url(' + newProfileUrl + ')';
+					document.getElementById('userDropdownLabel').style.backgroundImage = 'url(' + newProfileUrl + ')';
+				} else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE'),
+						text: this.translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT'),
+						type: "error",
+						confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+						timer: 4000,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: "em-swal-single-action",
+						},
+					});
+				}
+
+        this.$emit('loading',false);
       });
     }
+  },
 
-  }
+  watch: {
+    profile_picture: function(value){
+      this.dynamicPP++;
+    }
+  },
 }
 </script>
 
