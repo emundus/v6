@@ -10,10 +10,6 @@
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
         },
         {
-          "value": 2,
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_PHONE"
-        },
-        {
           "value": 3,
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_EMAIL"
         },
@@ -85,7 +81,7 @@
       ],
       "helptext": "",
       "placeholder": "",
-      "published": true,
+      "published": false,
       "sysadmin_only": false
     },
     {
@@ -172,7 +168,7 @@
       "helptext": "",
       "placeholder": "",
       "published": true,
-      "sysadmin_only": false
+      "sysadmin_only": true
     }
   ],
   "radiobutton": [
@@ -183,7 +179,7 @@
       "helptext": "",
       "placeholder": "",
       "published": true,
-      "sysadmin_only": false
+      "sysadmin_only": true
     }
   ],
   "birthday": [
@@ -203,7 +199,7 @@
       ],
       "helptext": "",
       "placeholder": "",
-      "published": true,
+      "published": false,
       "sysadmin_only": false
     },
     {
@@ -259,18 +255,6 @@
         {
           "value": "d/m/Y",
           "label": "21/12/2022"
-        },
-        {
-          "value": "D. month YYYY",
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_MONTH_YYYY"
-        },
-        {
-          "value": "D month YYYY",
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_MONTH_YYYY_2"
-        },
-        {
-          "value": "Month d, YYYY",
-          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_MONTH_D_YYYY"
         },
         {
           "value": "d m",

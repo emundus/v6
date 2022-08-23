@@ -174,7 +174,7 @@ class EmundusModelFormbuilder extends JModelList {
                 $db->setQuery($query);
                 $db->execute();
             } else {
-                $this->updateTranslation($labelTofind,$NewSubLabel);
+                $new_key = $this->updateTranslation($labelTofind, $NewSubLabel);
             }
             return $new_key;
         }  catch(Exception $e) {
@@ -363,13 +363,22 @@ class EmundusModelFormbuilder extends JModelList {
     }
 
     function createApplicantMenu($label, $intro, $prid, $template) {
+        if (empty($prid)) {
+            JLog::add('component/com_emundus/models/formbuilder | Error when create a new page in form, missing prid' , JLog::ERROR, 'com_emundus');
+
+            return array(
+                'status' => false,
+                'msg' => 'MISSING_PRID'
+            );
+        }
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if(!is_array($label)) {
+        if (!is_array($label)) {
             $label = json_decode($label, true);
         }
-        if(!is_array($intro)) {
+        if (!is_array($intro)) {
             $intro = json_decode($intro, true);
         }
 
@@ -377,15 +386,42 @@ class EmundusModelFormbuilder extends JModelList {
         $actualLanguage = substr($lang->getTag(), 0 , 2);
 
         try {
-            $formid = $this->createFabrikForm($prid,$label,$intro);
-            $list = $this->createFabrikList($prid,$formid);
-            $this->joinFabrikListToProfile($list['id'],$prid);
+            $formid = $this->createFabrikForm($prid, $label, $intro);
+            if (empty($formid)) {
+                return array(
+                    'status' => false,
+                    'msg' => 'UNABLE_TO_CREATE_FARBIK_FORM'
+                );
+            }
+
+            $list = $this->createFabrikList($prid, $formid);
+            if (empty($list)) {
+                return array(
+                    'status' => false,
+                    'msg' => 'UNABLE_TO_CREATE_FARBIK_FORM'
+                );
+            }
+
+            $joined = $this->joinFabrikListToProfile($list['id'], $prid);
+            if (!$joined) {
+                return array(
+                    'status' => false,
+                    'msg' => 'UNABLE_TO_JOIN_LIST_TO_PRID'
+                );
+            }
 
             $query->select('*')
                 ->from($db->quoteName('#__emundus_setup_profiles'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
             $db->setQuery($query);
             $profile = $db->loadObject();
+            if (empty($profile)) {
+                return array(
+                    'status' => false,
+                    'msg' => 'UNABLE_TO_FIND_PROFILE_DATA_FROM_PRID'
+                );
+            }
+
             $menutype = $profile->menutype;
 
             // INSERT MENU
@@ -428,15 +464,18 @@ class EmundusModelFormbuilder extends JModelList {
                 'lft' => array_values($lfts)[strval(sizeof($lfts) - 1)] + 2,
                 'rgt' => array_values($rgts)[strval(sizeof($rgts) - 1)] + 2
             );
-            $this->insertMenu($menu,$label);
+
+            $newmenuid = $this->insertMenu($menu, $label);
+            if (empty($newmenuid)) {
+                return array(
+                    'status' => false,
+                    'msg' => 'UNABLE_TO_INSERT_NEW_MENU'
+                );
+            }
             //
 
             // Create hidden group
-            $label = array(
-                'fr' => 'Hidden group',
-                'en' => 'Hidden group',
-            );
-            $group = $this->createGroup($label, $formid, -1);
+            $group = $this->createGroup(array('fr' => 'Hidden group', 'en' => 'Hidden group',), $formid, -1);
             $this->createElement('id',$group['group_id'],'internalid','id','',1,0,0);
             $this->createElement('time_date',$group['group_id'],'date','time date','',1, 0);
             $this->createElement('user',$group['group_id'],'user','user','',1, 0);
@@ -449,7 +488,7 @@ class EmundusModelFormbuilder extends JModelList {
                 'fr' => 'Nouvelle section',
                 'en' => 'New section'
             );
-            $this->createGroup($group_label,$formid);
+            $this->createGroup($group_label, $formid);
             //
 
             // Save as template
@@ -465,10 +504,13 @@ class EmundusModelFormbuilder extends JModelList {
             //
 
             return array(
+                'status' => true,
+                'msg' => 'SUCCESS',
                 'id' => $formid,
                 'db_table_name' => $list['db_table_name'],
                 'label' => $label[$actualLanguage],
                 'link' => 'index.php?option=com_fabrik&view=form&formid=' . $formid,
+                'new_menu_id' => $newmenuid,
                 'rgt' => array_values($rgts)[strval(sizeof($rgts) - 1)] + 2,
             );
         } catch(Exception $e) {
@@ -477,7 +519,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function createFabrikForm($prid,$label,$intro){
+    function createFabrikForm($prid,$label,$intro) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -489,14 +531,14 @@ class EmundusModelFormbuilder extends JModelList {
                 'record_in_database' => 1,
                 'error' => 'FORM_ERROR',
                 'intro' => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
-                'created' => date('Y-m-d h:i:s'),
+                'created' => gmdate('Y-m-d h:i:s'),
                 'created_by' => JFactory::getUser()->id,
                 'created_by_alias' => JFactory::getUser()->username,
-                'modified' => date('Y-m-d h:i:s'),
+                'modified' => gmdate('Y-m-d h:i:s'),
                 'modified_by' => JFactory::getUser()->id,
                 'checked_out' => JFactory::getUser()->id,
-                'checked_out_time' => date('Y-m-d h:i:s'),
-                'publish_up' => date('Y-m-d h:i:s'),
+                'checked_out_time' => gmdate('Y-m-d h:i:s'),
+                'publish_up' => gmdate('Y-m-d h:i:s'),
                 'reset_button_label' => 'RESET',
                 'submit_button_label' => 'SAVE_CONTINUE',
                 'form_template' => 'bootstrap',
@@ -641,7 +683,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function joinFabrikListToProfile($listid,$prid){
+    function joinFabrikListToProfile($listid, $prid) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -662,6 +704,7 @@ class EmundusModelFormbuilder extends JModelList {
                 ->columns($db->quoteName($columns))
                 ->values(implode(',', $db->quote($values)));
             $db->setQuery($query);
+
             return $db->execute();
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/formbuilder | Error when join list ' . $listid . ' to profile ' . $prid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
@@ -1806,6 +1849,10 @@ class EmundusModelFormbuilder extends JModelList {
                         $db->setQuery($query);
                         $db->execute();
                     }
+
+                    if($element['params']['database_join_show_please_select'] == 1) {
+                        $element['params']['database_join_noselectionlabel'] = 'PLEASE_SELECT';
+                    }
                 } else {
                     $sub_values = [];
                     $sub_labels = [];
@@ -1821,6 +1868,7 @@ class EmundusModelFormbuilder extends JModelList {
                         }
                     }
 
+                    // TODO: use a specific function for sub_options only (instead of updating all element, only update the sub_options)
                     foreach ($element['params']['sub_options']['sub_values'] as $index => $sub_value) {
                         if ($old_params['sub_options']) {
                             $new_label = array(
@@ -1829,7 +1877,7 @@ class EmundusModelFormbuilder extends JModelList {
                             );
                             if ($old_params['sub_options']['sub_labels'][$index]) {
                                 if($old_params['sub_options']['sub_labels'][$index] != 'PLEASE_SELECT'){
-                                    $this->updateTranslation($old_params['sub_options']['sub_labels'][$index], $new_label);
+                                    $this->updateTranslation($old_params['sub_options']['sub_labels'][$index], $new_label, 'fabrik_elements', $element['id']);
                                     $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
                                     $sub_values[] = $sub_value;
                                 }

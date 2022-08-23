@@ -32,6 +32,7 @@ if (count($languages) > 1) {
 }
 
 $coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
+$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
 $xmlDoc = new DOMDocument();
 if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
@@ -39,6 +40,16 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
 }
 
 ?>
-<div id="em-component-vue" component="messagescoordinator" coordinatorAccess="<?= $coordinator_access ?>" shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>" manyLanguages="<?= $many_languages ?>" fnum="<?= $fnum ?>" user="<?= $user->id ?>"></div>
+<div id="em-component-vue"
+     component="messagescoordinator"
+     coordinatorAccess="<?= $coordinator_access ?>"
+     shortLang="<?= $short_lang ?>"
+     currentLanguage="<?= $current_lang ?>"
+     manyLanguages="<?= $many_languages ?>"
+     fnum="<?= $fnum ?>"
+     user="<?= $user->id ?>"
+     sysadminAccess="<?= $sysadmin_access ?>"
+>
+</div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>

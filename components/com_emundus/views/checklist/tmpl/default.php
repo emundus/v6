@@ -41,8 +41,11 @@ try {
     echo $e->getMessage() . '<br />';
 }
 
-$this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$this->user->fnums[$this->user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$this->user->end_date);
+//$this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$this->user->fnums[$this->user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$this->user->end_date);
 
+if (!empty($this->current_phase) && !empty($this->current_phase->status)) {
+    $status_for_send[] = $this->current_phase->status;
+}
 $is_app_sent = !in_array($this->user->status, $status_for_send);
 
 $block_upload = true;

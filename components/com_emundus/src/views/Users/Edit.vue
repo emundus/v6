@@ -1,13 +1,13 @@
 <template>
   <div class="em-w-90 em-container-profile-view" v-if="user">
     <div class="em-container-profile-view-pict em-flex-row em-flex-space-between em-mb-44 em-small-flex-column em-small-align-items-start">
-      <ProfilePicture :user="user" />
+      <ProfilePicture :user="user" @loading="updateLoading" />
     </div>
 
     <div class="em-container-profile-view-intro em-flex-row em-flex-space-between em-mb-24 em-small-flex-column em-small-align-items-start">
       <span class="em-font-size-14 em-neutral-600-color">{{ translate('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_TIP') }}</span>
       <div class="em-flex-column" style="align-items: unset">
-        <button class="em-w-auto em-mt-xs-8" :class="isapplicant == 1 ? 'btn btn-primary' : 'em-secondary-button'" @click="saveProfile">{{ translate('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE') }}</button>
+        <button class="em-w-auto em-mt-xs-8" :class="isapplicant == 1 ? 'btn btn-primary' : 'em-primary-button'" @click="saveProfile">{{ translate('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE') }}</button>
       </div>
     </div>
 
@@ -82,6 +82,9 @@ export default {
     },
     updateValue(element) {
       this.user[element.name] = element.value;
+    },
+    updateLoading(value){
+      this.loading = value;
     }
   },
   computed: {

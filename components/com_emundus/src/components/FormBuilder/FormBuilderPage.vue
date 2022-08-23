@@ -100,8 +100,7 @@ export default {
           this.title = this.fabrikPage.show_title.label[this.shortDefaultLang];
           const groups = Object.values(response.data.Groups);
           this.sections = groups.filter(group => group.hidden_group != -1);
-
-          this.getDescription();
+	        this.getDescription();
 
           this.loading = false;
         }

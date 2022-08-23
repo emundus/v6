@@ -55,6 +55,7 @@
                 v-else-if="leftPanelActiveTab === 'Documents'"
                 :profile_id="profile_id"
                 @document-created="onDocumentCreated"
+                @dragging-element="onCloseCreateDocument"
             >
             </form-builder-document-formats>
           </div>
@@ -78,6 +79,7 @@
               :campaign_id="campaign_id"
               @add-document="onOpenCreateDocument"
               @edit-document="onEditDocument"
+              @delete-document="onDeleteDocument"
             ></form-builder-document-list>
           </transition>
         </section>
@@ -126,6 +128,7 @@
                 :profile_id="profile_id"
                 :current_document="selectedDocument ? selectedDocument : null"
                 :mandatory="createDocumentMandatory"
+                :mode="createDocumentMode"
                 @close="onCloseCreateDocument"
                 @documents-updated="onUpdateDocument"
             ></form-builder-create-document>
@@ -327,18 +330,31 @@ export default {
     onOpenCreateDocument(mandatory = "1")
     {
       this.selectedDocument = null;
-      this.showInRightPanel = 'create-document';
-      this.setSectionShown('documents');
-      if (this.$refs.formBuilderCreateDocument) {
-        this.$refs.formBuilderCreateDocument.document.mandatory = mandatory;
-      } else {
-        this.createDocumentMandatory = mandatory;
-      }
+	    if (this.$refs.formBuilderCreateDocument) {
+		    this.$refs.formBuilderCreateDocument.document.mandatory = mandatory;
+		    this.$refs.formBuilderCreateDocument.mode = 'create';
+	    } else {
+		    this.createDocumentMandatory = mandatory;
+		    this.createDocumentMode = 'create';
+
+	    }
+	    this.showInRightPanel = 'create-document';
+	    this.setSectionShown('documents');
     },
     onEditDocument(document)
     {
+			if (this.$refs.formBuilderCreateDocument) {
+				this.$refs.formBuilderCreateDocument.mode = 'update';
+			}
+
       this.selectedDocument = document;
       this.showInRightPanel = 'create-document';
+	    this.createDocumentMode = 'update';
+	    this.setSectionShown('documents');
+    },
+    onDeleteDocument(){
+      this.selectedDocument = null;
+      this.showInRightPanel = 'hierarchy';
       this.setSectionShown('documents');
     },
     selectTab(title) {

@@ -79,7 +79,6 @@ export default {
       errors: [],
     };
   },
-  mounted() {},
   methods: {
     selectTab(tab) {
       this.tabs.forEach(t => {
@@ -105,13 +104,17 @@ export default {
 
       if(this.errors.length === 0) {
         formBuilderService.addPage(this.page).then(response => {
-          this.$emit('close', response.data);
-          this.updateLastSave();
+					if (!response.status) {
+						this.errors.push(response.msg);
+						stop = true;
+					} else {
+						this.$emit('close', response.data);
+						this.updateLastSave();
+					}
         });
       }
     },
   },
-  computed: {},
   watch: {
     'page.label[shortDefaultLang]': function(newValue, oldValue) {
       this.errors = [];

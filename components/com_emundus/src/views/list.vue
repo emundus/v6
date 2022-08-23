@@ -51,26 +51,6 @@
           :validateFilters="validateFilters"
           :nbresults="nbresults"
       ></filters>
-
-<!--      <div class="search-container">
-        <v-popover :popoverArrowClass="'custom-popover-arrow'">
-          <span class="tooltip-target b3 material-icons-outlined">more_vert</span>
-
-          <template slot="popover">
-            <filters
-                :data="actions"
-                :selected="selecedItems"
-                :updateTotal="updateTotal"
-                :filter="filter"
-                :sort="sort"
-                :cherche="cherche"
-                :chercheGo="chercheGo"
-                :validateFilters="validateFilters"
-                :nbresults="nbresults"
-            ></filters>
-          </template>
-        </v-popover>
-      </div>-->
     </div>
 
     <transition :name="'slide-down'" type="transition">
@@ -160,11 +140,11 @@ export default {
     timer: null,
 
     translations: {
-      noCampaign: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOCAMPAIGN"),
-      noProgram: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOPROGRAM"),
-      noEmail: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOEMAIL"),
-      noForm: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFORM"),
-      noFiles: Joomla.JText._("COM_EMUNDUS_ONBOARD_NOFILES"),
+      noCampaign: "COM_EMUNDUS_ONBOARD_NOCAMPAIGN",
+      noProgram: "COM_EMUNDUS_ONBOARD_NOPROGRAM",
+      noEmail: "COM_EMUNDUS_ONBOARD_NOEMAIL",
+      noForm: "COM_EMUNDUS_ONBOARD_NOFORM",
+      noFiles: "COM_EMUNDUS_ONBOARD_NOFILES",
     },
     total: 0,
     filtersCount: "",

@@ -131,8 +131,8 @@
     <modal
         id="edit-modal"
         name="edit"
-        :height="'100vh'"
-        :width="'100vw'"
+        :resizable="true"
+        :draggable="true"
         styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
     >
       <div class="modal-head em-w-100 em-flex-row em-flex-space-between">
@@ -219,6 +219,7 @@ export default {
     return {
       loading: true,
       attachments: [],
+	    displayedAttachments: [],
       categories: {},
       fnums: [],
       users: [],
@@ -246,6 +247,7 @@ export default {
   },
   created() {
 	  this.canSee = !this.$store.state.global.anonyme;
+	  this.$store.dispatch('user/setCurrentUser', this.user);
   },
   mounted() {
     this.loading = true;
@@ -254,6 +256,7 @@ export default {
 				this.getAttachmentCategories().then((response) => {
 					this.categories = response ? response : {};
 					this.attachments = this.defaultAttachments;
+					this.displayedAttachments = this.attachments;
 					this.$store.dispatch("attachment/setAttachmentsOfFnum", {
 						fnum: [this.displayedFnum],
 						attachments: this.attachments,
@@ -312,7 +315,8 @@ export default {
         await this.refreshAttachments();
       } else {
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-        this.categories = this.$store.state.attachment.categories;
+	      this.displayedAttachments = this.attachments;
+	      this.categories = this.$store.state.attachment.categories;
       }
     },
     async refreshAttachments(addLoading = false) {
@@ -327,7 +331,8 @@ export default {
 
       if (response.status) {
         this.attachments = response.attachments;
-        this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+	      this.displayedAttachments = this.attachments;
+	      this.$store.dispatch("attachment/setAttachmentsOfFnum", {
           fnum: [this.displayedFnum],
           attachments: this.attachments,
         });
@@ -528,28 +533,31 @@ export default {
         // if attachment description contains the search term, show it
         // lowercase the search term to avoid case sensitivity
         if (
-            attachment.upload_description
-                .toLowerCase()
-                .includes(this.$refs["searchbar"].value.toLowerCase()) ||
-            attachment.value
-                .toLowerCase()
-                .includes(this.$refs["searchbar"].value.toLowerCase())
+						attachment.upload_description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) ||
+            attachment.value.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())
         ) {
           this.attachments[index].show = true;
         } else {
-          // remove attachments from checkedAttachment list
           this.checkedAttachments = this.checkedAttachments.filter(
               (aid) => aid !== attachment.aid
           );
           this.attachments[index].show = false;
         }
       });
+
+			this.displayedAttachments = this.attachments.filter((attachment) => {
+				return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
+			});
     },
     resetSearch() {
       this.attachments.forEach((attachment, index) => {
         this.attachments[index].show = true;
       });
       this.$refs["searchbar"].value = "";
+
+			this.displayedAttachments = this.attachments.filter((attachment) => {
+		    return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
+	    });
     },
     resetOrder() {
       this.sort = {
@@ -667,11 +675,11 @@ export default {
 	  }
   },
   computed: {
-    displayedAttachments() {
+    /*displayedAttachments() {
       return this.attachments.filter((attachment) => {
-        return ((attachment.show === true || attachment.show == undefined) && attachment.can_be_viewed);
+        return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
       });
-    },
+    },*/
     fnumPosition() {
       return this.fnums.indexOf(this.displayedFnum);
     },
@@ -707,6 +715,13 @@ export default {
 <style lang='scss'>
 #em-attachments {
   font-size: 14px;
+
+	.v--modal-box.v--modal {
+		height: 100vh !important;
+		width: 100vw !important;
+		top: 0 !important;
+		left: 0 !important;
+	}
 
   .head {
     align-items: center;

@@ -82,7 +82,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		// If we are creating a new user from the LDAP system, he does not have a password.
 		if ($ldap == 0) {
-			$password = JUserHelper::genRandomPassword();
+			$password = $this->generateStrongPassword();
 		}
 
 		$user = clone(JFactory::getUser(0));
@@ -210,6 +210,55 @@ class EmundusControllerUsers extends JControllerLegacy {
 		echo json_encode((object)array('status' => true, 'msg' => JText::_('COM_EMUNDUS_USERS_USER_CREATED')));
 		exit;
 	}
+
+    /**
+     * @param $length
+     * @param $add_dashes
+     * @param $available_sets
+     * Available sets : l = lowercase, u = uppercase, d = digits, s = symbols
+     *
+     * @return string
+     *
+     * @since version
+     */
+    function generateStrongPassword($length = 8, $add_dashes = false, $available_sets = 'luds') {
+        $sets = array();
+        if(strpos($available_sets, 'l') !== false)
+            $sets[] = 'abcdefghjkmnpqrstuvwxyz';
+        if(strpos($available_sets, 'u') !== false)
+            $sets[] = 'ABCDEFGHJKMNPQRSTUVWXYZ';
+        if(strpos($available_sets, 'd') !== false)
+            $sets[] = '123456789';
+        if(strpos($available_sets, 's') !== false)
+            $sets[] = '!@#%&*?';
+
+        $all = '';
+        $password = '';
+        foreach($sets as $set)
+        {
+            $password .= $set[array_rand(str_split($set))];
+            $all .= $set;
+        }
+
+        $all = str_split($all);
+        for($i = 0; $i < $length - count($sets); $i++)
+            $password .= $all[array_rand($all)];
+
+        $password = str_shuffle($password);
+
+        if(!$add_dashes)
+            return $password;
+
+        $dash_len = floor(sqrt($length));
+        $dash_str = '';
+        while(strlen($password) > $dash_len)
+        {
+            $dash_str .= substr($password, 0, $dash_len) . '-';
+            $password = substr($password, $dash_len);
+        }
+        $dash_str .= $password;
+        return $dash_str;
+    }
 
 	public function delincomplete() {
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
@@ -552,12 +601,73 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		if ($res !== false) {
 			$res = true;
-			$msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT');
+            if(count($users) > 1){
+                if($state === 1) {
+                    $msg = JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_MULTI');
+                } else {
+                    $msg = JText::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_MULTI');
+                }
+            } else {
+                if($state === 1) {
+                    $msg = JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE');
+                } else {
+                    $msg = JText::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_SINGLE');
+                }
+            }
 		} else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
 
 		echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
 		exit;
 	}
+
+    public function changeactivation() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $this->setRedirect('index.php', JText::_('ACCESS_DENIED'), 'error');
+            return;
+        }
+
+        $jinput = JFactory::getApplication()->input;
+        $users 	= $jinput->getString('users', null);
+        $state 	= $jinput->getInt('state', null);
+
+        if($state == 0){
+            $state = 1;
+        } else {
+            $state = -1;
+        }
+
+        $m_users = new EmundusModelUsers();
+
+
+        if ($users === 'all') {
+
+            $us = $m_users->getUsers(0,0);
+            $users = array();
+
+            foreach ($us as $u) {
+                $users[] = $u->id;
+            }
+
+        } else {
+            $users = (array) json_decode(stripslashes($users));
+        }
+
+        $res = $m_users->changeActivation($users, $state);
+
+        if ($res !== false) {
+            $res = true;
+            if(count($users) > 1){
+                $msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_MULTI');
+            } else {
+                $msg = JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE');
+            }
+        } else $msg = JText::_('COM_EMUNDUS_ERROR_OCCURED');
+
+        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+        exit;
+    }
 
 	public function affectgroups() {
 		$jinput = JFactory::getApplication()->input;

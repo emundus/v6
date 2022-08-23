@@ -181,7 +181,7 @@ class EmundusModelUsers extends JModelList {
         if ($showUniversities == 1)
             $query .= 'cat.title as university,';
 
-        $query .= 'u.block as active
+        $query .= 'u.activation as active,u.block as block
                     FROM #__users AS u
                     LEFT JOIN #__emundus_users AS e ON u.id = e.user_id
                     LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id
@@ -1284,6 +1284,28 @@ class EmundusModelUsers extends JModelList {
 
                 $res = $db->execute();
 	            EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_ADD_USER_UPDATE');
+            }
+
+            return $res;
+
+        } catch(Exception $e) {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
+    public function changeActivation($users, $state) {
+
+        try {
+            $db = $this->getDbo();
+            foreach ($users as $uid) {
+                $uid = intval($uid);
+                $query = "UPDATE #__users SET activation = ".$state." WHERE id =". $uid;
+
+                $db->setQuery($query);
+                $res = $db->execute();
+
+                EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_ADD_USER_UPDATE');
             }
 
             return $res;
@@ -2517,7 +2539,7 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    public function updateProfilePicture($user_id,$target_file){
+    public function updateProfilePicture($user_id, $target_file){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -2528,7 +2550,7 @@ class EmundusModelUsers extends JModelList {
             $db->setQuery($query);
             return $db->execute();
         } catch (Exception $e) {
-            JLog::add(' com_emundus/models/users.php | Cannot update profile picture for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add("com_emundus/models/users.php | Cannot update profile picture for user $user_id :"  . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;
         }
     }
