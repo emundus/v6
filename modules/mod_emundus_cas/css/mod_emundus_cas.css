@@ -14,6 +14,18 @@
     margin-bottom: 50px;
     margin-top: 50px;
     height: 35rem;
+    border-radius: 5px;
+}
+
+.container-module-cas .sous-container-module-cas form .controls {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.container-module-cas .sous-container-module-cas form .controls input  {
+    width: 100%;
 }
 
 .container-module-cas .sous-container-module-cas {
@@ -27,13 +39,13 @@
     justify-content: space-between;
 }
 
-.container-module-cas  .sous-container-module-cas ul li {
+.container-module-cas .sous-container-module-cas ul li {
     padding: 30px;
     flex: 0 0 50%;
     text-align: center;
 }
 
-.container-module-cas  .sous-container-module-cas #connexion {
+.container-module-cas .sous-container-module-cas #connexion {
     display: flex;
     flex-direction: row;
     height: 25rem;
@@ -44,7 +56,7 @@
     margin-right: auto;
 }
 
-.container-module-cas  .sous-container-module-cas #connexion .container {
+.container-module-cas .sous-container-module-cas #connexion .container {
   width: 100%;
 }
 
@@ -56,6 +68,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription  a.btn.btn-primary {
@@ -76,6 +89,7 @@
     justify-content: flex-end;
     align-items: center;
     height: 100%;
+    border-radius: 5px;
 }
 
 .container-module-cas  .sous-container-module-cas #inscription .formulaire {
@@ -109,8 +123,13 @@
     display: none !important;
 }
 
-.container-module-cas  .sous-container-module-cas .couleurFoncee {
+.container-module-cas  .sous-container-module-cas li.couleurFoncee {
     background: #FCFCFC;
+    border-radius: 5px 5px 0 0;
+}
+
+.container-module-cas  .sous-container-module-cas li:not(.couleurFoncee) {
+    border-radius: 5px 5px 0 0;
 }
 
 .container-module-cas  .sous-container-module-cas li:nth-child(1):not(.couleurFoncee) {

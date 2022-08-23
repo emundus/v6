@@ -1,0 +1,450 @@
+{
+  "field": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE",
+      "name": "password",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_TEXT"
+        },
+        {
+          "value": 3,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_EMAIL"
+        },
+        {
+          "value": 5,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_LINK"
+        },
+        {
+          "value": 6,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_FIELD_TYPE_NUMBER"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER",
+      "name": "placeholder",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT",
+      "name": "rollover",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_MAXLENGTH",
+      "name": "maxlength",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_TITLE",
+      "name": "text_input_mask",
+      "type": "text",
+      "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_HINT",
+      "placeholder": "COM_EMUNDUS_ONBOARD_BUILDER_INPUT_MASK_PLACEHOLDER",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "textarea": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_DISPLAY_LABEL",
+      "name": "textarea_showlabel",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": false,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_PLACEHOLDER",
+      "name": "textarea_placeholder",
+      "type": "text",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_WYSIWIG",
+      "name": "use_wysiwyg",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT",
+      "name": "textarea-maxlength",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_SHOWMAX_LIMIT",
+      "name": "textarea-showmax",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE",
+      "name": "textarea_limit_type",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "char",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_CHARACTERS"
+        },
+        {
+          "value": "word",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_TEXTAREA_LIMIT_TYPE_WORDS"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "checkbox": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CHECKBOX_OPTIONS_PER_ROW",
+      "name": "ck_options_per_row",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "radiobutton": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_RADIOBUTTON_OPTIONS_PER_ROW",
+      "name": "options_per_row",
+      "type": "number",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "birthday": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_ADVANCED",
+      "name": "advanced_behavior",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": false,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD",
+      "name": "birthday_yearopt",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "number",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_YEARS_NUMBER"
+        },
+        {
+          "value": "since",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_SINCE_YEAR"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER",
+      "name": "birthday_yearstart",
+      "type": "number",
+      "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_LIST_METHOD_NUMBER_TIP",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST",
+      "name": "birthday_forward",
+      "type": "number",
+      "helptext": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_YEARS_FUTURE_PAST_TIP",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT",
+      "name": "list_date_format",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "d.m.Y",
+          "label": "21.12.2022"
+        },
+        {
+          "value": "m.d.Y",
+          "label": "12.21.2022"
+        },
+        {
+          "value": "d/m/Y",
+          "label": "21/12/2022"
+        },
+        {
+          "value": "d m",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_BIRTHDAY_FORMAT_D_M"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "yesno": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_YESNO_DEFAULT_VALUE",
+      "name": "yesno_default",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
+  "calc": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALC_VALUE",
+      "name": "calc_calculation",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "databasejoin": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE",
+      "name": "database_join_display_type",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "dropdown",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_DROPDOWN"
+        },
+        {
+          "value": "radio",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_RADIO"
+        },
+        {
+          "value": "auto-complete",
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_AUTOCOMPLETE"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_TABLE",
+      "name": "join_db_name",
+      "type": "databasejoin",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_VALUE",
+      "name": "join_key_column",
+      "type": "databasejoin_cascade",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL",
+      "name": "join_val_column",
+      "type": "databasejoin_cascade",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_LABEL_CONCAT",
+      "name": "join_val_column_concat",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_SHOW_PLEASE_SELECT",
+      "name": "database_join_show_please_select",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE",
+      "name": "database_join_where_sql",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_WHERE_AJAX",
+      "name": "databasejoin_where_ajax",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": true
+    }
+  ],
+  "date": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_DEFAULT_TODAY",
+      "name": "date_defaulttotoday",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_FIRST_DAY",
+      "name": "date_firstday",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_SUNDAY"
+        },
+        {
+          "value": 1,
+          "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_MONDAY"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ]
+}

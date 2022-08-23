@@ -156,7 +156,7 @@
 }
 
 .rotate-me.blue, .rotate-me.orange {
-    width: 100vw;
+    width: 100%;
 }
 
 .navsearch-content {

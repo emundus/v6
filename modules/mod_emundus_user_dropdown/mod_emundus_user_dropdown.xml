@@ -54,6 +54,11 @@
 					<option value="2">COM_EMUNDUS_USERDROPDOWN_SHOW_REGISTRATION_NEVER</option>
 				</field>
 
+				<field name="show_profile_picture" type="radio" default="1" label="Show profile picture" description="" class="btn-group btn-group-yesno">
+					<option value="0">JNo</option>
+					<option value="1">JYes</option>
+				</field>
+
 				<field name="switch_profile_redirect" type="text" default="index.php" size="5" label="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT" description="COM_EMUNDUS_USERDROPDOWN_SWITCH_PROFILE_REDIRECT_DESC" />
 			</fieldset>
 		</fields>

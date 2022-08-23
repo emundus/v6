@@ -189,6 +189,21 @@ JText::script('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT');
 JText::script('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT');
 JText::script('COM_EMUNDUS_APPLICATION_DOCUMENT_PRINTED_ON');
 JText::script('COM_EMUNDUS_APPLICATION_APPLICANT');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT_2');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_UPLOAD');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE');
+JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD');
+JText::script('COM_EMUNDUS_ACCOUNT_INFORMATIONS');
+JText::script('COM_EMUNDUS_ACCOUNT_PERSONAL_DETAILS');
+JText::script('COM_EMUNDUS_USERS_DEFAULT_LANGAGE');
+JText::script('COM_EMUNDUS_USERS_NATIONALITY');
+JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PASSWORD');
+
 
 // view user
 JText::script('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL');
@@ -208,6 +223,9 @@ JText::script('COM_EMUNDUS_STATE');
 JText::script('COM_EMUNDUS_PROFILE_SWITCH_PROFILE');
 JText::script('COM_EMUNDUS_PROFILE_PROFILE_CHOSEN');
 Jtext::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TEXT');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -319,6 +337,7 @@ JText::script('FNUM');
 JText::script('COM_EMUNDUS_APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
 JText::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_DELETE_USERS');
+JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_NO_FORM_FOUND');
 
 // Submit application
 JText::script('COM_EMUNDUS_CONGRATULATIONS');
@@ -466,38 +485,25 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_COMPLETED');
 JText::script('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_EMAILS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_EXPORTS_EXPORT');
 JText::script('COM_EMUNDUS_ACTIONS_SEARCH');
 
 JText::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
 JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
+JText::script('COM_EMUNDUS_FILES_ARE_EDITED_BY_OTHER_USERS');
+JText::script('COM_EMUNDUS_FILES_IS_EDITED_BY_OTHER_USER');
+JText::script('COM_EMUNDUS_FILE_EDITED_BY_ANOTHER_USER');
 
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
 
+// LOGS
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD');
+JText::script('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR');
+JText::script('COM_EMUNDUS_LOGS_EXPORT');
 // ONBOARD
-
-JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
-JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-JHTML::script('media/com_emundus/js/em_files.js');
-JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
-JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
-
-JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
-JHtml::styleSheet('media/com_emundus/css/reset.css');
-JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
-JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
-JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
-JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
-JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
-JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 $app = JFactory::getApplication();
 
@@ -525,7 +531,28 @@ $token = $app->input->get('token', '', 'ALNUM');
 
 if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+    JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
+    JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
+    JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
+    JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+    JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    JHTML::script('media/com_emundus/js/em_files.js');
+    JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
+    JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+
+    JHtml::styleSheet('media/com_emundus/css/reset.css');
+    JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
+    JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+    JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
+    JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
+    JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
+    JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 }
+JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
+
+JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
+JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).

@@ -18,7 +18,7 @@
           {{ElementOptions}}
         </span>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalEditElement' + elementId)">
-          <span class="material-icons">close</span>
+          <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
@@ -85,15 +85,6 @@
 
 <script>
 import axios from "axios";
-import fieldF from "./Plugin/field";
-import birthdayF from "./Plugin/birthday";
-import checkboxF from "./Plugin/checkbox";
-import dropdownF from "./Plugin/dropdown";
-import radiobtnF from "./Plugin/radiobtn";
-import textareaF from "./Plugin/textarea";
-import displayF from "./Plugin/display";
-import fileF from "./Plugin/fileupload";
-import yesnoF from './Plugin/yesno';
 
 
 const qs = require("qs");
@@ -111,17 +102,7 @@ export default {
     actualLanguage: String,
     profileId:Number
   },
-  components: {
-    fieldF,
-    birthdayF,
-    checkboxF,
-    dropdownF,
-    radiobtnF,
-    textareaF,
-    displayF,
-    fileF,
-    yesnoF,
-  },
+  components: {},
   data() {
     return {
       label: {

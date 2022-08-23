@@ -29,56 +29,9 @@ class EmundusControllerForm extends JControllerLegacy {
         parent::__construct($config);
 
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
-        $this->m_form = $this->getModel('form');
+        require_once (JPATH_COMPONENT.DS.'models'.DS.'form.php');
+        $this->m_form = new EmundusModelForm;
     }
-
-    public function getformcount() {
-        $user = JFactory::getUser();
-
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-	        $jinput = JFactory::getApplication()->input;
-
-	        $filterCount = $jinput->getString('filterCount');
-	        $rechercheCount = $jinput->getString('rechercheCount');
-
-            $forms = $this->m_form->getFormCount($filterCount, $rechercheCount);
-
-            if ($forms > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
-            }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-    public function getgrilleEvalcount() {
-        $user = JFactory::getUser();
-
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
-            $jinput = JFactory::getApplication()->input;
-
-            $filterCount = $jinput->getString('filterCount');
-            $rechercheCount = $jinput->getString('rechercheCount');
-
-            $forms = $this->m_form->getFormCount($filterCount, $rechercheCount);
-
-            if ($forms > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('FORM_RETRIEVED'), 'data' => $forms);
-            } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_FORM'), 'data' => $forms);
-            }
-        }
-        echo json_encode((object)$tab);
-        exit;
-    }
-
 
     public function getallform() {
         $user = JFactory::getUser();
@@ -253,14 +206,9 @@ class EmundusControllerForm extends JControllerLegacy {
         $user = JFactory::getUser();
 
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
         } else {
-	        $jinput = JFactory::getApplication()->input;
-
-	        $data = $jinput->getRaw('body');
-
-            $result = $this->m_form->createProfile($data, $user->id, $user->name);
+            $result = $this->m_form->createApplicantProfile();
 
             if ($result) {
                 $tab = array('status' => 1, 'msg' => JText::_('FORM_ADDED'), 'data' => $result);
@@ -383,6 +331,33 @@ class EmundusControllerForm extends JControllerLegacy {
                 $tab = array('status' => 1, 'msg' => JText::_('DOCUMENTS_RETRIEVED'), 'data' => $form);
             } else {
                 $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_DOCUMENTS'), 'data' => $form);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function getdocumentsusage() {
+        $user = JFactory::getUser();
+        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $document_ids = $jinput->getString('documentIds');
+            $document_ids = explode(',', $document_ids);
+
+            if (!empty($document_ids)) {
+                $forms = $this->m_form->getDocumentsUsage($document_ids);
+
+                if (!empty($forms)) {
+                    $tab['status'] = 1;
+                    $tab['msg'] = 'SUCCESS';
+                    $tab['data'] = $forms;
+                } else {
+                    $tab['msg'] = JText::_("ERROR_GETTING_DOCUMENT_USAGE");
+                }
+            } else {
+                $tab['msg'] = JText::_('MISSING_PARAMS');
             }
         }
         echo json_encode((object)$tab);
@@ -546,8 +521,8 @@ class EmundusControllerForm extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $documents = $jinput->getRaw('documents');
-
+            $documents = $jinput->getString('documents');
+            $documents = json_decode($documents, true);
             $documents = $this->m_form->reorderDocuments($documents);
 
             if (!empty($documents)) {
@@ -765,6 +740,47 @@ class EmundusControllerForm extends JControllerLegacy {
             $changeresponse = array('allowed' => $result, 'msg' => 'worked');
         }
         echo json_encode((object)$changeresponse);
+        exit;
+    }
+
+    public function getdatabasejoinoptions(){
+        $user = JFactory::getUser();
+
+        $jinput = JFactory::getApplication()->input;
+
+        $table_name = $jinput->getString('table_name');
+        $column_name = $jinput->getString('column_name');
+        $value = $jinput->getString('value');
+        $concat_value = $jinput->getString('concat_value');
+        $where_clause = $jinput->getString('where_clause');
+
+        $options = $this->m_form->getDatabaseJoinOptions($table_name, $column_name, $value, $concat_value, $where_clause);
+
+        echo json_encode((object)array('status' => 1, 'msg' => 'worked', 'options' => $options));
+        exit;
+    }
+
+    public function checkcandocbedeleted() {
+        $user = JFactory::getUser();
+        $response = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $docid = $jinput->getInt('docid');
+            $prid = $jinput->getInt('prid');
+
+            if (!empty($prid) && !empty($docid)) {
+                $canBeDeleted = $this->m_form->checkIfDocCanBeRemovedFromCampaign($docid, $prid);
+
+                $response['status'] = 1;
+                $response['msg'] = JText::_("SUCCESS");
+                $response['data'] = $canBeDeleted;
+            } else {
+                $response['msg'] = JText::_("MISSING_PARAMS");
+            }
+        }
+
+        echo json_encode((object)$response);
         exit;
     }
 }
