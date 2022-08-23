@@ -28,7 +28,14 @@
 
       <div class="em-mb-16">
         <label for="title" class="em-font-weight-400">{{ translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_NAME") }}</label>
-        <incremental-select v-if="models.length > 0" :options="documentList" :defaultValue="incSelectDefaultValue" @update-value="updateDocumentSelectedValue"></incremental-select>
+        <incremental-select
+		        v-if="models.length > 0"
+		        :options="documentList"
+		        :defaultValue="incSelectDefaultValue"
+		        :locked="mode != 'create'"
+		        @update-value="updateDocumentSelectedValue"
+        >
+        </incremental-select>
       </div>
 
       <div class="em-mb-16">
@@ -113,7 +120,11 @@ export default {
     mandatory: {
       type: Boolean,
       default: true
-    }
+    },
+		mode: {
+			type: String,
+			default: "create"
+		}
   },
   components: {
     IncrementalSelect,
@@ -167,7 +178,6 @@ export default {
     };
   },
   created() {
-		console.log(this.mandatory);
     this.document.mandatory = this.mandatory;
     this.getDocumentModels();
     this.getFileTypes();
@@ -297,7 +307,7 @@ export default {
 		      document: JSON.stringify(this.document)
 	      };
 
-	      if (this.modelsUsage[this.document.id].usage > 1) {
+	      if (Object.keys(this.modelsUsage).includes(this.document.id) && this.modelsUsage[this.document.id].usage > 1) {
 					this.swalConfirm(
 							this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED'),
 							this.translate('COM_EMUNDUS_FORM_BUILDER_MULTIPLE_FORMS_IMPACTED_TEXT') + ' : ' + this.modelsUsage[this.document.id].profiles.map((profile) => {
