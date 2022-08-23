@@ -24,7 +24,6 @@ class EmundusController extends JControllerLegacy {
     var $_db = null;
 
     function __construct($config = array()){
-
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -92,7 +91,7 @@ class EmundusController extends JControllerLegacy {
         if($profile == null) {
             $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
         }
-        
+
         $h_menu = new EmundusHelperMenu;
         $getformids = $h_menu->getUserApplicationMenu($profile);
 
@@ -581,7 +580,7 @@ class EmundusController extends JControllerLegacy {
 
 	    $m_profile->initEmundusSession($fnum);
 
-	    if (empty($redirect)) {
+        if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
             if (empty($confirm)) {
                 $redirect = $m_application->getFirstPage();
@@ -1205,6 +1204,10 @@ class EmundusController extends JControllerLegacy {
                 $db->execute();
                 $id = $db->insertid();
 
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
+                $dispatcher->trigger('callEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
+
                 if ($format == "raw") {
                     echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"}';
                 } else {
@@ -1447,7 +1450,11 @@ class EmundusController extends JControllerLegacy {
 
         // Split the URL into different parts.
         $cpt = count($urltab);
-        $uid = $urltab[$cpt-2];
+        $uid = (int)$urltab[$cpt-2];
+        if(empty($uid)) {
+            // Manage subdirectories
+            $uid = (int)$urltab[$cpt-3];
+        }
         $file = $urltab[$cpt-1];
 
         $current_user = JFactory::getSession()->get('emundusUser');
@@ -1461,26 +1468,23 @@ class EmundusController extends JControllerLegacy {
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
         if (!empty(JFactory::getUser($uid)->id)) {
-
             $db = JFactory::getDBO();
-            $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
-            if(!empty($fnum)){
-                $query.= " WHERE fnum like ". $db->quote($fnum);
-            } else{
-                $query.= " WHERE user_id = " . $uid;
-            }
-            $query .= " OR filename like " . $db->Quote($file);
 
-            $db->setQuery($query);
-            $fileInfo = $db->loadObject();
-
-            if(empty($fileInfo) && EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)){
+            if(EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)){
                 $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
                 $query.= " WHERE fnum IN (". implode(',',$db->quote($fnums)) . ')';
                 $query .= " AND filename like " . $db->Quote($file);
-                $db->setQuery($query);
-                $fileInfo = $db->loadObject();
+            } else {
+                $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
+                if (!empty($fnum)) {
+                    $query .= " WHERE fnum like " . $db->quote($fnum);
+                } else {
+                    $query .= " WHERE user_id = " . $uid;
+                }
+                $query .= " OR filename like " . $db->Quote($file);
             }
+            $db->setQuery($query);
+            $fileInfo = $db->loadObject();
 
             $first_part_of_filename = explode('_', $file)[0];
             if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28) {
@@ -1491,7 +1495,7 @@ class EmundusController extends JControllerLegacy {
 
         // Check if the user is an applicant and it is his file.
         if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
-            if ($fileInfo->can_be_viewed != 1) {
+            if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo)) {
                 die (JText::_('ACCESS_DENIED'));
             }
         }

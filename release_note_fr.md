@@ -1,17 +1,20 @@
 ##✨ Nouvelles fonctionnalités ✨
-- Cette version continue l'harmonisation visuelle sur le formulaire candidat
-- Intégration d'un module d'interconnexion avec le système Apogée
-- Amélioration de l'interconnexion avec le système CAS
-  - Il est maintenant possible de récupérer tous les attributs définis par le CAS
-  - La récupération de ces attributs permet de corriger le problème reporté pour les noms composés
-- Amélioration de la gestion des phases
-  - Vous pouvez dorénavant définir des dates de début et de fin pour chaque phase 
+- Stabilisation du constructeur de formulaires
+- Possibilité de cacher les informations du document lors de la prévisualisation de celui-ci
+- Ajout d'un espace profil
+  - Proposez à vos déposants de remplir des informations génériques
+  - Les déposants peuvent ajouter des documents type afin de les utiliser au sein de leur différents dossiers sans avoir à les déposer de nouveau
+- Nouveau parcours de création de compte pour les déposants
+  - A l'inscription le déposant est connecté et dirigé vers une page intermédiaire en attente de l'activation de son compte par email
+  - En tant que gestionnaire 3 actions sont dorénavant disponible sur un utilisateur : Activer le compte, Bloquer le compte ou Débloquer le compte
+- Si un utilisateur possède plusieurs profils un message d'accueil s'affiche à la connexion afin de simplifier le changement de rôle
+- Nouveau parcours disponible pour les évaluateurs
+  - La liste des dossiers pour un évaluateur a été simplifié, divers filtres sont disponibles afin de n'afficher qu'une sélection restreinte pour chacun
+  - A l'ouverture d'un dossier une fenêtre scindée en 2 est disponible
+    - La partie gauche affiche la prévisualisation du/des formulaires candidats et de ses documents
+    - La partie droite affiche le formulaire d'évaluation qu'il doit compléter
 
 ##🔥 Corrections majeures 🔥
-- La génération du code programme pouvait poser problème lors d'un copier/coller à la création d'une campagne
-- Lors d'un changement de statut l'information qu'un mail va être envoyé était dans certains cas erronée
-- Optimisation des performances globales
-  - Mise en place d'une file d'attente lors d'un certain nombre de connexions dépassées (définis à 5000 connexions par défaut)
-  - Le temps de récupération des balises dynamiques était proportionnelle au nombre de balises que comportait la plateforme
-- A la copie d'un dossier certaines données n'étaient pas copiées sur le nouveau
-- Prévisualisation des documents : problème de compatibilité avec la dernière version de Safari
+- Amélioration de l'ergonomie lors du filtrage des dossiers
+- L'affichage des listes et des filtres a été revu
+- La création d'utilisateurs a été simplifiée

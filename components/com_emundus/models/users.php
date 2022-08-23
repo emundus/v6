@@ -181,7 +181,7 @@ class EmundusModelUsers extends JModelList {
         if ($showUniversities == 1)
             $query .= 'cat.title as university,';
 
-        $query .= 'u.block as active
+        $query .= 'u.activation as active,u.block as block
                     FROM #__users AS u
                     LEFT JOIN #__emundus_users AS e ON u.id = e.user_id
                     LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id
@@ -1294,6 +1294,28 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
+    public function changeActivation($users, $state) {
+
+        try {
+            $db = $this->getDbo();
+            foreach ($users as $uid) {
+                $uid = intval($uid);
+                $query = "UPDATE #__users SET activation = ".$state." WHERE id =". $uid;
+
+                $db->setQuery($query);
+                $res = $db->execute();
+
+                EmundusModelLogs::log(JFactory::getUser()->id, $uid, null, 20, 'u', 'COM_EMUNDUS_ADD_USER_UPDATE');
+            }
+
+            return $res;
+
+        } catch(Exception $e) {
+            error_log($e->getMessage(), 0);
+            return false;
+        }
+    }
+
 	/**
 	 * @param         $param String The param to be saved in the user account.
 	 *
@@ -1686,7 +1708,7 @@ class EmundusModelUsers extends JModelList {
         if (!$u->save()) {
             return array('msg' =>$u->getError());
         }
-  
+
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
         $query->update($db->quoteName('#__emundus_users'))
@@ -2018,7 +2040,11 @@ class EmundusModelUsers extends JModelList {
 
     public function getUserById($uid) { // user of emundus
         $db = JFactory::getDBO();
-        $query = 'SELECT * FROM #__emundus_users WHERE user_id = '.$uid;
+        $query = $db->getQuery(true);
+        $query->select('eu.*, case when u.password = ' . $db->quote('') . ' then ' . $db->quote('external') . ' else ' . $db->quote('internal') . ' end as login_type')
+            ->from('#__emundus_users as eu')
+            ->leftJoin('#__users as u on u.id = eu.user_id')
+            ->where('eu.user_id = '.$uid);
         $db->setQuery($query);
         return $db->loadObjectList();
     }
@@ -2208,4 +2234,350 @@ class EmundusModelUsers extends JModelList {
 		$return->status = true;
 		return $return;
 	}
+
+    public function getProfileForm(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('form_id')
+                ->from($db->quoteName('#__emundus_setup_formlist'))
+                ->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'))
+                ->andWhere($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            return $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot get profile form for edit user : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return 0;
+        }
+    }
+
+    public function getProfileGroups($formid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('fg.*')
+                ->from($db->quoteName('#__fabrik_groups','fg'))
+                ->leftJoin($db->quoteName('#__fabrik_formgroup','ff').' ON '.$db->quoteName('ff.group_id').' = '.$db->quoteName('fg.id'))
+                ->where($db->quoteName('ff.form_id') . ' = ' . $db->quote($formid))
+                ->andWhere($db->quoteName('fg.published') . ' = 1');
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot get profile groups with formid : ' . $formid . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return [];
+        }
+    }
+
+    public function getProfileElements($group){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('fe.*,fj.action,fj.code,fj.params as jsparams')
+                ->from($db->quoteName('#__fabrik_elements','fe'))
+                ->leftJoin($db->quoteName('#__fabrik_jsactions','fj').' ON '.$db->quoteName('fj.element_id').' = '.$db->quoteName('fe.id'));
+            if(is_array($group)){
+                $query->where($db->quoteName('fe.group_id') . ' IN (' . implode(',',$group) . ')');
+            } else {
+                $query->where($db->quoteName('fe.group_id') . ' = ' . $db->quote($group));
+            }
+            $query->andWhere($db->quoteName('fe.published') . ' = 1')
+                ->order($db->quoteName('fe.ordering'));
+            $db->setQuery($query);
+            $elements = $db->loadObjectList();
+
+            foreach ($elements as $element) {
+                $params = json_decode($element->params);
+
+                $element->label = JText::_($element->label);
+                $params->rollover = JText::_($params->rollover);
+
+                $element->params = json_encode($params);
+            }
+
+            return $elements;
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot get elements of group '.$groupid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return [];
+        }
+    }
+
+    public function saveUser($user,$uid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $columns = array();
+
+        $formid = $this->getProfileForm();
+        $groups = $this->getProfileGroups($formid);
+        $ids_groups = array_map(function($group){
+            return $group->id;
+        },$groups);
+        $elements = $this->getProfileElements($ids_groups);
+
+        $user_keys = array_keys(get_object_vars($user));
+        foreach ($elements as $element) {
+            if(in_array($element->name,$user_keys) && $element->name != 'id'){
+                $columns[] = $element->name;
+            }
+        }
+
+        try {
+            $query->update($db->quoteName('#__emundus_users'));
+            foreach ($columns as $column) {
+                $query->set($db->quoteName($column) . ' = ' . $db->quote($user->{$column}));
+            }
+            $query->where($db->quoteName('user_id') . ' = ' . $db->quote($uid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot update user '.$uid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    public function getProfileAttachments($user_id,$fnum = null){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('esa.*,eua.expires_date,eua.date_time,eua.filename,eua.id as default_id')
+                ->from($db->quoteName('#__emundus_users_attachments','eua'))
+                ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esa.id').' = '.$db->quoteName('eua.attachment_id'));
+            if(!empty($fnum)){
+                $query->where($db->quoteName('eua.attachment_id') . ' NOT IN (SELECT distinct attachment_id FROM #__emundus_uploads WHERE fnum = '.$db->quote($fnum).')');
+            }
+            $query->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user_id))
+                ->andWhere($db->quoteName('eua.published') . ' = 1');
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot get default attachments uploaded by the applicant : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return [];
+        }
+    }
+
+    public function getProfileAttachmentsAllowed(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('default_attachment') . ' = 1');
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot get attachments allowed to default values : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return [];
+        }
+    }
+
+    public function addDefaultAttachment($user_id,$attachment_id,$filename){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $six_month_in_future = strtotime(date('Y-m-d') . "+6 month");
+
+        try {
+            $query->insert($db->quoteName('#__emundus_users_attachments'))
+                ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($attachment_id))
+                ->set($db->quoteName('filename') . ' = ' . $db->quote($filename))
+                ->set($db->quoteName('expires_date') . ' = ' . $db->quote(date('Y-m-d',$six_month_in_future)));
+            $db->setQuery($query);
+            $result = $db->execute();
+
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onAfterProfileAttachmentUpload', [$user_id, (int)$attachment_id, $filename]);
+            $dispatcher->trigger('callEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $user_id, 'attachment_id' => (int)$attachment_id, 'file' => $filename]]);
+
+            return $result;
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot insert default documents : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    public function deleteProfileAttachment($id){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->delete($db->quoteName('#__emundus_users_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($id));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot delete document from jos_emundus_users_attachments with id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    public function uploadProfileAttachmentToFile($fnum,$aids,$uid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('eua.*')
+                ->from($db->quoteName('#__emundus_users_attachments','eua'))
+                ->where($db->quoteName('eua.attachment_id') . ' IN (' . $aids . ')')
+                ->andWhere($db->quoteName('eua.user_id') . ' = ' . $db->quote($uid));
+            $db->setQuery($query);
+            $attachments_to_copy = $db->loadObjectList();
+
+            foreach ($attachments_to_copy as $attachment) {
+                $query->clear()
+                    ->select('count(eu.id)')
+                    ->from($db->quoteName('#__emundus_uploads', 'eu'))
+                    ->where($db->quoteName('eu.attachment_id') . ' = ' . $db->quote($attachment->attachment_id))
+                    ->andWhere($db->quoteName('eu.fnum') . ' = ' . $db->quote($fnum));
+                $db->setQuery($query);
+                $attachment_already_copy = $db->loadResult();
+
+                if ($attachment_already_copy == 0) {
+                    $root_dir = "images/emundus/files/" . $uid;
+
+                    if(!file_exists($root_dir)){
+                        mkdir($root_dir);
+                    }
+
+                    $file = explode('/',$attachment->filename);
+                    $file = explode('.',end($file));
+                    $ext = end($file);
+                    $file = $file[0];
+                    $pos = strrpos($file, '-');
+                    $file = substr($file, 0, $pos);
+
+                    $target_file = $file . '-'  . time() . '.' . $ext;
+
+                    copy($attachment->filename, $root_dir . '/' . $target_file);
+                    $columns = array('user_id', 'fnum', 'attachment_id', 'filename');
+                    $values = array($uid, $fnum, $attachment->attachment_id, $target_file);
+
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_uploads'))
+                        ->columns(implode(',', $db->quoteName($columns)))
+                        ->values(implode(',', $db->quote($values)));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    public function uploadFileAttachmentToProfile($fnum,$aid,$uid){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('eu.*')
+                ->from($db->quoteName('#__emundus_uploads','eu'))
+                ->where($db->quoteName('eu.attachment_id') . ' = ' . $db->quote($aid))
+                ->andWhere($db->quoteName('eu.fnum') . ' = ' . $db->quote($fnum))
+                ->order('eu.id DESC');
+            $db->setQuery($query);
+            $attachment_to_copy = $db->loadObject();
+
+            if(!empty($attachment_to_copy)) {
+                $query->clear()
+                    ->select('count(eua.id)')
+                    ->from($db->quoteName('#__emundus_users_attachments', 'eua'))
+                    ->where($db->quoteName('eua.attachment_id') . ' = ' . $db->quote($attachment_to_copy->attachment_id))
+                    ->andWhere($db->quoteName('eua.user_id') . ' = ' . $db->quote($uid));
+                $db->setQuery($query);
+                $attachment_already_copy = $db->loadResult();
+
+                if ($attachment_already_copy == 0) {
+                    $file_dir = "images/emundus/files/" . $uid;
+                    $root_dir = "images/emundus/files/" . $uid . '/default_attachments';
+
+                    if (!file_exists($root_dir)) {
+                        mkdir($root_dir);
+                    }
+
+                    $file = explode('/', $attachment_to_copy->filename);
+                    $file = explode('.', end($file));
+                    $ext = end($file);
+                    $file = $file[0];
+                    $pos = strrpos($file, '-');
+                    $file = substr($file, 0, $pos);
+
+                    $target_file = $file . '-' . time() . '.' . $ext;
+
+                    copy($file_dir . '/' . $attachment_to_copy->filename, $root_dir . '/' . $target_file);
+                    $columns = array('date_time','user_id', 'attachment_id', 'filename','published');
+                    $values = array(date('Y-m-d H:i:s'), $uid, $attachment_to_copy->attachment_id, $root_dir . '/' . $target_file, 1);
+
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_users_attachments'))
+                        ->columns(implode(',', $db->quoteName($columns)))
+                        ->values(implode(',', $db->quote($values)));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    JPluginHelper::importPlugin('emundus');
+                    $dispatcher = JEventDispatcher::getInstance();
+                    $dispatcher->trigger('onAfterProfileAttachmentUpload', [$uid, (int)$attachment_to_copy->attachment_id, $root_dir . '/' . $target_file]);
+                    $dispatcher->trigger('callEventHandler', ['onAfterProfileAttachmentUpload', ['user_id' => $uid, 'attachment_id' => (int)$attachment_to_copy->attachment_id, 'file' => $root_dir . '/' . $target_file]]);
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    public function updateProfilePicture($user_id, $target_file){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->update('#__emundus_users')
+                ->set('profile_picture = ' . $db->quote($target_file))
+                ->where('user_id = ' . $db->quote($user_id));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add("com_emundus/models/users.php | Cannot update profile picture for user $user_id :"  . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    public function addApplicantProfile($user_id){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id,label,published,status')
+                ->from($db->quoteName('#__emundus_setup_profiles'))
+                ->where($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $app_profile = $db->loadResult();
+
+            $query->clear()
+                ->insert('#__emundus_users_profile')
+                ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                ->set($db->quoteName('profile_id') . ' = ' . $db->quote($app_profile->id));
+            $db->setQuery($query);
+            $db->execute();
+
+            return $app_profile;
+        } catch (Exception $e) {
+            JLog::add(' com_emundus/models/users.php | Cannot add applicant profile for user ' . $user_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
 }

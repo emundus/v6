@@ -50,7 +50,9 @@ export default {
 
   methods: {
     saveText(){
-      this.$emit("input", tinymce.activeEditor.getContent());
+			if (typeof tinymce.activeEditor !== undefined && tinymce.activeEditor !== null) {
+				this.$emit("input", tinymce.activeEditor.getContent());
+			}
     }
   },
 

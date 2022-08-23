@@ -23,7 +23,7 @@
           {{addTrigger}}
         </span>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
-          <span class="material-icons">close</span>
+          <span class="material-icons-outlined">close</span>
         </button>
       </div>
 
@@ -31,9 +31,10 @@
         <div class="em-mb-16">
           <label>{{Model}}* :</label>
           <div class="em-flex-row">
-            <select v-model="form.model" class="em-w-100" :class="{ 'is-invalid': errors.model}">
+            <select v-if="models.length > 0" v-model="form.model"  class="em-w-100" :class="{ 'is-invalid': errors.model}">
               <option v-for="(model, index) in models" :key="index" :value="model.id">{{model.subject}}</option>
             </select>
+	          <p v-else class="em-red-500-color">{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}</p>
           </div>
           <span v-if="errors.model" class="em-red-500-color em-mb-8">
             <span class="em-red-500-color">{{ModelRequired}}</span>
@@ -265,9 +266,11 @@ export default {
     },
     getEmailModels() {
       axios.get("index.php?option=com_emundus&controller=email&task=getallemail")
-              .then(response => {
-                this.models = response.data.data;
-              });
+		      .then(response => {
+						if (response.data.status) {
+							this.models = response.data.data.datas;
+						}
+		      });
     },
     getStatus() {
       axios.get("index.php?option=com_emundus&controller=email&task=getstatus")

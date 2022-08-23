@@ -49,6 +49,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
+    $status_for_delete = $eMConfig->get('status_for_delete', null);
+    if (!empty($status_for_delete) || $status_for_delete == '0' ) {
+        $status_for_delete = explode(',', $status_for_delete);
+    }
+
     $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
     $display_poll = $eMConfig->get('display_poll', 0);
     $display_poll_id = $eMConfig->get('display_poll_id', null);
