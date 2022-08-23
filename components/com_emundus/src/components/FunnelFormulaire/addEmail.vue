@@ -20,7 +20,7 @@
     <p>{{ TheCandidateDescription }}</p>
 
     <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggercandidate'); triggerSelected = null">
-      <span class="material-icons em-mr-8 em-color-white">add</span>
+      <span class="material-icons-outlined em-mr-8 em-color-white">add</span>
       {{ addTrigger }}
     </button>
 
@@ -48,10 +48,10 @@
 
           <div class="em-flex-row em-flex-end">
             <a class="em-mr-8 em-pointer" @click="editTrigger(trigger)">
-              <span class="material-icons">edit</span>
+              <span class="material-icons-outlined">edit</span>
             </a>
             <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)":title="removeTrig">
-              <span class="material-icons">close</span>
+              <span class="material-icons-outlined">close</span>
             </a>
           </div>
         </div>
@@ -64,7 +64,7 @@
     <p>{{ ManualDescription }}</p>
 
     <button class="em-primary-button em-w-auto em-mt-8" @click="$modal.show('modalAddTriggermanual'); triggerSelected = null">
-      <span class="material-icons em-mr-8 em-color-white">add</span>
+      <span class="material-icons-outlined em-mr-8 em-color-white">add</span>
       {{ addTrigger }}
     </button>
 
@@ -92,10 +92,10 @@
 
           <div class="em-flex-row em-flex-end">
             <a class="em-pointer em-mr-8" @click="editTrigger(trigger)">
-              <span class="material-icons">edit</span>
+              <span class="material-icons-outlined">edit</span>
             </a>
             <a class="em-pointer" @click="removeTrigger(trigger.trigger_id)">
-              <span class="material-icons">close</span>
+              <span class="material-icons-outlined">close</span>
             </a>
           </div>
         </div>
@@ -206,5 +206,13 @@ export default {
   background: white;
   border-radius: 5px;
   padding: 16px 24px;
+}
+
+a.em-pointer:nth-child(2) .material-icons {
+color: #DB333E;
+}
+
+a.em-pointer:nth-child(2):hover .material-icons {
+  color: #C31924;
 }
 </style>

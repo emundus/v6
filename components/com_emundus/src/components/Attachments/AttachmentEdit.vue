@@ -102,12 +102,22 @@
         <!-- TODO: add file size -->
       </div>
     </div>
-    <div class="actions">
-      <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
-        {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
-      </button>
-    </div>
 
+	  <div class="em-w-100 em-flex-row em-flex-space-between">
+		  <div id="toggle-display">
+			  <span v-if="displayed" class="material-icons-outlined displayed em-pointer" @click="toggleDisplay(false)">
+				  chevron_right
+			  </span>
+			  <span v-else class="material-icons-outlined not-displayed em-pointer" @click="toggleDisplay(true)">
+				  menu_open
+			  </span>
+		  </div>
+		  <div class="actions">
+			  <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
+				  {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
+			  </button>
+		  </div>
+	  </div>
     <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
 </template>
@@ -123,10 +133,15 @@ export default {
       type: String,
       required: true,
     },
+	  isDisplayed: {
+			type: Boolean,
+		  default: true
+	  }
   },
   mixins: [mixin],
   data() {
     return {
+			displayed: true,
       attachment: {},
       categories: {},
       file: null,
@@ -141,9 +156,8 @@ export default {
     };
   },
   mounted() {
-    this.canUpdate = this.$store.state.user.rights[this.fnum]
-        ? this.$store.state.user.rights[this.fnum].canUpdate
-        : false;
+		this.displayed = this.isDisplayed;
+    this.canUpdate = this.$store.state.user.rights[this.fnum] ? this.$store.state.user.rights[this.fnum].canUpdate : false;
     this.canSee = !this.$store.state.global.anonyme;
     this.attachment = this.$store.state.attachment.selectedAttachment;
     this.categories = this.$store.state.attachment.categories;
@@ -220,6 +234,10 @@ export default {
         this.errorMessage = "";
       }, 3000);
     },
+	  toggleDisplay(displayed) {
+			this.displayed = displayed;
+			this.$emit('update-displayed', this.displayed);
+	  }
   },
   computed: {
     allowedType() {
@@ -338,6 +356,7 @@ export default {
 
   .actions {
     align-self: flex-end;
+    margin-right: 20px;
 
     button {
       transition: all 0.3s;
@@ -347,13 +366,16 @@ export default {
 
   .input-group {
     margin-top: 10px;
-
     display: flex;
     flex-direction: column;
 
     [type="checkbox"] {
       width: fit-content;
     }
+
+	  input {
+		  height: fit-content !important;
+	  }
   }
 
 	.valid-state {
@@ -389,6 +411,18 @@ export default {
 				color: var(--error-color);
 				background-color: var(--error-bg-color);
 			}
+		}
+	}
+
+	#toggle-display {
+		.not-displayed {
+			position: absolute;
+			bottom: 0;
+			right: 15px;
+			padding: 10px;
+			background: white;
+			border-top-left-radius: 4px;
+			border: 1px solid #ececec;
 		}
 	}
 }

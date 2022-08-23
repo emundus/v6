@@ -13,7 +13,7 @@
       </div>
 
       <button @click="addNewForm" class="em-primary-button em-w-auto">
-          <span class="material-icons em-color-white em-mr-8">add</span>
+          <span class="material-icons-outlined em-color-white em-mr-8">add</span>
           <span>{{ AddForm }}</span>
       </button>
     </div>

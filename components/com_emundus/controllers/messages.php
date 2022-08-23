@@ -506,12 +506,14 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	    require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
         $m_messages = new EmundusModelMessages();
         $m_emails = new EmundusModelEmails();
+        $m_users = new EmundusModelUsers();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
         $m_eval = new EmundusModelEvaluation;
@@ -574,6 +576,17 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         foreach ($fnums as $fnum) {
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
+
+            $emundus_user = $m_users->getUserById($fnum->applicant_id)[0];
+            if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+                if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                    if (!is_array($cc)) {
+                        $cc = [];
+                    }
+                    $cc[] = $emundus_user->email_cc;
+                }
+            }
+
 
             $toAttach = [];
             $post = [
@@ -1009,11 +1022,13 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
 	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+	    require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
         $m_messages = new EmundusModelMessages();
 	    $m_emails   = new EmundusModelEmails();
 	    $m_files    = new EmundusModelFiles();
 	    $m_campaign = new EmundusModelCampaign();
+	    $m_users = new EmundusModelUsers();
 
 	    $user   = JFactory::getUser();
 	    $config = JFactory::getConfig();
@@ -1084,8 +1099,20 @@ class EmundusControllerMessages extends JControllerLegacy {
 	    }
 	    $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
 
+        // Check if user defined a cc address
+        $cc = [];
+        $emundus_user = $m_users->getUserById($fnum['applicant_id'])[0];
+        if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+            if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                $cc[] = $emundus_user->email_cc;
+            }
+        }
+
 	    // Configure email sender
 	    $mailer = JFactory::getMailer();
+        if (!empty($cc)) {
+            $mailer->addCc($cc);
+        }
 	    if ($bcc) {
 		    $mailer->addBCC($user->email);
 	    }
@@ -1321,6 +1348,37 @@ class EmundusControllerMessages extends JControllerLegacy {
 			}
 			return false;
 		} else {
+            $user_id_to = !empty($user_id) ? $user_id : null;
+
+            if ($user_id_to === null) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+                $query->select('id')
+                    ->from('#__users')
+                    ->where('email = ' . $db->quote($email_address));
+
+                $db->setQuery($query);
+
+                try {
+                    $user_id_to = $db->loadResult();
+                } catch (Exception $e) {
+                    JLog::add('error trying to find user_id_to ' . $e->getMessage(), JLog::ERROR);
+                }
+            }
+
+            if (!empty($user_id_to)) {
+                // Logs send email
+                $log = [
+                    'user_id_from'  => 62,
+                    'user_id_to'    => $user_id_to,
+                    'subject'       => $subject,
+                    'message'       => '<i>'.JText::_('COM_EMUNDUS_EMAILS_MESSAGE_SENT_TO').' '.$email_address.'</i><br>'.$body,
+                    'type'          => $template->type
+                ];
+                $m_emails = new EmundusModelEmails();
+                $m_emails->logEmail($log);
+            }
+
 			return true;
 		}
 	}
@@ -1559,9 +1617,11 @@ class EmundusControllerMessages extends JControllerLegacy {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 
         $m_emails = new EmundusModelEmails();
+        $m_users = new EmundusModelUsers();
         $m_files = new EmundusModelFiles();
         $m_campaign = new EmundusModelCampaign();
         $_meval = new EmundusModelEvaluation;
@@ -1648,11 +1708,23 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mail_from_name
         ];
 
+        // Check if user defined a cc address
+        $cc = [];
+        $emundus_user = $m_users->getUserById($fnum_info['applicant_id'])[0];
+        if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+            if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                $cc[] = $emundus_user->email_cc;
+            }
+        }
+
         // Configure email sender
         $mailer = JFactory::getMailer();
         $mailer->setSender($sender);
         $mailer->addReplyTo($mail_from, $mail_from_name);
         $mailer->addRecipient($fnum_info['email']);
+        if(!empty($cc)) {
+            $mailer->addCC($cc);
+        }
         $mailer->setSubject($subject);
         $mailer->isHTML(true);
         $mailer->Encoding = 'base64';

@@ -82,15 +82,6 @@ SELECT @settings_id:=id FROM jos_menu WHERE menutype = 'onboardingmenu' AND link
 UPDATE jos_falang_content SET value = JSON_REPLACE(value, '$.menu_image', '/images/emundus/menus/parametres.svg')
 WHERE reference_table LIKE 'menu' and reference_field LIKE 'params' and reference_id = @settings_id;
 
-
-SELECT @campaigns_module:=GROUP_CONCAT(id) FROM jos_modules WHERE module LIKE 'mod_emundus_campaign';
-UPDATE jos_falang_content
-SET value = JSON_REPLACE(value, '$.mod_em_campaign_date_format', 'd\/m\/Y à H\\hi')
-WHERE reference_table LIKE 'modules' and reference_field LIKE 'params' and language_id = 2 and reference_id IN (@campaigns_module);
-UPDATE jos_falang_content
-SET value = JSON_REPLACE(value, '$.mod_em_campaign_date_format', 'd\/m\/Y at H:i')
-WHERE reference_table LIKE 'modules' and reference_field LIKE 'params' and language_id = 1 and reference_id IN (@campaigns_module);
-
 UPDATE jos_content
 SET title = 'Indicateurs',introtext = '<h1>Bienvenue sur la page indicateurs</h1>'
 WHERE id = 50;
@@ -101,6 +92,6 @@ SET value = 'Indicators'
 WHERE reference_table LIKE 'content' and reference_field LIKE 'title' and language_id = 1 and reference_id = 50;
 UPDATE jos_falang_content
 SET value = '<h1>Welcome to the indicators page</h1>'
-WHERE reference_table LIKE 'content' and reference_field LIKE 'introtext' and language_id = 1 and reference_id = 50
+WHERE reference_table LIKE 'content' and reference_field LIKE 'introtext' and language_id = 1 and reference_id = 50;
 
 UPDATE jos_modules SET published = 0 WHERE title LIKE 'User menu phone';

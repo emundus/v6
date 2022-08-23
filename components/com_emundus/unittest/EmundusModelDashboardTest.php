@@ -32,7 +32,7 @@ JFactory::getApplication('site');
 // activate session
 session_start();
 
-class EmundusModeldashboardTest extends TestCase
+class EmundusModelDashboardTest extends TestCase
 {
     private $m_dashboard;
 
@@ -42,7 +42,7 @@ class EmundusModeldashboardTest extends TestCase
         $this->m_dashboard = new EmundusModeldashboard;
     }
 
-    public function testGetarticle()
+    /*public function testGetarticle()
     {
         // TEST 1 : Article is return
         $widget_article = $this->m_dashboard->getarticle(7,1040);
@@ -159,5 +159,5 @@ class EmundusModeldashboardTest extends TestCase
 
         $u = JUser::getInstance($user->id);
         $u->delete();
-    }
+    }*/
 }
