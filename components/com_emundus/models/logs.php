@@ -50,8 +50,6 @@ class EmundusModelLogs extends JModelList {
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
 
-        $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
-
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
 		$log_actions = $eMConfig->get('log_actions', null);
@@ -71,9 +69,9 @@ class EmundusModelLogs extends JModelList {
 	
 					$db = JFactory::getDbo();
 					$query = $db->getQuery(true);
-
-                    $columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
-                    $values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
+	
+					$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params'];
+					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params)];
 
 					try {
                         $query->insert($db->quoteName('#__emundus_logs'))
@@ -186,11 +184,10 @@ class EmundusModelLogs extends JModelList {
 	 * @param int $action
 	 * @param string $crud
 	 * @param int $offset
-     * @param int $limit
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and an array of objects on success.
 	 */
-	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
+	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null) {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!empty($user_from) && !is_numeric($user_from)) {
@@ -215,7 +212,7 @@ class EmundusModelLogs extends JModelList {
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
 			->order($db->QuoteName('lg.id') . ' DESC')
-			->setLimit($limit, $offset);
+			->setLimit(100, $offset);
 
 		$db->setQuery($query);
 		$results = $db->loadObjectList();
@@ -350,53 +347,4 @@ class EmundusModelLogs extends JModelList {
 
 		return $details;
 	}
-
-    public function exportLogs($fnum)
-    {
-        $actions = $this->getActionsOnFnum($fnum, null, null, null, null, 1000);
-        if (!empty($actions)) {
-            $lines = [
-                [
-                    JText::_('DATE'),
-                    JText::_('USER'),
-                    "to User",
-                    JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'),
-                    JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_DETAILS')
-                ]
-            ];
-            foreach ($actions as $action) {
-                $details = $this->setActionDetails($action->action_id, $action->verb, $action->params);
-                $action_details = strip_tags($details['action_details']);
-                $action_details = str_replace("\n", "", $action_details);
-                $action_details = str_replace("arrow_forward", " -> ", $action_details);
-
-                $lines[] = [
-                    JHtml::_('date', $action->timestamp, JText::_('DATE_FORMAT_LC2')),
-                    $action->firstname . ' ' . $action->lastname,
-                    $fnum,
-                    JText::_($action->message),
-                    trim($action_details)
-                ];
-            }
-
-            $csv_file = '';
-            foreach ($lines as $line) {
-                $csv_file .= implode(';', $line) . "\n";
-            }
-
-            $file = JPATH_ROOT . '/tmp/' . $fnum . '_logs.csv';
-
-            $fp = fopen($file, 'w');
-            if ($fp) {
-                fwrite($fp, $csv_file);
-                fclose($fp);
-
-                return JURI::base() . 'tmp/' . $fnum . '_logs.csv';
-            } else {
-                JLog::add('Could not create csv file in model logs', JLog::ERROR, 'com_emundus');
-            }
-        }
-
-        return false;
-    }
 }

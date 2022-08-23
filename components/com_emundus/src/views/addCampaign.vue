@@ -2,7 +2,7 @@
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined'">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons-outlined">arrow_back</span>
+        <span class="material-icons">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
@@ -27,7 +27,7 @@
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
-                class="form-control fabrikinput em-w-100"
+                class="form-control fabrikinput"
                 @focusout="onFormChange()"
             />
           </div>
@@ -120,7 +120,6 @@
             />
           </div>
 
-          <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
             <editor
                 :height="'30em'"
@@ -146,7 +145,7 @@
           <div class="em-flex-row em-mb-16">
             <select
                 id="select_prog"
-                class="form-control fabrikinput em-w-100"
+                class="form-control fabrikinput"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -173,7 +172,7 @@
                   <input
                       type="text"
                       id="prog_label"
-                      class="form-control fabrikinput em-w-100"
+                      class="form-control fabrikinput"
                       placeholder=" "
                       v-model="programForm.label"
                       :class="{ 'is-invalid': errors.progLabel }"
@@ -321,7 +320,7 @@ export default {
       this.campaignId = this.$props.campaign;
     }
 
-    this.actualLanguage = this.$store.getters['global/shortLang'];
+    this.actualLanguage = this.$store.getters['global/actualLanguage'];
     this.coordinatorAccess = this.$store.getters['global/coordinatorAccess'];
 
     // Configure datetime

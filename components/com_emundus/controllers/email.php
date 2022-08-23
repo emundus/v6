@@ -102,6 +102,28 @@ class EmundusControllerEmail extends JControllerLegacy {
         exit;
     }
 
+    public function getemailcount() {
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+
+            $filterCount = $jinput->getString('filterCount');
+            $rechercheCount = $jinput->getString('rechercheCount');
+
+            $emails = $this->m_emails->getEmailCount($filterCount, $rechercheCount);
+
+            if ($emails > 0) {
+                $tab = array('status' => 1, 'msg' => JText::_('EMAIL_RETRIEVED'), 'data' => $emails);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_EMAIL'), 'data' => $emails);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
     /**
      * Get emails filtered
      */

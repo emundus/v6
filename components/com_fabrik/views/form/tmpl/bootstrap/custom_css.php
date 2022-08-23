@@ -132,7 +132,6 @@ echo <<<EOT
 
 .view-form.view-registration .size-100 .size-100 .fabrikGroup {
     background: #fff;
-    margin-bottom: 32px;
 }
 
 .view-checklist #attachment_list_mand .fieldset, .view-checklist #attachment_list_opt .fieldset {
@@ -217,6 +216,7 @@ label {
     display: flex !important;
     flex-direction:row;
 }
+
 
 #g-navigation .g-main-nav .g-dropdown > .g-dropdown-column {
     border: none;
@@ -525,8 +525,7 @@ form#member-profile .form-horizontal .control-label {
     width: 50%;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 0;
-    margin-bottom: 64px;
+    margin-top: 92px;
     border-radius: 16px;
 }
 
@@ -576,7 +575,7 @@ form#member-profile .form-horizontal .control-label {
 
   .view-registration .login div.em-heading-registration,  .view-form .em-formRegistrationCenter div.em-heading-registration  {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
     width: 100%;
@@ -596,7 +595,7 @@ button.register {
     border-radius: 0;
     background: #fff;
     box-shadow: none;
-    padding: 0px 64px 16px 64px;
+    padding: 0px 64px 80px 64px;
     margin-top: 0px !important;
     border-radius: 0 0 16px 16px;
     width: 100%;
@@ -1132,6 +1131,10 @@ body.em-formRegistrationCenter  {
     overflow-x: hidden;
 }
 
+.view-form .fabrikElement div a.chzn-single {
+   border-radius: 0px; 
+}
+
 .view-form .fabrikElement div a.chzn-single span {
    display: inline; 
 }
@@ -1140,6 +1143,10 @@ body.em-formRegistrationCenter  {
 
 .import-csv-page h1, .import-csv-page legend { 
     color: #000 !important; 
+}
+
+.import-csv-page select { 
+   border: 2px solid #ccc!important;
 }
 
 /* RAPPRT ERREUR */ 

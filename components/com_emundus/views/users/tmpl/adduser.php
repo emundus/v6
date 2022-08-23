@@ -15,15 +15,8 @@ if ($s == '') {
 
 $eMConfig = JComponentHelper::getParams('com_emundus');
 
-$applicant_option = false;
-$applicant_option_others = false;
-
 ?>
-<style>
-    #campaigns_chosen{
-        max-width: 62em;
-    }
-</style>
+
 <form action = "<?= ($this->edit == 1)?"index.php?option=com_emundus&controller=users&task=edituser":"index.php?option=com_emundus&controller=users&task=adduser"; ?>" id="em-add-user" class="em-addUser" role="form" method="post">
 	<h3>
 		<?php
@@ -45,15 +38,15 @@ $applicant_option_others = false;
 		<div id="user-information" class="em-addUser-detail-info">
 			<div class="form-group em-addUser-detail-info-firstname">
 				<label class="control-label" for="fname"><?= JText::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
-				<input type="text" class="em-w-100" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
+				<input type="text" class="form-control" id="fname" name="firstname" <?= ($this->edit == 1)?'value="'.$this->user['firstname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-lastname">
 				<label class="control-label" for="lname"><?= JText::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
-				<input type="text" class="em-w-100" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
+				<input type="text" class="form-control" id="lname" name = "lastname" <?= ($this->edit == 1)?'value="'.$this->user['lastname'].'"':''; ?>/>
 			</div>
 			<div class="form-group em-addUser-detail-info-mail">
 				<label class="control-label" for="mail"><?= JText::_('COM_EMUNDUS_EMAIL'); ?></label>
-				<input type="text" class="em-w-100" id="mail" name="email" <?= $this->edit == 1?'value="'.$this->user['email'].'"':''; ?>/>
+				<input type="text" class="form-control" id="mail" name="email" <?= $this->edit == 1?'value="'.$this->user['email'].'"':''; ?>/>
 			</div>
             <div class="form-group em-addUser-detail-info-same-login">
                 <input type="checkbox" id="same_login_email" name="same_login_email" <?= ($this->user['email'] == $this->user['login'])?"checked":''; ?> style="margin-bottom: 5px; width: 20px !important">
@@ -61,52 +54,36 @@ $applicant_option_others = false;
             </div>
             <div class="form-group em-addUser-detail-info-id" id="login_field">
                 <label class="control-label" for="login"><?= JText::_('COM_EMUNDUS_USERS_LOGIN_FORM'); ?></label>
-                <input type="text" class="em-w-100"  id="login" name="login" <?= ($this->edit == 1)?'value="'.$this->user['login'].'"':''; ?> />
+                <input type="text" class="form-control"  id="login" name="login" <?= ($this->edit == 1)?'value="'.$this->user['login'].'"':''; ?> />
             </div>
 		</div>
 	</fieldset>
-    <?php
-    $other_profiles_applicant = false;
-    if(sizeof(array_intersect(array_keys($this->uOprofiles),$this->app_prof)) > 0){
-        $other_profiles_applicant = true;
-    }
-    ?>
-	<fieldset class="em-addUser-profil em-mt-16">
+	<fieldset class="em-addUser-profil">
 		<div class="form-group em-addUser-profil-selectProfil">
-			<label for="profiles"><?php echo JText::_('COM_EMUNDUS_PROFILE'); ?></label>
-			<select id="profiles" name="profiles" class="em-chosen em-mt-4">
-				<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
-				<?php foreach ($this->profiles as $profile)  {
-                    if($profile->published && !$applicant_option) {
-                    ?>
-					<option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && (in_array($this->user['profile'],$this->app_prof))){echo 'selected="true"';}?>><?= JText::_('COM_EMUNDUS_APPLICANT'); ?></option>
-                <?php
-                    $applicant_option = true;
-                    } elseif(!$profile->published) { ?>
-                <option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && ($profile->id == $this->user['profile'])){echo 'selected="true"';}?>><?= trim($profile->label); ?></option>
-				<?php } } ?>
+			<label class="control-label" for="profiles"><?php echo JText::_('COM_EMUNDUS_PROFILE'); ?></label>
+			<br/>
+			<select id="profiles" name="profiles" class="em-chosen">
+				<option value="0"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+				<?php foreach ($this->profiles as $profile) :?>
+					<option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"  pub="<?= $profile->published; ?>" <?php if(($this->edit == 1) && ($profile->id == $this->user['profile'])){echo 'selected="true"';}?>><?= trim($profile->label); ?></option>
+				<?php endforeach; ?>
 			</select>
 			<br/><br/>
 			<div class="em-addUser-profil-selectProfil-multiple">
-				<label for="oprofiles"><?= JText::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label>
-				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen em-mt-4">
+				<label class="control-label" for="oprofiles"><?= JText::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label><br/>
+				<select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen">
 					<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
-					<?php foreach ($this->profiles as $otherprofile)  {
-                        if($otherprofile->published && !$applicant_option_others) {
-                        ?>
-						<option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>" pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && $other_profiles_applicant === true)?'selected="true"':''; ?>><?= JText::_('COM_EMUNDUS_APPLICANT'); ?></option>
-                    <?php
-                        $applicant_option_others = true;
-                        } elseif (!$otherprofile->published) { ?>
-                    <option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>" pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles)))?'selected="true"':''; ?>><?= trim($otherprofile->label); ?></option>
-					<?php } } ?>
+					<?php foreach ($this->profiles as $otherprofile) :?>
+						<option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>" <?= (($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles)))?'selected="true"':''; ?>><?= trim($otherprofile->label); ?></option>
+					<?php endforeach;?>
 				</select>
 			</div>
 		</div>
         <?php if($eMConfig->get('showUniversities')) : ?>
 		<div class="form-group em-hidden-nonapli-fields em-addUser-university" <?= (($this->edit != 1) || ($this->user['university_id'] == 0))?'style="display:none;"':''; ?>>
 			<label for="univ"><?= JText::_('COM_EMUNDUS_USERS_UNIVERSITY_FROM'); ?></label>
-			<select name="university_id" class="em-chosen em-mt-4" id="univ">
+			<br/>
+			<select name="university_id" class="em-chosen" id="univ">
 				<option value="0"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->universities as $university) :?>
 					<option value="<?= $university->id; ?>" <?= (($this->edit == 1) && ($university->id == $this->user['university_id']))?'selected="true"':''; ?>><?= trim($university->title); ?></option>
@@ -114,9 +91,10 @@ $applicant_option_others = false;
 			</select>
 		</div>
         <?php endif ?>
-        <div class="form-group em-hidden-nonapli-fields em-addUser-groups" style="<?= (($this->edit != 1) || (empty($this->uGroups))) ? 'display:none;' : 'display:block;'; ?>">
+		<div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?= (($this->edit != 1) || (empty($this->uGroups)))?'style="display:none;"':''; ?>>
 			<label for="groups"><?= JText::_('COM_EMUNDUS_GROUPS'); ?></label>
-			<select class = "em-chosen em-mt-4" name="groups" id="groups" multiple="multiple">
+			<br/>
+			<select class = "em-chosen" name="groups" id="groups" multiple="multiple">
 				<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->groups as $group) :?>
 					<option value="<?= $group->id; ?>" <?= (($this->edit == 1) && (array_key_exists($group->id, $this->uGroups)))?'selected="true"':''; ?>><?= trim($group->label); ?></option>
@@ -124,10 +102,11 @@ $applicant_option_others = false;
 			</select>
 		</div>
 
-        <div class="form-group em-hidden-appli-fields em-addUser-campaign" style="<?= (($this->edit != 1) || (empty($this->uCamps))) ? 'display:none;' : 'display:block;'; ?>">
+		<div class="form-group em-hidden-appli-fields em-addUser-campaign" <?= (($this->edit != 1) || (empty($this->uCamps)))?'style="display:none;"':''; ?>>
 			<label for="campaigns"><?= JText::_('COM_EMUNDUS_CAMPAIGN'); ?></label>
-			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen em-mt-4">
-				<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+			<br/>
+			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen">
+				<option value="0"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->campaigns as $campaign) :?>
 				    <option value="<?= $campaign->id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date);?></option>
 				<?php endforeach;?>
@@ -156,7 +135,13 @@ $applicant_option_others = false;
 		$('.em-chosen').chosen({width:'100%'});
 
 		if (edit == '1') {
-            renderingSelects();
+			if($('#profiles option:selected').attr('pub') == 1) {
+				$('.em-hidden-appli-fields').show();
+				$('.em-hidden-nonapli-fields').hide();
+			} else {
+				$('.em-hidden-nonapli-fields').show();
+				$('.em-hidden-appli-fields').hide();
+			}
 		}
 
         let loginField = $('#login_field');
@@ -392,12 +377,14 @@ $applicant_option_others = false;
 		})
 
 		$(document).on('change', '#profiles', function() {
-            renderingSelects($(this).val());
+			if ($('#profiles option[value="'+$(this).val()+'"]').attr('pub') == 1) {
+				$('.em-hidden-appli-fields').show();
+				$('.em-hidden-nonapli-fields').hide();
+			} else {
+				$('.em-hidden-nonapli-fields').show();
+				$('.em-hidden-appli-fields').hide();
+			}
 		});
-
-        $(document).on('change', '#oprofiles', function() {
-            renderingSelects();
-        });
 
 		$(document).on('blur', '#mail', function() {
 			var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/;
@@ -430,56 +417,5 @@ $applicant_option_others = false;
                 $('#login').val($('#mail').val());
             }
         });
-
-        function renderingSelects(value = null){
-            if(value == null){
-                value = document.getElementById('profiles').value;
-            }
-            let main_profile_value = $('#profiles option[value="'+value+'"]').attr('pub');
-            let sub_profiles_values = getSelectValues(document.getElementById('oprofiles'));
-            let other_profiles_published = false;
-            let other_profiles_no_published = false;
-
-            sub_profiles_values.forEach((profile) => {
-                if($('#oprofiles option[value="'+profile+'"]')[0].attributes.pub.value == 1){
-                    other_profiles_published = true;
-                } else {
-                    other_profiles_no_published = true;
-                }
-            })
-
-            if (main_profile_value == 1) {
-                $('.em-hidden-appli-fields').show();
-                if(other_profiles_no_published === false) {
-                    $('#groups_chosen .search-choice-close').click();
-                    $('.em-hidden-nonapli-fields').hide();
-                } else {
-                    $('.em-hidden-nonapli-fields').show();
-                }
-            } else {
-                $('.em-hidden-nonapli-fields').show();
-                if(other_profiles_published === false) {
-                    $('#campaigns_chosen .search-choice-close').click();
-                    $('.em-hidden-appli-fields').hide();
-                } else {
-                    $('.em-hidden-appli-fields').show();
-                }
-            }
-        }
-
-        function getSelectValues(select) {
-            var result = [];
-            var options = select && select.options;
-            var opt;
-
-            for (var i=0, iLen=options.length; i<iLen; i++) {
-                opt = options[i];
-
-                if (opt.selected) {
-                    result.push(opt.value || opt.text);
-                }
-            }
-            return result;
-        }
 	})
 </script>

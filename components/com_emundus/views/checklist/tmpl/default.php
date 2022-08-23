@@ -41,11 +41,8 @@ try {
     echo $e->getMessage() . '<br />';
 }
 
-//$this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$this->user->fnums[$this->user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$this->user->end_date);
+$this->is_dead_line_passed = !empty($this->is_admission) ? strtotime(date($now)) > strtotime(@$this->user->fnums[$this->user->fnum]->admission_end_date) : strtotime(date($now)) > strtotime(@$this->user->end_date);
 
-if (!empty($this->current_phase) && !empty($this->current_phase->status)) {
-    $status_for_send[] = $this->current_phase->status;
-}
 $is_app_sent = !in_array($this->user->status, $status_for_send);
 
 $block_upload = true;
@@ -126,8 +123,8 @@ if (!empty($this->custom_title)) :?>
             }
             $div = '<fieldset id="a'.$attachment->id.'" class="em-fieldset-attachment">
                 <legend id="l'.$attachment->id.'" class="'.$class.'">
-                    <a class="'.$class.'">'.$attachment->value .'</a>';
-            $div .= '</legend>
+                    <a class="'.$class.'">'.$attachment->value .'</a>
+                </legend>
                 <p class="description em-fieldset-attachment-description">'.$attachment->description .'</p>
                 <div class="table-responsive em-fieldset-attachment-table-responsive">
                 <table id="'.$attachment->id .'" class="table em-fieldset-attachment-table">';
@@ -414,13 +411,10 @@ if (!empty($this->custom_title)) :?>
           });
 
           this.on("success", function(file, responseText) {
-          var profile_attachments_not_uploaded = "'. $this->profile_attachments_not_uploaded_ids.'";
-          profile_attachments_not_uploaded = profile_attachments_not_uploaded.split(",");
             // Handle the responseText here. For example, add the text to the preview element:
             var response = JSON.parse(responseText);
             var id = response["id"];
-            var attachment_id = "'.$attachment->id.'";
-                        
+            
             if (!response["status"]) {
                 // Remove the file preview.
                 this.removeFile(file);
@@ -437,31 +431,7 @@ if (!empty($this->custom_title)) :?>
                     },
                 });
             } else {
-                if(profile_attachments_not_uploaded.includes(attachment_id)) {
-                    Swal.fire({
-                        position: "top",
-                        type: "info",
-                        title: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND") . '",
-                        text: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT") . '",
-                        confirmButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE") . '",
-                        showCancelButton: true,
-                        cancelButtonText: "' . JText::_("COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE") . '",
-                        reverseButtons: true,
-                        customClass: {
-                           title: "em-swal-title",
-                           confirmButton: "em-swal-confirm-button",
-                           cancelButton: "em-swal-cancel-button",
-                        },
-                    }).then(confirm => {
-                        if (confirm.value) {
-                            uploadintoprofile(attachment_id);
-                        } else{
-                            document.location.reload(true);
-                        }
-                    });
-                } else {
-                    document.location.reload(true);
-                }
+                document.location.reload(true);
     
                 // Change icon on fieldset
                 document.getElementById("l'.$attachment->id.'").className = "need_ok";
@@ -532,16 +502,9 @@ if (!empty($this->custom_title)) :?>
                 </tr>
                 <tr class="em-allowed-files">
                     <td>
-                    <p><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p>
-                    <div class="em-flex-row em-flex-space-between">
-                        <p><em>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>';
-                   if (!empty($this->attachments_to_upload) && in_array($attachment->id,$this->attachments_to_upload)) {
-                        $div .= '<button class="btn btn-danger btn-xs em-pointer" onclick="uploadfromprofile('."$attachment->id".')">'.JText::_('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD').'</button>';
-                    }
-
-                    $div .= '</div></td>';
-
-                $div .= '</tr>';
+                    <p><em>'. JText::_('COM_EMUNDUS_ATTACHMENTS_PLEASE_ONLY').' '.$attachment->allowed_types.'</em></p><p><em>'.JText::_('COM_EMUNDUS_ATTACHMENTS_MAX_ALLOWED').' '.$attachment->nbmax .'</em></p>
+                    </td>
+                </tr>';
                 } else {
                     $div .= '
                 <tr class="em-no-more-files">
@@ -727,13 +690,7 @@ function processSelectedFiles(fileInput) {
             title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_FILE_COMPLETE'); ?>',
             confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_SEND_FILE'); ?>',
             showCancelButton: true,
-            cancelButtonText: '<?= JText::_('COM_EMUNDUS_ATTACHMENTS_EM_CONTINUE'); ?>',
-            reverseButtons: true,
-            customClass: {
-                title: 'em-swal-title',
-                cancelButton: 'em-swal-cancel-button',
-                confirmButton: 'em-swal-confirm-button',
-            },
+            cancelButtonText: '<?= JText::_('COM_EMUNDUS_ATTACHMENTS_EM_CONTINUE'); ?>'
         })
         .then(confirm => {
             if (confirm.value) {
@@ -741,39 +698,6 @@ function processSelectedFiles(fileInput) {
             }
         })
     });
-<?php else :?>
-$(document).ready(() => {
-    <?php if(!empty($this->attachments_to_upload) && $this->attachments_prog == 0) :?>
-    <?php $attachments_label = '';
-    foreach ($this->attachments as $attachment){
-        if(in_array($attachment->id,$this->attachments_to_upload)){
-            $attachments_label .= '<p> - '.$attachment->value.'</p>';
-        }
-    }
-    ?>
-    var attachments = "<?php echo $attachments_label; ?>";
-    console.log(attachments);
-    Swal.fire({
-        position: 'top',
-        type: 'info',
-        title: '<?= JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND'); ?>',
-        html: '<p><?= JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT') . '</p><div class="em-mt-8">' . $attachments_label . '</div><p class="em-mt-8">' . JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT_2'); ?></p>',
-        confirmButtonText: '<?= JText::_('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_UPLOAD'); ?>',
-        showCancelButton: true,
-        cancelButtonText: '<?= JText::_('COM_EMUNDUS_ONBOARD_CANCEL'); ?>',
-        reverseButtons: true,
-        customClass: {
-            title: 'em-swal-title',
-            cancelButton: 'em-swal-cancel-button',
-            confirmButton: 'em-swal-confirm-button',
-        },
-    }).then(confirm => {
-            if (confirm.value) {
-                uploadfromprofile("<?php echo implode(',',$this->attachments_to_upload); ?>");
-            }
-        });
-    <?php endif ?>
-});
 <?php endif; ?>
 
 //ADDPIPE check if video is uploaded. If yes, reaload page
@@ -802,45 +726,6 @@ function is_file_uploaded(fnum, aid, applicant_id) {
         });
     }, 500);
 
-}
-
-function uploadfromprofile(attachments_to_upload) {
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: 'index.php?option=com_emundus&controller=users&task=uploadprofileattachmenttofile',
-        data: ({
-            aids: attachments_to_upload
-        }),
-        success: function(result) {
-            if (result.status) {
-                clearInterval();
-                window.location.reload(true);
-            }
-        },
-        error: function(jqXHR) {
-            console.log("ERROR: "+jqXHR.responseText);
-        }
-    });
-}
-
-function uploadintoprofile(aid) {
-    $.ajax({
-        type: 'POST',
-        dataType: 'json',
-        url: 'index.php?option=com_emundus&controller=users&task=uploadfileattachmenttoprofile',
-        data: ({
-            aid: aid
-        }),
-        success: function(result) {
-            if (result.status) {
-                document.location.reload(true);
-            }
-        },
-        error: function(jqXHR) {
-            console.log("ERROR: "+jqXHR.responseText);
-        }
-    });
 }
 
 </script>

@@ -191,6 +191,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
 
 <script type="text/javascript">
     function checkurl() {
+
         var url = $(location).attr('href');
         url = url.split("#");
         $('.alert.alert-warning').remove();
@@ -201,7 +202,7 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
             fnum.fnum = url[0];
 
             if (fnum.fnum != null && fnum.fnum !== "close") {
-                addLoader();
+                addDimmer();
                 $('#'+fnum.fnum+'_check').prop('checked', true);
 
                 $.ajax({
@@ -217,12 +218,12 @@ $anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id)
                             fnum.label = fnumInfos.label;
                             openFiles(fnum);
                         } else {
-                            removeLoader();
+                            $('.em-dimmer').remove();
                             $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
                         }
                     },
                     error: function (jqXHR) {
-                        removeLoader();
+                        $('.em-dimmer').remove();
                         $("<div class=\"alert alert-warning\"><?= JText::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
                         console.log(jqXHR.responseText);
                     }

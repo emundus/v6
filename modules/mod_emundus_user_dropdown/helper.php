@@ -95,7 +95,7 @@ class modEmundusUserDropdownHelper {
 
 	static function isCampaignActive() {
 		$db = JFactory::getDBO();
-
+		
 		try {
 
 			$query = "SELECT COUNT(*) FROM `jos_emundus_setup_campaigns` WHERE `published` = 1 AND NOW() BETWEEN `start_date` AND `end_date`";
@@ -108,20 +108,4 @@ class modEmundusUserDropdownHelper {
 			return false;
 		}
 	}
-
-    static function getProfilePicture() {
-        $db = JFactory::getDBO();
-
-        try {
-            $query = $db->getQuery(true);
-            $query->select('profile_picture')
-                ->from($db->quoteName('#__emundus_users'))
-                ->where($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
-            $db->setQuery($query);
-            return $db->loadResult();
-
-        } catch(Exception $e) {
-            return null;
-        }
-    }
 }

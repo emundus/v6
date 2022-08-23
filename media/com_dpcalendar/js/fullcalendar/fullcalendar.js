@@ -3215,12 +3215,12 @@ var Scroller = /** @class */ (function (_super) {
         if (overflowX === 'auto') {
             overflowX = (scrollbarWidths.top || scrollbarWidths.bottom || // horizontal scrollbars?
                 // OR scrolling pane with massless scrollbars?
-                this.scrollEl[0].scrollWidth - 1 > this.scrollEl[0].clientWidth) ? 'visible' : 'visible';
+                this.scrollEl[0].scrollWidth - 1 > this.scrollEl[0].clientWidth) ? 'scroll' : 'hidden';
         }
         if (overflowY === 'auto') {
             overflowY = (scrollbarWidths.left || scrollbarWidths.right || // vertical scrollbars?
                 // OR scrolling pane with massless scrollbars?
-                this.scrollEl[0].scrollWidth - 1 > this.scrollEl[0].clientWidth) ? 'visible' : 'visible';
+                this.scrollEl[0].scrollHeight - 1 > this.scrollEl[0].clientHeight) ? 'scroll' : 'hidden';
         }
         this.scrollEl.css({ 'overflow-x': overflowX, 'overflow-y': overflowY });
     };
@@ -3885,7 +3885,7 @@ var View = /** @class */ (function (_super) {
         if (dateMutation) {
             eventInstance.dateProfile = dateMutation.buildNewDateProfile(eventInstance.dateProfile, this.calendar);
         }
-        this.triggerEventDrop(eventInstance,
+        this.triggerEventDrop(eventInstance, 
         // a drop doesn't necessarily mean a date mutation (ex: resource change)
         (dateMutation && dateMutation.dateDelta) || moment.duration(), undoFunc, el, ev);
     };

@@ -49,11 +49,6 @@ if ($allowed_attachments !== true) {
 ?>
 
 <!-- WYSIWYG Editor -->
-<style>
-    #emailForm #mceu_15 {
-        display: none;
-    }
-</style>
 <link rel="stylesheet" href="components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
 <script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>

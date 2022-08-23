@@ -27,7 +27,6 @@ $show_logout = $params->get('show_logout', '1');
 $show_update = $params->get('show_update', '1');
 $url_logout = $params->get('url_logout', 'index.php');
 $intro = $params->get('intro', '');
-$show_profile_picture = $params->get('show_profile_picture', '1');
 
 $link_login = $params->get('link_login', 'index.php?option=com_users&view=login&Itemid=1135');
 $link_register = $params->get('link_register', 'index.php?option=com_fabrik&view=form&formid=307&Itemid=1136');
@@ -66,14 +65,5 @@ $app = JFactory::getApplication();
 $menu = $app->getMenu();
 $active	= $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;
-
-if(!$only_applicant) {
-    $first_logged = $user->first_logged;
-}
-
-$profile_picture = '';
-if($show_profile_picture){
-    $profile_picture = modEmundusUserDropdownHelper::getProfilePicture();
-}
 
 require JModuleHelper::getLayoutPath('mod_emundus_user_dropdown', $layout);

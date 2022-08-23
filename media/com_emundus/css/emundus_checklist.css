@@ -74,9 +74,7 @@ button#back:hover, button#back:active, button#back:focus,
     display: flex;
     justify-content: center;
 }
-.em_module.need_ok a::before,
-#attachment_list legend .need_ok::before
-{
+.em_module.need_ok a::before {
     font-family: FontAwesome;
     content: "\f058";
     color: #55ce47;
@@ -164,6 +162,7 @@ button#back:hover, button#back:active, button#back:focus,
     color: #000 !important;
 }
 #attachment_list {
+    margin-bottom: 1em;
     width: 100%;
     margin: 20px 0;
 }
@@ -286,6 +285,12 @@ button#back:hover, button#back:active, button#back:focus,
 
 .view-checklist .table-responsive {
     color: #2E2E2E;
+}
+
+#g-sidebar .platform-content a {
+    color: #000;
+    display: flex;
+    align-items: center;
 }
 
 #g-sidebar a:focus {
@@ -492,14 +497,6 @@ body.view-reset label#jform_username-lbl::after,
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
     line-height: 1.2rem;
-    color: #000;
-    display: flex;
-    align-items: center;
-}
-
-
-.applicant-form #g-sidebar .platform-content a:hover {
-  text-decoration: none;
 }
 
 .em-print-button, .em-send-button {
@@ -540,11 +537,6 @@ body.view-reset label#jform_username-lbl::after,
 #attachment_list_mand legend a,
 .view-checklist #attachment_list_opt legend a {
     color: #000 !important;
-}
-
-#attachment_list_mand legend a:hover,
-.view-checklist #attachment_list_opt legend a:hover {
-    text-decoration: none;
 }
 
 .need_missing.active a::before {

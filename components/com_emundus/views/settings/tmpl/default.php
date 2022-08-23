@@ -117,8 +117,6 @@ JText::script('COM_EMUNDUS_ONBOARD_HOME_TITLE');
 JText::script('COM_EMUNDUS_ONBOARD_HOME_CONTENT');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 JText::script('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS');
-JText::script('COM_EMUNDUS_ONBOARD_STYLE_TOOL_GENERAL');
-JText::script('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -192,36 +190,23 @@ JText::script('COM_EMUNDUS_CONTENTELEMENTS_SETUP_CAMPAIGNS_DESC');
 ## END ##
 
 $lang = JFactory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
-$current_lang = $lang->getTag();
+$actualLanguage = substr($lang->getTag(), 0 , 2);
 $languages = JLanguageHelper::getLanguages();
-if (count($languages) > 1) {
+if(count($languages) > 1){
     $many_languages = '1';
-    require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-    $m_translations = new EmundusModelTranslations();
-    $default_lang = $m_translations->getDefaultLanguage()->lang_code;
 } else {
     $many_languages = '0';
-    $default_lang = $current_lang;
 }
 
 $user = JFactory::getUser();
 $coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
-
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
 ?>
 
 <div id="em-component-vue"
      component="settings"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
-     defaultLang="<?= $default_lang ?>"
+     actualLanguage="<?= $actualLanguage ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
      manyLanguages="<?= $many_languages ?>"
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
+<script src="media/com_emundus_vue/app_emundus.js"></script>

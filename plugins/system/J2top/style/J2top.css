@@ -23,11 +23,11 @@
     transform: scale(2, 1.5);
     display: block;
     font-size: 2em;
-    color: #353544;
     font-weight: 700;
+    color: $base-primary-color;
 }
 
 #gototop:hover div::after {
-    color: #5A5A72;
+    color: $base-secondary-color;
 }
 

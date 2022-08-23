@@ -35,18 +35,18 @@
 
 
 .btnConsulter {
-	border-radius:4px;
+	border-radius:25px;
 	color:white;
 	font-size: 14px;
 	white-space: normal;
 	display:inline-block;
 	margin-bottom: 10px;
-	padding: 8px 12px;
+	padding: 5px 30px;
 }
 .btnConsulter:hover {
-	border-radius:4px;
+	border-radius:25px;
 	background:transparent;
-	padding: 8px 12px;
+	padding: 5px 30px;
 	white-space: normal;
 	display:inline-block;
 }
