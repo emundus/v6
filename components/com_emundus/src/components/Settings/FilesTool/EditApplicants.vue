@@ -2,7 +2,7 @@
   <div class="em-settings-menu">
     <div class="em-w-80">
 
-      <div class="form-group em-flex-center em-w-100 em-mb-16" v-for="(param, index) in params" :key="index">
+      <div class="form-group em-flex-center em-w-100" v-for="(param, index) in params" :key="index">
         <label :for="'param_' + index">{{param.label}}</label>
         <select class="dropdown-toggle w-select" :id="'param_' + index" v-model="param.value" style="margin-bottom: 0" @change="saveEmundusParam(param)">
           <option v-for="option in param.options" :key="option.value"  :value="option.value">{{option.label}}</option>

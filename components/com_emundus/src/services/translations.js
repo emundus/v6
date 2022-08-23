@@ -127,6 +127,7 @@ export default {
             msg: e.message
           };
         }
+        break;
       case 'override':
         let params = {
           default_lang : default_lang,
@@ -266,21 +267,6 @@ export default {
             }
           }
       );
-    } catch (e) {
-      return {
-        status: false,
-        msg: e.message
-      };
-    }
-  },
-
-  async getJText(tag){
-    try {
-      return await client().get('index.php?option=com_emundus&controller=formbuilder&task=getJTEXT', {
-        params: {
-          toJTEXT: tag
-        }
-      });
     } catch (e) {
       return {
         status: false,

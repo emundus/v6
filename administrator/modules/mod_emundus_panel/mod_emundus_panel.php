@@ -11,11 +11,7 @@ defined('_JEXEC') or die;
 JLoader::register('ModEmunduspanelHelper', __DIR__ . '/helper.php');
 
 $sitename = JFactory::getConfig()->get('sitename');
-
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
+$version = file_get_contents(JPATH_SITE . DS . 'version.txt');
 
 $git_file = JPATH_SITE . DS . '.git' . DS . 'FETCH_HEAD';
 if(is_file($git_file)) {

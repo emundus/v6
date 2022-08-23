@@ -55,6 +55,7 @@ $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
 // END PARAMS
 
+
 $condition ='';
 
 $session = JFactory::getSession();

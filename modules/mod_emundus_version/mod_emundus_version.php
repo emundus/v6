@@ -28,11 +28,7 @@ if(is_file($git_file)) {
 }
 
 $old_version = ModEmundusVersionHelper::getOldVersion();
-$xmlDoc = new DOMDocument();
-if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
-    $current_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
-}
-
+$current_version = trim(file_get_contents('version.txt'));
 if(empty($old_version)){
     ModEmundusVersionHelper::insertVersion($current_version,$last_updated);
 } elseif($old_version != $current_version) {

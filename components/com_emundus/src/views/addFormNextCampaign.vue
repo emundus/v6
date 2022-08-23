@@ -1,13 +1,12 @@
 <template>
-  <div class="em-w-custom">
-  <div>
+  <div class="em-w-90rem">
     <ModalWarningFormBuilder
         :pid="getProfileId"
         :cid="campaignId"
     />
     <div>
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons-outlined">arrow_back</span>
+        <span class="material-icons">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
       <div class="em-flex-row em-mt-16">
@@ -21,7 +20,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: #20835F; font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: #16afe1; font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
@@ -208,7 +207,7 @@ export default {
   created () {
     // Get datas that we need with store
     this.campaignId = Number(this.$store.getters['global/datas'].campaignId.value);
-    this.actualLanguage = this.$store.getters['global/shortLang'];
+    this.actualLanguage = this.$store.getters['global/actualLanguage'];
     this.manyLanguages = Number(this.$store.getters['global/manyLanguages']);
     //
 
@@ -396,18 +395,5 @@ export default {
 .w--current{
   border: solid 1px #eeeeee;
   background: #eeeeee;
-}
-
-.w--current:hover{
-  color: #20835F;
-}
-
-.em-pointer:hover{
-  color: #20835F;
-}
-
-.em-w-custom {
-  width: calc(100% - 75px) !important;
-  margin-left: auto;
 }
 </style>

@@ -44,17 +44,26 @@ session_start();
 
 class EmundusModelFilesTest extends TestCase{
     private $m_files;
+    private $s_helper;
+
+    private $db;
 
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
         $this->m_files = new EmundusModelFiles;
 
-        //$coordinator = @EmundusUnittestHelperSamples::createSampleUser(2,'gestionnaire@emundus.fr');
+        $this->db = JFactory::getDbo();
+    }
+
+    // simple test case (example)
+    public function testFoo() {
+        $foo = true;
+        $this->assertSame(true, $foo);
     }
 
     // Brice
-    /*public function testTagFile() {
+    public function testTagFile() {
         $user = @EmundusUnittestHelperSamples::createSampleUser();
 
         $fnum = @EmundusUnittestHelperSamples::createSampleFile(1,$user->id);
@@ -86,7 +95,7 @@ class EmundusModelFilesTest extends TestCase{
     public function testUpdateState() {
         $user = @EmundusUnittestHelperSamples::createSampleUser();
         $fnum = @EmundusUnittestHelperSamples::createSampleFile(1,$user->id);
-        $status_step = @EmundusUnittestHelperSamples::createSampleStatus();
+        $status_step = @EmundusUnittestHelperSamples->createSampleStatus();
 
 
     }
@@ -124,5 +133,10 @@ class EmundusModelFilesTest extends TestCase{
 
         $u = JUser::getInstance($user->id);
         $u->delete();
-    }*/
+    }
+
+    // Wilfried
+    public function testGetFnumsInfos(){
+
+    }
 }

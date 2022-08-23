@@ -8,6 +8,9 @@
 
 // No direct access.
 defined('_JEXEC') or die;
+$document = JFactory::getDocument();
+$document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@9');
+$document->addStyleSheet("modules/mod_emundus_tutorial/style/mod_emundus_tutorial.css" );
 
 if (!empty($articles)) :?>
 

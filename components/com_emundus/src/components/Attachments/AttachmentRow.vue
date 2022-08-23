@@ -16,7 +16,7 @@
 			<span>{{ attachment.value }}</span>
 			<span
 				v-if="!attachment.existsOnServer"
-				class="material-icons-outlined warning file-not-found"
+				class="material-icons warning file-not-found"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')"
 			>
 				warning
@@ -63,14 +63,14 @@
 		<td class="date">{{ formattedDate(attachment.modified) }}</td>
 		<td class="permissions">
 			<span
-				class="material-icons-outlined visibility-permission"
+				class="material-icons visibility-permission"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')"
 				>visibility</span
 			>
 			<span
-				class="material-icons-outlined delete-permission"
+				class="material-icons delete-permission"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')"
@@ -200,7 +200,7 @@ export default {
 		}
 	}
 	.permissions {
-		.material-icons, .material-icons-outlined {
+		.material-icons {
 			margin: 0 10px;
 			cursor: pointer;
 			opacity: 0.3;

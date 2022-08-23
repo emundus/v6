@@ -64,6 +64,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .reset-complete .form-validate.form-horizontal.well .control-group .controls button {
     width: 100%;
     height: 48px;
+    text-transform: capitalize;
     margin-right:0;
     border-radius: 4px;
     padding: 8px 12px;
@@ -151,7 +152,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
 .view-reset .required::before,
 .reset-complete .required::before
 {
-    content: "";
+    content: "\f005";
     font-family: FontAwesome;
     font-size: 5px;
     font-style: normal;
@@ -175,14 +176,12 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
-    text-align: center;
-    color: #000;
 }
 
 
 .view-reset .reset .page-header,  .view-reset .reset-confirm .page-header, .view-reset .reset-complete .page-header {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: flex-end;
     flex-direction: row;
     width: 100%;

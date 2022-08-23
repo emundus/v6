@@ -9,11 +9,6 @@
 $document = JFactory::getDocument();
 $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 ?>
-<style>
-    .em-cell .material-icons{
-        font-size: 24px !important;
-    }
-</style>
 <input type="hidden" id="view" name="view" value="users">
 <?php if (!empty($this->users)) :?>
 	<div class="container-result">
@@ -68,7 +63,6 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                             </p>
                         </th>
                     <?php else :?>
-                        <?php if($key !== 'active') : ?>
                         <th id="<?php echo $key?>">
                         <?php if ($this->lists['order'] == $key) :?>
                                 <p class="em-cell">
@@ -86,7 +80,6 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                         <?php endif; ?>
                         </th>
                      <?php endif; ?>
-                     <?php endif; ?>
 				<?php endforeach; ?>
 			</tr>
 			</thead>
@@ -95,7 +88,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 			<?php foreach ($this->users as $l => $user) :?>
 				<tr>
 					<?php foreach ($user as $k => $value) :?>
-                        <?php if ($k != 'active') :?>
+
 								<?php if ($k == 'id') :?>
                                     <td>
                                         <div class="em-cell" >
@@ -111,26 +104,20 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                             </label>
                                         </div>
                                     </td>
-                                <?php elseif ($k == 'block') :?>
-                                    <?php if ($value == 0 && $user->active != -1) :?>
+								<?php elseif ($k == 'active') :?>
+									<?php if ($value == 0) :?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-main-500-color">verified</span>
+										        <span class="glyphicon glyphicon-ok" style="color: #00c500"></span>
                                             </div>
                                         </td>
-                                    <?php elseif($user->active == -1):?>
+									<?php else:?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-yellow-500-color">new_releases</span>
+										        <span class="glyphicon glyphicon-ban-circle" style="color: #ff0000"></span>
                                             </div>
                                         </td>
-                                    <?php else : ?>
-                                        <td>
-                                            <div class="em-cell" >
-                                                <span class="material-icons em-red-500-color">block</span>
-                                            </div>
-                                        </td>
-                                    <?php endif; ?>
+									<?php endif; ?>
 								<?php elseif ($k == 'newsletter') :?>
 									<?php if ($value == 1) :?>
                                         <td>
@@ -154,7 +141,6 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 								<?php endif;?>
 							</div>
 						</td>
-                        <?php endif; ?>
 					<?php endforeach; ?>
 				</tr>
 			<?php  endforeach;?>

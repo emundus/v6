@@ -143,14 +143,13 @@ class EmundusViewForm extends FabrikViewFormBase
                 $query = $db->getQuery(true);
 
                 $query
-                    ->select('fg.label,ffg.ordering,fg.params')
+                    ->select('fg.label,ffg.ordering')
                     ->from($db->quoteName('#__fabrik_formgroup','ffg'))
                     ->leftJoin($db->quoteName('#__fabrik_groups','fg').' ON '.$db->quoteName('fg.id').' = '.$db->quoteName('ffg.group_id'))
                     ->where($db->quoteName('ffg.group_id') . ' = ' . $db->quote($GroupProperties->id));
 
                 $db->setQuery($query);
                 $group_infos = $db->loadObject();
-                ${"group_" . $GroupProperties->id}->params = json_decode($group_infos->params);
                 ${"group_" . $GroupProperties->id}->ordering = (int)$group_infos->ordering;
                 ${"group_" . $GroupProperties->id}->group_showLegend = $GroupProperties->title;
                 ${"group_" . $GroupProperties->id}->group_tag = $group_infos->label != '' ? $group_infos->label : strtoupper($formbuilder->replaceAccents($GroupProperties->name));
@@ -197,7 +196,7 @@ class EmundusViewForm extends FabrikViewFormBase
                     } else {
                         $display_group = true;
                     }
-                    if($o_element->plugin != 'emundusreferent') {
+                    if($o_element->plugin != 'emundusreferent' && !(int)$o_element->hidden) {
                         //if($o_element->plugin != 'calc') {
                         $el_parmas = json_decode($o_element->params);
                         $content_element = $element->preRender('0', '1', 'bootstrap');

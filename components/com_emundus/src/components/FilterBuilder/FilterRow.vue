@@ -34,7 +34,7 @@
       v-model="selectedValue"
     />
 
-    <span class="material-icons-outlined delete" @click="removeFilter">
+    <span class="material-icons delete" @click="removeFilter">
       clear
     </span>
   </div>

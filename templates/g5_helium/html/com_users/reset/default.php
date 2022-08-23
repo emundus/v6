@@ -36,7 +36,7 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 		<div class="control-group">
 			<div class="controls">
 				<button type="submit" class="btn btn-primary validate">
-					<?php echo JText::_('COM_USERS_SUBMIT_RESET'); ?>
+					<?php echo JText::_('JSUBMIT'); ?>
 				</button>
 			</div>
 		</div>

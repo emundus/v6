@@ -22,7 +22,7 @@
           {{translations.createDocument}}
         </span>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddDocuments')">
-          <span class="material-icons-outlined">close</span>
+          <span class="material-icons">close</span>
         </button>
       </div>
 
@@ -882,7 +882,7 @@ export default {
 
 .image-resolution-tooltips {
   font-size: smaller;
-  color: #20835F;
+  color: #16AFE1;
 }
 
 </style>

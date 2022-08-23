@@ -121,15 +121,15 @@
 	margin-right:1%;
 }
 .btnExport, .btnQueryBuilder:hover, .swal2-confirm:hover, .swal2-cancel {
-	border-radius: 4px;
+	border-radius:25px;
 	background:transparent;
-	padding: 8px 12px;
+	padding:5px 30px;
 	white-space: normal;
 }
 .btnExport:hover, .btnQueryBuilder, .swal2-confirm, .swal2-cancel:hover {
-	border-radius: 4px;
+	border-radius:25px;
 	color:white;
-	padding: 8px 12px;
+	padding:5px 30px;
 	white-space: normal;
 }
 .btnExport:focus, .btnQueryBuilder:focus, .queryBuilder input[type="button"]:focus, .queryBuilder input[type="submit"]:focus, .swal2-confirm:focus, .swal2-cancel:focus {
@@ -163,9 +163,7 @@
 }
 .etiquette select {
 	border-radius:4px!important;
-	color: #353544;
 }
-
 .etiquette select:focus {
 	outline: 2px solid -webkit-focus-ring-color;
 }

@@ -242,12 +242,10 @@ class EmundusModelMessages extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('id, subject')
-            ->from($db->quoteName('#__emundus_setup_emails'))
-            ->where($db->quoteName('type') . ' = 2')
-            ->andWhere($db->quoteName('published') . ' = 1');
+            ->from($db->quoteName('#__emundus_setup_emails'));
 
         if ($category != 'all')
-            $query->andWhere($db->quoteName('category').' = '.$db->quote($category));
+            $query->where($db->quoteName('category').' = '.$db->Quote($category));
 
         try {
 

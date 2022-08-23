@@ -14,7 +14,7 @@
             scrollWheelZoom: false
         });
 
-        L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             id: 'mapbox.streets'
         }).addTo(mymap);
 

@@ -18,7 +18,7 @@
           {{translations.addMenu}}
         </span>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalMenu')">
-          <span class="material-icons-outlined">close</span>
+          <span class="material-icons">close</span>
         </button>
       </div>
 

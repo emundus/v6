@@ -50,8 +50,7 @@ class EmundusModelProfileTest extends TestCase
         $this->assertSame(true, $foo);
     }
 
-    
-    /*public function testGetProfileByStatus() {
+    public function testGetProfileByStatus() {
         // TEST 1 - SUCCESS WAITING
         $user = @EmundusUnittestHelperSamples::createSampleUser();
 
@@ -73,5 +72,5 @@ class EmundusModelProfileTest extends TestCase
 
         $u = JUser::getInstance($user->id);
         $u->delete();
-    }*/
+    }
 }

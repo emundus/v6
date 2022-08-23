@@ -20,15 +20,14 @@
 			<fields name="params">
 				<fieldset name="basic" label="Options">
 					<field type="list" name="mod_em_campaign_layout" label="MOD_EM_CAMPAIGN_LAYOUT" description="MOD_EM_CAMPAIGN_LAYOUT_DESC">
-						<option value="default">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
-						<option value="default_g5">MOD_EM_CAMPAIGN_LIST_DEFAULT_G5</option>
-						<option value="institut_fr">Institut Français</option>
-						<option value="nantes">Nantes</option>
-						<option value="old">MOD_EM_CAMPAIGN_LIST_OLD</option>
-						<option value="single_campaign">Single Campaign</option>
-						<option value="tchooz_single_campaign">Tchooz Single Campaign</option>
-						<option value="celsa">Celsa</option>
-						<option value="paris2">Paris 2</option>
+					<option value="default">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
+					<option value="default_g5">MOD_EM_CAMPAIGN_LIST_DEFAULT_G5</option>
+					<option value="institut_fr">Institut Français</option>
+					<option value="nantes">Nantes</option>
+					<option value="old">MOD_EM_CAMPAIGN_LIST_OLD</option>
+					<option value="single_campaign">Single Campaign</option>
+					<option value="tchooz_single_campaign">Tchooz Single Campaign</option>
+					<option value="celsa">Celsa</option>
 					</field>
 
 					<field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />

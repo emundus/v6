@@ -32,14 +32,14 @@ include_once(JPATH_SITE.'/components/com_emundus/models/settings.php');
  */
 class EmundusUnittestHelperSamples
 {
-    public function createSampleUser($profile = 9,$username = 'user.test@emundus.fr')
+    public function createSampleUser($profile = 9)
     {
         $m_users = new EmundusModelUsers;
 
         $user = clone(JFactory::getUser(0));
         $user->name = 'USER Test';
-        $user->username = $username;
-        $user->email = $username;
+        $user->username = 'user.test@emundus.fr';
+        $user->email = 'user.test@emundus.fr';
         $user->password = md5('test1234');
         $user->registerDate = date('Y-m-d H:i:s');
         $user->lastvisitDate = date('Y-m-d H:i:s');

@@ -93,7 +93,7 @@ plugins/fabrik_form/php/emundus-csv_import_ehesp.php
 
 /components/node_modules/
 /components/com_emundus_messenger/node_modules/
-/components/coverage/
+
 
 ## event booking ##
 administrator/components/com_eventbooking/assets/css/style.css
@@ -105,4 +105,4 @@ components/com_eventbooking/fields.xml
 
 ## unit test ##
 /components/com_emundus_onboard/unittest/logs/
-.phpunit.result.cache
+/.phpunit.*
