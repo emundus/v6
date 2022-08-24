@@ -13,13 +13,6 @@ use Joomla\CMS\Plugin\CMSPlugin;
 class plgEventbookingEmundus extends CMSPlugin
 {
     /**
-     * Database object.
-     *
-     * @var    JDatabaseDriver
-     */
-    protected $db;
-
-    /**
      * Constructor
      *
      * @param   object &$subject   The object to observe
@@ -50,6 +43,8 @@ class plgEventbookingEmundus extends CMSPlugin
         $event_id = $row->id;
         $custom_fields = json_decode($row->custom_fields);
         $save_quit = $row->second_reminder_frequency;
+
+        $redirect_url = '';
 
         try {
             $query->select('id')
@@ -98,8 +93,12 @@ class plgEventbookingEmundus extends CMSPlugin
                     $db->setQuery($query);
                     $dates = $db->loadObject();
 
-                    $row->registration_start_date = $dates->start_date;
-                    $row->cut_off_date = $dates->end_date;
+                    if($row->registration_start_date) {
+                        $row->registration_start_date = $dates->start_date;
+                    }
+                    if($row->cut_off_date) {
+                        $row->cut_off_date = $dates->end_date;
+                    }
                 }
 
                 // Create campaign
@@ -121,6 +120,13 @@ class plgEventbookingEmundus extends CMSPlugin
                 $db->execute();
 
                 $campaign = $db->insertid();
+
+                if($custom_fields->field_recurrent != 1){
+                    $redirect_url = '/index.php?option=com_fabrik&view=form&formid=449&cid='.$campaign;
+                }
+                if($save_quit == 1){
+                    $redirect_url = '/index.php?option=com_fabrik&view=form&formid=350&cid='.$campaign;
+                }
             } else {
                 $query->clear()
                     ->update($db->quoteName('#__emundus_setup_campaigns'))
@@ -135,8 +141,40 @@ class plgEventbookingEmundus extends CMSPlugin
                 $db->execute();
             }
 
+            if($custom_fields->field_cm == 3){
+                $query->clear()
+                    ->select('event_cms')
+                    ->from($db->quoteName('#__emundus_setup_campaigns'))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
+                $db->setQuery($query);
+                $cms = $db->loadResult();
+
+                if(empty($cms)){
+                    $query->clear()
+                        ->insert('#__emundus_setup_attachments')
+                        ->set($db->quoteName('lbl') . ' = ' . $db->quote('_em_cms_' . $campaign))
+                        ->set($db->quoteName('value') . ' = ' . $db->quote('Certifical médical spécifique - ' . $row->title))
+                        ->set($db->quoteName('allowed_types') . ' = ' . $db->quote('pdf'))
+                        ->set($db->quoteName('nbmax') . ' = ' . $db->quote(1))
+                        ->set($db->quoteName('ordering') . ' = ' . $db->quote(0))
+                        ->set($db->quoteName('published') . ' = ' . $db->quote(1))
+                        ->set($db->quoteName('default_attachment') . ' = ' . $db->quote(1));
+                    $db->setQuery($query);
+                    $db->execute();
+                    $cms = $db->insertid();
+
+                    $query->clear()
+                        ->update($db->quoteName('#__emundus_setup_campaigns'))
+                        ->set($db->quoteName('event_cms') . ' = ' . $db->quote($cms))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+
             $query->clear()
                 ->update($db->quoteName('#__eb_events'))
+                ->set($db->quoteName('alias') . ' = ' . $db->quote('activite-00' . $row->id))
                 ->set($db->quoteName('registration_handle_url') . ' = ' . $db->quote(JURI::base() . 'apply?course=prog&cid='.$campaign.'&Itemid=3056'));
             if($custom_fields->field_recurrent != 1){
                 $query->set($db->quoteName('event_date') . ' = ' . $db->quote($row->registration_start_date))
@@ -148,12 +186,8 @@ class plgEventbookingEmundus extends CMSPlugin
             $db->setQuery($query);
             $db->execute();
 
-            if($custom_fields->field_recurrent != 1){
-                JFactory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=449&cid='.$campaign);
-            }
-
-            if($save_quit == 1){
-                JFactory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=350&cid='.$campaign);
+            if(!empty($redirect_url)){
+                JFactory::getApplication()->redirect($redirect_url);
             }
         } catch (Exception $e){
             JLog::add('Error create campaign at event creation : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
