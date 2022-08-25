@@ -402,6 +402,10 @@ class plgUserEmundus extends JPlugin
                 }
 
                 $previous_url = "";
+                if(!empty($options['redirect'])){
+                    $previous_url = $options['redirect'];
+                }
+
             }
 
             if ($user['type'] == 'externallogin') {
