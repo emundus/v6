@@ -3465,4 +3465,116 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
+    public function updateElementOption($element, $oldOptions, $index, $newTranslation, $lang = 'fr')
+    {
+        if (empty($oldOptions['sub_labels'][$index])) {
+            $group = $this->getGroupId($element);
+            if (empty($group)) {
+                return false;
+            }
+
+            $oldOptions['sub_labels'][$index] = 'SUBLABEL_' . $group . '_' . $element . '_' . $index;
+        }
+
+        $this->deleteTranslation($oldOptions['sub_labels'][$index]);
+        $translated = $this->translate($oldOptions['sub_labels'][$index], [$lang => $newTranslation], 'fabrik_elements', $element, 'sub_labels');
+
+        return !empty($translated);
+    }
+
+    private function getGroupId($element) {
+        $group = 0;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('group_id')
+            ->from('#__fabrik_elements')
+            ->where('id = ' . $element);
+
+        $db->setQuery($query);
+        try {
+            $group = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('formbuilder | Error when  trying to find group from element: ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+        return $group;
+    }
+
+    public function getElementSubOption($element)
+    {
+        $options = [];
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('params')
+            ->from('#__fabrik_elements')
+            ->where('id = ' . $element);
+
+        $db->setQuery($query);
+
+        try {
+            $params = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('formbuilder | Error when  trying to find params from element: ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+
+        if (!empty($params)) {
+            $params = json_decode($params, true);
+
+            $options = $params['sub_options'];
+        }
+
+        return $options;
+    }
+
+    public function addElementSubOption($element, $newOption, $lang)
+    {
+        $return = false;
+
+        $sub_options = $this->getElementSubOption($element);
+        $group =  $this->getGroupId($element);
+
+        $index = sizeof($sub_options['sub_values']) + 1;
+        while(in_array($index, $sub_options['sub_values'])) {
+            $index++;
+        }
+
+        $newLabel =  'SUBLABEL_' . $group . '_' . $element . '_' . $index;
+        $sub_options['sub_values'][] = $index;
+        $sub_options['sub_labels'][] = $newLabel;
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('params')
+            ->from('#__fabrik_elements')
+            ->where('id = ' . $element);
+
+        $db->setQuery($query);
+        $params = $db->loadResult();
+        $params = json_decode($params, true);
+
+        $params['sub_options'] = $sub_options;
+
+        $query->clear()
+            ->update('#__fabrik_elements')
+            ->set('params = '.  $db->quote(json_encode($params)))
+            ->where('id = ' . $element);
+
+        $db->setQuery($query);
+
+        $updated = $db->execute();
+
+        if ($updated) {
+            $this->deleteTranslation( $newLabel);
+            $translated = $this->translate( $newLabel, [$lang => $newOption], 'fabrik_elements', $element, 'sub_labels');
+
+            if ($translated) {
+                $return = $sub_options;
+            }
+        }
+
+        return $return;
+    }
 }

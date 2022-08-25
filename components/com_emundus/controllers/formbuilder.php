@@ -965,6 +965,80 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
          echo json_encode((object)$tab);
          exit;
      }
+
+     public function updateElementOption()
+     {
+         $user = JFactory::getUser();
+
+         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+             $result = 0;
+             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+         } else {
+             $jinput = JFactory::getApplication()->input;
+             $element = $jinput->getInt("element");
+             $options = json_decode($jinput->getString("options"), true);
+             $index = $jinput->getInt("index");
+             $newTranslation = $jinput->getString("newTranslation");
+             $lang = $jinput->getString("lang");
+
+             if (!empty($element) && !empty($options) && !empty($newTranslation)) {
+                 $translated = $this->m_formbuilder->updateElementOption($element, $options, $index, $newTranslation, $lang);
+                 $tab = array('status' => $translated);
+             } else {
+                 $tab = array('status' => false, 'new_options' => "MISSING_PARAMETERS");
+             }
+         }
+
+         echo json_encode((object)$tab);
+         exit;
+     }
+
+     public function getelementsuboptions()
+     {
+         $user = JFactory::getUser();
+
+         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+             $result = 0;
+             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+         } else {
+             $jinput = JFactory::getApplication()->input;
+             $element = $jinput->getInt("element");
+
+             if (!empty($element)) {
+                 $options = $this->m_formbuilder->getElementSubOption($element);
+                 $tab = array('status' => !empty($options), 'new_options' => $options);
+             } else {
+                 $tab = array('status' => false, 'new_options' => "MISSING_PARAMETERS");
+             }
+         }
+
+         echo json_encode((object)$tab);
+         exit;
+     }
+
+     public function addElementSubOption() {
+         $user = JFactory::getUser();
+
+         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+             $result = 0;
+             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+         } else {
+             $jinput = JFactory::getApplication()->input;
+             $element = $jinput->getInt("element");
+             $newOption = $jinput->getString("newOption");
+             $lang = $jinput->getString("lang");
+
+             if (!empty($element) && !empty($newOption)) {
+                 $options = $this->m_formbuilder->addElementSubOption($element, $newOption, $lang);
+                 $tab = array('status' => !empty($options), 'options' => $options);
+             } else {
+                 $tab = array('status' => false, 'new_options' => "MISSING_PARAMETERS");
+             }
+         }
+
+         echo json_encode((object)$tab);
+         exit;
+     }
 }
 
 

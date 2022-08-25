@@ -13,14 +13,13 @@
                 <span class="material-icons-outlined handle-options em-grab">drag_indicator</span>
               </span>
             </div>
-            <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id" :value="element.params.sub_options.sub_values[index]">
+            <input v-if="type !== 'dropdown'" :type="type" :name="'element-id-' + element.id" :value="optionsTranslations[index]">
             <div v-else>{{ index+1 }}. </div>
             <input
                 type="text"
                 class="editable-data editable-data-input em-ml-4 em-w-100"
-                v-model="option.sub_label"
-                @keyup.enter="updateOption(index, option.sub_label)"
-                @focusout="updateOption(index, option.sub_label)"
+                v-model="optionsTranslations[index]"
+                @focusout="updateOption(index, optionsTranslations[index])"
                 :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
           </div>
           <div class="em-flex-row">
@@ -38,7 +37,6 @@
           type="text"
           class="editable-data editable-data-input em-ml-4 em-w-100"
           v-model="newOption"
-          @keyup.enter="addOption"
           @focusout="addOption"
           :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_OPTION')">
       </div>
@@ -69,60 +67,60 @@ export default {
       loading: false,
       newOption: '',
       arraySubValues: [],
-
+			optionsTranslations: [],
       optionHighlight: null,
     };
   },
   created () {
 	  this.getSubOptionsTranslation();
+	  this.arraySubLabelsNotTranslated = JSON.parse(JSON.stringify(this.element.params.sub_options.sub_labels));
   },
   methods: {
+	  async reloadOptions() {
+			this.loading = true;
+			formBuilderService.getElementSubOptions(this.element.id).then((response) => {
+				if (response.data.status) {
+					this.element.params.sub_options = response.data.new_options;
+					this.getSubOptionsTranslation();
+				}
+				this.loading = false;
+			});
+	  },
     async getSubOptionsTranslation() {
       this.loading = true;
 
       formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then(response => {
 				if (response) {
-					this.element.params.sub_options.sub_labels.forEach((label, index) => {
-						this.element.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-					});
-
+					this.optionsTranslations = Object.values(response.data);
 					this.arraySubValues = this.element.params.sub_options.sub_values.map((value, i) => {
 						return {
 							'sub_value' : value,
-							'sub_label' : Object.values(response.data)[i],
+							'sub_label' :  this.element.params.sub_options.sub_labels[i],
 						};
 					});
-
-					this.$forceUpdate();
 				}
 
         this.loading = false;
       });
     },
     addOption() {
-      if (this.newOption.length) {
-        this.element.params.sub_options.sub_labels.push(this.newOption);
-        this.element.params.sub_options.sub_values.push(null);
-
-        let object = {
-          'sub_value' : null,
-          'sub_label' : this.newOption,
-        };
-        this.arraySubValues.push(object);
-
-        this.newOption = '';
-	      formBuilderService.updateParams(this.element).then((response) => {
-					if (response.data.scalar) {
-						this.$emit('update-element');
-					}
-	      });
-			}
+			this.loading = true;
+	    formBuilderService.addOption(this.element.id, this.newOption, this.shortDefaultLang).then((response) => {
+				this.newOption = '';
+				if (response.data.status) {
+					this.reloadOptions();
+				}
+				this.loading = false;
+	    })
     },
     updateOption(index, option) {
-      this.element.params.sub_options.sub_labels[index] = option;
-	    formBuilderService.updateParams(this.element);
+			formBuilderService.updateOption(this.element.id, this.element.params.sub_options, index, option, this.shortDefaultLang).then((response) => {
+				if (response.data.status) {
+					this.reloadOptions();
+				}
+			});
     },
-    updateOrder() {
+    /*updateOrder() {
       let new_sub_values = [];
       let new_sub_labels = [];
       this.arraySubValues.forEach((value, i) => {
@@ -132,22 +130,11 @@ export default {
 
       this.element.params.sub_options.sub_labels = new_sub_labels;
       this.element.params.sub_options.sub_values = new_sub_values;
-	    formBuilderService.updateParams(this.element);
-    },
+	    //formBuilderService.updateParams(this.element);
+    },*/
     removeOption(index) {
-      this.arraySubValues.splice(index,1);
-      this.element.params.sub_options.sub_labels.splice(index,1);
-      this.element.params.sub_options.sub_values.splice(index,1);
-	    formBuilderService.updateParams(this.element);
+
     }
-  },
-  watch: {
-    "element.params.sub_options.sub_labels": {
-      handler: function (newValue) {
-        // TODO: find a better way to do this
-        //this.getSubOptionsTranslation();
-      },
-    },
   }
 }
 </script>

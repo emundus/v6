@@ -470,6 +470,69 @@ export default {
         }
     },
 
+    async updateOption(elementId, options, index, newTranslation, lang) {
+        const formData = new FormData();
+        formData.append('element', elementId);
+        formData.append('options', JSON.stringify(options));
+        formData.append('index', index);
+        formData.append('newTranslation', newTranslation);
+        formData.append('lang', lang);
+
+        try {
+            const response = client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=updateElementOption',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
+    addOption(element, newOption, lang) {
+        const formData = new FormData();
+        formData.append('element', element);
+        formData.append('newOption', newOption);
+        formData.append('lang', lang);
+
+        try {
+            const response = client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=addElementSubOption',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
+
+    getElementSubOptions(element) {
+        try {
+            const response = client().get(
+                'index.php?option=com_emundus&controller=formbuilder&task=getelementsuboptions',
+                {
+                    params: {
+                        element: element
+                    }
+                }
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
+
     deleteElement(elementId) {
         const formData = new FormData();
         formData.append('element', elementId);
