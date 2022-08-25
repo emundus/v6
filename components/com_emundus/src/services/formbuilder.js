@@ -512,7 +512,25 @@ export default {
             };
         }
     },
+    deleteElementSubOption(element, index) {
+        const formData = new FormData();
+        formData.append('element', element);
+        formData.append('index', index);
 
+        try {
+            const response = client().post(
+                'index.php?option=com_emundus&controller=formbuilder&task=deleteElementSubOption',
+                formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     getElementSubOptions(element) {
         try {
             const response = client().get(

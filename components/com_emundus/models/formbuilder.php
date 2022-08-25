@@ -3577,4 +3577,42 @@ class EmundusModelFormbuilder extends JModelList {
 
         return $return;
     }
+
+    public function deleteElementSubOption($element, $index)
+    {
+        $deleted = false;
+        $sub_options = $this->getElementSubOption($element);
+
+        $trad_to_delete = $sub_options['sub_labels'][$index];
+        unset($sub_options['sub_labels'][$index]);
+        unset($sub_options['sub_values'][$index]);
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('params')
+            ->from('#__fabrik_elements')
+            ->where('id = ' . $element);
+
+        $db->setQuery($query);
+        $params = $db->loadResult();
+        $params = json_decode($params, true);
+
+        $params['sub_options'] = $sub_options;
+
+        $query->clear()
+            ->update('#__fabrik_elements')
+            ->set('params = '.  $db->quote(json_encode($params)))
+            ->where('id = ' . $element);
+
+        $db->setQuery($query);
+        $updated = $db->execute();
+
+        if ($updated) {
+            $this->deleteTranslation($trad_to_delete);
+            $deleted = true;
+        }
+
+        return $deleted;
+    }
 }

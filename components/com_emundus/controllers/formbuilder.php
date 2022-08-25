@@ -985,7 +985,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
                  $translated = $this->m_formbuilder->updateElementOption($element, $options, $index, $newTranslation, $lang);
                  $tab = array('status' => $translated);
              } else {
-                 $tab = array('status' => false, 'new_options' => "MISSING_PARAMETERS");
+                 $tab = array('status' => false, 'msg' => "MISSING_PARAMETERS");
              }
          }
 
@@ -1008,7 +1008,7 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
                  $options = $this->m_formbuilder->getElementSubOption($element);
                  $tab = array('status' => !empty($options), 'new_options' => $options);
              } else {
-                 $tab = array('status' => false, 'new_options' => "MISSING_PARAMETERS");
+                 $tab = array('status' => false, 'msg' => "MISSING_PARAMETERS");
              }
          }
 
@@ -1032,7 +1032,31 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
                  $options = $this->m_formbuilder->addElementSubOption($element, $newOption, $lang);
                  $tab = array('status' => !empty($options), 'options' => $options);
              } else {
-                 $tab = array('status' => false, 'new_options' => "MISSING_PARAMETERS");
+                 $tab = array('status' => false, 'msg' => "MISSING_PARAMETERS");
+             }
+         }
+
+         echo json_encode((object)$tab);
+         exit;
+     }
+
+     public function deleteElementSubOption()
+     {
+         $user = JFactory::getUser();
+
+         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+             $result = 0;
+             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+         } else {
+             $jinput = JFactory::getApplication()->input;
+             $element = $jinput->getInt("element");
+             $index = $jinput->getInt("index");
+
+             if (!empty($element) && !empty($index)) {
+                 $deleted = $this->m_formbuilder->deleteElementSubOption($element, $index);
+                 $tab = array('status' => $deleted);
+             } else {
+                 $tab = array('status' => false, 'msg' => "MISSING_PARAMETERS");
              }
          }
 

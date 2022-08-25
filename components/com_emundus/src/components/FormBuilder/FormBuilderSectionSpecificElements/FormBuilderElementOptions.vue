@@ -133,7 +133,11 @@ export default {
 	    //formBuilderService.updateParams(this.element);
     },*/
     removeOption(index) {
-
+	    formBuilderService.deleteElementSubOption(this.element.id, index).then((response) => {
+		    if (response.data.status) {
+					this.reloadOptions();
+		    }
+	    });
     }
   }
 }
