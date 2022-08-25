@@ -59,6 +59,7 @@
         <div>
           <p class="em-label">{{ attachment.value }}</p>
           <span class="em-help-text">{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS_DROP_DATE') }}{{ formattedDate(attachment.date_time,'LL') }}</span>
+          <span v-if="attachment.expires_date != null" class="em-expires-text em-red-500-color">{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS_EXPIRES_DATE') }}{{ formattedDate(attachment.expires_date,'LL') }}</span>
         </div>
         <div class="em-flew-row em-small-flex-column">
           <a :href="'/' + attachment.filename" download target="_blank"><span class="material-icons em-material-icons-download">file_download</span></a>
@@ -99,6 +100,7 @@ export default {
   data: () => ({
     showform: false,
     reloadDropzone: 0,
+    isExpiresDateDisplay: false,
 
     attachments: [],
     attachments_allowed: [],
@@ -129,6 +131,7 @@ export default {
         });
       }
     });
+    this.displayExpiresDate();
   },
   methods: {
     afterAdded() {
@@ -209,6 +212,11 @@ export default {
             }
           });
         }
+      });
+    },
+    displayExpiresDate(){
+      attachmentService.isExpiresDateDisplayed().then((response) => {
+        this.isExpiresDateDisplay = response.display_expires_date;
       });
     }
   },
@@ -292,6 +300,17 @@ legend {
   color: #727272;
   display: flex;
   margin-top: 12px;
+}
+.em-expires-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 17px;
+  letter-spacing: 0.0025em;
+  text-align: left;
+  display: flex;
+  margin-top: 4px;
 }
 
 </style>
