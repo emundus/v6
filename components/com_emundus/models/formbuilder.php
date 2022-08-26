@@ -59,7 +59,7 @@ class EmundusModelFormbuilder extends JModelList {
     public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0){
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-            $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code,'override', $reference_table, $reference_id);
+            $key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code,'override', $reference_table, $reference_id);
         }
         return $key;
     }
@@ -152,27 +152,34 @@ class EmundusModelFormbuilder extends JModelList {
             $db = $this->getDbo();
             $query = $db->getQuery(true);
 
-            if($element != null){
+            if (!empty($element)){
                 $new_key = $this->updateTranslation($labelTofind, $NewSubLabel,'fabrik_elements', $element);
-                $query->update($db->quoteName('#__fabrik_elements'))
-                    ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($element));
-                $db->setQuery($query);
-                $db->execute();
-            } elseif ($group != null){
-                $new_key = $this->updateTranslation($labelTofind,$NewSubLabel,'fabrik_groups',$group);
-                $query->update($db->quoteName('#__fabrik_groups'))
-                    ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($group));
-                $db->setQuery($query);
-                $db->execute();
-            } elseif ($page != null){
+                if (!empty($new_key) && !is_bool($new_key)) {
+                    $query->update($db->quoteName('#__fabrik_elements'))
+                        ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($element));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            } elseif (!empty($group)){
+                $new_key = $this->updateTranslation($labelTofind, $NewSubLabel,'fabrik_groups', $group);
+
+                if (!empty($new_key) && !is_bool($new_key)) {
+                    $query->update($db->quoteName('#__fabrik_groups'))
+                        ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($group));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            } elseif (!empty($page)){
                 $new_key = $this->updateTranslation($labelTofind,$NewSubLabel,'fabrik_forms',$page);
-                $query->update($db->quoteName('#__fabrik_forms'))
-                    ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($page));
-                $db->setQuery($query);
-                $db->execute();
+                if (!empty($new_key) && !is_bool($new_key)) {
+                    $query->update($db->quoteName('#__fabrik_forms'))
+                        ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($page));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
             } else {
                 $new_key = $this->updateTranslation($labelTofind, $NewSubLabel);
             }
