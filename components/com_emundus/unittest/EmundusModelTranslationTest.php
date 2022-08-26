@@ -154,4 +154,11 @@ class EmundusModelTranslationTest extends TestCase
     public function testGetPlatformLanguages(){
         $this->assertNotEmpty($this->m_translations->getPlatformLanguages());
     }
+
+    public function testCheckTagIsCorrect()
+    {
+        $this->assertFalse($this->m_translations->checkTagIsCorrect('', 'Ma traduction', 'insert', 'fr'));
+        $this->assertFalse($this->m_translations->checkTagIsCorrect('E[L<$EN^()T_TE\T', 'Ma traduction', 'insert', 'fr'));
+        $this->assertTrue($this->m_translations->checkTagIsCorrect('MON_ELEMENT', 'Ma traduction', 'insert', 'fr'));
+    }
 }

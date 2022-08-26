@@ -1091,7 +1091,7 @@ class EmundusModelTranslations extends JModelList
         }
     }
 
-    private function checkTagIsCorrect($tag, $override, $action, $lang) {
+    public function checkTagIsCorrect($tag, $override, $action, $lang) {
         $isCorrect = false;
 
         if (!empty($tag)) {
