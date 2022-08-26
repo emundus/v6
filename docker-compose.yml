@@ -87,15 +87,14 @@ services:
     container_name: database-$CI_COMMIT_SHORT_SHA-$CI_JOB_ID
     image: $CI_REGISTRY/tchooz-build-db:$CI_COMMIT_SHORT_SHA
     environment:
-      - MYSQL_ROOT_PASSWORD=${TCHOOZ_DB_PASSWORD}
       - MYSQL_DATABASE=${TCHOOZ_DB_NAME}
       - MYSQL_USER=${TCHOOZ_DB_USER}
       - MYSQL_PASSWORD=${TCHOOZ_DB_PASSWORD}
     healthcheck:
       test: ["CMD", "mysql" ,"-h", "${TCHOOZ_DB_HOST}", "-P", "3306", "-u", "${TCHOOZ_DB_USER}", "-p${TCHOOZ_DB_PASSWORD}", "-e", "USE ${TCHOOZ_DB_NAME}; DESCRIBE language_requirements;"]
-      interval: 15s
-      retries: 20
-      start_period: 20s
+      interval: 5s
+      retries: 30
+      start_period: 1s
       timeout: 10s
     restart: always
     cap_add:
