@@ -1,5 +1,5 @@
 <template>
-  <div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section">
+  <div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section em-mt-32 em-mb-32">
     <div class="section-card em-flex-column">
       <div class="section-identifier em-bg-main-500 em-pointer em-flex-row"
           @click="closedSection = !closedSection">
@@ -10,19 +10,16 @@
       </div>
       <div class="section-content em-w-100 em-p-32" :class="{'closed': closedSection}">
         <div class="em-flex-row em-flex-space-between em-w-100 ">
-          <span
-              id="section-title"
-              class="editable-data"
-              ref="sectionTitle"
-              contenteditable="true"
-              @focusout="updateTitle"
-              @keyup.enter="updateTitle"
-              @keydown="(event) => checkMaxMinlength(event, 50)"
-              :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-              v-html="section.label[shortDefaultLang]"
-          >
-          </span>
-          <div>
+	        <input
+			        id="section-title"
+			        class="editable-data em-w-100"
+			        :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
+			        v-model="section.label[shortDefaultLang]"
+			        :value="section.label[shortDefaultLang]"
+			        @focusout="updateTitle"
+			        @keydown="(event) => checkMaxMinlength(event, 50)"
+	        />
+          <div class="section-actions-wrapper">
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')" title="Move section upwards">keyboard_double_arrow_up</span>
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('down')" title="Move section downwards">keyboard_double_arrow_down</span>
             <span class="material-icons-outlined em-red-500-color em-pointer delete hover-opacity" @click="deleteSection">delete</span>
@@ -36,9 +33,7 @@
                ref="sectionIntro"
                contenteditable="true"
                @focusout="updateIntro"
-               @keyup.enter="updateIntro"
-               v-html="section.group_intro"
-            >
+               v-html="section.group_intro">
             </p>
             <draggable
                 v-model="elements"
@@ -139,17 +134,12 @@ export  default {
       this.elements = elements.length > 0 ? elements : [];
     },
     updateTitle() {
-      document.activeElement.blur();
-      this.$refs.sectionTitle.innerText = this.$refs.sectionTitle.innerText.trim();
-      this.section.label[this.shortDefaultLang] = this.$refs.sectionTitle.innerText;
-      formBuilderService.updateTranslation({
-        value: this.section.group_id,
-        key: 'group'
-      }, this.section.group_tag, this.section.label);
-      this.updateLastSave();
+      this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
+      formBuilderService.updateTranslation({value: this.section.group_id, key: 'group'}, this.section.group_tag, this.section.label).then((response) => {
+	      this.updateLastSave();
+      });
     },
     updateIntro() {
-      document.activeElement.blur();
       this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim();
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
       formBuilderService.updateGroupParams(this.section.group_id, {
@@ -209,7 +199,9 @@ export  default {
 
 <style lang="scss">
 .form-builder-page-section {
-  margin: 32px 0;
+	.section-actions-wrapper {
+		min-width: fit-content;
+	}
 
   .section-card {
     .section-identifier {

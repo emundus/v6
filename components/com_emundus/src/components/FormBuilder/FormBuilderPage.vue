@@ -4,7 +4,6 @@
         class="em-font-size-24 em-font-weight-800 editable-data"
         ref="pageTitle"
         @focusout="updateTitle"
-        @keyup.enter="updateTitleKeyup"
         @keydown="(event) => checkMaxMinlength(event, 50, 3)"
         contenteditable="true"
         :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
@@ -189,10 +188,6 @@ export default {
           this.updateLastSave();
         }
       });
-    },
-    updateTitleKeyup()
-    {
-      document.activeElement.blur();
     },
     updateDescription()
     {
