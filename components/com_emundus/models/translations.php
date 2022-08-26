@@ -517,6 +517,11 @@ class EmundusModelTranslations extends JModelList
      * @since version
      */
     public function insertTranslation($tag,$override,$lang_code,$location = '',$type='override',$reference_table = '',$reference_id = 0,$reference_field = ''){
+        $isCorrect = $this->checkTagIsCorrect($tag, $override, 'insert', $lang_code);
+        if (!$isCorrect) {
+            return false;
+        }
+
         $query = $this->_db->getQuery(true);
         $user = JFactory::getUser();
 
@@ -581,8 +586,8 @@ class EmundusModelTranslations extends JModelList
      * @since version
      */
     public function updateTranslation($tag, $override, $lang_code, $type = 'override', $reference_table = '', $reference_id = 0) {
-        if (empty($tag)) {
-            JLog::add("Problem when try to update translation into file, missing tag for this override $override, $lang_code",JLog::ERROR, 'com_emundus.translations');
+        $isCorrect = $this->checkTagIsCorrect($tag, $override, 'update', $lang_code);
+        if (!$isCorrect) {
             return false;
         }
 
@@ -1084,5 +1089,21 @@ class EmundusModelTranslations extends JModelList
             JLog::add('component/com_emundus/models/translations | Error at sending email to purpose a new language : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
             return false;
         }
+    }
+
+    public function checkTagIsCorrect($tag, $override, $action, $lang) {
+        $isCorrect = false;
+
+        if (!empty($tag)) {
+            if (!preg_match('/[$^*()=+\\\[<?;]/', $tag, $matches)) {
+                $isCorrect = true;
+            } else {
+                JLog::add("Problem when try to $action translation into file, tag [$tag] for override [$override] contains forbidden characters ",JLog::ERROR, 'com_emundus.translations');
+            }
+        } else {
+            JLog::add("Problem when try to $action translation into file, missing tag for this override $override, $lang",JLog::ERROR, 'com_emundus.translations');
+        }
+
+        return $isCorrect;
     }
 }

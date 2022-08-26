@@ -46,6 +46,14 @@ class EmundusModelTranslationTest extends TestCase
     }
 
     public function testInsertTranslation(){
+        // Test insert translation with empty key return false
+        $inserted = $this->m_translations->insertTranslation('', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999);
+        $this->assertFalse($inserted);
+
+        // Make sure $^*()=+\[<?; are not allowed in tag
+        $inserted = $this->m_translations->insertTranslation('E[L<$EN^()T_TE\T', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999);
+        $this->assertFalse($inserted);
+
         if(empty($this->m_translations->getTranslations('override','fr-FR','','','',0,'ELEMENT_TEST'))) {
             // TEST 1 - Insert a basic translation of a fabrik_element
             $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
@@ -145,5 +153,12 @@ class EmundusModelTranslationTest extends TestCase
 
     public function testGetPlatformLanguages(){
         $this->assertNotEmpty($this->m_translations->getPlatformLanguages());
+    }
+
+    public function testCheckTagIsCorrect()
+    {
+        $this->assertFalse($this->m_translations->checkTagIsCorrect('', 'Ma traduction', 'insert', 'fr'));
+        $this->assertFalse($this->m_translations->checkTagIsCorrect('E[L<$EN^()T_TE\T', 'Ma traduction', 'insert', 'fr'));
+        $this->assertTrue($this->m_translations->checkTagIsCorrect('MON_ELEMENT', 'Ma traduction', 'insert', 'fr'));
     }
 }
