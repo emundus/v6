@@ -3607,8 +3607,8 @@ class EmundusModelFormbuilder extends JModelList {
         $sub_options = $this->getElementSubOption($element);
 
         $trad_to_delete = $sub_options['sub_labels'][$index];
-        unset($sub_options['sub_labels'][$index]);
-        unset($sub_options['sub_values'][$index]);
+        array_splice($sub_options['sub_labels'], $index, 1);
+        array_splice($sub_options['sub_values'], $index, 1);
 
         $params = $this->getFabrikElementParams($element);
 

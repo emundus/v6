@@ -73,7 +73,6 @@ export default {
   },
   created () {
 	  this.getSubOptionsTranslation();
-	  this.arraySubLabelsNotTranslated = JSON.parse(JSON.stringify(this.element.params.sub_options.sub_labels));
   },
   methods: {
 	  async reloadOptions() {
