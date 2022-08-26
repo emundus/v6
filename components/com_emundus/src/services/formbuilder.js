@@ -531,6 +531,27 @@ export default {
             };
         }
     },
+    updateElementSubOptionsOrder(element, old_order, new_order)
+    {
+        const formData = new FormData();
+        formData.append('element', element);
+        formData.append('options_old_order', JSON.stringify(old_order));
+        formData.append('options_new_order', JSON.stringify(new_order));
+
+        try {
+            const response =  client().post(
+              'index.php?option=com_emundus&controller=formbuilder&task=updateElementSubOptionsOrder' ,
+              formData
+            );
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
+    },
     getElementSubOptions(element) {
         try {
             const response = client().get(

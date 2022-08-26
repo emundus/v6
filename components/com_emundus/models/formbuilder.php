@@ -3501,9 +3501,9 @@ class EmundusModelFormbuilder extends JModelList {
         return $group;
     }
 
-    public function getElementSubOption($element)
+    private function getFabrikElementParams($element)
     {
-        $options = [];
+        $params = [];
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -3515,13 +3515,48 @@ class EmundusModelFormbuilder extends JModelList {
 
         try {
             $params = $db->loadResult();
+
+            if (!empty($params)) {
+                $params = json_decode($params, true);
+            }
         } catch (Exception $e) {
             JLog::add('formbuilder | Error when  trying to find params from element: ' .$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
 
-        if (!empty($params)) {
-            $params = json_decode($params, true);
+        return $params;
+    }
 
+    private function updateFabrikElementParams($element, $params)
+    {
+        $updated = false;
+        if (!empty($element) && !empty($params)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->update('#__fabrik_elements')
+                ->set('params = '.  $db->quote(json_encode($params)))
+                ->where('id = ' . $element);
+
+            $db->setQuery($query);
+
+            try {
+                $updated = $db->execute();
+            } catch (Exception $e) {
+                JLog::add("formbuilder | Error when  trying to update params of element $element : " . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $updated;
+    }
+
+    public function getElementSubOption($element)
+    {
+        $options = [];
+
+        $params = $this->getFabrikElementParams($element);
+
+        if (!empty($params)) {
             $options = $params['sub_options'];
         }
 
@@ -3532,53 +3567,41 @@ class EmundusModelFormbuilder extends JModelList {
     {
         $return = false;
 
-        $sub_options = $this->getElementSubOption($element);
-        $group =  $this->getGroupId($element);
+        if (!empty($element) && !empty(trim($newOption))) {
+            $sub_options = $this->getElementSubOption($element);
+            $group =  $this->getGroupId($element);
 
-        $index = sizeof($sub_options['sub_values']) + 1;
-        while(in_array($index, $sub_options['sub_values'])) {
-            $index++;
-        }
+            $index = sizeof($sub_options['sub_values']) + 1;
+            while(in_array($index, $sub_options['sub_values'])) {
+                $index++;
+            }
 
-        $newLabel =  'SUBLABEL_' . $group . '_' . $element . '_' . $index;
-        $sub_options['sub_values'][] = $index;
-        $sub_options['sub_labels'][] = $newLabel;
+            $newLabel =  'SUBLABEL_' . $group . '_' . $element . '_' . $index;
+            $sub_options['sub_values'][] = $index;
+            $sub_options['sub_labels'][] = $newLabel;
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+            $params = $this->getFabrikElementParams($element);
 
-        $query->select('params')
-            ->from('#__fabrik_elements')
-            ->where('id = ' . $element);
+            if (!empty($params)) {
+                $params['sub_options'] = $sub_options;
 
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params, true);
+                $updated = $this->updateFabrikElementParams($element, $params);
 
-        $params['sub_options'] = $sub_options;
+                if ($updated) {
+                    $this->deleteTranslation( $newLabel);
+                    $translated = $this->translate( $newLabel, [$lang => $newOption], 'fabrik_elements', $element, 'sub_labels');
 
-        $query->clear()
-            ->update('#__fabrik_elements')
-            ->set('params = '.  $db->quote(json_encode($params)))
-            ->where('id = ' . $element);
-
-        $db->setQuery($query);
-
-        $updated = $db->execute();
-
-        if ($updated) {
-            $this->deleteTranslation( $newLabel);
-            $translated = $this->translate( $newLabel, [$lang => $newOption], 'fabrik_elements', $element, 'sub_labels');
-
-            if ($translated) {
-                $return = $sub_options;
+                    if ($translated) {
+                        $return = $sub_options;
+                    }
+                }
             }
         }
 
         return $return;
     }
 
-    public function deleteElementSubOption($element, $index)
+    public function deleteElementSubOption($element, $index): bool
     {
         $deleted = false;
         $sub_options = $this->getElementSubOption($element);
@@ -3587,32 +3610,37 @@ class EmundusModelFormbuilder extends JModelList {
         unset($sub_options['sub_labels'][$index]);
         unset($sub_options['sub_values'][$index]);
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $params = $this->getFabrikElementParams($element);
 
-        $query->select('params')
-            ->from('#__fabrik_elements')
-            ->where('id = ' . $element);
+        if (!empty($params)) {
+            $params['sub_options'] = $sub_options;
+            $updated = $this->updateFabrikElementParams($element, $params);
 
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params, true);
-
-        $params['sub_options'] = $sub_options;
-
-        $query->clear()
-            ->update('#__fabrik_elements')
-            ->set('params = '.  $db->quote(json_encode($params)))
-            ->where('id = ' . $element);
-
-        $db->setQuery($query);
-        $updated = $db->execute();
-
-        if ($updated) {
-            $this->deleteTranslation($trad_to_delete);
-            $deleted = true;
+            if ($updated) {
+                $this->deleteTranslation($trad_to_delete);
+                $deleted = true;
+            }
         }
 
         return $deleted;
+    }
+
+    public function updateElementSubOptionsOrder($element, $old_order, $new_order): bool
+    {
+        $updated = false;
+
+        if (!empty($element) && !empty($new_order) && is_array($new_order) && !empty($old_order) && is_array($old_order)) {
+            if (sizeof($new_order['sub_values']) > 1 && sizeof($new_order['sub_values']) == sizeof($old_order['sub_values'])) {
+                $params = $this->getFabrikElementParams($element);
+
+                if (!empty($params)) {
+                    $params['sub_options'] = $new_order;
+
+                    $updated = $this->updateFabrikElementParams($element, $params);
+                }
+            }
+        }
+
+        return $updated;
     }
 }

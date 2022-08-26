@@ -82,8 +82,9 @@ export default {
 				if (response.data.status) {
 					this.element.params.sub_options = response.data.new_options;
 					this.getSubOptionsTranslation();
+				} else {
+					this.loading = false;
 				}
-				this.loading = false;
 			});
 	  },
     async getSubOptionsTranslation() {
@@ -104,6 +105,10 @@ export default {
       });
     },
     addOption() {
+			if (this.newOption.trim() == '') {
+				return;
+			}
+
 			this.loading = true;
 	    formBuilderService.addOption(this.element.id, this.newOption, this.shortDefaultLang).then((response) => {
 				this.newOption = '';
@@ -114,28 +119,50 @@ export default {
 	    })
     },
     updateOption(index, option) {
-			formBuilderService.updateOption(this.element.id, this.element.params.sub_options, index, option, this.shortDefaultLang).then((response) => {
+	    this.loading = true;
+	    formBuilderService.updateOption(this.element.id, this.element.params.sub_options, index, option, this.shortDefaultLang).then((response) => {
 				if (response.data.status) {
 					this.reloadOptions();
+				} else {
+					this.loading = false;
 				}
-			});
+	    });
     },
-    /*updateOrder() {
-      let new_sub_values = [];
-      let new_sub_labels = [];
-      this.arraySubValues.forEach((value, i) => {
-        new_sub_values.push(value.sub_value);
-        new_sub_labels.push(value.sub_label);
-      });
+    updateOrder() {
+	    if (this.arraySubValues.length > 1) {
+		    let sub_options_in_new_order = {
+			    sub_values: [],
+			    sub_labels: []
+		    };
 
-      this.element.params.sub_options.sub_labels = new_sub_labels;
-      this.element.params.sub_options.sub_values = new_sub_values;
-	    //formBuilderService.updateParams(this.element);
-    },*/
+		    this.arraySubValues.forEach((value, i) => {
+					sub_options_in_new_order.sub_values.push(value.sub_value);
+					sub_options_in_new_order.sub_labels.push(value.sub_label);
+				});
+
+				if (!this.element.params.sub_options.sub_values.every((value, index) => value === sub_options_in_new_order.sub_values[index])) {
+					this.loading = true;
+					formBuilderService.updateElementSubOptionsOrder(this.element.id, this.element.params.sub_options, sub_options_in_new_order).then((response) => {
+						if (response.data.status) {
+							this.reloadOptions();
+						} else {
+							this.loading = false;
+						}
+					});
+				} else {
+					console.log('No need to call reorder, same order');
+				}
+			} else {
+				console.log('No need to reorder, only one element');
+	    }
+    },
     removeOption(index) {
+	    this.loading = true;
 	    formBuilderService.deleteElementSubOption(this.element.id, index).then((response) => {
 		    if (response.data.status) {
 					this.reloadOptions();
+		    } else {
+			    this.loading = false;
 		    }
 	    });
     }

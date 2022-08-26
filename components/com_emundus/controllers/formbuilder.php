@@ -1063,6 +1063,31 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
          echo json_encode((object)$tab);
          exit;
      }
+
+     public function updateElementSubOptionsOrder()
+     {
+         $user = JFactory::getUser();
+
+         if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+             $result = 0;
+             $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+         } else {
+             $jinput = JFactory::getApplication()->input;
+             $element = $jinput->getInt("element");
+             $old_order = json_decode($jinput->getString("options_old_order"), true);
+             $new_order = json_decode($jinput->getString("options_new_order"), true);
+
+             if (!empty($element) && !empty($new_order) && !empty($old_order)) {
+                 $updated = $this->m_formbuilder->updateElementSubOptionsOrder($element, $old_order, $new_order);
+                 $tab = array('status' => $updated);
+             } else {
+                 $tab = array('status' => false, 'msg' => "MISSING_PARAMETERS");
+             }
+         }
+
+         echo json_encode((object)$tab);
+         exit;
+     }
 }
 
 
