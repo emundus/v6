@@ -42,11 +42,10 @@ switch ($order) {
         $month = ( $currentCampaign->formation_end !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($currentCampaign->formation_end, $site_offset))->format("F Y") : "";
         break;
 }
-
 ?>
 
 <div class="single-campaign-tabs">
-    <?php if ((in_array('faq', $modules_tabs) && !empty($faq_articles)) || (in_array('documents', $modules_tabs) && !empty($files))) : ?>
+    <?php if (!empty($faq_articles) || !empty($files)) : ?>
         <button class="btn btn-primary current-tab" onclick="displayTab('campaign')" id="campaign_tab">
             <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
         </button>
@@ -64,7 +63,7 @@ switch ($order) {
 </div>
 <div class="g-block size-100 tchooz-single-campaign">
     <div class="single-campaign" id="campaign">
-        <div class="right-side-tchooz col-md-12">
+        <div class="right-side-tchooz col-md-4">
             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                 <div class="campaingapplycontent">
                     <legend><?php echo JText::_('CAMPAIGN_PERIOD'); ?></legend>
@@ -112,7 +111,7 @@ switch ($order) {
                 <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course='.$currentCampaign->code.'&cid='.$currentCampaign->id); ?>
 
                 <?php if ($currentCampaign->apply_online == 1) :?>
-                <a class="btn btn-primary btn-creux"  role="button" href="index.php"><?= JText::_('MOD_EM_CAMPAIGN_GO_BACK');?></a>
+                    <a class="btn btn-primary btn-creux"  role="button" href="index.php"><?= JText::_('MOD_EM_CAMPAIGN_GO_BACK');?></a>
                     <?php
                     // The register URL does not work  with SEF, this workaround helps counter this.
                     if ($sef == 0) {
@@ -124,12 +123,10 @@ switch ($order) {
                         $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                     }
                     ?>
-                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                    <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                 <?php else :?>
                     <?php if ($mod_em_campaign_get_link) :?>
-                    <a class="btn btn-primary btn-creux" role="button" href="index.php" data-toggle="sc-modal" ><?= JText::_('MOD_EM_CAMPAIGN_GO_BACK');?></a>
-                    <?php else :?>
-                    <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
+                        <a class="btn btn-primary btn-creux" role="button" href="index.php" data-toggle="sc-modal" ><?= JText::_('MOD_EM_CAMPAIGN_GO_BACK');?></a>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -145,7 +142,7 @@ switch ($order) {
             </div>
         <?php endif; ?>
     </div><!-- Close campaign-content -->
-    <?php if (in_array('faq', $modules_tabs) && !empty($faq_articles)) : ?>
+    <?php if ($mod_em_campaign_modules_tab) :?>
         <div id="faq">
             <?php foreach ($faq_articles as $article) :?>
                 <h2> <?php echo $article->title ?></h2>
@@ -153,82 +150,76 @@ switch ($order) {
                 <hr>
             <?php endforeach; ?>
         </div>
-    <?php endif ?>
-    <?php if (in_array('documents', $modules_tabs) && !empty($files)) : ?>
         <div id="documents">
             <div class="em-campaign-dropfiles">
-            <ul>
-                <?php foreach($files as $file) { ?>
-                    <a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >
-                        <li class="em-campaign-dropfiles__btn">
-                            <?php echo $file->title_file.".".$file->ext; ?><span><i class="fas fa-arrow-circle-down"></i></span>
-                        </li>
-                    </a>
-                <?php } ?>
-            </ul>
+                <ul>
+                    <?php foreach($files as $file) { ?>
+                        <a href="files/<?php echo $file->catid."/".$file->title_category."/".$file->id."/".$file->title_file.".".$file->ext; ?>" target="_blank" rel="noopener noreferrer" >
+                            <li class="em-campaign-dropfiles__btn">
+                                <?php echo $file->title_file.".".$file->ext; ?><span><i class="fas fa-arrow-circle-down"></i></span>
+                            </li>
+                        </a>
+                    <?php } ?>
+                </ul>
             </div>
         </div>
-    <?php endif ?>
+    <?php endif; ?>
 
 </div>
 
-    <script>
-        var current_tab = 'campaign';
+<script>
+    var current_tab = 'campaign';
 
-        window.onload = function() {
-            document.getElementById('campaign_tab').classList.add('current-tab');
-            <?php if (in_array('faq', $modules_tabs)  && !empty($faq_articles)) : ?>
-                document.getElementById('faq').style.display = 'none';
-            <?php endif; ?>
+    window.onload = function() {
+        document.getElementById('campaign_tab').classList.add('current-tab');
+        <?php if (in_array('faq', $modules_tabs)) : ?>
+        document.getElementById('faq').style.display = 'none';
+        <?php endif; ?>
 
-            <?php if (in_array('documents', $modules_tabs)  && !empty($files)) : ?>
-                document.getElementById('documents').style.display = 'none';
-                if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
-                    document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
-                }
-            <?php endif; ?>
+        <?php if (in_array('documents', $modules_tabs)) : ?>
+        document.getElementById('documents').style.display = 'none';
+        if(typeof document.getElementsByClassName('campaign-documents')[0] != 'undefined') {
+            document.getElementsByClassName('campaign-documents')[0].parentElement.style.display = 'none';
         }
+        <?php endif; ?>
+    }
 
-        function displayTab(tab){
-            switch (tab) {
-                case 'campaign':
-                    if(current_tab === 'faq'){
-                        document.getElementById('faq').style.display = 'none';
-                        document.getElementById('faq_tab').classList.remove('current-tab');
-                    } else if(current_tab === 'documents'){
-                        document.getElementById('documents').style.display = 'none';
-                        document.getElementById('documents_tab').classList.remove('current-tab');
-                    }
-                    break;
-                case 'faq':
-                    if(current_tab === 'campaign'){
-                        document.getElementById('campaign').style.display = 'none';
-                        document.getElementById('campaign_tab').classList.remove('current-tab');
-                    } else if(current_tab === 'documents'){
-                        document.getElementById('documents').style.display = 'none';
-                        document.getElementById('documents_tab').classList.remove('current-tab');
-                    }
-                    break;
-                case 'documents':
-                    if(current_tab === 'faq'){
-                        document.getElementById('faq').style.display = 'none';
-                        document.getElementById('faq_tab').classList.remove('current-tab');
-                    } else if(current_tab === 'campaign'){
-                        document.getElementById('campaign').style.display = 'none';
-                        document.getElementById('campaign_tab').classList.remove('current-tab');
-                    }
-                    break;
-                default:
+    function displayTab(tab){
+        switch (tab) {
+            case 'campaign':
+                if(current_tab === 'faq'){
                     document.getElementById('faq').style.display = 'none';
                     document.getElementById('faq_tab').classList.remove('current-tab');
+                } else if(current_tab === 'documents'){
                     document.getElementById('documents').style.display = 'none';
                     document.getElementById('documents_tab').classList.remove('current-tab');
-                    break;
-            }
-            current_tab = tab;
-            var section = document.getElementById(tab);
-            var tab_div = document.getElementById(tab + '_tab');
-            section.style.display === 'none' ? tab_div.classList.add('current-tab') : '';
-            section.style.display === 'none' ? section.style.display = 'flex' : '';
+                }
+                break;
+            case 'faq':
+                if(current_tab === 'campaign'){
+                    document.getElementById('campaign').style.display = 'none';
+                    document.getElementById('campaign_tab').classList.remove('current-tab');
+                } else if(current_tab === 'documents'){
+                    document.getElementById('documents').style.display = 'none';
+                    document.getElementById('documents_tab').classList.remove('current-tab');
+                }
+                break;
+            case 'documents':
+                if(current_tab === 'faq'){
+                    document.getElementById('faq').style.display = 'none';
+                    document.getElementById('faq_tab').classList.remove('current-tab');
+                } else if(current_tab === 'campaign'){
+                    document.getElementById('campaign').style.display = 'none';
+                    document.getElementById('campaign_tab').classList.remove('current-tab');
+                }
+                break;
+            default:
+                break;
         }
-    </script>
+        current_tab = tab;
+        var section = document.getElementById(tab);
+        var tab_div = document.getElementById(tab + '_tab');
+        section.style.display === 'none' ? tab_div.classList.add('current-tab') : '';
+        section.style.display === 'none' ? section.style.display = 'flex' : '';
+    }
+</script>
