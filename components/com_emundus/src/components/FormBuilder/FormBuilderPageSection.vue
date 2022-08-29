@@ -17,7 +17,8 @@
 			        v-model="section.label[shortDefaultLang]"
 			        :value="section.label[shortDefaultLang]"
 			        @focusout="updateTitle"
-			        @keydown="(event) => checkMaxMinlength(event, 50)"
+			        @keyup.enter="blurElement('#section-title')"
+			        maxlength="50"
 	        />
           <div class="section-actions-wrapper">
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')" title="Move section upwards">keyboard_double_arrow_up</span>
@@ -33,6 +34,7 @@
                ref="sectionIntro"
                contenteditable="true"
                @focusout="updateIntro"
+               @keyup.enter="blurElement('#section-intro')"
                v-html="section.group_intro">
             </p>
             <draggable
@@ -136,16 +138,23 @@ export  default {
     updateTitle() {
       this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
       formBuilderService.updateTranslation({value: this.section.group_id, key: 'group'}, this.section.group_tag, this.section.label).then((response) => {
-	      this.updateLastSave();
+	      if (response.data.status) {
+		      this.section.group_tag = response.data.data;
+					this.updateLastSave();
+	      }
       });
     },
+	  blurElement(selector) {
+			document.querySelector(selector).blur();
+	  },
     updateIntro() {
-      this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim();
+      this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, " ");
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
-      formBuilderService.updateGroupParams(this.section.group_id, {
-        'intro': this.section.group_intro
-      });
-      this.updateLastSave();
+	    formBuilderService.updateGroupParams(this.section.group_id, {'intro': this.section.group_intro}, this.shortDefaultLang).then((response) => {
+		    if (response.data.status) {
+			    this.updateLastSave();
+		    }
+			});
     },
     onDragEnd(e) {
       const toGroup = e.to.getAttribute('data-sid');
@@ -155,15 +164,15 @@ export  default {
           return { id: element.id, order: index + 1 };
         });
         const movedElement = this.elements[e.newIndex];
-        formBuilderService.updateOrder(elements, this.section.group_id, movedElement);
-        this.updateLastSave();
+        formBuilderService.updateOrder(elements, this.section.group_id, movedElement).then((response) => {
+	        this.updateLastSave();
+        });
       } else {
         this.$emit('move-element', e, this.section.group_id, toGroup);
       }
     },
     deleteElement(elementId) {
       this.section.elements['element'+elementId].publish = -2;
-      //this.elements = this.elements.filter(element => element.id !== elementId);
       this.updateLastSave();
     },
     cancelDeleteElement(elementId) {

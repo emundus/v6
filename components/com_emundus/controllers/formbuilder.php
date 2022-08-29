@@ -96,11 +96,12 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $group_id = $jinput->getInt('group_id');
             $params = $jinput->getString('params');
             $params = json_decode($params, true);
+            $lang = $jinput->getString('lang', '');
 
             if (!empty($params)) {
                 $update = array(
                     'status' => 1,
-                    'data' => $this->m_formbuilder->updateGroupParams($group_id, $params)
+                    'data' => $this->m_formbuilder->updateGroupParams($group_id, $params, $lang)
                 );
             } else {
                 $update = array(

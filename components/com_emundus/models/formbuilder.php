@@ -59,7 +59,9 @@ class EmundusModelFormbuilder extends JModelList {
     public function updateTranslation($key, $values, $reference_table = '', $reference_id = 0){
         $languages = JLanguageHelper::getLanguages();
         foreach ($languages as $language) {
-            $key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code,'override', $reference_table, $reference_id);
+            if (isset($values[$language->sef])) {
+                $key = $this->m_translations->updateTranslation($key, $values[$language->sef], $language->lang_code,'override', $reference_table, $reference_id);
+            }
         }
         return $key;
     }
@@ -141,7 +143,7 @@ class EmundusModelFormbuilder extends JModelList {
     }
 
     /**
-     * Update translation
+     * Update translations
      *
      * @param $labelTofind
      * @param $locallang
@@ -1979,8 +1981,9 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function updateGroupParams($group_id, $params)
+    function updateGroupParams($group_id, $params, $lang = null)
     {
+        $updated = false;
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -2004,24 +2007,67 @@ class EmundusModelFormbuilder extends JModelList {
             $this->enableRepeatGroup($group_id);
         }
 
-        if (!empty($group_params)) {
-            foreach($params as $param => $value) {
-                $group_params[$param] = $value;
+        if (!empty($params['intro'])) {
+            $stripped_intro = strip_tags($group_params['intro']);
+            if ($stripped_intro != JText::_($stripped_intro)) {
+                $new_intro = $params['intro'];
+                $intro_tag = trim($stripped_intro);
+
+                $new_key = $this->updateTranslation($intro_tag, [$lang => $new_intro]);
+                if ($new_key) {
+                    $updated = true;
+                }
+                unset($params['intro']);
+            } elseif (empty(trim($stripped_intro))) {
+                $form_id = $this->getFormId($group_id);
+                $new_tag = 'FORM_' .$form_id . '_GROUP_' . $group_id . '_INTRO';
+                $new_key = $this->translate($new_tag, [$lang => $params['intro']], 'fabrik_forms', $form_id,'intro');
+                $params['intro'] = $new_key;
             }
         }
 
-        $query->clear()
-            ->update('#__fabrik_groups')
-            ->set('params = ' . $db->quote(json_encode($group_params)))
-            ->where('id = ' . $db->quote($group_id));
+        if (!empty($params['outro'])) {
+            $stripped_outro = strip_tags($group_params['outro']);
 
-        try {
-            $db->setQuery($query);
-            return $db->execute();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error at updating group params : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+            if ($stripped_outro != JText::_($stripped_outro)) {
+                $new_outro = $params['outro'];
+                $outro_tag = trim($stripped_outro);
+
+                $new_key = $this->updateTranslation($outro_tag, [$lang => $new_outro]);
+                if ($new_key) {
+                    $updated = true;
+                }
+                unset($params['outro']);
+            } elseif (empty(trim($stripped_outro))) {
+                $form_id = $this->getFormId($group_id);
+                $new_tag = 'FORM_' .$form_id . '_GROUP_' . $group_id . '_OUTRO';
+                $new_key = $this->translate($new_tag, [$lang => $params['outro']], 'fabrik_forms', $form_id,'outro');
+                $params['outro'] = $new_key;
+            }
         }
+
+        if (!empty($params)) {
+            if (!empty($group_params)) {
+                foreach($params as $param => $value) {
+                    $group_params[$param] = $value;
+                }
+            }
+
+            $query->clear()
+                ->update('#__fabrik_groups')
+                ->set('params = ' . $db->quote(json_encode($group_params)))
+                ->where('id = ' . $db->quote($group_id));
+
+            try {
+                $db->setQuery($query);
+                $updated = $db->execute();
+            } catch(Exception $e) {
+                JLog::add('component/com_emundus/models/formbuilder | Error at updating group params : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                $updated = false;
+            }
+        }
+
+        return $updated;
     }
 
     function duplicateElement($eid,$group,$old_group,$form_id){
@@ -3649,5 +3695,26 @@ class EmundusModelFormbuilder extends JModelList {
         }
 
         return $updated;
+    }
+
+    private function getFormId($group_id)
+    {
+        $form_id = 0;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('form_id')
+            ->from('#__fabrik_formgroup')
+            ->where('group_id = ' . $group_id);
+
+        $db->setQuery($query);
+
+        try {
+            $form_id = $db->loadResult();
+        } catch(Exception $e) {
+            JLog::add('formBuilder model: Error trying to find fotm id from group id', JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $form_id;
     }
 }

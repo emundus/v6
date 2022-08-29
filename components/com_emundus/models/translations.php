@@ -1186,9 +1186,7 @@ class EmundusModelTranslations extends JModelList
                     $tag = "ELEMENT_" . $group_id . "_" . $element_id;
                     break;
                 case 'fabrik_forms':
-                    $form_id = $reference_id;
-
-                    $tag = "FORM_" . $form_id;
+                    $tag = "FORM_" . $reference_id;
                     break;
                 case 'fabrik_groups':
                     $group_id = $reference_id;

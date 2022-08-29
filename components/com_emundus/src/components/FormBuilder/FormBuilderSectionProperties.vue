@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     saveProperties() {
-      formBuilderService.updateGroupParams(this.section_tmp.id,this.section_tmp.params).then(() => {
+      formBuilderService.updateGroupParams(this.section_tmp.id,this.section_tmp.params, this.shortDefaultLang).then(() => {
         this.$emit('close');
       });
     },
