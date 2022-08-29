@@ -16,7 +16,7 @@ define('JPATH_BASE', dirname(__DIR__) . '/../../');
 
 include_once (JPATH_BASE . 'includes/defines.php' );
 include_once (JPATH_BASE . 'includes/framework.php' );
-include_once(JPATH_SITE.'/components/com_emundus/unittest/helpers/samples.php');
+include_once (__DIR__ . '/helpers/samples.php');
 include_once (JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
 include_once (__DIR__ . '/../models/translations.php');
 
@@ -158,48 +158,63 @@ class EmundusModelFormbuilderTest extends TestCase
     public function testCreateGroup()
     {
         // Test 1 - Un groupe a besoin d'un formulaire pour fonctionner
-        $created = $this->m_formbuilder->createGroup(['fr' => '', 'en' => ''], 0);
-        $this->assertFalse($created);
+        $group = $this->m_formbuilder->createGroup(['fr' => '', 'en' => ''], 0);
+        $this->assertArrayNotHasKey('group_id', $group);
 
-        $data = $this->h_sample->createSampleGroup();
-        $this->assertGreaterThan(0, $data['group_id'], 'Le groupe a bien été créé.');
+        $prid = 9;
+        $form_id = $this->h_sample->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests']);
+        $this->assertGreaterThan(0, $form_id);
 
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $group = $this->m_formbuilder->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'] , $form_id);
+        $this->assertIsArray($group);
 
-        $query->select('id')
-            ->from('#__fabrik_formgroup')
-            ->where('group_id = ' . $data['group_id'])
-            ->andWhere('form_id = ' . $data['form_id']);
+        if (!empty($group['group_id'])) {
+            $this->assertGreaterThan(0, $group['group_id'], 'Le groupe a bien été créé.');
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['is_sample' => true]);
 
-        $db->setQuery($query);
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $row_id = $db->loadResult();
+            $query->select('id')
+                ->from('#__fabrik_formgroup')
+                ->where('group_id = ' . $group['group_id'])
+                ->andWhere('form_id = ' . $form_id);
 
-        $this->assertGreaterThan(0, $row_id, 'Le groupe et le formulaire sont bien liés');
+            $db->setQuery($query);
 
-        $deleted = $this->h_sample->deleteSampleGroup($data['group_id']);
-        $this->assertTrue($deleted, 'Le groupe de test a bien été supprimé');
+            $row_id = $db->loadResult();
 
-        $deleted = $this->h_sample->deleteSampleForm($data['form_id']);
-        $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
+            $this->assertGreaterThan(0, $row_id, 'Le groupe et le formulaire sont bien liés');
+
+            $deleted = $this->h_sample->deleteSampleGroup($group['group_id']);
+            $this->assertTrue($deleted, 'Le groupe de test a bien été supprimé');
+
+            $deleted = $this->h_sample->deleteSampleForm($form_id);
+            $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
+        }
     }
 
     public function testUpdateGroupParams() {
-        $data = $this->h_sample->createSampleGroup();
-        $this->assertIsArray($data);
-        $this->assertGreaterThan(0, $data['group_id'], 'Le groupe a bien été créé.');
+        $prid = 9;
+        $form_id = $this->h_sample->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
+        $this->assertGreaterThan(0, $form_id);
 
-        if (!empty($data['group_id'])) {
+        $group = $this->m_formbuilder->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'] , $form_id);
+        $this->assertIsArray($group);
+
+        if (!empty($group['group_id'])) {
+            $this->assertGreaterThan(0, $group['group_id'], 'Le groupe a bien été créé.');
+
+
             $new_intro = 'Mon introduction';
-            $this->m_formbuilder->updateGroupParams($data['group_id'], ['intro' => $new_intro], 'fr');
+            $this->m_formbuilder->updateGroupParams($group['group_id'], ['intro' => $new_intro, 'is_sample' => true], 'fr');
 
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
             $query->select('params')
                 ->from('#__fabrik_groups')
-                ->where('id = ' . $data['group_id']);
+                ->where('id = ' . $group['group_id']);
 
             $db->setQuery($query);
 
@@ -210,7 +225,7 @@ class EmundusModelFormbuilderTest extends TestCase
             $this->assertTrue($params['is_sample'], 'Le groupe utilisé est bien un groupe de test');
 
             $this->assertNotEmpty($params['intro'], 'Mon introduction n\'est pas vide');
-            $this->assertSame($params['intro'], 'FORM_' . $data['form_id'] . '_GROUP_' . $data['group_id'] . '_INTRO', 'Mon introduction a une balise de traduction bien formatée');
+            $this->assertSame($params['intro'], 'FORM_' . $form_id . '_GROUP_' . $group['group_id'] . '_INTRO', 'Mon introduction a une balise de traduction bien formatée');
             $this->assertNotSame($new_intro, $params['intro'], 'Mon introduction n\'a pas été inséré en direct mais via une traduction.');
 
 
@@ -226,10 +241,10 @@ class EmundusModelFormbuilderTest extends TestCase
             $translation = $db->loadResult();
             $this->assertSame($translation, $new_intro, 'La traduction de l\'introduction du groupe enregistrée est correcte.');
 
-            $deleted = $this->h_sample->deleteSampleGroup($data['group_id']);
+            $deleted = $this->h_sample->deleteSampleGroup($group['group_id']);
             $this->assertTrue($deleted, 'Le groupe de test a bien été supprimé');
 
-            $deleted = $this->h_sample->deleteSampleForm($data['form_id']);
+            $deleted = $this->h_sample->deleteSampleForm($form_id);
             $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
         }
     }

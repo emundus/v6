@@ -987,145 +987,144 @@ class EmundusModelFormbuilder extends JModelList {
     }*/
 
     function createGroup($label, $fid, $repeat_group_show_first = 1) {
-        if (empty($fid)) {
-            return false;
-        }
+        $group = [];
 
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+        if (!empty($fid)) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
 
-        if(!is_array($label)) {
-            $label = json_decode($label, true);
-        }
+            $label = !is_array($label) ? json_decode($label, true) : $label;
 
-        // Prepare languages
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
+            // Prepare languages
+            $path_to_file = basename(__FILE__) . '/../language/overrides/';
+            $path_to_files = array();
+            $Content_Folder = array();
 
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
-
-        try {
-            $params = $this->h_fabrik->prepareGroupParams();
-            $params = $this->h_fabrik->updateParam($params,'repeat_group_show_first',$repeat_group_show_first);
-
-            $columns = array(
-                'name',
-                'css',
-                'label',
-                'published',
-                'created',
-                'created_by',
-                'created_by_alias',
-                'modified',
-                'modified_by',
-                'checked_out',
-                'checked_out_time',
-                'is_join',
-                'private',
-                'params');
-
-            // Insert values.
-            $values = array(
-                'GROUP_' . $fid,
-                '',
-                'GROUP_' . $fid,
-                1,
-                date('Y-m-d H:i:s'),
-                JFactory::getUser()->id,
-                JFactory::getUser()->username,
-                date('Y-m-d H:i:s'),
-                JFactory::getUser()->id,
-                0,
-                date('Y-m-d H:i:s'),
-                0,
-                0,
-                json_encode($params)
-            );
-
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_groups'))
-                ->columns($db->quoteName($columns))
-                ->values(implode(',', $db->Quote($values)));
-            $db->setQuery($query);
-            $db->execute();
-            $groupid = $db->insertid();
-
-            $tag = 'GROUP_' . $fid . '_' . $groupid;
-
-            $this->translate($tag,$label,'fabrik_groups',$groupid,'label');
-
-            $query->clear()
-                ->update($db->quoteName('#__fabrik_groups'))
-                ->set($db->quoteName('name') . ' = ' . $db->quote($label['fr']))
-                ->set($db->quoteName('label') . ' = ' . $db->quote('GROUP_' . $fid . '_' . $groupid))
-                ->where($db->quoteName('id') . ' = ' . $db->quote($groupid));
-            $db->setQuery($query);
-            $db->execute();
-            //
-
-            // INSERT FORMGROUP
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__fabrik_formgroup'))
-                ->where($db->quoteName('form_id') . ' = ' . $db->quote($fid))
-                ->order('ordering');
-
-            $db->setQuery($query);
-            $results = $db->loadObjectList();
-            $orderings = [];
-            foreach (array_values($results) as $result) {
-                if (!in_array($result->ordering, $orderings)) {
-                    $orderings[] = intval($result->ordering);
-                }
+            $languages = JLanguageHelper::getLanguages();
+            foreach ($languages as $language) {
+                $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
             }
 
-            $columns = array(
-                'form_id',
-                'group_id',
-                'ordering',
-            );
+            try {
+                $params = $this->h_fabrik->prepareGroupParams();
+                $params = $this->h_fabrik->updateParam($params,'repeat_group_show_first',$repeat_group_show_first);
 
-            $order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
+                $columns = array(
+                    'name',
+                    'css',
+                    'label',
+                    'published',
+                    'created',
+                    'created_by',
+                    'created_by_alias',
+                    'modified',
+                    'modified_by',
+                    'checked_out',
+                    'checked_out_time',
+                    'is_join',
+                    'private',
+                    'params');
 
-            $values = array(
-                $fid,
-                $groupid,
-                $order,
-            );
+                // Insert values.
+                $values = array(
+                    'GROUP_' . $fid,
+                    '',
+                    'GROUP_' . $fid,
+                    1,
+                    date('Y-m-d H:i:s'),
+                    JFactory::getUser()->id,
+                    JFactory::getUser()->username,
+                    date('Y-m-d H:i:s'),
+                    JFactory::getUser()->id,
+                    0,
+                    date('Y-m-d H:i:s'),
+                    0,
+                    0,
+                    json_encode($params)
+                );
 
-            $query->clear()
-                ->insert($db->quoteName('#__fabrik_formgroup'))
-                ->columns($db->quoteName($columns))
-                ->values(implode(',', $db->Quote($values)));
+                $query->clear()
+                    ->insert($db->quoteName('#__fabrik_groups'))
+                    ->columns($db->quoteName($columns))
+                    ->values(implode(',', $db->Quote($values)));
+                $db->setQuery($query);
+                $db->execute();
+                $groupid = $db->insertid();
 
-            $db->setQuery($query);
-            $db->execute();
+                $tag = 'GROUP_' . $fid . '_' . $groupid;
 
-            $label_fr = $this->getTranslation($tag, 'fr-FR');
-            $label_en = $this->getTranslation($tag, 'en-GB');
+                $this->translate($tag,$label,'fabrik_groups',$groupid,'label');
 
-            return array(
-                'elements' => array(),
-                'group_id' => $groupid,
-                'group_tag' => $tag,
-                'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
-                'label' => array(
-                    'fr' => $label_fr,
-                    'en' => $label_en,
-                ),
-                'ordering' => $order,
-                'formid' => $fid
-            );
-            //
-        } catch(Exception $e){
-            JLog::add('component/com_emundus/models/formbuilder | Error at creating a group for fabrik_form ' . $fid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+                $query->clear()
+                    ->update($db->quoteName('#__fabrik_groups'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote($label['fr']))
+                    ->set($db->quoteName('label') . ' = ' . $db->quote('GROUP_' . $fid . '_' . $groupid))
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($groupid));
+                $db->setQuery($query);
+                $db->execute();
+                //
+
+                // INSERT FORMGROUP
+                $query->clear()
+                    ->select('*')
+                    ->from($db->quoteName('#__fabrik_formgroup'))
+                    ->where($db->quoteName('form_id') . ' = ' . $db->quote($fid))
+                    ->order('ordering');
+
+                $db->setQuery($query);
+                $results = $db->loadObjectList();
+                $orderings = [];
+                foreach (array_values($results) as $result) {
+                    if (!in_array($result->ordering, $orderings)) {
+                        $orderings[] = intval($result->ordering);
+                    }
+                }
+
+                $columns = array(
+                    'form_id',
+                    'group_id',
+                    'ordering',
+                );
+
+                $order = array_values($orderings)[strval(sizeof($orderings) - 1)] + 1;
+
+                $values = array(
+                    $fid,
+                    $groupid,
+                    $order,
+                );
+
+                $query->clear()
+                    ->insert($db->quoteName('#__fabrik_formgroup'))
+                    ->columns($db->quoteName($columns))
+                    ->values(implode(',', $db->Quote($values)));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                $label_fr = $this->getTranslation($tag, 'fr-FR');
+                $label_en = $this->getTranslation($tag, 'en-GB');
+
+                $group = array(
+                    'elements' => array(),
+                    'group_id' => $groupid,
+                    'group_tag' => $tag,
+                    'group_showLegend' => $this->getJTEXT("GROUP_" . $fid . "_" . $groupid),
+                    'label' => array(
+                        'fr' => $label_fr,
+                        'en' => $label_en,
+                    ),
+                    'ordering' => $order,
+                    'formid' => $fid
+                );
+                //
+            } catch(Exception $e){
+                JLog::add('component/com_emundus/models/formbuilder | Error at creating a group for fabrik_form ' . $fid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $group;
     }
 
     function deleteGroup($group) {
