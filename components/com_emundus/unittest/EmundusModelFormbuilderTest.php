@@ -116,7 +116,8 @@ class EmundusModelFormbuilderTest extends TestCase
     public function testCreatefabrikForm()
     {
         // Test 1 - Création de formulaire basique
-        $form_id = $this->h_sample->createSampleForm(1000);
+        $prid = 9;
+        $form_id = $this->h_sample->createSampleForm($prid);
 
         $this->assertGreaterThan(0, $form_id, 'le formulaire a bien été créé');
 
@@ -130,8 +131,8 @@ class EmundusModelFormbuilderTest extends TestCase
 
         $form = $db->loadObject();
 
-        $this->assertSame($form->label, 'FORM_1000_' . $form_id, 'Le label du formulaire est bien formaté.');
-        $this->assertSame($form->intro,'<p>' . 'FORM_1000_INTRO_' . $form_id . '</p>', "L'introduction du formulaire est bien formaté");
+        $this->assertSame($form->label, 'FORM_' . $prid . '_' . $form_id, 'Le label du formulaire est bien formaté.');
+        $this->assertSame($form->intro,'<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>', "L'introduction du formulaire est bien formaté");
         $this->assertSame($form->published,'1', 'Le formulaire est bien publié à sa création');
 
         $deleted = $this->h_sample->deleteSampleForm($form_id);
@@ -143,11 +144,11 @@ class EmundusModelFormbuilderTest extends TestCase
 
         $this->assertFalse($form_id);
 
-        $form_id = $this->h_sample->createSampleForm(1000, 'label');
+        $form_id = $this->h_sample->createSampleForm($prid, 'label');
         $this->assertFalse($form_id);
 
         // Se tromper pour le champ introduction ne devrait pas causer d'erreur
-        $form_id = $this->h_sample->createSampleForm(1000, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
+        $form_id = $this->h_sample->createSampleForm($prid, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
         $this->assertGreaterThan(0, $form_id);
 
         $deleted = $this->h_sample->deleteSampleForm($form_id);
