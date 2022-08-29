@@ -178,7 +178,7 @@ if($user != null) {
         <?php if ($show_update == '1') :?>
             <hr style="width: 100%">
             <?php
-            echo '<li><a class="edit-button-user" href="/index.php?option=com_emundus&view=users&layout=edit" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
+            echo '<li><a class="edit-button-user" href="/mon-profil" style="margin-bottom: 20px;margin-top: 0">'.JText::_('COM_USERS_PROFILE_DEFAULT_LABEL').'</a></li>';
             ?>
         <?php endif; ?>
     </ul>
