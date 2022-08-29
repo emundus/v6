@@ -84,4 +84,91 @@ class EmundusUnittestHelperSamples
 
         return $m_settings->createStatus()->step;
     }
+
+    public function createSampleForm() {
+        $m_formbuilder = new EmundusModelFormbuilder;
+
+        return $m_formbuilder->createFabrikForm('1000', ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => '']);
+    }
+
+    public function createSampleGroup() {
+        $m_formbuilder = new EmundusModelFormbuilder;
+
+        $form_id = $this->createSampleForm();
+        $group = $m_formbuilder->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'] , $form_id);
+        $group_id = $group['group_id'];
+
+        if (!empty($group_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('params')
+                ->from('#__fabrik_groups')
+                ->where('id = ' . $group_id);
+
+            $db->setQuery($query);
+
+            $params = $db->loadResult();
+            $params = json_decode($params, true);
+
+            $params['is_sample'] = true;
+
+            $query->clear()
+                ->update('#__fabrik_groups')
+                ->set('params = ' . $db->quote(json_encode($params)))
+                ->where('id = ' . $group_id);
+
+            $db->setQuery($query);
+            $db->execute();
+        }
+
+        return array(
+            'form_id' => $form_id,
+            'group_id' => $group_id
+        );
+    }
+
+    public function deleteSampleGroup($group_id) {
+        $deleted = false;
+        if (!empty($group_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('params')
+                ->from('#__fabrik_groups')
+                ->where('id = ' . $group_id);
+
+            $db->setQuery($query);
+
+            $params = $db->loadResult();
+            $params = json_decode($params, true);
+
+            if ($params['is_sample']) {
+                $query->clear()
+                    ->delete('#__fabrik_groups')
+                    ->where('id = ' . $group_id);
+
+                $db->setQuery($query);
+                $deleted = $db->execute();
+            }
+        }
+
+        return $deleted;
+    }
+
+    public function deleteSampleForm($form_id) {
+        $deleted = false;
+        if (!empty($form_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->delete('#__fabrik_groups')
+                ->where('id = ' . $form_id);
+
+            $db->setQuery($query);
+            $deleted = $db->execute();
+        }
+
+        return $deleted;
+    }
 }

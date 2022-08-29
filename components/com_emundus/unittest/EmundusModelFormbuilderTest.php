@@ -109,4 +109,52 @@ class EmundusModelFormbuilderTest extends TestCase
 
         $this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
     }
+
+    public function testUpdateGroupParams() {
+        $h_sample = new EmundusUnittestHelperSamples();
+        $data = $h_sample->createSampleGroup();
+
+        $this->assertGreaterThan(0, $data['group_id'], 'Le groupe a bien été créé.');
+
+        $new_intro = 'Mon introduction';
+        $this->m_formbuilder->updateGroupParams($data['group_id'], ['intro' => $new_intro], 'fr');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('params')
+            ->from('#__fabrik_groups')
+            ->where('id = ' . $data['group_id']);
+
+        $db->setQuery($query);
+
+        $params = $db->loadResult();
+        $this->assertNotEmpty($params);
+
+        $params = json_decode($params, true);
+        $this->assertTrue($params['is_sample'], 'Le groupe utilisé est bien un groupe de test');
+
+        $this->assertNotEmpty($params['intro'], 'Mon introduction n\'est pas vide');
+        $this->assertSame($params['intro'], 'FORM_' . $data['form_id'] . '_GROUP_' . $data['group_id'] . '_INTRO', 'Mon introduction a une balise de traduction bien formatée');
+        $this->assertNotSame($new_intro, $params['intro'], 'Mon introduction n\'a pas été inséré en direct mais via une traduction.');
+
+
+        $query->clear()
+            ->select('override')
+            ->from('#__emundus_setup_languages')
+            ->where('tag = ' . $db->quote($params['intro']))
+            ->andWhere('type = ' . $db->quote('override'))
+            ->andWhere('lang_code = ' . $db->quote('fr-FR'));
+
+        $db->setQuery($query);
+
+        $translation = $db->loadResult();
+        $this->assertSame($translation, $new_intro, 'La traduction de l\'introduction du groupe enregistrée est correcte.');
+
+        $deleted = $h_sample->deleteSampleGroup($data['group_id']);
+        $this->assertTrue($deleted, 'Le groupe de test a bien été supprimé');
+
+        $deleted = $h_sample->deleteSampleForm($data['form_id']);
+        $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
+    }
 }
