@@ -2343,7 +2343,7 @@ class EmundusModelUsers extends JModelList {
         $query = $db->getQuery(true);
 
         try {
-            $query->select('esa.*,eua.expires_date,eua.date_time,eua.filename,eua.id as default_id')
+            $query->select('esa.*,eua.expires_date,eua.date_time,eua.filename,eua.id as default_id,eua.validation')
                 ->from($db->quoteName('#__emundus_users_attachments','eua'))
                 ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esa.id').' = '.$db->quoteName('eua.attachment_id'));
             if(!empty($fnum)){
@@ -2386,8 +2386,7 @@ class EmundusModelUsers extends JModelList {
                 ->set($db->quoteName('date_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
                 ->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
                 ->set($db->quoteName('attachment_id') . ' = ' . $db->quote($attachment_id))
-                ->set($db->quoteName('filename') . ' = ' . $db->quote($filename))
-                ->set($db->quoteName('expires_date') . ' = ' . $db->quote(date('Y-m-d',$six_month_in_future)));
+                ->set($db->quoteName('filename') . ' = ' . $db->quote($filename));
             $db->setQuery($query);
             $result = $db->execute();
 

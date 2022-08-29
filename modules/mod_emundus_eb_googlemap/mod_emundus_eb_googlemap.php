@@ -30,9 +30,19 @@ $reccurent = $jinput->get('field_recurrent', null);
 $date_filter = $jinput->get('filter_duration', null);
 $sub_category = $jinput->get('sub_category_id', null);
 
+$ae_session = JFactory::getSession()->get('ae_filters');
+if(is_null($ae_session)){
+    $ae_session = new stdClass;
+}
+
 // Load locations
-$id_locations = modEventBookingGoogleMapHelper::getLocationsByFilter($jinput->getArray());
-$params->set('location_ids',$id_locations);
+$locations_events_filtered = modEventBookingGoogleMapHelper::getLocationsByFilter($ae_session);
+$locations = [];
+foreach ($locations_events_filtered as $filtered_item){
+    $locations[] = $filtered_item->id;
+}
+$params->set('location_ids',$locations);
+$params->set('location_events',$locations_events_filtered);
 
 // Load css
 $document->addStyleSheet($rootUri . '/modules/mod_emundus_eb_googlemap/asset/style.css');
@@ -52,20 +62,20 @@ $Itemid    = (int) $params->get('Itemid') ?: EventbookingHelper::getItemid();
 
 if (file_exists(JPATH_ROOT . '/modules/mod_emundus_eb_googlemap/asset/marker/map_marker.png'))
 {
-	$markerUri = $rootUri . '/modules/mod_emundus_eb_googlemap/asset/marker/map_marker.png';
+    $markerUri = $rootUri . '/modules/mod_emundus_eb_googlemap/asset/marker/map_marker.png';
 }
 else
 {
-	$markerUri = $rootUri . '/modules/mod_emundus_eb_googlemap/asset/marker/marker.png';
+    $markerUri = $rootUri . '/modules/mod_emundus_eb_googlemap/asset/marker/marker.png';
 }
 
-$locations = modEventBookingGoogleMapHelper::loadAllLocations($params, $Itemid);
+$locations = modEventBookingGoogleMapHelper::loadAllLocations($params, $Itemid, $ae_session);
 
 if (empty($locations))
 {
-	echo Text::_('EB_NO_EVENTS');
+    echo Text::_('EB_NO_EVENTS');
 
-	return;
+    return;
 }
 
 // Calculate center location of the map
@@ -74,44 +84,44 @@ $view   = Factory::getApplication()->input->getCmd('view');
 
 if ($option == 'com_eventbooking' && $view == 'location')
 {
-	$activeLocation = EventbookingHelperDatabase::getLocation(Factory::getApplication()->input->getInt('location_id'));
+    $activeLocation = EventbookingHelperDatabase::getLocation(Factory::getApplication()->input->getInt('location_id'));
 
-	if ($activeLocation)
-	{
-		$homeCoordinates = $activeLocation->lat . ',' . $activeLocation->long;
-	}
+    if ($activeLocation)
+    {
+        $homeCoordinates = $activeLocation->lat . ',' . $activeLocation->long;
+    }
 }
 
 if (empty($homeCoordinates))
 {
-	if (trim($params->get('center_coordinates')))
-	{
-		$homeCoordinates = trim($params->get('center_coordinates'));
-	}
-	else
-	{
-		$homeCoordinates = $locations[0]->lat . ',' . $locations[0]->long;
-	}
+    if (trim($params->get('center_coordinates')))
+    {
+        $homeCoordinates = trim($params->get('center_coordinates'));
+    }
+    else
+    {
+        $homeCoordinates = $locations[0]->lat . ',' . $locations[0]->long;
+    }
 }
 
 if ($config->get('map_provider', 'googlemap') == 'googlemap')
 {
-	$layout = 'default';
-	$document->addScript('https://maps.googleapis.com/maps/api/js?key=' . $config->get('map_api_key', ''))
-		->addScript($rootUri . '/media/com_eventbooking/js/mod-eb-googlemap.min.js');
+    $layout = 'default';
+    $document->addScript('https://maps.googleapis.com/maps/api/js?key=' . $config->get('map_api_key', ''))
+        ->addScript($rootUri . '/media/com_eventbooking/js/mod-eb-googlemap.min.js');
 }
 else
 {
-	$layout = 'openstreetmap';
-	$document->addScript($rootUri . '/media/com_emundus/js/leaflet/leaflet.js')
-		->addStyleSheet($rootUri . '/media/com_emundus/js/leaflet/leaflet.css')
-		->addScript($rootUri . '/media/com_emundus/js/leaflet/mod-eb-openstreetmap.min.js');
+    $layout = 'openstreetmap';
+    $document->addScript($rootUri . '/media/com_emundus/js/leaflet/leaflet.js')
+        ->addStyleSheet($rootUri . '/media/com_emundus/js/leaflet/leaflet.css')
+        ->addScript($rootUri . '/media/com_emundus/js/leaflet/mod-eb-openstreetmap.min.js');
 }
 
 $document->addScriptOptions('mapLocations', $locations)
-	->addScriptOptions('homeCoordinates', explode(',', $homeCoordinates))
-	->addScriptOptions('zoomLevel', $zoomLevel)
-	->addScriptOptions('moduleId', $module->id)
-	->addScriptOptions('markerUri', $markerUri);
+    ->addScriptOptions('homeCoordinates', explode(',', $homeCoordinates))
+    ->addScriptOptions('zoomLevel', $zoomLevel)
+    ->addScriptOptions('moduleId', $module->id)
+    ->addScriptOptions('markerUri', $markerUri);
 
 require JModuleHelper::getLayoutPath('mod_emundus_eb_googlemap');
