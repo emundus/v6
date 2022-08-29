@@ -24,6 +24,7 @@ $mod_em_campaign_intro=$params->get('mod_em_campaign_intro', '');
 $mod_em_campaign_start_date=$params->get('mod_em_campaign_start_date');
 $mod_em_campaign_end_date=$params->get('mod_em_campaign_end_date');
 $mod_em_campaign_list_tab=$params->get('mod_em_campaign_list_tab');
+$mod_em_campaign_modules_tab =$params->get('mod_em_campaign_modules_tab', 0);
 $mod_em_campaign_param_tab=$params->get('mod_em_campaign_param_tab');
 $mod_em_campaign_display_groupby=$params->get('mod_em_campaign_display_groupby');
 $mod_em_campaign_groupby=$params->get('mod_em_campaign_groupby');
