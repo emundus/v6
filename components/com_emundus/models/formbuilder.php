@@ -1894,41 +1894,6 @@ class EmundusModelFormbuilder extends JModelList {
                         }
                     }
 
-                    // TODO: use a specific function for sub_options only (instead of updating all element, only update the sub_options)
-                    foreach ($element['params']['sub_options']['sub_values'] as $index => $sub_value) {
-                        if ($old_params['sub_options']) {
-                            $new_label = array(
-                                'fr' => $element['params']['sub_options']['sub_labels'][$index],
-                                'en' => $element['params']['sub_options']['sub_labels'][$index],
-                            );
-                            if ($old_params['sub_options']['sub_labels'][$index]) {
-                                if($old_params['sub_options']['sub_labels'][$index] != 'PLEASE_SELECT'){
-                                    $this->updateTranslation($old_params['sub_options']['sub_labels'][$index], $new_label, 'fabrik_elements', $element['id']);
-                                    $sub_labels[] = $old_params['sub_options']['sub_labels'][$index];
-                                    $sub_values[] = $sub_value;
-                                }
-                            } else {
-                                $this->deleteTranslation('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index);
-                                $labels = array(
-                                    'fr' => $element['params']['sub_options']['sub_labels'][$index],
-                                    'en' => $element['params']['sub_options']['sub_labels'][$index],
-                                );
-                                $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels,'fabrik_elements',$element['id'],'sub_labels');
-                                $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
-                                $sub_values[] = $index + 1;
-                            }
-                        } else {
-                            $labels = array(
-                                'fr' => $element['params']['sub_options']['sub_labels'][$index],
-                                'en' => $element['params']['sub_options']['sub_labels'][$index],
-                            );
-                            $this->translate('SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index,$labels,'fabrik_elements',$element['id'],'sub_labels');
-
-                            $sub_labels[] = 'SUBLABEL_' . $element['group_id'] . '_' . $element['id'] . '_' . $index;
-                            $sub_values[] = $index + 1;
-                        }
-                    }
-
                     $element['params']['sub_options'] = array(
                         'sub_values' => $sub_values,
                         'sub_labels' => $sub_labels,

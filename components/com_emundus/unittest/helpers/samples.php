@@ -85,46 +85,53 @@ class EmundusUnittestHelperSamples
         return $m_settings->createStatus()->step;
     }
 
-    public function createSampleForm($prid = '1000', $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => '']) {
+    public function createSampleForm($prid = 1000, $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => '']) {
         $m_formbuilder = new EmundusModelFormbuilder;
         return $m_formbuilder->createFabrikForm($prid, $label, $intro);
     }
 
     public function createSampleGroup() {
+        $data = [];
         $m_formbuilder = new EmundusModelFormbuilder;
 
         $form_id = $this->createSampleForm();
-        $group = $m_formbuilder->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'] , $form_id);
-        $group_id = $group['group_id'];
 
-        if (!empty($group_id)) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
+        if (!empty($form_id)) {
+            $group = $m_formbuilder->createGroup(['fr' => 'Groupe Tests unitaires', 'en' => 'Group Unit tests'] , $form_id);
 
-            $query->select('params')
-                ->from('#__fabrik_groups')
-                ->where('id = ' . $group_id);
+            if (!empty($group['group_id'])) {
+                $group_id = $group['group_id'];
 
-            $db->setQuery($query);
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
 
-            $params = $db->loadResult();
-            $params = json_decode($params, true);
+                $query->select('params')
+                    ->from('#__fabrik_groups')
+                    ->where('id = ' . $group_id);
 
-            $params['is_sample'] = true;
+                $db->setQuery($query);
 
-            $query->clear()
-                ->update('#__fabrik_groups')
-                ->set('params = ' . $db->quote(json_encode($params)))
-                ->where('id = ' . $group_id);
+                $params = $db->loadResult();
+                $params = json_decode($params, true);
 
-            $db->setQuery($query);
-            $db->execute();
+                $params['is_sample'] = true;
+
+                $query->clear()
+                    ->update('#__fabrik_groups')
+                    ->set('params = ' . $db->quote(json_encode($params)))
+                    ->where('id = ' . $group_id);
+
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $data = array(
+                'form_id' => $form_id,
+                'group_id' => $group_id
+            );
         }
 
-        return array(
-            'form_id' => $form_id,
-            'group_id' => $group_id
-        );
+        return $data;
     }
 
     public function deleteSampleGroup($group_id) {
