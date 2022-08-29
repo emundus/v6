@@ -3493,6 +3493,9 @@ class EmundusModelFormbuilder extends JModelList {
             $group->label = JText::_($group->label);
             $group->params = json_decode($group->params);
 
+            $group->params->intro = JText::_(trim(strip_tags($group->params->intro)));
+            $group->params->outro = JText::_(trim(strip_tags($group->params->outro)));
+
             return $group;
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/formbuilder | Cannot get group ' . $section . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');

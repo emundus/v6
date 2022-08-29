@@ -141,6 +141,13 @@ export  default {
 	      if (response.data.status) {
 		      this.section.group_tag = response.data.data;
 					this.updateLastSave();
+	      } else {
+		      Swal.fire({
+			      title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+			      text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
+			      type: "error",
+			      cancelButtonText: this.translate("OK"),
+		      });
 	      }
       });
     },
@@ -153,6 +160,13 @@ export  default {
 	    formBuilderService.updateGroupParams(this.section.group_id, {'intro': this.section.group_intro}, this.shortDefaultLang).then((response) => {
 		    if (response.data.status) {
 			    this.updateLastSave();
+		    } else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+						text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_GROUP_PARAMS'),
+						type: "error",
+						cancelButtonText: this.translate("OK"),
+					});
 		    }
 			});
     },

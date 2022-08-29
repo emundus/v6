@@ -85,7 +85,7 @@ class EmundusUnittestHelperSamples
         return $m_settings->createStatus()->step;
     }
 
-    public function createSampleForm($prid = 1000, $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => '']) {
+    public function createSampleForm($prid = 9, $label = ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], $intro = ['fr' => 'Ce formulaire est un formulaire de test eMundus, utilisé uniquement pour tester le bon fonctionnement de la plateforme.', 'en' => '']) {
         $m_formbuilder = new EmundusModelFormbuilder;
         return $m_formbuilder->createFabrikForm($prid, $label, $intro);
     }
@@ -123,12 +123,12 @@ class EmundusUnittestHelperSamples
 
                 $db->setQuery($query);
                 $db->execute();
-            }
 
-            $data = array(
-                'form_id' => $form_id,
-                'group_id' => $group_id
-            );
+                $data = array(
+                    'form_id' => $form_id,
+                    'group_id' => $group_id
+                );
+            }
         }
 
         return $data;
