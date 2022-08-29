@@ -528,7 +528,17 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function createFabrikForm($prid,$label,$intro) {
+    /**
+     * @param $prid int profile id
+     * @param $label array labels by language
+     * @param $intro array intros by language
+     * @return false|int|mixed
+     */
+    function createFabrikForm($prid, $label, $intro) {
+        if (empty($prid) || empty($label) || !is_array($label)) {
+            return false;
+        }
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -572,8 +582,11 @@ class EmundusModelFormbuilder extends JModelList {
             $db->execute();
 
             // Add translation to translation files
-            $this->translate('FORM_' . $prid . '_' . $formid,$label,'fabrik_forms',$formid,'label');
-            $this->translate('FORM_' . $prid . '_INTRO_' . $formid,$intro,'fabrik_forms',$formid,'intro');
+            $this->translate('FORM_' . $prid . '_' . $formid, $label,'fabrik_forms', $formid,'label');
+
+            if (!empty($intro) && is_array($intro)) {
+                $this->translate('FORM_' . $prid . '_INTRO_' . $formid, $intro,'fabrik_forms', $formid,'intro');
+            }
             //
 
             return $formid;
@@ -974,6 +987,10 @@ class EmundusModelFormbuilder extends JModelList {
     }*/
 
     function createGroup($label, $fid, $repeat_group_show_first = 1) {
+        if (empty($fid)) {
+            return false;
+        }
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 

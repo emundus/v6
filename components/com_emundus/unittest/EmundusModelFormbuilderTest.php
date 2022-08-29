@@ -110,6 +110,79 @@ class EmundusModelFormbuilderTest extends TestCase
         $this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
     }
 
+    public function testCreatefabrikForm()
+    {
+        // Test 1 - Création de formulaire basique
+        $h_sample = new EmundusUnittestHelperSamples();
+        $form_id = $h_sample->createSampleForm(1000);
+
+        $this->assertGreaterThan(0, $form_id, 'le formulaire a bien été créé');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('*')
+            ->from('#__fabrik_forms')
+            ->where('id = ' . $form_id);
+
+        $db->setQuery($query);
+
+        $form = $db->loadObject();
+
+        $this->assertSame($form->label, 'FORM_1000_' . $form_id, 'Le label du formulaire est bien formaté.');
+        $this->assertSame($form->intro,'<p>' . 'FORM_1000_INTRO_' . $form_id . '</p>', "L'introduction du formulaire est bien formaté");
+        $this->assertSame($form->published,'1', 'Le formulaire est bien publié à sa création');
+
+        $deleted = $h_sample->deleteSampleForm($form_id);
+        $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
+
+        // Test 2 - S'assurer que les paramètres ne vont pas causer d'erreur, si vide ou de mauvais type
+
+        $form_id = $h_sample->createSampleForm(0);
+
+        $this->assertFalse($form_id);
+
+        $form_id = $h_sample->createSampleForm(1000, 'label');
+        $this->assertFalse($form_id);
+
+        // Se tromper pour le champ introduction ne devrait pas causer d'erreur
+        $form_id = $h_sample->createSampleForm(1000, ['fr' => 'Formulaire Tests unitaires', 'en' => 'form for unit tests'], 'label intro');
+        $this->assertGreaterThan(0, $form_id);
+
+        $deleted = $h_sample->deleteSampleForm($form_id);
+        $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
+    }
+
+    public function testCreateGroup()
+    {
+        // Test 1 - Un groupe a besoin d'un formulaire pour fonctionner
+        $h_sample = new EmundusUnittestHelperSamples();
+        $created = $this->m_formbuilder->createGroup(['fr' => '', 'en' => ''], 0);
+        $this->assertFalse($created);
+
+        $data = $h_sample->createSampleGroup();
+        $this->assertGreaterThan(0, $data['group_id'], 'Le groupe a bien été créé.');
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from('#__fabrik_formgroup')
+            ->where('group_id = ' . $data['group_id'])
+            ->andWhere('form_id = ' . $data['form_id']);
+
+        $db->setQuery($query);
+
+        $row_id = $db->loadResult();
+
+        $this->assertGreaterThan(0, $row_id, 'Le groupe et le formulaire sont bien liés');
+
+        $deleted = $h_sample->deleteSampleGroup($data['group_id']);
+        $this->assertTrue($deleted, 'Le groupe de test a bien été supprimé');
+
+        $deleted = $h_sample->deleteSampleForm($data['form_id']);
+        $this->assertTrue($deleted, 'Le formulaire de test a bien été supprimé');
+    }
+
     public function testUpdateGroupParams() {
         $h_sample = new EmundusUnittestHelperSamples();
         $data = $h_sample->createSampleGroup();
