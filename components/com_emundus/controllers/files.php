@@ -898,7 +898,9 @@ class EmundusControllerFiles extends JControllerLegacy
             //*********************************************************************
             // Get triggered email
             include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
             $m_email = new EmundusModelEmails;
+            $m_users = new EmundusModelUsers;
             $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
             $toAttach = [];
 
@@ -979,6 +981,15 @@ class EmundusControllerFiles extends JControllerLegacy
                                     continue;
                                 }
 
+                                // Check if user defined a cc address
+                                $cc = [];
+                                $emundus_user = $m_users->getUserById($file['applicant_id'])[0];
+                                if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+                                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                                        $cc[] = $emundus_user->email_cc;
+                                    }
+                                }
+
                                 $mailer = JFactory::getMailer();
 
                                 $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
@@ -1019,6 +1030,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer->Encoding = 'base64';
                                 $mailer->setBody($body);
                                 $mailer->addAttachment($toAttach);
+
+                                if (!empty($cc)) {
+                                    $mailer->addCc($cc);
+                                }
 
                                 $send = $mailer->Send();
                                 if ($send !== true) {
