@@ -1200,23 +1200,28 @@ $(document).ready(function () {
 				}
 				addLoader();
 
+				let addUserData = {
+					login: login,
+					firstname: fn,
+					lastname: ln,
+					campaigns: campaigns.substr(0, campaigns.length - 1),
+					oprofiles: oprofiles.substr(0, oprofiles.length - 1),
+					groups: groups.substr(0, groups.length - 1),
+					profile: profile,
+					jgr: $('#profiles option:selected').attr('id'),
+					email: email,
+					newsletter: $('#news').is(':checked') ? 1 : 0,
+					university_id: $('#univ').val()
+				}
+
+				if($('#em-add-user').attr('action').indexOf('edituser') !== -1) {
+					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
+				}
+
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
-					data: {
-						id: $('.em-check:checked').attr('id').split('_')[0],
-						login: login,
-						firstname: fn,
-						lastname: ln,
-						campaigns: campaigns.substr(0, campaigns.length - 1),
-						oprofiles: oprofiles.substr(0, oprofiles.length - 1),
-						groups: groups.substr(0, groups.length - 1),
-						profile: profile,
-						jgr: $('#profiles option:selected').attr('id'),
-						email: email,
-						newsletter: $('#news').is(':checked') ? 1 : 0,
-						university_id: $('#univ').val()
-					},
+					data: addUserData,
 					dataType: 'json',
 					success: function (result) {
 						removeLoader();
