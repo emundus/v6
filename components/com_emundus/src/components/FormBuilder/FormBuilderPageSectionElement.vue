@@ -15,6 +15,7 @@
 			      v-model="element.label[shortDefaultLang]"
 			      :value="element.label[shortDefaultLang]"
 			      @focusout="updateLabel"
+			      @keyup.enter="updateLabelKeyup"
 	      />
       </label>
       <div id="element-action-icons" class="em-flex-row">
@@ -80,6 +81,10 @@ export default {
 				}
       });
     },
+	  updateLabelKeyup()
+	  {
+		  document.activeElement.blur();
+		},
     updateElement()
     {
       formBuilderService.updateParams(this.element).then((response) => {
