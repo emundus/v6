@@ -3,6 +3,7 @@
     <p id="form-builder-document-title" class="em-text-align-center em-w-100 em-p-16">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
     </p>
+	  <input id="search" v-model="search" type="text" class="em-mt-16 em-w-100" :value="search" placeholder=""/>
     <draggable
         v-model="formats"
         class="draggables-list"
@@ -14,15 +15,12 @@
     >
       <transition-group>
         <div
-            v-for="format in publishedFormats"
+		        v-for="format in displayedFormats"
             :key="format.id"
             class="em-flex-row em-flex-space-between draggable-element em-mt-8 em-mb-8 em-p-16"
-            :style="format.value == 'other' ? 'cursor: pointer' : ''"
-            @click="onClickOnFormat(format)"
         >
-          <span class="material-icons-outlined">{{ format.icon }}</span>
-          <span class="em-w-100 em-p-16">{{ translate(format.name) }}</span>
-          <span v-show="format.value != 'other'" class="material-icons-outlined"> drag_indicator </span>
+          <span id="format-name" class="em-w-100 em-p-16" :title="format.name[shortDefaultLang]">{{ format.name[shortDefaultLang] }}</span>
+          <span class="material-icons-outlined"> drag_indicator </span>
         </div>
       </transition-group>
     </draggable>
@@ -33,6 +31,7 @@
 import draggable from "vuedraggable";
 import campaignService from "../../services/campaign";
 import formBuilderMixin from "../../mixins/formbuilder";
+import formService from "../../services/form";
 
 export default {
   components: {
@@ -48,84 +47,34 @@ export default {
   data() {
     return {
       formats: [],
-      cloneFormat: null
+      cloneFormat: null,
+	    search: ''
     }
   },
   created() {
-    this.formats = this.getFormats();
+    this.getFormats();
   },
   methods: {
     getFormats() {
-      return require('../../../data/form-builder-formats.json');
-    },
-    onClickOnFormat(format) {
-      if (format.value == 'other') {
-        const title = this.translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORMAT');
-        const text = this.translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORMAT_DESC');
-        const cancel = this.translate('COM_EMUNDUS_FORM_BUILDER_CANCEL');
-        const confirm = this.translate('COM_EMUNDUS_FORM_BUILDER_CONTACT_ADD_FORMAT');
-
-        this.swalConfirm(title, text, confirm, cancel, () => {
-          const contact = "support@emundus.fr";
-          window.open("mailto:" + contact);
-        },true,true);
-      }
+	    formService.getDocumentModels().then(response => {
+		    if (response.status) {
+			    this.formats = response.data;
+		    }
+	    });
     },
     setCloneFormat(format) {
       this.cloneFormat = format;
     },
     onDragEnd(event) {
-      if (this.cloneFormat.value === 'other') {
-        return;
-      }
-
-      const to = event.to;
-      if (to === null) {
-        return;
-      }
-
-      const newDocument = {
-        id: null,
-        type: {},
-        mandatory: to.id == "required-documents",
-        nbmax: 1,
-        description: {
-          fr: '',
-          en: ''
-        },
-        name: {
-          fr: 'Nouveau Document',
-          en: 'New document'
-        },
-        selectedTypes: {},
-        minResolution: {
-          width: 0,
-          height: 0
-        },
-        maxResolution: {
-          width: 0,
-          height: 0
-        }
-      };
-
-      const data = {
-        document: JSON.stringify(newDocument),
-        types: JSON.stringify([this.cloneFormat.extensions]),
-        pid: this.profile_id,
-        isModeleAndUpdate: true
-      }
-
-      campaignService.updateDocument(data, true).then((response) => {
-        if (response.status) {
-          this.$emit('document-created');
-        }
-      });
+			this.$emit('open-create-document', this.cloneFormat);
     }
   },
   computed: {
-    publishedFormats() {
-      return this.formats.filter(format => format.published);
-    }
+	  displayedFormats() {
+			return this.formats.filter((format) => {
+				return format.name[this.shortDefaultLang].toLowerCase().includes(this.search.toLowerCase());
+			});
+	  }
   }
 }
 </script>
@@ -144,5 +93,12 @@ export default {
     border: 1px solid #f2f2f3;
     cursor: grab;
   }
+
+	#format-name {
+		white-space: nowrap;
+		max-width: 100%;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
 }
 </style>

@@ -193,10 +193,10 @@ export default {
       formService.getDocumentModels().then(response => {
         if (response.status) {
           this.models = response.data;
-          if (this.current_document) {
+          if (this.current_document && (this.current_document.docid || this.current_document.id)) {
             this.selectModel({
               target: {
-                value: this.current_document.docid
+                value: this.current_document.docid ? this.current_document.docid : this.current_document.id
               }
             });
           }
@@ -225,7 +225,7 @@ export default {
 			this.hasImgFormat();
 			this.hasPDFFormat();
     },
-    selectModel(event) {
+     selectModel(event) {
       if (event.target.value !== 'none') {
         const model = this.models.find(model => model.id == event.target.value);
         this.document.id = model.id;
@@ -381,24 +381,29 @@ export default {
       return this.document.mandatory == "1";
     },
     incSelectDefaultValue() {
-      return this.current_document && this.current_document.docid ? this.current_document.docid : null;
+			let defaultValue = null
+	    if (this.current_document && (this.current_document.docid || this.current_document.id)) {
+				defaultValue = this.current_document.docid ? this.current_document.docid : this.current_document.id;
+	    }
+			return defaultValue;
     },
   },
   watch: {
     current_document(newValue) {
-      if (newValue && newValue.docid) {
+      if (newValue && (newValue.docid || newValue.id)) {
+				console.log(newValue)
         if (this.models.length < 1) {
           this.getDocumentModels().then(() => {
             this.selectModel({
               target: {
-                value: newValue.docid
+                value: newValue.docid ? newValue.docid : newValue.id
               }
             });
           });
         } else {
           this.selectModel({
             target: {
-              value: newValue.docid
+              value: newValue.docid ? newValue.docid : newValue.id
             }
           });
         }
