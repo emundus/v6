@@ -7,6 +7,26 @@
     }
 }
 
+.messages__campaigns-list-select {
+    display: none;
+    margin: 0;
+}
+
+@media all and (max-width: 820px) {
+    .messages__campaigns-list {
+        display: none;
+    }
+
+    .messages__campaigns-list-select {
+        display: block;
+        margin: 16px;
+    }
+
+    .drag-window {
+        flex-direction: column !important;
+    }
+}
+
 hr{
     margin: 0;
 }
