@@ -230,10 +230,13 @@ export default {
             };
         }
     },
-    async updateGroupParams(group_id, params) {
+    async updateGroupParams(group_id, params, lang = null) {
         const formData = new FormData();
         formData.append('group_id', group_id);
         formData.append('params', JSON.stringify(params));
+        if (lang != null) {
+            formData.append('lang', lang);
+        }
 
         try {
             const response = await client().post(

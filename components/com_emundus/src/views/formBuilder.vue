@@ -506,6 +506,14 @@ export default {
       background-color: #DFF5E9;
     }
   }
+
+	input.editable-data {
+		border: none !important;
+
+		&:focus {
+			background-color: #DFF5E9;
+		}
+	}
 }
 
 .fade-enter-active,
