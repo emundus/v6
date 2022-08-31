@@ -34,6 +34,9 @@ JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_SAVE_FAILED_TEXT');
 JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_WRONG_TYPE_TEXT');
 JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PASSWORD_TITLE');
 JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_EXPIRES_DATE');
+JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_WAITING');
+JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_OK');
+JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_INVALID');
 
 $lang = JFactory::getLanguage();
 $short_lang = substr($lang->getTag(), 0 , 2);
@@ -54,6 +57,14 @@ $xmlDoc = new DOMDocument();
 if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
     $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 }
+
+$app = JFactory::getApplication();
+$menu = @JFactory::getApplication()->getMenu();
+$current_menu = $menu->getActive();
+$Itemid = $app->input->getInt('Itemid', $current_menu->id);
+$params = $menu->getParams($Itemid);
+$attachment_intro = $params->get('em_users_attachments_intro','');
+$display_validation_state = $params->get('em_users_attachments_display_validation_state','');
 ?>
 
 <div id="em-component-vue"
@@ -62,6 +73,9 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
      sysadminAccess="<?= $sysadmin_access ?>"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      manyLanguages="<?= $many_languages ?>"
-     isApplicant="<?= $is_applicant ?>"></div>
+     isApplicant="<?= $is_applicant ?>"
+     attachmentIntro="<?= $attachment_intro ?>"
+     displayValidationState="<?= $display_validation_state ?>"
+></div>
 
 <script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
