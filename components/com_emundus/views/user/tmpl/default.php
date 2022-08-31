@@ -17,8 +17,10 @@ $current_user = JFactory::getUser();
                 <span class="em-h3 em-mb-32 em-mt-24"><?= JText::_('COM_EMUNDUS_MAIL_SEND') ?></span>
                 <p class="instructions"><?= JText::sprintf( 'COM_EMUNDUS_ACCESS_PLATFORM', $this->user_email ); ?></p>
                 <div class="resend em-mt-48">
-                    <p><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC'); ?><span onclick="activation(<?= $this->user->id; ?>)" class="em-pointer"><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC_2'); ?></span></p>
-                    <div class="containerButtons" style="display: none">
+                    <p><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC'); ?>
+                        <!--<span onclick="activation(<?= $this->user->id; ?>)" class="em-pointer"><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC_2'); ?></span>-->
+                    </p>
+                    <div class="containerButtons">
                         <input id="email" type="text" name="email" value="<?= $this->user_email ?>" class="mail">
                         <input type="button" onclick="activation(<?= $this->user->id; ?>)" class="btn btn-primary btn-resend" value="<?= JText::_('COM_EMUNDUS_MAIL_SEND_NEW'); ?>">
                     </div>

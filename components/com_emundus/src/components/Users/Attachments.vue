@@ -1,7 +1,7 @@
 <template>
   <div class="fabrikGroup em-container-profile-view-attach" v-if="attachments_allowed.length > 0">
     <div class="em-flex-row em-flex-space-between em-small-flex-column">
-      <legend >{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS') }}</legend>
+      <p class="em-h3">{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS') }}</p>
       <button
           v-if="allowedAttachmentsICanAdd.length > 0"
           class="em-w-auto"
@@ -13,6 +13,7 @@
         {{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS_ADD') }}
       </button>
     </div>
+    <p class="em-mt-8" v-if="intro.length > 0">{{ intro }}</p>
 
     <transition :name="'slide-down'" type="transition">
       <div v-if="showform">
@@ -58,6 +59,9 @@
       <div v-for="attachment in attachments" class="em-flex-row em-flex-space-between em-mb-16">
         <div>
           <p class="em-label">{{ attachment.value }}</p>
+          <span v-if="isDisplayValidationState && attachment.expires_date == null" class="em-help-text">
+            {{ translate(displayValidationState(attachment.validation)) }}
+          </span>
           <span class="em-help-text">{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS_DROP_DATE') }}{{ formattedDate(attachment.date_time,'LL') }}</span>
           <span v-if="attachment.expires_date != null" class="em-expires-text em-red-500-color">{{ translate('COM_EMUNDUS_USERS_MY_DOCUMENTS_EXPIRES_DATE') }}{{ formattedDate(attachment.expires_date,'LL') }}</span>
         </div>
@@ -218,6 +222,17 @@ export default {
       attachmentService.isExpiresDateDisplayed().then((response) => {
         this.isExpiresDateDisplay = response.display_expires_date;
       });
+    },
+    displayValidationState(state){
+      switch (state){
+        case '0':
+          return 'COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_WAITING';
+        case '1':
+          return 'COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_OK';
+        case '-1':
+          return 'COM_EMUNDUS_USERS_MY_DOCUMENTS_STATE_INVALID';
+        default:
+      }
     }
   },
   watch: {
@@ -233,6 +248,12 @@ export default {
   computed:{
     isapplicant() {
       return this.$store.getters['global/datas'].isapplicant.value;
+    },
+    intro() {
+      return this.$store.getters['global/datas'].attachmentintro.value;
+    },
+    isDisplayValidationState() {
+      return this.$store.getters['global/datas'].displayvalidationstate.value != '0';
     },
     allowedAttachmentsICanAdd() {
       if (this.attachments.length < 1) {

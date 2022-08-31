@@ -111,7 +111,6 @@ class EmundusModelTranslations extends JModelList
             $this->_db->quoteName('reference_table'),
             $this->_db->quoteName('reference_field'),
         ];
-        $db_values = [];
 
         foreach ($files as $file) {
             $parsed_file = JLanguageHelper::parseIniFile($file);
@@ -243,26 +242,22 @@ class EmundusModelTranslations extends JModelList
                         } else {
                             $row = [$this->_db->quote($key), $this->_db->quote($language), $this->_db->quote($val), $this->_db->quote($val), $this->_db->quote(md5($val)), $this->_db->quote(md5($val)), $this->_db->quote($file_name), $this->_db->quote(null), 62, $this->_db->quote(null), $this->_db->quote(null), $this->_db->quote(null)];
                         }
-                        $db_values[] = implode(',', $row);
+                        try {
+                            $query
+                                ->clear()
+                                ->insert($this->_db->quoteName('jos_emundus_setup_languages'))
+                                ->columns($db_columns)
+                                ->values(implode(',', $row));
+
+                            $this->_db->setQuery($query);
+                            return $this->_db->execute();
+                        } catch (Exception $e) {
+                            JLog::add('Problem when insert translations at first launch with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
+                            return false;
+                        }
                         $key_added[] = strtoupper($key);
                     }
                 }
-            }
-        }
-
-        if(!empty($db_values)) {
-            try {
-                $query
-                    ->clear()
-                    ->insert($this->_db->quoteName('jos_emundus_setup_languages'))
-                    ->columns($db_columns)
-                    ->values($db_values);
-
-                $this->_db->setQuery($query);
-                return $this->_db->execute();
-            } catch (Exception $e) {
-                JLog::add('Problem when insert translations at first launch with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
-                return false;
             }
         }
     }
