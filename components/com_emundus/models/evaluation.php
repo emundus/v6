@@ -3701,17 +3701,28 @@ class EmundusModelEvaluation extends JModelList {
         $h_array  = new EmundusHelperArray;
 
         try {
-            $params = $h_module->getParams($module);
+            $groups = JFactory::getSession()->get('emundusUser')->emGroups;
 
-            $fnums = array();
-            $query->select('DISTINCT eua.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
-                ->from($db->quoteName('#__emundus_users_assoc','eua'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum'))
-                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
-                ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
-                ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1))
-                ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
-                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+            if(in_array(1,$groups)){
+                $query->select('DISTINCT ecc.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+                    ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+                    ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
+                    ->where($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
+                    ->andWhere($db->quoteName('ecc.published') . ' = 1');
+            }
+            else {
+                $params = $h_module->getParams($module);
+
+                $fnums = array();
+                $query->select('DISTINCT eua.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+                    ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+                    ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('eua.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                    ->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'))
+                    ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
+                    ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1))
+                    ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
+                    ->andWhere($db->quoteName('ecc.published') . ' = 1');
+            }
 
             if (isset($params->status) && $params->status !== '') {
                 $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
@@ -3871,10 +3882,10 @@ class EmundusModelEvaluation extends JModelList {
                 }
 
                 $evaluations[] = $evaluation;
+
+
+                $evaluations = $h_array->removeDuplicateObjectsByProperty($evaluations,'fnum');
             }
-
-            $evaluations = $h_array->removeDuplicateObjectsByProperty($evaluations,'fnum');
-
             return array('evaluations' => $evaluations,'elements' => $eval_elements,'evaluation_form' => $form_id);
         } catch (Exception $e) {
             JLog::add('Problem to get files associated to user '.$user.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
@@ -3894,14 +3905,23 @@ class EmundusModelEvaluation extends JModelList {
         try {
             $params = $h_module->getParams($module);
 
-            // Get files associated to me (emundus_users_assoc)
-            $query->select('DISTINCT esc.id,esc.label,count(distinct eua.fnum) as files')
-                ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
-                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('eua.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
-                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
-                ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
-                ->andWhere($db->quoteName('ecc.published') . ' = 1')
-                ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1));
+            $groups = JFactory::getSession()->get('emundusUser')->emGroups;
+
+            if(in_array(1,$groups)){
+                $query->select('DISTINCT esc.id,esc.label,count(distinct ecc.fnum) as files')
+                    ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+                    ->where($db->quoteName('ecc.published') . ' = 1');
+            } else {
+                // Get files associated to me (emundus_users_assoc)
+                $query->select('DISTINCT esc.id,esc.label,count(distinct eua.fnum) as files')
+                    ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+                    ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('eua.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                    ->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+                    ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
+                    ->andWhere($db->quoteName('ecc.published') . ' = 1')
+                    ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1));
+            }
 
             if (isset($params->status) && $params->status !== '') {
                 $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
