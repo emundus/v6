@@ -3701,9 +3701,9 @@ class EmundusModelEvaluation extends JModelList {
         $h_array  = new EmundusHelperArray;
 
         try {
-            $groups = JFactory::getSession()->get('emundusUser')->emGroups;
+            //$groups = JFactory::getSession()->get('emundusUser')->emGroups;
 
-            if(in_array(1,$groups)){
+            if (EmundusHelperAccess::asAccessAction(5, 'r', $user)) {
                 $query->select('DISTINCT ecc.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
                     ->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
                     ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
@@ -3905,9 +3905,9 @@ class EmundusModelEvaluation extends JModelList {
         try {
             $params = $h_module->getParams($module);
 
-            $groups = JFactory::getSession()->get('emundusUser')->emGroups;
+            //$groups = JFactory::getSession()->get('emundusUser')->emGroups;
 
-            if(in_array(1,$groups)){
+            if (EmundusHelperAccess::asAccessAction(5, 'r', $user)) {
                 $query->select('DISTINCT esc.id,esc.label,count(distinct ecc.fnum) as files')
                     ->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
                     ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
