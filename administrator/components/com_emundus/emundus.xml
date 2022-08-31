@@ -7,33 +7,40 @@
 	<license>GNU/GPL http://www.gnu.org/copyleft/gpl.html</license>
 	<authorEmail>dev@emundus.fr</authorEmail>
 	<authorUrl>www.emundus.fr</authorUrl>
-	<version>1.32.6</version>
+	<version>1.31.29</version>
 	<description>Online application component for Joomla!.</description>
-
+	<scriptfile>script.com_emundus.php</scriptfile>
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates/mysql</schemapath>
+		</schemas>
+	</update>
 	<files folder="site">
 		<folder>assets</folder>
 		<folder>controllers</folder>
 		<folder>helpers</folder>
 		<folder>language</folder>
 		<folder>models</folder>
+		<folder>public</folder>
+		<folder>src</folder>
 		<folder>views</folder>
+		<file>babel.config.js</file>
 		<file>controller.php</file>
 		<file>emundus.php</file>
 		<file>index.html</file>
+		<file>package.json</file>
+		<file>README.md</file>
+		<file>router.php</file>
+		<file>vue.config.js</file>
 	</files>
 
 	<media folder="media">
-		<folder>com_emundus/images</folder>
 		<folder>com_emundus/css</folder>
+		<folder>com_emundus/images</folder>
 		<folder>com_emundus/js</folder>
 		<folder>com_emundus/lib</folder>
 		<file>com_emundus/index.html</file>
 	</media>
-
-	<languages folder="language">
-		<language tag="fr-FR">fr-FR.com_emundus.ini</language>
-		<language tag="en-GB">en-GB.com_emundus.ini</language>
-	</languages>
 
 	<install>
 		<sql>
@@ -52,6 +59,8 @@
 		<files folder="admin">
 			<folder>assets</folder>
 			<folder>controllers</folder>
+			<folder>elements</folder>
+			<folder>help</folder>
 			<folder>helpers</folder>
 			<folder>language</folder>
 			<folder>models</folder>
@@ -64,6 +73,8 @@
 			<file>emundus.xml</file>
 			<file>index.html</file>
 			<file>router.php</file>
+			<file>toolbar.emundus.php</file>
+			<file>version.json</file>
 		</files>
 
 		<languages folder="language">
@@ -71,11 +82,4 @@
 			<language tag="en-GB">en-GB.com_emundus.ini</language>
 		</languages>
 	</administration>
-
-	<!-- START UPDATESERVERS
-	<updateservers>
-		<server type="collection" name="eMundus61">http://emundus.fr/update/emundus61/package_list.xml</server>
-	</updateservers>
-	-->
-
 </extension>
