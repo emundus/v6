@@ -275,7 +275,7 @@ class UpdateCli extends JApplicationCli
                 $this->out("\n*--------------------*\n");
 
                 # Check if this is the first run for emundus component
-                if ($elementArr['element'] == "com_emundus" and $manifest_cache['version'] == "6.1") {
+                if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" or $manifest_cache['version'] < "1.33.0")) {
                     $this->checkFirstRun($elementArr['extension_id']);
                     $manifest_cache['version'] = (string)$this->manifest_xml->version;
                 }

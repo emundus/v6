@@ -54,7 +54,7 @@ class com_emundusInstallerScript
 
         if ($manifest_cache) {
             # First run condition
-            if (version_compare($cache_version, '1.31.29', '<') OR $firstrun) {
+            if (version_compare($cache_version, '1.33.0', '<') OR $firstrun) {
                 #$this->deleteOldSqlFiles();
                 $this->updateModulesParams('mod_emundusflow','show_programme' , "0");
                 #$plugin_list = $this->getEmundusPlugins();
