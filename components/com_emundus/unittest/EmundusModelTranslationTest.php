@@ -108,10 +108,10 @@ class EmundusModelTranslationTest extends TestCase
 
 
         // TEST 1 - Update the translations created before in french
-        $this->assertSame(true, $this->m_translations->updateTranslation('ELEMENT_TEST','Mon élement modifié','fr-FR'));
+        $this->assertSame('ELEMENT_TEST', $this->m_translations->updateTranslation('ELEMENT_TEST','Mon élement modifié','fr-FR'));
 
         // TEST 2 - Update the translations created before in english
-        $this->assertSame(true, $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
+        $this->assertSame('ELEMENT_TEST', $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
 
         // TEST 3 - Failed waiting - Update the translations created before in portuguesh
         $this->assertSame(false, $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','pt-PT'));

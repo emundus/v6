@@ -82,7 +82,7 @@ var mixin = {
 			if (event.target.textContent.length >= maxlength && event.keyCode != 8) {
 				event.preventDefault();
 			}
-			if(minlength !== null) {
+			if (minlength !== null) {
 				if (event.target.textContent.length <= minlength && event.keyCode == 8) {
 					event.preventDefault();
 				}
