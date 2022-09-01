@@ -70,10 +70,10 @@ class UpdateCli extends JApplicationCli
 
         # Array of components with extensions datas
         $this->components = $this->getComponentsElement('extensions', $availableComponents);
-        # Init
+        # Init variables
         $this->count_stmt = 0;
         $this->count_fails = 0;
-        $this->count_succes = 0;
+        $this->count_exec = 0;
         $this->verbose = false;
 
         $this->out("Emundus Update Tool \n");
@@ -90,12 +90,12 @@ class UpdateCli extends JApplicationCli
             }
         # Update only Joomla core component
         if (isset($options["c"]) || isset($options["core"])) {
-            $this->count_succes++;
+            $this->count_exec++;
             $this->updateJoomla();
         }
         # Update all
         if (isset($options["a"]) || isset($options["all"])) {
-            $this->count_succes++;
+            $this->count_exec++;
             $this->updateJoomla();
             $this->updateComponents();
         }
@@ -117,7 +117,7 @@ class UpdateCli extends JApplicationCli
         if (isset($options["u"]) || isset($options["update"]) || isset($options["a"]) || isset($options["all"])   || isset($options["c"])|| isset($options["core"])) {
             $this->out("\n*--------------------*");
             $this->out("RESULTS :");
-            $this->out($this->count_fails . " fails / " . $this->count_succes . " executed");
+            $this->out($this->count_fails . " fails / " . $this->count_exec . " executed");
 
             if ($this->verbose) {
                 $this->out("-> " . $this->count_stmt . " sql statements executed");
@@ -211,7 +211,7 @@ class UpdateCli extends JApplicationCli
                     $file = preg_split("/.sql/", $file);
                     $exit_file[$k] = $file[0];
                 }
-                $this->updateSchema(700, array($exit_file[0]), "end", null);
+                $this->updateSchema(700, array($exit_file[0]), "end");
             }
             # Log
             $this->out("\nJoomla DB update Failed...");
@@ -250,7 +250,7 @@ class UpdateCli extends JApplicationCli
                 return false;
             }
         }
-        $this->count_succes += count($elements);
+        $this->count_exec += count($elements);
         # Process update for each component listed
         foreach ($elements as $element) {
             # Get component row & load manifest cache
@@ -313,6 +313,10 @@ class UpdateCli extends JApplicationCli
                         continue;
                     } elseif (!$sql_update[0] == 0) {
                         $this->out("-> " . $sql_update[0] . " sql statements executed");
+                    }
+
+                    if ($this->firstrun) {
+                        $this->firstrun = false;
                     }
 
                     # Step 2 : Check custom updates
@@ -379,7 +383,6 @@ class UpdateCli extends JApplicationCli
                                     if (method_exists($scriptClass, 'postflight')) {
                                         $script->postflight('update', $adapter);
                                     }
-
                                     break;
                             }
 
@@ -397,19 +400,10 @@ class UpdateCli extends JApplicationCli
 
                             Log::add("[FAIL] " . $element . " : ", Log::ERROR, 'error');
                             Log::add($e->getMessage(), Log::ERROR, 'error');
-                            Log::add(str_replace(PHP_EOL, '', $log), Log::INFO, 'error');
+                            Log::add(str_replace(PHP_EOL, '', $this->db->getQuery()), Log::INFO, 'error');
 
                             $success = false;
                         }
-
-                        # Log updates
-                        $component_logs = $this->getElementLogs();
-                        $this->count_stmt += count($component_logs);
-                        foreach ($component_logs as $log) {
-                            Log::add("[EXEC] " . $element . " : ", Log::INFO, 'update');
-                            Log::add(str_replace(PHP_EOL, '', $log), Log::INFO, 'update');
-                        }
-
                     } else {
                         $this->out("-> Scriptfile doesn't exists");
                     }
@@ -430,6 +424,15 @@ class UpdateCli extends JApplicationCli
 
             # Check success of custom updates, if true overwrite new version in xml
             if ($success) {
+
+                # Log updates
+                $component_logs = $this->getElementLogs();
+                $this->count_stmt += count($component_logs);
+                foreach ($component_logs as $log) {
+                    Log::add("[EXEC] " . $element . " : ", Log::INFO, 'update');
+                    Log::add(str_replace(PHP_EOL, '', $log), Log::INFO, 'update');
+                }
+
                 if($this->verbose) {
                     $this->out("-> OK");
                     $this->out("-> " . count($component_logs) . " sql statements executed");
@@ -1046,9 +1049,6 @@ class UpdateCli extends JApplicationCli
                     Log::add("[EXEC] " . $element . " : " . $file . ".sql  ->", Log::INFO, 'update');
                     Log::add(str_replace(PHP_EOL, '', $queryString), Log::INFO, 'update');
 
-                    if ($this->firstrun) {
-                        unset($this->firstrun);
-                    }
                     $update_count++;
                 }
             }
