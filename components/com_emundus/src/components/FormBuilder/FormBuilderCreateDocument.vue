@@ -178,7 +178,7 @@ export default {
     };
   },
   created() {
-    this.document.mandatory = this.mandatory;
+    this.document.mandatory = this.current_document.mandatory === null || typeof this.current_document.mandatory == 'undefined' ? this.mandatory : this.current_document.mandatory;
     this.getDocumentModels();
     this.getFileTypes();
   },
@@ -198,7 +198,7 @@ export default {
               target: {
                 value: this.current_document.docid ? this.current_document.docid : this.current_document.id
               }
-            });
+            }, this.current_document.mandatory !== null && this.current_document.mandatory != 'undefined' ? this.current_document.mandatory : null);
           }
 
 					formService.getDocumentModelsUsage(this.models.map((model) => {
@@ -225,12 +225,12 @@ export default {
 			this.hasImgFormat();
 			this.hasPDFFormat();
     },
-     selectModel(event) {
+     selectModel(event, mandatory = null) {
       if (event.target.value !== 'none') {
         const model = this.models.find(model => model.id == event.target.value);
         this.document.id = model.id;
         this.document.type = model.type;
-        this.document.mandatory = model.mandatory;
+        this.document.mandatory = mandatory == null ? model.mandatory : mandatory;
         this.document.nbmax = model.nbmax;
         this.document.description = model.description;
         this.document.name = model.name;
@@ -333,7 +333,9 @@ export default {
     {
       if (document.id) {
         this.document.name[this.shortDefaultLang] = document.label;
-        this.selectModel({target: {value: document.id}});
+        this.selectModel({target: {value: document.id}},
+		        this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : null
+        );
       } else {
         this.document.id = null;
         this.document.name[this.shortDefaultLang] = document.label;
@@ -390,25 +392,26 @@ export default {
   },
   watch: {
     current_document(newValue) {
+			console.log(newValue);
       if (newValue && (newValue.docid || newValue.id)) {
-				console.log(newValue)
         if (this.models.length < 1) {
           this.getDocumentModels().then(() => {
             this.selectModel({
               target: {
                 value: newValue.docid ? newValue.docid : newValue.id
               }
-            });
+            }, newValue.mandatory);
           });
         } else {
           this.selectModel({
             target: {
               value: newValue.docid ? newValue.docid : newValue.id
             }
-          });
+          }, newValue.mandatory);
         }
       }
-    }
+    },
+	  deep: true
   }
 }
 </script>

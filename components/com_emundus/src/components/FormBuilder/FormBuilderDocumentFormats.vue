@@ -66,6 +66,13 @@ export default {
       this.cloneFormat = format;
     },
     onDragEnd(event) {
+	    const to = event.to;
+	    if (to === null) {
+		    return;
+	    }
+
+			this.cloneFormat.mandatory = to.id == "required-documents" ? "1" : "0";
+
 			this.$emit('open-create-document', this.cloneFormat);
     }
   },
