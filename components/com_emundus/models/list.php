@@ -35,17 +35,19 @@ class EmundusModelList extends JModelList
     public function getListActions($listId, $elementId)
     {
         $query = $this->db->getQuery(true);
-        $query->select('DISTINCT jfe.name as column_name, jfe.plugin, jfe.label, jfl.db_table_name as db_table_name')
+        $query->select('DISTINCT jfe.label, jfe.name as column_name, jfe.plugin, jfl.db_table_name as db_table_name')
             ->from($this->db->quoteName('#__fabrik_lists', 'jfl'))
             ->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jfl.form_id') . ' = ' . $this->db->quoteName('jffg.form_id'))
             ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
             ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
             ->andWhere($this->db->quoteName('jfe.id') . ' = ' . $elementId);
+
         $actionsColumns = [];
         $databaseJoinsKeysAndColumns = [];
         $actionsData = [];
         try {
             $this->db->setQuery($query);
+
             $result = $this->db->loadObject();
             if (!empty($result)) {
                 $dbTableName = $result->db_table_name;
@@ -71,11 +73,12 @@ class EmundusModelList extends JModelList
         }
 
         if (count($actionsColumns) > 0) {
+
             $query->clear();
-            $query->select($actionsColumns)
+            $query->select('DISTINCT '.implode(",",$actionsColumns))
                 ->from($this->db->quoteName($dbTableName));
 
-            if (count($databaseJoinsKeysAndColumns) > 0) {
+            if(count($databaseJoinsKeysAndColumns) > 0) {
                 foreach ($databaseJoinsKeysAndColumns as $data) {
                     $query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
                 }
@@ -84,6 +87,7 @@ class EmundusModelList extends JModelList
             try {
 
                 $this->db->setQuery($query);
+
 
                 $actionDataResult = $this->db->loadObjectList();
 
@@ -148,7 +152,9 @@ class EmundusModelList extends JModelList
             JLog::add('component/com_emundus/models/list | Cannot getting the list colunmns and data table name: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
+
         $query->clear();
+
         $query->select($listColumns)
             ->from($this->db->quoteName($dbTableName));
 
@@ -222,6 +228,27 @@ class EmundusModelList extends JModelList
             return $listData;
         }
 
+    }
+
+    public function actionSetColumnValueAs($rowId,$value,$dbTablename,$columnName){
+
+        $query = $this->db->getQuery(true);
+        $query->update($this->db->quoteName($dbTablename))
+              ->set($this->db->quoteName($columnName) .' = '.$this->db->quote($value))
+              ->where($this->db->quoteName('id') . ' IN ('. $rowId.')');
+
+        try{
+            $this->db->setQuery($query);
+
+            $result = $this->db->execute();
+
+            return $result;
+
+        } catch (Exception $e) {
+
+            JLog::add('component/com_emundus/models/list | Error when trying to set action column value as  : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+            return 0;
+        }
     }
 
 }

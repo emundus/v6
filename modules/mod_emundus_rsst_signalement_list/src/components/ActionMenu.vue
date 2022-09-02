@@ -32,9 +32,11 @@ export default {
         }
     },
 
-    method: {
+    methods: {
         setAs(val){
-            console.log(val);
+
+
+            this.$emit('setAs',this.actionColumn,val)
         }
     }
 };

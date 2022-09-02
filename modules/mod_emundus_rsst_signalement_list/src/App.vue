@@ -1,7 +1,7 @@
 <template>
     <div id="app">
 
-        <List :listId="fabrikListId" :listActionColumn="fabrikListActionColumn"/>
+        <List :listId="fabrikListId" :ListActionColumn="fabrikListActionColumn"/>
     </div>
 </template>
 

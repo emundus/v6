@@ -7,7 +7,7 @@
             <span class="tooltip-target b3 material-icons">more_vert</span>
             <template slot="popover">
                 <actions :actionColumnsAvailableValue="actionColumnsAvailableValue"
-                         :actionColumn = "actionColumn"
+                         :actionColumn = "actionColumn" @setAs="setAs"
                 ></actions>
             </template>
         </v-popover>
@@ -32,6 +32,7 @@ export default {
         },
     },
     created() {
+
         this.retriveListActionsData();
     },
     data: () => ({
@@ -51,6 +52,9 @@ export default {
                 console.log(e);
             }
         },
+        setAs(actionColumn,value){
+            this.$emit('setAs',actionColumn,value);
+        }
     }
 
 }

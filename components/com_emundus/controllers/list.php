@@ -52,6 +52,7 @@ class EmundusControllerList extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
     public function getListActions() {
         $user = JFactory::getUser();
 
@@ -63,6 +64,30 @@ class EmundusControllerList extends JControllerLegacy {
             $listId = $jinput->getInt('listId');
             $lisActionColumnId=  $jinput->getInt('listActionColumnId');
             $listData = $this->m_list->getListActions($listId,$lisActionColumnId);
+
+            if (!empty($listData)) {
+                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
+
+    public function actionSetColumnValueAs() {
+        $user = JFactory::getUser();
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $rowId = $jinput->getString('row_id');
+            $value = $jinput->getString('value');
+            $columnName = $jinput->getString('column_name');
+            $dbTablename = $jinput->getString('db_table_name');
+            $listData = $this->m_list->actionSetColumnValueAs($rowId,$value,$dbTablename,$columnName);
 
             if (!empty($listData)) {
                 $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);

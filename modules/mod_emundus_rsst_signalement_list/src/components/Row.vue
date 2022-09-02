@@ -23,7 +23,7 @@
         </td>
         <td>
 			<span>
-				<list-action-menu :actionColumnId="ListActionColumn" :listId="listId"></list-action-menu>
+				<list-action-menu :actionColumnId="actionColumnId" :listId="listId" @setAs="setAs"></list-action-menu>
 			</span>
         </td>
     </tr>
@@ -31,7 +31,7 @@
 
 <script>
 import ListActionMenu from './ListActionMenu.vue';
-
+import ListService from '../services/list';
 export default {
     name: "Row",
     props: {
@@ -47,7 +47,7 @@ export default {
             type: Object,
             required : true
         },
-        ListActionColumn: {
+        actionColumnId: {
             type:String,
             required: false
         },
@@ -58,6 +58,18 @@ export default {
     },
     components: {
         'list-action-menu': ListActionMenu
+    },
+    data:()=>({
+        isChecked : false,
+    }),
+    watch : {
+        /*checkedRows: function(val){
+            console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+            console.log(val);
+            console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+            this.isChecked = val.rows.some(row => row.id === this.rowData.id);
+
+        }*/
     },
     methods: {
         classFromValue(val) {
@@ -84,6 +96,7 @@ export default {
             }
             return className;
         },
+
         texteFromValue(val) {
 
             let texte = '';
@@ -108,7 +121,28 @@ export default {
 
             }
             return texte;
+        },
+
+        async setAs(actionColumn,value){
+
+            try{
+                const isChecked = this.checkedRows.rows.some(row => row.id === this.rowData.id);
+                if(isChecked){
+
+                    const response = await ListService.setAs(actionColumn,value,this.rowData.id);
+                    console.log('^^^^^^^^^^^^^^^^^^^')
+                    console.log(response);
+                } else {
+                    alert('Merci de sélectionné une ligne avant de pouvoir éffectué cette action');
+                }
+            } catch (e) {
+                console.log(e);
+            }
+
+
         }
+
+
     }
 }
 </script>

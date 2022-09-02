@@ -42,7 +42,8 @@
                 </th>
                 <th>
                     <span>
-                        <list-action-menu :actionColumnId="ListActionColumn" :listId="listId"></list-action-menu>
+                        <list-action-menu :actionColumnId="ListActionColumn" :listId="listId"
+                                          @setAs="setAs"></list-action-menu>
                     </span>
                 </th>
 
@@ -85,13 +86,13 @@ export default {
         'filter-item': Filter,
         'list-action-menu': ListActionMenu
     },
-    props:{
-        listId:{
+    props: {
+        listId: {
             type: String,
             required: true,
         },
         ListActionColumn: {
-            type:String,
+            type: String,
             required: false
         }
     },
@@ -113,14 +114,14 @@ export default {
 
     }),
     created() {
-        console.log("hello he is "+  this.listId);
+
         this.retriveListData();
     },
     methods: {
-        reloadData(){
+        reloadData() {
             this.loading = true;
-            this.listColumns =[];
-            this.listData =[];
+            this.listColumns = [];
+            this.listData = [];
             this.items = [];
             this.filters = [];
             this.retriveListData();
@@ -235,6 +236,21 @@ export default {
             })
 
             this.filtering();
+        },
+
+        async setAs(actionColumn, value) {
+
+            try {
+                const checkedRowsId = this.checkedRows.rows.map((val) => {
+                    return val.id
+                });
+                const response = await ListService.setAs(actionColumn, value, checkedRowsId.join(','));
+
+            } catch (e) {
+                console.log(e);
+            }
+
+
         }
 
 
@@ -250,8 +266,9 @@ input.withSearchIco {
     padding: 9px 4px 9px 45px !important;
     background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
 }
-.reload-icons{
-    font-size: 30px!important;
+
+.reload-icons {
+    font-size: 30px !important;
     cursor: grab;
     transform: rotate(90deg);
 }
