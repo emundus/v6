@@ -67,18 +67,38 @@ export default {
     {
       this.element.label[this.shortDefaultLang] = this.$refs['element-label-' + this.element.id].value.trim().replace(/[\r\n]/gm, "");
 
-      formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label);
-      this.updateLastSave();
+      formBuilderService.updateTranslation({value: this.element.id, key: 'element'}, this.element.label_tag, this.element.label).then((response) => {
+				if (response.data.status) {
+					this.element.label_tag = response.data.data;
+					this.updateLastSave();
+				} else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+						text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
+						type: "error",
+						cancelButtonText: this.translate("OK"),
+					});
+				}
+      });
     },
-    updateLabelKeyup()
-    {
-      document.activeElement.blur();
-    },
+	  updateLabelKeyup()
+	  {
+		  document.activeElement.blur();
+		},
     updateElement()
     {
       formBuilderService.updateParams(this.element).then((response) => {
-	      this.$emit('update-element');
-	      this.updateLastSave();
+				if (response.data.status) {
+					this.$emit('update-element');
+					this.updateLastSave();
+				} else {
+					Swal.fire({
+						title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
+						text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_PARAMS'),
+						type: "error",
+						cancelButtonText: this.translate("OK"),
+					});
+				}
       });
     },
     deleteElement() {

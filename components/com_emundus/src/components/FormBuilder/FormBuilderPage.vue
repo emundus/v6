@@ -190,21 +190,25 @@ export default {
         }
       });
     },
-    updateTitleKeyup()
-    {
-      document.activeElement.blur();
-    },
+	  updateTitleKeyup()
+	  {
+		  document.activeElement.blur();
+	  },
     updateDescription()
     {
       this.fabrikPage.intro[this.shortDefaultLang] = this.$refs.pageDescription.innerText.replace(/[\r\n]/gm, "<br/>");
 
-      formBuilderService.updateTranslation(null, this.fabrikPage.intro_raw, this.fabrikPage.intro);
-      this.updateLastSave();
+      formBuilderService.updateTranslation(null, this.fabrikPage.intro_raw, this.fabrikPage.intro).then((response) => {
+				if (response.data.status) {
+					this.updateLastSave();
+					this.fabrikPage.intro_raw = response.data.data;
+				}
 
-      if (this.$refs.pageDescription.innerText === '') {
-        document.getElementById('pageDescription').textContent = this.translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD');
-        document.getElementById('pageDescription').classList.add('em-text-neutral-600');
-      }
+	      if (this.$refs.pageDescription.innerText === '') {
+		      document.getElementById('pageDescription').textContent = this.translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD');
+		      document.getElementById('pageDescription').classList.add('em-text-neutral-600');
+	      }
+      });
     },
     updateElementsOrder(event, fromGroup, toGroup) {
       const sectionFrom = this.sections.find(section => section.group_id === fromGroup);

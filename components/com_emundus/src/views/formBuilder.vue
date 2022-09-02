@@ -54,8 +54,7 @@
             <form-builder-document-formats
                 v-else-if="leftPanelActiveTab === 'Documents'"
                 :profile_id="profile_id"
-                @document-created="onDocumentCreated"
-                @dragging-element="onCloseCreateDocument"
+                @open-create-document="onEditDocument"
             >
             </form-builder-document-formats>
           </div>
@@ -454,7 +453,7 @@ export default {
       > div {
         width: 100%;
 	      height: 100%;
-	      overflow: scroll;
+	      overflow: auto;
       }
     }
 
@@ -463,7 +462,7 @@ export default {
       border-right: solid 1px #E3E5E8;
       align-self: flex-start;
 
-      .tabs {
+	    .tabs {
         align-self: flex-start;
         align-items: flex-start;
         border-right: solid 1px #E3E5E8;
@@ -485,6 +484,7 @@ export default {
         align-items: flex-start;
         padding: 0 16px;
         height: 100%;
+	      overflow: auto;
       }
     }
 
@@ -506,6 +506,14 @@ export default {
       background-color: #DFF5E9;
     }
   }
+
+	input.editable-data {
+		border: none !important;
+
+		&:focus {
+			background-color: #DFF5E9;
+		}
+	}
 }
 
 .fade-enter-active,

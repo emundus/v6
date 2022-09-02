@@ -96,11 +96,12 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $group_id = $jinput->getInt('group_id');
             $params = $jinput->getString('params');
             $params = json_decode($params, true);
+            $lang = $jinput->getString('lang', '');
 
             if (!empty($params)) {
                 $update = array(
                     'status' => 1,
-                    'data' => $this->m_formbuilder->updateGroupParams($group_id, $params)
+                    'data' => $this->m_formbuilder->updateGroupParams($group_id, $params, $lang)
                 );
             } else {
                 $update = array(
@@ -219,14 +220,16 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
         } else {
             $jinput = JFactory::getApplication()->input;
 
-            $element = $jinput->getInt('element');
-            $group = $jinput->getInt('group');
-            $page = $jinput->getInt('page');
+            $element = $jinput->getInt('element', null);
+            $group = $jinput->getInt('group', null);
+            $page = $jinput->getInt('page', null);
             $labelTofind = $jinput->getString('labelTofind');
             $newLabel = $jinput->getRaw('NewSubLabel');
 
-            $results = $this->m_formbuilder->formsTrad($labelTofind, $newLabel, $element, $group, $page);
-            $changeresponse = array('status' => 1, 'msg' => 'Traductions effectués avec succès', 'data' => $results);
+            if (!empty($labelTofind) && !empty($newLabel)) {
+                $results = $this->m_formbuilder->formsTrad($labelTofind, $newLabel, $element, $group, $page);
+            }
+            $changeresponse = array('status' => !empty($results), 'msg' => 'Traductions effectués avec succès', 'data' => $results);
         }
 
         echo json_encode((object)$changeresponse);
