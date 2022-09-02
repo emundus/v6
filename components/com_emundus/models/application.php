@@ -307,12 +307,12 @@ class EmundusModelApplication extends JModelList
                 /* $old_comment->comment_body vs $text */
 
                 if ($old_comment->reason !== $title) {
-                    array_push($logsParams['updated'], ['element' => JText::_('EDIT_COMMENT_TITLE') . '<span class="label label-default">' . $old_comment->reason . '</span>' . JText::_('HAS_CHANGED'),
+                    array_push($logsParams['updated'], ['element' => JText::_('EDIT_COMMENT_TITLE') . '<span class="label label-default">' . $old_comment->reason . '</span>',
                         'old' => $old_comment->reason,
                         'new' => $title]);
                 }
                 if ($old_comment->comment_body !== $text) {
-                    array_push($logsParams['updated'], ['element' => JText::_('EDIT_COMMENT_BODY') . '<span class="label label-default">' . $old_comment->reason . '</span>' . JText::_('HAS_CHANGED'),
+                    array_push($logsParams['updated'], ['element' => JText::_('EDIT_COMMENT_BODY') . '<span class="label label-default">' . $old_comment->reason . '</span>',
                         'old' => $old_comment->comment_body,
                         'new' => $text]);
                 }
