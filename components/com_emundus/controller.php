@@ -1236,7 +1236,16 @@ class EmundusController extends JControllerLegacy {
         $mFile = new EmundusModelFiles();
         $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE');
+        // stock the attachments name //
+        $logsStd = new stdClass();
+
+        $logsStd->element = '<u>' . JText::_('COM_EMUNDUS_NEW_ATTACHMENT') . '</u>';
+        $logsStd->details = $_FILES['file']['name'];
+
+        // stock all logs into an array
+        $logsParams = array('created' => [$logsStd]);
+
+        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
         return true;
     }
 

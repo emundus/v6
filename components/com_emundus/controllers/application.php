@@ -738,8 +738,8 @@ class EmundusControllerApplication extends JControllerLegacy
                 $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
 
                 # TRACK THE LOGS
-                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE');
+                //require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                //EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE');
 
             } else {
                 $msg = JText::_('INVALID_PARAMETERS');
