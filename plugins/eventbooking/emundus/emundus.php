@@ -125,7 +125,7 @@ class plgEventbookingEmundus extends CMSPlugin
                     $redirect_url = '/index.php?option=com_fabrik&view=form&formid=449&cid='.$campaign;
                 }
                 if($save_quit == 1){
-                    $redirect_url = '/index.php?option=com_fabrik&view=form&formid=350&cid='.$campaign;
+                    $redirect_url = '/index.php?option=com_fabrik&view=form&formid=350&eid='.$row->id;
                 }
             } else {
                 $query->clear()
