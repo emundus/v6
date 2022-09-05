@@ -2295,6 +2295,10 @@ class EmundusModelUsers extends JModelList {
                 $params->rollover = JText::_($params->rollover);
 
                 $element->params = json_encode($params);
+
+                if($element->plugin == 'calc'){
+                    $element->value = eval($params->calc_calculation);
+                }
             }
 
             return $elements;
