@@ -33,21 +33,9 @@
 						:clear-on-select="false"
 						:searchable="true"
 					></multiselect>
-					<multiselect
-						v-model="selectedWidget"
-						:class="'tchooz-widget__select'"
-						label="label"
-						track-by="id"
-						:options="widgets"
-						:multiple="false"
-						:taggable="false"
-						select-label=""
-						selected-label=""
-						deselect-label=""
-						:close-on-select="true"
-						:clear-on-select="false"
-						:searchable="false"
-					></multiselect>
+          <select v-model="selectedWidgetId" @change="updateWidgetRender">
+            <option v-for="widget in widgets" :value="widget.id">{{ widget.label }}</option>
+          </select>
 				</div>
 				<div v-if="loading" class="lds-ring">
 					<div></div>
@@ -96,6 +84,7 @@ export default {
 		chart_render: 0,
 		position: null,
 		selectedWidget: null,
+		selectedWidgetId: null,
 		selectedFilters: [],
 		filters: [],
 		translations: {
@@ -110,6 +99,16 @@ export default {
 		dataSource: {},
 		chart_values: [],
 	}),
+
+  created() {
+    this.getTranslations();
+    this.selectedWidget = this.widget;
+    this.selectedWidgetId = this.widget.id;
+    this.position = this.selectedWidget.position;
+    this.render();
+    this.getWidgets();
+  },
+
 	methods: {
 		getTranslations() {
 			this.translations.selectfilter = this.translate(
@@ -269,24 +268,16 @@ export default {
 					});
 			});
 		},
-	},
-
-	created() {
-		this.getTranslations();
-		this.selectedWidget = this.widget;
-		this.position = this.selectedWidget.position;
-    this.render();
-		this.getWidgets();
+    updateWidgetRender(){
+      this.selectedWidget = this.widgets.find((widget) => widget.id == this.selectedWidgetId)
+      if (this.chart_render !== 0) {
+        this.updateDashboard();
+      }
+    }
 	},
 
 	watch: {
-		selectedWidget: function () {
-			if (this.chart_render !== 0) {
-				this.updateDashboard();
-			}
-		},
-
-		selectedFilters: function () {
+    selectedFilters: function () {
 			if (this.chart_render !== 0) {
 				this.renderChart();
 			}
