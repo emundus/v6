@@ -170,6 +170,13 @@ class plgEventbookingEmundus extends CMSPlugin
                     $db->setQuery($query);
                     $db->execute();
                 }
+            } elseif ($custom_fields->field_cm != 3){
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_campaigns'))
+                    ->set($db->quoteName('event_cms') . ' = null')
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
+                $db->setQuery($query);
+                $db->execute();
             }
 
             $query->clear()

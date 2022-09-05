@@ -1064,13 +1064,15 @@ class EmundusControllerUsers extends JControllerLegacy {
     }
 
     public function deleteprofileattachment(){
+        $user = JFactory::getUser();
+
         $jinput = JFactory::getApplication()->input;
         $id = $jinput->getInt('id', null);
         $filename = $jinput->getString('filename');
 
         if(!empty($id)) {
             $m_users = new EmundusModelUsers();
-            $deleted = $m_users->deleteProfileAttachment($id);
+            $deleted = $m_users->deleteProfileAttachment($id,$user->id);
 
             if($deleted && !empty($filename)){
                 unlink(JPATH_SITE . DS . $filename);
