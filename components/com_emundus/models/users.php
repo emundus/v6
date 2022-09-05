@@ -2402,15 +2402,29 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    public function deleteProfileAttachment($id){
+    public function deleteProfileAttachment($id,$user_id){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         try {
-            $query->delete($db->quoteName('#__emundus_users_attachments'))
+            $query->select('attachment_id,filename')
+                ->from($db->quoteName('#__emundus_users_attachments'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($id));
             $db->setQuery($query);
-            return $db->execute();
+            $default_attachment = $db->loadObject();
+
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_users_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($id));
+            $db->setQuery($query);
+            $result = $db->execute();
+
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onAfterProfileAttachmentDelete', [$user_id, (int)$default_attachment->attachment_id]);
+            $dispatcher->trigger('callEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int)$default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
+
+            return $result;
         } catch (Exception $e) {
             JLog::add(' com_emundus/models/users.php | Cannot delete document from jos_emundus_users_attachments with id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;
