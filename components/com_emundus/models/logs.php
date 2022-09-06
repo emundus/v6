@@ -45,53 +45,54 @@ class EmundusModelLogs extends JModelList {
 	 *
 	 * @since 3.8.8
 	 */
-	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
+    static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
         // write log file
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
 
         $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
-		$log_actions = $eMConfig->get('log_actions', null);
-		$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
-		$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
-		if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
-			// Only log if action is not banned from logs
-			if (!in_array($action, explode(',',$log_actions_exclude))) {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        // Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
+        $log_actions = $eMConfig->get('log_actions', null);
+        $log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
+        $log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
+        if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
+            // Only log if action is not banned from logs
+            if (!in_array($action, explode(',',$log_actions_exclude))) {
                 if (empty($user_from)) {
                     JLog::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::log', JLog::WARNING, 'com_emundus');
                     return false;
                 }
-				// Only log if user is not banned from logs
-				if (!in_array($user_from, explode(',',$log_actions_exclude_user))) {
-					if (empty($user_to))
-					$user_to = '';
-	
-					$db = JFactory::getDbo();
-					$query = $db->getQuery(true);
+                // Only log if user is not banned from logs
+                if (!in_array($user_from, explode(',',$log_actions_exclude_user))) {
+                    if (empty($user_to))
+                        $user_to = '';
+
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
 
                     $columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
                     $values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
 
-					try {
+                    try {
                         $query->insert($db->quoteName('#__emundus_logs'))
                             ->columns($db->quoteName($columns))
                             ->values(implode(',', $values));
 
                         $db->setQuery($query);
-						$db->execute();
-					} catch (Exception $e) {
-						JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-					}
-				}
-			}
-		}
-	}
+                        $db->execute();
+                    } catch (Exception $e) {
+                        JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        }
+    }
 
 
-	/**
+
+    /**
 	 * Gets the actions done by a user. Can be filtered by action and/or CRUD.
 	 * If the user is not specified, use the currently signed in one.
 	 * @param int $user_from
@@ -312,9 +313,9 @@ class EmundusModelLogs extends JModelList {
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
                     if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp<br>';
-                        $action_details .= '<span class="label label-green">' . $value->details . '</span>&nbsp';
-                        $action_details .= '</div></br>';
+                        $action_details .= '<div class="em-flex-row"><span>' . $value->element . '</span>';
+                        $action_details .= '<span class="em-red-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                        $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
                     }
@@ -336,10 +337,10 @@ class EmundusModelLogs extends JModelList {
                     foreach($value->old as $_old) {
                         if(!isset($_old) or is_null($_old) or empty(trim($_old))) {
                             $_old = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
-                            $action_details .= '<span class="label label-orange">' . $_old . '</span>&nbsp';
+                            $action_details .= '<span class="em-blue-500-color">' . $_old . '</span>&nbsp';
                         } else {
-                            $_old = (strlen($_old) > 25) ? substr($_old, 0, 25) . '...' : $_old;
-                            $action_details .= '<span class="label label-red">' . $_old . '</span>&nbsp';
+                            //$_old = (strlen($_old) > 25) ? substr($_old, 0, 25) . '...' : $_old;
+                            $action_details .= '<span class="em-red-500-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
                         }
                     }
 
@@ -349,10 +350,10 @@ class EmundusModelLogs extends JModelList {
                     foreach($value->new as $_new) {
                         if(!isset($_new) or is_null($_new) or empty(trim($_new))) {
                             $_new = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
-                            $action_details .= '<span class="label label-orange">' . $_new . '</span>&nbsp';
+                            $action_details .= '<span class="em-blue-500-color">' . $_new . '</span>&nbsp';
                         } else {
-                            $_new = (strlen($_new) > 25) ? substr($_new, 0, 25) . '...' : $_new;
-                            $action_details .= '<span class="label label-green">' . $_new . '</span>&nbsp';
+                            //$_new = (strlen($_new) > 25) ? substr($_new, 0, 25) . '...' : $_new;
+                            $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
                         }
                     }
                     $action_details .= '</div></br>';
@@ -362,8 +363,7 @@ class EmundusModelLogs extends JModelList {
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
                     if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp<br>';
-                        $action_details .= '<span class="label label-red">' . $value->details . '</span>&nbsp';
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp<br>';
                         $action_details .= '</div></br>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';

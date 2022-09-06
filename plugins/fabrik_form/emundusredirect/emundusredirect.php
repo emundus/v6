@@ -74,6 +74,391 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 		return $params->get($pname);
 	}
 
+    public function onBeforeStore() {
+        $excludeElements = array('id','time_date','user','fnum');
+        $timeElements = array('birthday','birthday_remove_slashes','date','jdate','time','timer','timestamp','years');
+        $checkElements = array('radiobutton', 'dropdown', 'yesno');
+        $multipleElements = array('checkbox');
+
+        /* get process data */
+        $formModel = $this->getModel();
+        $formData = $formModel->formData;
+
+        $keys = array_keys($formData);
+
+        /* grab all tables name (repeat and non-repeat table) */
+        //$table = array_values(array_unique(array_map(function($data) {return explode('___', $data)[0];},$keys)));
+
+        $parentTable = "";
+
+        /* */
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        /* get fnum */
+        $user = JFactory::getSession()->get('emundusUser');
+        //$fnum = $user->fnum;
+
+        /* get form id from $jinput */
+        $jinput = JFactory::getApplication()->input;
+        $formid = $jinput->get('formid');
+
+        $elements = array();
+
+        /* old data */
+        $oldData = array();
+
+        foreach($formData as $key=>$value) {
+            if(strpos($key, '___fnum')) {
+                $fnum = $value;
+                $parentTable = explode("___",$key)[0];
+            }
+
+            $elementName = explode('___', $key)[1];
+            $elementName === null or strpos($elementName,'_raw') or strpos($elementName,'-') or in_array($elementName,$excludeElements) ? null : $elements[] = $key;
+        }
+
+        foreach($elements as $element) {
+            if(!strpos($element,'repeat')) {
+                $query
+                    ->clear()
+                    ->select($db->quoteName(explode('___',$element)[0] . '.' . explode('___',$element)[1]))
+                    ->from($db->quoteName($parentTable));
+                $query->where($db->quoteName($parentTable . '.fnum') . ' = ' . $db->quote($fnum));
+            } else {
+                /* repeat group */
+                $query
+                    ->clear()
+                    ->select(explode('___',$element)[0] . '.' . $db->quoteName(explode('___',$element)[1]))
+                    ->from($db->quoteName(explode('___',$element)[0]))
+                    ->leftJoin($db->quoteName($parentTable) . ' ON ' . $db->quoteName($parentTable . '.id') . ' = ' . $db->quoteName(explode('___',$element)[0] . '.parent_id'));
+                $query->where($db->quoteName($parentTable . '.fnum') . ' = ' . $db->quote($fnum));
+            }
+            $db->setQuery($query);
+            $res = $db->loadColumn();       /* here */
+            $oldData[explode('___',$element)[0] . '___' . explode('___',$element)[1]] = $res;
+        }
+
+        /* find all same keys of 2 arrays (oldData, processData) */
+        $intersectKey = array_keys(array_intersect_key($oldData,$formData));
+
+        $results = array();
+
+        /* init a new session */
+        $session = JFactory::getSession();
+
+        foreach($intersectKey as $iKey) {
+            $diffs = $this->dataFormCompare($oldData,$formData,$iKey);
+
+            if(!empty($diffs)) {
+                /* get element data (getObject) */
+
+                $query->clear()
+                    ->select("distinct jfe.id as element_id, jfe.name as element_name, jfe.label as element_label, jfe.params as element_params, jfg.id as group_id, jfg.name as group_name, jfg.label as group_label, jff1.id as form_id, jff1.label as form_label, jfe.plugin, instr(jfg.params, '\"repeat_group_button\":\"1\"') as group_repeat")
+                    ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                    ->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jfg.id'))
+                    ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jff') . ' ON ' . $db->quoteName('jff.group_id') . ' = ' . $db->quoteName('jfg.id'))
+                    ->leftJoin($db->quoteName('#__fabrik_forms', 'jff1') . ' ON ' . $db->quoteName('jff.form_id') . ' = ' . $db->quoteName('jff1.id'))
+                    ->where($db->quoteName('jff1.id') . ' = ' . $formid)
+                    ->andWhere($db->quoteName('jfe.hidden') . ' != 1')
+                    ->andWhere($db->quoteName('jfe.published') . ' = 1')
+                    ->andWhere($db->quoteName('jfe.name') . ' LIKE ' . $db->quote(explode('___', $iKey)[1]));
+
+                $db->setQuery($query);
+                $element = (array)$db->loadObject();
+
+                if(empty($element)) { continue; }
+
+                if($element['group_repeat'] == 0) {
+
+                    // flat old data and new data
+                    $diffs['old_data'] = reset($diffs['old_data']);
+                    $diffs['new_data'] = reset($diffs['new_data']);
+
+                    if ($element['plugin'] !== 'databasejoin' and $element['plugin'] != 'cascadingdropdown') {
+                        /* special case : time, date plugins --> using the method strtotime to compare */
+                        if (in_array($element['plugin'], $timeElements)) {
+                            /* recheck the diff */
+                            if (strtotime($diffs['old_data']) === strtotime($diffs['new_data'])) {
+                                continue;
+                            }
+                        }
+
+                        /* check or select plugins */
+                        if (in_array($element['plugin'], $checkElements) or in_array($element['plugin'],$multipleElements)) {
+                            /* get subValues and subLabels */
+                            $optSubValues = json_decode($element['element_params'])->sub_options->sub_values;
+                            $optSubLabels = json_decode($element['element_params'])->sub_options->sub_labels;
+                            /* *********** */
+
+                            $oldsValues = $newsValues = array();
+                            $oldsLabels = $newsLabels = array();
+
+                            if (in_array($element['plugin'], $checkElements)) {
+                                /* find the index of subValues from $diffs['old_data'] and $diffs['new_data'] */
+                                $oldArrayIndex = array_search($diffs['old_data'], $optSubValues);
+                                $newArrayIndex = array_search($diffs['new_data'], $optSubValues);
+
+                                /* get oldValues and newValues */
+                                $oldsValues = [$diffs['old_data']];
+                                $newsValues = [$diffs['new_data']];
+
+                                /* using ternary operator */
+                                $oldsLabels = $oldArrayIndex !== false ? JText::_($optSubLabels[$oldArrayIndex]) : null;
+                                $newsLabels = $newArrayIndex !== false ? JText::_($optSubLabels[$newArrayIndex]) : null;
+                            }
+                            else if (in_array($element['plugin'], $multipleElements)) {
+                                /* replace the substring "[" and "]" by empty string */
+                                $olds = str_replace('[', '', $diffs['old_data']);
+                                $olds = str_replace(']', '', $olds);
+                                $olds = str_replace(',', ';', $olds);
+                                $olds = str_replace('"', '', $olds);
+
+                                /* convert $diffs['old_data'] to (string) by explode (";") */
+                                $olds = explode(';', $olds);
+
+                                /* null condition */
+                                $olds = empty(trim($olds)) !== false ? $olds : array("");
+
+                                $olds = is_array($olds) === false ? array($olds) : $olds;
+                                $news = is_array($diffs['new_data']) === false ? array($diffs['new_data']) : $diffs['new_data'];
+
+                                foreach ($olds as $_old) {
+                                    $_oIndex = array_search($_old, $optSubValues);
+                                    $_oLabels = $_oIndex !== false ? JText::_($optSubLabels[$_oIndex]) : null;
+                                    $oldsLabels[] = $_oLabels;
+                                    $oldsValues[] = $_old;
+                                }
+
+                                foreach ($news as $_new) {
+                                    $_nIndex = array_search($_new, $optSubValues);
+                                    $_nLabels = $_nIndex !== false ? JText::_($optSubLabels[$_nIndex]) : null;
+                                    $newsLabels[] = $_nLabels;
+                                    $newsValues[] = $_new;
+                                }
+                            }
+
+                            if ($oldsValues === $newsValues) {
+                                $oldsLabels = $newsLabels = "";
+                            } else {
+                                $oldsLabels = count($oldsLabels) > 1 ? (empty(trim(implode("", $oldsLabels))) === true ? "" : implode('<#>', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                                $newsLabels = count($newsLabels) > 1 ? (empty(trim(implode("", $newsLabels))) === true ? "" : implode('<#>', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                            }
+                            $diffs['old_data'] = $oldsLabels;
+                            $diffs['new_data'] = $newsLabels;
+                        }
+                    }
+                    else {
+                        //TODO : HANDLE THE CONCAT LABEL OF DATABASE JOIN with {shortlang}, {thistable}
+                        /* get label of this element by $diffs['old_data'] and $diffs['new_data'] */
+                        $query->clear()
+                            ->select('*')
+                            ->from($db->quoteName('#__fabrik_joins','jfj'))
+                            ->where($db->quoteName('jfj.element_id') . ' = ' . $db->quote($element['element_id']));
+                        $db->setQuery($query);
+                        $joinResults = $db->loadObject();
+
+                        $joinlabel = json_decode($joinResults->params,true)['join-label'];
+                        $joinKey = $joinResults->table_join_key;
+                        $joinFrom = $joinResults->table_join;
+
+                        $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($diffs['old_data']));
+                        $db->setQuery($query);
+                        $diffs['old_data'] = $db->loadResult();
+
+                        $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($diffs['new_data']));
+
+                        $db->setQuery($query);
+                        $diffs['new_data'] = $db->loadResult();
+                    }
+                    $results[$iKey] = array_merge($element,$diffs);
+                }
+                else {
+                    /* group repeat is always an array nD with n >= 1 */
+                    if($element['plugin'] != 'databasejoin' and $element['plugin'] != 'cascadingdropdown') {
+
+                        //TODO : TIME, DATE PLUGIN WITH REPEAT GROUP
+
+                        // check or select plugins //
+                        if (in_array($element['plugin'], $checkElements) or in_array($element['plugin'],$multipleElements)) {
+                            /* get subValues and subLabels */
+                            $optSubValues = json_decode($element['element_params'])->sub_options->sub_values;
+                            $optSubLabels = json_decode($element['element_params'])->sub_options->sub_labels;
+                            /* *********** */
+
+                            $oldsValues = $newsValues = array();
+                            $oldsLabels = $newsLabels = array();
+
+                            if (in_array($element['plugin'], $checkElements)) {
+                                $olds = is_array($diffs['old_data']) === false ? array($diffs['old_data']) : $diffs['old_data'];
+                                $news = is_array($diffs['new_data']) === false ? array($diffs['new_data']) : $diffs['new_data'];
+
+                                foreach ($olds as $_old) {
+                                    $_oIndex = array_search($_old, $optSubValues);
+                                    $_oLabels = $_oIndex !== false ? JText::_($optSubLabels[$_oIndex]) : null;
+                                    $oldsLabels[] = $_oLabels;
+                                    $oldsValues[] = $_old;
+                                }
+
+                                foreach ($news as $_new) {
+                                    $_nIndex = array_search($_new, $optSubValues);
+                                    $_nLabels = $_nIndex !== false ? JText::_($optSubLabels[$_nIndex]) : null;
+                                    $newsLabels[] = $_nLabels;
+                                    $newsValues[] = $_new;
+                                }
+
+                            } else if (in_array($element['plugin'], $multipleElements)) {
+                                $diffs['old_data'] = is_array($diffs['old_data']) === true ? $diffs['old_data'] : [$diffs['old_data']];
+
+                                $olds = array_map(
+                                    function($x) {
+                                        $x =  str_replace('[','',$x);
+                                        $x =  str_replace(']','',$x);
+                                        $x =  str_replace(',',';',$x);
+                                        return str_replace('"','',$x);
+                                    }, array_values($diffs['old_data']));
+
+                                ////
+                                $olds = array_map(function($x) { return empty(trim(explode(";", $x))) !== false ? explode(";", $x) : array(""); },array_values($olds));
+                                $olds = call_user_func_array('array_merge',$olds);
+
+                                $olds = is_array($olds) === false ? array($olds) : $olds;
+                                $news = is_array($diffs['new_data']) === false ? array($diffs['new_data']) : $diffs['new_data'];
+
+                                foreach ($olds as $_old) {
+                                    $_oIndex = array_search($_old, $optSubValues);
+                                    $_oLabels = $_oIndex !== false ? JText::_($optSubLabels[$_oIndex]) : null;
+                                    $oldsLabels[] = $_oLabels;
+                                    $oldsValues[] = $_old;
+                                }
+
+                                foreach ($news as $_new) {
+                                    $_nIndex = array_search($_new, $optSubValues);
+                                    $_nLabels = $_nIndex !== false ? JText::_($optSubLabels[$_nIndex]) : null;
+                                    $newsLabels[] = $_nLabels;
+                                    $newsValues[] = $_new;
+                                }
+                            }
+
+                            if (array_values($oldsValues) === array_values($newsValues)) {
+                                $oldsLabels = $newsLabels = "";
+                            } else {
+                                $oldsLabels = count($oldsLabels) > 1 ? (empty(trim(implode("", $oldsLabels))) === true ? "" : implode('<#>', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                                $newsLabels = count($newsLabels) > 1 ? (empty(trim(implode("", $newsLabels))) === true ? "" : implode('<#>', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                            }
+                            $diffs['old_data'] = $oldsLabels;
+                            $diffs['new_data'] = $newsLabels;
+
+
+                        } else {
+                            $diffs['old_data'] = count($diffs['old_data']) > 1 ? (empty(trim(implode("", $diffs['old_data']))) === true ? "" : implode('<#>', $diffs['old_data'])) : (is_array($diffs['old_data']) === true ? $diffs['old_data'][0] : $diffs['old_data']);
+                            $diffs['new_data'] = count($diffs['new_data']) > 1 ? (empty(trim(implode("", $diffs['new_data']))) === true ? "" : implode('<#>', $diffs['new_data'])) : (is_array($diffs['new_data']) === true ? $diffs['new_data'][0] : $diffs['new_data']);
+                        }
+                    } else {
+                        $query->clear()
+                            ->select('*')
+                            ->from($db->quoteName('#__fabrik_joins','jfj'))
+                            ->where($db->quoteName('jfj.element_id') . ' = ' . $db->quote($element['element_id']));
+                        $db->setQuery($query);
+                        $joinResults = $db->loadObject();
+
+                        /* get the join results */
+                        $joinlabel = json_decode($joinResults->params,true)['join-label'];
+                        $joinKey = $joinResults->table_join_key;
+                        $joinFrom = $joinResults->table_join;
+
+                        $oldsLabels = $newsLabels = array();
+
+                        foreach ($diffs['old_data'] as $_old) {
+                            $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($_old));
+                            $db->setQuery($query);
+                            $oldsLabels[] = $db->loadResult();
+                        }
+
+                        if (empty(trim(implode("", $diffs['new_data'])))) {
+                            $diffs['new_data'] = "";
+                        } else {
+                            foreach ($diffs['new_data'] as $_new) {
+                                $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($_new));
+                                $db->setQuery($query);
+                                $newsLabels[] = $db->loadResult();
+                            }
+                        }
+
+                        $diffs['old_data'] = count($oldsLabels) > 1 ? (empty(trim(implode("", $oldsLabels))) === true ? "" : implode('<#>', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                        $diffs['new_data'] = count($newsLabels) > 1 ? (empty(trim(implode("", $newsLabels))) === true ? "" : implode('<#>', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                    }
+                }
+
+                $results[$iKey] = array_merge($element,$diffs);
+            }
+
+        }
+        $logger = array();
+
+        if(!empty($results)) {
+            foreach ($results as $result) {
+                $logsStd = new stdClass();
+
+                if(($result['old_data'] === null or empty(trim($result['old_data']))) and ($result['new_data'] === null or empty(trim($result['new_data'])))) {
+                    continue;
+                } else {
+                    $logsStd->element = '<u>' . JText::_($result['element_label']) . '</u>';
+                    $logsStd->old = $result['old_data'];
+                    $logsStd->new = $result['new_data'];
+                    $logger[] = $logsStd;
+                }
+            }
+        }
+
+        # parse to JSON (json encode)
+        $logParams = array('updated' => $logger);
+
+        /* REGISTER LOGS TO DATABASE, DO NOT NEED USING THE SESSION IN THIS CASE */
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+        if(!empty($logParams['updated']) and $logParams['updated'] !== null) {
+            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', json_encode($logParams,JSON_UNESCAPED_UNICODE));
+        }
+
+        $session->set( 'updateFormData___' .$formid, $results);
+    }
+
+    public function dataFormCompare($old,$new,$key) : array {
+        $diffElements = array();
+
+        if(!is_array($new[$key])) { $new[$key] = array($new[$key]); }
+
+        /* handle new data */
+        if(is_array(current($new[$key])) === false) {
+            $new[$key] = array_values($new[$key]);
+        } else {
+            if(count($new[$key]) >= 1) {    // the sub array
+                $new[$key] = call_user_func_array('array_merge', array_values($new[$key]));
+            }
+        }
+
+        if(trim(implode("", array_values($old[$key]))) === trim(implode("", array_values($new[$key])))) {
+            return array();
+        } else {
+            if (array_values($old[$key]) !== array_values($new[$key])) {
+                if (empty(trim(implode("", $old[$key]))) and empty(trim(implode("", $new[$key])))) {
+                    return array();
+                } else {
+                    $diffElements['key_data'] = $key;
+                    $diffElements['old_data'] = $old[$key];
+                    $diffElements['new_data'] = $new[$key];
+                }
+            } else {
+                return array();
+            }
+        }
+
+        return $diffElements;       /* empty or not-empty array */
+    }
+
 	/**
 	 * Before the record is stored, this plugin will see if it should process
 	 * and if so store the form data in the session.

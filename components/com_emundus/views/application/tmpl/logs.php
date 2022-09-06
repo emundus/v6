@@ -32,6 +32,10 @@ JFactory::getSession()->set('application_layout', 'logs');
                 </div>
 
             </div>
+
+            <div id="logs-filters"/>
+
+
             <div class="panel-body em-container-comment-body">
             <?php if (count($this->fileLogs) > 0) { ?>
                 <div id="export-logs" class="em-flex-row">

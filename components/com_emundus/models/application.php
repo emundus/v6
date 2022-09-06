@@ -376,12 +376,11 @@ class EmundusModelApplication extends JModelList
             // Log the comment in the eMundus logging system
             // Log only the body if the comment had no title
             if (empty($deleted_comment->reason)) {
-                $logsStd->element = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+                $logsStd->details = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . $deleted_comment->comment_body;
             } else {
-                $logsStd->element = '<i style="color:#663399">' . $deleted_comment->reason . '</i>';
+                $logsStd->details = "(" . $deleted_comment->reason . ") : " . $deleted_comment->comment_body;
             }
 
-            $logsStd->details = $deleted_comment->comment_body;
             $logsParams = array('deleted' => [$logsStd]);
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
@@ -423,12 +422,12 @@ class EmundusModelApplication extends JModelList
         $logsStd = new stdClass();
         // Log only the body if there is no title
         if (empty($row['reason'])) {
-            $logsStd->element = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+            $logsStd->details = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . $row['comment_body'];
         } else {
-            $logsStd->element = '<i style="color:#663399">' . $row['reason'] . '</i>';
+            $logsStd->details = "(" . $row['reason'] . ") " . $row['comment_body'];
         }
 
-        $logsStd->details =  $row['comment_body'];
+        //$logsStd->details =  $row['comment_body'];
 
         $logsParams = array('created' => [$logsStd]);
         EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
@@ -479,7 +478,21 @@ class EmundusModelApplication extends JModelList
 
             $query = 'DELETE FROM #__emundus_uploads WHERE id=' . $id;
             $this->_db->setQuery($query);
-            return $this->_db->Query();
+            $this->_db->execute();
+
+            // Log the tag in the eMundus logging system.
+            $logsStd = new stdClass();
+
+            // get attachment data
+            $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
+
+            $logsStd->details = "(" . $attachmentTpe['value'] . ") : " . $file['filename'];
+            $logsParams = array('deleted' => [$logsStd]);
+
+            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+            return true;
+            //return $this->_db->Query();
 
         } catch (Exception $e) {
             JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');

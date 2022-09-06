@@ -472,7 +472,7 @@ class EmundusControllerApplication extends JControllerLegacy
             $mFile = new EmundusModelFiles();
             $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-            EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
+            //EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
 
             $res->status = true;
         }
