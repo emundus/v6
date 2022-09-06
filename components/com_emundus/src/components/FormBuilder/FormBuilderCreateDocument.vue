@@ -178,7 +178,7 @@ export default {
     };
   },
   created() {
-    this.document.mandatory = this.current_document.mandatory === null || typeof this.current_document.mandatory == 'undefined' ? this.mandatory : this.current_document.mandatory;
+    this.document.mandatory = this.current_document == null || this.current_document.mandatory === null || typeof this.current_document.mandatory == 'undefined' ? this.mandatory : this.current_document.mandatory;
     this.getDocumentModels();
     this.getFileTypes();
   },
@@ -193,7 +193,7 @@ export default {
       formService.getDocumentModels().then(response => {
         if (response.status) {
           this.models = response.data;
-          if (this.current_document && (this.current_document.docid || this.current_document.id)) {
+          if (this.current_document != null && (this.current_document.docid || this.current_document.id)) {
             this.selectModel({
               target: {
                 value: this.current_document.docid ? this.current_document.docid : this.current_document.id
@@ -392,7 +392,6 @@ export default {
   },
   watch: {
     current_document(newValue) {
-			console.log(newValue);
       if (newValue && (newValue.docid || newValue.id)) {
         if (this.models.length < 1) {
           this.getDocumentModels().then(() => {
@@ -400,14 +399,14 @@ export default {
               target: {
                 value: newValue.docid ? newValue.docid : newValue.id
               }
-            }, newValue.mandatory);
+            },  newValue.mandatory ?  newValue.mandatory : null);
           });
         } else {
           this.selectModel({
             target: {
               value: newValue.docid ? newValue.docid : newValue.id
             }
-          }, newValue.mandatory);
+          }, newValue.mandatory ?  newValue.mandatory : null);
         }
       }
     },
