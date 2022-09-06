@@ -108,7 +108,7 @@ class EmundusHelperFiles
             'institution'       => NULL,
             'spam_suspect'      => NULL,
             'not_adv_filter'    => NULL,
-	        'tag'               => NULL
+            'tag'               => NULL
         ];
         $filts_options  = [
             'profile'           => NULL,
@@ -130,7 +130,7 @@ class EmundusHelperFiles
             'institution'       => NULL,
             'spam_suspect'      => NULL,
             'not_adv_filter'    => NULL,
-	        'tag'               => NULL
+            'tag'               => NULL
         ];
 
         $filter_multi_list = array('schoolyear', 'campaign', 'programme', 'status', 'profile_users', 'group', 'institution', 'tag');
@@ -143,31 +143,31 @@ class EmundusHelperFiles
                     $params[$filt_name] = explode('|', $filts_values[$key]);
                     $params[$filt_name] = array_unique($params[$filt_name]);
                 } else {
-                	$params[$filt_name] = $filts_values[$key];
+                    $params[$filt_name] = $filts_values[$key];
                 }
             }
 
             if (array_key_exists($key, $filts_values)) {
                 if (in_array($filt_name, $filter_multi_list)) {
-	                $filts_details[$filt_name] = explode('|', $filts_values[$key]);
+                    $filts_details[$filt_name] = explode('|', $filts_values[$key]);
                 } else {
-	                $filts_details[$filt_name] = $filts_values[$key];
+                    $filts_details[$filt_name] = $filts_values[$key];
                 }
             } else {
-            	$filts_details[$filt_name] = '';
+                $filts_details[$filt_name] = '';
             }
 
             if (array_key_exists($key, $filts_types)) {
                 if ($filts_types[$key] == "hidden") {
                     if (in_array($filt_name, $filter_multi_list)) {
-	                    $params[$filt_name] = explode('|', $filts_values[$key]);
+                        $params[$filt_name] = explode('|', $filts_values[$key]);
                     } else {
-	                    $params[$filt_name] = $filts_values[$key];
+                        $params[$filt_name] = $filts_values[$key];
                     }
                 }
                 $filts_options[$filt_name] = $filts_types[$key];
             } else {
-            	$filts_options[$filt_name] = '';
+                $filts_options[$filt_name] = '';
             }
 
         }
@@ -179,17 +179,17 @@ class EmundusHelperFiles
             $filts_details['status'] = $fd_with_param;
         }
         */
-		if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
-			$fd_with_param          = $params['group'] + $filts_details['group'];
-			$params['group']        = $filts_details['group'];
-			$filts_details['group'] = $fd_with_param;
-		}
+        if (is_array($filts_details['group']) && count($filts_details['group']) > 0 && isset($filts_details['group'][0]) && !empty($filts_details['group'][0])) {
+            $fd_with_param          = $params['group'] + $filts_details['group'];
+            $params['group']        = $filts_details['group'];
+            $filts_details['group'] = $fd_with_param;
+        }
 
-	    if (is_array($filts_details['institution']) && count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
+        if (is_array($filts_details['institution']) && count($filts_details['institution']) > 0 && isset($filts_details['institution'][0]) && !empty($filts_details['institution'][0])) {
             $fd_with_param = $params['institution'] + $filts_details['institution'];
             $params['institution'] = $filts_details['institution'];
             $filts_details['institution'] = $fd_with_param;
-	    }
+        }
 
         // Else statement is present due to the fact that programmes are group limited
         if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) && isset($filts_details['programme'][0]) && !empty($filts_details['programme'][0])) {
@@ -200,28 +200,27 @@ class EmundusHelperFiles
             $codes = $m_files->getAssociatedProgrammes($current_user->id);
 
             // ONLY FILES LINKED TO MY GROUP
-	        $programme = null;
-            if ((is_array($filts_details['programme']) && count($filts_details['programme']) > 0) || $filts_details['programme'] !== NULL) {
-	            $programme = !empty($m_files->code) ? $m_files->code : '';
+            $programme = null;
+            if (!empty($filts_details['programme']) || $filts_details['programme'] !== NULL) {
+                $programme = !empty($m_files->code) ? $m_files->code : '';
             }
 
-            //////////////////////////////////////////
-            if ((is_array($filts_details['programme']) && count(@$params['programme']) == 0) || @$params['programme'][0] == '%') {
+            if ((is_array($filts_details['programme']) && !empty($params['programme']))) {
                 $params['programme'] = $programme;
-                $filts_details['programme'] = $programme;
-            } elseif ((is_array($filts_details['programme']) && count($filts_details['programme']) == 0) || empty($filts_details['programme'])) {
-                $filts_details['programme'] = $programme;
             }
-            if ((is_array($codes) && count($codes)) > 0 && isset($code)) {
+            $filts_details['programme'] = $programme;
+
+            // TODO: code is never set so we were never passing here ? What was it used for ?
+            /*if ((is_array($codes) && count($codes)) > 0 && isset($code)) {
                 $params['programme'] = array_merge($params['programme'], $codes);
                 $filts_details['programme'] = array_merge($filts_details['programme'], $codes);
-            }
+            }*/
         }
 
 
         // Used for adding default columns when no programme is loaded.
         if (empty($params['programme'])) {
-	        $params['programme'] = ["%"];
+            $params['programme'] = ["%"];
         }
 
 
@@ -1494,7 +1493,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $campaign .= '<div id="campaign" class="em-filter">
                             	<div class="em_label">
-                            		<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                            		<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_CAMPAIGN').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_campaigns\')" onclick="clearchosen(\'#select_multiple_campaigns\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                             	</div>
                           		<div class="em_filtersElement">';
             }
@@ -1524,7 +1523,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $schoolyear .= '<div id="schoolyear" class="em-filter">
                                     <div class="em_label">
-                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROFILES_SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROFILES_SCHOOLYEARS').' &ensp;<a href="javascript:clearchosen(\'#select_multiple_schoolyears\')" onclick="clearchosen(\'#select_multiple_schoolyears\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                                     </div>
                                    <div class="em_filtersElement">';
             }
@@ -1554,7 +1553,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $programme .= '<div id="programme" class="em-filter">
                     <div class="em_label">
-                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROGRAMME').'&ensp;<a href="javascript:clearchosen(\'#select_multiple_programmes\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_PROGRAMME').'&ensp;<a href="javascript:clearchosen(\'#select_multiple_programmes\')" onclick="clearchosen(\'#select_multiple_programmes\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                     </div>
                     <div class="em_filtersElement">';
             }
@@ -1594,7 +1593,7 @@ class EmundusHelperFiles
             if (!$hidden) {
                 $status .= '<div class="em_filters em-filter" id="status">
                     <div class="em_label">
-                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_STATUS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_status\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    	<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_STATUS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_status\')" onclick="clearchosen(\'#select_multiple_status\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                     </div>
                     <div class="em_filtersElement">';
             }
@@ -1659,7 +1658,7 @@ class EmundusHelperFiles
 	        if (!$hidden) {
 		        $tag .= '<div id="tag" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_TAGS_TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_TAGS_TAG').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_tags\')" onclick="clearchosen(\'#select_multiple_tags\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
 	        }
@@ -1705,7 +1704,7 @@ class EmundusHelperFiles
 		    if (!$hidden) {
 			    $group_assoc .= '<div id="group_assoc" class="em-filter">
                     		<div class="em_label">
-                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_group_assoc\')"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
+                    			<label class="control-label em-filter-label">'.JText::_('COM_EMUNDUS_ASSOCIATED_GROUPS').'&ensp; <a href="javascript:clearchosen(\'#select_multiple_group_assoc\')" onclick="clearchosen(\'#select_multiple_group_assoc\');setFiltersSumo(event)"><span class="fas fa-redo" title="'.JText::_('COM_EMUNDUS_FILTERS_CLEAR').'"></span></a></label>
                             </div>
                     		<div class="em_filtersElement">';
 		    }
@@ -2413,9 +2412,9 @@ class EmundusHelperFiles
                     {
                         $str .= '<tr>';
                         if (strpos($element->element_plugin, 'textarea') !== false) {
-	                        $str .= '<td colspan="2"><b>'.$element->element_label.'</b> <br>'.JText::_($eval[$k]).'</td>';
+	                        $str .= '<td colspan="2"><b>'.JText::_($element->element_label).'</b> <br>'.JText::_($eval[$k]).'</td>';
                         } else {
-	                        $str .= '<td width="70%"><b>'.$element->element_label.'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
+	                        $str .= '<td width="70%"><b>'.JText::_($element->element_label).'</b> </td><td width="30%">'.JText::_($eval[$k]).'</td>';
                         }
                         $str .= '</tr>';
                     }

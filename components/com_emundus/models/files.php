@@ -1859,7 +1859,7 @@ class EmundusModelFiles extends JModelLegacy
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
 
             if (!empty($fnums) && !empty($tags)) {
-                $logsParams = array('created' => []);
+                $logger = array();
                 foreach ($fnums as $fnum) {
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
@@ -1879,9 +1879,21 @@ class EmundusModelFiles extends JModelLegacy
                                 WHERE id =' . $tag;
                             $db->setQuery($query_log);
                             $log_tag = $db->loadResult();
-                            array_push($logsParams['created'], $log_tag);
+
+                            //stock the tag name
+                            $logsStd = new stdClass();
+
+                            $logsStd->details = $log_tag;
+                            $logger[] = $logsStd;
                         }
                     }
+
+                    if(!empty($logger)) {
+                        $logsParams = array('created' => array_unique($logger, SORT_REGULAR));
+                    } else {
+                        continue;
+                    }
+
                     // Log the tags in the eMundus logging system.
                     EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
@@ -1889,6 +1901,9 @@ class EmundusModelFiles extends JModelLegacy
                 $query = substr_replace($query, ";", -1);
                 $db->setQuery($query);
                 $db->execute();
+
+//                // Log the tags in the eMundus logging system.
+//                EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             return true;
@@ -2416,6 +2431,15 @@ class EmundusModelFiles extends JModelLegacy
             foreach ($elements as $elt) {
                 $params_group = json_decode($elt->group_attribs);
 
+                try{
+                    $query_isjoin = 'select is_join from jos_fabrik_groups where id = '.$elt->group_id;
+                    $db->setQuery($query_isjoin);
+                    $is_join = $db->loadResult();
+                } catch(Exception $e){
+                    JLog::add('Error when get param is_join from group : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                }
+
+
                 if (!array_key_exists($elt->tab_name, $tableAlias)) {
 
                     $tableAlias[$elt->tab_name] = $elt->tab_name;
@@ -2430,7 +2454,7 @@ class EmundusModelFiles extends JModelLegacy
                     $lastTab[] = $elt->tab_name;
                 }
 
-                if ($params_group->repeat_group_button == 1) {
+                if ($params_group->repeat_group_button == 1 || $is_join == 1) {
                     // Get the table repeat table name using this query
                     $repeat_join_table_query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $elt->group_id . ' AND table_join_key like "parent_id"';
                     try {

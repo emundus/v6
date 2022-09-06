@@ -1,0 +1,26 @@
+[
+  {
+    "title": "COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS",
+    "value": "pdf"
+  },
+  {
+    "title": "COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS",
+    "value": "jpeg;jpg;png;gif"
+  },
+  {
+    "title": "COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS",
+    "value": "doc;docx;odt;ppt;pptx"
+  },
+  {
+    "title": "COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS",
+    "value": "xls;xlsx;odf"
+  },
+  {
+    "title": "COM_EMUNDUS_FORM_BUILDER_FORMATS_AUDIO",
+    "value": "mp3"
+  },
+  {
+    "title": "COM_EMUNDUS_FORM_BUILDER_FORMATS_VIDEO",
+    "value": "mp4"
+  }
+]

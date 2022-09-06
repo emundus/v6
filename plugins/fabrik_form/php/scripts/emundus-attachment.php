@@ -112,7 +112,15 @@ require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.p
 $mFile = new EmundusModelFiles();
 $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', 'FILE_CREATED_BY_COORDINATOR');
+// stock the attachment name
+$logsStd = new stdClass();
+
+//$logsStd->element = '<u>' . JText::_('COM_EMUNDUS_NEW_ATTACHMENT') . '</u>';
+$logsStd->details = str_replace("/tmp/", "", $_FILES['jos_emundus_uploads___filename']['name']);
+
+$logsParams = array('created' => [$logsStd]);
+
+EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams,JSON_UNESCAPED_UNICODE));
 
 // Pour tous les mails
 $user = JFactory::getUser();

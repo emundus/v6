@@ -210,9 +210,21 @@ endif; ?>
 
 <script type="text/javascript">
     function deletefile(fnum) {
-        if (confirm("<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
-        }
+        Swal.fire({
+            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#dc3545",
+            reverseButtons: true,
+            confirmButtonText: "<?php echo JText::_('JYES');?>",
+            cancelButtonText: "<?php echo JText::_('JNO');?>"
+        }).then((confirm) => {
+            if (confirm.value) {
+                document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+            }
+        });
     }
 </script>
 <script>

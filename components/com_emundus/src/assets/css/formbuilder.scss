@@ -73,11 +73,14 @@ legend {
   justify-content: center !important;
   align-items: center !important;
 }
-.fabrikSubElementContainer .checkbox{
-  display: flex;
-  align-items: center;
-}
 .fabrikSubElementContainer .radio{
   display: flex;
   align-items: center;
+}
+.fabrikSubElementContainer .radio input{
+  width: 16px !important;
+  height: 16px !important;
+}
+.fabrikSubElementContainer .radio span{
+    margin-top: 0 !important;
 }

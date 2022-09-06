@@ -28,6 +28,10 @@ class EmundusModelLogs extends JModelList {
 		// Assign values to class variables.
 		$this->user = JFactory::getUser();
 		$this->db = JFactory::getDbo();
+
+        // write log file
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
 	}
 
 	/**
@@ -41,48 +45,54 @@ class EmundusModelLogs extends JModelList {
 	 *
 	 * @since 3.8.8
 	 */
-	static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
-        if (empty($user_from)) {
-            JLog::add('empty user_from in EmundusModelLogs::log. User_id_from can not be null', JLog::WARNING, 'com_emundus');
-            return false;
-        }
+    static function log($user_from, $user_to, $fnum, $action, $crud = '', $message = '', $params = '') {
+        // write log file
+        jimport('joomla.log.log');
+        JLog::addLogger(['text_file' => 'com_emundus.logs.php'], JLog::ERROR, 'com_emundus');
 
-		$eMConfig = JComponentHelper::getParams('com_emundus');
-		// Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
-		$log_actions = $eMConfig->get('log_actions', null);
-		$log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
-		$log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
-		if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
-			// Only log if action is not banned from logs
-			if (!in_array($action, explode(',',$log_actions_exclude))) {
-				// Only log if user is not banned from logs
-				if (!in_array($user_from, explode(',',$log_actions_exclude_user))) {
-					if (empty($user_to))
-					$user_to = '';
-	
-					$db = JFactory::getDbo();
-					$query = $db->getQuery(true);
-	
-					$columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params'];
-					$values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params)];
+        $ip = JFactory::getApplication()->input->server->get('REMOTE_ADDR','');
 
-					try {
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        // Only log if logging is activated and, if actions to log are defined: check if our action fits the case.
+        $log_actions = $eMConfig->get('log_actions', null);
+        $log_actions_exclude = $eMConfig->get('log_actions_exclude', null);
+        $log_actions_exclude_user = $eMConfig->get('log_actions_exclude_user', 62);
+        if ($eMConfig->get('logs', 0) && (empty($log_actions) || in_array($action, explode(',',$log_actions)))) {
+            // Only log if action is not banned from logs
+            if (!in_array($action, explode(',',$log_actions_exclude))) {
+                if (empty($user_from)) {
+                    JLog::add('Error in action [' . $action . ' - ' . $crud . '] - ' . $message . ' user_from cannot be null in EmundusModelLogs::log', JLog::WARNING, 'com_emundus');
+                    return false;
+                }
+                // Only log if user is not banned from logs
+                if (!in_array($user_from, explode(',',$log_actions_exclude_user))) {
+                    if (empty($user_to))
+                        $user_to = '';
+
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
+
+                    $columns = ['user_id_from', 'user_id_to', 'fnum_to', 'action_id', 'verb', 'message', 'params', 'ip_from'];
+                    $values  = [$user_from, $user_to, $db->quote($fnum), $action, $db->quote($crud), $db->quote($message), $db->quote($params), $db->quote($ip)];
+
+                    try {
                         $query->insert($db->quoteName('#__emundus_logs'))
                             ->columns($db->quoteName($columns))
                             ->values(implode(',', $values));
 
                         $db->setQuery($query);
-						$db->execute();
-					} catch (Exception $e) {
-						JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-					}
-				}
-			}
-		}
-	}
+                        $db->execute();
+                    } catch (Exception $e) {
+                        JLog::add('Error logging at the following query: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+                    }
+                }
+            }
+        }
+    }
 
 
-	/**
+
+    /**
 	 * Gets the actions done by a user. Can be filtered by action and/or CRUD.
 	 * If the user is not specified, use the currently signed in one.
 	 * @param int $user_from
@@ -142,7 +152,7 @@ class EmundusModelLogs extends JModelList {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user_to)) {
-			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			JLog::add('Getting actions on user in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -185,7 +195,7 @@ class EmundusModelLogs extends JModelList {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!empty($user_from) && !is_numeric($user_from)) {
-			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			JLog::add('Getting actions on fnum in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -241,7 +251,7 @@ class EmundusModelLogs extends JModelList {
 
 		// If the user ID from is not a number, something is wrong.
 		if (!is_numeric($user1) || !is_numeric($user2)) {
-			JLog::add('Getting user actions in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
+			JLog::add('Getting actions between users in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
 		}
 
@@ -298,36 +308,72 @@ class EmundusModelLogs extends JModelList {
 		$action_details = '';
 
 		// Complete action name with crud
-		switch ($crud) {
-			case ('c'):
-				$action_name = $action_category . '_CREATE';
-				foreach ($params->created as $value) {
-					$action_details .= '<p>"' . $value . '"</p>';
-				}
-			break;
-			case ('r'):
-				$action_name = $action_category . '_READ';
-			break;
-			case ('u'):
-				$action_name = $action_category . '_UPDATE';
-				foreach ($params->updated as $value) {
-					$action_details .= '<div class="em-flex-row">
-                        <span class="label label-default">' . $value->old . '</span>
-                        <span class="material-icons">arrow_forward</span>
-                        <span class="label label-default">' . $value->new . '</span>
-                    </div>';
-				}
-			break;
-			case ('d'):
-				$action_name = $action_category . '_DELETE';
-				foreach ($params->deleted as $value) {
-					$action_details .= '<p>"' . $value . '"</p>';
-				}
-			break;
-			default:
-				$action_name = $action_category . '_READ';
-			break;
-		}
+        switch ($crud) {
+            case ('c'):
+                $action_name = $action_category . '_CREATE';
+                foreach ($params->created as $value) {
+                    if(isset($value->details) and ($value->details) !== null) {
+                        $action_details .= '<div class="em-flex-row"><span>' . $value->element . '</span>';
+                        $action_details .= '<span class="em-red-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                        $action_details .= '</div>';
+                    } else {
+                        $action_details .= '<p>' . $value . '</p>';
+                    }
+                }
+                break;
+            case ('r'):
+                $action_name = $action_category . '_READ';
+                break;
+            case ('u'):
+                $action_name = $action_category . '_UPDATE';
+
+                foreach ($params->updated as $value) {
+                    $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp<br>';
+
+                    if(empty($value->old) or is_null($value->old)) { $value->old = ""; }
+                    if(empty($value->new) or is_null($value->new)) { $value->new = ""; }
+
+                    $value->old = explode('<#>',$value->old);
+                    foreach($value->old as $_old) {
+                        if(!isset($_old) or is_null($_old) or empty(trim($_old))) {
+                            $_old = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
+                            $action_details .= '<span class="em-blue-500-color">' . $_old . '</span>&nbsp';
+                        } else {
+                            //$_old = (strlen($_old) > 25) ? substr($_old, 0, 25) . '...' : $_old;
+                            $action_details .= '<span class="em-red-500-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+                        }
+                    }
+
+                    $action_details .= '<span>' . JText::_('COM_EMUNDUS_CHANGE_TO') . '</span>&nbsp';
+
+                    $value->new = explode('<#>',$value->new);
+                    foreach($value->new as $_new) {
+                        if(!isset($_new) or is_null($_new) or empty(trim($_new))) {
+                            $_new = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
+                            $action_details .= '<span class="em-blue-500-color">' . $_new . '</span>&nbsp';
+                        } else {
+                            //$_new = (strlen($_new) > 25) ? substr($_new, 0, 25) . '...' : $_new;
+                            $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+                        }
+                    }
+                    $action_details .= '</div></br>';
+                }
+                break;
+            case ('d'):
+                $action_name = $action_category . '_DELETE';
+                foreach ($params->deleted as $value) {
+                    if(isset($value->details) and ($value->details) !== null) {
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp<br>';
+                        $action_details .= '</div></br>';
+                    } else {
+                        $action_details .= '<p>' . $value . '</p>';
+                    }
+                }
+                break;
+            default:
+                $action_name = $action_category . '_READ';
+                break;
+        }
 
 		// Translate with JText
 		$action_category = JText::_($action_category);

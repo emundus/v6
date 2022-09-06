@@ -95,7 +95,7 @@ class EmundusModelEmails extends JModelList {
         if(!is_null($to_current_user)) {
             $query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
         }
-        $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode('","', $this->_db->quote($code)) .')')
+        $query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($code)) .')')
             ->group('eset.id');
         $this->_db->setQuery( $query );
         $results = $this->_db->loadObjectList();
@@ -396,7 +396,7 @@ class EmundusModelEmails extends JModelList {
      * @throws Exception
      * @since version v6
      */
-    public function setConstants($user_id, $post=null, $passwd='') {
+    public function setConstants($user_id, $post=null, $passwd='', $fnum=null) {
         $app            = JFactory::getApplication();
         $current_user   = JFactory::getUser();
         $user           = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
@@ -439,6 +439,23 @@ class EmundusModelEmails extends JModelList {
             JURI::base()."index.php?option=com_users&task=registration.activate&token=".$activation, "index.php?option=com_users&task=registration.activate&token=".$activation, JURI::base(), $sitename,
             $user->id, $user->name, $user->email, $user->username, JFactory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
         );
+
+        if(!empty($fnum)){
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+            $m_files = new EmundusModelFiles();
+            $status = $m_files->getStatusByFnums([$fnum]);
+
+            $patterns[] = '/\[APPLICATION_STATUS\]/';
+            $replacements[] = $status[$fnum]['value'];
+
+            $tags = $m_files->getTagsByFnum([$fnum]);
+            $tags_label = [];
+            foreach ($tags as $tag){
+                $tags_label[] = $tag['label'];
+            }
+            $patterns[] = '/\[APPLICATION_TAGS\]/';
+            $replacements[] = implode(',', $tags_label);
+        }
 
         if(isset($post)) {
             foreach ($post as $key => $value) {
@@ -493,7 +510,7 @@ class EmundusModelEmails extends JModelList {
             return array('patterns' => array() , 'replacements' => array());
         }
 
-        $constants = $this->setConstants($user_id, $post, $passwd);
+        $constants = $this->setConstants($user_id, $post, $passwd, $fnum);
 
         $patterns = $constants['patterns'];
         $replacements = $constants['replacements'];
@@ -1473,49 +1490,6 @@ class EmundusModelEmails extends JModelList {
     }
 
     /**
-     * @param $filter
-     * @param $recherche
-     *
-     * @return int
-     *
-     * @since version 1.0
-     */
-    function getEmailCount($filter, $recherche) {
-        $query = $this->_db->getQuery(true);
-
-        if ($filter == 'Publish') {
-            $filterCount = $this->_db->quoteName('se.published') . ' = 1';
-        } else if ($filter == 'Unpublish') {
-            $filterCount = $this->_db->quoteName('se.published') . ' = 0';
-        } else {
-            $filterCount = ('1');
-        }
-
-        if (empty($recherche)) {
-            $fullRecherche = 1;
-        } else {
-            $rechercheSubject = $this->_db->quoteName('se.subject') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheMessage = $this->_db->quoteName('se.message') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheEmail = $this->_db->quoteName('se.emailfrom') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $rechercheType = $this->_db->quoteName('se.type') . ' LIKE ' . $this->_db->quote('%'.$recherche.'%');
-            $fullRecherche = $rechercheSubject.' OR '.$rechercheMessage.' OR '.$rechercheEmail.' OR '.$rechercheType;
-        }
-
-        $query->select('COUNT(se.id)')
-            ->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
-            ->where($filterCount)
-            ->where($fullRecherche);
-
-        try {
-            $this->_db->setQuery($query);
-            return $this->_db->loadResult();
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/email | Error when try to get number of emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
-        }
-    }
-
-    /**
      * @param $lim
      * @param $page
      * @param $filter
@@ -1573,12 +1547,14 @@ class EmundusModelEmails extends JModelList {
             ->order($sortDb.$sort);
 
         try {
+            $this->_db->setQuery($query);
+            $count_emails  = sizeof($this->_db->loadObjectList());
             if(empty($lim)) {
                 $this->_db->setQuery($query, $offset);
             } else {
                 $this->_db->setQuery($query, $offset, $limit);
             }
-            return $this->_db->loadObjectList();
+            return array('datas' => $this->_db->loadObjectList(), 'count' => $count_emails);
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/email | Error when try to get emails : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
             return [];

@@ -14,12 +14,13 @@
       class="em-pointer"
 			:popoverArrowClass="'custom-popover-arrow'"
 		>
-      <span class="tooltip-target b3 material-icons">more_vert</span>
+      <span class="tooltip-target b3 material-icons-outlined">more_vert</span>
 			<template slot="popover">
 				<actions
 					:data="{type: type}"
 					:selected="itemId"
 					:published="isPublished"
+					:nb_files="nb_files"
 					@validateFilters="validateFilters()"
 					@updateLoading="updateLoading"
 				></actions>
@@ -49,7 +50,11 @@ export default {
 		showTootlip : {
 			type: Boolean,
 			default: true
-		}
+		},
+    nb_files : {
+      type: Number,
+      default: 0
+    }
 	},
 	data() {
 		return {

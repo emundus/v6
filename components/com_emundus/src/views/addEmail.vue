@@ -44,7 +44,7 @@
               >
               </editor>
               <div class="em-mt-8">
-                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-blue-500" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
+                <a href="component/emundus/?view=export_select_columns&format=html&layout=all_programs&Itemid=1173" class="em-main-500-color em-hover-main-600" target="_blank">{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}</a>
               </div>
             </div>
             <p v-if="errors.message" class="em-red-500-color em-mb-8">
@@ -58,14 +58,14 @@
         <div>
           <div class="em-flex-row em-mb-16">
             <p class="em-h4">{{ translations.Advanced }}</p>
-            <button :title="translations.Advanced" type="button" class="em-transparent-button" @click="displayAdvanced" v-show="!displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>
-            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button" v-show="displayAdvancedParameters">
+            <button :title="translations.Advanced" type="button" @click="displayAdvanced" class="em-transparent-button em-flex-column" v-show="displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">remove_circle_outline</span>
             </button>
           </div>
-          <div v-if="displayAdvancedParameters">
+          <div id="email-advanced-parameters" v-if="displayAdvancedParameters">
             <div class="form-group">
               <label>{{translations.receiverName}}</label>
               <input
@@ -93,7 +93,7 @@
               />
             </div>
 
-            <div class="form-group" id="receivers_cc">
+            <div class="form-group em-mb-8" id="receivers_cc">
               <label>{{ translations.ReceiversCC }}</label>
               <multiselect
                   v-model="selectedReceiversCC"
@@ -114,7 +114,7 @@
             </div>
 
             <!-- Email -- BCC (in form of email adress or fabrik element -->
-            <div class="form-group" id="receivers_bcc">
+            <div class="form-group em-mb-8" id="receivers_bcc">
               <label>{{ translations.ReceiversBCC }}</label>
               <multiselect
                   v-model="selectedReceiversBCC"
@@ -135,7 +135,7 @@
             </div>
 
             <!-- Email -- Associated letters (in form of email adress or fabrik element -->
-            <div class="form-group" id="attached_letters" v-if="attached_letters">
+            <div class="form-group em-mb-8" id="attached_letters" v-if="attached_letters">
               <label>{{ translations.Letters }}</label>
               <multiselect
                   v-model="selectedLetterAttachments"
@@ -154,7 +154,7 @@
             </div>
 
             <!-- Email -- Action tags -->
-            <div class="form-group" v-if="tags">
+            <div class="form-group em-mb-8" v-if="tags">
               <label>{{ translations.Tags }}</label>
               <multiselect
                   v-model="selectedTags"
@@ -173,7 +173,7 @@
             </div>
 
             <!-- Email -- Candidat attachments -->
-            <div class="form-group" id="">
+            <div class="form-group em-mb-8">
               <label>{{ translations.CandidateAttachments }}</label>
               <multiselect
                   v-model="selectedCandidateAttachments"
@@ -193,7 +193,7 @@
           </div>
         </div>
 
-        <div class="em-flex-row em-flex-space-between">
+        <div class="em-flex-row em-flex-space-between em-mt-16">
           <button
               type="button"
               class="em-secondary-button em-w-auto"
@@ -364,7 +364,7 @@ export default {
     this.getAllTags();
     this.getAllDocumentLetter();
 
-    this.actualLanguage = this.$store.getters['global/actualLanguage'];
+    this.actualLanguage = this.$store.getters['global/shortLang'];
 
     axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
         .then(rep => {
@@ -716,6 +716,7 @@ export default {
 
 <style scoped>
 .emails__add-email{
-  width: 75rem !important;
+  width: calc(100% - 75px) !important;
+  margin-left: auto;
 }
 </style>

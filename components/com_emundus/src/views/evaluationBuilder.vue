@@ -226,7 +226,7 @@ export default {
     };
   },
   created() {
-    this.$props.actualLanguage = this.$store.getters['global/actualLanguage'];
+    this.$props.actualLanguage = this.$store.getters['global/shortLang'];
     this.$props.manyLanguages = this.$store.getters['global/manyLanguages'];
     this.$props.index = this.$store.getters['global/datas'].index.value;
     this.$props.prid = this.$store.getters['global/datas'].prid.value;

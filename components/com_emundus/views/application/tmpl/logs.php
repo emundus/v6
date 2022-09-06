@@ -32,6 +32,10 @@ JFactory::getSession()->set('application_layout', 'logs');
                 </div>
 
             </div>
+
+            <div id="logs-filters"/>
+
+
             <div class="panel-body em-container-comment-body">
             <?php if (count($this->fileLogs) > 0) { ?>
                 <div id="export-logs" class="em-flex-row">
@@ -44,6 +48,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                     <thead>
                         <tr>
                             <th id="date"><?= JText::_('DATE'); ?></th>
+                            <th id="ip">IP</th>
                             <th id="user"><?= JText::_('USER'); ?></th>
                             <th id="action_category"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
                             <th id="action_name"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
@@ -55,6 +60,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                         foreach ($this->fileLogs as $log) { ?>
                         <tr>
                             <td><?= $log->date; ?></td>
+                            <td><?= $log->ip_from; ?></td>
                             <td><?= $log->firstname . ' ' . $log->lastname; ?></td>
                             <td><?= $log->details['action_category']; ?></td>
                             <td><?= $log->details['action_name']; ?></td>
@@ -97,6 +103,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                         for (let i = 0; i < result.res.length; i++) {
                             tr = '<tr>' +
                                 '<td>'+ result.res[i].date + '</td>' +
+                                '<td>'+ result.res[i].ip_from + '</td>' +
                                 '<td>'+ result.res[i].firstname + ' ' + result.res[i].lastname + '</td>' +
                                 '<td>'+ result.details[i].action_category + '</td>' +
                                 '<td>'+ result.details[i].action_name + '</td>' +

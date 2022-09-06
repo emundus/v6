@@ -13,10 +13,10 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
-require_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
+include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'files.php');
+include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'list.php');
+include_once(JPATH_COMPONENT . DS . 'helpers' . DS . 'access.php');
+include_once(JPATH_COMPONENT . DS . 'models' . DS . 'files.php');
 
 class EmundusModelDecision extends JModelList
 {
@@ -46,6 +46,8 @@ class EmundusModelDecision extends JModelList
 		// Get current menu parameters
 		$menu = @JFactory::getApplication()->getMenu();
 		$current_menu = $menu->getActive();
+
+		$current_user = JFactory::getUser();
 		/*
 		** @TODO : gestion du cas Itemid absent à prendre en charge dans la vue
 		*/
@@ -219,6 +221,16 @@ class EmundusModelDecision extends JModelList
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
                     }
 
+				} elseif ($def_elmt->element_plugin == 'yesno') {
+					if (@$group_params->repeat_group_button == 1) {
+						$this->_elements_default[] = '(
+                                                        SELECT REPLACE(REPLACE(GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+					} else {
+						$this->_elements_default[] = 'REPLACE(REPLACE('.$def_elmt->tab_name.'.'.$def_elmt->element_name.', "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")  AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
+					}
 				} else {
 					if (@$group_params->repeat_group_button == 1) {
 						$this->_elements_default[] = '(
