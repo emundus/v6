@@ -6,7 +6,7 @@
 
         <td v-for="column in listColumns" :key="column.label">
 
-            <template v-if="column.column_name != 'etat' || column.column_name != 'publication'">
+            <template v-if="!badgeForColumnum(column.column_name) ">
                 <template v-if="column.plugin =='date'">
                     {{ formattedDate(rowData[column.column_name]) }}
                 </template>
@@ -15,6 +15,7 @@
                 </template>
             </template>
             <template v-else>
+
                 <span :class="classFromValue(rowData[column.column_name])">
                         {{ texteFromValue(rowData[column.column_name]) }}
                 </span>
@@ -72,6 +73,11 @@ export default {
         }*/
     },
     methods: {
+        badgeForColumnum(name){
+
+            const availableList = ['etat','publication','profile'];
+            return availableList.includes(name);
+        },
         classFromValue(val) {
             let className = '';
             switch (val) {
@@ -84,14 +90,17 @@ export default {
                 case 'fait' :
                     className = 'tag done';
                     break;
-                case 'sand_objet' :
+                case 'sans_objet' :
                     className = 'tag todo';
                     break;
                 case '1' :
                     className = 'tag done';
                     break;
                 case '0' :
-                    className = 'to do';
+                    className = 'tag todo';
+                    break;
+                default :
+                    className = 'tag todo';
 
             }
             return className;
@@ -118,6 +127,9 @@ export default {
                     break;
                 case '0' :
                     texte = 'Non publié';
+                    break;
+                default:
+                    texte = val;
 
             }
             return texte;
