@@ -220,7 +220,7 @@ class EmundusModelLogs extends JModelList {
 
 		$db->setQuery($query);
 		$results = $db->loadObjectList();
-		
+
 		// Create a new element to store the correct date display
 		foreach ($results as $result) {
 			$result->date = EmundusHelperDate::displayDate($result->timestamp);
@@ -314,7 +314,7 @@ class EmundusModelLogs extends JModelList {
                 foreach ($params->created as $value) {
                     if(isset($value->details) and ($value->details) !== null) {
                         $action_details .= '<div class="em-flex-row"><span>' . $value->element . '</span>';
-                        $action_details .= '<span class="em-red-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                        $action_details .= '<span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
                         $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
