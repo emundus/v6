@@ -314,7 +314,7 @@ class EmundusModelLogs extends JModelList {
                 foreach ($params->created as $value) {
                     if(isset($value->details) and ($value->details) !== null) {
                         $action_details .= '<div class="em-flex-row"><span>' . $value->element . '</span>';
-                        $action_details .= '<span class="em-red-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                        $action_details .= '<span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
                         $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
