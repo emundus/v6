@@ -4610,7 +4610,7 @@ class EmundusModelApplication extends JModelList
             } else {
                 // add new document LOGS
                 $logsStd = new stdClass();
-                $logsStd->element = '<u>' . JText::_('COM_EMUNDUS_NEW_ATTACHMENT') . '</u>';
+                //$logsStd->element = '<u>' . JText::_('COM_EMUNDUS_NEW_ATTACHMENT') . '</u>';
                 $logsStd->details = $_FILES['file']['name'];
                 $logsParams = array('created' => [$logsStd]);
                 EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
