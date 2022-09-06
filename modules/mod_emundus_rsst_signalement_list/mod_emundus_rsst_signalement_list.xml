@@ -18,6 +18,8 @@
             <fieldset name="basic">
                 <field name="fabrik_list_id" type="number" label="Fabrik list ID"></field>
                 <field name="fabrik_list_particular_action_column" type="number" label="Fabrick List Action Column"></field>
+                <field name="fabrik_list_particular_conditional_column" type="string" label="Particular Showing column list (SQL where clause column name). Columns list separed by comma Ex: col1,col2,col3"></field>
+                <field name="fabrik_list_particular_conditional_column_values" type="string" label="Particular Showing where column value (SQL clause column values), multiple column values separed by '|' . Ex : col1_value_1|col1_value_2,col2_value,col3_value"></field>
             </fieldset>
         </fields>
     </config>

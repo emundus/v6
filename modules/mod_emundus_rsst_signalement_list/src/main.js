@@ -21,11 +21,14 @@ if (modRsstSignalementList) {
     el: '#em-rsst-signalement-list-vue',
     store,
     render(h) {
+
       return h(App, {
         props: {
           currentUser: modRsstSignalementList.getAttribute('user'),
           fabrikListId: modRsstSignalementList.getAttribute('listId'),
           fabrikListActionColumn: modRsstSignalementList.getAttribute('listActionColumn'),
+          fabrikListParticularConditionalColumn: modRsstSignalementList.getAttribute('listParticularConditionalColumn'),
+          fabrikListParticularConditionalColumnValues: modRsstSignalementList.getAttribute('listParticularConditionalColumnValues'),
         }
       });
     }

@@ -107,7 +107,7 @@ class EmundusModelList extends JModelList
 
     }
 
-    public function getList($listId)
+    public function getList($listId,$listParticularConditionalColumn,$listParticularConditionalColumnValues)
     {
 
         $query = $this->db->getQuery(true);
@@ -158,10 +158,44 @@ class EmundusModelList extends JModelList
         $query->select($listColumns)
             ->from($this->db->quoteName($dbTableName));
 
+
+
+
         if (count($databaseJoinsKeysAndColumns) > 0) {
             foreach ($databaseJoinsKeysAndColumns as $data) {
                 $query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
             }
+        }
+
+        /*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
+
+        $whereConditonAlreadyPlaced = false;
+        for($i=0; $i<count($listParticularConditionalColumn); $i++) {
+
+            $values = explode(',', $listParticularConditionalColumnValues[$i]);
+
+            $values = '"' . join('", "', $values) . '"';
+
+            if ($i === 0 && !empty($listParticularConditionalColumnValues[$i]) && !$whereConditonAlreadyPlaced){
+
+
+
+                $query->where($this->db->quoteName($listParticularConditionalColumn[$i]) . ' IN (' .$values. ')');
+                $whereConditonAlreadyPlaced = true;
+            }
+
+
+            if ($i != 0 && !empty($listParticularConditionalColumnValues[$i]) && $whereConditonAlreadyPlaced  ){
+
+                $query->andWhere($this->db->quoteName($listParticularConditionalColumn[$i]) . ' IN (' . $values . ')');
+            }
+
+            if ($i != 0 && !empty($listParticularConditionalColumnValues[$i]) && !$whereConditonAlreadyPlaced ){
+
+                $query->where($this->db->quoteName($listParticularConditionalColumn[$i]) . ' IN (' . $values . ')');
+                $whereConditonAlreadyPlaced = true;
+            }
+
         }
 
 

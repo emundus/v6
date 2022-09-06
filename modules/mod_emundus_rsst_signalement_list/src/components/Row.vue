@@ -130,8 +130,7 @@ export default {
                 if(isChecked){
 
                     const response = await ListService.setAs(actionColumn,value,this.rowData.id);
-                    console.log('^^^^^^^^^^^^^^^^^^^')
-                    console.log(response);
+
                 } else {
                     alert('Merci de sélectionné une ligne avant de pouvoir éffectué cette action');
                 }

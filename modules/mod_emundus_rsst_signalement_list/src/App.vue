@@ -1,7 +1,7 @@
 <template>
     <div id="app">
 
-        <List :listId="fabrikListId" :ListActionColumn="fabrikListActionColumn"/>
+        <List :listId="fabrikListId" :ListActionColumn="fabrikListActionColumn" :listParticularConditionalColumn="fabrikListParticularConditionalColumn" :listParticularConditionalColumnValues="fabrikListParticularConditionalColumnValues" />
     </div>
 </template>
 
@@ -23,6 +23,18 @@ export default {
             type: String,
             required: false
         },
+        fabrikListParticularConditionalColumn:{
+            type: String,
+            required: false
+        },
+        fabrikListParticularConditionalColumnValues: {
+            type: String,
+            required: false
+        }
+    },
+
+    created() {
+        console.log(this.fabrikListParticularConditionalColumn);
     }
 }
 </script>

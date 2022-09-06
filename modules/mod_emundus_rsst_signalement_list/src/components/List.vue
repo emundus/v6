@@ -94,6 +94,14 @@ export default {
         ListActionColumn: {
             type: String,
             required: false
+        },
+        listParticularConditionalColumn:{
+            type: String,
+            required: false,
+        },
+        listParticularConditionalColumnValues:{
+            type: String,
+            required: false
         }
     },
     data: () => ({
@@ -129,8 +137,15 @@ export default {
         },
         async retriveListData() {
 
+            let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []
+            let particularConditionalColumnValues = this.listParticularConditionalColumnValues.split(',') || [];
+            let particularConditionalRealColumnValues = [];
+            particularConditionalColumnValues.forEach(element =>{
+                particularConditionalRealColumnValues.push((element.split('|')).join(','));
+            });
+
             try {
-                const response = await ListService.getListAndDataContains(this.listId);
+                const response = await ListService.getListAndDataContains(this.listId,particularConditionalColumn,particularConditionalRealColumnValues);
 
                 this.listColumns = response.data.listColumns;
 

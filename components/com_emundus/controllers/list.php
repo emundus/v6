@@ -41,7 +41,11 @@ class EmundusControllerList extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $listId = $jinput->getInt('listId');
 
-            $listData = $this->m_list->getList($listId);
+            $listParticularConditionalColumn= json_decode($jinput->getString('listParticularConditionalColumn'));
+
+            $listParticularConditionalColumnValues=  json_decode($jinput->getString('listParticularConditionalColumnValues'));
+
+            $listData = $this->m_list->getList($listId,$listParticularConditionalColumn,$listParticularConditionalColumnValues);
 
             if (!empty($listData)) {
                 $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
@@ -63,7 +67,7 @@ class EmundusControllerList extends JControllerLegacy {
             $jinput = JFactory::getApplication()->input;
             $listId = $jinput->getInt('listId');
             $lisActionColumnId=  $jinput->getInt('listActionColumnId');
-            $listData = $this->m_list->getListActions($listId,$lisActionColumnId);
+            $listData = $this->m_list->getListActions($listId,$lisActionColumnId,);
 
             if (!empty($listData)) {
                 $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);

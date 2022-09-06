@@ -2,10 +2,13 @@ import client from './axiosClient';
 
 
 export default {
-    async getListAndDataContains(listId) {
+
+    async getListAndDataContains(listId,listParticularConditionalColumn, listParticularConditionalColumnValues) {
         try {
             const formData = new FormData();
             formData.append('listId',parseInt(listId));
+            formData.append('listParticularConditionalColumn',JSON.stringify(listParticularConditionalColumn));
+            formData.append('listParticularConditionalColumnValues',JSON.stringify(listParticularConditionalColumnValues));
             const response = await client().post('index.php?option=com_emundus&controller=list&task=getList',formData);
 
             return response.data;
@@ -13,6 +16,7 @@ export default {
             return false;
         }
     },
+
     async getListActionAndDataContains(listId,actionColumnId) {
         try {
             const formData = new FormData();
