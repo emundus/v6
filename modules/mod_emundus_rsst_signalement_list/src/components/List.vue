@@ -188,9 +188,9 @@ export default {
 
         retrieveFiltersInputData(column) {
             if (column.filter_type == 'dropdown') {
-                return this.listData.map(el => {
+                return [...new Set(this.listData.map(el => {
                     return el[column.column_name]
-                });
+                }))];
             } else {
                 return [];
             }
