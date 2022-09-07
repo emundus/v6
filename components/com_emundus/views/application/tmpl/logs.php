@@ -48,7 +48,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                     <thead>
                         <tr>
                             <th id="date"><?= JText::_('DATE'); ?></th>
-                            <th id="ip">IP</th>
+                            <!--<th id="ip">IP</th>-->
                             <th id="user"><?= JText::_('USER'); ?></th>
                             <th id="action_category"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION_CATEGORY'); ?></th>
                             <th id="action_name"><?= JText::_('COM_EMUNDUS_LOGS_VIEW_ACTION'); ?></th>
@@ -60,7 +60,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                         foreach ($this->fileLogs as $log) { ?>
                         <tr>
                             <td><?= $log->date; ?></td>
-                            <td><?= $log->ip_from; ?></td>
+                            <!--<td><?= $log->ip_from; ?></td>-->
                             <td><?= $log->firstname . ' ' . $log->lastname; ?></td>
                             <td><?= $log->details['action_category']; ?></td>
                             <td><?= $log->details['action_name']; ?></td>
