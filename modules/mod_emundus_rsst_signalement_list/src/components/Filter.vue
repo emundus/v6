@@ -2,7 +2,7 @@
     <div>
         <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='dropdown'" v-model="filterValue" style="width: max-content">
             <option value="all" selected > {{translate(columnNameLabel) }}</option>
-            <option v-for="(data,index) in filterDatas" :key="data+'_'+index" :value="data"> {{ data }}</option>
+            <option v-for="(data,index) in filterDatas" :key="data+'_'+index" :value="data"> {{ translate(data) }}</option>
         </select>
 
         <input type="text" placeholder="Good day " v-if="filterType =='field'" v-model="filterValue" class="list-vue-input em-input" :placeholder="translate(columnNameLabel)"/>
@@ -35,6 +35,37 @@ export default {
     }),
     created() {
         this.filterValue = this.filterType == 'dropdown' ? 'all' :'';
+    },
+
+    method: {
+        texteFromValue(val) {
+
+            let texte = '';
+            switch (val) {
+                case 'a_faire':
+                    texte = 'À faire';
+                    break;
+                case 'en_cours':
+                    texte = 'En cours';
+                    break;
+                case 'fait' :
+                    texte = 'Fait';
+                    break;
+                case 'sans_objet' :
+                    texte = 'Sans objet';
+                    break;
+                case '1' :
+                    texte = 'Publié';
+                    break;
+                case '0' :
+                    texte = 'Non publié';
+                    break;
+                default:
+                    texte = val;
+
+            }
+            return texte;
+        },
     },
     watch: {
         filterValue: function (val) {
