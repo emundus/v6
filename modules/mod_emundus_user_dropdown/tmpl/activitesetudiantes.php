@@ -89,15 +89,21 @@ if($user != null) {
 
     <?= $intro; ?>
 
-<!-- Button which opens up the dropdown menu. -->
-<div class='dropdown' id="userDropdown" style="float: right;">
-    <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
-        <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
-    </div>
-    <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
-    <input type="hidden" value="<?= $user->fnum; ?>" id="current_fnum">
-    <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
-        <?php
+    <!-- Button which opens up the dropdown menu. -->
+    <div class='dropdown' id="userDropdown" style="float: right;">
+        <?php if(!empty($profile_picture)): ?>
+            <div class="em-profile-picture em-pointer em-ml-8 em-user-dropdown-button" id="userDropdownLabel"
+                 style="background-image:url('<?php echo $profile_picture ?>');right: 15px">
+            </div>
+        <?php else : ?>
+            <div class="em-user-dropdown-button" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
+                <img src="<?php echo JURI::base()?>images/emundus/menus/user.svg" id="userDropdownIcon" alt="<?php echo JText::_('PROFILE_ICON_ALT')?>">
+            </div>
+        <?php endif; ?>
+        <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
+        <input type="hidden" value="<?= $user->fnum; ?>" id="current_fnum">
+        <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
+            <?php
             $ids_array = array();
             if (isset($user->fnums) && $user->fnums) {
                 foreach ($user->fnums as $fnum) {
@@ -211,28 +217,28 @@ if($user != null) {
             document.getElementsByClassName('em-page-loader')[0].style.display = 'block';
             let current_fnum = document.getElementById("current_fnum").value;
 
-        jQuery.ajax({
-            type: 'POST',
-            url: 'index.php?option=com_emundus&controller=files&task=generateletter',
-            data: ({
-                fnums: current_fnum,
-                ids_tmpl: [31],
-                cansee: 1,
-                showMode: 2,
-                mergeMode: 0,
-            }),
-            success: function (result) {
-                let response = JSON.parse(result);
-                let file = response.data.files[0].url + response.data.files[0].filename;
-                document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
-                download(file,'carte_acces.pdf')
-            },
-            error : function (jqXHR, status, err) {
-                alert("Une erreur est survenue à la génération de votre carte d'accès. Veuillez contactez un administrateur");
-            }
-        });
-    }
-</script>
+            jQuery.ajax({
+                type: 'POST',
+                url: 'index.php?option=com_emundus&controller=files&task=generateletter',
+                data: ({
+                    fnums: current_fnum,
+                    ids_tmpl: [31],
+                    cansee: 1,
+                    showMode: 2,
+                    mergeMode: 0,
+                }),
+                success: function (result) {
+                    let response = JSON.parse(result);
+                    let file = response.data.files[0].url + response.data.files[0].filename;
+                    document.getElementsByClassName('em-page-loader')[0].style.display = 'none';
+                    download(file,'carte_acces.pdf')
+                },
+                error : function (jqXHR, status, err) {
+                    alert("Error switching porfiles.");
+                }
+            });
+        }
+    </script>
 <?php } else { ?>
     <div class="header-right" style="text-align: right;">
         <a class="btn btn-danger" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
