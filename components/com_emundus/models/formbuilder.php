@@ -1879,8 +1879,8 @@ class EmundusModelFormbuilder extends JModelList {
                         $element['params']['database_join_noselectionlabel'] = 'PLEASE_SELECT';
                     }
                 } else {
-                    $sub_values = [];
-                    $sub_labels = [];
+                    $sub_values = $old_params['sub_options']['sub_values'];
+                    $sub_labels = $old_params['sub_options']['sub_labels'];
                     $sub_initial_selection = [];
 
                     if($element['params']['default_value'] == 1) {
