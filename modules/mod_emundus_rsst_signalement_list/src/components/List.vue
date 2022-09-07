@@ -225,7 +225,11 @@ export default {
 
             this.items = this.listData.filter(item => {
                 return this.filters.every(key => {
-                    return key.filterValue.toLowerCase().split(' ').every(v => item[key.column_name].toLowerCase().includes(v))
+                    if(key !== null && key.filterValue !== null) {
+                        return key.filterValue.toLowerCase().split(' ').every(v => item[key.column_name].toLowerCase().includes(v))
+                    } else {
+                        return false;
+                    }
                 })
             })
 
