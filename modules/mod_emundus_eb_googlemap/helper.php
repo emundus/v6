@@ -80,9 +80,7 @@ class modEventBookingGoogleMapHelper
                 ->where('a.location_id = ' . $row->id)
                 ->where('a.published = 1')
                 ->where('a.hidden = 0')
-                ->where('a.access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')')
-                ->where('(a.publish_up = ' . $nullDate . ' OR a.publish_up <= ' . $nowDate . ')')
-                ->where('(a.publish_down = ' . $nullDate . ' OR a.publish_down >= ' . $nowDate . ')');
+                ->where('a.access IN (' . implode(',', $user->getAuthorisedViewLevels()) . ')');
             if(!empty($events)){
                 $query->where($db->quoteName('a.id') . ' IN (' . $events . ')');
             }
@@ -264,6 +262,12 @@ class modEventBookingGoogleMapHelper
         }
         if(!empty($params->niveau)) {
             $query->where("JSON_EXTRACT(ee.custom_fields, \"$.field_niveau\") = \"".$params->niveau."\"");
+        }
+        if(!empty($params->search)) {
+            $query->where($db->quoteName('ee.title') . ' LIKE ' . $db->quote('%'.$params->search.'%'));
+        }
+        if(!empty($params->location_id)) {
+            $query->where($db->quoteName('ee.location_id') . ' = ' . $db->quote($params->location_id));
         }
         $query->group('el.id');
         $db->setQuery($query);
