@@ -13,81 +13,81 @@ $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_us
 // Note. It is important to remove spaces between elements.
 
 if($user != null) {
-    ?>
+?>
 
-    <style>
-        .dropdown-header {
-            display: block;
-            font-size: unset;
-            line-height: 1.42857143;
-            color: black;
-            white-space: nowrap;
-            padding: unset;
-        }
+<style>
+    .dropdown-header {
+        display: block;
+        font-size: unset;
+        line-height: 1.42857143;
+        color: black;
+        white-space: nowrap;
+        padding: unset;
+    }
 
-        .dropdown-menu-right {
-            right: 0;
-            left: auto;
-        }
+    .dropdown-menu-right {
+        right: 0;
+        left: auto;
+    }
 
-        #userDropdownIcon {
-            background-color: #<?= $primary_color; ?>;
-            border: solid 1px white;
-            color: #<?= $secondary_color; ?>;
-        }
+    #userDropdownIcon {
+        background-color: #<?= $primary_color; ?>;
+        border: solid 1px white;
+        color: #<?= $secondary_color; ?>;
+    }
 
-        #userDropdownIcon:hover,
-        #userDropdownIcon.active {
-            border: 1px solid;
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
-            outline-color: rgba(255, 255, 255, 0);
-            outline-offset: 15px;
-            background-color: #<?= $secondary_color; ?>;
-            color: #fff;
-        }
+    #userDropdownIcon:hover,
+    #userDropdownIcon.active {
+        border: 1px solid;
+        box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
+        outline-color: rgba(255, 255, 255, 0);
+        outline-offset: 15px;
+        background-color: #<?= $secondary_color; ?>;
+        color: #fff;
+    }
 
-        #userDropdownMenu .divider {
-            height: 1px;
-            margin: 9px 1px;
-            overflow: hidden;
-            background-color: #e5e5e5;
-            border-bottom: 1px solid #fff;
-        }
+    #userDropdownMenu .divider {
+        height: 1px;
+        margin: 9px 1px;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        border-bottom: 1px solid #fff;
+    }
 
-        #userDropdownMenu li>a:hover,
-        #userDropdownMenu .active>a {
-            background: #<?= $secondary_color; ?>;
-        }
+    #userDropdownMenu li>a:hover,
+    #userDropdownMenu .active>a {
+        background: #<?= $secondary_color; ?>;
+    }
 
-        .select{
-            text-align: left;
-        }
-        .select .profile-select{
-            height: 36px;
-            padding: 0 5px;
-            border: 1px solid #e5e5e5;
-            background-color: white !important;
-            background-image: url(/images/emundus/arrow-2.png) !important;
-            background-size: 25px !important;
-            background-repeat: no-repeat !important;
-            background-position-x: 98% !important;
-            background-position-y: 54% !important;
-            -moz-appearance: none;
-            -webkit-appearance: none;
-            width: 200px;
-        }
-        .select .profile-select:hover{
-            background-color: white !important;
-        }
-        .select .profile-select:focus{
-            background-color: white !important;
-        }
-        .dropdown-menu > li > a{
-            padding: unset;
-        }
-    </style>
+    .select{
+        text-align: left;
+    }
+    .select .profile-select{
+        height: 36px;
+        padding: 0 5px;
+        border: 1px solid #e5e5e5;
+        background-color: white !important;
+        background-image: url(/images/emundus/arrow-2.png) !important;
+        background-size: 25px !important;
+        background-repeat: no-repeat !important;
+        background-position-x: 98% !important;
+        background-position-y: 54% !important;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        width: 200px;
+    }
+    .select .profile-select:hover{
+        background-color: white !important;
+    }
+    .select .profile-select:focus{
+        background-color: white !important;
+    }
+    .dropdown-menu > li > a{
+        padding: unset;
+    }
+</style>
 
-    <?= $intro; ?>
+<?= $intro; ?>
 
     <!-- Button which opens up the dropdown menu. -->
     <div class='dropdown' id="userDropdown" style="float: right;">
@@ -213,9 +213,9 @@ if($user != null) {
             a.click();
         }
 
-        function generateLetter() {
-            document.getElementsByClassName('em-page-loader')[0].style.display = 'block';
-            let current_fnum = document.getElementById("current_fnum").value;
+    function generateLetter() {
+        document.getElementsByClassName('em-page-loader')[0].style.display = 'block';
+        let current_fnum = document.getElementById("current_fnum").value;
 
         jQuery.ajax({
             type: 'POST',
