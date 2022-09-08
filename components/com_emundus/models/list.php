@@ -119,7 +119,7 @@ class EmundusModelList extends JModelList
             ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
             ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = ' . 1)
             ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1)
-            ->order($this->quoteName('jfe.ordering').' ASC');
+            ->order($this->db->quoteName('jfe.ordering').' ASC');
 
         try {
             $this->db->setQuery($query);
