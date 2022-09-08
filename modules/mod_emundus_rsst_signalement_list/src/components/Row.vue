@@ -1,7 +1,9 @@
 <template>
-    <tr class="list-row">
+
+
+    <tr class="list-row" >
         <td>
-            <input type="checkbox" class="em-switch input" v-model = 'checkedRows.rows' :value ='rowData' checked = 'true'>
+            <input type="checkbox" class="em-switch input" v-model='checkedRows.rows' :value='rowData' checked='true'>
         </td>
 
         <td v-for="column in listColumns" :key="column.label">
@@ -33,6 +35,7 @@
 <script>
 import ListActionMenu from './ListActionMenu.vue';
 import ListService from '../services/list';
+
 export default {
     name: "Row",
     props: {
@@ -44,26 +47,40 @@ export default {
             type: Array,
             required: true
         },
-        checkedRows:{
+        checkedRows: {
             type: Object,
-            required : true
+            required: true
         },
         actionColumnId: {
-            type:String,
+            type: String,
             required: false
         },
-        listId:{
+        listId: {
             type: String,
             required: true,
         },
+
+        hasBeenGroupBy: {
+            type: Boolean,
+            required: true
+        },
+
+        rowGroupByRowKeyName: {
+            type: String,
+            required: false
+        },
+        opened: {
+            type: Array,
+            required:false
+        }
     },
     components: {
         'list-action-menu': ListActionMenu
     },
-    data:()=>({
-        isChecked : false,
+    data: () => ({
+        isChecked: false,
     }),
-    watch : {
+    watch: {
         /*checkedRows: function(val){
             console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
             console.log(val);
@@ -73,9 +90,9 @@ export default {
         }*/
     },
     methods: {
-        badgeForColumnum(name){
+        badgeForColumnum(name) {
 
-            const availableList = ['etat','publication','profile'];
+            const availableList = ['etat', 'publication', 'profile'];
             return availableList.includes(name);
         },
         classFromValue(val) {
@@ -135,13 +152,13 @@ export default {
             return texte;
         },
 
-        async setAs(actionColumn,value){
+        async setAs(actionColumn, value) {
 
-            try{
+            try {
                 const isChecked = this.checkedRows.rows.some(row => row.id === this.rowData.id);
-                if(isChecked){
+                if (isChecked) {
 
-                    const response = await ListService.setAs(actionColumn,value,this.rowData.id);
+                    const response = await ListService.setAs(actionColumn, value, this.rowData.id);
 
                 } else {
                     alert('Merci de sélectionné une ligne avant de pouvoir éffectué cette action');

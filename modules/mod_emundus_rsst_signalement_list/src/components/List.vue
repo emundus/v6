@@ -6,6 +6,9 @@
             <span class="material-icons reload-icons" @click="reloadData">loop</span>
         </div>
         <div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
+            <filter-item
+                :filterType="'groupBy'" :filterDatas="listColumns" @groupByCriteriaValue="groupByColumn"
+            />
             <template v-for="data in listColumns">
                 <template v-if="data.filter_type ==='field' || data.filter_type ==='dropdown' ">
                     <filter-item :id="data.id+'_'+data.filter_type" :key="data.id+'_'+data.filter_type"
@@ -50,15 +53,54 @@
             </tr>
             </thead>
             <tbody>
-            <Row
-                v-for="data in items"
-                :key="data.id"
-                :rowData="data"
-                :listColumns="listColumns"
-                :checkedRows='checkedRows'
-                :actionColumnId="ListActionColumn"
-                :listId="listId"
-            />
+            <template v-if="hasBeenGroupBy">
+
+
+                <template v-for="group in items">
+                    <tr @click="toggle(rowGroupByRowKeyName(group))" class="list-row">
+                        <td :colspan="listColumns.length+1">{{ rowGroupByRowKeyName(group) }}</td>
+                        <td style="border-left: none;text-align: end">
+                            <span
+                                v-if="opened.includes(rowGroupByRowKeyName(group))"
+                                class="material-icons"
+                            >arrow_drop_down</span>
+                            <span
+                                v-if="!opened.includes(rowGroupByRowKeyName(group))"
+                                class="material-icons"
+                            >arrow_drop_up</span>
+                        </td>
+                    </tr>
+                    <template v-for="data in groupByItemArraySubValues(group)"
+                              :key="'group_by_'+data.id">
+                        <Row
+                            v-if="opened.includes(rowGroupByRowKeyName(group)) && hasBeenGroupBy"
+                            :rowData="data"
+                            :listColumns="listColumns"
+                            :checkedRows='checkedRows'
+                            :actionColumnId="ListActionColumn"
+                            :listId="listId"
+                            :hasBeenGroupBy="hasBeenGroupBy"
+                            :rowGroupByRowKeyName="rowGroupByRowKeyName(group)"
+                        />
+                    </template>
+
+                </template>
+
+            </template>
+
+            <template v-if="!hasBeenGroupBy">
+                <Row
+                    v-for="data in items"
+                    :key="data.id"
+                    :rowData="data"
+                    :listColumns="listColumns"
+                    :checkedRows='checkedRows'
+                    :actionColumnId="ListActionColumn"
+                    :listId="listId"
+                    :hasBeenGroupBy="hasBeenGroupBy"
+                />
+            </template>
+
             <tr v-if="items.length == 0">
                 <td :colspan="listColumns.length+2" class="em-text-align-center">
                     {{ translate('COM_EMUNDUS_MOD_RSST_LIST_NO_DATA') }}
@@ -95,11 +137,11 @@ export default {
             type: String,
             required: false
         },
-        listParticularConditionalColumn:{
+        listParticularConditionalColumn: {
             type: String,
             required: false,
         },
-        listParticularConditionalColumnValues:{
+        listParticularConditionalColumnValues: {
             type: String,
             required: false
         }
@@ -109,6 +151,7 @@ export default {
         listColumns: [],
         listData: [],
         items: [],
+        opened: [],
         sort: {
             last: "",
             order: "",
@@ -118,14 +161,38 @@ export default {
         checkedRows: {
             rows: []
         },
-        searchTerm: ''
+        searchTerm: '',
+        hasBeenGroupBy: false,
+        filterGroupCriteria: '',
 
     }),
     created() {
-
         this.retriveListData();
     },
+
+    computed: {},
+
     methods: {
+
+        toggle(key) {
+            const index = this.opened.indexOf(key);
+            if (index > -1) {
+
+                this.opened.splice(index, 1);
+            } else {
+                this.opened.push(key)
+            }
+
+        },
+
+        groupByItemArraySubValues(item) {
+            return item[1];
+        },
+
+        rowGroupByRowKeyName(item) {
+            return item[0];
+        },
+
         reloadData() {
             this.loading = true;
             this.listColumns = [];
@@ -140,17 +207,17 @@ export default {
             let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []
             let particularConditionalColumnValues = this.listParticularConditionalColumnValues.split(',') || [];
             let particularConditionalRealColumnValues = [];
-            particularConditionalColumnValues.forEach(element =>{
+            particularConditionalColumnValues.forEach(element => {
                 particularConditionalRealColumnValues.push((element.split('|')).join(','));
             });
 
             try {
-                const response = await ListService.getListAndDataContains(this.listId,particularConditionalColumn,particularConditionalRealColumnValues);
+                const response = await ListService.getListAndDataContains(this.listId, particularConditionalColumn, particularConditionalRealColumnValues);
 
                 this.listColumns = response.data.listColumns;
 
                 this.listData = response.data.listData;
-                this.items = this.listData
+                this.items = this.listData;
 
                 this.filtersInitialize();
 
@@ -186,6 +253,37 @@ export default {
             this.sort.last = key;
         },
 
+        groupByColumn(columnName) {
+
+            this.filterGroupCriteria = columnName;
+            if (columnName != null && columnName != '' && columnName != 'all') {
+
+                this.items = Object.entries(this.groupBy(this.listData, columnName));
+
+                this.hasBeenGroupBy = true;
+            } else {
+                this.items = this.listData;
+                this.hasBeenGroupBy = false;
+            }
+
+
+        },
+
+        groupBy(arr, criteria) {
+
+
+            const itemsGroupBY = arr.reduce(function (acc, currentValue) {
+                if (!acc[currentValue[criteria]]) {
+                    acc[currentValue[criteria]] = [];
+                }
+                acc[currentValue[criteria]].push(currentValue);
+                return acc;
+            }, {});
+            return itemsGroupBY;
+
+
+        },
+
         retrieveFiltersInputData(column) {
             if (column.filter_type == 'dropdown') {
                 return [...new Set(this.listData.map(el => {
@@ -207,7 +305,6 @@ export default {
             })
 
         },
-
         getFilterValue(value, column_name) {
 
             this.filters = this.filters.map(el => {
@@ -220,15 +317,14 @@ export default {
             this.filtering();
 
         },
-
         filtering() {
 
             this.items = this.listData.filter(item => {
                 return this.filters.every(key => {
-                    if(key !== null && key.filterValue !== null) {
+                    if (key !== null && key.filterValue !== null) {
                         return key.filterValue.toLowerCase().split(' ').every(v => {
 
-                            if( item[key.column_name] !==null) {
+                            if (item[key.column_name] !== null) {
                                 return item[key.column_name].toLowerCase().includes(v)
                             } else {
                                 return false;
@@ -239,11 +335,19 @@ export default {
                         return false;
                     }
                 })
-            })
+            });
+
+            if (this.hasBeenGroupBy) {
+
+                if (this.filterGroupCriteria != null && this.filterGroupCriteria != '' && this.filterGroupCriteria != 'all') {
+                    this.items = Object.entries(this.groupBy(this.items, this.filterGroupCriteria));
+                }
+
+            }
 
         },
-
         searchInAllListColumn() {
+
             this.items = this.listData.filter(item => {
                 return Object.keys(item).some(key => {
                     if (item[key] !== null) {
@@ -255,7 +359,6 @@ export default {
                 })
             })
         },
-
         clearFilters() {
 
             this.filters.map(el => {
@@ -276,8 +379,6 @@ export default {
             } catch (e) {
                 console.log(e);
             }
-
-
         }
 
 
@@ -298,6 +399,13 @@ input.withSearchIco {
     font-size: 30px !important;
     cursor: grab;
     transform: rotate(90deg);
+}
+
+tr.list-row td {
+    border-left: 0;
+    border-right: 0;
+    font-size: 12px;
+    padding: 0.85rem 0.5rem;
 }
 
 table {

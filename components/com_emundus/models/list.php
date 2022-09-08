@@ -42,6 +42,7 @@ class EmundusModelList extends JModelList
             ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
             ->andWhere($this->db->quoteName('jfe.id') . ' = ' . $elementId)
             ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1);
+
         $actionsColumns = [];
         $databaseJoinsKeysAndColumns = [];
         $actionsData = [];
@@ -117,8 +118,8 @@ class EmundusModelList extends JModelList
             ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
             ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
             ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = ' . 1)
-            ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1);
-
+            ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1)
+            ->order($this->quoteName('jfe.ordering').' ASC');
 
         try {
             $this->db->setQuery($query);

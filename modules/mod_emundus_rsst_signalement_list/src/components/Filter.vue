@@ -1,5 +1,9 @@
 <template>
     <div>
+        <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='groupBy'"  style="width: max-content" v-model="groupByCriteriaValue">
+            <option value="all" selected > Grouper par</option>
+            <option v-for="(data,index) in filterDatas" :key="data+'_'+index+data.column_name" :value="data.column_name"> {{ texteFromValue(data.label) }}</option>
+        </select>
         <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='dropdown'" v-model="filterValue" style="width: max-content">
             <option value="all" selected > {{translate(columnNameLabel) }}</option>
             <option v-for="(data,index) in filterDatas" :key="data+'_'+index" :value="data"> {{ texteFromValue(data) }}</option>
@@ -23,18 +27,20 @@ export default {
         },
         columnName: {
             type: String,
-            require: true
+            require: false
         },
         columnNameLabel: {
             type: String,
-            required: true
+            required: false
         }
     },
     data: () => ({
-        filterValue: ''
+        filterValue: '',
+        groupByCriteriaValue:'all'
     }),
     created() {
         this.filterValue = this.filterType == 'dropdown' ? 'all' :'';
+
     },
 
     methods: {
@@ -72,6 +78,11 @@ export default {
 
             this.$emit('filterValue', val, this.columnName);
 
+
+        },
+
+        groupByCriteriaValue:function (val) {
+            this.$emit('groupByCriteriaValue',val)
         }
     }
 
