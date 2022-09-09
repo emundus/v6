@@ -55,20 +55,27 @@ class com_emundusInstallerScript
         if ($manifest_cache) {
             # First run condition
             if (version_compare($cache_version, '1.33.0', '<') OR $firstrun) {
-                #$this->deleteOldSqlFiles();
-                $this->updateModulesParams('mod_emundusflow','show_programme' , "0");
-                #$plugin_list = $this->getEmundusPlugins();
-                #$this->disableEmundusPlugins('hesam_tutorial_events');
+                # Delete emundus sql files in con_admin
+                # $this->deleteOldSqlFiles();
 
-                $this->genericUpdateParams("#__modules", "module", "mod_emundusflow", "show_programme", "0");
+                # Non generic
+                $this->updateModulesParams('mod_emundusflow','show_programme' , "0");
                 # Change cron fabrik params
                 $this->updateFabrikCronParams('Application not sent','log' , "0");
-                $this->updateFabrikCronParams('Application not sent','log_email' , "jordan.troadec@emundus.fr");
+                $this->updateFabrikCronParams('Application not sent','log_email' , "mail@emundus.fr");
                 $this->updateFabrikCronParams('Application not sent','cron_rungate' , "1");
 
                 # Update SCP params
                 $this->updateSCPParams("pro_plugin", "email_active", "0" );
                 $this->updateSCPParams("pro_plugin", "email_on_admin_login", "0" );
+
+                # Generic
+                $this->genericUpdateParams("#__modules", "module", "mod_emundusflow", "show_programme", "0");
+                $this->genericUpdateParams("#__fabrik_cron", "label", 'Application not sent','log' , "0");
+                $this->genericUpdateParams("#__fabrik_cron", "label", 'Application not sent','log_email' , "mail@emundus.fr");
+                $this->genericUpdateParams("#__fabrik_cron", "label", 'Application not sent','cron_rungate' , "1");
+                #$this->genericUpdateParams("#__securitycheckpro_storage", "storage_key", "pro_plugin", "email_active", "0", array('storage_value', 'storage_key'));
+                #$this->genericUpdateParams("#__securitycheckpro_storage", "storage_key", "pro_plugin", "email_on_admin_login", "0", array('storage_value', 'storage_key'));
 
                 # Update lifetime in configuration.php
                 $this->updateConfigurationFile("lifetime", "45");
@@ -176,26 +183,32 @@ class com_emundusInstallerScript
         }
     }
 
-    private function genericUpdateParams($table, $where, $name, $param, $value) {
-                $query = $this->db->getQuery(true);
-                $this->db->getQuery(true);
-                $query->select('*')
-                    ->from($table)
-                    ->where($where. ' LIKE ' . $this->db->q('%'.$name.'%'));
-                $this->db->setQuery($query);
-                $rows =  $this->db->loadObjectList();
+    private function genericUpdateParams($table, $where, $name, $param, $valueToSet, $updateParams = null) {
+        if (!$updateParams[0]) {
+            $updateParams[0] = "params";
+        }
 
-                foreach ($rows as $row) {
-                    $params = json_decode($row->params,true);
-                    $params[$param] = $value;
-                    # Assign new params value
-                    $paramsString = json_encode( $params );
-                    $this->db->setQuery('UPDATE ' . $table . ' SET params = ' .
-                        $this->db->quote($paramsString) .
-                        ' WHERE id = ' . $row->id );
-                    $this->db->query();
-                }
-            }
+        if (!$updateParams[1]) {
+            $updateParams[1] = "id";
+        }
+        $query = $this->db->getQuery(true);
+        $this->db->getQuery(true);
+        $query->select('*')
+            ->from($table)
+            ->where($where. ' LIKE ' . $this->db->q('%'.$name.'%'));
+        $this->db->setQuery($query);
+        $rows =  $this->db->loadObjectList();
+        foreach ($rows as $row) {
+            $params = json_decode($row->params,true);
+            $params[$param] = $valueToSet;
+            # Assign new params value
+            $paramsString = json_encode( $params );
+            $this->db->setQuery('UPDATE ' . $table . ' SET '. $updateParams[0] .' = ' .
+                $this->db->quote($paramsString) .
+                ' WHERE ' . $updateParams[1] . ' = ' . $row->id );
+            $this->db->query();
+        }
+    }
 
     private function updateFabrikCronParams($name, $param, $value)
     {
