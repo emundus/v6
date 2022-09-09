@@ -37,7 +37,7 @@ JFactory::getSession()->set('application_layout', 'logs');
 
             </div>
 
-            <div class="panel-body em-container-comment-body">
+            <br class="panel-body em-container-comment-body">
             <?php if (count($this->fileLogs) > 0) { ?>
                 <div id="filters-logs">
                     <!-- add CRUD filters (multi-chosen) -->
@@ -109,7 +109,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                 <?php } else { ?>
                 <div class="log-info"><?= JText::_('NO_LOGS'); ?></div>
                 <?php } ?>
-			</div>
+			</br>
         </div>
     </div>
 </div>
@@ -320,7 +320,16 @@ JFactory::getSession()->set('application_layout', 'logs');
         body.append('persons', JSON.stringify(persons));
 
         xhr.send(body);
-
-        xhr.send(body);
     }
 </script>
+
+<style>
+    .search-choice {
+        font-size: small;
+    }
+
+    .search-field input{
+        font-size: small !important;
+        font-style: italic;
+    }
+</style>
