@@ -16,6 +16,7 @@
                                  @filterValue="getFilterValue"
                                  :columnName="data.column_name"
                                  :columnNameLabel="data.label"
+
                     />
                 </template>
 
@@ -57,7 +58,8 @@
 
 
                 <template v-for="group in items">
-                    <tr @click="toggle(rowGroupByRowKeyName(group))" class="list-row">
+                    <tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
+
                         <td :colspan="listColumns.length+1">{{ rowGroupByRowKeyName(group) }}</td>
                         <td style="border-left: none;text-align: end">
                             <span
@@ -202,6 +204,29 @@ export default {
             this.retriveListData();
 
         },
+
+        retrieveGroupeClassColor(group){
+            const data = this.groupByItemArraySubValues(group);
+            const count = {};
+            /// essayer de trouver un truc plus générique ici plutôt que de mettre directement le nom de l'attribut;
+            for (const element of data) {
+                if (count[element.etat]) {
+                    count[element.etat] += 1;
+                } else {
+                    count[element.etat] = 1;
+                }
+            }
+            console.log(count);
+            console.log(Object.values(count));
+            let countObjectKeys = Object.keys(count);
+            let countObjectValues = Object.values(count)
+            let minElementValue = Math.min(...countObjectValues);
+
+            let minElementKey = countObjectKeys[countObjectValues.indexOf(minElementValue)];
+            return this.classFromValue(minElementKey)
+
+        },
+
         async retriveListData() {
 
             let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []
@@ -305,6 +330,7 @@ export default {
             })
 
         },
+
         getFilterValue(value, column_name) {
 
             this.filters = this.filters.map(el => {
@@ -317,6 +343,7 @@ export default {
             this.filtering();
 
         },
+
         filtering() {
 
             this.items = this.listData.filter(item => {
@@ -346,6 +373,35 @@ export default {
             }
 
         },
+
+        classFromValue(val) {
+            let className = '';
+            switch (val) {
+                case 'a_faire':
+                    className = 'list-row todo';
+                    break;
+                case 'en_cours':
+                    className = 'list-row inprogress';
+                    break;
+                case 'fait' :
+                    className = 'list-row done';
+                    break;
+                case 'sans_objet' :
+                    className = 'list-row todo';
+                    break;
+                case '1' :
+                    className = 'list-row done';
+                    break;
+                case '0' :
+                    className = 'list-row todo';
+                    break;
+                default :
+                    className = 'list-row';
+
+            }
+            return className;
+        },
+
         searchInAllListColumn() {
 
             this.items = this.listData.filter(item => {
@@ -466,6 +522,23 @@ table {
         }
     }
 }
+
+.list-row {
+
+        &.done {
+            background: #DFF5E9;
+        }
+
+        &.todo {
+            color: #ACB1B9;
+        }
+
+        &.inprogress {
+
+            background: #FFFBDB;
+        }
+}
+
 
 
 </style>

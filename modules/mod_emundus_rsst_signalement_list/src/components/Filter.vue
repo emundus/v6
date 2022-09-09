@@ -2,11 +2,11 @@
     <div>
         <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='groupBy'"  style="width: max-content" v-model="groupByCriteriaValue">
             <option value="all" selected > Grouper par</option>
-            <option v-for="(data,index) in filterDatas" :key="data+'_'+index+data.column_name" :value="data.column_name"> {{ texteFromValue(data.label) }}</option>
+            <option v-for="data in filterDataGroupBy" :key="data.id" :value="data.column_name">{{ data.label }}</option>
         </select>
         <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='dropdown'" v-model="filterValue" style="width: max-content">
             <option value="all" selected > {{translate(columnNameLabel) }}</option>
-            <option v-for="(data,index) in filterDatas" :key="data+'_'+index" :value="data"> {{ texteFromValue(data) }}</option>
+            <option v-for="(data,index) in filterDatas" :key="data.id+'_'+index" :value="data"> {{ texteFromValue(data) }}</option>
         </select>
 
         <input type="text" placeholder="Good day " v-if="filterType =='field'" v-model="filterValue" class="list-vue-input em-input" :placeholder="translate(columnNameLabel)"/>
@@ -32,7 +32,9 @@ export default {
         columnNameLabel: {
             type: String,
             required: false
-        }
+        },
+
+
     },
     data: () => ({
         filterValue: '',
@@ -42,7 +44,6 @@ export default {
         this.filterValue = this.filterType == 'dropdown' ? 'all' :'';
 
     },
-
     methods: {
         texteFromValue(val) {
 
@@ -72,6 +73,13 @@ export default {
             }
             return texte;
         },
+    },
+    computed: {
+        filterDataGroupBy() {
+            return this.filterDatas.filter((data) => {
+                return JSON.parse(data.params).filter_groupby != -1;
+            });
+        }
     },
     watch: {
         filterValue: function (val) {

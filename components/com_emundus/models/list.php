@@ -112,7 +112,7 @@ class EmundusModelList extends JModelList
     {
 
         $query = $this->db->getQuery(true);
-        $query->select('DISTINCT jfe.name as column_name, jfe.plugin,jfe.filter_type, jfe.label,jfe.id, jfl.db_table_name as db_table_name')
+        $query->select('DISTINCT jfe.name as column_name, jfe.plugin, jfe.filter_type, jfe.params, jfe.label,jfe.id, jfl.db_table_name as db_table_name')
             ->from($this->db->quoteName('#__fabrik_lists', 'jfl'))
             ->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jfl.form_id') . ' = ' . $this->db->quoteName('jffg.form_id'))
             ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
@@ -129,7 +129,7 @@ class EmundusModelList extends JModelList
             $listColumns = [];
             $databaseJoinsKeysAndColumns = [];
             $i = 0;
-            foreach ($result as list('column_name' => $column_name, 'plugin' => $plugin, 'id' => $id)) {
+            foreach ($result as list('column_name' => $column_name, 'plugin' => $plugin, 'id' => $id,'params'=> $params)) {
                 //array_push($listColumns, str_replace(" ","_",$column_name));
                 if ($plugin == "databasejoin") {
                     $response = $this->retrieveDataBasePluginElementJoinKeyColumnAndTable($id);
@@ -216,6 +216,8 @@ class EmundusModelList extends JModelList
             JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             return 0;
         }
+
+
 
         return ["listColumns" => $result, "listData" => $listData];
 
