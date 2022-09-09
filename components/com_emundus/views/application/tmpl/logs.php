@@ -42,7 +42,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                 <div id="filters-logs">
                     <!-- add CRUD filters (multi-chosen) -->
                     <div id="actions">
-                        <label for="crud-logs-label"><?= JText::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
+                        <label for="crud-logs-label" id="crud-logs-hint"><?= JText::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
                         <select name="crud-logs-select" id="crud-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
                             <option selected value="r"><?= JText::_('COM_EMUNDUS_LOG_READ_TYPE'); ?></option>
                             <option value="c"><?= JText::_('COM_EMUNDUS_LOG_CREATE_TYPE'); ?></option>
@@ -52,16 +52,18 @@ JFactory::getSession()->set('application_layout', 'logs');
                     </div>
                     <!-- -->
                     <div id="types">
-                        <p><br>
-                            <label for="crud-logs-label"><?= JText::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
+                        <br>
+                            <label for="actions-logs-label" id="actions-logs-hint"><?= JText::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
                             <select name="type-logs-select" id="type-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER'); ?>"></select>
+                        </br>
                     </div>
 
                     <!-- -->
                     <div id="actors">
-                        <p><br>
-                            <label for="actors-logs-label"><?= JText::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
-                            <select name="actor-logs-select" id="actors-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>">></select>
+                        <br>
+                            <label for="actors-logs-label" id="actors-logs-hint"><?= JText::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
+                            <select name="actor-logs-select" id="actors-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>"></select>
+                        </br>
                     </div>
 
                 </div>
@@ -145,6 +147,19 @@ JFactory::getSession()->set('application_layout', 'logs');
             }
         });
 
+        /* show hint */
+        $('#crud-logs-hint').on('hover', function(e){
+            $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_CRUD_LOG_FILTER_HINT"));
+        });
+
+        $('#actions-logs-hint').on('hover', function(e){
+            $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_TYPES_LOG_FILTER_HINT"));
+        });
+
+        $('#actors-logs-hint').on('hover', function(e){
+            $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_ACTOR_LOG_FILTER_HINT"));
+        });
+
         /* get fnum from input hidden ==> jQuery('#fnum_hidden').attr('value') */
         /* get all affected user(s) by current fnum */
         jQuery.ajax({
@@ -192,6 +207,8 @@ JFactory::getSession()->set('application_layout', 'logs');
                 }),
                 dataType: 'json',
                 success: function(results) {
+                    $('#log-count-results').remove();
+
                     // add loading icon
                     $('#logs_list').empty();
                     $('#logs_list').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
@@ -202,6 +219,8 @@ JFactory::getSession()->set('application_layout', 'logs');
                     }
 
                     if(results.status) {
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold; padding-bottom: 30px" class="em-main-500-color">' + results.res.length  + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+
                         // re-render the view (clear the logs-list)
                         $('#loading').remove();
 
@@ -221,11 +240,10 @@ JFactory::getSession()->set('application_layout', 'logs');
                             $('#logs_list').append(tr);
                         }
                     } else {
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold; padding-bottom: 30px" class="em-red-500-color">' + 0  + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
                         $('.show-more').hide();
-                        setTimeout(function() {
-                            $('#loading').remove();
-                            $('#logs_list').append('<div id="erorr-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
-                        }, 1500);
+                        $('#loading').remove();
+                        $('#logs_list').append('<div id="erorr-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
                     }
                 }, error: function(xhr,status,error) {
                     console.log(xhr, status, error);
@@ -239,12 +257,26 @@ JFactory::getSession()->set('application_layout', 'logs');
             e.handle = false;
             var fnum = "<?php echo $this->fnum; ?>";
 
+            // get actions (CRUD)
+            var crud = jQuery('#crud-logs').val();
+
+            // get type(s)
+            var types = jQuery('#type-logs').val();
+
+            // get person(s)
+            var persons = jQuery('#actors-logs').val();
+
             url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum';
             $.ajax({
                 type:'POST',
                 url:url,
                 dataType:'json',
-                data:({fnum: fnum, offset: offset}),
+                data:({fnum: fnum,
+                    offset: offset,
+                    crud: crud,
+                    types: types,
+                    persons: persons
+                }),
                 success: function(result) {
                     if (result.status) {
                         var tr = ''

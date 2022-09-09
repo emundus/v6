@@ -4460,7 +4460,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $user = JFactory::getUser()->id;
         $fnum = $jinput->post->getString('fnum');
-        $offset = $jinput->post->getInt('offset');
+        $offset = $jinput->post->getInt('offset', null);
 
         // get request data //
         $crud = $jinput->post->get('crud');                 // crud

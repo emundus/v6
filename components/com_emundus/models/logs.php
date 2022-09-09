@@ -215,12 +215,12 @@ class EmundusModelLogs extends JModelList {
         if (!empty($crud))
             $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
 
-		$query->select('*')
+        $query->select('lg.*, us.firstname, us.lastname')
 			->from($db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
-			->order($db->QuoteName('lg.id') . ' DESC')
-			->setLimit($limit, $offset);
+            ->order($db->QuoteName('lg.id') . ' DESC');
+//			->setLimit($limit, $offset);
 
         if(!is_null($offset)) {
             $query->setLimit($limit, $offset);
