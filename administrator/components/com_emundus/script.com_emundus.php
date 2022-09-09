@@ -60,6 +60,7 @@ class com_emundusInstallerScript
                 #$plugin_list = $this->getEmundusPlugins();
                 #$this->disableEmundusPlugins('hesam_tutorial_events');
 
+                $this->genericUpdateParams("#__modules", "module", "mod_emundusflow", "show_programme", "0");
                 # Change cron fabrik params
                 $this->updateFabrikCronParams('Application not sent','log' , "0");
                 $this->updateFabrikCronParams('Application not sent','log_email' , "jordan.troadec@emundus.fr");
@@ -174,6 +175,27 @@ class com_emundusInstallerScript
             $this->db->query();
         }
     }
+
+    private function genericUpdateParams($table, $where, $name, $param, $value) {
+                $query = $this->db->getQuery(true);
+                $this->db->getQuery(true);
+                $query->select('*')
+                    ->from($table)
+                    ->where($where. ' LIKE ' . $this->db->q('%'.$name.'%'));
+                $this->db->setQuery($query);
+                $rows =  $this->db->loadObjectList();
+
+                foreach ($rows as $row) {
+                    $params = json_decode($row->params,true);
+                    $params[$param] = $value;
+                    # Assign new params value
+                    $paramsString = json_encode( $params );
+                    $this->db->setQuery('UPDATE ' . $table . ' SET params = ' .
+                        $this->db->quote($paramsString) .
+                        ' WHERE id = ' . $row->id );
+                    $this->db->query();
+                }
+            }
 
     private function updateFabrikCronParams($name, $param, $value)
     {

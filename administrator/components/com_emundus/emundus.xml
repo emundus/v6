@@ -9,6 +9,12 @@
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>1.32.8</version>
 	<description>Online application component for Joomla!.</description>
+	<scriptfile>script.com_emundus.php</scriptfile>
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates/mysql</schemapath>
+		</schemas>
+	</update>
 
 	<files folder="site">
 		<folder>assets</folder>

@@ -30,18 +30,6 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . 'com_installer/models/install.php';
 
 jimport('joomla.application.cli');
 
-# Init log files
-Log::addLogger(
-    array(
-        'text_file' => 'update_cli_errors.log.php',
-    ),
-    JLog::ALL, array('error'));
-Log::addLogger(
-    array(
-        'text_file' => 'update_cli_queries.log.php',
-    ),
-    JLog::ALL, array('update'));
-
 
 class UpdateCli extends JApplicationCli
 {
@@ -62,6 +50,23 @@ class UpdateCli extends JApplicationCli
         $options = getopt($short_options, $long_options);
         $args = (array)$GLOBALS['argv'];
 
+        # Init log files
+        $error_log = array(JPATH_BASE . "/logs/update_cli_errors.php", JPATH_BASE . "/logs/update_cli_queries.php");
+        foreach ($error_log AS $file) {
+            if (!unlink($file)) {
+                echo("$file cannot be deleted due to an error");
+            }
+        }
+        Log::addLogger(
+            array(
+                'text_file' => 'update_cli_errors.php',
+            ),
+            JLog::ALL, array('error'));
+        Log::addLogger(
+            array(
+                'text_file' => 'update_cli_queries.php',
+            ),
+            JLog::ALL, array('update'));
         $this->firstrun = false;
         # Array of components available for update
         $availableComponents = array('com_emundus', 'com_fabrik', 'com_hikashop', 'com_hikamarket', 'com_falang',
@@ -277,8 +282,8 @@ class UpdateCli extends JApplicationCli
 
                 # Check if this is the first run for emundus component
                 if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" or $manifest_cache['version'] < "1.33.0")) {
-                    $this->checkFirstRun($elementArr['extension_id']);
-                    $manifest_cache['version'] = (string)$this->manifest_xml->version;
+                    $emundus_version = $this->checkFirstRun($elementArr['extension_id']);
+                    $manifest_cache['version'] = $emundus_version;
                 }
 
                 # Update loop
@@ -1002,7 +1007,7 @@ class UpdateCli extends JApplicationCli
             } else {
                 $begin_update = reset($files);
             }
-
+            # Return null & update schema if begin_update not find
             if ($begin_update === null) {
                 $this->updateSchema($eid, $files, null, $this->manifest_xml->version);
                 return array(0, 0);
@@ -1015,6 +1020,7 @@ class UpdateCli extends JApplicationCli
             $this->count_fails++;
         }
 
+        # Execute queries
         foreach ($files as $file) {
             if (version_compare($file, $begin_update) > 0) {
 
@@ -1023,7 +1029,7 @@ class UpdateCli extends JApplicationCli
                     continue;
                 }
 
-                // Graceful exit and rollback if read not successful
+                # Graceful exit and rollback if read not successful
                 if ($buffer === false) {
                     Log::add($element . " : " . $file . ".sql  -> Error SQL Read buffer", Log::ERROR, 'error');
                     return array(0, 0);
@@ -1071,9 +1077,7 @@ class UpdateCli extends JApplicationCli
         # Update the database
         if ($update_count >= 0) {
             $this->updateSchema($eid, $files, 'end');
-        }/* else {
-            $this->updateSchema($eid, $files, null, $this->manifest_xml->version);
-        }*/
+        }
         return array($update_count, $files);
     }
 
@@ -1103,6 +1107,7 @@ class UpdateCli extends JApplicationCli
         }
         $result = 0;
         $result |= $installer->refreshManifestCache($ext_id);
+
         # Case for component with non conventional file naming
         if ($element == 'com_extplorer' or $element == 'com_dropfiles') {
             if (file_exists($rename_file)) {
