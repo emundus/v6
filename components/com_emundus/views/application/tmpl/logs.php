@@ -43,7 +43,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                     <!-- add CRUD filters (multi-chosen) -->
                     <div id="actions">
                         <label for="crud-logs-label"><?= JText::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
-                        <select name="crud-logs-select" id="crud-logs" class="chzn-select" multiple>
+                        <select name="crud-logs-select" id="crud-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
                             <option selected value="r"><?= JText::_('COM_EMUNDUS_LOG_READ_TYPE'); ?></option>
                             <option value="c"><?= JText::_('COM_EMUNDUS_LOG_CREATE_TYPE'); ?></option>
                             <option value="u"><?= JText::_('COM_EMUNDUS_LOG_UPDATE_TYPE'); ?></option>
