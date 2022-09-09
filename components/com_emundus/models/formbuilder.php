@@ -167,7 +167,11 @@ class EmundusModelFormbuilder extends JModelList {
                 $new_key = $this->updateTranslation($labelTofind, $NewSubLabel,'fabrik_groups', $group);
 
                 if (!empty($new_key) && !is_bool($new_key)) {
+                    $translation = JText::_($new_key);
+                    $new_name = !empty($translation) && $translation != "Nouvelle section" ? $translation : $new_key;
+
                     $query->update($db->quoteName('#__fabrik_groups'))
+                        ->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
                         ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                         ->where($db->quoteName('id') . ' = ' . $db->quote($group));
                     $db->setQuery($query);
@@ -1879,8 +1883,8 @@ class EmundusModelFormbuilder extends JModelList {
                         $element['params']['database_join_noselectionlabel'] = 'PLEASE_SELECT';
                     }
                 } else {
-                    $sub_values = [];
-                    $sub_labels = [];
+                    $sub_values = $old_params['sub_options']['sub_values'];
+                    $sub_labels = $old_params['sub_options']['sub_labels'];
                     $sub_initial_selection = [];
 
                     if($element['params']['default_value'] == 1) {
