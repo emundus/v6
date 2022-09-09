@@ -73,7 +73,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                         <?= JText::_('COM_EMUNDUS_LOGS_FILTER') ?>
                     </button>
 
-                    <button style="background: #16afe1" class="em-w-max-content em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
+                    <button id="log-export-btn" style="background: #16afe1" class="em-w-max-content em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
                         <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
                     </button>
                 </div>
@@ -219,7 +219,9 @@ JFactory::getSession()->set('application_layout', 'logs');
                     }
 
                     if(results.status) {
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold; padding-bottom: 30px" class="em-main-500-color">' + results.res.length  + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        $('.logs_table').show();
+                        $('#log-export-btn').show();
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-red-500-color">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
 
                         // re-render the view (clear the logs-list)
                         $('#loading').remove();
@@ -244,6 +246,8 @@ JFactory::getSession()->set('application_layout', 'logs');
                         $('.show-more').hide();
                         $('#loading').remove();
                         $('#logs_list').append('<div id="erorr-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
+                        $('#log-export-btn').hide();
+                        $('.logs_table').hide();
                     }
                 }, error: function(xhr,status,error) {
                     console.log(xhr, status, error);
@@ -322,6 +326,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                         file_link.innerText = Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD');
                         file_link.click();
                     } else {
+                        $('#log-export-btn').hide();
                         Swal.fire({
                             title: Joomla.JText._('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR'),
                             type: 'error',
