@@ -215,13 +215,13 @@ JFactory::getSession()->set('application_layout', 'logs');
 
                     // remove the error-message (if any)
                     if($('#error-message').length > 0) {
-                        $('#erorr-message').remove();
+                        $('#error-message').remove();
                     }
 
                     if(results.status) {
                         $('.logs_table').show();
                         $('#log-export-btn').show();
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-red-500-color">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-red-500-color">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
 
                         // re-render the view (clear the logs-list)
                         $('#loading').remove();
@@ -242,10 +242,10 @@ JFactory::getSession()->set('application_layout', 'logs');
                             $('#logs_list').append(tr);
                         }
                     } else {
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold; padding-bottom: 30px" class="em-red-500-color">' + 0  + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold; padding-bottom: 30px" class="em-red-500-color">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
                         $('.show-more').hide();
                         $('#loading').remove();
-                        $('#logs_list').append('<div id="erorr-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
+                        $('#logs_list').append('<div id="error-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
                         $('#log-export-btn').hide();
                         $('.logs_table').hide();
                     }
