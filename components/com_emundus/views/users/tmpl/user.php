@@ -115,19 +115,19 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                     <?php if ($value == 0 && $user->active != -1) :?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-main-500-color">verified</span>
+                                                <span class="material-icons em-main-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
                                             </div>
                                         </td>
                                     <?php elseif($user->active == -1):?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-yellow-500-color">new_releases</span>
+                                                <span class="material-icons em-yellow-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_WAITING') ?>">new_releases</span>
                                             </div>
                                         </td>
                                     <?php else : ?>
                                         <td>
                                             <div class="em-cell" >
-                                                <span class="material-icons em-red-500-color">block</span>
+                                                <span class="material-icons em-red-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE') ?>">block</span>
                                             </div>
                                         </td>
                                     <?php endif; ?>
