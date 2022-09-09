@@ -4022,4 +4022,40 @@ class EmundusModelFiles extends JModelLegacy
 
         return $result;
     }
+
+    public function getStatusByStep($step)
+    {
+        $query = 'select id from #__emundus_setup_status where step='.$step;
+        $db = $this->getDbo();
+
+        try
+        {
+            $db->setQuery($query);
+            $status_id = $db->loadResult();
+
+            return $this->getStatusByID($status_id);
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
+
+    public function getAllLogs()
+    {
+        $query = 'select * from #__emundus_setup_actions order by id asc';
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+        $query->clear()->select('*')->from($db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
+
+        try
+        {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            JLog::add('component/com_emundus/models/files | Error when get all logs' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
+    }
 }

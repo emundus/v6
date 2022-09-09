@@ -183,9 +183,9 @@ class EmundusModelLogs extends JModelList {
 	/**
 	 * Gets the actions done on an fnum. Can be filtered by user doing the action, the action itself, CRUD and/or banned logs.
 	 * @param int $fnum
-	 * @param int $user_from
-	 * @param int $action
-	 * @param string $crud
+     * @param array $user_from  // optional
+     * @param array $action     // optional
+     * @param array $crud       // optional
 	 * @param int $offset
      * @param int $limit
 	 * @since 3.8.8
@@ -194,22 +194,26 @@ class EmundusModelLogs extends JModelList {
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
 
 		// If the user ID from is not a number, something is wrong.
-		if (!empty($user_from) && !is_numeric($user_from)) {
+		/* if (!empty($user_from) && !is_numeric($user_from)) {
 			JLog::add('Getting actions on fnum in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
 			return false;
-		}
+		} */
 
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
+        $user_from = implode(',', $user_from);
+        $action = implode(',', $action);
+        $crud = implode(',', $db->quote($crud));
+
 		// Build a where depending on what params are present.
-		$where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
-		if (!empty($user_from))
-			$where .= ' AND '.$db->quoteName('user_id_from').'='.$user_from;
-		if (!empty($action) && is_numeric($action))
-			$where .= ' AND '.$db->quoteName('action_id').'='.$action;
-		if (!empty($crud))
-			$where .= ' AND '.$db->quoteName('verb').' LIKE '.$db->quote($crud);
+        $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
+        if (!empty($user_from))
+            $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.$user_from . ')';
+        if (!empty($action))
+            $where .= ' AND '.$db->quoteName('action_id').' IN ('. $action . ')';
+        if (!empty($crud))
+            $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
 
 		$query->select('*')
 			->from($db->quoteName('#__emundus_logs', 'lg'))
@@ -217,6 +221,10 @@ class EmundusModelLogs extends JModelList {
 			->where($where)
 			->order($db->QuoteName('lg.id') . ' DESC')
 			->setLimit($limit, $offset);
+
+        if(!is_null($offset)) {
+            $query->setLimit($limit, $offset);
+        }
 
 		$db->setQuery($query);
 		$results = $db->loadObjectList();
@@ -388,9 +396,9 @@ class EmundusModelLogs extends JModelList {
 		return $details;
 	}
 
-    public function exportLogs($fnum)
+    public function exportLogs($fnum,$users,$actions,$crud)
     {
-        $actions = $this->getActionsOnFnum($fnum, null, null, null, null, 1000);
+        $actions = $this->getActionsOnFnum($fnum, $users, $actions, $crud, null, null);
         if (!empty($actions)) {
             $lines = [
                 [
@@ -435,5 +443,31 @@ class EmundusModelLogs extends JModelList {
         }
 
         return false;
+    }
+
+    /* get all #users #logs by fnum [make left join with table jos_users] */
+    public function getUsersLogsByFnum($fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        /* if no fnum is set ==> return empty array */
+        if(empty($fnum)) {
+            return [];
+        } else {
+            try {
+                $query->clear()
+                    ->select('distinct(ju.id) as uid, ju.name')
+                    ->from($db->quoteName('jos_users', 'ju'))
+                    ->leftJoin($db->quoteName('#__emundus_logs', 'jel') . ' ON ' . $db->quoteName('jel.user_id_from') . ' = ' . $db->quoteName('ju.id'))
+                    ->where($db->quoteName('jel.fnum_to') . ' = ' . $db->quote($fnum));
+
+                $db->setQuery($query);
+                $results = $db->loadObjectList();
+
+                return $results;
+            } catch(Exception $e) {
+                JLog::add('component/com_emundus/models/files | Error when get all affected user by fnum' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage() . '#fnum = ' . $fnum), JLog::ERROR, 'com_emundus');
+            }
+        }
     }
 }

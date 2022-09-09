@@ -4461,13 +4461,19 @@ class EmundusControllerFiles extends JControllerLegacy
         $user = JFactory::getUser()->id;
         $fnum = $jinput->post->getString('fnum');
         $offset = $jinput->post->getInt('offset');
+
+        // get request data //
+        $crud = $jinput->post->get('crud');                 // crud
+        $types = $jinput->post->get('types');               // log id
+        $persons = $jinput->post->get('persons');           // person
+
         $fnumErrorList = [];
 
         if (EmundusHelperAccess::asAccessAction(37, 'r', $user, $fnum)) {
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
             $m_logs = new EmundusModelLogs;
 
-            $res = $m_logs->getActionsOnFnum($fnum, null, null, null, $offset);
+            $res = $m_logs->getActionsOnFnum($fnum, $persons, $types, $crud, $offset);
             $details = [];
 
             if (empty($res)) {
@@ -4537,11 +4543,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', '');
 
+        // get crud, types, persons
+        $crud = json_decode($jinput->getString('crud', ''));
+        $types = json_decode($jinput->getString('types', ''));
+        $persons = json_decode($jinput->getString('persons', ''));
+
         if (!empty($fnum)) {
             if (EmundusHelperAccess::asAccessAction(37, 'r', $user->id, $fnum)) {
                 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
                 $m_logs = new EmundusModelLogs;
-                $res = $m_logs->exportLogs($fnum);
+                $res = $m_logs->exportLogs($fnum,$persons,$types,$crud);
             } else {
                 $res = array(
                     'status' => false,
@@ -4582,5 +4593,38 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         return !empty($data) ? $data : false;
+    }
+
+    /* get all logs */
+    public function getalllogs() {
+        $m_files = $this->getModel('Files');
+        $logs = $m_files->getAllLogs();
+
+        if($logs) {
+            echo json_encode((array('status' => true, 'data' => $logs)));
+        } else {
+            echo json_encode((array('status' => false, 'data' => [])));
+        }
+        exit;
+    }
+
+    /* get users logs by fnum */
+    public function getuserslogbyfnum() {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', '');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $m_logs = new EmundusModelLogs;
+
+        if(!empty($fnum)) {
+            $users = $m_logs->getUsersLogsByFnum($fnum);
+            if(!empty($users)) {
+                echo json_encode((array('status' => true, 'data' => $users)));
+            } else {
+                echo json_encode((array('status' => false, 'data' => [])));
+            }
+        } else {
+            echo json_encode((array('status' => false, 'data' => [])));
+        }
+        exit;
     }
 }
