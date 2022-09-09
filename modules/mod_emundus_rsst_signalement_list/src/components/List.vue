@@ -60,7 +60,7 @@
                 <template v-for="group in items">
                     <tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
 
-                        <td :colspan="listColumns.length+1">{{ rowGroupByRowKeyName(group) }}</td>
+                        <td :colspan="listColumns.length+1" ><b>{{ rowGroupByRowKeyName(group) }}</b></td>
                         <td style="border-left: none;text-align: end">
                             <span
                                 v-if="opened.includes(rowGroupByRowKeyName(group))"
@@ -501,6 +501,7 @@ table {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        color: black;
     }
 
     th.status,
@@ -514,6 +515,7 @@ table {
             th {
                 border-top: 1px solid #e0e0e0;
                 border-bottom: 1px solid #e0e0e0;
+                color:black;
 
                 .material-icons {
                     transform: translateY(3px);
@@ -521,16 +523,24 @@ table {
             }
         }
     }
+
+
 }
 
+.list-table-head{
+    background-color: white!important;
+}
 .list-row {
 
         &.done {
             background: #DFF5E9;
+            color:black;
+            opacity: 100%;
         }
 
         &.todo {
             color: #ACB1B9;
+            background-color: red;
         }
 
         &.inprogress {
