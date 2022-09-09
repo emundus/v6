@@ -221,7 +221,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                     if(results.status) {
                         $('.logs_table').show();
                         $('#log-export-btn').show();
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-red-500-color">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-main-500-color">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
 
                         // re-render the view (clear the logs-list)
                         $('#loading').remove();
