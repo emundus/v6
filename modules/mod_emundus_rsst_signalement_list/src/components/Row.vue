@@ -190,15 +190,23 @@ export default {
 
         &.done {
             background: #DFF5E9;
+
         }
 
         &.todo {
-            color: #ACB1B9;
+            color: black;
+            background: #FBABAB;
         }
 
         &.inprogress {
 
-            background: #FFFBDB;
+            background: #FDD46A;
+            color: black
+        }
+
+        &.default{
+            background: #F2F2F3;
+            colo:black
         }
     }
 

@@ -533,14 +533,14 @@ table {
 .list-row {
 
         &.done {
-            background: #DFF5E9;
+            background-color: #32EE5F !important;
             color:black;
             opacity: 100%;
         }
 
         &.todo {
-            color: #ACB1B9;
-            background-color: red;
+            color: black;
+            background-color: #FBABAB !important;
         }
 
         &.inprogress {
