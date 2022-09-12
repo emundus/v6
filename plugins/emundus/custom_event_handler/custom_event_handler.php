@@ -24,9 +24,12 @@ class plgEmundusCustom_event_handler extends JPlugin {
 
     function callEventHandler(String $event, array $args = null): array
     {
+        $events = [];
         $params = json_decode($this->params);
         $event_handlers = json_decode($params->event_handlers);
-        $events = array_keys($event_handlers->event, $event);
+        if(!empty($event_handlers->event)){
+            $events = array_keys($event_handlers->event, $event);
+        }
         $returned_values = [];
 
         if(method_exists($this->hEvents,$event)){
