@@ -415,6 +415,25 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 						JLog::add($error, JLog::ERROR, 'com_emundus');
 					}
 
+                    if (!empty($link)) {
+                        $query = $db->getQuery(true);
+                        $query->select('COUNT(id)')
+                            ->from('#__emundus_setup_attachment_profiles')
+                            ->where('profile_id = ' . $user->profile)
+                            ->orWhere('campaign_id = ' . $user->fnums[$user->fnum]->campaign_id);
+
+                        $db->setQuery($query);
+                        try {
+                            $profileDocuments = $db->loadResult();
+
+                            if ($profileDocuments < 1) {
+                                $link = "";
+                            }
+                        } catch (Exception $e) {
+                            JLog::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', JLog::ERROR, 'fabrik_form.emundus_redirect');
+                        }
+                    }
+
 					if (empty($link)) {
 						try {
 							$query = 'SELECT CONCAT(link,"&Itemid=",id) 
