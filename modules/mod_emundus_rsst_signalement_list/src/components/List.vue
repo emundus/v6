@@ -43,12 +43,12 @@
 
                     {{ translate(data.label) }}
                 </th>
-                <th>
+               <!--<th>
                     <span>
                         <list-action-menu :actionColumnId="ListActionColumn" :listId="listId"
                                           @setAs="setAs"></list-action-menu>
                     </span>
-                </th>
+                </th>-->
 
             </tr>
             </thead>

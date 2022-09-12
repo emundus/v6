@@ -24,11 +24,11 @@
             </template>
 
         </td>
-        <td>
+        <!--<td>
 			<span>
 				<list-action-menu :actionColumnId="actionColumnId" :listId="listId" @setAs="setAs"></list-action-menu>
 			</span>
-        </td>
+        </td>-->
     </tr>
 </template>
 
