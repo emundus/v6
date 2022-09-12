@@ -98,6 +98,6 @@ fi
 cd /var/www/html/libraries/emundus && ./update-db.sh $TCHOOZ_DB_HOST
 
 # Custom update script
-php /var/www/html/cli/update_cli.php -c -v
+php /var/www/html/cli/update_cli.php -av
 
 exec "$@"
