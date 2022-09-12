@@ -88,7 +88,7 @@ class EmundusHelperEvents {
             $submittion_page = $mForm->getSubmittionPage($prid);
             $submittion_page_id = (int)explode('=',$submittion_page->link)[3];
 
-            if($submittion_page_id !== $params['formModel']->id){
+            if ($submittion_page_id != $params['formModel']->id) {
                 $this->redirect($params);
             } else {
                 $this->confirmpost($params);
@@ -113,7 +113,8 @@ class EmundusHelperEvents {
             $formModel = $params['formModel'];
             $listModel =  $params['formModel']->getListModel();
 
-            $user = JFactory::getSession()->get('emundusUser');
+            $emundusUser = JFactory::getSession()->get('emundusUser');
+            $user = $emundusUser;
 
             if (empty($user)) {
                 $user = JFactory::getUser();
@@ -123,7 +124,7 @@ class EmundusHelperEvents {
             $copy_application_form = $eMConfig->get('copy_application_form', 0);
             $can_edit_until_deadline = $eMConfig->get('can_edit_until_deadline', '0');
             $can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
-            $current_phase = $m_campaign->getCurrentCampaignWorkflow($user);
+            $current_phase = $m_campaign->getCurrentCampaignWorkflow($emundusUser);
 
             $id_applicants = $eMConfig->get('id_applicants', '0');
             $applicants = explode(',',$id_applicants);
@@ -164,8 +165,8 @@ class EmundusHelperEvents {
             $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
 
             $edit_status = array();
-            if (!empty($current_phase) && !empty($current_phase->status)) {
-                $edit_status[] = $current_phase->status;
+            if (!empty($current_phase) && !empty($current_phase->entry_status)) {
+                $edit_status = array_merge($edit_status, $current_phase->entry_status);
             } else {
                 $edit_status[] = 0;
             }
@@ -703,8 +704,6 @@ class EmundusHelperEvents {
         $export_pdf                 = $eMConfig->get('export_application_pdf', 0);
         $export_path                = $eMConfig->get('export_path', null);
         $id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
-
-        // TODO : Replace new_status by a dynamic value. Getting it in emundus_campaign_workflow
         $new_status                 = 1;
 
 
@@ -715,10 +714,16 @@ class EmundusHelperEvents {
 
 
         $current_phase = $mCampaign->getCurrentCampaignWorkflow($student);
-        if (!empty($current_phase) && !empty($current_phase->end_date)) {
-            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
-        } else {
-            $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->end_date)) ? true : false;
+        if (!empty($current_phase) && !empty($current_phase->id)) {
+            if (!is_null($current_phase->output_status)) {
+                $new_status = $current_phase->output_status;
+            }
+
+            if (!empty($current_phase->end_date)) {
+                $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+            } else {
+                $is_dead_line_passed = strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->end_date);
+            }
         }
 
         // Check campaign limit, if the limit is obtained, then we set the deadline to true
