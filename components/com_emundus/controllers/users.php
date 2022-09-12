@@ -324,7 +324,8 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	/////////////Nouvelle Gestion /////////////////
 	public function clear() {
-		@EmundusHelperFiles::clear();
+        $h_files = new EmundusHelperFiles();
+        $h_files->clear();
 		echo json_encode((object)(array('status' => true)));
 		exit;
 	}

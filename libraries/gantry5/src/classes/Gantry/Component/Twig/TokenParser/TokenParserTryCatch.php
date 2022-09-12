@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -36,8 +36,8 @@ class TokenParserTryCatch extends AbstractTokenParser
     /**
      * Parses a token and returns a node.
      *
-     * @param Token $token A Twig Token instance
-     * @return Node A Twig Node instance
+     * @param Token $token
+     * @return TwigNodeTryCatch
      * @throws SyntaxError
      */
     public function parse(Token $token)
