@@ -708,7 +708,12 @@ class UpdateCli extends JApplicationCli
     {
         $this->out("** Script first run **");
         $tmp_version = explode(".", $this->manifest_xml->version);
-        $tmp_version[2]--;
+        if ($tmp_version[2] == 0){
+            $tmp_version[1]--;
+            $tmp_version[2] = "9";
+        } else{
+            $tmp_version[2]--;
+        }
         $tmp_version = implode(".", $tmp_version);
         $this->schema_version = $tmp_version;
         $this->updateSchema($id, null, null, $this->schema_version);
@@ -975,7 +980,7 @@ class UpdateCli extends JApplicationCli
             while (reset($files) < $cache_version and !empty($files)) {
                 array_shift($files);
             }
-
+        }
             if (empty($files)) {
                 if ($this->verbose) {
                     $this->out("-> No SQL Files");
@@ -983,7 +988,7 @@ class UpdateCli extends JApplicationCli
                 $this->updateSchema($eid, $files, null, $this->manifest_xml->version);
                 return array(0, 0);
             }
-        }
+
 
         # Search matching file with version in schema table
         try {
@@ -1075,7 +1080,7 @@ class UpdateCli extends JApplicationCli
             }
         }
         # Update the database
-        if ($update_count >= 0) {
+        if ($update_count >= 0 and !$this->firstrun) {
             $this->updateSchema($eid, $files, 'end');
         }
         return array($update_count, $files);
