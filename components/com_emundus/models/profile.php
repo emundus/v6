@@ -180,27 +180,53 @@ class EmundusModelProfile extends JModelList {
     }
 
     // We are getting the profile in setup status table
-    function getProfileByFnum($fnum) {
-        $query = 'SELECT ss.profile from jos_emundus_setup_status ss
-                  LEFT JOIN jos_emundus_campaign_candidature cc ON cc.status = ss.step
-						WHERE cc.fnum LIKE "'.$fnum.'"';
+    function getProfileByFnum($fnum): int
+    {
+        $profile = 0;
+        $query = $this->_db->getQuery(true);
+
+        $query->select('ecw.profile')
+            ->from('#__emundus_campaign_workflow AS ecw')
+            ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw.id = ecw_camp.parent_id')
+            ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw.id = ecw_status.parent_id')
+            ->leftJoin('#__emundus_campaign_candidature AS cc ON cc.campaign_id = ecw_camp.campaign AND cc.status = ecw_status.entry_status')
+            ->where('cc.fnum = ' . $fnum);
+
+        $this->_db->setQuery($query);
 
         try {
+            $profile = $this->_db->loadResult();
+        } catch(Exception $e) {
+            JLog::add('Error on query profile Model function getProfileByFnum => '.$query->__toString(), JLog::ERROR, 'com_emundus.error');
+        }
+
+        if (empty($profile)) {
+            $query = 'SELECT ss.profile from jos_emundus_setup_status ss
+                  LEFT JOIN jos_emundus_campaign_candidature cc ON cc.status = ss.step
+						WHERE cc.fnum LIKE "'.$fnum.'"';
             $this->_db->setQuery($query);
-            $res = $this->_db->loadResult();
-            if (!empty($res)) {
-                return $res;
-            } else {
+
+            try {
+                $profile = $this->_db->loadResult();
+            } catch(Exception $e) {
+                JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+            }
+
+            if (empty($profile)) {
                 $query = 'SELECT esc.profile_id from jos_emundus_setup_campaigns esc
                   LEFT JOIN jos_emundus_campaign_candidature cc ON cc.campaign_id = esc.id
 						WHERE cc.fnum LIKE "'.$fnum.'"';
                 $this->_db->setQuery($query);
-                return $this->_db->loadResult();
+
+                try {
+                    $profile = $this->_db->loadResult();
+                } catch(Exception $e) {
+                    JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus.error');
+                }
             }
-        } catch(Exception $e) {
-            JLog::add('Error on query profile Model function getProfileByFnum => '.$query, JLog::ERROR, 'com_emundus');
-            return null;
         }
+
+        return $profile;
     }
 
     function getCurrentProfile($aid) {
