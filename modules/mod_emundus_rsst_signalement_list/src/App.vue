@@ -1,7 +1,10 @@
 <template>
     <div id="app">
 
-        <List :listId="fabrikListId" :ListActionColumn="fabrikListActionColumn" :listParticularConditionalColumn="fabrikListParticularConditionalColumn" :listParticularConditionalColumnValues="fabrikListParticularConditionalColumnValues" />
+        <List :listId="fabrikListId" :ListActionColumn="fabrikListActionColumn" :listParticularConditionalColumn="fabrikListParticularConditionalColumn"
+              :listParticularConditionalColumnValues="fabrikListParticularConditionalColumnValues" :listColumnShowingAsBadge="fabrikListColumnShowingAsBadge"
+              :listColumnToNotShowingWhenFilteredBy="fabrikListColumnToNotShowingWhenFilteredBy"
+        />
     </div>
 </template>
 
@@ -30,11 +33,19 @@ export default {
         fabrikListParticularConditionalColumnValues: {
             type: String,
             required: false
+        },
+        fabrikListColumnShowingAsBadge: {
+            type: String,
+            required: false
+        },
+        fabrikListColumnToNotShowingWhenFilteredBy:{
+            type: String,
+            required: false
         }
     },
 
     created() {
-        console.log(this.fabrikListParticularConditionalColumn);
+
     }
 }
 </script>

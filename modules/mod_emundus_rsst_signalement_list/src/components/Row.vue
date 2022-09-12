@@ -1,12 +1,12 @@
 <template>
 
 
-    <tr class="list-row" >
+    <tr class="list-row">
         <td>
             <input type="checkbox" class="em-switch input" v-model='checkedRows.rows' :value='rowData' checked='true'>
         </td>
 
-        <td v-for="column in listColumns" :key="column.label">
+        <td v-for="column in showingListColumns" :key="column.label">
 
             <template v-if="!badgeForColumnum(column.column_name) ">
                 <template v-if="column.plugin =='date'">
@@ -59,7 +59,10 @@ export default {
             type: String,
             required: true,
         },
-
+        listColumnShowingAsBadge: {
+            type: String,
+            required: false,
+        },
         hasBeenGroupBy: {
             type: Boolean,
             required: true
@@ -69,9 +72,20 @@ export default {
             type: String,
             required: false
         },
+
         opened: {
             type: Array,
-            required:false
+            required: false
+        },
+
+        filterColumnUsedActually: {
+            type: Array,
+            required: false
+        },
+
+        listColumnToNotShowingWhenFilteredBy: {
+            type: String,
+            required: false,
         }
     },
     components: {
@@ -80,19 +94,13 @@ export default {
     data: () => ({
         isChecked: false,
     }),
-    watch: {
-        /*checkedRows: function(val){
-            console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-            console.log(val);
-            console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-            this.isChecked = val.rows.some(row => row.id === this.rowData.id);
+    created() {
 
-        }*/
     },
     methods: {
         badgeForColumnum(name) {
 
-            const availableList = ['etat', 'publication', 'profile'];
+            const availableList = this.listColumnShowingAsBadge.split(',') || [];
             return availableList.includes(name);
         },
         classFromValue(val) {
@@ -171,7 +179,25 @@ export default {
         }
 
 
-    }
+    },
+    watch: {
+
+    },
+    computed: {
+        showingListColumns() {
+
+            const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
+
+            return this.listColumns.filter((data) => {
+                if (this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)) {
+                    return !unwantedColumns.includes(data.column_name);
+                } else {
+                    return true;
+                }
+
+            });
+        }
+    },
 }
 </script>
 
@@ -204,9 +230,9 @@ export default {
             color: black
         }
 
-        &.default{
+        &.default {
             background: #F2F2F3;
-            colo:black
+            colo: black
         }
     }
 

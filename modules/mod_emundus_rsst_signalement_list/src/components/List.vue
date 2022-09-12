@@ -9,18 +9,17 @@
             <filter-item
                 :filterType="'groupBy'" :filterDatas="listColumns" @groupByCriteriaValue="groupByColumn"
             />
-            <template v-for="data in listColumns">
-                <template v-if="data.filter_type ==='field' || data.filter_type ==='dropdown' ">
-                    <filter-item :id="data.id+'_'+data.filter_type" :key="data.id+'_'+data.filter_type"
-                                 :filterType="data.filter_type" :filterDatas="retrieveFiltersInputData(data)"
-                                 @filterValue="getFilterValue"
-                                 :columnName="data.column_name"
-                                 :columnNameLabel="data.label"
 
-                    />
-                </template>
 
-            </template>
+            <filter-item v-for="data in fieldAndDropdownFilters"
+                         :id="data.id+'_'+data.filter_type"
+                         :key="data.id+'_'+data.filter_type"
+                         :filterType="data.filter_type" :filterDatas="retrieveFiltersInputData(data)"
+                         @filterValue="getFilterValue"
+                         :columnName="data.column_name"
+                         :columnNameLabel="data.label"
+
+            />
 
 
         </div>
@@ -31,7 +30,7 @@
                 <th>
                     <!--<input type="checkbox" v-model="checkedRows.rows" class="em-switch input" :value="listData" > -->
                 </th>
-                <th v-for="data in listColumns" :id="data.column_name" :key="data.id"
+                <th v-for="data in showingListColumns" :id="data.column_name" :key="data.id"
                     @click="orderBy(data.column_name)">
                     <span
                         v-if="sort.orderBy == data.column_name && sort.order == 'asc'"
@@ -58,9 +57,10 @@
 
 
                 <template v-for="group in items">
-                    <tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
+                    <tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)"
+                        :class="retrieveGroupeClassColor(group)">
 
-                        <td :colspan="listColumns.length+1" ><b>{{ rowGroupByRowKeyName(group) }}</b></td>
+                        <td :colspan="listColumns.length+1"><b>{{ rowGroupByRowKeyName(group) }}</b></td>
                         <td style="border-left: none;text-align: end">
                             <span
                                 v-if="opened.includes(rowGroupByRowKeyName(group))"
@@ -83,6 +83,9 @@
                             :listId="listId"
                             :hasBeenGroupBy="hasBeenGroupBy"
                             :rowGroupByRowKeyName="rowGroupByRowKeyName(group)"
+                            :listColumnShowingAsBadge="listColumnShowingAsBadge"
+                            :filterColumnUsedActually="filterColumnUsedActually"
+                            :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
                         />
                     </template>
 
@@ -100,6 +103,9 @@
                     :actionColumnId="ListActionColumn"
                     :listId="listId"
                     :hasBeenGroupBy="hasBeenGroupBy"
+                    :listColumnShowingAsBadge="listColumnShowingAsBadge"
+                    :filterColumnUsedActually="filterColumnUsedActually"
+                    :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
                 />
             </template>
 
@@ -146,6 +152,16 @@ export default {
         listParticularConditionalColumnValues: {
             type: String,
             required: false
+        },
+
+        listColumnShowingAsBadge:{
+            type:String,
+            required: false,
+        },
+
+        listColumnToNotShowingWhenFilteredBy:{
+            type:String,
+            required: false
         }
     },
     data: () => ({
@@ -154,6 +170,8 @@ export default {
         listData: [],
         items: [],
         opened: [],
+        filterColumnUsedActually: [],
+
         sort: {
             last: "",
             order: "",
@@ -172,7 +190,6 @@ export default {
         this.retriveListData();
     },
 
-    computed: {},
 
     methods: {
 
@@ -192,7 +209,10 @@ export default {
         },
 
         rowGroupByRowKeyName(item) {
-            return item[0];
+            console.log('-------------------------')
+            console.log(item[0])
+            console.log('-------------------------');
+            return this.translate(item[0]);
         },
 
         reloadData() {
@@ -205,7 +225,7 @@ export default {
 
         },
 
-        retrieveGroupeClassColor(group){
+        retrieveGroupeClassColor(group) {
             const data = this.groupByItemArraySubValues(group);
             const count = {};
             /// essayer de trouver un truc plus générique ici plutôt que de mettre directement le nom de l'attribut;
@@ -216,8 +236,7 @@ export default {
                     count[element.etat] = 1;
                 }
             }
-            console.log(count);
-            console.log(Object.values(count));
+
             let countObjectKeys = Object.keys(count);
             let countObjectValues = Object.values(count)
             let minElementValue = Math.min(...countObjectValues);
@@ -333,9 +352,21 @@ export default {
 
         getFilterValue(value, column_name) {
 
+
+                const index = this.filterColumnUsedActually.indexOf(column_name);
+
+                if (index > -1 || value =='all') {
+
+                    this.filterColumnUsedActually.splice(index, 1);
+                } else {
+                    this.filterColumnUsedActually.push(column_name)
+                }
+
+
             this.filters = this.filters.map(el => {
 
                 if (el.column_name == column_name) {
+
                     return {...el, filterValue: value === 'all' ? '' : value}
                 }
                 return el;
@@ -438,7 +469,28 @@ export default {
         }
 
 
-    }
+    },
+
+    computed: {
+        fieldAndDropdownFilters() {
+            return this.listColumns.filter((data) => {
+                return data.filter_type === 'field' || data.filter_type === 'dropdown';
+            });
+        },
+
+        showingListColumns(){
+            const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
+
+            return this.listColumns.filter((data) => {
+                if(this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)){
+                    return !unwantedColumns.includes(data.column_name);
+                } else {
+                    return true;
+                }
+
+            });
+        }
+    },
 }
 </script>
 
@@ -515,7 +567,7 @@ table {
             th {
                 border-top: 1px solid #e0e0e0;
                 border-bottom: 1px solid #e0e0e0;
-                color:black;
+                color: black;
 
                 .material-icons {
                     transform: translateY(3px);
@@ -527,28 +579,28 @@ table {
 
 }
 
-.list-table-head{
-    background-color: white!important;
+.list-table-head {
+    background-color: white !important;
 }
+
 .list-row {
 
-        &.done {
-            background-color: #32EE5F !important;
-            color:black;
-            opacity: 100%;
-        }
+    &.done {
+        background-color: #32EE5F !important;
+        color: black;
+        opacity: 100%;
+    }
 
-        &.todo {
-            color: black;
-            background-color: #FBABAB !important;
-        }
+    &.todo {
+        color: black;
+        background-color: #FBABAB !important;
+    }
 
-        &.inprogress {
+    &.inprogress {
 
-            background: #FFFBDB;
-        }
+        background: #FFFBDB;
+    }
 }
-
 
 
 </style>
