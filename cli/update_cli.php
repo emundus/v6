@@ -244,14 +244,19 @@ class UpdateCli extends JApplicationCli
         $success = true;
 
         # Case where element isn't defined in script parameters -> update all
-        if (!$elements) {
-            $elements = array_keys($this->components);
+        $elements = empty($elements) ? array_keys($this->components) : $elements;
 
-            if ($elements == null) {
+        if (empty($elements)) {
+            $this->out("Nothing component available for update");
+            return false;$elements = empty($elements) ? array_keys($this->components) : $elements;
+
+            if (empty($elements)) {
                 $this->out("Nothing component available for update");
                 return false;
             }
+
         }
+
         $this->count_exec += count($elements);
         # Process update for each component listed
         foreach ($elements as $element) {
@@ -265,11 +270,7 @@ class UpdateCli extends JApplicationCli
             } else {
                 $xml_file = preg_split("/[_]+/", $elementArr["element"], 2)[1] . '.xml';
             }
-            $path = JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/';
-            $path_bis = JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
-            if (!is_dir($path)) {
-                $path = $path_bis;
-            }
+            $path = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
 
             # Load xml or fail
             if (file_exists($xml_path = $path . $xml_file)) {
@@ -277,7 +278,7 @@ class UpdateCli extends JApplicationCli
                 $this->out("\n*--------------------*\n");
 
                 # Check if this is the first run for emundus component
-                if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" or $manifest_cache['version'] < "1.33.0")) {
+                if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" || $manifest_cache['version'] < "1.33.0")) {
                     $emundus_version = $this->checkFirstRun($elementArr['extension_id']);
                     $manifest_cache['version'] = $emundus_version;
                 }
@@ -613,11 +614,8 @@ class UpdateCli extends JApplicationCli
             } else {
                 $xml_file = preg_split("/[_]+/", $element["element"], 2)[1] . '.xml';
             }
-            $path = JPATH_ADMINISTRATOR . '/components/' . $element['element'] . '/';
-            $path_bis = JPATH_ROOT . '/components/' . $element['element'] . '/';
-            if (!is_dir($path)) {
-                $path = $path_bis;
-            }
+            $path = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
+
 
             # Load xml or fail
             if (file_exists($xml_path = $path . $xml_file)) {
