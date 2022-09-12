@@ -1901,9 +1901,6 @@ class EmundusModelFiles extends JModelLegacy
                 $query = substr_replace($query, ";", -1);
                 $db->setQuery($query);
                 $db->execute();
-
-//                // Log the tags in the eMundus logging system.
-//                EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
             }
 
             return true;
