@@ -242,7 +242,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                             $('#logs_list').append(tr);
                         }
                     } else {
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold; padding-bottom: 30px" class="em-red-500-color">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold;" class="em-red-500-color">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
                         $('.show-more').hide();
                         $('#loading').remove();
                         $('#logs_list').append('<div id="error-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
