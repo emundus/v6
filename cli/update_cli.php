@@ -8,17 +8,11 @@ use FOF40\Database\Installer;
 const _JEXEC = 1;
 
 // Load system defines
-if (file_exists(dirname(__DIR__) . '/defines.php')) {
-    require_once dirname(__DIR__) . '/defines.php';
-}
 if (!defined('_JDEFINES')) {
     define('JPATH_BASE', dirname(__DIR__));
     require_once JPATH_BASE . '/includes/defines.php';
 }
 const JPATH_COMPONENT_ADMINISTRATOR = JPATH_ADMINISTRATOR . '/components/';
-
-error_reporting(E_ALL ^ E_NOTICE);
-ini_set('display_errors', 1);
 
 require_once JPATH_BASE . '/includes/framework.php';
 require_once JPATH_CONFIGURATION . '/configuration.php';
@@ -40,7 +34,7 @@ class UpdateCli extends JApplicationCli
      */
     public function doExecute()
     {
-        # Initialsation
+        # Initialisation
         JFactory::getApplication('site');
         $executionStartTime = microtime(true);
         $this->db = JFactory::getDbo();
@@ -51,20 +45,22 @@ class UpdateCli extends JApplicationCli
         $args = (array)$GLOBALS['argv'];
 
         # Init log files
-        $error_log = array(JPATH_BASE . "/logs/update_cli_errors.php", JPATH_BASE . "/logs/update_cli_queries.php");
-        foreach ($error_log AS $file) {
-            if (!unlink($file)) {
-                echo("$file cannot be deleted due to an error");
+        $log_files = array(JPATH_BASE . "/logs/update_cli_errors.log", JPATH_BASE . "/logs/update_cli_queries.log");
+        foreach ($log_files AS $file) {
+            if (file_exists($file)){
+                if (!unlink($file)) {
+                    echo("$file log file can't be deleted");
+                }
             }
         }
         Log::addLogger(
             array(
-                'text_file' => 'update_cli_errors.php',
+                'text_file' => 'update_cli_errors.log',
             ),
             JLog::ALL, array('error'));
         Log::addLogger(
             array(
-                'text_file' => 'update_cli_queries.php',
+                'text_file' => 'update_cli_queries.log',
             ),
             JLog::ALL, array('update'));
         $this->firstrun = false;
@@ -135,8 +131,6 @@ class UpdateCli extends JApplicationCli
 
                 # Check if table emundus_setup_languages exists before running functions
                 $this->db->getTableColumns('#__emundus_setup_languages');
-                $this->langageFileToBase();
-                $this->languageBaseToOverrideFile();
             } catch (Exception $e) {
                 if ($this->verbose) {
                     $this->out($e->getMessage());
@@ -205,11 +199,13 @@ class UpdateCli extends JApplicationCli
 
         } else {
             foreach ($files as $k => $file) {
-                $source = file_get_contents($dir . '/' . $file);
-                if (strpos($source, $failed_statement) === false ^ strpos($source, $failed_statement_without_prefix) === false) {
-                    # exit_file -> First element for setting schema version. Second element is the file where there is an error
-                    $exit_file[] = $files[$k - 1];
-                    $exit_file[] = $files[$k];
+                if(is_file($dir . '/' . $file)){
+                    $source = file_get_contents($dir . '/' . $file);
+                    if (strpos($source, $failed_statement) === false ^ strpos($source, $failed_statement_without_prefix) === false) {
+                        # exit_file -> First element for setting schema version. Second element is the file where there is an error
+                        $exit_file[] = $files[$k - 1];
+                        $exit_file[] = $files[$k];
+                    }
                 }
             }
             if (!empty($exit_file)) {
@@ -462,241 +458,6 @@ class UpdateCli extends JApplicationCli
         }
     }
 
-
-    # Languages functions
-
-    /**
-     * @return array
-     */
-    private function getPlatformLanguages(): array
-    {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->select($db->quoteName('lang_code'))
-            ->from($db->quoteName('#__languages'))
-            ->where($db->quoteName('published') . ' = 1 ');
-
-        $db->setQuery($query);
-
-        try {
-            return $db->loadColumn();
-        } catch (Exception $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Cron job to import language Tags to jos_emundus_setup_languages table
-     *
-     * @since  2.5
-     */
-    private function langageFileToBase()
-    {
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query
-            ->select('DISTINCT(element), CONCAT(type, "s") AS type')
-            ->from($db->quoteName('#__extensions'))
-            ->where($db->quoteName('element') . ' LIKE ' . $db->quote('%emundus%'));
-
-        $db->setQuery($query);
-
-        try {
-            $extensions = $db->loadObjectList();
-        } catch (Exception $e) {
-            echo "Error getting extensions";
-        }
-
-        // Components, modules, extensions files
-        $files = [];
-        foreach ($this->getPlatformLanguages() as $language) {
-            foreach ($extensions as $extension) {
-                $file = JPATH_BASE . '/' . $extension->type . '/' . $extension->element . '/language/' . $language . '/' . $language . '.' . $extension->element . '.ini';
-                if (file_exists($file)) {
-                    $files[] = $file;
-                }
-            }
-            // Overrides
-            $override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
-            if (file_exists($override_file)) {
-                $files[] = $override_file;
-            }
-            //
-        }
-        //
-
-        $db_columns = [
-            $db->quoteName('tag'),
-            $db->quoteName('lang_code'),
-            $db->quoteName('override'),
-            $db->quoteName('original_text'),
-            $db->quoteName('original_md5'),
-            $db->quoteName('override_md5'),
-            $db->quoteName('location'),
-            $db->quoteName('type'),
-            $db->quoteName('created_by'),
-            $db->quoteName('reference_id'),
-            $db->quoteName('reference_table'),
-            $db->quoteName('reference_field'),
-        ];
-        $db_values = [];
-
-        foreach ($files as $file) {
-            if ($this->verbose) {
-                echo $file . "\n";
-            }
-
-            $parsed_file = JLanguageHelper::parseIniFile($file);
-
-            $file = explode('/', $file);
-            $file_name = end($file);
-            $language = strtok($file_name, '.');
-
-            foreach ($parsed_file as $key => $val) {
-                $query->clear()
-                    ->select('count(id)')
-                    ->from($db->quoteName('jos_emundus_setup_languages'))
-                    ->where($db->quoteName('tag') . ' = ' . $db->quote($key))
-                    ->andWhere($db->quoteName('lang_code') . ' = ' . $db->quote($language))
-                    ->andWhere($db->quoteName('location') . ' = ' . $db->quote($file_name));
-                $db->setQuery($query);
-
-                if ($db->loadResult() == 0) {
-                    if (strpos($file_name, 'override') !== false) {
-                        // Search if value is use in fabrik
-                        $reference_table = null;
-                        $reference_id = null;
-                        $reference_field = null;
-
-                        $query->clear()
-                            ->select('id')
-                            ->from($db->quoteName('#__fabrik_forms'))
-                            ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
-                        $db->setQuery($query);
-                        $find = $db->loadResult();
-
-                        if (!empty($find)) {
-                            $reference_table = 'fabrik_forms';
-                            $reference_id = $find;
-                            $reference_field = 'label';
-                        } else {
-                            $query->clear()
-                                ->select('id')
-                                ->from($db->quoteName('#__fabrik_groups'))
-                                ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
-                            $db->setQuery($query);
-                            $find = $db->loadResult();
-
-                            if (!empty($find)) {
-                                $reference_table = 'fabrik_groups';
-                                $reference_id = $find;
-                                $reference_field = 'label';
-                            } else {
-                                $query->clear()
-                                    ->select('id')
-                                    ->from($db->quoteName('#__fabrik_elements'))
-                                    ->where($db->quoteName('label') . ' LIKE ' . $db->quote($key));
-                                $db->setQuery($query);
-                                $find = $db->loadResult();
-
-                                if (!empty($find)) {
-                                    $reference_table = 'fabrik_elements';
-                                    $reference_id = $find;
-                                    $reference_field = 'label';
-                                }
-                            }
-                        }
-                        //
-                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name), $db->quote('override'), 62, $db->quote($reference_id), $db->quote($reference_table), $db->quote($reference_field)];
-                    } else {
-                        $row = [$db->quote($key), $db->quote($language), $db->quote($val), $db->quote($val), $db->quote(md5($val)), $db->quote(md5($val)), $db->quote($file_name), $db->quote(null), 62, $db->quote(null), $db->quote(null), $db->quote(null)];
-                    }
-                    $db_values[] = implode(',', $row);
-                }
-            }
-        }
-
-        if (!empty($db_values)) {
-            $query
-                ->clear()
-                ->insert($db->quoteName('jos_emundus_setup_languages'))
-                ->columns($db_columns)
-                ->values($db_values);
-
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-            } catch (Exception $exception) {
-                echo "<pre>";
-                var_dump('error inserting data : ' . $exception->getMessage());
-                echo "</pre>";
-                die();
-            }
-        }
-    }
-
-    /**
-     * Cron job to import language Tags to jos_emundus_setup_languages table
-     *
-     * @since  2.5
-     */
-    private function languageBaseToOverrideFile()
-    {
-
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        try {
-            $files = [];
-            foreach ($this->getPlatformLanguages() as $language) {
-                $override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
-                if (file_exists($override_file)) {
-                    $files[] = $override_file;
-                }
-            }
-
-            foreach ($files as $file) {
-                echo $file . "\n";
-
-                $file_explode = explode('/', $file);
-                $file_name = end($file_explode);
-
-                $query->clear()
-                    ->select('id,tag,override,location,original_md5,override_md5')
-                    ->from($db->quoteName('#__emundus_setup_languages'))
-                    ->where($db->quoteName('location') . ' LIKE ' . $db->quote($file_name));
-                $db->setQuery($query);
-                $modified_overrides = $db->loadObjectList();
-
-                $parsed_file = JLanguageHelper::parseIniFile($file);
-                if (empty($parsed_file)) {
-                    foreach ($modified_overrides as $modified_override) {
-                        $parsed_file[$modified_override->tag] = $modified_override->override;
-                    }
-                    JLanguageHelper::saveToIniFile($file, $parsed_file);
-                } else {
-                    foreach ($modified_overrides as $modified_override) {
-                        if (empty($parsed_file[$modified_override->tag])) {
-                            $parsed_file[$modified_override->tag] = $modified_override->override;
-                        }
-                    }
-                    JLanguageHelper::saveToIniFile($file, $parsed_file);
-                }
-            }
-        } catch (Exception $e) {
-            echo '<pre>';
-            var_dump($e->getMessage());
-            echo '</pre>';
-            die;
-        }
-    }
-
-
     # Utils functions
 
     /**
@@ -805,7 +566,7 @@ class UpdateCli extends JApplicationCli
         $logs = $this->db->getLog();
         if ($this->global_logs) {
             foreach ($logs as $key => $value) {
-                if (isset($logs[$key])) {
+                if($key < count($this->global_logs)) {
                     if ($logs[$key] == $this->global_logs[$key]) {
                         unset($logs[$key]);
                     } elseif (strpos($value, "SELECT") !== false ^ strpos($value, "SHOW") !== false) {
