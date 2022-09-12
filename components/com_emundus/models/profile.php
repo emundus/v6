@@ -138,6 +138,7 @@ class EmundusModelProfile extends JModelList {
 	 */
 	function getFullProfileByFnum($fnum) : array {
 
+
 		$query = $this->_db->getQuery(true);
 
 		try {
@@ -422,9 +423,10 @@ class EmundusModelProfile extends JModelList {
                 ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                 ->leftJoin('jos_emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.campaign = cc.campaign_id')
                 ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow', 'ecw').' ON '.$this->_db->quoteName('ecw.id').' = '.$this->_db->quoteName('ecw_camp.parent_id'))
-                ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow_repeat_entry_status', 'ecw_status').' ON '.$this->_db->quoteName('ecw.id').' = '.$this->_db->quoteName('ecw_status.parent_id'). ' AND '.$this->_db->quoteName('ecw_status.entry_status').' = '.$this->_db->quoteName('cc.status'))
+                ->leftJoin($this->_db->quoteName('jos_emundus_campaign_workflow_repeat_entry_status', 'ecw_status').' ON '.$this->_db->quoteName('ecw.id').' = '.$this->_db->quoteName('ecw_status.parent_id'))
                 ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ecw.profile'))
-                ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
+                ->where($this->_db->quoteName('cc.fnum').' LIKE '. $this->_db->quote($fnum))
+                ->andWhere($this->_db->quoteName('cc.status'). ' = ' . $this->_db->quoteName('ecw_status.entry_status'));
 
             $this->_db->setQuery($query);
             $res = $this->_db->loadAssoc();
@@ -436,7 +438,7 @@ class EmundusModelProfile extends JModelList {
                     ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                     ->leftJoin($this->_db->quoteName('jos_emundus_setup_status', 'ss').' ON '.$this->_db->quoteName('ss.step').' = '.$this->_db->quoteName('cc.status'))
                     ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('ss.profile'))
-                    ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
+                    ->where($this->_db->quoteName('cc.fnum').' LIKE '. $this->_db->quote($fnum));
 
                 $this->_db->setQuery( $query );
                 $res = $this->_db->loadAssoc();
@@ -448,7 +450,7 @@ class EmundusModelProfile extends JModelList {
                         ->leftJoin($this->_db->quoteName('jos_emundus_users', 'eu').' ON '.$this->_db->quoteName('eu.user_id').' = '.$this->_db->quoteName('cc.applicant_id'))
                         ->leftJoin($this->_db->quoteName('jos_emundus_setup_campaigns', 'sc').' ON '.$this->_db->quoteName('sc.id').' = '.$this->_db->quoteName('cc.campaign_id'))
                         ->leftJoin($this->_db->quoteName('jos_emundus_setup_profiles', 'esp').' ON '.$this->_db->quoteName('esp.id').' = '.$this->_db->quoteName('sc.profile_id'))
-                        ->where($this->_db->quoteName('cc.fnum').' LIKE '.$fnum);
+                        ->where($this->_db->quoteName('cc.fnum').' LIKE '. $this->_db->quote($fnum));
 
                     $this->_db->setQuery( $query );
                     $res = $this->_db->loadAssoc();
