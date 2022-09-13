@@ -31,7 +31,7 @@ export default {
         }
     },
 
-    async setAs(actionConlumn,value,rowId){
+    async setAs(actionConlumn, value, rowId){
         const formData = new FormData();
         formData.append('row_id',rowId);
         formData.append('column_name',actionConlumn.column_name);
@@ -39,7 +39,7 @@ export default {
         formData.append('value',value);
 
         try {
-            const response = await client().post('index.php?option=com_emundus&controller=list&task=actionSetColumnValueAs',formData);
+            const response = await client().post('index.php?option=com_emundus&controller=list&task=actionSetColumnValueAs', formData);
             return response.data;
         } catch (e){
             console.log(e);

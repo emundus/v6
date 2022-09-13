@@ -112,8 +112,16 @@ export default {
 				if (isChecked) {
 					const response = await ListService.setAs(actionColumn, value, this.rowData.id);
 				} else {
-					// todo: swal
-					alert('Merci de sélectionné une ligne avant de pouvoir éffectué cette action');
+					Swal.fire({
+						title: 'Merci de sélectionner une ligne avant de pouvoir effectuer cette action.',
+						showCancelButton: false,
+						confirmButtonColor: '#12db42',
+						confirmButtonText: this.translate("OK"),
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+						},
+					});
 				}
 			} catch (e) {
 				console.log(e);

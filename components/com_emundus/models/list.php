@@ -32,71 +32,75 @@ class EmundusModelList extends JModelList
 
     public function getListActions($listId, $elementId)
     {
-        $query = $this->db->getQuery(true);
-        $query->select('DISTINCT jfe.label, jfe.name as column_name, jfe.plugin, jfl.db_table_name as db_table_name')
-            ->from($this->db->quoteName('#__fabrik_lists', 'jfl'))
-            ->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jfl.form_id') . ' = ' . $this->db->quoteName('jffg.form_id'))
-            ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
-            ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
-            ->andWhere($this->db->quoteName('jfe.id') . ' = ' . $elementId)
-            ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1);
+        $data = [];
 
-        $actionsColumns = [];
-        $databaseJoinsKeysAndColumns = [];
-        $actionsData = [];
-        $this->db->setQuery($query);
+        if (!empty($listId) && !empty($elementId)) {
+            $query = $this->db->getQuery(true);
+            $query->select('DISTINCT jfe.label, jfe.name as column_name, jfe.plugin, jfl.db_table_name as db_table_name')
+                ->from($this->db->quoteName('#__fabrik_lists', 'jfl'))
+                ->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jfl.form_id') . ' = ' . $this->db->quoteName('jffg.form_id'))
+                ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
+                ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
+                ->andWhere($this->db->quoteName('jfe.id') . ' = ' . $elementId)
+                ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1);
 
-        try {
-            $result = $this->db->loadObject();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/models/list | Cannot getting the list action colunmn and data table name: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
-        }
-
-        if (!empty($result)) {
-            $dbTableName = $result->db_table_name;
-            if ($result->plugin == "databasejoin") {
-                $response = $this->retrieveDataBasePluginElementJoinKeyColumnAndTable($result->id);
-
-                if (!empty($response)) {
-                    $params = json_decode($response->params, true);
-
-                    if (!empty($params["join-label"])) {
-                        $response->column_real_name = $result->column_name;
-                        $column = $response->table_join . '.' . $params["join-label"];
-                        $databaseJoinsKeysAndColumns[] = $response;
-                        $actionsColumns[] = $column;
-                        $actionsColumns[] = $params["pk"] . 'AS ' . $params["join-label"] . '_pk';
-                    }
-                }
-            } else {
-                $actionsColumns[] = $dbTableName . '.' . $result->column_name;
-            }
-        }
-
-        if (count($actionsColumns) > 0) {
-
-            $query->clear();
-            $query->select('DISTINCT '.implode(",",$actionsColumns))
-                ->from($this->db->quoteName($dbTableName));
-
-            if (!empty($databaseJoinsKeysAndColumns)) {
-                foreach ($databaseJoinsKeysAndColumns as $data) {
-                    $query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
-                }
-            }
+            $actionsColumns = [];
+            $databaseJoinsKeysAndColumns = [];
+            $actionsData = [];
+            $this->db->setQuery($query);
 
             try {
-                $this->db->setQuery($query);
-                $actionDataResult = $this->db->loadObjectList();
+                $result = $this->db->loadObject();
             } catch (Exception $e) {
-                JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                return 0;
+                JLog::add('component/com_emundus/models/list | Cannot getting the list action colunmn and data table name: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
             }
-            $actionsData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $actionDataResult);
+
+            if (!empty($result)) {
+                $dbTableName = $result->db_table_name;
+                if ($result->plugin == "databasejoin") {
+                    $response = $this->retrieveDataBasePluginElementJoinKeyColumnAndTable($result->id);
+
+                    if (!empty($response)) {
+                        $params = json_decode($response->params, true);
+
+                        if (!empty($params["join-label"])) {
+                            $response->column_real_name = $result->column_name;
+                            $column = $response->table_join . '.' . $params["join-label"];
+                            $databaseJoinsKeysAndColumns[] = $response;
+                            $actionsColumns[] = $column;
+                            $actionsColumns[] = $params["pk"] . 'AS ' . $params["join-label"] . '_pk';
+                        }
+                    }
+                } else {
+                    $actionsColumns[] = $dbTableName . '.' . $result->column_name;
+                }
+
+                if (!empty($actionsColumns)) {
+                    $query->clear();
+                    $query->select('DISTINCT '.implode(",",$actionsColumns))
+                        ->from($this->db->quoteName($dbTableName));
+
+                    if (!empty($databaseJoinsKeysAndColumns)) {
+                        foreach ($databaseJoinsKeysAndColumns as $data) {
+                            $query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
+                        }
+                    }
+
+                    try {
+                        $this->db->setQuery($query);
+                        $actionDataResult = $this->db->loadObjectList();
+                    } catch (Exception $e) {
+                        JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+                        return 0;
+                    }
+                    $actionsData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $actionDataResult);
+                }
+
+                $data = ["actionsColumns" => $result, "actionsData" => $actionsData];
+            }
         }
 
-        return ["actionsColumns" => $result, "actionsData" => $actionsData];
+        return $data;
     }
 
     public function getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues)
@@ -121,75 +125,74 @@ class EmundusModelList extends JModelList
                 $result = $this->db->loadAssocList();
             } catch (Exception $e) {
                 JLog::add('component/com_emundus/models/list | Cannot getting the list colunmns and data table name: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                return 0;
             }
 
-            $dbTableName = $result[0]["db_table_name"];
+            if (!empty($result)) {
+                $dbTableName = $result[0]["db_table_name"];
+                $listColumns = [];
+                $databaseJoinsKeysAndColumns = [];
 
-            $listColumns = [];
-            $databaseJoinsKeysAndColumns = [];
+                foreach ($result as list('column_name' => $column_name, 'plugin' => $plugin, 'id' => $id,'params'=> $params)) {
+                    if ($plugin == "databasejoin") {
+                        $response = $this->retrieveDataBasePluginElementJoinKeyColumnAndTable($id);
 
-            foreach ($result as list('column_name' => $column_name, 'plugin' => $plugin, 'id' => $id,'params'=> $params)) {
-                if ($plugin == "databasejoin") {
-                    $response = $this->retrieveDataBasePluginElementJoinKeyColumnAndTable($id);
+                        if (!empty($response)) {
+                            $params = json_decode($response->params, true);
 
-                    if (!empty($response)) {
-                        $params = json_decode($response->params, true);
+                            if (!empty($params["join-label"])) {
+                                $response->column_real_name = $column_name;
+                                $column = $response->table_join . '.' . $params["join-label"];
+                                $databaseJoinsKeysAndColumns[] = $response;
+                                $listColumns[] = $column;
+                                $listColumns[] = $params["pk"] . 'AS ' . $params["join-label"] . '_pk';
+                            }
+                        }
+                    } else {
+                        $listColumns[] = $dbTableName . '.' . $column_name;
+                    }
+                }
 
-                        if (!empty($params["join-label"])) {
-                            $response->column_real_name = $column_name;
-                            $column = $response->table_join . '.' . $params["join-label"];
-                            $databaseJoinsKeysAndColumns[] = $response;
-                            $listColumns[] = $column;
-                            $listColumns[] = $params["pk"] . 'AS ' . $params["join-label"] . '_pk';
+                $query->clear()
+                    ->select($listColumns)
+                    ->from($this->db->quoteName($dbTableName));
+
+                if (!empty($databaseJoinsKeysAndColumns)) {
+                    foreach ($databaseJoinsKeysAndColumns as $data) {
+                        $query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
+                    }
+                }
+
+                /*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
+                $firstWhere = false;
+                foreach ($listParticularConditionalColumn as $column) {
+                    $values = explode(',', $column);
+                    $values = '"' . join('", "', $values) . '"';
+
+                    if (!empty($column)) {
+                        if (!$firstWhere) {
+                            $query->where($this->db->quoteName($column) . ' IN (' .$values. ')');
+                            $firstWhere = true;
+                        } else {
+                            $query->andWhere($this->db->quoteName($column) . ' IN (' . $values . ')');
                         }
                     }
-                } else {
-                    $listColumns[] = $dbTableName . '.' . $column_name;
                 }
-            }
 
-
-            $query->clear()
-                ->select($listColumns)
-                ->from($this->db->quoteName($dbTableName));
-
-            if (!empty($databaseJoinsKeysAndColumns)) {
-                foreach ($databaseJoinsKeysAndColumns as $data) {
-                    $query->join($data->join_type, $this->db->quoteName($data->table_join) . ' ON ' . $this->db->quoteName($data->table_join . '.' . $data->table_join_key) . ' = ' . $this->db->quoteName($dbTableName . '.' . $data->table_key));
+                $this->db->setQuery($query);
+                try {
+                    $listDataResult = $this->db->loadObjectList();
+                } catch (Exception $e) {
+                    JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
+                    return 0;
                 }
-            }
 
-            /*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
-            $firstWhere = false;
-            foreach ($listParticularConditionalColumn as $column) {
-                $values = explode(',', $column);
-                $values = '"' . join('", "', $values) . '"';
-
-                if (!empty($column)) {
-                    if (!$firstWhere) {
-                        $query->where($this->db->quoteName($column) . ' IN (' .$values. ')');
-                        $firstWhere = true;
-                    } else {
-                        $query->andWhere($this->db->quoteName($column) . ' IN (' . $values . ')');
-                    }
+                foreach ($result as $key => $res) {
+                    $result[$key]['label'] = JText::_($res['label']);
                 }
-            }
 
-            $this->db->setQuery($query);
-            try {
-                $listDataResult = $this->db->loadObjectList();
-            } catch (Exception $e) {
-                JLog::add('component/com_emundus/models/list | Cannot getting the list data table content: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-                return 0;
+                $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
+                $data = ["listColumns" => $result, "listData" => $listData];
             }
-
-            foreach ($result as $key => $res) {
-                $result[$key]['label'] = JText::_($res['label']);
-            }
-
-            $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
-            $data = ["listColumns" => $result, "listData" => $listData];
         }
 
         return $data;
@@ -231,30 +234,25 @@ class EmundusModelList extends JModelList
                 }
             }
         }
-        return $listData;
 
+        return $listData;
     }
 
-    public function actionSetColumnValueAs($rowId,$value,$dbTablename,$columnName){
+    public function actionSetColumnValueAs($rowId, $value, $dbTablename, $columnName) {
+        $updated = false;
 
         $query = $this->db->getQuery(true);
         $query->update($this->db->quoteName($dbTablename))
               ->set($this->db->quoteName($columnName) .' = '.$this->db->quote($value))
               ->where($this->db->quoteName('id') . ' IN ('. $rowId.')');
-
         $this->db->setQuery($query);
 
-        try{
-
-            $result = $this->db->execute();
-
-            return $result;
-
+        try {
+            $updated = $this->db->execute();
         } catch (Exception $e) {
-
             JLog::add('component/com_emundus/models/list | Error when trying to set action column value as  : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
-            return 0;
         }
-    }
 
+        return $updated;
+    }
 }

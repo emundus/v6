@@ -59,11 +59,9 @@ class EmundusControllerList extends JControllerLegacy {
 
     public function getListActions() {
         $user = JFactory::getUser();
+        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $listId = $jinput->getInt('listId');
             $lisActionColumnId=  $jinput->getInt('listActionColumnId');
@@ -75,30 +73,30 @@ class EmundusControllerList extends JControllerLegacy {
                 $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
 
     public function actionSetColumnValueAs() {
         $user = JFactory::getUser();
+        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $rowId = $jinput->getString('row_id');
             $value = $jinput->getString('value');
             $columnName = $jinput->getString('column_name');
             $dbTablename = $jinput->getString('db_table_name');
-            $listData = $this->m_list->actionSetColumnValueAs($rowId,$value,$dbTablename,$columnName);
+            $updated = $this->m_list->actionSetColumnValueAs($rowId,$value,$dbTablename,$columnName);
 
-            if (!empty($listData)) {
-                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
+            if ($updated) {
+                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $updated);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
+                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $updated);
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
