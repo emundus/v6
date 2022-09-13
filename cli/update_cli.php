@@ -157,18 +157,26 @@ class UpdateCli extends JApplicationCli
      */
     private function updateJoomla()
     {
+        # Load Joomla id
+        $query = $this->db->getQuery(true);
+        $query->select('extension_id')
+            ->where($this->db->quoteName('name') ." = 'files_joomla'" )
+            ->from("#__extensions");
+        $this->db->setQuery($query);
+        $id = $this->db->loadResult("id");
+
         # Load xml, version to update, model and logs
         $xml = simplexml_load_file(JPATH_MANIFESTS . '/files/joomla.xml');
         $xml_version = $xml->version;
         $updater = JModelLegacy::getInstance('JoomlaupdateModelDefault');
 
-        $version = $this->getSchemaVersion(700);
+        $version = $this->getSchemaVersion($id);
         $dir = JPATH_COMPONENT_ADMINISTRATOR . "com_admin/sql/updates/mysql";
         $files = scandir($dir);
         sort($files, SORT_NATURAL);
 
         $this->out("UPDATE Joomla " . $version . " to " . preg_split("/.sql/", end($files))[0]);
-        $this->purgeAndFetchUpdates(700);
+        $this->purgeAndFetchUpdates("joomla");
         $this->out("-> Finalise...");
 
         # Execute update
@@ -213,7 +221,7 @@ class UpdateCli extends JApplicationCli
                     $file = preg_split("/.sql/", $file);
                     $exit_file[$k] = $file[0];
                 }
-                $this->updateSchema(700, array($exit_file[0]), "end");
+                $this->updateSchema($id, array($exit_file[0]), "end");
             }
             # Log
             $this->out("\nJoomla DB update Failed...");
@@ -279,8 +287,8 @@ class UpdateCli extends JApplicationCli
 
                 # Check if this is the first run for emundus component
                 if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" || $manifest_cache['version'] < "1.33.0")) {
-                    $emundus_version = $this->checkFirstRun($elementArr['extension_id']);
-                    $manifest_cache['version'] = $emundus_version;
+                    # Set schema version and align manifest cache version
+                    $manifest_cache['version'] = $this->checkFirstRun($elementArr['extension_id']);
                 }
 
                 # Update loop
@@ -361,6 +369,7 @@ class UpdateCli extends JApplicationCli
                                         // Install failed, roll back changes
                                         $this->out($e);
                                         $installer->abort($e->getMessage());
+                                        ob_end_clean();
                                         return false;
                                     }
                                     break;
@@ -469,6 +478,7 @@ class UpdateCli extends JApplicationCli
     private function checkFirstRun($id)
     {
         $this->out("** Script first run **");
+        # Init schema version inferior to xml file
         $tmp_version = explode(".", $this->manifest_xml->version);
         if ($tmp_version[2] == 0){
             $tmp_version[1]--;
@@ -614,7 +624,7 @@ class UpdateCli extends JApplicationCli
             } else {
                 $xml_file = preg_split("/[_]+/", $element["element"], 2)[1] . '.xml';
             }
-            $path = is_dir(JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $elementArr['element'] . '/' : JPATH_ROOT . '/components/' . $elementArr['element'] . '/';
+            $path = is_dir(JPATH_ADMINISTRATOR . '/components/' . $element['element'] . '/') ? JPATH_ADMINISTRATOR . '/components/' . $element['element'] . '/' : JPATH_ROOT . '/components/' . $element['element'] . '/';
 
 
             # Load xml or fail
@@ -638,13 +648,13 @@ class UpdateCli extends JApplicationCli
      * @param $id
      * @return void
      */
-    private function purgeAndFetchUpdates($id = null)
+    private function purgeAndFetchUpdates($comp = null)
     {
         // Get the update cache time
         $component = JComponentHelper::getComponent('com_installer');
         $updater = JUpdater::getInstance();
         $minimumStability = JUpdater::STABILITY_STABLE;
-        if ($id == 700) {
+        if ($comp == "joomla") {
             $model = JModelLegacy::getInstance('JoomlaupdateModelDefault');
         } else {
             $model = JModelLegacy::getInstance('InstallerModelUpdate');
@@ -657,7 +667,7 @@ class UpdateCli extends JApplicationCli
         $model->purge();
         // Find all updates
         $this->out('-> Fetching updates...');
-        if ($id == 700) {
+        if ($comp == "joomla") {
             $model->applyUpdateSite();
             $model->refreshUpdates();
         } else {

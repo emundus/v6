@@ -56,31 +56,27 @@ class com_emundusInstallerScript
 
         if ($this->manifest_cache) {
             # First run condition
-            if (version_compare($cache_version, '1.33.0', '<') OR $firstrun) {
+            if (version_compare($cache_version, '1.33.0', '<') || $firstrun) {
                 # Delete emundus sql files in con_admin
-                $this->deleteOldSqlFiles();
+                #$this->deleteOldSqlFiles();
 
                 # Non generic
-                $this->updateModulesParams('mod_emundusflow','show_programme' , "0");
+                $this->updateModulesParams("mod_emundusflow","show_programme" , "0");
                 # Change cron fabrik params
-                $this->updateFabrikCronParams('Application not sent','log' , "0");
-                $this->updateFabrikCronParams('Application not sent','log_email' , "mail@emundus.fr");
-                $this->updateFabrikCronParams('Application not sent','cron_rungate' , "1");
+                $this->updateFabrikCronParams("emundusrecall",array("log","log_email","cron_rungate") , array("0","mail@emundus.fr","1"));
 
                 # Update SCP params
-                $this->updateSCPParams("pro_plugin", "email_active", "0" );
-                $this->updateSCPParams("pro_plugin", "email_on_admin_login", "0" );
+                $this->updateSCPParams("pro_plugin", array("email_active","email_on_admin_login"), array("0","0"));
 
                 # Generic
-                $this->genericUpdateParams("#__modules", "module", "mod_emundusflow", "show_programme", "0");
-                $this->genericUpdateParams("#__fabrik_cron", "label", 'Application not sent','log' , "0");
-                $this->genericUpdateParams("#__fabrik_cron", "label", 'Application not sent','log_email' , "mail@emundus.fr");
-                $this->genericUpdateParams("#__fabrik_cron", "label", 'Application not sent','cron_rungate' , "1");
+                $this->genericUpdateParams("#__modules", "module", "mod_emundusflow", array("show_programme"), array("0"));
+                $this->genericUpdateParams("#__fabrik_cron", "plugin", "emundusrecall", array("log", "log_email", "cron_rungate") , array("0", "mail@emundus.fr", "1"));
+
                 #$this->genericUpdateParams("#__securitycheckpro_storage", "storage_key", "pro_plugin", "email_active", "0", array('storage_value', 'storage_key'));
                 #$this->genericUpdateParams("#__securitycheckpro_storage", "storage_key", "pro_plugin", "email_on_admin_login", "0", array('storage_value', 'storage_key'));
 
                 # Update lifetime in configuration.php
-                $this->updateConfigurationFile("lifetime", "45");
+                $this->updateConfigurationFile("lifetime", "54");
             }
         }
     }
@@ -148,7 +144,7 @@ class com_emundusInstallerScript
                 ->where("folder LIKE '%emundus%' OR element LIKE " . $db->q('%emundus%') . " AND type='plugin'");
             $db->setQuery($query);
         } catch (Exception $e){
-            echo $e;
+            echo $e->getMessage();
         }
         return $this->db->loadObjectList();
     }
@@ -167,62 +163,75 @@ class com_emundusInstallerScript
                 ->set('enabled = 0')
                 ->where("element LIKE " . $db->q('%'. $name .'%'));
         } catch (Exception $e) {
-            echo $e;
+            echo $e->getMessage();
         }
         return $db->setQuery($query)->execute();
     }
 
     private function updateModulesParams($name, $param, $value) {
-        $query = $this->db->getQuery(true);
-        $query->select('id,params')
-            ->from("#__modules")
-            ->where('module LIKE ' . $this->db->q('%'.$name.'%'));
-        $this->db->setQuery($query);
-        $rows =  $this->db->loadObjectList();
+        try {
+            $query = $this->db->getQuery(true);
+            $query->select('id,params')
+                ->from("#__modules")
+                ->where('module LIKE ' . $this->db->q('%'.$name.'%'));
+            $this->db->setQuery($query);
+            $rows =  $this->db->loadObjectList();
+            $query->clear();
 
-        foreach ($rows as $row) {
-            $params = json_decode($row->params,true);
-            $params[$param] = $value;
-            $this->db->setQuery('UPDATE #__modules SET params = ' .
-                $this->db->quote(json_encode($params)) .
-                ' WHERE id = ' . $row->id);
-            $this->db->execute();
+            foreach ($rows as $row) {
+                $params = json_decode($row->params,true);
+                $params[$param] = $value;
+                $query->update("#__modules")
+                    ->set("params = " . $this->db->quote(json_encode($params)))
+                    ->where("id = " . $row->id);
+                $this->db->setQuery($query);
+                $this->db->execute();
+            }
+        }
+        catch (Exception $e) {
+            echo $e->getMessage();
         }
     }
 
-    private function genericUpdateParams($table, $where, $name, $param, $valueToSet, $updateParams = null) {
+    private function genericUpdateParams($table, $where, $name, $param, $valuesToSet, $updateParams = null) {
         if (empty($updateParams[0])) {
             $updateParams[0] = "params";
         }
-
         if (empty($updateParams[1])) {
             $updateParams[1] = "id";
         }
-        $query = $this->db->getQuery(true);
-        $this->db->getQuery(true);
-        $query->select('*')
-            ->from($table)
-            ->where($where. ' LIKE ' . $this->db->q('%'.$name.'%'));
-        $this->db->setQuery($query);
-        $rows =  $this->db->loadObjectList();
-        foreach ($rows as $row) {
-            $params = json_decode($row->params,true);
-            $params[$param] = $valueToSet;
-            # Assign new params value
-            $this->db->setQuery('UPDATE ' . $table . ' SET '. $updateParams[0] .' = ' .
-                $this->db->quote(json_encode($params)) .
-                ' WHERE ' . $updateParams[1] . ' = ' . $row->id );
-            $this->db->execute();
+        try {
+            $query = $this->db->getQuery(true);
+            $query->select('*')
+                ->from($table)
+                ->where($where. ' LIKE ' . $this->db->q('%'.$name.'%'));
+            $this->db->setQuery($query);
+            $rows =  $this->db->loadObjectList();
+            $query->clear();
+            foreach ($rows as $row) {
+                $params = json_decode($row->params,true);
+                foreach ($param as $k => $par) {
+                    $params[$par] = $valuesToSet[$k];
+                    $query->update($table)
+                        ->set($updateParams[0] . ' = ' . $this->db->quote(json_encode($params)))
+                        ->where($updateParams[1] . ' = ' . $row->id);
+                    $this->db->setQuery($query);
+                    $this->db->execute();
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
         }
     }
 
     private function updateFabrikCronParams($name, $param, $value)
     {
+        try {
+
         $query = $this->db->getQuery(true);
-        $this->db->getQuery(true);
         $query->select('id,params')
             ->from("#__fabrik_cron")
-            ->where('label LIKE ' . $this->db->q('%' . $name . '%'));
+            ->where('plugin LIKE ' . $this->db->q('%' . $name . '%'));
         $this->db->setQuery($query);
         $rows = $this->db->loadObjectList();
 
@@ -230,44 +239,55 @@ class com_emundusInstallerScript
             $params = json_decode($row->params, true);
             $params[$param] = $value;
             # Assign new params value
-            $this->db->setQuery("UPDATE #__fabrik_cron SET params = " .
-                $this->db->quote(json_encode($params)) .
-                " WHERE id = '" . $row->id . "'");
+            $query->update("#__fabrik_cron")
+                ->set("params = " . $this->db->quote(json_encode($params)))
+                ->where("id = " . $row->id);
+            $this->db->setQuery($query);
             $this->db->execute();
+        }
+        } catch (Exception $e) {
+            echo $e->getMessage();
         }
     }
 
     private function updateSCPParams($name, $param, $value)
     {
-        $query = $this->db->getQuery(true);
-        $this->db->getQuery(true);
-        $query->select('storage_key,storage_value')
-            ->from("#__securitycheckpro_storage")
-            ->where('storage_key LIKE ' . $this->db->q('%' . $name . '%'));
-        $this->db->setQuery($query);
-        $rows = $this->db->loadObjectList();
+        try {
+            $query = $this->db->getQuery(true);
+            $query->select('storage_key,storage_value')
+                ->from("#__securitycheckpro_storage")
+                ->where('storage_key LIKE ' . $this->db->q('%' . $name . '%'));
+            $this->db->setQuery($query);
+            $rows = $this->db->loadObjectList();
 
-        foreach ($rows as $row) {
-            $params = json_decode($row->storage_value, true);
-            $params[$param] = $value;
-            # Assign new params value
-            $paramsString = json_encode($params);
-            $this->db->setQuery("UPDATE #__securitycheckpro_storage SET storage_value = " .
-                $this->db->quote($paramsString) .
-                " WHERE storage_key = '" . $row->storage_key . "'");
-            $this->db->execute();
+            foreach ($rows as $row) {
+                $params = json_decode($row->storage_value, true);
+                $params[$param] = $value;
+                # Assign new params value
+                $paramsString = json_encode($params);
+                $query->update("#__securitycheckpro_storage")
+                    ->set("storage_value = " .$this->db->quote($paramsString))
+                    ->where("storage_key = " . $row->storage_key);
+                $this->db->setQuery($query);
+                $this->db->execute();
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
         }
     }
 
     private function updateConfigurationFile($param, $value) {
         $formatter = new JRegistryFormatPHP();
+        $config = JFactory::getConfig();
+        $config->set($param, $value);
+
         $this->config = new JConfig();
         $this->config->$param = $value;
         $params = array('class' => 'JConfig', 'closingtag' => false);
         $str = $formatter->objectToString($this->config, $params);
-        $config_file = JPATH_CONFIGURATION . '/configurfation.php';
+        $config_file = JPATH_CONFIGURATION . '/configuration.php';
         if (file_exists($config_file) and is_writable($config_file)){
-            file_put_contents($config_file);
+            file_put_contents($config_file,$str);
         } else {
             echo ("Update Configuration file failed");
         }
