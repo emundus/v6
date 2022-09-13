@@ -45,7 +45,7 @@
 								<span v-else class="material-icons">arrow_drop_up</span>
 							</td>
 						</tr>
-						<Row v-if="opened.includes(rowGroupByRowKeyName(group))"
+						<Row v-show="opened.includes(rowGroupByRowKeyName(group))"
 						     v-for="data in groupByItemArraySubValues(group)" :key="data.id"
 						     :rowData="data"
 						     :listColumns="listColumns"
@@ -130,7 +130,6 @@ export default {
         items: [],
         opened: [],
         filterColumnUsedActually: [],
-
         sort: {
             last: "",
             order: "",
@@ -146,10 +145,8 @@ export default {
 
     }),
     created() {
-        this.retriveListData();
+        this.retrieveListData();
     },
-
-
     methods: {
         toggle(key) {
             const index = this.opened.indexOf(key);
@@ -174,7 +171,8 @@ export default {
             this.listData = [];
             this.items = [];
             this.filters = [];
-            this.retriveListData();
+						this.hasBeenGroupBy = false;
+            this.retrieveListData();
         },
 
         retrieveGroupeClassColor(group) {
@@ -192,13 +190,12 @@ export default {
             let countObjectKeys = Object.keys(count);
             let countObjectValues = Object.values(count)
             let minElementValue = Math.min(...countObjectValues);
-
             let minElementKey = countObjectKeys[countObjectValues.indexOf(minElementValue)];
-            return this.classFromValue(minElementKey)
 
+            return this.classFromValue(minElementKey);
         },
 
-        async retriveListData() {
+        async retrieveListData() {
             let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []
             let particularConditionalColumnValues = this.listParticularConditionalColumnValues.split(',') || [];
             let particularConditionalRealColumnValues = [];
@@ -216,7 +213,6 @@ export default {
 
 		              this.filtersInitialize();
 	              }
-
             } catch (e) {
                 console.log(e);
             }
@@ -277,7 +273,6 @@ export default {
             } else {
                 return [];
             }
-
         },
 
         filtersInitialize() {
@@ -309,14 +304,12 @@ export default {
                 return this.filters.every(key => {
                     if (key !== null && key.filterValue !== null) {
                         return key.filterValue.toLowerCase().split(' ').every(v => {
-
                             if (item[key.column_name] !== null) {
                                 return item[key.column_name].toLowerCase().includes(v)
                             } else {
                                 return false;
                             }
-
-                        })
+                        });
                     } else {
                         return false;
                     }
@@ -324,55 +317,45 @@ export default {
             });
 
             if (this.hasBeenGroupBy) {
-
                 if (this.filterGroupCriteria != null && this.filterGroupCriteria != '' && this.filterGroupCriteria != 'all') {
                     this.items = Object.entries(this.groupBy(this.items, this.filterGroupCriteria));
                 }
-
             }
-
         },
-
         classFromValue(val) {
             let className = '';
             switch (val) {
-                case 'a_faire':
-                    className = 'list-row todo';
-                    break;
                 case 'en_cours':
                     className = 'list-row inprogress';
                     break;
                 case 'fait' :
-                    className = 'list-row done';
-                    break;
-                case 'sans_objet' :
-                    className = 'list-row todo';
-                    break;
                 case '1' :
                     className = 'list-row done';
                     break;
                 case '0' :
-                    className = 'list-row todo';
+	              case 'sans_objet' :
+	              case 'a_faire':
+		                className = 'list-row todo';
                     break;
                 default :
                     className = 'list-row';
-
+										break;
             }
+
+						className += ' em-pointer';
             return className;
         },
 
         searchInAllListColumn() {
-
             this.items = this.listData.filter(item => {
                 return Object.keys(item).some(key => {
                     if (item[key] !== null) {
-
                         return item[key].toLowerCase().includes(this.searchTerm.toLowerCase());
                     } else {
                         return false;
                     }
-                })
-            })
+                });
+            });
         },
         clearFilters() {
 
