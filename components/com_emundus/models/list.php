@@ -184,6 +184,10 @@ class EmundusModelList extends JModelList
                 return 0;
             }
 
+            foreach ($result as $key => $res) {
+                $result[$key]['label'] = JText::_($res['label']);
+            }
+
             $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
             $data = ["listColumns" => $result, "listData" => $listData];
         }
