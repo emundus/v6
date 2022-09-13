@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 export default {
-
     methods: {
         formattedDate: function (date = '', format = 'LLLL') {
             let formattedDate = '';
@@ -16,8 +15,6 @@ export default {
 
             return formattedDate;
         },
-
     }
-
 };
 

@@ -1,6 +1,5 @@
 <template>
     <div id="app">
-
         <List :listId="fabrikListId" :ListActionColumn="fabrikListActionColumn" :listParticularConditionalColumn="fabrikListParticularConditionalColumn"
               :listParticularConditionalColumnValues="fabrikListParticularConditionalColumnValues" :listColumnShowingAsBadge="fabrikListColumnShowingAsBadge"
               :listColumnToNotShowingWhenFilteredBy="fabrikListColumnToNotShowingWhenFilteredBy"
@@ -42,10 +41,6 @@ export default {
             type: String,
             required: false
         }
-    },
-
-    created() {
-
     }
 }
 </script>

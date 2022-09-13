@@ -1,26 +1,27 @@
 <template>
     <div class="list-actions-menu">
-        <v-popover
-            class="em-pointer"
-            :popoverArrowClass="'custom-popover-arrow'"
-        >
+        <v-popover class="em-pointer" :popoverArrowClass="'custom-popover-arrow'">
             <span class="tooltip-target b3 material-icons">more_vert</span>
-            <template slot="popover">
-                <actions :actionColumnsAvailableValue="actionColumnsAvailableValue"
-                         :actionColumn = "actionColumn" @setAs="setAs"
-                ></actions>
-            </template>
+            <div slot="popover">
+                <action-menu
+		                :actionColumnsAvailableValue="actionColumnsAvailableValue"
+		                :actionColumn = "actionColumn"
+		                @setAs="setAs">
+                </action-menu>
+            </div>
         </v-popover>
     </div>
 </template>
 
 <script>
-import actions from "./ActionMenu.vue";
+import ActionMenu from "./ActionMenu.vue";
 import ListService from '../services/list';
 
 export default {
     name: "ListActionMenu",
-    components: {actions},
+    components: {
+	    ActionMenu
+    },
     props: {
         actionColumnId: {
             type:String,
@@ -32,7 +33,6 @@ export default {
         },
     },
     created() {
-
         this.retriveListActionsData();
     },
     data: () => ({
@@ -40,23 +40,18 @@ export default {
         actionColumnsAvailableValue: [],
     }),
     methods: {
-        async retriveListActionsData() {
-
-            try {
-                const response = await ListService.getListActionAndDataContains(this.listId,this.actionColumnId);
-                this.actionColumn = response.data.actionsColumns;
-
-                this.actionColumnsAvailableValue = response.data.actionsData;
-
-            } catch (e) {
-                console.log(e);
-            }
+        retriveListActionsData() {
+	        ListService.getListActionAndDataContains(this.listId,this.actionColumnId).then((response) => {
+		        if (response) {
+			        this.actionColumn = response.data.actionsColumns;
+			        this.actionColumnsAvailableValue = response.data.actionsData;
+		        }
+	        });
         },
         setAs(actionColumn,value){
-            this.$emit('setAs',actionColumn,value);
+	        this.$emit('setAs',actionColumn,value);
         }
     }
-
 }
 </script>
 

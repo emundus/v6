@@ -84,12 +84,8 @@ export default {
     },
     watch: {
         filterValue: function (val) {
-
             this.$emit('filterValue', val, this.columnName);
-
-
         },
-
         groupByCriteriaValue:function (val) {
             this.$emit('groupByCriteriaValue',val)
         }

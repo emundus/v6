@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="1.0.0" client="site" method="upgrade">
-    <name>SU-RSST Report follow-up</name>
+    <name>Module liste fabrik en VueJS</name>
     <author>Merveille Gbetegan</author>
     <creationDate>July 2022</creationDate>
-    <description>Monitoring of global actions carried out on reports for SU-RSST Plateform</description>
-
+    <description>Affiche en VueJS un tableau à partir des données du liste Fabrik</description>
     <files>
-        <filename module="mod_emundus_[NAME]">mod_emundus_rsst_signalement_list.xml</filename>
-        <filename module="mod_emundus_[NAME]">mod_emundus_rsst_signalement_list.php</filename>
-        <filename module="mod_emundus_[NAME]">index.html</filename>
+        <filename module="mod_emundus_rsst_signalement_list">mod_emundus_rsst_signalement_list.xml</filename>
+        <filename module="mod_emundus_rsst_signalement_list">mod_emundus_rsst_signalement_list.php</filename>
+        <filename module="mod_emundus_rsst_signalement_list">index.html</filename>
         <folder>tmpl</folder>
         <folder>language</folder>
     </files>

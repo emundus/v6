@@ -1,35 +1,14 @@
 <template>
-
-
-    <tr class="list-row">
-        <td>
-            <input type="checkbox" class="em-switch input" v-model='checkedRows.rows' :value='rowData' checked='true'>
-        </td>
-
-        <td v-for="column in showingListColumns" :key="column.label">
-
-            <template v-if="!badgeForColumnum(column.column_name) ">
-                <template v-if="column.plugin =='date'">
-                    {{ formattedDate(rowData[column.column_name]) }}
-                </template>
-                <template v-else>
-                    {{ rowData[column.column_name] }}
-                </template>
-            </template>
-            <template v-else>
-
-                <span :class="classFromValue(rowData[column.column_name])">
-                        {{ texteFromValue(rowData[column.column_name]) }}
-                </span>
-            </template>
-
-        </td>
-        <!--<td>
-			<span>
-				<list-action-menu :actionColumnId="actionColumnId" :listId="listId" @setAs="setAs"></list-action-menu>
-			</span>
-        </td>-->
-    </tr>
+	<tr class="list-row">
+		<td><input type="checkbox" class="em-switch input" v-model='checkedRows.rows' :value='rowData' checked='true'></td>
+		<td v-for="column in showingListColumns" :key="column.label">
+			<div v-if="!badgeForColumn(column.column_name) ">
+				<div v-if="column.plugin =='date'">{{ formattedDate(rowData[column.column_name]) }}</div>
+				<div v-else>{{ rowData[column.column_name] }}</div>
+			</div>
+			<div v-else><span :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span></div>
+		</td>
+	</tr>
 </template>
 
 <script>
@@ -37,173 +16,127 @@ import ListActionMenu from './ListActionMenu.vue';
 import ListService from '../services/list';
 
 export default {
-    name: "Row",
-    props: {
-        rowData: {
-            type: Object,
-            required: true,
-        },
-        listColumns: {
-            type: Array,
-            required: true
-        },
-        checkedRows: {
-            type: Object,
-            required: true
-        },
-        actionColumnId: {
-            type: String,
-            required: false
-        },
-        listId: {
-            type: String,
-            required: true,
-        },
-        listColumnShowingAsBadge: {
-            type: String,
-            required: false,
-        },
-        hasBeenGroupBy: {
-            type: Boolean,
-            required: true
-        },
-
-        rowGroupByRowKeyName: {
-            type: String,
-            required: false
-        },
-
-        opened: {
-            type: Array,
-            required: false
-        },
-
-        filterColumnUsedActually: {
-            type: Array,
-            required: false
-        },
-
-        listColumnToNotShowingWhenFilteredBy: {
-            type: String,
-            required: false,
-        }
-    },
-    components: {
-        'list-action-menu': ListActionMenu
-    },
-    data: () => ({
-        isChecked: false,
-    }),
-    created() {
-
-    },
-    methods: {
-        badgeForColumnum(name) {
-
-            const availableList = this.listColumnShowingAsBadge.split(',') || [];
-            return availableList.includes(name);
-        },
-        classFromValue(val) {
-            let className = '';
-            switch (val) {
-                case 'a_faire':
-                    className = 'tag todo';
-                    break;
-                case 'en_cours':
-                    className = 'tag inprogress';
-                    break;
-                case 'fait' :
-                    className = 'tag done';
-                    break;
-                case 'sans_objet' :
-                    className = 'tag todo';
-                    break;
-                case '1' :
-                    className = 'tag done';
-                    break;
-                case '0' :
-                    className = 'tag todo';
-                    break;
-                default :
-                    className = 'tag todo';
-
-            }
-            return className;
-        },
-
-        texteFromValue(val) {
-
-            let texte = '';
-            switch (val) {
-                case 'a_faire':
-                    texte = 'À faire';
-                    break;
-                case 'en_cours':
-                    texte = 'En cours';
-                    break;
-                case 'fait' :
-                    texte = 'Fait';
-                    break;
-                case 'sans_objet' :
-                    texte = 'Sans objet';
-                    break;
-                case '1' :
-                    texte = 'Publié';
-                    break;
-                case '0' :
-                    texte = 'Non publié';
-                    break;
-                default:
-                    texte = val;
-
-            }
-            return texte;
-        },
-
-        async setAs(actionColumn, value) {
-
-            try {
-                const isChecked = this.checkedRows.rows.some(row => row.id === this.rowData.id);
-                if (isChecked) {
-
-                    const response = await ListService.setAs(actionColumn, value, this.rowData.id);
-
-                } else {
-                    alert('Merci de sélectionné une ligne avant de pouvoir éffectué cette action');
-                }
-            } catch (e) {
-                console.log(e);
-            }
-
-
-        }
-
-
-    },
-    watch: {
-
-    },
-    computed: {
-        showingListColumns() {
-
-            const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
-
-            return this.listColumns.filter((data) => {
-                if (this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)) {
-                    return !unwantedColumns.includes(data.column_name);
-                } else {
-                    return true;
-                }
-
-            });
-        }
-    },
+	name: "Row",
+	props: {
+		rowData: {
+			type: Object,
+			required: true,
+		},
+		listColumns: {
+			type: Array,
+			required: true
+		},
+		checkedRows: {
+			type: Object,
+			required: true
+		},
+		listColumnShowingAsBadge: {
+			type: String,
+			required: false,
+		},
+		filterColumnUsedActually: {
+			type: Array,
+			required: false
+		},
+		listColumnToNotShowingWhenFilteredBy: {
+			type: String,
+			required: false,
+		}
+	},
+	components: {
+		'list-action-menu': ListActionMenu
+	},
+	data: () => ({
+		isChecked: false,
+	}),
+	methods: {
+		badgeForColumn(name) {
+			const availableList = this.listColumnShowingAsBadge.split(',') || [];
+			return availableList.includes(name);
+		},
+		classFromValue(val) {
+			let className = '';
+			switch (val) {
+				case 'a_faire':
+					className = 'tag todo';
+					break;
+				case 'en_cours':
+					className = 'tag inprogress';
+					break;
+				case 'fait' :
+					className = 'tag done';
+					break;
+				case 'sans_objet' :
+					className = 'tag todo';
+					break;
+				case '1' :
+					className = 'tag done';
+					break;
+				case '0' :
+					className = 'tag todo';
+					break;
+				default :
+					className = 'tag todo';
+			}
+			return className;
+		},
+		texteFromValue(val) {
+			let texte = '';
+			switch (val) {
+				case 'a_faire':
+					texte = 'À faire';
+					break;
+				case 'en_cours':
+					texte = 'En cours';
+					break;
+				case 'fait' :
+					texte = 'Fait';
+					break;
+				case 'sans_objet' :
+					texte = 'Sans objet';
+					break;
+				case '1' :
+					texte = 'Publié';
+					break;
+				case '0' :
+					texte = 'Non publié';
+					break;
+				default:
+					texte = val;
+			}
+			return texte;
+		},
+		async setAs(actionColumn, value) {
+			try {
+				const isChecked = this.checkedRows.rows.some(row => row.id === this.rowData.id);
+				if (isChecked) {
+					const response = await ListService.setAs(actionColumn, value, this.rowData.id);
+				} else {
+					// todo: swal
+					alert('Merci de sélectionné une ligne avant de pouvoir éffectué cette action');
+				}
+			} catch (e) {
+				console.log(e);
+			}
+		}
+	},
+	computed: {
+		showingListColumns() {
+			const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
+			return this.listColumns.filter((data) => {
+				if (this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)) {
+					return !unwantedColumns.includes(data.column_name);
+				} else {
+					return true;
+				}
+			});
+		}
+	},
 }
 </script>
 
 <style scoped lang="scss">
 .list-row {
-
     span.tag {
         margin: 0 8px 8px 0;
         padding: 4px 8px;

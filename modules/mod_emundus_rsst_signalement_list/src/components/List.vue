@@ -1,125 +1,86 @@
 <template>
-    <div id="actions-list-table">
-        <div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
-            <input class="em-input withSearchIco" type="search" placeholder="Rechercher" v-model="searchTerm"
-                   @keyup="searchInAllListColumn">
-            <span class="material-icons reload-icons" @click="reloadData">loop</span>
-        </div>
-        <div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
-            <filter-item
-                :filterType="'groupBy'" :filterDatas="listColumns" @groupByCriteriaValue="groupByColumn"
-            />
-
-
-            <filter-item v-for="data in fieldAndDropdownFilters"
-                         :id="data.id+'_'+data.filter_type"
-                         :key="data.id+'_'+data.filter_type"
-                         :filterType="data.filter_type" :filterDatas="retrieveFiltersInputData(data)"
-                         @filterValue="getFilterValue"
-                         :columnName="data.column_name"
-                         :columnNameLabel="data.label"
-
-            />
-
-
-        </div>
-
-        <table :class="{ loading: loading }" :aria-describedby="'Table of actions lists '">
-            <thead class="list-table-head">
-            <tr>
-                <th>
-                    <!--<input type="checkbox" v-model="checkedRows.rows" class="em-switch input" :value="listData" > -->
-                </th>
-                <th v-for="data in showingListColumns" :id="data.column_name" :key="data.id"
-                    @click="orderBy(data.column_name)">
-                    <span
-                        v-if="sort.orderBy == data.column_name && sort.order == 'asc'"
-                        class="material-icons"
-                    >arrow_upward</span>
-                    <span
-                        v-if="sort.orderBy == data.column_name && sort.order == 'desc'"
-                        class="material-icons"
-                    >arrow_downward</span>
-
-                    {{ translate(data.label) }}
-                </th>
-               <th>
-                    <!--<span>
-                        <list-action-menu :actionColumnId="ListActionColumn" :listId="listId"
-                                          @setAs="setAs"></list-action-menu>
-                    </span>-->
-                </th>
-
-            </tr>
-            </thead>
-            <tbody>
-            <template v-if="hasBeenGroupBy">
-
-
-                <template v-for="group in items">
-                    <tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)"
-                        :class="retrieveGroupeClassColor(group)">
-
-                        <td :colspan="listColumns.length+1"><b>{{ rowGroupByRowKeyName(group) }}</b></td>
-                        <td style="border-left: none;text-align: end">
-                            <span
-                                v-if="opened.includes(rowGroupByRowKeyName(group))"
-                                class="material-icons"
-                            >arrow_drop_down</span>
-                            <span
-                                v-if="!opened.includes(rowGroupByRowKeyName(group))"
-                                class="material-icons"
-                            >arrow_drop_up</span>
-                        </td>
-                    </tr>
-                    <template v-for="data in groupByItemArraySubValues(group)"
-                              :key="'group_by_'+data.id">
-                        <Row
-                            v-if="opened.includes(rowGroupByRowKeyName(group)) && hasBeenGroupBy"
-                            :rowData="data"
-                            :listColumns="listColumns"
-                            :checkedRows='checkedRows'
-                            :actionColumnId="ListActionColumn"
-                            :listId="listId"
-                            :hasBeenGroupBy="hasBeenGroupBy"
-                            :rowGroupByRowKeyName="rowGroupByRowKeyName(group)"
-                            :listColumnShowingAsBadge="listColumnShowingAsBadge"
-                            :filterColumnUsedActually="filterColumnUsedActually"
-                            :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
-                        />
-                    </template>
-
-                </template>
-
-            </template>
-
-            <template v-if="!hasBeenGroupBy">
-                <Row
-                    v-for="data in items"
-                    :key="data.id"
-                    :rowData="data"
-                    :listColumns="listColumns"
-                    :checkedRows='checkedRows'
-                    :actionColumnId="ListActionColumn"
-                    :listId="listId"
-                    :hasBeenGroupBy="hasBeenGroupBy"
-                    :listColumnShowingAsBadge="listColumnShowingAsBadge"
-                    :filterColumnUsedActually="filterColumnUsedActually"
-                    :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
-                />
-            </template>
-
-            <tr v-if="items.length == 0">
-                <td :colspan="listColumns.length+2" class="em-text-align-center">
-                    {{ translate('COM_EMUNDUS_MOD_RSST_LIST_NO_DATA') }}
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <div v-if="loading">
-            <div class="em-page-loader"></div>
-        </div>
-    </div>
+	<div id="actions-list-table">
+		<div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
+			<input
+					class="em-input withSearchIco"
+					type="search"
+					placeholder="Rechercher"
+					v-model="searchTerm"
+					@keyup="searchInAllListColumn"
+			/>
+			<span class="material-icons reload-icons" @click="reloadData">loop</span>
+		</div>
+		<div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
+			<filter-item :filterType="'groupBy'" :filterDatas="listColumns" @groupByCriteriaValue="groupByColumn"/>
+			<filter-item
+					v-for="data in fieldAndDropdownFilters"
+					:id="data.id+'_'+data.filter_type"
+					:key="data.id+'_'+data.filter_type"
+					:filterType="data.filter_type" :filterDatas="retrieveFiltersInputData(data)"
+					@filterValue="getFilterValue"
+					:columnName="data.column_name"
+					:columnNameLabel="data.label"
+			/>
+		</div>
+		<table :class="{ loading: loading }" :aria-describedby="'Table of actions lists '">
+			<thead class="list-table-head">
+			<tr>
+				<th></th>
+				<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id"
+				    @click="orderBy(data.column_name)">
+					<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+					<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+					{{ translate(data.label) }}
+				</th>
+				<th></th>
+			</tr>
+			</thead>
+			<tbody>
+			<div v-if="hasBeenGroupBy">
+				<div v-for="group in items">
+					<tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
+						<td :colspan="listColumns.length+1"><b>{{ rowGroupByRowKeyName(group) }}</b></td>
+						<td style="border-left: none;text-align: end">
+							<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_down</span>
+							<span v-if="!opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_up</span>
+						</td>
+					</tr>
+					<div v-for="data in groupByItemArraySubValues(group)" :key="data.id">
+						<Row v-if="opened.includes(rowGroupByRowKeyName(group)) && hasBeenGroupBy"
+						     :rowData="data"
+						     :listColumns="listColumns"
+						     :checkedRows='checkedRows'
+						     :actionColumnId="ListActionColumn"
+                 :rowGroupByRowKeyName="rowGroupByRowKeyName(group)"
+                 :listColumnShowingAsBadge="listColumnShowingAsBadge"
+                 :filterColumnUsedActually="filterColumnUsedActually"
+                 :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+						/>
+					</div>
+				</div>
+			</div>
+			<Row v-if="!hasBeenGroupBy"
+			     v-for="data in items"
+			     :key="data.id"
+			     :rowData="data"
+			     :listColumns="listColumns"
+			     :checkedRows='checkedRows'
+			     :actionColumnId="ListActionColumn"
+			     :listId="listId"
+			     :hasBeenGroupBy="hasBeenGroupBy"
+			     :listColumnShowingAsBadge="listColumnShowingAsBadge"
+			     :filterColumnUsedActually="filterColumnUsedActually"
+			     :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+			/>
+			<tr v-if="items.length == 0">
+				<td :colspan="listColumns.length+2" class="em-text-align-center">
+					{{ translate('COM_EMUNDUS_MOD_RSST_LIST_NO_DATA') }}
+				</td>
+			</tr>
+			</tbody>
+		</table>
+		<div v-if="loading" class="em-page-loader"></div>
+	</div>
 </template>
 
 <script>
@@ -192,16 +153,13 @@ export default {
 
 
     methods: {
-
         toggle(key) {
             const index = this.opened.indexOf(key);
             if (index > -1) {
-
                 this.opened.splice(index, 1);
             } else {
                 this.opened.push(key)
             }
-
         },
 
         groupByItemArraySubValues(item) {
@@ -209,9 +167,6 @@ export default {
         },
 
         rowGroupByRowKeyName(item) {
-            console.log('-------------------------')
-            console.log(item[0])
-            console.log('-------------------------');
             return this.translate(item[0]);
         },
 
@@ -222,7 +177,6 @@ export default {
             this.items = [];
             this.filters = [];
             this.retriveListData();
-
         },
 
         retrieveGroupeClassColor(group) {
@@ -247,7 +201,6 @@ export default {
         },
 
         async retriveListData() {
-
             let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []
             let particularConditionalColumnValues = this.listParticularConditionalColumnValues.split(',') || [];
             let particularConditionalRealColumnValues = [];
@@ -258,23 +211,21 @@ export default {
             try {
                 const response = await ListService.getListAndDataContains(this.listId, particularConditionalColumn, particularConditionalRealColumnValues);
 
-                this.listColumns = response.data.listColumns;
+	              if (response.status) {
+		              this.listColumns = response.data.listColumns;
+		              this.listData = response.data.listData;
+		              this.items = this.listData;
 
-                this.listData = response.data.listData;
-                this.items = this.listData;
-
-                this.filtersInitialize();
-
-                this.loading = false;
-
+		              this.filtersInitialize();
+	              }
 
             } catch (e) {
-                this.loading = false;
                 console.log(e);
             }
+
+	        this.loading = false;
         },
         orderBy(key) {
-
             if (this.sort.last == key) {
                 this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
                 this.listData.reverse();
@@ -298,24 +249,17 @@ export default {
         },
 
         groupByColumn(columnName) {
-
             this.filterGroupCriteria = columnName;
             if (columnName != null && columnName != '' && columnName != 'all') {
-
                 this.items = Object.entries(this.groupBy(this.listData, columnName));
-
                 this.hasBeenGroupBy = true;
             } else {
                 this.items = this.listData;
                 this.hasBeenGroupBy = false;
             }
-
-
         },
 
         groupBy(arr, criteria) {
-
-
             const itemsGroupBY = arr.reduce(function (acc, currentValue) {
                 if (!acc[currentValue[criteria]]) {
                     acc[currentValue[criteria]] = [];
@@ -323,9 +267,8 @@ export default {
                 acc[currentValue[criteria]].push(currentValue);
                 return acc;
             }, {});
+
             return itemsGroupBY;
-
-
         },
 
         retrieveFiltersInputData(column) {
@@ -340,43 +283,30 @@ export default {
         },
 
         filtersInitialize() {
-
             this.listColumns.forEach(element => {
-
                 if (element.filter_type === "field" || element.filter_type === "dropdown") {
                     this.filters.push({column_name: element.column_name, filterValue: ''})
                 }
-            })
-
+            });
         },
-
         getFilterValue(value, column_name) {
+	        const index = this.filterColumnUsedActually.indexOf(column_name);
+	        if (index > -1 || value =='all') {
+		        this.filterColumnUsedActually.splice(index, 1);
+	        } else {
+		        this.filterColumnUsedActually.push(column_name)
+	        }
+	        this.filters = this.filters.map(el => {
+		        if (el.column_name == column_name) {
+			        return {...el, filterValue: value === 'all' ? '' : value}
+		        }
+		        return el;
+	        });
 
-
-                const index = this.filterColumnUsedActually.indexOf(column_name);
-
-                if (index > -1 || value =='all') {
-
-                    this.filterColumnUsedActually.splice(index, 1);
-                } else {
-                    this.filterColumnUsedActually.push(column_name)
-                }
-
-
-            this.filters = this.filters.map(el => {
-
-                if (el.column_name == column_name) {
-
-                    return {...el, filterValue: value === 'all' ? '' : value}
-                }
-                return el;
-            })
-            this.filtering();
-
+	        this.filtering();
         },
 
         filtering() {
-
             this.items = this.listData.filter(item => {
                 return this.filters.every(key => {
                     if (key !== null && key.filterValue !== null) {

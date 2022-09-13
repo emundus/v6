@@ -9,8 +9,6 @@
                            @click="setAs(action[actionColumn.column_name])" class="action-submenu">
                             {{ action[actionColumn.column_name] }}
                         </a>
-
-
                     </nav>
                 </div>
             </transition>
@@ -34,8 +32,6 @@ export default {
 
     methods: {
         setAs(val){
-
-
             this.$emit('setAs',this.actionColumn,val)
         }
     }

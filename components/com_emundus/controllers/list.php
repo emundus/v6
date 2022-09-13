@@ -32,27 +32,27 @@ class EmundusControllerList extends JControllerLegacy {
     }
 
     public function getList() {
+        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
         $user = JFactory::getUser();
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
             $listId = $jinput->getInt('listId');
+            $listParticularConditionalColumn = json_decode($jinput->getString('listParticularConditionalColumn'));
+            $listParticularConditionalColumnValues = json_decode($jinput->getString('listParticularConditionalColumnValues'));
 
-            $listParticularConditionalColumn= json_decode($jinput->getString('listParticularConditionalColumn'));
-
-            $listParticularConditionalColumnValues=  json_decode($jinput->getString('listParticularConditionalColumnValues'));
-
-            $listData = $this->m_list->getList($listId,$listParticularConditionalColumn,$listParticularConditionalColumnValues);
-
-            if (!empty($listData)) {
-                $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
+            if (!empty($listId)) {
+                $listData = $this->m_list->getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues);
+                if (!empty($listData)) {
+                    $tab = array('status' => 1, 'msg' => JText::_('COM_EMUNDUS_LIST_RETRIEVED'), 'data' => $listData);
+                } else {
+                    $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
+                }
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST'), 'data' => $listData);
+                $tab['msg'] = JText::_('MISSING_PARAMS');
             }
         }
+
         echo json_encode((object)$tab);
         exit;
     }
