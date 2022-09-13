@@ -52,7 +52,7 @@ class EmundusControllerJobForm extends EmundusController {
     /**
      * Method to save a user's profile data.
      *
-     * @return	void
+     * @return	void|mixed
      * @since	1.6
      */
     public function save() {
@@ -138,7 +138,7 @@ class EmundusControllerJobForm extends EmundusController {
     }
 
     function cancel() {
-        
+
         $app = JFactory::getApplication();
 
         // Get the current edit id.
@@ -151,13 +151,20 @@ class EmundusControllerJobForm extends EmundusController {
         if ($editId) {
             $model->checkin($editId);
         }
-        
+
         $menu = JFactory::getApplication()->getMenu();
         $item = $menu->getActive();
         $url = (empty($item->link) ? 'index.php?option=com_emundus&view=jobs' : $item->link);
         $this->setRedirect(JRoute::_($url, false));
     }
 
+    /**
+     *
+     * @return false|void
+     *
+     * @throws Exception
+     * @since version
+     */
     public function remove() {
 
         // Initialise variables.

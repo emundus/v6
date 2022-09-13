@@ -26,12 +26,11 @@ define('SCOPES', implode(' ', array(
 
 class EmundusModelUpdate extends JModelLegacy {
     private $db;
-    private $user;
 
     public function __construct()
     {
+        parent::__construct();
         $this->db = JFactory::getDbo();
-        $this->user = JFactory::getUser();
 
     }
 
@@ -59,10 +58,10 @@ class EmundusModelUpdate extends JModelLegacy {
         }
     }
 
-/// Client chooses a date to update 
+/// Client chooses a date to update
     public function setUpdateDate($date, $userName, $version) {
 
-        
+
 
        // $calendarListEntry = $service->calendarList->get('calendarId');
         //var_dump($calendarListEntry->getSummary());
@@ -77,7 +76,6 @@ class EmundusModelUpdate extends JModelLegacy {
         ]);
         $calendarId = 'primary';
         //$event = $service->events->insert($calendarId, $event);
-        var_dump('Event created: %s\n', $event->htmlLink);
         //$result = $google_api_service->events->insert(41, $google_event);
 
     }

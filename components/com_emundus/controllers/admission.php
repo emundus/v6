@@ -300,12 +300,13 @@ class EmundusControllerAdmission extends JControllerLegacy {
         } elseif($fnums == 'all') {
             //all result find by the request
             $m_files = $this->getmodel('Files');
+            $m_application = $this->getModel('application');
 
             $fnums = $m_files->getAllFnums();
             foreach ($fnums as $fnum) {
                 if (EmundusHelperAccess::asAccessAction(10, 'c', $user, $fnum)) {
                     $aid = intval(substr($fnum, 14, count($fnum)));
-                    $appModel->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
+                    $m_application->addComment((array('applicant_id' => $aid, 'user_id' => $user, 'reason' => $title, 'comment_body' => $comment, 'fnum' => $fnum)));
                 }
             }
         }
@@ -745,7 +746,7 @@ class EmundusControllerAdmission extends JControllerLegacy {
     public function sortObjectByArray($object, $orderArray) {
         $ordered = array();
         $properties=get_object_vars($object);
-        return sortArrayByArray($properties,$orderArray);
+        return $this->sortArrayByArray($properties,$orderArray);
     }
 
     public function create_file_csv() {
@@ -955,7 +956,8 @@ class EmundusControllerAdmission extends JControllerLegacy {
                         if (array_key_exists($fnum['fnum'],$vOpt)) {
                             $val = $vOpt[$fnum['fnum']];
                             // Img comes in form of html tag
-                            $xpath = new DOMXPath(@DOMDocument::loadHTML($val));
+                            $dom_document = new DOMDocument();
+                            $xpath = new DOMXPath($dom_document->loadHTML($val));
                             $src = $xpath->evaluate("string(//img/@src)");
                             $line .= $src . "\t";
                             // This only prints the link to the image, in order to add an img to the csv you have to superpose it over a cell

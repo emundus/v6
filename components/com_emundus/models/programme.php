@@ -776,12 +776,6 @@ class EmundusModelProgramme extends JModelList {
                 $db->setQuery($query);
                 $res = $db->execute();
 
-                if ($res) {
-                    // Call plugin event after we delete the programme
-                    $dispatcher = JEventDispatcher::getInstance();
-                    $dispatcher->trigger('callEventHandler', ['onAfterProgramDelete', ['id' => $id, 'data' => $data]]);
-                }
-
                 return $res;
 
             } catch(Exception $e) {
@@ -2059,7 +2053,7 @@ class EmundusModelProgramme extends JModelList {
             $db->execute();
             //
 
-            $formbuilder->createHiddenGroup($formid,1);
+            //$formbuilder->createHiddenGroup($formid,1);
             $group = $formbuilder->createGroup($label,$formid);
 
             // Link groups to program

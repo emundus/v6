@@ -1,16 +1,16 @@
 ﻿<?php
 /**
  * Export  Model for eMundus Component
- * 
+ *
  * @package    eMundus
  * @subpackage Components
  * @link       http://www.emundus.fr
  * @license    GNU/GPL
  */
- 
+
 // No direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
- 
+
 jimport( 'joomla.application.component.model' );
 
 //client api for file conversion
@@ -22,7 +22,7 @@ use TheCodingMachine\Gotenberg\HTMLRequest;
 use TheCodingMachine\Gotenberg\Request;
 use TheCodingMachine\Gotenberg\RequestException;
 use GuzzleHttp\Psr7\LazyOpenStream;
- 
+
 class EmundusModelExport extends JModelList {
 
 	var $_db = null;
@@ -72,7 +72,8 @@ class EmundusModelExport extends JModelList {
 
             ///
             $src = $file_src;
-            $file = end(explode('/',$file_src));
+            $array_src = explode('/',$file_src);
+            $file = end($array_src);
             $dest = $file_dest;
 
             //TODO: parse URL to make it cleaner
@@ -100,12 +101,12 @@ class EmundusModelExport extends JModelList {
                     $request->setMargins(Request::NO_MARGINS);
                     $request->setScale(0.75);
                 }
-                
+
                 # store method allows you to... store the resulting PDF in a particular destination.
                 $client->store($request, $dest);
-                
+
                 # if you wish to redirect the response directly to the browser, you may also use:
-                $client->post($request);          
+                $client->post($request);
             } catch (RequestException $e) {
                 # this exception is thrown if given paper size or margins are not correct.
                 $res->status = false;

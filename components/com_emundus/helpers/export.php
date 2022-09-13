@@ -79,7 +79,7 @@ class EmundusHelperExport {
      *      --> $elements (Object)
      *      --> $options (Array) [null]
      * */
-    public function buildCustomizedPDF($fnumInfos, $forms = 1, $elements, $options=null, $application_form_order = null) {
+    public function buildCustomizedPDF($fnumInfos, $forms, $elements, $options=null, $application_form_order = null) {
         $_profile_model = JModelLegacy::getInstance('profile','EmundusModel');   /// invoke model of profile
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_'.$fnumInfos['training'].'.php';

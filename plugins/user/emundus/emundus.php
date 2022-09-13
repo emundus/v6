@@ -101,6 +101,7 @@ class plgUserEmundus extends JPlugin
         $jinput = $app->input;
         $fabrik = $jinput->post->get('listid', null);
 
+
         // In case we are signing up a new user via Fabrik, check that the profile ID is either an applicant, or one of the allowed non-applicant profiles.
         if ($isnew && !empty($fabrik)) {
 
@@ -159,6 +160,8 @@ class plgUserEmundus extends JPlugin
         $option = $jinput->get->get('option', null);
         $controller = $jinput->get->get('controller', null);
         $task = $jinput->get->get('task', null);
+
+        echo '<pre>'; var_dump('here 2'); echo '</pre>'; die;
 
         // If the details are empty, we are probably signing in via LDAP for the first time.
         if ($isnew && empty($details) && empty($fabrik)) {

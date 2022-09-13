@@ -17,7 +17,6 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Date\Date;
 use Joomla\CMS\HTML\HTMLHelper;
 /**
  * Content Component Query Helper
@@ -35,11 +34,11 @@ class EmundusHelperDate {
             $offset = $config->get('offset');
 
             $date_time = new DateTime($date, new DateTimeZone($offset));
-            $date_time->setTimezone(new DateTimeZone("UTC"));
+            $date_time->setTimezone(new DateTimeZone('UTC'));
          } else {
             $date_time = new DateTime($date);
          }
-    
-        return HtmlHelper::date($date_time->format("Y-m-d H:i:s"), Text::_($format));
+
+        return HtmlHelper::date($date_time->format('Y-m-d H:i:s'), Text::_($format));
     }
 }

@@ -14,7 +14,7 @@
 
 // Check to ensure this file is within the rest of the framework
 defined('_JEXEC') or die('Restricted access');
- 
+
 jimport('joomla.form.formfield');
 
 /**
@@ -34,17 +34,17 @@ class JFormFieldOrganisation extends JFormField
 	 * @var		string
 	 */
 	protected $type = 'Organisation';
-	
+
 	public function getLabel() {
 	// code that returns HTML that will be shown as the label
 		 return '<span style="text-decoration: underline;">' . parent::getLabel() . '</span>';
 	}
- 
+
 	public function getInput() {
 	// code that returns HTML that will be shown as the form field
      	$class = '';
 		$options = array ();
-		$db	= & JFactory::getDBO();
+		$db	= JFactory::getDBO();
 
 		$query = 'SELECT c.id, c.title 
 					FROM #__categories c 
@@ -52,12 +52,12 @@ class JFormFieldOrganisation extends JFormField
 					ORDER BY c.title';
 		$db->setQuery($query);
 		$organisations = $db->loadObjectList();
-		
+
 		$options[] = JHTML::_('select.optgroup', JText::_(""));
 		foreach($organisations as $organisation){
 			$options[] = JHTML::_('select.option', $organisation->id, JText::_($organisation->title), 'value', 'text');
 		}
-			
+
 		return JHTML::_('select.genericlist',  $options, $this->name, 'value', 'text');
 	}
 

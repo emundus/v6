@@ -651,7 +651,6 @@ class EmundusModelCalendar extends JModelLegacy {
         $table = JTable::getInstance('Category');
 
         $data['rules'] = array(
-            'core.edit.state' => array(),
             'core.edit.delete' => array(),
             'core.edit.edit' => array(),
             'core.edit.state' => array(),

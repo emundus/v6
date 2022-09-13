@@ -829,7 +829,7 @@ class EmundusControllerDecision extends JControllerLegacy
     {
         $ordered = array();
         $properties=get_object_vars($object);
-        return sortArrayByArray($properties,$orderArray);
+        return $this->sortArrayByArray($properties,$orderArray);
     }
 
     public function create_file_csv() {

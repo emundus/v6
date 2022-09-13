@@ -43,6 +43,8 @@ class EmundusModelAdmission extends JModelList
         $db = JFactory::getDbo();
         $mainframe = JFactory::getApplication();
 
+        $current_user = JFactory::getUser();
+
         // Get current menu parameters
         $menu = @JFactory::getApplication()->getMenu();
         $current_menu = $menu->getActive();

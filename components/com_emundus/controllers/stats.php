@@ -25,7 +25,7 @@ class EmundusControllerStats extends JControllerLegacy {
         parent::__construct($config);
     }
 
-    
+
 
     public function getprofiletype() {
     	$dateArray = [];
@@ -68,7 +68,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
 	    $m_stats = new EmundusModelStats();
         $getConsultations = $m_stats->consultationOffres($val, $periode);
-        
+
         foreach ($getConsultations as $bars) {
             if ($bars['num_offre'] == $val) {
                 $dateArray[] = $bars['_day'];
@@ -76,7 +76,7 @@ class EmundusControllerStats extends JControllerLegacy {
                 $count += $bars['nombre'];
             }
         }
-     
+
         echo json_encode((object)[
         	'status' => true,
 	        'datearray' => $dateArray,
@@ -92,16 +92,16 @@ class EmundusControllerStats extends JControllerLegacy {
         $jinput = JFactory::getApplication()->input;
         $periode = $jinput->post->get('periode', null);
 
-        $m_stats = new EmundusModelStats();   
- 
+        $m_stats = new EmundusModelStats();
+
 	    echo json_encode((object)[
 	        'status' => true,
 	        'countOffre' => $m_stats->getOffres($periode)
 	    ]);
 	    exit;
     }
-    
-    
+
+
     public function getcandidatures() {
         $candArray = [];
         $nbArray = [];
@@ -138,8 +138,8 @@ class EmundusControllerStats extends JControllerLegacy {
 
 	    $m_stats = new EmundusModelStats();
         $getConnections = $m_stats->getConnections($periode);
-        
-        
+
+
         foreach ($getConnections as $co) {
             $dateArray[] = $co['_day'];
             $countArray[] = $co['nombre_connexions'];
@@ -165,7 +165,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
 	    $m_stats = new EmundusModelStats();
         $getNbRelations = $m_stats->getNbRelations($periode);
-        
+
         foreach ($getNbRelations as $rel) {
             $dateArray[] = $rel['_day'];
             $countArray[] = $rel['nombre_rel_etablies'];
@@ -185,9 +185,9 @@ class EmundusControllerStats extends JControllerLegacy {
         $m_stats = new EmundusModelStats();
         $male = $m_stats->getMale();
         $female = $m_stats->getFemale();
-        if($male == null) 
+        if($male == null)
             $male = 0;
-        if($female == null) 
+        if($female == null)
             $female = 0;
         echo json_encode((object) [
             'status' => true,
@@ -203,7 +203,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         $m_stats = new EmundusModelStats();
         $nationality = $m_stats->getNationality();
-        
+
         foreach ($nationality as $nat) {
             $nbArray[] = $nat['nb'];
             $natArray[] = $nat['nationality'];
@@ -212,7 +212,7 @@ class EmundusControllerStats extends JControllerLegacy {
             'status' => true,
             'nationality' => $natArray,
             'nb' => $nbArray
-            
+
 	    ]);
 	    exit;
     }
@@ -223,7 +223,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         $m_stats = new EmundusModelStats();
         $ages = $m_stats->getAge();
-        
+
         foreach ($ages as $age) {
             $nbArray[] = $age['age'];
             $natArray[] = $age['campaign'];
@@ -232,13 +232,13 @@ class EmundusControllerStats extends JControllerLegacy {
             'status' => true,
             'campaign' => $natArray,
             'age' => $nbArray
-            
+
         ]);
         exit;
     }
 
     public function getfiles() {
-
+        $array = [];
         $m_stats = new EmundusModelStats();
         $files = $m_stats->getFiles();
         foreach ($files as $file) {
@@ -247,7 +247,7 @@ class EmundusControllerStats extends JControllerLegacy {
 
         echo json_encode((object) [
             'status' => true,
-            'val' => $array            
+            'val' => $array
 	    ]);
 	    exit;
     }
@@ -269,7 +269,7 @@ class EmundusControllerStats extends JControllerLegacy {
                 'status' => false
             ]);
         }
-	    
+
     }
 
     public function linkfabrik() {
@@ -284,5 +284,5 @@ class EmundusControllerStats extends JControllerLegacy {
         ]);
 
         exit;
-    } 
+    }
 }

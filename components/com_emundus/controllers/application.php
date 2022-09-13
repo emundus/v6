@@ -654,7 +654,7 @@ class EmundusControllerApplication extends JControllerLegacy
             $res = new stdClass();
             $res->status = false;
             $res->msg = JText::_('YOU_ARE_NOT_ALLOWED_TO_DO_THAT');
-            echo (object) json_encode(array());
+            echo (object) json_encode(array($res));
             exit();
         }
     }

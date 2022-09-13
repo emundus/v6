@@ -113,8 +113,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function clear()
     {
-        $h_files = new EmundusHelperFiles;
-        $h_files->clear();
+        @EmundusHelperFiles::clear();
         echo json_encode((object)(array('status' => true)));
         exit;
     }
@@ -128,8 +127,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $elements   = $jinput->getString('elements', null);
         $multi      = $jinput->getString('multi', null);
 
-        $h_files = new EmundusHelperFiles;
-        $h_files->clearfilter();
+        @EmundusHelperFiles::clearfilter();
 
         if ($multi == "true") {
             $filterval = $jinput->get('val', array(), 'ARRAY');
@@ -1414,7 +1412,7 @@ class EmundusControllerFiles extends JControllerLegacy
      */
     public function sortObjectByArray($object, $orderArray) {
         $properties = get_object_vars($object);
-        return sortArrayByArray($properties,$orderArray);
+        return $this->sortArrayByArray($properties,$orderArray);
     }
 
     /**
@@ -4267,7 +4265,7 @@ class EmundusControllerFiles extends JControllerLegacy
         $export_date = strftime('%e')." ".strftime('%B')." ".date('Y');
 
         $body = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $article))));
-        $footer = '<hr style="margin=0; padding=0;"><span>Les CCI de Charente-Maritime se réservent le droit d’adapter les informations de cette fiche.</br>La CCIRS est un organisme de formation enregistré sous le numéro 5417 P00 1017. La CCI La Rochelle est un organisme de formation déclaré sous le n° 54 17 P00 04 17. Les CCI de Charente-Maritime sont référencées Datadock.</span><br/><span>{PRODUCT_MANAGER} - competencesetformation@rochefort.cci.fr - 05 46 84 70 92 - www.competencesetformation.fr</span><br/><span>Consultez les CGV dans la rubrique Infos Pratiques sur le site <a href="https://www.competencesetformation.fr" target=""blank>www.competencesetformation.fr</a></span><br/><span>Fiche pédagogique éditée le '.$export_date.' - ';
+        $footer = '<hr style="margin=0; padding=0;"><span>Les CCI de Charente-Maritime se réservent le droit d’adapter les informations de cette fiche.</br>La CCIRS est un organisme de formation enregistré sous le numéro 5417 P00 1017. La CCI La Rochelle est un organisme de formation déclaré sous le n° 54 17 P00 04 17. Les CCI de Charente-Maritime sont référencées Datadock.</span><br/><span>{PRODUCT_MANAGER} - competencesetformation@rochefort.cci.fr - 05 46 84 70 92 - www.competencesetformation.fr</span><br/><span>Consultez les CGV dans la rubrique Infos Pratiques sur le site <a href="https://www.competencesetformation.fr" target="_blank">www.competencesetformation.fr</a></span><br/><span>Fiche pédagogique éditée le '.$export_date.' - ';
         $footer = html_entity_decode(preg_replace('~<(\w+)[^>]*>(?>[\p{Z}\p{C}]|<br\b[^>]*>|&(?:(?:nb|thin|zwnb|e[nm])sp|zwnj|#xfeff|#xa0|#160|#65279);)*</\1>~iu', '', preg_replace(array_keys($post), $post, preg_replace("/<br[^>]+\>/i", "<br>", $footer))));
 
         require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
@@ -4436,13 +4434,14 @@ class EmundusControllerFiles extends JControllerLegacy
 
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'email.php');
 
-        $m_emails = new EmundusModel;
+        $m_emails = new EmundusModelEmails();
         $m_files = $this->getModel('Files');
 
         $tag_ids = [];
 
         foreach($fabrikIds as $key => $tag) {
-            $tag_ids[] = reset($m_files->getVariables($tag));
+            $vars = $m_files->getVariables($tag);
+            $tag_ids[] = reset($vars);
         }
 
         $res = $m_emails->getEmailsFromFabrikIds($tag_ids);

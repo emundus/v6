@@ -24,7 +24,6 @@ jimport('joomla.application.component.controller');
 class EmundusControllerUsers extends JControllerLegacy {
 	private $_user = null;
 	private $_db = null;
-	private $m_user = null;
 
 	public function __construct($config = array()) {
 		require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
@@ -35,7 +34,6 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 		$this->_user  = JFactory::getSession()->get('emundusUser');
 		$this->_db    = JFactory::getDBO();
-		$this->m_user = new EmundusModelUsers();
 
 		parent::__construct($config);
 	}
@@ -947,11 +945,7 @@ class EmundusControllerUsers extends JControllerLegacy {
 
 	public function getattachmentaccessrights()
 	{
-		$rights = [
-			'canDelete' => false,
-			'canExport' => false,
-			'canUpdate' => false,
-		];
+		$rights = array();
 
 		$fnum = JFactory::getApplication()->input->getString('fnum', null);
 

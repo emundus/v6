@@ -904,8 +904,8 @@ class EmundusModelProfile extends JModelList {
      * Get fnums for applicants
      * @param int $aid               Applicant ID
      * @param int $submitted         Submitted application
-     * @param date $start_date       campaigns as started after
-     * @param date $end_date         campaigns as ended before
+     * @param datetime $start_date       campaigns as started after
+     * @param datetime $end_date         campaigns as ended before
      * @return array
      * @throws Exception
      */

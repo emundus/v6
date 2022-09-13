@@ -233,7 +233,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param String $category The name of the category.
-     * @return Object The list of templates corresponding.
+     * @return Object|false The list of templates corresponding.
      */
     function getEmailsByCategory($category) {
 
@@ -328,8 +328,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param Int $letter_id the ID of the letter used in setup_letters
-     * @return Object The letter object as found in the DB, also contains the status and training.
-     * @return Boolean False if ther query fails.
+     * @return Object|false The letter object as found in the DB, also contains the status and training.
      */
     function get_letter($letter_id) {
 
@@ -360,7 +359,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param String The IDs of the candidate files to get the names of
-     * @return Array A list of objects containing the names and ids of the candidate files.
+     * @return Array|false A list of objects containing the names and ids of the candidate files.
      */
     function getCandidateFileNames($ids) {
 
@@ -389,7 +388,7 @@ class EmundusModelMessages extends JModelList {
      *
      * @since 3.8.6
      * @param String The IDs of the candidate files to get the names of
-     * @return Array A list of objects containing the names and ids of the candidate files.
+     * @return Array|false A list of objects containing the names and ids of the candidate files.
      */
     function getLetterFileNames($ids) {
 

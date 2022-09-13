@@ -47,7 +47,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     }
 
     function clear() {
-        EmundusHelperFilters::clear();
+        EmundusHelperFiles::clear();
     }
 
     function setCampaign()

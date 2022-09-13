@@ -18,9 +18,9 @@ jimport('joomla.event.dispatcher');
  */
 class EmundusModelThesisForm extends JModelForm
 {
-    
+
     var $_item = null;
-    
+
 	/**
 	 * Method to auto-populate the model state.
 	 *
@@ -50,7 +50,7 @@ class EmundusModelThesisForm extends JModelForm
 		$this->setState('params', $params);
 
 	}
-        
+
 
 	/**
 	 * Method to get an ojbect.
@@ -71,20 +71,20 @@ class EmundusModelThesisForm extends JModelForm
 
 			// Attempt to load the row.
 			if ($table->load($id)) {
-                
+
                 $user = JFactory::getUser();
                 $id = $table->id;
                 if ($id)
 					$canEdit = $user->authorise('core.edit', 'com_emundus.thesis.'.$id) || $user->authorise('core.create', 'com_emundus.thesis.'.$id);
 				else
 					$canEdit = $user->authorise('core.edit', 'com_emundus') || $user->authorise('core.create', 'com_emundus');
-                
-				if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus.thesis.'.$id)) 
+
+				if (!$canEdit && $user->authorise('core.edit.own', 'com_emundus.thesis.'.$id))
                     $canEdit = $user->id == $table->created_by;
 
                 if (!$canEdit)
                     JError::raiseError('500', JText::_('JERROR_ALERTNOAUTHOR'));
-                
+
 				// Check published state.
 				if ($published = $this->getState('filter.published')) {
 					if ($table->state != $published)
@@ -101,14 +101,14 @@ class EmundusModelThesisForm extends JModelForm
 
 		return $this->_item;
 	}
-    
+
 	public function getTable($type = 'Job', $prefix = 'EmundusTable', $config = array())
-	{   
+	{
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
         return JTable::getInstance($type, $prefix, $config);
-	}     
+	}
 
-    
+
 	/**
 	 * Method to check in an item.
 	 *
@@ -122,7 +122,7 @@ class EmundusModelThesisForm extends JModelForm
 		$id = (!empty($id)) ? $id : (int)$this->getState('thesis.id');
 
 		if ($id) {
-            
+
 			// Initialise the table
 			$table = $this->getTable();
 
@@ -151,7 +151,7 @@ class EmundusModelThesisForm extends JModelForm
 		$id = (!empty($id)) ? $id : (int)$this->getState('thesis.id');
 
 		if ($id) {
-            
+
 			// Initialise the table
 			$table = $this->getTable();
 
@@ -168,16 +168,16 @@ class EmundusModelThesisForm extends JModelForm
 		}
 
 		return true;
-	}    
-    
+	}
+
 	/**
 	 * Method to get the profile form.
 	 *
-	 * The base form is loaded from XML 
-     * 
+	 * The base form is loaded from XML
+     *
 	 * @param	array	$data		An optional array of data for the form to interogate.
 	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
-	 * @return	JForm	A JForm object on success, false on failure
+	 * @return	JForm|false	A JForm object on success, false on failure
 	 * @since	1.6
 	 */
 	public function getForm($data = array(), $loadData = true)
@@ -203,7 +203,7 @@ class EmundusModelThesisForm extends JModelForm
         if (empty($data)) {
             $data = $this->getData();
         }
-        
+
         return $data;
 	}
 
@@ -236,12 +236,12 @@ class EmundusModelThesisForm extends JModelForm
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-        
+
         $table = $this->getTable();
         if ($table->save($data) === true) return $table->id;
 		else return false;
 	}
-    
+
      function delete($data)
     {
         $id = (!empty($data['id'])) ? $data['id'] : (int)$this->getState('thesis.id');
@@ -252,8 +252,6 @@ class EmundusModelThesisForm extends JModelForm
         $table = $this->getTable();
         if ($table->delete($data['id']) === true) return $id;
         else return false;
-
-        return true;
     }
-    
+
 }

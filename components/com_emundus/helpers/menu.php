@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class EmundusHelperMenu {
 
-	function buildMenuQuery($profile, $formids = null, $checklevel=true) {
+	public static function buildMenuQuery($profile, $formids = null, $checklevel=true) {
 	    if (empty($profile)) {
 	        return false;
         }

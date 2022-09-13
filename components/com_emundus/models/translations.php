@@ -250,7 +250,7 @@ class EmundusModelTranslations extends JModelList
                                 ->values(implode(',', $row));
 
                             $this->_db->setQuery($query);
-                            return $this->_db->execute();
+                            $this->_db->execute();
                         } catch (Exception $e) {
                             JLog::add('Problem when insert translations at first launch with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
                             return false;

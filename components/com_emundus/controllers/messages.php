@@ -440,7 +440,8 @@ class EmundusControllerMessages extends JControllerLegacy {
                 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
                 $m_files = new EmundusModelFiles();
 
-                $_letter = reset($m_files->getSetupAttachmentsById(array($setup_letter)));
+                $aids = $m_files->getSetupAttachmentsById(array($setup_letter));
+                $_letter = reset($aids);
                 $toAttach['letter'][] = $_letter['value'];
             }
         }
@@ -1237,7 +1238,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 	 */
 	function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null) {
 
-        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+        require_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
         $m_email = new EmundusModelEmails;
 		$m_messages = new EmundusModelMessages();
 
@@ -1259,13 +1260,6 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mail_from_name = $template->name;
         }
 
-        /* DEPRECATED */
-		// If the email sender has the same domain as the system sender address.
-		/*if (substr(strrchr($mail_from, "@"), 1) === substr(strrchr($mail_from_sys, "@"), 1))
-			$mail_from_address = $mail_from;
-		else {
-            $mail_from_address = $mail_from_sys;
-		}*/
         $mail_from_address = $mail_from_sys;
 
 		if (!empty($attachments) && is_array($attachments)) {
@@ -1546,21 +1540,6 @@ class EmundusControllerMessages extends JControllerLegacy {
         return $db->loadObjectList() ;
     }
 
-    /// get letter templates by fnums
-    public function getlettertemplatesbyfnums() {
-        // call to jinput to get form variable (fnums)
-        $jinput = JFactory::getApplication()->input;
-
-        $fnums = $jinput->post->getRaw('fnums', null);
-
-        /// call to models/messages.php/getLetterTemplateByFnums
-        $_mMessages = new EmundusModelMessages;
-        $_templates = $_mMessages->getLetterTemplateByFnums($fnums);
-
-        echo json_encode((object)['status' => true, 'templates' => $_templates]);
-        exit;
-    }
-
     // get recap info by fnum
     public function getrecapbyfnum() {
         $jinput = JFactory::getApplication()->input;
@@ -1608,7 +1587,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $raw = $jinput->post->getRaw('raw', null);
         $template_email_id = $jinput->post->getString('tmpl', null);
-        
+
         if (!EmundusHelperAccess::asAccessAction(9, 'c')) {
             die(JText::_("ACCESS_DENIED"));
         }

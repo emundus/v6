@@ -331,7 +331,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
     //
     if ($evaluation_id > 0) {
         $evaluation = $m_evaluation->getEvaluationByID($evaluation_id);
-        $reason = $m_evaluation->getEvaluationReasons();
+        $reasons = $m_evaluation->getEvaluationReasons($evaluation_id);
         unset($evaluation[0]["id"]);
         unset($evaluation[0]["user"]);
         unset($evaluation[0]["time_date"]);
@@ -355,7 +355,9 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             if ($ed->hidden==0 && $ed->published==1 && $ed->tab_name=="jos_emundus_evaluations" && $ed->element_name=="reason") {
                 $result .= '<ul>';
                 foreach ($evaluation as $e) {
-                    $result .= '<li>'.@$reason[$e[@$ed->element_name]]->reason.'</li>';
+                    foreach ($reasons as $reason) {
+                        $result .= '<li>' . $reason . '</li>';
+                    }
                 }
                 if (@!empty($evaluation[0]["reason_other"])) {
 	                $result .= '<ul><li>'.@$evaluation[0]["reason_other"].'</li></ul>';

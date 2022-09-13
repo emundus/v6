@@ -423,8 +423,8 @@ class EmundusModelStats extends JModelLegacy {
             return true;
 
         }catch(Exception $e) {
-            return false;
             JLog::add('Error getting stats on account types at m/stats in query: '.$updateMod->__toString(), JLog::ERROR, 'com_emundus');
+            return false;
         }
 
     }

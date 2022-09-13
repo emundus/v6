@@ -669,7 +669,7 @@ class EmundusModelUsers extends JModelList {
      *
      * @param   array   $data       An optional array of data for the form to interogate.
      * @param   boolean $loadData   True if the form is to load its own data (default case), false if not.
-     * @return  JForm   A JForm object on success, false on failure
+     * @return  JForm|false   A JForm object on success, false on failure
      * @since   1.6
      */
     public function getForm($data = array(), $loadData = true) {
@@ -996,7 +996,7 @@ class EmundusModelUsers extends JModelList {
         // Get the application object.
         $app = JFactory::getApplication();
 
-        $db =& JFactory::getDBO();
+        $db = JFactory::getDBO();
         $query = 'SELECT `id`, `username`, `password`'
             . ' FROM `#__users`'
             . ' WHERE username=' . $db->Quote( $credentials['username'] )
@@ -1958,10 +1958,6 @@ class EmundusModelUsers extends JModelList {
         return EmundusHelperFiles::getMenuList($params);
     }
 
-    public function getActionsACL() {
-        return EmundusHelperFiles::getMenuActions();
-    }
-
 	/**
 	 * @param $aid
 	 * @param $fnum
@@ -2083,7 +2079,7 @@ class EmundusModelUsers extends JModelList {
         $m_emails = new EmundusModelEmails();
 
 		// Load the com_users language tags in order to call the Joomla user JText.
-		$language =& JFactory::getLanguage();
+		$language = JFactory::getLanguage();
 		$extension = 'com_users';
 		$base_dir = JPATH_SITE;
 		$language_tag = $language->getTag(); // loads the current language-tag
@@ -2303,7 +2299,7 @@ class EmundusModelUsers extends JModelList {
 
             return $elements;
         } catch (Exception $e) {
-            JLog::add(' com_emundus/models/users.php | Cannot get elements of group '.$groupid.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add(' com_emundus/models/users.php | Cannot get elements of group '.$group.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return [];
         }
     }
@@ -2487,7 +2483,7 @@ class EmundusModelUsers extends JModelList {
 
             return true;
         } catch (Exception $e) {
-            JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aid . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            JLog::add(' com_emundus/models/users.php | Cannot copy profile document ' . $aids . ' to fnum ' . $fnum . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;
         }
     }

@@ -1086,7 +1086,7 @@ class EmundusControllerEvaluation extends JControllerLegacy
     {
         $ordered = array();
         $properties=get_object_vars($object);
-        return sortArrayByArray($properties,$orderArray);
+        return $this->sortArrayByArray($properties,$orderArray);
     }
 
     public function create_file_csv() {
@@ -1869,7 +1869,8 @@ class EmundusControllerEvaluation extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnums = $jinput->getRaw('fnums', null);
 
-        $attachment_letters = $this->getModel('Evaluation')->getLettersByFnums($fnums, true);
+        $m_evaluation = new EmundusModelEvaluation();
+        $attachment_letters = $m_evaluation->getLettersByFnums($fnums, true);
 
         if (!empty($attachment_letters)) {
             $result = array('status' => true, 'attachment_letters' => $attachment_letters);

@@ -29,7 +29,7 @@ class EmundusHelperFiles
     /*
     ** @description Clear session and reinit values by default
     */
-    public function clear()
+    public static function clear()
     {
         $session = JFactory::getSession();
         $session->set('filt_params', array());
@@ -51,7 +51,7 @@ class EmundusHelperFiles
     /*
     ** @description Clear session and reinit values by default
     */
-    public  function clearfilter()
+    public static function clearfilter()
     {
         $session = JFactory::getSession();
         $session->set('filt_params', array());
@@ -139,7 +139,6 @@ class EmundusHelperFiles
 
             if (isset($filts_values[$key]) && !is_null($filts_values[$key]) && empty($params[$filt_name])) {
                 if (in_array($filt_name, $filter_multi_list)) {
-                    $params[$filt_name] = array();
                     $params[$filt_name] = explode('|', $filts_values[$key]);
                     $params[$filt_name] = array_unique($params[$filt_name]);
                 } else {
@@ -236,7 +235,7 @@ class EmundusHelperFiles
     /*
     ** @description Clear session and reinit values by default
     */
-    public function resetFilter() {
+    public static function resetFilter() {
         $h_files = new EmundusHelperFiles;
         $filters = $h_files->setMenuFilter();
         return $h_files->createFilterBlock($filters['filts_details'], $filters['filts_options'], $filters['tables']);
@@ -247,7 +246,7 @@ class EmundusHelperFiles
     * @param            query results
     * @param    array   values to extract and insert
     */
-    public function insertValuesInQueryResult($results, $options) {
+    public static function insertValuesInQueryResult($results, $options) {
         foreach ($results as $key => $result) {
             if (array_key_exists('params', $result)) {
                 if (is_array($result)) {
@@ -274,7 +273,7 @@ class EmundusHelperFiles
         return $results;
     }
 
-    public function getCurrentCampaign() {
+    public static function getCurrentCampaign() {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config     = JFactory::getConfig();
@@ -294,7 +293,7 @@ class EmundusHelperFiles
         }
     }
 
-    public function getCurrentCampaignsID() {
+    public static function getCurrentCampaignsID() {
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $nb_months_registration_period_access = $eMConfig->get('nb_months_registration_period_access', '11');
         $config = JFactory::getConfig();
@@ -369,14 +368,14 @@ class EmundusHelperFiles
         return $db->loadObjectList();
     }
 
-    public function getStatus() {
+    public static function getStatus() {
         $db = JFactory::getDBO();
         $query = 'SELECT *  FROM #__emundus_setup_status ORDER BY ordering';
         $db->setQuery( $query );
         return $db->loadObjectList();
     }
 
-    public function getCampaign() {
+    public static function getCampaign() {
         $db = JFactory::getDBO();
         $query = 'SELECT year as schoolyear FROM #__emundus_setup_campaigns WHERE published=1';
         $db->setQuery( $query );
@@ -385,7 +384,7 @@ class EmundusHelperFiles
         return $syear[0];
     }
 
-    public function getCampaignByID($id) {
+    public static function getCampaignByID($id) {
         $db = JFactory::getDBO();
         $query = 'SELECT * FROM #__emundus_setup_campaigns WHERE id='.$id;
         $db->setQuery( $query );
@@ -393,7 +392,7 @@ class EmundusHelperFiles
         return $db->loadAssoc();
     }
 
-    public function getApplicants() {
+    public static function getApplicants() {
         $db = JFactory::getDBO();
         $query = 'SELECT esp.id, esp.label
         FROM #__emundus_setup_profiles esp
@@ -733,6 +732,13 @@ class EmundusHelperFiles
         return $db->loadObject();
     }
 
+    /**
+     * @param $fnum
+     *
+     * @return array|false|string|void
+     *
+     * @since version
+     */
     public function getPhotos($fnum = null) {
 
         $m_files = new EmundusModelFiles;
@@ -748,7 +754,7 @@ class EmundusHelperFiles
                 $photos = $m_files->getPhotos($fnums);
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    return '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    return '<img class="img-responsive" alt="photo" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
                 }
 
             } else {
@@ -756,7 +762,7 @@ class EmundusHelperFiles
                 $photos = $m_files->getPhotos();
                 foreach ($photos as $photo) {
                     $folder = JURI::base().EMUNDUS_PATH_REL.$photo['user_id'];
-                    $pictures[$photo['fnum']] = '<img class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
+                    $pictures[$photo['fnum']] = '<img alt="photo" class="img-responsive" src="'.$folder . '/tn_'. $photo['filename'] . '" width="60" /></img>';
                 }
                 return $pictures;
 
@@ -840,7 +846,7 @@ class EmundusHelperFiles
         return $sub->sub_options;
     }
 
-    public function getElementsName($elements_id) {
+    public static function getElementsName($elements_id) {
         if (!empty($elements_id) && !empty(ltrim($elements_id))) {
 
             $db = JFactory::getDBO();
@@ -977,7 +983,7 @@ class EmundusHelperFiles
     ** @param string $query Name for HTML tag.
     ** @return string The query WHERE.
     */
-    public function setWhere($search, $search_values, &$query) {
+    public static function setWhere($search, $search_values, &$query) {
         if (isset($search) && !empty($search)) {
             $i = 0;
             foreach ($search as $s) {
@@ -2000,7 +2006,7 @@ class EmundusHelperFiles
         return $filters;
     }
 
-    public function getEmundusFilters($id = null) {
+    public static function getEmundusFilters($id = null) {
         $itemid = JFactory::getApplication()->input->get('Itemid');
         $user = JFactory::getUser();
         $db = JFactory::getDBO();
@@ -2017,7 +2023,7 @@ class EmundusHelperFiles
         }
     }
 
-    public function createTagsList($tags) {
+    public static function createTagsList($tags) {
         $tagsList = array();
         foreach ($tags as $tag) {
             $fnum = $tag['fnum'];
@@ -2104,7 +2110,7 @@ class EmundusHelperFiles
 		return $htmlList;
     }
 
-    public function createEvaluatorList($join, $model) {
+    public static function createEvaluatorList($join, $model) {
         $evaluators = array();
         $groupEval = $model->getEvaluatorsFromGroup();
 
@@ -2137,7 +2143,7 @@ class EmundusHelperFiles
     }
 
     // Get object of a Joomla Menu
-    public function getMenuList($params, $fnum = null) {
+    public static function getMenuList($params, $fnum = null) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
         $m_users = new EmundusModelUsers();
 
@@ -2276,7 +2282,7 @@ class EmundusHelperFiles
     }
 
     // getEvaluation
-    function getEvaluation($format='html', $fnums) {
+    public static function getEvaluation($format='html', $fnums = []) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -2368,7 +2374,7 @@ class EmundusHelperFiles
     }
 
     // getDecision
-    function getDecision($format='html', $fnums) {
+    function getDecision($format='html', $fnums = []) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -2442,7 +2448,7 @@ class EmundusHelperFiles
     }
 
     // Get Admission
-    function getAdmission($format='html', $fnums, $name = null) {
+    function getAdmission($format='html', $fnums = [], $name = null) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'admission.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -2595,7 +2601,7 @@ class EmundusHelperFiles
     }
 
     // getInterview
-    function getInterview($format='html', $fnums) {
+    function getInterview($format='html', $fnums = []) {
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'interview.php');
         require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -2681,7 +2687,7 @@ class EmundusHelperFiles
      * @return  string      FNUM for application.
      * @since   1.6
      */
-    public function createFnum($campaign_id, $user_id){
+    public static function createFnum($campaign_id, $user_id){
         return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
     }
 
@@ -2866,6 +2872,14 @@ class EmundusHelperFiles
     }
 
     /// get profiles from element list
+
+    /**
+     * @param $elements
+     *
+     * @return array|false|void
+     *
+     * @since version
+     */
     public function getFabrikDataByListElements($elements) {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

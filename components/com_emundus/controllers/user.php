@@ -24,16 +24,10 @@ jimport('joomla.application.component.controller');
 class EmundusControllerUsers extends JControllerLegacy
 {
     private $_user = null;
-    private $_db = null;
-    private $m_user = null;
 
     public function __construct($config = array())
     {
-        require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
-
         $this->_user = JFactory::getSession()->get('emundusUser');
-        $this->_db = JFactory::getDBO();
-        $this->m_user = new EmundusModelUsers();
 
         parent::__construct($config);
     }

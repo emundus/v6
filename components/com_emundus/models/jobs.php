@@ -122,7 +122,6 @@ class EmundusModelJobs extends JModelList
 
 					// Just to keep the default case
 					default:
-						$value = $value;
 						break;
 				}
 
@@ -196,10 +195,10 @@ class EmundusModelJobs extends JModelList
 		$config = JFactory::getConfig();
 		$eMConfig = JComponentHelper::getParams('com_emundus');
 		$validation = $eMConfig->get('validation', '0');
-        
+
 		// Get the application date and set it to the timezone defined in settings
         $timezone = new DateTimeZone( $config->get('offset') );
-		$now = JFactory::getDate()->setTimezone($timezone);      
+		$now = JFactory::getDate()->setTimezone($timezone);
 
 		// Create a new query object.
 		$db    = $this->getDbo();
@@ -280,11 +279,11 @@ class EmundusModelJobs extends JModelList
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering');
 		$orderDirn = $this->state->get('list.direction');
-		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))	{	
+		if ($orderCol && $orderDirn && ($orderCol!='step' && $user->guest))	{
 			$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		}
 //echo($query->__toString());
-		
+
 		return $query;
 	}
 
