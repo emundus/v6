@@ -577,10 +577,11 @@ class UpdateCli extends JApplicationCli
         $logs = $this->db->getLog();
         if ($this->global_logs) {
             foreach ($logs as $key => $value) {
-                if($key < count($this->global_logs)) {
+                if (strpos($value, "SELECT") !== false ^ strpos($value, "SHOW") !== false) {
+                    unset($logs[$key]);
+                }
+                elseif($key < count($this->global_logs)) {
                     if ($logs[$key] == $this->global_logs[$key]) {
-                        unset($logs[$key]);
-                    } elseif (strpos($value, "SELECT") !== false ^ strpos($value, "SHOW") !== false) {
                         unset($logs[$key]);
                     }
                 }
