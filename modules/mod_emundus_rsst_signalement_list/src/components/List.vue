@@ -15,7 +15,7 @@
 			<filter-item
 					v-for="data in fieldAndDropdownFilters"
 					:id="data.id+'_'+data.filter_type"
-					:key="data.id+'_'+data.filter_type"
+					:key="data.id"
 					:filterType="data.filter_type" :filterDatas="retrieveFiltersInputData(data)"
 					@filterValue="getFilterValue"
 					:columnName="data.column_name"
@@ -24,59 +24,57 @@
 		</div>
 		<table :class="{ loading: loading }" :aria-describedby="'Table of actions lists '">
 			<thead class="list-table-head">
-			<tr>
-				<th></th>
-				<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id"
+				<tr>
+					<th></th>
+					<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id"
 				    @click="orderBy(data.column_name)">
-					<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-					<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
-					{{ translate(data.label) }}
-				</th>
-				<th></th>
-			</tr>
+						<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+						<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+						{{ translate(data.label) }}
+					</th>
+					<th></th>
+				</tr>
 			</thead>
 			<tbody>
-			<div v-if="hasBeenGroupBy">
-				<div v-for="group in items">
-					<tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
-						<td :colspan="listColumns.length+1"><b>{{ rowGroupByRowKeyName(group) }}</b></td>
-						<td style="border-left: none;text-align: end">
-							<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_down</span>
-							<span v-if="!opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_up</span>
-						</td>
-					</tr>
-					<div v-for="data in groupByItemArraySubValues(group)" :key="data.id">
-						<Row v-if="opened.includes(rowGroupByRowKeyName(group)) && hasBeenGroupBy"
+				<template v-if="hasBeenGroupBy">
+					<template v-for="group in items">
+						<tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
+							<td :colspan="listColumns.length+1"><b>{{ rowGroupByRowKeyName(group) }}</b></td>
+							<td style="border-left: none;text-align: end">
+								<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_down</span>
+								<span v-else class="material-icons">arrow_drop_up</span>
+							</td>
+						</tr>
+						<Row v-if="opened.includes(rowGroupByRowKeyName(group))"
+						     v-for="data in groupByItemArraySubValues(group)" :key="data.id"
 						     :rowData="data"
 						     :listColumns="listColumns"
 						     :checkedRows='checkedRows'
 						     :actionColumnId="ListActionColumn"
-                 :rowGroupByRowKeyName="rowGroupByRowKeyName(group)"
-                 :listColumnShowingAsBadge="listColumnShowingAsBadge"
-                 :filterColumnUsedActually="filterColumnUsedActually"
-                 :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+						     :rowGroupByRowKeyName="rowGroupByRowKeyName(group)"
+	               :listColumnShowingAsBadge="listColumnShowingAsBadge"
+	               :filterColumnUsedActually="filterColumnUsedActually"
+	               :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
 						/>
-					</div>
-				</div>
-			</div>
-			<Row v-if="!hasBeenGroupBy"
-			     v-for="data in items"
-			     :key="data.id"
-			     :rowData="data"
-			     :listColumns="listColumns"
-			     :checkedRows='checkedRows'
-			     :actionColumnId="ListActionColumn"
-			     :listId="listId"
-			     :hasBeenGroupBy="hasBeenGroupBy"
-			     :listColumnShowingAsBadge="listColumnShowingAsBadge"
-			     :filterColumnUsedActually="filterColumnUsedActually"
-			     :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
-			/>
-			<tr v-if="items.length == 0">
-				<td :colspan="listColumns.length+2" class="em-text-align-center">
-					{{ translate('COM_EMUNDUS_MOD_RSST_LIST_NO_DATA') }}
-				</td>
-			</tr>
+					</template>
+				</template>
+				<Row v-else
+				     v-for="data in items"
+				     :key="data.id"
+				     :rowData="data"
+				     :listColumns="listColumns"
+				     :checkedRows='checkedRows'
+				     :actionColumnId="ListActionColumn"
+				     :listId="listId"
+				     :listColumnShowingAsBadge="listColumnShowingAsBadge"
+				     :filterColumnUsedActually="filterColumnUsedActually"
+				     :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+				/>
+				<tr v-if="items.length == 0">
+					<td :colspan="listColumns.length+2" class="em-text-align-center">
+						{{ translate('COM_EMUNDUS_MOD_RSST_LIST_NO_DATA') }}
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<div v-if="loading" class="em-page-loader"></div>
