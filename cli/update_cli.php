@@ -861,7 +861,7 @@ class UpdateCli extends JApplicationCli
      * @param $element
      * @return void
      */
-    private function refreshManifestCache($ext_id = null, $element)
+    private function refreshManifestCache($ext_id, $element)
     {
         if (is_array($ext_id)) {
             $ext_id = $ext_id[0];
