@@ -28,11 +28,11 @@
 					<th></th>
 					<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id" @click="orderBy(data.column_name)" class="em-pointer" style="user-select: none;">
 						<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-						<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+						<span v-else-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
 						{{ translate(data.label) }}
 					</th>
 					<th>
-						<span v-if="checkedRows.length > 0" class="material-icons" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
+						<span v-if="checkedRows.length > 0" class="material-icons em-pointer" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
 						<more-options v-if="checkedRows.length > 0 && moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
 					</th>
 				</tr>
@@ -170,7 +170,7 @@ export default {
 			return item[1];
 		},
 		rowGroupByRowKeyName(item) {
-			return this.translate(item[0]);
+			return this.texteFromValue(this.translate(item[0]));
 		},
 		reloadData() {
 			this.loading = true;
@@ -183,20 +183,17 @@ export default {
 		},
 		retrieveGroupeClassColor(group) {
 			const data = this.groupByItemArraySubValues(group);
-			const count = {};
-			/// essayer de trouver un truc plus générique ici plutôt que de mettre directement le nom de l'attribut;
-			for (const element of data) {
-				if (count[element.etat]) {
-					count[element.etat] += 1;
-				} else {
-					count[element.etat] = 1;
-				}
+			let valueToHighlight = "";
+
+			if (data.find((item) => {return item.etat == 'a_faire' || item.etat == 'sans_objet'})) {
+				valueToHighlight = 'a_faire';
+			} else if(data.find((item) => {return item.etat == 'en_cours'})) {
+				valueToHighlight = 'en_cours';
+			} else {
+				valueToHighlight = 'fait';
 			}
-			let countObjectKeys = Object.keys(count);
-			let countObjectValues = Object.values(count)
-			let minElementValue = Math.min(...countObjectValues);
-			let minElementKey = countObjectKeys[countObjectValues.indexOf(minElementValue)];
-			return this.classFromValue(minElementKey);
+
+			return this.classFromValue(valueToHighlight);
 		},
 		async retrieveListData() {
 			let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []

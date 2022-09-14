@@ -8,7 +8,7 @@
 </template>
 
 <script>
-
+import moment from 'moment';
 import List from './components/List.vue';
 
 export default {
@@ -41,7 +41,10 @@ export default {
             type: String,
             required: false
         }
-    }
+    },
+	created() {
+			moment.locale('fr');
+	}
 }
 </script>
 

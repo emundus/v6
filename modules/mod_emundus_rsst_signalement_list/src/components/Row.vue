@@ -8,7 +8,7 @@
 			</div>
 			<div v-else><span :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span></div>
 		</td>
-		<td><span class="material-icons" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span></td>
+		<td><span class="material-icons em-pointer" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span></td>
 		<more-options v-if="moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
 	</tr>
 </template>
@@ -94,32 +94,6 @@ export default {
 					className = 'tag todo';
 			}
 			return className;
-		},
-		texteFromValue(val) {
-			let texte = '';
-			switch (val) {
-				case 'a_faire':
-					texte = 'À faire';
-					break;
-				case 'en_cours':
-					texte = 'En cours';
-					break;
-				case 'fait' :
-					texte = 'Fait';
-					break;
-				case 'sans_objet' :
-					texte = 'Sans objet';
-					break;
-				case '1' :
-					texte = 'Publié';
-					break;
-				case '0' :
-					texte = 'Non publié';
-					break;
-				default:
-					texte = val;
-			}
-			return texte;
 		},
 		async setAs(actionColumn, value) {
 			try {
