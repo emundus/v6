@@ -163,22 +163,19 @@ export default {
         color: #080C12;
         height: fit-content;
         background: #F2F2F3;
-        box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07),
-        0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 
         &.done {
             background: #DFF5E9;
-
         }
 
         &.todo {
             color: black;
-            background: #FBABAB;
+            background: #FFEEEE;
         }
 
         &.inprogress {
 
-            background: #FDD46A;
+            background: #FFFBDB;
             color: black
         }
 

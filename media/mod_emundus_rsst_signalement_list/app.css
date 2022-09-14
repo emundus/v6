@@ -36,17 +36,16 @@ div nav a[data-v-d36c9736]:hover {
   height: -moz-fit-content;
   height: fit-content;
   background: #F2F2F3;
-  box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 }
 .list-row span.tag.done[data-v-513a62da] {
   background: #DFF5E9;
 }
 .list-row span.tag.todo[data-v-513a62da] {
   color: black;
-  background: #FBABAB;
+  background: #FFEEEE;
 }
 .list-row span.tag.inprogress[data-v-513a62da] {
-  background: #FDD46A;
+  background: #FFFBDB;
   color: black;
 }
 .list-row span.tag.default[data-v-513a62da] {

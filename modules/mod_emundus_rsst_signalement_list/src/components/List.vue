@@ -28,8 +28,8 @@
 					<th></th>
 					<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id"
 				    @click="orderBy(data.column_name)">
-						<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons">arrow_upward</span>
-						<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
+						<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons em-pointer">arrow_upward</span>
+						<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons em-pointer">arrow_downward</span>
 						{{ translate(data.label) }}
 					</th>
 					<th></th>
@@ -223,28 +223,45 @@ export default {
 	        this.loading = false;
         },
         orderBy(key) {
-            if (this.sort.last == key) {
-                this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
-                this.listData.reverse();
-            } else {
-                // sort in ascending order by key
-                this.listColumns.sort((a, b) => {
-                    if (a[key] < b[key]) {
-                        return -1;
-                    }
-                    if (a[key] > b[key]) {
-                        return 1;
-                    }
-                    return 0;
-                });
+					if (!this.hasBeenGroupBy) {
+						if (this.sort.last == key) {
+							this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
+							this.items.reverse();
+						} else {
+							this.items.sort((a, b) => {
+								if (a[key] < b[key]) {
+									return -1;
+								} else if (a[key] > b[key]) {
+									return 1;
+								}
+								return 0;
+							});
 
-                this.sort.order = "asc";
-            }
+							this.sort.order = "asc";
+						}
+					} else {
+						this.items.forEach((group, index) => {
+							if (this.sort.last == key) {
+								this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
+								this.items[index][1].reverse();
+							} else {
+								this.items[index][1].sort((a, b) => {
+									if (a[key] < b[key]) {
+										return -1;
+									} else if (a[key] > b[key]) {
+										return 1;
+									}
+									return 0;
+								});
 
-            this.sort.orderBy = key;
-            this.sort.last = key;
+								this.sort.order = "asc";
+							}
+						});
+					}
+
+	        this.sort.orderBy = key;
+	        this.sort.last = key;
         },
-
         groupByColumn(columnName) {
             this.filterGroupCriteria = columnName;
             if (columnName != null && columnName != '' && columnName != 'all') {
@@ -326,22 +343,21 @@ export default {
             }
         },
         classFromValue(val) {
-            let className = '';
+            let className = 'list-row ';
             switch (val) {
                 case 'en_cours':
-                    className = 'list-row inprogress';
+                    className += 'inprogress';
                     break;
                 case 'fait' :
                 case '1' :
-                    className = 'list-row done';
+                    className += 'done';
                     break;
                 case '0' :
 	              case 'sans_objet' :
 	              case 'a_faire':
-		                className = 'list-row todo';
+		                className += 'todo';
                     break;
                 default :
-                    className = 'list-row';
 										break;
             }
 
@@ -399,7 +415,6 @@ export default {
 						}
 			    });
 				} else {
-					// uncheck all group items
 			    this.checkedRows = this.checkedRows.filter((checked) => {
 						return !(group[1].find((groupItem) => {
 							return groupItem.id == checked.id
