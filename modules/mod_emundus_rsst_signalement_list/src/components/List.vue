@@ -26,13 +26,15 @@
 			<thead class="list-table-head">
 				<tr>
 					<th></th>
-					<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id"
-				    @click="orderBy(data.column_name)">
-						<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons em-pointer">arrow_upward</span>
-						<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons em-pointer">arrow_downward</span>
+					<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id" @click="orderBy(data.column_name)" class="em-pointer">
+						<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons">arrow_upward</span>
+						<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
 						{{ translate(data.label) }}
 					</th>
-					<th></th>
+					<th>
+						<span v-if="checkedRows.length > 0" class="material-icons" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
+						<more-options v-if="checkedRows.length > 0 && moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption"></more-options>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -43,9 +45,11 @@
 								<input type="checkbox" class="em-switch input" style="margin-top: -2px;" @change="(e) => toggleCheckGroupRows(e, group)">
 								<span class="em-ml-32"><b>{{ rowGroupByRowKeyName(group) }}</b></span>
 							</td>
-							<td style="border-left: none;text-align: end" @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)">
-								<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_down</span>
-								<span v-else class="material-icons">arrow_drop_up</span>
+							<td style="border-left: none;text-align: end">
+								<div @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)">
+									<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons" >arrow_drop_down</span>
+									<span v-else class="material-icons">arrow_drop_up</span>
+								</div>
 							</td>
 						</tr>
 						<Row v-show="opened.includes(rowGroupByRowKeyName(group))"
@@ -87,363 +91,347 @@
 </template>
 
 <script>
-
 import Row from './Row.vue';
 import Filter from './Filter.vue';
 import ListService from '../services/list';
-import ListActionMenu from './ListActionMenu.vue';
+import MoreOptions from "./MoreOptions";
 
 export default {
-    name: "List",
-    components: {
-        Row,
-        'filter-item': Filter,
-        'list-action-menu': ListActionMenu
-    },
-    props: {
-        listId: {
-            type: String,
-            required: true,
-        },
-        ListActionColumn: {
-            type: String,
-            required: false
-        },
-        listParticularConditionalColumn: {
-            type: String,
-            required: false,
-        },
-        listParticularConditionalColumnValues: {
-            type: String,
-            required: false
-        },
-
-        listColumnShowingAsBadge:{
-            type:String,
-            required: false,
-        },
-
-        listColumnToNotShowingWhenFilteredBy:{
-            type:String,
-            required: false
-        }
-    },
-    data: () => ({
-        loading: true,
-        listColumns: [],
-        listData: [],
-        items: [],
-        opened: [],
-        filterColumnUsedActually: [],
-        sort: {
-            last: "",
-            order: "",
-            orderBy: "",
-        },
-        filters: [],
-        checkedRows:  [],
-        searchTerm: '',
-        hasBeenGroupBy: false,
-        filterGroupCriteria: '',
-
-    }),
-    created() {
-        this.retrieveListData();
-    },
-    methods: {
-        toggle(key) {
-            const index = this.opened.indexOf(key);
-            if (index > -1) {
-                this.opened.splice(index, 1);
-            } else {
-                this.opened.push(key)
-            }
-        },
-
-        groupByItemArraySubValues(item) {
-            return item[1];
-        },
-
-        rowGroupByRowKeyName(item) {
-            return this.translate(item[0]);
-        },
-
-        reloadData() {
-            this.loading = true;
-            this.listColumns = [];
-            this.listData = [];
-            this.items = [];
-            this.filters = [];
-						this.hasBeenGroupBy = false;
-            this.retrieveListData();
-        },
-
-        retrieveGroupeClassColor(group) {
-            const data = this.groupByItemArraySubValues(group);
-            const count = {};
-            /// essayer de trouver un truc plus générique ici plutôt que de mettre directement le nom de l'attribut;
-            for (const element of data) {
-                if (count[element.etat]) {
-                    count[element.etat] += 1;
-                } else {
-                    count[element.etat] = 1;
-                }
-            }
-
-            let countObjectKeys = Object.keys(count);
-            let countObjectValues = Object.values(count)
-            let minElementValue = Math.min(...countObjectValues);
-            let minElementKey = countObjectKeys[countObjectValues.indexOf(minElementValue)];
-
-            return this.classFromValue(minElementKey);
-        },
-
-        async retrieveListData() {
-            let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []
-            let particularConditionalColumnValues = this.listParticularConditionalColumnValues.split(',') || [];
-            let particularConditionalRealColumnValues = [];
-            particularConditionalColumnValues.forEach(element => {
-                particularConditionalRealColumnValues.push((element.split('|')).join(','));
-            });
-
-            try {
-                const response = await ListService.getListAndDataContains(this.listId, particularConditionalColumn, particularConditionalRealColumnValues);
-
-	              if (response.status) {
-		              this.listColumns = response.data.listColumns;
-		              this.listData = response.data.listData;
-		              this.items = this.listData;
-
-		              this.filtersInitialize();
-	              }
-            } catch (e) {
-                console.log(e);
-            }
-
-	        this.loading = false;
-        },
-        orderBy(key) {
-					if (!this.hasBeenGroupBy) {
-						if (this.sort.last == key) {
-							this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
-							this.items.reverse();
-						} else {
-							this.items.sort((a, b) => {
-								if (a[key] < b[key]) {
-									return -1;
-								} else if (a[key] > b[key]) {
-									return 1;
-								}
-								return 0;
-							});
-
-							this.sort.order = "asc";
+	name: "List",
+	components: {
+		Row,
+		'filter-item': Filter,
+		MoreOptions
+	},
+	props: {
+		listId: {
+			type: String,
+			required: true,
+		},
+		ListActionColumn: {
+			type: String,
+			required: false
+		},
+		listParticularConditionalColumn: {
+			type: String,
+			required: false,
+		},
+		listParticularConditionalColumnValues: {
+			type: String,
+			required: false
+		},
+		listColumnShowingAsBadge:{
+			type:String,
+			required: false,
+		},
+		listColumnToNotShowingWhenFilteredBy:{
+			type:String,
+			required: false
+		}
+	},
+	data: () => ({
+		loading: true,
+		listColumns: [],
+		listData: [],
+		items: [],
+		opened: [],
+		filterColumnUsedActually: [],
+		sort: {
+			last: "",
+			order: "",
+			orderBy: "",
+		},
+		filters: [],
+		checkedRows:  [],
+		searchTerm: '',
+		hasBeenGroupBy: false,
+		filterGroupCriteria: '',
+		moreOptionsOpened: false,
+		moreOptionsData: [
+			{value: 'en_cours', label: 'En cours'},
+			{value: 'a_faire', label: 'A faire'},
+			{value: 'fait', label: 'Fait'},
+			{value: 'sans_objet', label: 'Sans objet'}
+		]
+	}),
+	created() {
+		this.retrieveListData();
+	},
+	methods: {
+		toggle(key) {
+			const index = this.opened.indexOf(key);
+			if (index > -1) {
+				this.opened.splice(index, 1);
+			} else {
+				this.opened.push(key)
+			}
+		},
+		groupByItemArraySubValues(item) {
+			return item[1];
+		},
+		rowGroupByRowKeyName(item) {
+			return this.translate(item[0]);
+		},
+		reloadData() {
+			this.loading = true;
+			this.listColumns = [];
+			this.listData = [];
+			this.items = [];
+			this.filters = [];
+			this.hasBeenGroupBy = false;
+			this.retrieveListData();
+		},
+		retrieveGroupeClassColor(group) {
+			const data = this.groupByItemArraySubValues(group);
+			const count = {};
+			/// essayer de trouver un truc plus générique ici plutôt que de mettre directement le nom de l'attribut;
+			for (const element of data) {
+				if (count[element.etat]) {
+					count[element.etat] += 1;
+				} else {
+					count[element.etat] = 1;
+				}
+			}
+			let countObjectKeys = Object.keys(count);
+			let countObjectValues = Object.values(count)
+			let minElementValue = Math.min(...countObjectValues);
+			let minElementKey = countObjectKeys[countObjectValues.indexOf(minElementValue)];
+			return this.classFromValue(minElementKey);
+		},
+		async retrieveListData() {
+			let particularConditionalColumn = this.listParticularConditionalColumn.split(',') || []
+			let particularConditionalColumnValues = this.listParticularConditionalColumnValues.split(',') || [];
+			let particularConditionalRealColumnValues = [];
+			particularConditionalColumnValues.forEach(element => {
+				particularConditionalRealColumnValues.push((element.split('|')).join(','));
+			});
+			try {
+				const response = await ListService.getListAndDataContains(this.listId, particularConditionalColumn, particularConditionalRealColumnValues);
+				if (response.status) {
+					this.listColumns = response.data.listColumns;
+					this.listData = response.data.listData;
+					this.items = this.listData;
+					this.filtersInitialize();
+				}
+			} catch (e) {
+				console.log(e);
+			}
+			this.loading = false;
+		},
+		orderBy(key) {
+			if (!this.hasBeenGroupBy) {
+				if (this.sort.last == key) {
+					this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
+					this.items.reverse();
+				} else {
+					this.items.sort((a, b) => {
+						if (a[key] < b[key]) {
+							return -1;
+						} else if (a[key] > b[key]) {
+							return 1;
 						}
+						return 0;
+					});
+					this.sort.order = "asc";
+				}
+			} else {
+				this.items.forEach((group, index) => {
+					if (this.sort.last == key) {
+						this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
+						this.items[index][1].reverse();
 					} else {
-						this.items.forEach((group, index) => {
-							if (this.sort.last == key) {
-								this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
-								this.items[index][1].reverse();
-							} else {
-								this.items[index][1].sort((a, b) => {
-									if (a[key] < b[key]) {
-										return -1;
-									} else if (a[key] > b[key]) {
-										return 1;
-									}
-									return 0;
-								});
+						this.items[index][1].sort((a, b) => {
+							if (a[key] < b[key]) {
+								return -1;
+							} else if (a[key] > b[key]) {
+								return 1;
+							}
+							return 0;
+						});
 
-								this.sort.order = "asc";
+						this.sort.order = "asc";
+					}
+				});
+			}
+
+			this.sort.orderBy = key;
+			this.sort.last = key;
+		},
+		groupByColumn(columnName) {
+			this.filterGroupCriteria = columnName;
+			if (columnName != null && columnName != '' && columnName != 'all') {
+				this.items = Object.entries(this.groupBy(this.listData, columnName));
+				this.hasBeenGroupBy = true;
+			} else {
+				this.items = this.listData;
+				this.hasBeenGroupBy = false;
+			}
+		},
+		groupBy(arr, criteria) {
+			const itemsGroupBY = arr.reduce(function (acc, currentValue) {
+				if (!acc[currentValue[criteria]]) {
+					acc[currentValue[criteria]] = [];
+				}
+				acc[currentValue[criteria]].push(currentValue);
+				return acc;
+			}, {});
+			return itemsGroupBY;
+		},
+
+		retrieveFiltersInputData(column) {
+			if (column.filter_type == 'dropdown') {
+				return [...new Set(this.listData.map(el => {
+					return el[column.column_name]
+				}))];
+			} else {
+				return [];
+			}
+		},
+		filtersInitialize() {
+			this.listColumns.forEach(element => {
+				if (element.filter_type === "field" || element.filter_type === "dropdown") {
+					this.filters.push({column_name: element.column_name, filterValue: ''})
+				}
+			});
+		},
+		getFilterValue(value, column_name) {
+			const index = this.filterColumnUsedActually.indexOf(column_name);
+			if (index > -1 || value =='all') {
+				this.filterColumnUsedActually.splice(index, 1);
+			} else {
+				this.filterColumnUsedActually.push(column_name)
+			}
+			this.filters = this.filters.map(el => {
+				if (el.column_name == column_name) {
+					return {...el, filterValue: value === 'all' ? '' : value}
+				}
+				return el;
+			});
+
+			this.filtering();
+		},
+
+		filtering() {
+			this.items = this.listData.filter(item => {
+				return this.filters.every(key => {
+					if (key !== null && key.filterValue !== null) {
+						return key.filterValue.toLowerCase().split(' ').every(v => {
+							if (item[key.column_name] !== null) {
+								return item[key.column_name].toLowerCase().includes(v)
+							} else {
+								return false;
 							}
 						});
-					}
-
-	        this.sort.orderBy = key;
-	        this.sort.last = key;
-        },
-        groupByColumn(columnName) {
-            this.filterGroupCriteria = columnName;
-            if (columnName != null && columnName != '' && columnName != 'all') {
-                this.items = Object.entries(this.groupBy(this.listData, columnName));
-                this.hasBeenGroupBy = true;
-            } else {
-                this.items = this.listData;
-                this.hasBeenGroupBy = false;
-            }
-        },
-
-        groupBy(arr, criteria) {
-            const itemsGroupBY = arr.reduce(function (acc, currentValue) {
-                if (!acc[currentValue[criteria]]) {
-                    acc[currentValue[criteria]] = [];
-                }
-                acc[currentValue[criteria]].push(currentValue);
-                return acc;
-            }, {});
-
-            return itemsGroupBY;
-        },
-
-        retrieveFiltersInputData(column) {
-            if (column.filter_type == 'dropdown') {
-                return [...new Set(this.listData.map(el => {
-                    return el[column.column_name]
-                }))];
-            } else {
-                return [];
-            }
-        },
-
-        filtersInitialize() {
-            this.listColumns.forEach(element => {
-                if (element.filter_type === "field" || element.filter_type === "dropdown") {
-                    this.filters.push({column_name: element.column_name, filterValue: ''})
-                }
-            });
-        },
-        getFilterValue(value, column_name) {
-	        const index = this.filterColumnUsedActually.indexOf(column_name);
-	        if (index > -1 || value =='all') {
-		        this.filterColumnUsedActually.splice(index, 1);
-	        } else {
-		        this.filterColumnUsedActually.push(column_name)
-	        }
-	        this.filters = this.filters.map(el => {
-		        if (el.column_name == column_name) {
-			        return {...el, filterValue: value === 'all' ? '' : value}
-		        }
-		        return el;
-	        });
-
-	        this.filtering();
-        },
-
-        filtering() {
-            this.items = this.listData.filter(item => {
-                return this.filters.every(key => {
-                    if (key !== null && key.filterValue !== null) {
-                        return key.filterValue.toLowerCase().split(' ').every(v => {
-                            if (item[key.column_name] !== null) {
-                                return item[key.column_name].toLowerCase().includes(v)
-                            } else {
-                                return false;
-                            }
-                        });
-                    } else {
-                        return false;
-                    }
-                })
-            });
-
-            if (this.hasBeenGroupBy) {
-                if (this.filterGroupCriteria != null && this.filterGroupCriteria != '' && this.filterGroupCriteria != 'all') {
-                    this.items = Object.entries(this.groupBy(this.items, this.filterGroupCriteria));
-                }
-            }
-        },
-        classFromValue(val) {
-            let className = 'list-row ';
-            switch (val) {
-                case 'en_cours':
-                    className += 'inprogress';
-                    break;
-                case 'fait' :
-                case '1' :
-                    className += 'done';
-                    break;
-                case '0' :
-	              case 'sans_objet' :
-	              case 'a_faire':
-		                className += 'todo';
-                    break;
-                default :
-										break;
-            }
-
-						className += ' em-pointer';
-            return className;
-        },
-
-        searchInAllListColumn() {
-            this.items = this.listData.filter(item => {
-                return Object.keys(item).some(key => {
-                    if (item[key] !== null) {
-                        return item[key].toLowerCase().includes(this.searchTerm.toLowerCase());
-                    } else {
-                        return false;
-                    }
-                });
-            });
-        },
-        clearFilters() {
-            this.filters.map(el => {
-                return {...el, filterValue: ''}
-            })
-            this.filtering();
-        },
-
-        async setAs(actionColumn, value) {
-
-	        try {
-		        const checkedRowsId = this.checkedRows.map((val) => {
-			        return val.id
-		        });
-		        const response = await ListService.setAs(actionColumn, value, checkedRowsId.join(','));
-
-	        } catch (e) {
-		        console.log(e);
-	        }
-        },
-	    toggleCheckRow(rowData) {
-		    const checked = this.checkedRows.some((row) => {return row.id == rowData.id && row.id != undefined});
-
-					if (checked) {
-						this.checkedRows.filter((row) => {
-							return row.id != rowData.id
-						});
 					} else {
-						this.checkedRows.push(rowData);
+						return false;
 					}
-	    },
-	    toggleCheckGroupRows(e, group)
-	    {
-		    if (e.target.checked) {
-			    group[1].forEach((groupItem) => {
-						if (!this.checkedRows.find((checked) => {return checked.id == groupItem.id})) {
-							this.checkedRows.push(groupItem);
-						}
-			    });
-				} else {
-			    this.checkedRows = this.checkedRows.filter((checked) => {
-						return !(group[1].find((groupItem) => {
-							return groupItem.id == checked.id
-						}));
-			    });
+				})
+			});
+			if (this.hasBeenGroupBy) {
+				if (this.filterGroupCriteria != null && this.filterGroupCriteria != '' && this.filterGroupCriteria != 'all') {
+					this.items = Object.entries(this.groupBy(this.items, this.filterGroupCriteria));
 				}
-	    },
-    },
+			}
+		},
+		classFromValue(val) {
+			let className = 'list-row ';
+			switch (val) {
+				case 'en_cours':
+					className += 'inprogress';
+					break;
+				case 'fait' :
+				case '1' :
+					className += 'done';
+					break;
+				case '0' :
+				case 'sans_objet' :
+				case 'a_faire':
+					className += 'todo';
+					break;
+				default :
+					break;
+			}
+			className += ' em-pointer';
+			return className;
+		},
 
-    computed: {
-        fieldAndDropdownFilters() {
-            return this.listColumns.filter((data) => {
-                return data.filter_type === 'field' || data.filter_type === 'dropdown';
-            });
-        },
+		searchInAllListColumn() {
+			this.items = this.listData.filter(item => {
+				return Object.keys(item).some(key => {
+					if (item[key] !== null) {
+						return item[key].toLowerCase().includes(this.searchTerm.toLowerCase());
+					} else {
+						return false;
+					}
+				});
+			});
+		},
+		clearFilters() {
+			this.filters.map(el => {
+				return {...el, filterValue: ''}
+			})
+			this.filtering();
+		},
 
-        showingListColumns(){
-            const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
-
-            return this.listColumns.filter((data) => {
-                if(this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)){
-                    return !unwantedColumns.includes(data.column_name);
-                } else {
-                    return true;
-                }
-
-            });
-        }
-    },
+		async setAs(actionColumn, value) {
+			try {
+				const checkedRowsId = this.checkedRows.map((val) => {
+					return val.id
+				});
+				const response = await ListService.setAs(actionColumn, value, checkedRowsId.join(','));
+			} catch (e) {
+				console.log(e);
+			}
+		},
+		toggleCheckRow(rowData) {
+			const checked = this.checkedRows.some((row) => {return row.id == rowData.id && row.id != undefined});
+			if (checked) {
+				this.checkedRows = this.checkedRows.filter((row) => {
+					return row.id != rowData.id
+				});
+			} else {
+				this.checkedRows.push(rowData);
+			}
+		},
+		toggleCheckGroupRows(e, group)
+		{
+			if (e.target.checked) {
+				group[1].forEach((groupItem) => {
+					if (!this.checkedRows.find((checked) => {return checked.id == groupItem.id})) {
+						this.checkedRows.push(groupItem);
+					}
+				});
+			} else {
+				this.checkedRows = this.checkedRows.filter((checked) => {
+					return !(group[1].find((groupItem) => {
+						return groupItem.id == checked.id
+					}));
+				});
+			}
+		},
+		onSelectOption(option) {
+			this.moreOptionsOpened = false;
+			ListService.updateActionState(option.value, this.checkedRows).then((response) => {
+			});
+		},
+	},
+	computed: {
+		fieldAndDropdownFilters() {
+			return this.listColumns.filter((data) => {
+				return data.filter_type === 'field' || data.filter_type === 'dropdown';
+			});
+		},
+		showingListColumns(){
+			const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
+			return this.listColumns.filter((data) => {
+				if(this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)){
+					return !unwantedColumns.includes(data.column_name);
+				} else {
+					return true;
+				}
+			});
+		}
+	},
 }
 </script>
 

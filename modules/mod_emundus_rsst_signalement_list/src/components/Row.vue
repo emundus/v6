@@ -8,13 +8,14 @@
 			</div>
 			<div v-else><span :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span></div>
 		</td>
-		<td><span class="material-icons">more_horiz</span></td>
+		<td><span class="material-icons" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span></td>
+		<more-options v-if="moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption"></more-options>
 	</tr>
 </template>
 
 <script>
-import ListActionMenu from './ListActionMenu.vue';
 import ListService from '../services/list';
+import MoreOptions from "./MoreOptions";
 
 export default {
 	name: "Row",
@@ -45,13 +46,23 @@ export default {
 		}
 	},
 	components: {
-		'list-action-menu': ListActionMenu
+		MoreOptions
 	},
 	data: () => ({
 		isChecked: false,
+		moreOptionsOpened: false,
+		moreOptionsData: []
 	}),
 	created() {
 		this.isChecked = this.checkedRows.find(row => row.id === this.rowData.id) ? true: false;
+		if (this.rowData.num_signalement && this.rowData.etat) {
+			this.moreOptionsData = [
+				{value: 'en_cours', label: 'En cours'},
+				{value: 'a_faire', label: 'A faire'},
+				{value: 'fait', label: 'Fait'},
+				{value: 'sans_objet', label: 'Sans objet'}
+			];
+		}
 	},
 	methods: {
 		badgeForColumn(name) {
@@ -129,6 +140,12 @@ export default {
 			} catch (e) {
 				console.log(e);
 			}
+		},
+		onSelectOption(option) {
+			this.moreOptionsOpened = false;
+			ListService.updateActionState(option.value, [this.rowData]).then((response) => {
+
+			});
 		}
 	},
 	computed: {
@@ -146,7 +163,9 @@ export default {
 	watch: {
 		checkedRows: {
 			handler() {
-				this.isChecked = this.checkedRows.some((row) => {return row.id == this.rowData.id && row.id != undefined});
+				this.isChecked = this.checkedRows.some((row) => {
+					return row.id == this.rowData.id && row.id != undefined
+				});
 			},
 			deep: true,
 		}

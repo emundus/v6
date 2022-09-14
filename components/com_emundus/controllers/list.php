@@ -100,5 +100,26 @@ class EmundusControllerList extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function updateActionState()
+    {
+        $user = JFactory::getUser();
+        $tab = array('status' => 0, 'msg' => JText::_("ACCESS_DENIED"));
+
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+            $jinput = JFactory::getApplication()->input;
+            $newValue = $jinput->getString('newValue');
+            $rows = json_decode($jinput->getString('rows'), true);
+
+            if (!empty($newValue) && !empty($rows)) {
+                $updated = $this->m_list->updateActionState($newValue, $rows);
+
+                $tab['status'] = $updated;
+            }
+        }
+
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 

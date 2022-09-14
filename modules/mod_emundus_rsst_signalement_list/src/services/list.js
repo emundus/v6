@@ -44,5 +44,22 @@ export default {
         } catch (e){
             console.log(e);
         }
+    },
+
+    async updateActionState(newValue, rows)
+    {
+        const formData = new FormData();
+        formData.append('newValue', JSON.stringify(newValue));
+        formData.append('rows', JSON.stringify(rows));
+
+        try {
+            const response = await client().post('index.php?option=com_emundus&controller=list&task=updateActionState', formData);
+            return response.data;
+        } catch (error) {
+            return {
+                status: false,
+                msg: error
+            };
+        }
     }
 };

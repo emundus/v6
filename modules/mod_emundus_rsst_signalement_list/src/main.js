@@ -30,8 +30,7 @@ if (modRsstSignalementList) {
                     fabrikListParticularConditionalColumn: modRsstSignalementList.getAttribute('listParticularConditionalColumn'),
                     fabrikListParticularConditionalColumnValues: modRsstSignalementList.getAttribute('listParticularConditionalColumnValues'),
                     fabrikListColumnShowingAsBadge: modRsstSignalementList.getAttribute('listColumnShowingAsBadge'),
-                    fabrikListColumnToNotShowingWhenFilteredBy: modRsstSignalementList.getAttribute('listColumnToNotShowingWhenFilteredBy'),
-
+                    fabrikListColumnToNotShowingWhenFilteredBy: modRsstSignalementList.getAttribute('listColumnToNotShowingWhenFilteredBy')
                 }
             });
         }

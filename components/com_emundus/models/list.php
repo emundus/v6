@@ -254,4 +254,44 @@ class EmundusModelList extends JModelList
 
         return $updated;
     }
+
+    public function updateActionState($newValue, $rows) {
+        $updated = false;
+
+        if (!empty($newValue) && !empty($rows)) {
+            $query = $this->db->getQuery(true);
+
+            foreach ($rows as $row) {
+                if (preg_match('/.*-action-([0-9]+)-([0-9]+)/', $row['id'], $match)) {
+                    $numeroSignalement = $row['num_signalement'];
+                    $actionId = $match[1];
+                    $userId = $match[2];
+
+                    if (!empty($numeroSignalement) && !empty($actionId) && !empty($userId)) {
+                        $query->clear();
+
+                        $query->update('#__emundus_evaluations as jee')
+                            ->set('jee.action_' . $actionId . '_etat = ' . $newValue)
+                            ->leftJoin('#__emundus_reporting_numbers AS jern ON jern.fnum = jee.fnum')
+                            ->where('jern.numero_signalement = ' . $this->db->quote($numeroSignalement))
+                            ->andWhere('jee.user = ' . $userId);
+
+                        $this->db->setQuery($query);
+
+                        try {
+                            $updated = $this->db->execute();
+                        } catch (Exception $e) {
+                            $updated = false;
+                        }
+
+                        if (!$updated) {
+                            JLog::add('Could not update value for ' . $row['id'], JLog::WARNING, 'com_emundus');
+                        }
+                    }
+                }
+            }
+        }
+
+        return $updated;
+    }
 }
