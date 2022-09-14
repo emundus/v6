@@ -561,6 +561,9 @@ JText::script('COM_EMUNDUS_FICHE_DE_SYNTHESE');             # 35
 JText::script('COM_EMUNDUS_MESSENGER');                     # 36
 JText::script('COM_EMUNDUS_ACCESS_LOGS');                   # 37
 
+JText::script('COM_EMUNDUS_EDIT_COMMENT_BODY');
+JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
+
 // ONBOARD
 
 $app = JFactory::getApplication();
