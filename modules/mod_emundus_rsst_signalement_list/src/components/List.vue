@@ -183,7 +183,7 @@ export default {
 		},
 		retrieveGroupeClassColor(group) {
 			const data = this.groupByItemArraySubValues(group);
-			let valueToHighlight = "";
+			let valueToHighlight = "fait";
 
 			if (data.find((item) => {return item.etat == 'a_faire' || item.etat == 'sans_objet'})) {
 				valueToHighlight = 'a_faire';
