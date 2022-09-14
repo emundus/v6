@@ -60,6 +60,17 @@ class com_emundusInstallerScript
                 # Delete emundus sql files in con_admin
                 #$this->deleteOldSqlFiles();
 
+                $this->updateModulesParams("mod_emundusflow","show_programme" , "0");
+
+                $this->updateFabrikCronParams("emundusrecall",array("log","log_email","cron_rungate") , array("0","mail@emundus.fr","1"));
+
+                $this->updateSCPParams("pro_plugin", array("email_active","email_on_admin_login"), array("0","0"));
+
+                $this->genericUpdateParams("#__modules", "module", "mod_emundusflow", array("show_programme"), array("0"));
+                $this->genericUpdateParams("#__fabrik_cron", "plugin", "emundusrecall", array("log", "log_email", "cron_rungate") , array("0", "mail@emundus.fr", "1"));
+
+                $this->updateConfigurationFile("lifetime", "30");
+
                 // Update Gantry5 configuration file for PHP8 compatibility
                 $this->updateYamlVariable('offcanvas','16rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','width');
                 $this->updateYamlVariable('breakpoints','48rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','mobile-menu-breakpoint');
@@ -265,13 +276,11 @@ class com_emundusInstallerScript
 
     private function updateConfigurationFile($param, $value) {
         $formatter = new JRegistryFormatPHP();
-        $config = JFactory::getConfig();
-        $config->set($param, $value);
-
         $this->config = new JConfig();
         $this->config->$param = $value;
         $params = array('class' => 'JConfig', 'closingtag' => false);
         $str = $formatter->objectToString($this->config, $params);
+
         $config_file = JPATH_CONFIGURATION . '/configuration.php';
         if (file_exists($config_file) and is_writable($config_file)){
             file_put_contents($config_file,$str);
