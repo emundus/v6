@@ -486,7 +486,7 @@ class EmundusModelApplication extends JModelList
             // get attachment data
             $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
 
-            $logsStd->details = "(" . $attachmentTpe['value'] . ") : " . $file['filename'];
+            $logsStd->details = "(" . $attachmentTpe['value'] . ") " . $file['filename'];
             $logsParams = array('deleted' => [$logsStd]);
 
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
@@ -4586,9 +4586,9 @@ class EmundusModelApplication extends JModelList
 
             if(empty($_FILES)) {
                 // file the difference
+                $logsStd = new stdClass();
+                $logStd->description = "test";
                 foreach ($oldData as $key => $value) {
-                    $logsStd = new stdClass();
-
                     if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
                         $logsStd->element = '<u>' . JText::_($key) . '</u>';
 
