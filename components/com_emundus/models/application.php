@@ -4603,7 +4603,7 @@ class EmundusModelApplication extends JModelList
                 foreach ($oldData as $key => $value) {
                     $logsStd = new stdClass();
                     if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
-                        $logsStd->description = '(' . $attachmentParams['value'] . ') ';
+                        $logsStd->description = '<b>' . '(' . $attachmentParams['value'] . ') ' . '</b>';
 
                         $logsStd->element = '<u>' . JText::_($key) . '</u>';
 
