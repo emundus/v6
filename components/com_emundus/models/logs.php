@@ -334,7 +334,7 @@ class EmundusModelLogs extends JModelList {
                 break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
-
+                $action_details = reset($params->updated)->description;
                 foreach ($params->updated as $value) {
                     $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp<br>';
 

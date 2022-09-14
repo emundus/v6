@@ -4584,12 +4584,15 @@ class EmundusModelApplication extends JModelList
             $mFile = new EmundusModelFiles();
             $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
 
+            $attachmentParams = $this->getAttachmentByID($newData['attachment_id']);
+
             if(empty($_FILES)) {
-                // file the difference
-                $logsStd = new stdClass();
-                $logStd->description = "test";
+                // find the difference
                 foreach ($oldData as $key => $value) {
+                    $logsStd = new stdClass();
                     if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
+                        $logsStd->description = '(' . $attachmentParams['value'] . ') ';
+
                         $logsStd->element = '<u>' . JText::_($key) . '</u>';
 
                         // set old data
@@ -4612,17 +4615,11 @@ class EmundusModelApplication extends JModelList
                 $logsStd = new stdClass();
 
                 /* get attachment type by $data['id'] */
-                $attachmentParams = $this->getAttachmentByID($newData['attachment_id']);
                 $logsStd->element = '(' . $attachmentParams['value'] . ') ';
-
                 $logsStd->details = $_FILES['file']['name'];
                 $logsParams = array('created' => [$logsStd]);
                 EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
             }
-
-
-
-
         } catch (Exception $e) {
             // log error
             $return['update'] = false;
