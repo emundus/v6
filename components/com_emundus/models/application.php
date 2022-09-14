@@ -4594,8 +4594,13 @@ class EmundusModelApplication extends JModelList
             $attachmentParams = $this->getAttachmentByID($newData['attachment_id']);
 
             if(empty($_FILES)) {
-                // find the difference
+                // find the difference(s)
                 foreach ($oldData as $key => $value) {
+                    // by default : null = "invalid" or -2
+                    if($key === 'is_validated' and is_null($value)) {
+                        $value = -2;            # recheck !!!
+                    }
+
                     $logsStd = new stdClass();
                     if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
                         $logsStd->description = '<b>' . '(' . $attachmentParams['value'] . ') ' . '</b>';
