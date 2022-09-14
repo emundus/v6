@@ -1112,6 +1112,7 @@ class FabrikFEModelForm extends FabModelForm
 	{
 		$input = $this->app->input;
 
+
 		if ($this->isNewRecord() || !$this->getForm()->record_in_database)
 		{
 			$this->_origData = array(new stdClass);
@@ -2314,7 +2315,7 @@ class FabrikFEModelForm extends FabModelForm
 
 					// $$$ rob $this->formData was $_POST, but failed to get anything for calculation elements in php 5.2.1
 					$formData = $elementModel->getValue($this->formData, $c, array('runplugins' => 0, 'use_default' => false, 'use_querystring' => false));
-					
+
 					/* remove get_magic_quotes_gpc (always false since php5.4, deprecated in php7.4)
 					if (get_magic_quotes_gpc())
 					{
@@ -2929,7 +2930,7 @@ class FabrikFEModelForm extends FabModelForm
 	 */
 	public function getRowId()
 	{
-		if (isset($this->rowId))
+		if (isset($this->rowId) && !empty($this->rowId))
 		{
 			return $this->rowId;
 		}

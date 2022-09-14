@@ -47,7 +47,7 @@ class EmundusHelperMenu {
 	    }
 	}
 
-	function getUserApplicationMenu($profile, $formids = null) {
+	static function getUserApplicationMenu($profile, $formids = null) {
 		$user   = JFactory::getUser();
 		$levels = JAccess::getAuthorisedViewLevels($user->id);
 
