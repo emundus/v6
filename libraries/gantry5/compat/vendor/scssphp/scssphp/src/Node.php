@@ -27,7 +27,7 @@ abstract class Node
     public $type;
 
     /**
-     * @var int
+     * @var integer
      */
     public $sourceIndex;
 

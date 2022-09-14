@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -14,7 +14,6 @@
 
 namespace Gantry\Component\Menu;
 
-use Gantry\Component\Serializable\Serializable;
 use RocketTheme\Toolbox\ArrayTraits\ArrayAccessWithGetters;
 use RocketTheme\Toolbox\ArrayTraits\Export;
 
@@ -53,7 +52,7 @@ use RocketTheme\Toolbox\ArrayTraits\Export;
  */
 class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonSerializable
 {
-    use ArrayAccessWithGetters, Export, Serializable;
+    use ArrayAccessWithGetters, Export;
 
     const VERSION = 2;
 
@@ -91,7 +90,6 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
         'anchor_class' => '',
         'yaml_path' => null,
         'yaml_alias' => null,
-        'tree' => []
     ];
 
     /** @var array */
@@ -132,7 +130,6 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
     /**
      * @return array|mixed
      */
-    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return [
@@ -179,36 +176,36 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
     }
 
     /**
-     * @return array
+     * @return string
      */
-    #[\ReturnTypeWillChange]
-    public function __serialize()
+    public function serialize()
     {
         // TODO: need to create collection class to gather the sibling data.
-        return [
+        return serialize([
             'version' => static::VERSION,
             'items' => $this->items,
             'groups' => $this->groups,
             'children' => $this->children,
             'url' => $this->url
-        ];
+        ]);
     }
 
     /**
-     * @param array $serialized
+     * @param string $serialized
      */
-    #[\ReturnTypeWillChange]
-    public function __unserialize($serialized)
+    public function unserialize($serialized)
     {
         // TODO: need to create collection class to gather the sibling data.
-        if (!isset($serialized['version']) && $serialized['version'] === static::VERSION) {
+        $data = unserialize($serialized);
+
+        if (!isset($data['version']) && $data['version'] === static::VERSION) {
             throw new \UnexpectedValueException('Serialized data is not valid');
         }
 
-        $this->items = $serialized['items'];
-        $this->groups =  $serialized['groups'];
-        $this->children = $serialized['children'];
-        $this->url = $serialized['url'];
+        $this->items = $data['items'];
+        $this->groups =  $data['groups'];
+        $this->children = $data['children'];
+        $this->url = $data['url'];
     }
 
     /**
@@ -259,43 +256,31 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      */
     public function groups()
     {
-        $menu = $this->menu();
+        $children = $this->children();
 
         // Grouped by column counts.
         if ($this->items['columns_count']) {
-            $children = $this->children;
-
             $i = 0; $start = 0;
             $list = [];
             foreach ($this->items['columns_count'] as $i => $count) {
-                $list[$i] = array_slice($children, $start, $count, true);
+                $list[$i] = array_slice($children, $start, $count);
                 $start += $count;
             }
             // Add missing items into the end of the list.
             if (count($children) > $start) {
-                $list[$i] = array_merge($list[$i], array_slice($children, $start, null, true));
+                $list[$i] = array_merge($list[$i], array_slice($children, $start));
             }
-
-            foreach ($list as &$items) {
-                foreach ($items as $id => &$item) {
-                    $item = $menu[$id];
-                }
-                unset($item);
-
-                $items = array_filter($items);
-            }
-            unset($items);
 
             return $list;
         }
 
-        // Grouped by explicit list.
+        // Grouped by explisit list.
         if ($this->groups) {
             $list = [];
             foreach ($this->groups as $i => $group) {
                 $list[$i] = [];
                 foreach ($group as $id => $value) {
-                    $item = $menu[$id];
+                    $item = $this->menu()[$id];
                     if ($item) {
                         $list[$i][] = $item;
                     }
@@ -305,8 +290,8 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
             return $list;
         }
 
-        // No grouping.
-        return [$this->children()];
+        // No grouping (use first group).
+        return [$children];
     }
 
     /**
@@ -327,7 +312,7 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      */
     public function hasChildren()
     {
-        return !empty($this->children());
+        return !empty($this->children);
     }
 
     /**
@@ -451,9 +436,7 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
 
                         // Assign each menu items to the group.
                         $item = $menu[$key];
-                        if ($item) {
-                            $item->group = $i;
-                        }
+                        $item->group = $i;
                     }
                 }
 
@@ -489,7 +472,6 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      *
      * @return Item
      */
-    #[\ReturnTypeWillChange]
     public function current()
     {
         $current = key($this->children);
@@ -502,7 +484,6 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      *
      * @return mixed  Returns scalar on success, or NULL on failure.
      */
-    #[\ReturnTypeWillChange]
     public function key()
     {
         return current($this->children);
@@ -513,14 +494,9 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      *
      * @return void
      */
-    #[\ReturnTypeWillChange]
     public function next()
     {
-        while (false !== next($this->children)) {
-            if ($this->current()) {
-                break;
-            }
-        }
+        next($this->children);
     }
 
     /**
@@ -528,14 +504,9 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      *
      * @return void
      */
-    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->children);
-        $current = key($this->children);
-        if (!$this->menu()[$current]) {
-            $this->next();
-        }
     }
 
     /**
@@ -543,10 +514,9 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      *
      * @return int
      */
-    #[\ReturnTypeWillChange]
     public function count()
     {
-        return count($this->children());
+        return count($this->children);
     }
 
     /**
@@ -554,7 +524,6 @@ class Item implements \ArrayAccess, \Iterator, \Serializable, \Countable, \JsonS
      *
      * @return bool  Returns TRUE on success or FALSE on failure.
      */
-    #[\ReturnTypeWillChange]
     public function valid()
     {
         return key($this->children) !== null;

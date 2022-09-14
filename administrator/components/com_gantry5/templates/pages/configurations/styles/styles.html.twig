@@ -69,8 +69,7 @@
         <input type="hidden" name="styles[preset]" value="{{ presetKey }}" />
         {% endif %}
 
-        {% for group, list in blocks %}
-        {% if (group != 'hidden') %}
+        {% for group, list in blocks if (group != 'hidden') %}
         <h2>{{ group|capitalize }} {{ 'GANTRY5_PLATFORM_STYLES'|trans }}</h2>
 
         <div class="g-filter-actions">
@@ -103,7 +102,6 @@
                 </div>
             {% endfor %}
         </div>
-        {% endif %}
         {% endfor %}
 
         <div class="g-footer-actions">

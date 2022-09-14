@@ -164,7 +164,7 @@ class Base64
     /**
      * Convert to base64
      *
-     * @param int $value
+     * @param integer $value
      *
      * @return string
      */
@@ -178,7 +178,7 @@ class Base64
      *
      * @param string $value
      *
-     * @return int
+     * @return integer
      */
     public static function decode($value)
     {

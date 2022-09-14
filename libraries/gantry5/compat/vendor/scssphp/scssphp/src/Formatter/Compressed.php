@@ -50,6 +50,8 @@ class Compressed extends Formatter
         foreach ($block->lines as $index => $line) {
             if (substr($line, 0, 2) === '/*' && substr($line, 2, 1) !== '!') {
                 unset($block->lines[$index]);
+            } elseif (substr($line, 0, 3) === '/*!') {
+                $block->lines[$index] = '/*' . substr($line, 3);
             }
         }
 

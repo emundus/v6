@@ -204,10 +204,10 @@ class Colors
     /**
      * Reverse conversion : from RGBA to a color name if possible
      *
-     * @param int       $r
-     * @param int       $g
-     * @param int       $b
-     * @param int|float $a
+     * @param integer $r
+     * @param integer $g
+     * @param integer $b
+     * @param integer|float $a
      *
      * @return string|null
      */

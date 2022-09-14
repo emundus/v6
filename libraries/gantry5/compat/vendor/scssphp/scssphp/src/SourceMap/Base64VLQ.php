@@ -51,7 +51,7 @@ class Base64VLQ
     /**
      * Returns the VLQ encoded value.
      *
-     * @param int $value
+     * @param integer $value
      *
      * @return string
      */
@@ -80,9 +80,9 @@ class Base64VLQ
      * Decodes VLQValue.
      *
      * @param string $str
-     * @param int    $index
+     * @param integer $index
      *
-     * @return int
+     * @return integer
      */
     public static function decode($str, &$index)
     {
@@ -107,9 +107,9 @@ class Base64VLQ
      *   1 becomes 2 (10 binary), -1 becomes 3 (11 binary)
      *   2 becomes 4 (100 binary), -2 becomes 5 (101 binary)
      *
-     * @param int $value
+     * @param integer $value
      *
-     * @return int
+     * @return integer
      */
     private static function toVLQSigned($value)
     {
@@ -126,9 +126,9 @@ class Base64VLQ
      *   2 (10 binary) becomes 1, 3 (11 binary) becomes -1
      *   4 (100 binary) becomes 2, 5 (101 binary) becomes -2
      *
-     * @param int $value
+     * @param integer $value
      *
-     * @return int
+     * @return integer
      */
     private static function fromVLQSigned($value)
     {

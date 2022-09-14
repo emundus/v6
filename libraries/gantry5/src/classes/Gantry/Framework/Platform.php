@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -275,6 +275,10 @@ class Platform extends BasePlatform
     {
         /** @var CMSApplication $application */
         $application = Factory::getApplication();
+        $document = $application->getDocument();
+        if (!$document instanceof HtmlDocument) {
+            return '';
+        }
 
         $module = is_object($id) ? $id : $this->getModule($id);
 
@@ -283,18 +287,12 @@ class Platform extends BasePlatform
             return '';
         }
 
-        if (empty($module->contentRendered)) {
-            $document = $application->getDocument();
-            if (!$document instanceof HtmlDocument) {
-                return '';
-            }
+        $isGantry = \strpos($module->module, 'gantry5') !== false;
+        $content = isset($module->content) ? $module->content : null;
 
-            $renderer = $document->loadRenderer('module');
+        $renderer = $document->loadRenderer('module');
 
-            $html = trim($renderer->render($module, $attribs));
-        } else {
-            $html = trim($module->content);
-        }
+        $html = trim($renderer->render($module, $attribs));
 
         // Add frontend editing feature as it has only been defined for module positions.
         $user = $application->getIdentity();
@@ -302,7 +300,6 @@ class Platform extends BasePlatform
         $frontEditing = ($application->isClient('site') && $application->get('frontediting', 1) && $user && !$user->guest);
         $menusEditing = ($application->get('frontediting', 1) == 2) && $user && $user->authorise('core.edit', 'com_menus');
 
-        $isGantry = \strpos($module->module, 'gantry5') !== false;
         if (!$isGantry && $frontEditing && $html && $user && $user->authorise('module.edit.frontend', 'com_modules.module.' . $module->id)) {
             $displayData = [
                 'moduleHtml' => &$html,
@@ -312,6 +309,9 @@ class Platform extends BasePlatform
             ];
             LayoutHelper::render('joomla.edit.frontediting_modules', $displayData);
         }
+
+        // Work around Joomla "issue" which corrupts content of custom html module (last checked J! 3.6.5).
+        $module->content = $content;
 
         if ($html && !$isGantry) {
             /** @var Theme $theme */

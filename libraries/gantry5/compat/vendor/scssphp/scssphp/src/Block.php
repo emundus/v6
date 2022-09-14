@@ -22,12 +22,12 @@ namespace ScssPhp\ScssPhp;
 class Block
 {
     /**
-     * @var string|null
+     * @var string
      */
     public $type;
 
     /**
-     * @var Block|null
+     * @var \ScssPhp\ScssPhp\Block
      */
     public $parent;
 
@@ -37,17 +37,17 @@ class Block
     public $sourceName;
 
     /**
-     * @var int
+     * @var integer
      */
     public $sourceIndex;
 
     /**
-     * @var int
+     * @var integer
      */
     public $sourceLine;
 
     /**
-     * @var int
+     * @var integer
      */
     public $sourceColumn;
 
@@ -67,7 +67,7 @@ class Block
     public $children;
 
     /**
-     * @var Block|null
+     * @var \ScssPhp\ScssPhp\Block|null
      */
     public $selfParent;
 }

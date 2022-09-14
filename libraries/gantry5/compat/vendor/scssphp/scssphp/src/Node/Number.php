@@ -38,7 +38,7 @@ class Number extends Node implements \ArrayAccess
     const PRECISION = 10;
 
     /**
-     * @var int
+     * @var integer
      * @deprecated use {Number::PRECISION} instead to read the precision. Configuring it is not supported anymore.
      */
     public static $precision = self::PRECISION;
@@ -81,7 +81,7 @@ class Number extends Node implements \ArrayAccess
     ];
 
     /**
-     * @var int|float
+     * @var integer|float
      */
     private $dimension;
 
@@ -100,7 +100,7 @@ class Number extends Node implements \ArrayAccess
     /**
      * Initialize number
      *
-     * @param int|float       $dimension
+     * @param integer|float   $dimension
      * @param string[]|string $numeratorUnits
      * @param string[]        $denominatorUnits
      *
@@ -147,9 +147,8 @@ class Number extends Node implements \ArrayAccess
     }
 
     /**
-     * @return bool
+     * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         if ($offset === -3) {
@@ -173,9 +172,8 @@ class Number extends Node implements \ArrayAccess
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         switch ($offset) {
@@ -200,18 +198,16 @@ class Number extends Node implements \ArrayAccess
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         throw new \BadMethodCallException('Number is immutable');
     }
 
     /**
-     * @return void
+     * {@inheritdoc}
      */
-    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         throw new \BadMethodCallException('Number is immutable');
@@ -220,7 +216,7 @@ class Number extends Node implements \ArrayAccess
     /**
      * Returns true if the number is unitless
      *
-     * @return bool
+     * @return boolean
      */
     public function unitless()
     {

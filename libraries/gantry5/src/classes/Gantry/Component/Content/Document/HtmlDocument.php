@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -412,10 +412,10 @@ class HtmlDocument
     /**
      * NOTE: In PHP this function can be called either from Gantry DI container or statically.
      *
-     * @param bool|null $addDomain
+     * @param bool $addDomain
      * @return string
      */
-    public static function domain($addDomain = null)
+    public static function domain($addDomain = false)
     {
         return '';
     }
@@ -428,13 +428,13 @@ class HtmlDocument
      * NOTE: In PHP this function can be called either from Gantry DI container or statically.
      *
      * @param  string $url         Resource to be located.
-     * @param  bool|null $domain   True to include domain name, false to not, null to use default.
+     * @param  bool $domain        True to include domain name.
      * @param  int $timestamp_age  Append timestamp to files that are less than x seconds old. Defaults to a week.
      *                             Use value <= 0 to disable the feature.
      * @param  bool $allowNull     True if non-existing files should return null.
      * @return string|null         Returns url to the resource or null if resource was not found.
      */
-    public static function url($url, $domain = null, $timestamp_age = null, $allowNull = true)
+    public static function url($url, $domain = false, $timestamp_age = null, $allowNull = true)
     {
         if (!is_string($url) || $url === '') {
             // Return null on invalid input.

@@ -521,7 +521,6 @@ class BlueprintSchema
         }
 
         // Parent type override.
-        /** @var array $properties <- Workaround for phpstan 1 bug */
         $properties['type'] = !empty($properties['parent@']) ? '_parent' : $type;
 
         $isInputField = !isset($properties['input@']) || (bool)$properties['input@'];

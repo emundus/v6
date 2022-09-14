@@ -60,23 +60,8 @@ class com_emundusInstallerScript
                 # Delete emundus sql files in con_admin
                 #$this->deleteOldSqlFiles();
 
-                # Non generic
-                $this->updateModulesParams("mod_emundusflow","show_programme" , "0");
-                # Change cron fabrik params
-                $this->updateFabrikCronParams("emundusrecall",array("log","log_email","cron_rungate") , array("0","mail@emundus.fr","1"));
-
-                # Update SCP params
-                $this->updateSCPParams("pro_plugin", array("email_active","email_on_admin_login"), array("0","0"));
-
-                # Generic
-                $this->genericUpdateParams("#__modules", "module", "mod_emundusflow", array("show_programme"), array("0"));
-                $this->genericUpdateParams("#__fabrik_cron", "plugin", "emundusrecall", array("log", "log_email", "cron_rungate") , array("0", "mail@emundus.fr", "1"));
-
-                #$this->genericUpdateParams("#__securitycheckpro_storage", "storage_key", "pro_plugin", "email_active", "0", array('storage_value', 'storage_key'));
-                #$this->genericUpdateParams("#__securitycheckpro_storage", "storage_key", "pro_plugin", "email_on_admin_login", "0", array('storage_value', 'storage_key'));
-
-                # Update lifetime in configuration.php
-                $this->updateConfigurationFile("lifetime", "54");
+                // Update Gantry5 configuration file for PHP8 compatibility
+                $this->updateYamlVariable('offcanvas','16rem','templates/g5_helium/custom/config/default/styles.yaml');
             }
         }
     }
@@ -293,7 +278,21 @@ class com_emundusInstallerScript
         }
     }
 
+    private function updateYamlVariable($key1,$value,$file,$key2 = null){
+        $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
 
+        if(!empty($key2) && isset($yaml[$key1])){
+            if(isset($yaml[$key1][$key2])) {
+                $yaml[$key1][$key2] = $value;
+            }
+        } elseif (isset($yaml[$key1])){
+            $yaml[$key1] = $value;
+        } else {
+            echo ("Key " . $key1 . ' not found in file ' . $file);
+        }
 
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml);
 
+        file_put_contents($file, $new_yaml);
+    }
 }

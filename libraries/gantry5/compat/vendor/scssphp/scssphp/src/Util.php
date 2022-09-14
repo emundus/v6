@@ -79,7 +79,7 @@ class Util
     /**
      * mb_chr() wrapper
      *
-     * @param int $code
+     * @param integer $code
      *
      * @return string
      */

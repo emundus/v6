@@ -34,8 +34,8 @@ class Range
     /**
      * Initialize range
      *
-     * @param int|float $first
-     * @param int|float $last
+     * @param integer|float $first
+     * @param integer|float $last
      */
     public function __construct($first, $last)
     {
@@ -46,9 +46,9 @@ class Range
     /**
      * Test for inclusion in range
      *
-     * @param int|float $value
+     * @param integer|float $value
      *
-     * @return bool
+     * @return boolean
      */
     public function includes($value)
     {

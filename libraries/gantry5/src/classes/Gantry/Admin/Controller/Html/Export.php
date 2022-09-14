@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -16,7 +16,6 @@ namespace Gantry\Admin\Controller\Html;
 
 use Gantry\Component\Admin\HtmlController;
 use Gantry\Framework\Exporter;
-use Joomla\CMS\Version;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Symfony\Component\Yaml\Yaml;
 
@@ -43,7 +42,7 @@ class Export extends HtmlController
         $exported = $exporter->all();
 
         $zipname = $exported['export']['theme']['name'] . '-export.zip';
-        $tmpname = tempnam(sys_get_temp_dir(), 'zip') . '.zip';
+        $tmpname = tempnam(sys_get_temp_dir(), 'zip');
 
         $zip = new \ZipArchive();
         $zip->open($tmpname, \ZipArchive::CREATE);
@@ -104,10 +103,6 @@ class Export extends HtmlController
                 }
             }
 
-        }
-
-        if (!empty($exported['joomla']['mysql'])) {
-            $zip->addFromString('joomla/mysql/custom.sql', $exported['joomla']['mysql']);
         }
 
         $zip->close();

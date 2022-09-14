@@ -88,6 +88,7 @@
 // Tables
 table.table-bordered {
     border-collapse: separate;
+    *border-collapse: collapse;
 
     th {
         background-color: #eceff3;

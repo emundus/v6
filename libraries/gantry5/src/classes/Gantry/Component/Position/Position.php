@@ -271,7 +271,6 @@ class Position extends Collection
     /**
      * @return \ArrayIterator
      */
-    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $items = [];

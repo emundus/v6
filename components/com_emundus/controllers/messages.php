@@ -1262,10 +1262,9 @@ class EmundusControllerMessages extends JControllerLegacy {
 
         $mail_from_address = $mail_from_sys;
 
+        $toAttach = array();
 		if (!empty($attachments) && is_array($attachments)) {
 			$toAttach = $attachments;
-		} else {
-			$toAttach[] = $attachments;
 		}
 
 		// In case no post value is supplied
@@ -1328,7 +1327,7 @@ class EmundusControllerMessages extends JControllerLegacy {
 		$mailer->Encoding = 'base64';
 		$mailer->setBody($body);
 
-		if (!empty($toAttach)) {
+        if (!empty($toAttach)) {
 			$mailer->addAttachment($toAttach);
 		}
 

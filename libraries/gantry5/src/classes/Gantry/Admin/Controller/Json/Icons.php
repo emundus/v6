@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -15,7 +15,6 @@
 namespace Gantry\Admin\Controller\Json;
 
 use Gantry\Component\Admin\JsonController;
-use Gantry\Component\Config\Config;
 use Gantry\Component\Response\JsonResponse;
 
 /**
@@ -31,17 +30,8 @@ class Icons extends JsonController
     {
         $response = [];
 
-        $this->container['configuration'] = 'default';
-
-        /** @var Config $config */
-        $config = $this->container['config'];
-
-        $version = $config->get('page.fontawesome.version', $config->get('page.fontawesome.default_version', 'fa4'));
-        if ($version === 'fa4') {
-            $list = include __DIR__ . '/Icons/FontAwesome4.php';
-        } else {
-            $list = include __DIR__ . '/Icons/FontAwesome5.php';
-        }
+        $list = include __DIR__ . '/Icons/FontAwesome5.php';
+        //$list = include __DIR__ . '/Icons/FontAwesome4.php';
 
         $options = [
             'fw' => 'Fixed Width',

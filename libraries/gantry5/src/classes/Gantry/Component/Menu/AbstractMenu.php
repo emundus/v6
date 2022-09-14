@@ -3,7 +3,7 @@
 /**
  * @package   Gantry5
  * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -17,7 +17,6 @@ namespace Gantry\Component\Menu;
 use Gantry\Component\Config\Config;
 use Gantry\Component\File\CompiledYamlFile;
 use Gantry\Component\Gantry\GantryTrait;
-use Gantry\Framework\Gantry;
 use RocketTheme\Toolbox\ArrayTraits\ArrayAccessWithGetters;
 use RocketTheme\Toolbox\ArrayTraits\Countable;
 use RocketTheme\Toolbox\ArrayTraits\Export;
@@ -129,7 +128,7 @@ abstract class AbstractMenu implements \ArrayAccess, \Iterator, \Countable
         foreach ($ordering as $path => $children) {
             $tree = $parents;
             if (!$isGroup) {
-                $tree[] = Gantry::basename($path);
+                $tree[] = basename($path);
                 $name = implode('/', $tree);
                 $list[0][$name] = ++$i;
             }
@@ -180,7 +179,7 @@ abstract class AbstractMenu implements \ArrayAccess, \Iterator, \Countable
             if ($isGroup) {
                 $counts[] = $count;
             } else {
-                $tree[] = Gantry::basename($path);
+                $tree[] = basename($path);
             }
             if (\is_array($children)) {
                 static::embedOrderingRecurse($items, $children, $tree, $isGroup ? $pos : 0);
@@ -610,7 +609,7 @@ abstract class AbstractMenu implements \ArrayAccess, \Iterator, \Countable
                     $item['enabled'] = !isset($item['options']['particle']['enabled']) || !empty($item['options']['particle']['enabled']);
                     $item['id'] = $route;
                     $item['parent_id'] = implode('/', $parentTree);
-                    $item['alias'] = Gantry::basename($route);
+                    $item['alias'] = basename($route);
                     $item['level'] = $level;
 
                     $item = new Item($this, $item);
@@ -636,8 +635,7 @@ abstract class AbstractMenu implements \ArrayAccess, \Iterator, \Countable
             $map = $this->pathMap ? $this->pathMap->toArray() : [];
         }
 
-        $alias = Gantry::basename($path);
-        $key = $map && isset($map[$alias]['id']) ? $map[$alias]['id'] : $path;
+        $key = $map && isset($map[basename($path)]['id']) ? $map[basename($path)]['id'] : $path;
 
         if (!isset($this->items[$key]) || !$this->items[$key]->hasChildren()) {
             return;
