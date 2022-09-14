@@ -9,7 +9,7 @@
 			<div v-else><span :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span></div>
 		</td>
 		<td><span class="material-icons" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span></td>
-		<more-options v-if="moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption"></more-options>
+		<more-options v-if="moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
 	</tr>
 </template>
 
@@ -144,7 +144,7 @@ export default {
 		onSelectOption(option) {
 			this.moreOptionsOpened = false;
 			ListService.updateActionState(option.value, [this.rowData]).then((response) => {
-
+				this.rowData.etat = option.value;
 			});
 		}
 	},
@@ -152,6 +152,10 @@ export default {
 		showingListColumns() {
 			const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
 			return this.listColumns.filter((data) => {
+				if (data.column_name == 'id') {
+					return false;
+				}
+
 				if (this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)) {
 					return !unwantedColumns.includes(data.column_name);
 				} else {

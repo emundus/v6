@@ -26,14 +26,14 @@
 			<thead class="list-table-head">
 				<tr>
 					<th></th>
-					<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id" @click="orderBy(data.column_name)" class="em-pointer">
+					<th v-for="data in showingListColumns" :id="data.column_name" :key="data.id" @click="orderBy(data.column_name)" class="em-pointer" style="user-select: none;">
 						<span v-if="sort.orderBy == data.column_name && sort.order == 'asc'" class="material-icons">arrow_upward</span>
 						<span v-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
 						{{ translate(data.label) }}
 					</th>
 					<th>
 						<span v-if="checkedRows.length > 0" class="material-icons" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
-						<more-options v-if="checkedRows.length > 0 && moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption"></more-options>
+						<more-options v-if="checkedRows.length > 0 && moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
 					</th>
 				</tr>
 			</thead>
@@ -41,7 +41,7 @@
 				<template v-if="hasBeenGroupBy">
 					<template v-for="group in items">
 						<tr :class="retrieveGroupeClassColor(group)">
-							<td :colspan="listColumns.length+1">
+							<td :colspan="showingListColumns.length+1">
 								<input type="checkbox" class="em-switch input" style="margin-top: -2px;" @change="(e) => toggleCheckGroupRows(e, group)">
 								<span class="em-ml-32"><b>{{ rowGroupByRowKeyName(group) }}</b></span>
 							</td>
@@ -412,6 +412,13 @@ export default {
 		onSelectOption(option) {
 			this.moreOptionsOpened = false;
 			ListService.updateActionState(option.value, this.checkedRows).then((response) => {
+				if (response.status) {
+					this.checkedRows.forEach((item) => {
+						item.etat = option.value;
+					});
+
+					this.checkedRows = [];
+				}
 			});
 		},
 	},
@@ -424,6 +431,10 @@ export default {
 		showingListColumns(){
 			const unwantedColumns = this.listColumnToNotShowingWhenFilteredBy.split(',') || [];
 			return this.listColumns.filter((data) => {
+				if (data.column_name == 'id') {
+					return false;
+				}
+
 				if(this.filterColumnUsedActually.length > 0 && this.filterColumnUsedActually.includes(data.column_name)){
 					return !unwantedColumns.includes(data.column_name);
 				} else {
