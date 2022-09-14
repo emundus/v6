@@ -29,13 +29,24 @@ $mod_emundus_footer_data_privacy=$params->get('mod_emundus_footer_data_privacy',
 $mod_emundus_footer_rights=$params->get('mod_emundus_footer_rights', '1');
 $mod_emundus_footer_cookies=$params->get('mod_emundus_footer_cookies', '1');
 
+$type             = ModLoginHelper::getType();
+$return           = ModLoginHelper::getReturnUrl($params, $type);
+$twofactormethods = JAuthenticationHelper::getTwoFactorMethods();
+$user             = JFactory::getUser();
+$layout           = $params->get('layout', 'default');
+
 
 // Get release version
 $xmlDoc = new DOMDocument();
 if ($xmlDoc->load('administrator/components/com_emundus/emundus.xml')) {
     $file_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 }
-//
+
+/*Logged users must load the logout sublayout
+if (!$user->guest)
+{
+	$layout .= '_logout';
+}*/
 
 $lang = JFactory::getLanguage();
 $actualLanguage = substr($lang->getTag(), 0 , 2);
