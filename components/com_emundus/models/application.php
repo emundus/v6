@@ -307,11 +307,19 @@ class EmundusModelApplication extends JModelList
                 /* $old_comment->comment_body vs $text */
 
                 if ($old_comment->reason !== $title) {
+                    if(empty(trim($old_comment->reason))) {
+                        $old_comment->reason = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+                    }
+
                     array_push($logsParams['updated'], ['element' =>  '<span><b>' . $old_comment->reason . '</b>'. JText::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
                         'old' => $old_comment->reason,
                         'new' => $title]);
                 }
                 if ($old_comment->comment_body !== $text) {
+                    if(empty(trim($old_comment->reason))) {
+                        $old_comment->reason = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+                    }
+
                     array_push($logsParams['updated'], ['element' => '<span><b>' . $old_comment->reason . '</b>'.  JText::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
                         'old' => $old_comment->comment_body,
                         'new' => $text]);
