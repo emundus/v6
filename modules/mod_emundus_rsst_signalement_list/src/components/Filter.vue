@@ -1,16 +1,15 @@
 <template>
     <div>
-        <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='groupBy'"  style="width: max-content" v-model="groupByCriteriaValue">
+        <select v-if="filterType =='groupBy'" class="list-vue-select em-mt-4 em-mr-16 em-input"  style="width: max-content" v-model="groupByCriteriaValue">
             <option value="all" selected > Grouper par</option>
             <option v-for="data in filterDataGroupBy" :key="data.id" :value="data.column_name">{{ data.label }}</option>
         </select>
-        <select class="list-vue-select em-mt-4 em-input" v-if="filterType =='dropdown'" v-model="filterValue" style="width: max-content">
+        <select v-else-if="filterType =='dropdown'" class="list-vue-select em-mt-4 em-mr-16 em-input" v-model="filterValue" style="width: max-content">
             <option value="all" selected > {{translate(columnNameLabel) }}</option>
-            <!-- la key contient data car il peut y arriver que data.id n'extiste pas et deplus data est forcément un string string -->
             <option v-for="(data,index) in filterDatas" :key="data+'_'+index" :value="data"> {{ texteFromValue(data) }}</option>
         </select>
 
-        <input type="text" placeholder="Good day " v-if="filterType =='field'" v-model="filterValue" class="list-vue-input em-input" :placeholder="translate(columnNameLabel)"/>
+        <input v-else-if="filterType =='field'" type="text" placeholder="Good day " v-model="filterValue" class="list-vue-input em-mt-4 em-mr-16 em-input" :placeholder="translate(columnNameLabel)"/>
     </div>
 </template>
 
@@ -96,10 +95,9 @@ export default {
 
 <style scoped lang="scss">
 .list-vue-select, .list-vue-input {
-    height: 35px;
+    height: 42px;
 }
 .list-vue-select{
-    width: 206px!important;
-
+    max-width: 206px !important;
 }
 </style>

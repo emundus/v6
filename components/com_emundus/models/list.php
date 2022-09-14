@@ -115,8 +115,7 @@ class EmundusModelList extends JModelList
                 ->leftJoin($this->db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfg.id'))
                 ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
                 ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
-                ->andWhere('jfg.published = 1')
-                ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = ' . 1)
+                ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = 1 OR jfe.name = ' . $this->db->quote('id'))
                 ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1)
                 ->order($this->db->quoteName('jfe.ordering').' ASC');
             $this->db->setQuery($query);

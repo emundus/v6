@@ -1,6 +1,6 @@
 <template>
 	<tr class="list-row">
-		<td><input type="checkbox" class="em-switch input" v-model='checkedRows.rows' :value='rowData' checked='true'></td>
+		<td><input type="checkbox" class="em-switch input" v-model='isChecked' checked='true' @change="$emit('toggle-check', rowData)"/></td>
 		<td v-for="column in showingListColumns" :key="column.label">
 			<div v-if="!badgeForColumn(column.column_name) ">
 				<div v-if="column.plugin =='date'">{{ formattedDate(rowData[column.column_name]) }}</div>
@@ -8,6 +8,7 @@
 			</div>
 			<div v-else><span :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span></div>
 		</td>
+		<td><span class="material-icons">more_horiz</span></td>
 	</tr>
 </template>
 
@@ -27,7 +28,7 @@ export default {
 			required: true
 		},
 		checkedRows: {
-			type: Object,
+			type: Array,
 			required: true
 		},
 		listColumnShowingAsBadge: {
@@ -49,6 +50,9 @@ export default {
 	data: () => ({
 		isChecked: false,
 	}),
+	created() {
+		this.isChecked = this.checkedRows.find(row => row.id === this.rowData.id) ? true: false;
+	},
 	methods: {
 		badgeForColumn(name) {
 			const availableList = this.listColumnShowingAsBadge.split(',') || [];
@@ -108,8 +112,7 @@ export default {
 		},
 		async setAs(actionColumn, value) {
 			try {
-				const isChecked = this.checkedRows.rows.some(row => row.id === this.rowData.id);
-				if (isChecked) {
+				if (this.isChecked) {
 					const response = await ListService.setAs(actionColumn, value, this.rowData.id);
 				} else {
 					Swal.fire({
@@ -140,6 +143,14 @@ export default {
 			});
 		}
 	},
+	watch: {
+		checkedRows: {
+			handler() {
+				this.isChecked = this.checkedRows.some((row) => {return row.id == this.rowData.id && row.id != undefined});
+			},
+			deep: true,
+		}
+	}
 }
 </script>
 

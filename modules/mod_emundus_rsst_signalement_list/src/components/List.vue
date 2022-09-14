@@ -10,7 +10,7 @@
 			/>
 			<span class="material-icons reload-icons" @click="reloadData">loop</span>
 		</div>
-		<div class="em-flex-row em-flex-space-between em-w-auto em-mb-32">
+		<div class="em-flex-row em-w-auto em-mb-32">
 			<filter-item :filterType="'groupBy'" :filterDatas="listColumns" @groupByCriteriaValue="groupByColumn"/>
 			<filter-item
 					v-for="data in fieldAndDropdownFilters"
@@ -38,9 +38,12 @@
 			<tbody>
 				<template v-if="hasBeenGroupBy">
 					<template v-for="group in items">
-						<tr @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
-							<td :colspan="listColumns.length+1"><b>{{ rowGroupByRowKeyName(group) }}</b></td>
-							<td style="border-left: none;text-align: end">
+						<tr :class="retrieveGroupeClassColor(group)">
+							<td :colspan="listColumns.length+1">
+								<input type="checkbox" class="em-switch input" style="margin-top: -2px;" @change="(e) => toggleCheckGroupRows(e, group)">
+								<span class="em-ml-32"><b>{{ rowGroupByRowKeyName(group) }}</b></span>
+							</td>
+							<td style="border-left: none;text-align: end" @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)">
 								<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons">arrow_drop_down</span>
 								<span v-else class="material-icons">arrow_drop_up</span>
 							</td>
@@ -55,6 +58,7 @@
 	               :listColumnShowingAsBadge="listColumnShowingAsBadge"
 	               :filterColumnUsedActually="filterColumnUsedActually"
 	               :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+	               @toggle-check="toggleCheckRow"
 						/>
 					</template>
 				</template>
@@ -69,6 +73,7 @@
 				     :listColumnShowingAsBadge="listColumnShowingAsBadge"
 				     :filterColumnUsedActually="filterColumnUsedActually"
 				     :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+				     @toggle-check="toggleCheckRow"
 				/>
 				<tr v-if="items.length == 0">
 					<td :colspan="listColumns.length+2" class="em-text-align-center">
@@ -136,9 +141,7 @@ export default {
             orderBy: "",
         },
         filters: [],
-        checkedRows: {
-            rows: []
-        },
+        checkedRows:  [],
         searchTerm: '',
         hasBeenGroupBy: false,
         filterGroupCriteria: '',
@@ -358,28 +361,52 @@ export default {
             });
         },
         clearFilters() {
-
             this.filters.map(el => {
                 return {...el, filterValue: ''}
             })
-
             this.filtering();
         },
 
         async setAs(actionColumn, value) {
 
-            try {
-                const checkedRowsId = this.checkedRows.rows.map((val) => {
-                    return val.id
-                });
-                const response = await ListService.setAs(actionColumn, value, checkedRowsId.join(','));
+	        try {
+		        const checkedRowsId = this.checkedRows.map((val) => {
+			        return val.id
+		        });
+		        const response = await ListService.setAs(actionColumn, value, checkedRowsId.join(','));
 
-            } catch (e) {
-                console.log(e);
-            }
-        }
+	        } catch (e) {
+		        console.log(e);
+	        }
+        },
+	    toggleCheckRow(rowData) {
+		    const checked = this.checkedRows.some((row) => {return row.id == rowData.id && row.id != undefined});
 
-
+					if (checked) {
+						this.checkedRows.filter((row) => {
+							return row.id != rowData.id
+						});
+					} else {
+						this.checkedRows.push(rowData);
+					}
+	    },
+	    toggleCheckGroupRows(e, group)
+	    {
+		    if (e.target.checked) {
+			    group[1].forEach((groupItem) => {
+						if (!this.checkedRows.find((checked) => {return checked.id == groupItem.id})) {
+							this.checkedRows.push(groupItem);
+						}
+			    });
+				} else {
+					// uncheck all group items
+			    this.checkedRows = this.checkedRows.filter((checked) => {
+						return !(group[1].find((groupItem) => {
+							return groupItem.id == checked.id
+						}));
+			    });
+				}
+	    },
     },
 
     computed: {
@@ -497,18 +524,17 @@ table {
 .list-row {
 
     &.done {
-        background-color: #32EE5F !important;
+        background-color: #DFF5E9 !important;
         color: black;
         opacity: 100%;
     }
 
     &.todo {
         color: black;
-        background-color: #FBABAB !important;
+        background-color: #FFEEEE !important;
     }
 
     &.inprogress {
-
         background: #FFFBDB;
     }
 }

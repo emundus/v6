@@ -72,10 +72,10 @@ tr.list-row td[data-v-513a62da] {
   background: #F2F2F3;
 }
 .list-vue-select[data-v-e12614b0], .list-vue-input[data-v-e12614b0] {
-  height: 35px;
+  height: 42px;
 }
 .list-vue-select[data-v-e12614b0] {
-  width: 206px !important;
+  max-width: 206px !important;
 }
 input.withSearchIco[data-v-264bddce] {
   height: 35px !important;
@@ -145,13 +145,13 @@ table thead tr th .material-icons[data-v-264bddce] {
   background-color: white !important;
 }
 .list-row.done[data-v-264bddce] {
-  background-color: #32EE5F !important;
+  background-color: #DFF5E9 !important;
   color: black;
   opacity: 100%;
 }
 .list-row.todo[data-v-264bddce] {
   color: black;
-  background-color: #FBABAB !important;
+  background-color: #FFEEEE !important;
 }
 .list-row.inprogress[data-v-264bddce] {
   background: #FFFBDB;
