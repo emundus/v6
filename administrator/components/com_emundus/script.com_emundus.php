@@ -61,7 +61,9 @@ class com_emundusInstallerScript
                 #$this->deleteOldSqlFiles();
 
                 // Update Gantry5 configuration file for PHP8 compatibility
-                $this->updateYamlVariable('offcanvas','16rem','templates/g5_helium/custom/config/default/styles.yaml');
+                $this->updateYamlVariable('offcanvas','16rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','width');
+                $this->updateYamlVariable('breakpoints','48rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','mobile-menu-breakpoint');
+                $this->updateYamlVariable('menu','11rem',JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml','col-width');
             }
         }
     }

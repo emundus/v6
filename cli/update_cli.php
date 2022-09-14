@@ -119,7 +119,7 @@ class UpdateCli extends JApplicationCli
         if (isset($options["u"]) || isset($options["update"]) || isset($options["a"]) || isset($options["all"]) || isset($options["c"]) || isset($options["core"])) {
             $this->out("\n*--------------------*");
             $this->out("RESULTS :");
-            $this->out($this->count_fails . " fails / " . $this->count_exec . " executed");
+            $this->out($this->count_fails . " components update fails / " . $this->count_exec . " components updated");
 
             if ($this->verbose) {
                 $this->out("-> " . $this->count_stmt . " sql statements executed");
@@ -861,7 +861,7 @@ class UpdateCli extends JApplicationCli
      * @param $element
      * @return void
      */
-    private function refreshManifestCache($ext_id = null, $element)
+    private function refreshManifestCache($ext_id, $element)
     {
         if (is_array($ext_id)) {
             $ext_id = $ext_id[0];
