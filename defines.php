@@ -8,7 +8,7 @@
 
 defined('_JEXEC') or die;
 
-$parts = explode(DIRECTORY_SEPARATOR, dirname(__DIR__));
+$parts = explode(DIRECTORY_SEPARATOR, __DIR__);
 $jpath_root = implode(DIRECTORY_SEPARATOR, $parts);
 
 // Defines.
