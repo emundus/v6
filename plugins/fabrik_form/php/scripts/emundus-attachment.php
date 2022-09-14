@@ -41,7 +41,7 @@ $student = JFactory::getUser($upload->user_id);
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id;
 $db->setQuery( $query );
 $profile=$db->loadResult();
-$query = 'SELECT ap.displayed, attachment.lbl 
+$query = 'SELECT ap.displayed, attachment.lbl, attachment.value
 			FROM #__emundus_setup_attachments AS attachment
 			LEFT JOIN #__emundus_setup_attachment_profiles AS ap ON attachment.id = ap.attachment_id AND ap.profile_id='.$profile.'
 			WHERE attachment.id ='.$aid.' ';
@@ -115,7 +115,7 @@ $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 // stock the attachment name
 $logsStd = new stdClass();
 
-//$logsStd->element = '<u>' . JText::_('COM_EMUNDUS_NEW_ATTACHMENT') . '</u>';
+$logsStd->element = '(' . $attachment_params->value . ') ';
 $logsStd->details = str_replace("/tmp/", "", $_FILES['jos_emundus_uploads___filename']['name']);
 
 $logsParams = array('created' => [$logsStd]);
