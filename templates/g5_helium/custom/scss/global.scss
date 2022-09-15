@@ -44,6 +44,7 @@ h6 {
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 600;
+  font-family: get-font-family($font-family-title);
 }
 
 .view-list, .g-back-office-emundus-tableau {
@@ -644,7 +645,7 @@ footer#g-footer img {
   flex-direction: column;
   min-height: 100vh !important;
   width: 100%;
-  background: #f8f8f8;
+  background: $base-background;
 }
 
 .view-registration.login.em-formRegistrationCenter #g-page-surround,
@@ -737,6 +738,10 @@ body>.g-container {
       color: $link-hover;
     }
   }
+}
+
+.em-container-footer-cand .em-col-3-footer a {
+  color: $base-text-color !important;
 }
 
 /* MODULE USER DROPDOWN */
@@ -913,6 +918,12 @@ body>.g-container {
 /* PAGE PLUS D INFO - COULEUR BTN  CANDIDATER */
 
 .view-programme {
+
+  .campaingapplycontent {
+    strong, span,  {
+      color: $base-text-color;
+    }
+  }
 
   /* DOCUMENTS PREALABLES */
   .em-infoComp li i {
@@ -1159,7 +1170,7 @@ body>.g-container {
   /* COULEURS TITRES  */
 
   .campaign-title {
-    color: $base-primary-color;
+    color: $accent-color-1;
   }
 
   h3.g-title {
@@ -2828,7 +2839,7 @@ tr.fabrikFilterContainer{
 }
 
 .com_emundus h2 {
-  color: $night-blue;
+  color: $accent-color-1;
 }
 
   .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
