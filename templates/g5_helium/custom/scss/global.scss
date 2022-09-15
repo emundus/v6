@@ -40,7 +40,7 @@ h3,
 h4,
 h5,
 h6 {
-  color: $base-primary-color;
+  color: $accent-color-1;
   margin-top: 50px;
   margin-bottom: 50px;
   font-weight: 600;
@@ -415,7 +415,7 @@ legend {
 
 p,
 .ui.warning.message {
-  color: #000;
+  color: $base-text-color;
 }
 
 #g-container-main{
@@ -743,8 +743,12 @@ body>.g-container {
 #g-navigation .g-container #header-c {
   a.forgotten_password_header {
     font-size: 14px;
-    color: $base-secondary-color;
+    color: $link-regular;
     float: right;
+
+    &:hover {
+      color: $link-hover;
+    }
   }
 
   .moduletable .header-right {
