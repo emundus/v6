@@ -126,9 +126,9 @@ a:focus {
 }
 
 a {
-  color: $base-secondary-color;
+  color: $link-regular;
   &:hover {
-   color: $base-secondary-color;
+   color: $link-hover;
   }
 }
 
@@ -731,8 +731,11 @@ body>.g-container {
   margin: auto auto 0 auto;
 
   a {
-    color: $base-secondary-color;
+    color: $link-regular;
     text-decoration: none;
+    &:hover {
+      color: $link-hover;
+    }
   }
 }
 
