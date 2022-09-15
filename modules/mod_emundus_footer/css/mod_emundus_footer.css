@@ -122,4 +122,16 @@ hr.footer-separation {
         text-align: center;
         padding-bottom: 5px;
     }
+
+    .footer-rgpd-links {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media all and (min-width: 480px) and(max-width: 767px) {
+    .footer-rgpd-links {
+        flex-direction: column;
+        align-items: center;
+    }
 }
