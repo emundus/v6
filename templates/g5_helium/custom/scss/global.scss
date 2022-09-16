@@ -92,7 +92,7 @@ h1 {
     border-radius: 4px;
     border-color: #ccc;
     height: 40px;
-    color: $night-blue;
+    color: var(--night-blue);
   }
 }
 
@@ -241,7 +241,7 @@ ul {
 
 .modal {
   position: relative;
-  background-color: #fff;
+  background-color: var(--neutral-50);
   margin: 0;
   width: 100%;
   left: 0;
@@ -262,7 +262,7 @@ ul {
 }
 
 .modal-header {
-  background: #fff;
+  background: var(--neutral-50);
   padding: 10px 20px;
   border-bottom: 1px solid #eee;
   min-height: 90px;
@@ -272,78 +272,78 @@ ul {
 
 .modal-body {
   a {
-    color: $dark-grey !important;
+    color: var(--dark-grey) !important;
   }
 }
 
 .contentpane.modal {
   h1, h2, h3, h4, h5, h6 {
-    color: $night-blue !important;
+    color: var(--night-blue) !important;
   }
 
   form legend {
-    color: $night-blue !important;
+    color: var(--night-blue) !important;
   }
 }
 
 .modal-dialog .modal-body {
   h1, h2, h3, h4, h5, h6 {
-    color: $night-blue !important;
+    color: var(--night-blue) !important;
   }
 }
 
 
 .contentpane.modal form .fabrikActions.form-actions button.btn {
-  background: $dark-grey !important;
-  background-color: $dark-grey !important;
-  border: 1px solid $dark-grey !important;
+  background: var(--dark-grey) !important;
+  background-color: var(--dark-grey) !important;
+  border: 1px solid var(--dark-grey) !important;
   border-radius: 4px !important;
-  color: #fff;
+  color: var(--neutral-50);
 
   &:active, &:focus, &:hover {
-    background: $grey!important;
-    background-color: $grey!important;
-    border: 1px solid $grey !important;
+    background: var(--grey)!important;
+    background-color: var(--grey)!important;
+    border: 1px solid var(--grey) !important;
     border-radius: 4px !important;
-    color: $white !important;
+    color: var(--neutral-50) !important;
   }
 }
 
 .files-board form.em-form-message .toggle-editor .btn-group a.btn, .modal-body form .em_email_block input.btn.btn-success[name="expert"]  {
-  background: $dark-grey !important;
-  background-color: $dark-grey !important;
-  border: 1px solid $dark-grey !important;
+  background: var(--dark-grey) !important;
+  background-color: var(--dark-grey) !important;
+  border: 1px solid var(--dark-grey) !important;
   border-radius: 4px !important;
-  color: $white !important;
+  color: var(--neutral-50) !important;
 
   &:active, &:focus, &:hover {
-    background: $grey !important;
-    background-color: $grey !important;
-    border: 1px solid $grey !important;
+    background: var(--grey) !important;
+    background-color: var(--grey) !important;
+    border: 1px solid var(--grey) !important;
     border-radius: 4px !important;
-    color: $white !important;
+    color: var(--neutral-50) !important;
   }
 }
 
 .modal-body ul#em-export li.em-export-item button.btn.btn-danger.btn-xs  {
-  background: $red-500 !important;
-  background-color: $red-500 !important;
-  border: 1px solid $red-500 !important;
-  color: $white !important;
+  background: var(--red-500) !important;
+  background-color: var(--red-500) !important;
+  border: 1px solid var(--red-500) !important;
+  color: var(--neutral-50) !important;
 
   &:active, &:focus, &:hover {
     background: transparent !important;
     background-color: transparent !important;
-    border: 1px solid $red-500 !important;
-    color: $red-500 !important;
+    border: 1px solid var(--red-500) !important;
+    color: var(--red-500) !important;
 
     .material-icons {
-      color: $red-500;
+      color: var(--red-500);
     }
   }
 
   .material-icons {
-    color: $white;
+    color: var(--neutral-50);
   }
 }
 
@@ -352,7 +352,7 @@ ul {
 }
 
 #system-message .alert.alert-message h1 {
-  margin: 0px;
+  margin: 0;
 
   &::after {
     display: none;
@@ -427,7 +427,7 @@ p,
 }
 
 #g-container-main .g-container {
-  padding: 0px 20px;
+  padding: 0 20px;
 }
 
 .g-back-office-emundus-tableau #g-container-main .g-container {
@@ -465,7 +465,7 @@ p,
 }
 
 #g-offcanvas a:hover {
-  color: #fff;
+  color: var(--neutral-50);
   text-decoration: none;
 }
 
@@ -518,8 +518,8 @@ p,
       align-items: center;
 
       .platform-content {
-        margin: 0px 10px;
-        padding: 0px;
+        margin: 0 10px;
+        padding: 0;
 
       }
 
@@ -542,7 +542,7 @@ p,
     width: 100%;
     margin: auto !important;
     position: fixed;
-    background: #fff;
+    background: var(--neutral-50);
   }
 
   #header-a {
@@ -571,7 +571,7 @@ p,
 }
 
 .em-container-footer-gest .em-block-footer a:hover {
-  color: $night-blue !important;
+  color: var(--night-blue) !important;
   text-decoration: underline !important;
   font-weight: 500 ;
 }
@@ -598,7 +598,7 @@ p,
     ul {
       display: flex;
       flex-direction: row;
-      margin-bottom: 0px;
+      margin-bottom: 0;
 
       li {
         list-style: none;
@@ -611,7 +611,7 @@ p,
       li:nth-child(1) a {
         margin: 10px;
         border-right: 1px solid #cccccc;
-        padding: 0px 10px;
+        padding: 0 10px;
       }
     }
 
@@ -624,7 +624,7 @@ p,
 }
 
 footer#g-footer {
-  background-color: #fff;
+  background-color: var(--neutral-50);
   border-top: 1px solid #E3E5E8;
   bottom: 0;
   width: 100vw;
@@ -770,7 +770,7 @@ body>.g-container {
       &.inscription {
         background: $base-secondary-color;
         border: 1px solid $base-secondary-color;
-        color: #fff;
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
@@ -790,7 +790,7 @@ body>.g-container {
         &:active,
         &:focus {
           background: $base-primary-color;
-          color: #fff;
+          color: var(--neutral-50);
           border-color: $base-primary-color;
         }
       }
@@ -814,7 +814,7 @@ body>.g-container {
     li>a:hover,
     .active>a {
       background: $base-primary-color;
-      color: #ffffff;
+      color: var(--neutral-50);
     }
   }
 
@@ -880,7 +880,7 @@ body>.g-container {
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
 .view-form .em-formRegistrationCenter .row-fluid .span4 .button.btn.btn-primary.save-btn.sauvegarder.button.register {
   background-color: $base-secondary-color;
-  color: #ffffff;
+  color: var(--neutral-50);
   border-color: $base-secondary-color;
   text-transform: initial;
   margin-left: 0px !important;
@@ -965,13 +965,13 @@ body>.g-container {
 
       background-color: $base-secondary-color;
       border-color: $base-secondary-color;
-      color: #fff;
+      color: var(--neutral-50);
       font-size: 14px !important;
 
       &:hover,
       &:active,
       &:focus {
-        background-color: #ffffff;
+        background-color: var(--neutral-50);
         color: $base-secondary-color;
         border-color: $base-secondary-color;
       }
@@ -987,7 +987,7 @@ body>.g-container {
       &:active,
       &:focus {
         background-color: $base-primary-color;
-        color: #fff;
+        color: var(--neutral-50);
         border-color: $base-primary-color;
       }
     }
@@ -1017,7 +1017,7 @@ body>.g-container {
   .platform-content a.btn[title="Envoyer le dossier"] {
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
-    color: #fff;
+    color: var(--neutral-50);
 
     &:hover,
     &:active,
@@ -1092,7 +1092,7 @@ body>.g-container {
       &:hover,
       &:active,
       &:focus {
-        background-color: #ffffff;
+        background-color: var(--neutral-50);
         color: $base-secondary-color;
         border-color: $base-secondary-color;
       }
@@ -1104,7 +1104,7 @@ body>.g-container {
          color: $base-primary-color;
        }
        span.material-icons {
-          color: #fff;
+          color: var(--neutral-50);
        }
      }
   }
@@ -1141,7 +1141,7 @@ body>.g-container {
       a.btn.btn-primary.btn-plein.btn-blue {
         background-color: $base-secondary-color;
         border-color: $base-secondary-color;
-        color: #fff;
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
@@ -1161,7 +1161,7 @@ body>.g-container {
         &:active,
         &:focus {
           background-color: $base-primary-color;
-          color: #fff;
+          color: var(--neutral-50);
           border-color: $base-primary-color;
         }
       }
@@ -1181,8 +1181,8 @@ body>.g-container {
   #navfilter .navsearch .navsearch-content .input-group-btn button {
     background-color: $base-secondary-color;
     background: $base-secondary-color;
-    color: white;
-    margin-bottom: 0px;
+    color: var(--neutral-50);
+    margin-bottom: 0;
   }
 
   /* COULEURS TITRES  */
@@ -1229,12 +1229,12 @@ body>.g-container {
   .current-tab {
     background: $base-primary-color;
     opacity: 1;
-    color: white;
+    color: var(--neutral-50);
     border-color: $base-primary-color;
 
     &:hover{
       background: $base-primary-color;
-      color: white;
+      color: var(--neutral-50);
     }
   }
 }
@@ -1318,7 +1318,7 @@ body>.g-container {
   button.btn.btn-primary.validate {
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
-    color: #fff;
+    color: var(--neutral-50);
 
     &:hover,
     &:active,
@@ -1334,8 +1334,8 @@ body>.g-container {
 /* LISTES  */
 
 .nav .dropdown-toggle .caret {
-  border-top-color: $night-blue;
-  border-bottom-color: $night-blue;
+  border-top-color: var(--night-blue);
+  border-bottom-color: var(--night-blue);
 }
 
 // remove
@@ -1373,7 +1373,7 @@ body>.g-container {
 
 
   #sidebar-a .em-send-button a.btn.btn-success.btn-xs {
-    color: #fff;
+    color: var(--neutral-50);
     background: $base-primary-color;
     border-color: $base-primary-color;
 
@@ -1385,22 +1385,22 @@ body>.g-container {
   }
 
   .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.btn-danger.active, .controls .fabrikElement .radio.btn-radio.btn-group label.btn-default.btn.active.btn-success {
-    background-color: $dark-grey;
-    color: #fff;
-    border-color: $dark-grey;
+    background-color: var(--dark-grey);
+    color: var(--neutral-50);
+    border-color: var(--dark-grey);
 
     &:hover,
     &:active,
     :focus {
       background-color: transparent;
-      color: $grey;
-      border-color: $grey;
+      color: var(--grey);
+      border-color: var(--grey);
     }
   }
 
 
   .btn.calendarbutton {
-    background: #fff;
+    background: var(--neutral-50);
   }
 
 .fabrikForm .controls .btn-danger:hover,
@@ -1485,10 +1485,10 @@ div.fabrikFilterContainer{
         border-radius: 4px;
         border: unset;
         height: 40px;
-        color: white;
+        color: var(--neutral-50);
         background-color: var(--main-500);
         &:hover {
-          background-color: white;
+          background-color: var(--neutral-50);
           color: var(--main-500);
           border: 1px solid var(--main-500);
           text-decoration: none;
@@ -1596,7 +1596,7 @@ tr.fabrikFilterContainer{
     cursor: pointer;
   }
   .btn-upload{
-    color: #fff;
+    color: var(--neutral-50);
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
     padding: 8px 12px;
@@ -1746,26 +1746,26 @@ tr.fabrikFilterContainer{
   /* BOUTONS */
 
   .modal-dialog .modal-body #chargement a.btn.btn-link {
-    background-color: $night-blue;
-    border: 1px solid $night-blue !important;
+    background-color: var(--night-blue);
+    border: 1px solid var(--night-blue) !important;
     border-radius: 5px !important;
     padding: 5px 30px !important;
     height: 36px;
-    color: $neutral-100;
+    color: var(--neutral-100);
 
     span {
-      color: $neutral-100;
+      color: var(--neutral-100);
     }
     &:hover, &:focus, &:active {
-      background-color: $grey;
-      border: 1px solid $grey !important;
+      background-color: var(--grey);
+      border: 1px solid var(--grey) !important;
       border-radius: 5px !important;
       padding: 5px 30px !important;
       height: 36px;
-      color: $neutral-100 !important;
+      color: var(--neutral-100) !important;
       text-decoration: none;
       span {
-        color: $neutral-100 !important;
+        color: var(--neutral-100) !important;
       }
     }
   }
@@ -1773,24 +1773,24 @@ tr.fabrikFilterContainer{
 .modal-dialog .modal-body #chargement button.btn-default#back,
  .modal-dialog .modal-body button#delfilter,
 .modal-dialog .modal-body button#delPDFfilter {
-  background-color: $grey !important;
-  border: 1px solid $grey !important;
+  background-color: var(--grey) !important;
+  border: 1px solid var(--grey) !important;
   border-radius: 5px !important;
   padding: 5px 30px !important;
   height: 36px;
-  color: $neutral-100 !important;
+  color: var(--neutral-100) !important;
   span {
-    color: $neutral-100;
+    color: var(--neutral-100);
   }
   &:hover, &:focus, &:active {
-    background-color: $light-grey !important;
-    border: 1px solid $light-grey !important;
+    background-color: var(--light-grey) !important;
+    border: 1px solid var(--light-grey)  !important;
     border-radius: 5px !important;
     padding: 5px 30px !important;
     height: 36px;
-    color: $grey !important;
+    color: var(--grey) !important;
     span {
-      color: $grey !important;
+      color: var(--grey) !important;
     }
   }
 }
@@ -1804,7 +1804,7 @@ tr.fabrikFilterContainer{
     &:focus,
     &:active {
       border: 1px solid $base-secondary-color !important;
-      color: #fff !important;
+      color: var(--neutral-50) !important;
       background: $base-secondary-color !important;
     }
   }
@@ -1825,7 +1825,7 @@ tr.fabrikFilterContainer{
 
   #sidebar-a .em-print-button a#print {
     border: 1px solid $base-secondary-color;
-    color: #fff;
+    color: var(--neutral-50);
     background: $base-secondary-color;
 
     &:hover,
@@ -1838,7 +1838,7 @@ tr.fabrikFilterContainer{
 
   .em-send-button a.btn.btn-success.btn-xs {
     background: $base-secondary-color;
-    color: #ffffff;
+    color: var(--neutral-50);
     border: 1px solid $base-secondary-color;
 
     &:hover,
@@ -1859,7 +1859,7 @@ tr.fabrikFilterContainer{
 
   .btn-elements-success {
     background-color: #5bb75b !important;
-    color: #FFFFFF !important;
+    color: var(--neutral-50) !important;
   }
 
   .btn {
@@ -1889,7 +1889,7 @@ tr.fabrikFilterContainer{
     border: 1px solid $base-primary-color;
     border-radius: 4px;
     padding: 8px 12px !important;
-    color: #fff;
+    color: var(--neutral-50);
 
     &:hover,
     &:focus,
@@ -1905,19 +1905,19 @@ tr.fabrikFilterContainer{
   a.btn-attach,
   .xclsform .panel-body button,
   button.close {
-    color: #fff;
+    color: var(--neutral-50);
   }
 
   .modal-body #form-element button.btn.btn-info.btn-xs,
   .modal-body .panel-heading button.btn.btn-info.btn-xs{
-    background: $dark-grey;
-    color: #fff;
+    background: var(--dark-grey);
+    color: var(--neutral-50);
   }
 
 .modal-body #form-element button.btn-xs.btn.btn-elements-success ,
 .modal-body .panel-heading button.btn-xs.btn.btn-elements-success {
-    background-color: $grey !important;
-    color: #fff;
+    background-color: var(--grey) !important;
+    color: var(--neutral-50);
 }
 
 .modal-body .panel-body  .panel-primary>.panel-heading {
@@ -1925,7 +1925,7 @@ tr.fabrikFilterContainer{
 }
 
 .modal-body ul li, .modal-body span strong,.modal-body form  {
- color: $night-blue;
+ color: var(--night-blue);
 }
 
   .btn-warning.active.focus,
@@ -1937,7 +1937,7 @@ tr.fabrikFilterContainer{
   .open>.dropdown-toggle.btn-warning.focus,
   .open>.dropdown-toggle.btn-warning:focus,
   .open>.dropdown-toggle.btn-warning:hover {
-    color: #ffffff;
+    color: var(--neutral-50);
     background-color: #D5855A;
     border-color: #D5855A;
   }
@@ -1979,7 +1979,7 @@ tr.fabrikFilterContainer{
       :focus {
         background: $base-secondary-color;
         border: 1px solid $base-secondary-color;
-        color: #fff;
+        color: var(--neutral-50);
       }
     }
 
@@ -1998,7 +1998,7 @@ tr.fabrikFilterContainer{
       :focus {
         background: $base-secondary-color;
         border: 1px solid $base-secondary-color;
-        color: #fff;
+        color: var(--neutral-50);
       }
     }
 
@@ -2006,7 +2006,7 @@ tr.fabrikFilterContainer{
       background: $base-primary-color;
       border: 1px solid $base-primary-color;
       border-radius: 4px;
-      color: #fff;
+      color: var(--neutral-50);
 
       &:hover,
       &:active,
@@ -2029,9 +2029,9 @@ tr.fabrikFilterContainer{
     border: unset;
     button.btn.btn-danger {
       background: transparent;
-      border: 1px solid $dark-grey;
+      border: 1px solid var(--dark-grey);
       border-radius: 4px !important;
-      color: $dark-grey;
+      color: var(--dark-grey);
       margin-right: 10px;
       font-weight: normal;
       padding: 7px 30px !important;
@@ -2039,26 +2039,26 @@ tr.fabrikFilterContainer{
       &:hover,
       &:active,
       :focus {
-        background: $dark-grey;
-        border: 1px solid $dark-grey;
-        color: $white;
+        background: var(--dark-grey);
+        border: 1px solid var(--dark-grey);
+        color: var(--neutral-50);
       }
     }
 
     button.btn.btn-success,
     a.btn-success {
-      background: $dark-grey;
-      border: 1px solid $dark-grey;
+      background: var(--dark-grey);
+      border: 1px solid var(--dark-grey);
       border-radius: 4px !important;
-      color: $white;
+      color: var(--neutral-50);
       padding: 7px 30px;
 
       &:hover,
       &:active,
       :focus {
-        background: $grey;
-        border: 1px solid $grey;
-        color: $white;
+        background: var(--grey);
+        border: 1px solid var(--grey);
+        color: var(--neutral-50);
       }
     }
   }
@@ -2083,7 +2083,7 @@ tr.fabrikFilterContainer{
 .em-front-primary-btn {
   background-color: $base-primary-color;
   border-color: $base-primary-color;
-  color: #fff;
+  color: var(--neutral-50);
 
   &:hover:not(:disabled),
   &:active:not(:disabled),
@@ -2097,7 +2097,7 @@ tr.fabrikFilterContainer{
 .em-front-secondary-btn {
   background-color: $base-secondary-color;
   border-color: $base-secondary-color;
-  color: #fff;
+  color: var(--neutral-50);
 
   &:hover:not(:disabled),
   &:active:not(:disabled),
@@ -2276,7 +2276,7 @@ tr.fabrikFilterContainer{
     &:hover,
     &:focus {
       background-color: $base-secondary-color;
-      color: #fff;
+      color: var(--neutral-50);
       outline: none;
       border-color: unset;
     }
@@ -2320,7 +2320,7 @@ tr.fabrikFilterContainer{
   }
 
   .btn-group.pull-right #em-close-file.btn.btn-danger.btn-xxl {
-    background: $night-blue;
+    background: var(--night-blue);
     border: none;
 
     width: 43px;
@@ -2329,16 +2329,16 @@ tr.fabrikFilterContainer{
     &:hover,
     &:focus,
     &:active {
-      background-color: $night-blue;
+      background-color: var(--night-blue);
       outline: none;
     }
 
     span {
-      color: $white;
+      color: var(--neutral-50);
       &:hover,
       &:focus,
       &:active {
-        color: $neutral-500;
+        color: var(--neutral-500);
       }
     }
   }
@@ -2351,16 +2351,16 @@ tr.fabrikFilterContainer{
 
   #em_select_filter #del-filter {
     background-color: transparent;
-    color: $red-500;
+    color: var(--red-500);
     border: none;
     span{
-      color: $red-500;
+      color: var(--red-500);
       font-size: 24px !important;
 
       &:hover,
       &:active,
       &:focus {
-        color: $red-300;
+        color: var(--red-300);
       }
     }
 
@@ -2374,21 +2374,21 @@ tr.fabrikFilterContainer{
 
   #em-delete-files{
     span{
-      color: $red-500
+      color: var(--red-500)
     }
   }
 
   #em-delete-files.btn.btn-danger.btn-xs.pull-right {
     background-color: transparent;
-    color: $red-500;
+    color: var(--red-500);
     border-color: transparent;
 
     span {
-      color: $red-500;
+      color: var(--red-500);
       &:hover,
       &:active,
       &:focus {
-        color: $red-600;
+        color: var(--red-600);
       }
     }
 
@@ -2396,27 +2396,27 @@ tr.fabrikFilterContainer{
     &:active,
     &:focus {
       background-color: transparent;
-      color: $red-600;
+      color: var(--red-600);
       border-color: transparent;
     }
   }
 
   #em-files-filters .em-filter .em_label label a, #em-user-filters .em-filter .em_label label a, #em-user-filters .em_label label a {
-    color: $dark-grey;
+    color: var(--dark-grey);
     &:hover,
     &:active,
     &:focus {
-      color: $grey;
+      color: var(--grey);
     }
   }
 
   .gantry .panel.panel-default.em-data span.em_list_text {
-    color: $night-blue;
+    color: var(--night-blue);
   }
 
   #filters #quick.form-group input#search.btn.btn-sm.btn-info {
     background-color: transparent;
-    color: $dark-grey;
+    color: var(--dark-grey);
     border: none;
     font-size: 19px !important;
     padding-right: 3px !important;
@@ -2425,41 +2425,41 @@ tr.fabrikFilterContainer{
     &:active,
     &:focus {
       background: transparent;
-      color: $grey;
+      color: var(--grey);
     }
   }
 
   .files-board .em-container-tags .em-container-tags-heading #add-tags {
-    color: $white;
-    background: $dark-grey;
-    border-color: $dark-grey;
+    color: var(--neutral-50);
+    background: var(--dark-grey);
+    border-color: var(--dark-grey);
 
     &:hover, &:active, &:focus {
-      color: $white;
-      background: $grey;
-      border-color: $grey;
+      color: var(--neutral-50);
+      background: var(--grey);
+      border-color: var(--grey);
     }
   }
 
 
   #em-see-files.btn.btn-info.btn-xs.pull-right {
     background-color: transparent;
-    color: $dark-grey;
+    color: var(--dark-grey);
     border-color: transparent;
 
     &:hover,
     &:active,
     &:focus {
       background-color: transparent;
-      color: $neutral-800;
+      color: var(--neutral-800);
       border-color: transparent;
     }
     span {
-      color: $dark-grey;
+      color: var(--dark-grey);
       &:hover,
       &:active,
       &:focus {
-        color: $neutral-800;
+        color: var(--neutral-800);
       }
     }
   }
@@ -2470,12 +2470,12 @@ tr.fabrikFilterContainer{
     #em-prev-file.btn.btn-info.btn-xxl,
     #em-next-file.btn.btn-info.btn-xxl {
       background-color: transparent;
-      color: #fff;
+      color: var(--neutral-50);
       border-color: transparent;
       display: flex !important;
       align-items: center !important;
       span{
-        color: white;
+        color: var(--neutral-50);
         font-weight: bold;
       }
 
@@ -2484,7 +2484,7 @@ tr.fabrikFilterContainer{
       &:focus {
         background: transparent;
         span{
-          color: $neutral-500;
+          color: var(--neutral-500);
         }
       }
     }
@@ -2499,7 +2499,7 @@ tr.fabrikFilterContainer{
   .btn-info:active,
   .btn-info.active,
   .open .dropdown-toggle.btn-info {
-    color: #ffffff;
+    color: var(--neutral-50);
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
   }
@@ -2517,7 +2517,7 @@ tr.fabrikFilterContainer{
 
   .candidacy-files-list h1,
   #em-panel h1 {
-    color: #000;
+    color: var( --neutral-900);
     font-weight: 700;
   }
 
@@ -2526,7 +2526,7 @@ tr.fabrikFilterContainer{
   #em-appli-menu .panel-body .list-group-item:hover,
   #em-appli-menu .panel-body .list-group-item:active,
   #em-appli-menu .panel-body .list-group-item:focus {
-    color: $night-blue;
+    color: var(--night-blue);
   }
 
   .em-actions {
@@ -2534,12 +2534,12 @@ tr.fabrikFilterContainer{
 
     a {
       padding: 8px !important;
-      color: $neutral-900;
+      color: var(--neutral-900);
 
       &:hover, &:focus, &:active {
         border: unset !important;
-        background: $main-200 !important;
-        color: $neutral-900 !important;
+        background: var(--main-200) !important;
+        color: var(--neutral-900) !important;
       }
     }
   }
@@ -2565,7 +2565,7 @@ tr.fabrikFilterContainer{
     border-radius: 50%;
     width: 20px;
     height: 21px;
-    color: white;
+    color: var(--neutral-50);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2595,7 +2595,7 @@ tr.fabrikFilterContainer{
     }
 
     &:not(.em-alert-filter) {
-      background-color: #ffffff;
+      background-color: var(--neutral-50);
       border-color: #4E5B6D;
       padding: 0.938rem;
       display: inline-flex;
@@ -2662,7 +2662,7 @@ tr.fabrikFilterContainer{
   .view-details .ui.attached.segment {
     background: $base-secondary-color;
     border: $base-secondary-color;
-    color: #ffffff;
+    color: var(--neutral-50);
   }
 
   .view-form .platform-content .ui.tablet.attached .step i,
@@ -2746,26 +2746,26 @@ tr.fabrikFilterContainer{
 .logout-button input.btn.btn-primary {
   border: 1px solid $base-secondary-color;
   background: $base-secondary-color;
-  color: $neutral-50;
+  color: var(--neutral-50);
   padding: 8px 12px;
 }
 
 .logout-button input.btn.btn-primary:hover {
   border: 1px solid $base-secondary-color;
-  background: $neutral-50;
+  background: var(--neutral-50);
   color: $base-secondary-color;
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary:hover {
   border: 1px solid $base-secondary-color;
   background: $base-secondary-color;
-  color: $neutral-50;
+  color: var(--neutral-50);
   padding: 8px 12px;
 }
 
 #g-container-main div.login .control-group .controls button.btn.btn-primary {
   border: 1px solid $base-secondary-color;
-  background: $neutral-50;
+  background: var(--neutral-50);
   color: $base-secondary-color;
 }
 
@@ -2801,8 +2801,7 @@ h1.em-titre-connectez-vous {
   .view-login button.btn.btn-primary {
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
-    color: #fff;
-    //font-family: "Lato", sans-serif;
+    color: var(--neutral-50);
     text-transform: initial;
     width: 100%;
     height: 48px;
@@ -2834,7 +2833,7 @@ h1.em-titre-connectez-vous {
   .em-formRegistrationCenter button.login-button {
     background: $base-secondary-color;
     border: 1px solid $base-secondary-color;
-    color: #fff;
+    color: var(--neutral-50);
     height: 50px;
 
     &:hover,
@@ -2850,7 +2849,7 @@ h1.em-titre-connectez-vous {
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
 .referents-sollicitation-page .calendarbutton {
-  background: #fff;
+  background: var(--neutral-50);
   border-radius: 0 4px 4px 0 !important;
   border: 1px solid #e0e0e5;
   height: 41px;
@@ -2865,7 +2864,7 @@ h1.em-titre-connectez-vous {
 }
 
   .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
-    background: $grey !important;
+    background: var(--grey) !important;
   }
 
   .import-csv-page .fabrikActions.form-actions button.importation {
@@ -2883,14 +2882,14 @@ h1.em-titre-connectez-vous {
 
   .form.em-decision-form .btn.btn-success {
     padding: 5px 30px;
-    border: 1px solid $dark-grey;
-    background: $dark-grey;
+    border: 1px solid var(--dark-grey);
+    background: var(--dark-grey);
     border-radius: 4px !important;
 
     &:hover, &:active, &:focus {
-      border: 1px solid $grey;
-      background: $grey;
-      color: $white;
+      border: 1px solid var(--grey);
+      background: var(--grey);
+      color: var(--neutral-50);
     }
   }
 
@@ -2906,24 +2905,24 @@ h1.em-titre-connectez-vous {
   }
 
   .g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
-    background: $grey;
+    background: var(--grey);
   }
 
   .g-back-office-emundus-tableau.experts-page .panel-info > .panel-heading h3.panel-title {
-    color: $night-blue !important;
+    color: var(--night-blue) !important;
   }
 
   .panel-default .panel-heading h3.panel-title {
-    margin-left: 0px;
+    margin-left: 0;
   }
 
   .g-back-office-emundus-tableau .side-panel .panel-info > .panel-heading {
-    background: $night-blue;
+    background: var(--night-blue);
   }
 
   #em_filters fieldset.em_filters_filedset > p,
   #em-user-filters fieldset.em_filters_filedset > p {
-    color: $night-blue;
+    color: var(--night-blue);
   }
 
   // CHOSEN css
@@ -2938,13 +2937,13 @@ h1.em-titre-connectez-vous {
   }
   .chosen-container-multi {
     .chosen-choices {
-      background: #fff !important;
+      background: var(--neutral-50) !important;
       box-shadow: unset;
-      border-color: #EDEDED;
+      border-color: var(--neutral-300);
       border-radius: 4px;
     }
     .chosen-drop{
-      border-color: #EDEDED;
+      border-color: var(--neutral-300);
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
       box-shadow: unset;
@@ -2952,14 +2951,14 @@ h1.em-titre-connectez-vous {
   }
   .chosen-container {
     .chosen-single {
-      background: #fff !important;
+      background: var(--neutral-50) !important;
       box-shadow: unset;
       height: 40px;
       padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-color: $neutral-300;
+      border-color: var(--neutral-300);
       div{
         position: relative;
       }
@@ -2984,8 +2983,8 @@ h1.em-titre-connectez-vous {
     }
 
     .chosen-results li.highlighted {
-      background-color: $neutral-300;
-      color: $neutral-900;
+      background-color: var(--neutral-300);
+      color: var(--neutral-900);
     }
   }
 
@@ -3000,12 +2999,12 @@ h1.em-titre-connectez-vous {
     align-items: center;
     justify-content: space-between;
     span {
-      color: white;
+      color: var(--neutral-50);
       margin-right: 8px;
       &:focus,
       &:hover,
       &:active {
-       color: $neutral-500;
+       color: var(--neutral-500);
       }
     }
   }
@@ -3015,7 +3014,7 @@ h1.em-titre-connectez-vous {
 
 
 #em-attachments #filters .refresh:hover {
-  color: $neutral-500 !important;
+  color: var(--neutral-500) !important;
 }
 
 #em-appli-block .com_emundus_vue #em-attachments .head {
@@ -3029,10 +3028,10 @@ h1.em-titre-connectez-vous {
   #em-files-filters #em_filters fieldset input#save-filter,
   #em_adv_filters .em_filters_adv_filter_addColumn button#add-filter{
     margin-top: 10px;
-    background: $white;
-    border: 1px solid $dark-grey !important;
+    background: var(--neutral-50);
+    border: 1px solid var(--dark-grey) !important;
     width: 100%;
-    color: $dark-grey;
+    color: var(--dark-grey);
     width: -moz-available;
     width: -webkit-fill-available;
     width: fill-available;
@@ -3042,9 +3041,9 @@ h1.em-titre-connectez-vous {
     &:focus,
     &:hover,
     &:active {
-      background: $dark-grey;
-      border-color: $dark-grey !important;
-      color: $white !important;
+      background: var(--dark-grey);
+      border-color: var(--dark-grey) !important;
+      color: var(--neutral-50) !important;
     }
   }
 
@@ -3079,14 +3078,14 @@ h1.em-titre-connectez-vous {
   .g-back-office-emundus-tableau .side-panel #em-files-filters .buttons input#clear-search,
   .g-back-office-emundus-tableau .side-panel #em-user-filters .buttons input#clear-search {
     background: transparent;
-    color: #fff !important;
+    color: var(--neutral-50) !important;
     border-color: transparent;
     font-size: 19px !important;
 
     &:hover,
     &:active,
     &:focus {
-      color: #fff;
+      color: var(--neutral-50);
       background: darken($main-500, 10%) !important;
     }
   }
@@ -3094,13 +3093,13 @@ h1.em-titre-connectez-vous {
   #advanced-filters button.btn.btn-danger.btn-xs#suppr-filt {
     background: $base-secondary-color;
     border-color: $base-secondary-color;
-    color: #fff;
+    color: var(--neutral-50);
     padding: 6px 10px !important;
 
     &:focus,
     &:hover,
     &:active {
-      background: #fff;
+      background: var(--neutral-50);
       border-color: $base-secondary-color;
       color: $base-secondary-color;
     }
@@ -3111,14 +3110,14 @@ h1.em-titre-connectez-vous {
   }
 
   .g-back-office-emundus-tableau #em-hide-filters {
-    border: 0 solid $dark-grey;
-    background-color: $dark-grey;
+    border: 0 solid var(--dark-grey);
+    background-color: var(--dark-grey);
 
     &:hover,
     &:focus,
     &:active {
-      border: $grey;
-      background-color: $grey;
+      border: var(--grey);
+      background-color: var(--grey);
     }
   }
 
@@ -3132,7 +3131,7 @@ h1.em-titre-connectez-vous {
       }
 
       span {
-        color: $red-500;
+        color: var(--red-500);
       }
     }
   }
@@ -3141,7 +3140,7 @@ h1.em-titre-connectez-vous {
   /* SUPPRIMER EVAL */
   .g-back-office-emundus-tableau .panel-heading.em-container-evaluation-heading #em_delete_evals.btn.btn-danger.btn-xs.btn-attach {
     background: transparent !important;
-    color: $red-500 !important;
+    color: var(--red-500) !important;
     border: none;
     margin: unset !important;
     display: flex !important;
@@ -3149,11 +3148,11 @@ h1.em-titre-connectez-vous {
     padding: unset !important;
 
     span {
-      color: $red-500 !important;
+      color: var(--red-500) !important;
       &:hover,
       &:active,
       &:focus {
-        color: $red-300 !important;
+        color: var(--red-300) !important;
       }
     }
 
@@ -3161,7 +3160,7 @@ h1.em-titre-connectez-vous {
     &:active,
     &:focus {
       background: transparent !important;
-      color: $red-300 !important;
+      color: var(--red-300) !important;
     }
   }
 
@@ -3184,8 +3183,8 @@ h1.em-titre-connectez-vous {
   .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn.btn-info.btn-sm,
   .gantry.g-back-office-emundus-tableau #em-appli-block .panel-body .em-personalInfo .btn.btn-default.btn-sm {
     height: 36px;
-    background-color: $night-blue;
-    border: 1px solid $night-blue !important;
+    background-color: var(--night-blue);
+    border: 1px solid var(--night-blue) !important;
     border-radius: 5px !important;
     padding: 5px 30px !important;
 
@@ -3193,8 +3192,8 @@ h1.em-titre-connectez-vous {
     &:active,
     &:focus {
       background-color: transparent !important;
-      color: $night-blue;
-      border: 1px solid $night-blue;
+      color: var(--night-blue);
+      border: 1px solid var(--night-blue);
     }
 
     i {
@@ -3211,14 +3210,14 @@ h1.em-titre-connectez-vous {
 
     &:hover {
       background-color: darken($base-primary-color, 10%);
-      color: #fff;
+      color: var(--neutral-50);
       border: 1px solid darken($base-primary-color, 10%);
     }
   }
 
   div#em-appli-block {
     .panel-heading {
-      background: $night-blue;
+      background: var(--night-blue);
       border-radius: 0;
       margin-top: 2px;
       display: flex;
@@ -3235,13 +3234,13 @@ h1.em-titre-connectez-vous {
       margin-left: 8px;
       padding: unset;
       span{
-        color: white;
+        color: var(--neutral-50);
       }
 
       &:hover {
         background-color: transparent;
         span{
-          color: $neutral-500;
+          color: var(--neutral-500);
         }
       }
     }
@@ -3252,17 +3251,17 @@ h1.em-titre-connectez-vous {
       .actions-edit-comment .cancel-edit-comment.btn-danger  {
         background: transparent;
         border: none;
-        color: $red-500;
+        color: var(--red-500);
 
         .material-icons {
-          color: $red-500;
+          color: var(--red-500);
         }
 
         &:hover, &:focus, &:active {
           background: transparent;
           border: none;
           .material-icons {
-            color: $red-600;
+            color: var(--red-600);
           }
         }
       }
@@ -3280,7 +3279,7 @@ h1.em-titre-connectez-vous {
           background: transparent;
           border: none;
           .material-icons {
-            color: $main-600;
+            color: var(--main-600);
           }
         }
       }
@@ -3293,7 +3292,7 @@ h1.em-titre-connectez-vous {
         border: none;
 
         .material-icons {
-          color: $red-500;
+          color: var(--red-500);
         }
 
         &:hover {
@@ -3301,21 +3300,21 @@ h1.em-titre-connectez-vous {
           background: transparent;
 
           .material-icons {
-            color: $red-600;
+            color: var(--red-600);
           }
         }
       }
 
       .comment-name, .comment-date a {
-        color: $neutral-900;
+        color: var(--neutral-900);
       }
 
       .list-group-item .ctext {
-        color: $night-blue;
+        color: var(--night-blue);
       }
 
       .em-list-status-date a {
-        color: $night-blue;
+        color: var(--night-blue);
       }
 
       .em-list-status-date {
@@ -3328,72 +3327,72 @@ h1.em-titre-connectez-vous {
 
 
       .edit-comment-container button.edit-comment {
-        background: $white;
-        border: 1px solid $white;
+        background: var(--neutral-50);
+        border: 1px solid var(--neutral-50);
         border-radius: 4px !important;
 
         span {
-          color: $night-blue;
+          color: var(--night-blue);
 
           &:hover {
-            color: $neutral-800;
+            color: var(--neutral-800);
           }
         }
       }
     }
 
     .em-container-tags-body .em-tags-date a   {
-      color: $night-blue;
+      color: var(--night-blue);
     }
 
     .edit-comment-container button.delete-comment,
     .em-container-tags-body button.btn-danger[title="Supprimer"]{
-      background: $white;
-      border: 1px solid $white;
+      background: var(--neutral-50);
+      border: 1px solid var(--neutral-50);
       border-radius: 4px !important;
 
       span {
-        color: $red-500;
+        color: var(--red-500);
 
         &:hover {
-          color: $red-600;
+          color: var(--red-600);
         }
       }
     }
 
     .chosen-container .chosen-results li.group-option,
     .chosen-container .chosen-results li.group-result {
-      color: $neutral-900;
+      color: var(--neutral-900);
     }
 
     .chosen-container .chosen-results li.group-option.highlighted,
     .chosen-container .chosen-results li.group-result.highlighted{
-      color: $neutral-100;
-      background: $night-blue;
+      color: var(--neutral-100);
+      background: var(--night-blue);
     }
 
     .chosen-container-multi .chosen-choices li.search-choice span {
-      color: $neutral-900;
+      color: var(--neutral-900);
     }
 
     #add-tags {
-      background: $night-blue;
-      border: 1.5px solid $neutral-100;
-      color: $neutral-100;
+      background: var(--night-blue);
+      border: 1.5px solid var(--neutral-100);
+      color: var(--neutral-100);
       padding: 8px 12px !important;
 
       &:hover, &:active, &:focus {
-        background: $neutral-100 !important;
-        border: 1.5px solid $neutral-100;
+        background: var(--neutral-100) !important;
+        border: 1.5px solid var(--neutral-100);
         border-radius: 5px;
-        color: $night-blue;
+        color: var(--night-blue);
       }
     }
 
     span.label.label-info {
-      background: #ffffff !important;
+      background: var(--neutral-50) !important;
       text-shadow: none;
-      color: $night-blue !important;
+      color: var(--night-blue) !important;
       margin-left: 10px;
     }
   }
@@ -3408,7 +3407,7 @@ h1.em-titre-connectez-vous {
 
   .indicateurs-page {
     .btn a {
-      color: #fff;
+      color: var(--neutral-50);
 
       &:hover,
       &:focus,
@@ -3422,7 +3421,7 @@ h1.em-titre-connectez-vous {
   /* ??? - menu déroulant */
 
   .open .dropdown-toggle.btn-danger {
-    color: #ffffff !important;
+    color: var(--neutral-50) !important;
     background-color: darken($base-primary-color, 10%) !important;
     border-color: darken($base-primary-color, 10%) !important;
   }
@@ -3448,53 +3447,53 @@ h1.em-titre-connectez-vous {
   .view-list form.form-search table {
     thead th.fabrik_actions .btn-group {
       a.delete {
-        background: $red-500;
-        border-color: $red-500;
+        background: var(--red-500);
+        border-color: var(--red-500);
         margin-right: 5px;
-        color: #fff;
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
         &:focus {
-          background: #fff;
-          border-color: $red-500;
-          color: $red-500;
+          background: var(--neutral-50);
+          border-color: var(--red-500);
+          color: var(--red-500);
         }
       }
 
       a.listplugin.btn-default {
-        background: $night-blue;
-        border-color: $night-blue;
-        color: #fff;
+        background: var(--night-blue);
+        border-color: var(--night-blue);
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
         &:focus {
-          background: #fff;
-          border-color: $night-blue;
-          color: $night-blue;
+          background: var(--neutral-50);
+          border-color: var(--night-blue);
+          color: var(--night-blue);
         }
       }
     }
 
     tbody.fabrik_groupdata tr.fabrik_row {
-      color: $night-blue;
+      color: var(--night-blue);
     }
 
     tbody td.fabrik_actions .btn-group {
 
         a.delete {
-        background: $red-500;
-        border-color: $red-500;
+        background: var(--red-500);
+        border-color: var(--red-500);
         margin-right: 5px;
-        color: #fff;
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
         &:focus {
-          background: #fff;
-          border-color: $red-500;
-          color: $red-500;
+          background: var(--neutral-50);
+          border-color: var(--red-500);
+          color: var(--red-500);
         }
       }
 
@@ -3502,45 +3501,45 @@ h1.em-titre-connectez-vous {
         background: var(--main-500);
         border-color: var(--main-500);
         margin-right: 5px;
-        color: #fff;
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
         &:focus {
-          background: #fff;
+          background: var(--neutral-50);
           border-color: var(--main-500);
           color: var(--main-500);
         }
       }
 
       a.fabrik_view {
-        background: $main-600;
-        border-color: $main-600;
+        background: var(--main-600);
+        border-color: var(--main-600);
         margin-right: 5px;
-        color: #fff;
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
         &:focus {
-          background: #fff;
-          border-color: $main-600;
-          color: $main-600;
+          background: var(--neutral-50);
+          border-color: var(--main-600);
+          color: var(--main-600);
         }
       }
 
 
       a.listplugin {
-        background: $night-blue;
-        border-color: $night-blue;
+        background: var(--night-blue);
+        border-color: var(--night-blue);
         margin-right: 5px;
-        color: #fff;
+        color: var(--neutral-50);
 
         &:hover,
         &:active,
         &:focus {
-          background: #fff;
-          border-color: $night-blue;
-          color: $night-blue;
+          background: var(--neutral-50);
+          border-color: var(--night-blue);
+          color: var(--night-blue);
         }
       }
     }
@@ -3548,22 +3547,22 @@ h1.em-titre-connectez-vous {
 
   .com_fabrik.view-list.task-list\.view {
     .page-header h1 {
-      color: $night-blue;
+      color: var(--night-blue);
     }
 
     form .filtertable input.fabrik_filter_submit {
       border-radius: 4px;
       padding: 8px 12px;
       border: 1px solid var(--main-500);
-      background: $night-blue;
-      color: $white;
+      background: var(--night-blue);
+      color: var(--neutral-50);
 
       &:active, &:focus, &:hover {
         border-radius: 4px;
         padding: 8px 12px;
         border: 1px solid var(--main-500);
         background: transparent;
-        color: $night-blue;
+        color: var(--night-blue);
       }
     }
   }
@@ -3576,14 +3575,14 @@ h1.em-titre-connectez-vous {
     .fabrik___heading a.fabrikorder-asc,
     table .fabrik___heading th.heading,
     .emptyDataMessage {
-      color: $night-blue;
+      color: var(--night-blue);
     }
 
     .fabrik_filter_submit.button {
       background: var(--main-500);
       border-color: var(--main-500);
       &:hover, &:active, &:focus {
-        background: #fff;
+        background: var(--neutral-50);
         border-color: var(--main-500);
         color: var(--main-500);
       }
@@ -3595,12 +3594,12 @@ h1.em-titre-connectez-vous {
         th,
         i,
         a {
-          color: $night-blue;
+          color: var(--night-blue);
         }
       }
 
       tbody tr > td {
-        color: $night-blue;
+        color: var(--night-blue);
       }
     }
 
@@ -3608,31 +3607,31 @@ h1.em-titre-connectez-vous {
 
       a,
       i {
-        color: $night-blue;
+        color: var(--night-blue);
       }
 
       b.caret {
-        color: $night-blue;
-        border-top-color: $night-blue;
-        border-bottom-color: $night-blue;
+        color: var(--night-blue);
+        border-top-color: var(--night-blue);
+        border-bottom-color: var(--night-blue);
       }
 
       a:hover b.caret,
       a:hover b.caret,
       a:hover b.caret {
-        color: $night-blue;
-        border-top-color: $night-blue;
-        border-bottom-color: $night-blue;
+        color: var(--night-blue);
+        border-top-color: var(--night-blue);
+        border-bottom-color: var(--night-blue);
       }
 
       ul.dropdown-menu li a {
-        color: $night-blue;
+        color: var(--night-blue);
 
         &:hover, &:focus, &:active {
-          color: #fff;
+          color: var(--neutral-50);
 
           i {
-            color: #fff;
+            color: var(--neutral-50);
           }
         }
       }
@@ -3647,14 +3646,14 @@ h1.em-titre-connectez-vous {
 
       .fabrik_groupdata,
       thead {
-        border-color: $night-blue;
+        border-color: var(--night-blue)-blue;
       }
 
       thead tr.fabrik___heading {
 
         th span a,
         th span a i {
-          color: $night-blue;
+          color: var(--night-blue);
         }
       }
     }
@@ -3682,7 +3681,7 @@ h1.em-titre-connectez-vous {
 .table-hover tbody tr,
 .table-hover tbody tr {
   a {
-    color : $night-blue;
+    color : var(--night-blue);
   }
 }
 
@@ -3695,24 +3694,24 @@ h1.em-titre-connectez-vous {
 
   .indicateurs-page {
     .informationStatistique {
-      background-color: #fff;
-      color: #000 !important;
+      background-color: var(--neutral-50);
+      color: var( --neutral-900) !important;
       box-shadow: 0 1px 2px 0 hsla(0, 0%, 41.2%, .19);
       border-radius: 4px;
     }
 
     .item-pageindicateurs-page {
       h1 {
-        color: #000;
+        color: var( --neutral-900);
       }
     }
 
     .etiquette label {
-      color: $night-blue;
+      color: var(--night-blue);
     }
 
     .etiquette p {
-      color: $night-blue;
+      color: var(--night-blue);
     }
 
     #validation {
@@ -3753,42 +3752,42 @@ h1.em-titre-connectez-vous {
 
     .btnExport,
     .swal2-cancel {
-      color: $night-blue;
-      border: 1px solid $night-blue;
+      color: var(--night-blue);
+      border: 1px solid var(--night-blue);
       background: transparent;
     }
 
     .btnExport:hover,
     .swal2-cancel:hover {
-      color: #fff;
-      border: 1px solid $night-blue;
-      background: $night-blue;
+      color: var(--neutral-50);
+      border: 1px solid var(--night-blue);
+      background: var(--night-blue);
     }
 
     .g-content h1::after,
     .swal2-title::after {
-      background: $night-blue !important;
+      background: var(--night-blue) !important;
     }
 
     .swal2-progress-step,
     .swal2-progress-steps .swal2-progress-step-line,
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
-      background: $night-blue;
+      background: var(--night-blue);
     }
 
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step-line {
-      border-top: 1px solid $night-blue;
-      border-bottom: 1px solid $night-blue;
+      border-top: 1px solid var(--night-blue);
+      border-bottom: 1px solid var(--night-blue);
     }
 
     .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step ~ .swal2-progress-step {
-      color: $night-blue;
-      border: 1px solid $night-blue;
+      color: var(--night-blue);
+      border: 1px solid var(--night-blue);
     }
 
     .input .modif,
     .input .delete {
-      color: $night-blue;
+      color: var(--night-blue);
     }
 
     .btnConsulter:hover a {
@@ -3800,20 +3799,20 @@ h1.em-titre-connectez-vous {
 
   .experts-synchro-page button.btn.btn-primary.ignore {
     background: transparent;
-    border: 1px solid $night-blue;
-    color: $night-blue;
+    border: 1px solid var(--night-blue);
+    color: var(--night-blue);
 
     &:hover {
-      background: $night-blue;
-      border: 1px solid $night-blue;
-      color: #fff;
+      background: var(--night-blue);
+      border: 1px solid var(--night-blue);
+      color: var(--neutral-50);
     }
   }
 
 .experts-synchro-page button.btn.btn-primary[ng-click="validAll()"] {
   background: var(--main-500);
   border: 1px solid var(--main-500);
-  color: #fff;
+  color: var(--neutral-50);
 
   &:hover {
     background: transparent;
@@ -3827,7 +3826,7 @@ h1.em-titre-connectez-vous {
   .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="showForm()"] {
     background: var(--main-500);
     border: 1px solid var(--main-500);
-    color: #fff;
+    color: var(--neutral-50);
     margin-left: 10px;
 
     &:hover,
@@ -3835,14 +3834,14 @@ h1.em-titre-connectez-vous {
     &:focus {
       color: var(--main-500);
       border: 1px solid var(--main-500);
-      background: #fff;
+      background: var(--neutral-50);
     }
   }
 
   .experts-page div.btn.btn-primary.btn-xs.pull-right[ng-click="addGroup()"] {
     background: var(--main-500);
     border: 1px solid var(--main-500);
-    color: #fff;
+    color: var(--neutral-50);
     margin-left: 10px;
 
     &:hover,
@@ -3850,29 +3849,29 @@ h1.em-titre-connectez-vous {
     &:focus {
       color: var(--main-500);
       border: 1px solid var(--main-500);
-      background-color: #fff;
+      background-color: var(--neutral-50);
     }
   }
 
   .experts-page .ct-view.contact .panel-heading div.btn.btn-default.btn.xs.pull-right:nth-child(3) {
-    background: $night-blue;
-    border: 1px solid $night-blue;
-    color: #fff;
+    background: var(--night-blue);
+    border: 1px solid var(--night-blue);
+    color: var(--neutral-50);
     margin-left: 10px;
 
     &:hover,
     &:active,
     &:focus {
-      color: $night-blue;
-      border: 1px solid $night-blue;
-      background: #fff;
+      color: var(--night-blue);
+      border: 1px solid var(--night-blue);
+      background: var(--neutral-50);
     }
   }
 
   .experts-page .panel-heading div.btn.btn-default.btn.xs.pull-right:first-of-type {
     background: var(--main-500);
     border: 1px solid var(--main-500);
-    color: #fff;
+    color: var(--neutral-50);
     margin-left: 10px;
 
     &:hover,
@@ -3880,22 +3879,22 @@ h1.em-titre-connectez-vous {
     &:focus {
       color: var(--main-500);
       border: 1px solid var(--main-500);
-      background: #fff;
+      background: var(--neutral-50);
     }
   }
 
   .experts-page a.btn.btn-primary.btn-xs.pull-right[ng-click="switchSearch()"] {
-    background: $night-blue;
-    border: 1px solid $night-blue;
-    color: #fff;
+    background: var(--night-blue);
+    border: 1px solid var(--night-blue);
+    color: var(--neutral-50);
     margin-left: 10px;
 
     &:hover,
     &:active,
     &:focus {
-      color: $night-blue;
-      border: 1px solid $night-blue;
-      background: #fff;
+      color: var(--night-blue);
+      border: 1px solid var(--night-blue);
+      background: var(--neutral-50);
     }
   }
 
@@ -3904,12 +3903,12 @@ h1.em-titre-connectez-vous {
   }
 
   .experts-page ul.contact-group li.contact-group-item.bg-warning a.row {
-    color: $night-blue !important;
+    color: var(--night-blue) !important;
 
     &:hover,
     &:active,
     &:focus {
-      color: $night-blue !important;
+      color: var(--night-blue) !important;
     }
   }
 
@@ -3945,7 +3944,7 @@ h1.em-titre-connectez-vous {
 
           a {
             background-color: $base-secondary-color;
-            color: #fff;
+            color: var(--neutral-50);
             border: 1px solid $base-secondary-color;
             padding: 8px 12px;
             border-radius: 4px;
@@ -3967,7 +3966,7 @@ h1.em-titre-connectez-vous {
 /******************************* SWEET ALERT ***********************************/
 
 .swal2-title {
-  color: #000;
+  color: var( --neutral-900);
   margin: 10px 0 20px 0;
   font-family: $font;
 }
@@ -3977,13 +3976,13 @@ button.swal2-confirm.save-btn.sauvegarder.save_continue {
   background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
   border-radius: 4px;
-  color: #fff !important;
+  color: var(--neutral-50) !important;
   font-weight: inherit;
   &:hover {
     background: darken($base-primary-color, 8%) !important;
     border: 1px solid darken($base-primary-color, 8%) !important;
     border-radius: 4px;
-    color: #fff !important;
+    color: var(--neutral-50) !important;
   }
 }
 
@@ -3992,12 +3991,12 @@ button.swal2-cancel.goback-btn {
   background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
   border-radius: 4px !important;
-  color: #fff !important;
+  color: var(--neutral-50) !important;
   &:hover {
     background: darken($base-primary-color, 8%) !important;
     border: 1px solid darken($base-primary-color, 8%) !important;
     border-radius: 4px;
-    color: #fff !important;
+    color: var(--neutral-50) !important;
   }
 }
 
@@ -4045,7 +4044,7 @@ button.swal2-cancel.goback-btn {
     /* TITRE FORMULAIRE */
     .page-header h1 {
       @include headline-4;
-      color: $neutral-800;
+      color: var(--neutral-800);
     }
 
     /* INTRO FORMULAIRE */
@@ -4053,7 +4052,7 @@ button.swal2-cancel.goback-btn {
       p:first-of-type:not(.accept_terms),
       p.form-intro {
         @include body-16;
-        color: $neutral-600;
+        color: var(--neutral-600);
         margin-top: 8px;
       }
     }
@@ -4067,18 +4066,18 @@ button.swal2-cancel.goback-btn {
         margin-bottom: 64px;
         padding: 80px 64px 80px 64px;
         border-radius: 16px !important;
-        background: #fff;
+        background: var(--neutral-50);
 
         /* LEGEND */
         .legend {
           @include headline-5;
-          color: $neutral-800;
+          color: var(--neutral-800);
         }
 
         /* INTR0 GROUPE */
         .groupintro p {
           @include body-16;
-          color: $neutral-600;
+          color: var(--neutral-600);
           margin-top: 8px;
         }
 
@@ -4159,15 +4158,15 @@ button.swal2-cancel.goback-btn {
           /* TABLEAU */
            td,
            th {
-             background: $neutral-50;
+             background: var(--neutral-50);
              @include body-16-medium;
-             color: $neutral-800;
+             color: var(--neutral-800);
              margin-bottom: 0;
           }
 
           .fabrikGroupRepeater {
             position: relative;
-            bottom: 0px;
+            bottom: 0;
             background: transparent;
             opacity: 1 !important;
           }
@@ -4191,7 +4190,7 @@ button.swal2-cancel.goback-btn {
                 font-size: 12px;
                 color: var(--main-500);
                 &:hover {
-                  color: $main-600;
+                  color: var(--main-600);
                 }
               }
 
@@ -4213,9 +4212,9 @@ button.swal2-cancel.goback-btn {
 
               i {
                 font-size: 12px;
-                color: $red-500;
+                color: var(--red-500);
                 &:hover {
-                  color: $red-600;
+                  color: var(--red-600);
                 }
               }
 
@@ -4546,7 +4545,7 @@ button.swal2-cancel.goback-btn {
               margin-top: 15px;
 
               &::after {
-                color: #000;
+                color: var( --neutral-900);
                 opacity: initial;
               }
             }
@@ -4572,7 +4571,7 @@ button.swal2-cancel.goback-btn {
             background: #ccc;
 
             a {
-              color: #fff;
+              color: var(--neutral-50);
             }
           }
         }
@@ -4687,7 +4686,7 @@ button.swal2-cancel.goback-btn {
               margin-top: 15px;
 
               &::after {
-                color: #000;
+                color: var( --neutral-900);
                 opacity: initial;
               }
             }
@@ -4713,7 +4712,7 @@ button.swal2-cancel.goback-btn {
             background: #ccc;
 
             a {
-              color: #fff;
+              color: var(--neutral-50);
             }
           }
         }
@@ -5232,24 +5231,24 @@ button.swal2-cancel.goback-btn {
   VUE Multiselect
  */
 .multiselect__tag-icon::after{
-  color: $neutral-900 !important;
+  color: var(--neutral-900) !important;
 }
 
 .multiselect__tag-icon:focus, .multiselect__tag-icon:hover{
-  background: $neutral-300 !important;
+  background: var(--neutral-300) !important;
 }
 
 .multiselect__option--highlight::after, .multiselect__option--highlight{
-  background: $neutral-300 !important;
-  color: $neutral-900 !important;
+  background: var(--neutral-300) !important;
+  color: var(--neutral-900) !important;
 }
 
 .multiselect__tag {
   padding: 0 12px;
-  color: $neutral-900 !important;
+  color: var(--neutral-900) !important;
   border-radius: 30px !important;
   height: 24px;
-  background: $neutral-300 !important;
+  background: var(--neutral-300) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5267,7 +5266,7 @@ fieldset[disabled] .multiselect {
   top: 1px;
   width: 48px;
   height: 35px;
-  background: #fff;
+  background: var(--neutral-50);
   display: block;
 }
 
@@ -5335,7 +5334,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect--disabled {
-  background: #ededed;
+  background: var(--neutral-300);
   pointer-events: none;
   opacity: 0.6;
 }
@@ -5447,8 +5446,8 @@ fieldset[disabled] .multiselect {
   align-items: center;
   padding: 0 16px;
   border-radius: 4px;
-  border: 1px solid $neutral-400;
-  background: #fff;
+  border: 1px solid var(--neutral-400);
+  background: var(--neutral-50);
   font-size: 14px;
 }
 
@@ -5458,7 +5457,7 @@ fieldset[disabled] .multiselect {
   padding: 4px 26px 4px 10px;
   border-radius: 5px;
   margin-right: 10px;
-  color: #fff;
+  color: var(--neutral-50);
   line-height: 1;
   background: #b5b4b4;
   white-space: nowrap;
@@ -5547,7 +5546,7 @@ fieldset[disabled] .multiselect {
   height: 46px;
   padding: 0 !important;
   margin: 0 !important;
-  color: $neutral-600 !important;
+  color: var(--neutral-600) !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -5564,7 +5563,7 @@ fieldset[disabled] .multiselect {
 .multiselect__content-wrapper {
   position: absolute;
   display: block;
-  background: #fff;
+  background: var(--neutral-50);
   width: 100%;
   max-height: 240px;
   overflow: auto;
@@ -5629,13 +5628,13 @@ fieldset[disabled] .multiselect {
 .multiselect__option--highlight {
   background: #41b883;
   outline: none;
-  color: white;
+  color: var(--neutral-50);
 }
 
 .multiselect__option--highlight:after {
   content: attr(data-select);
   background: #41b883;
-  color: white;
+  color: var(--neutral-50);
 }
 
 .multiselect__option--selected {
@@ -5663,36 +5662,36 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--selected.multiselect__option--highlight {
   background: #ff6a6a;
-  color: #fff;
+  color: var(--neutral-50);
 }
 
 .multiselect__option--selected.multiselect__option--highlight:after {
   background: #ff6a6a;
   content: attr(data-deselect);
-  color: #fff;
+  color: var(--neutral-50);
 }
 
 .multiselect--disabled .multiselect__current,
 .multiselect--disabled .multiselect__select {
-  background: #ededed;
+  background: var(--neutral-300);
   color: #a6a6a6;
 }
 
 .multiselect__option--disabled {
-  background: #ededed !important;
+  background: var(--neutral-300) !important;
   color: #a6a6a6 !important;
   cursor: text;
   pointer-events: none;
 }
 
 .multiselect__option--group {
-  background: #ededed;
+  background: var(--neutral-300);
   color: #35495e;
 }
 
 .multiselect__option--group.multiselect__option--highlight {
   background: #35495e;
-  color: #fff;
+  color: var(--neutral-50);
 }
 
 .multiselect__option--group.multiselect__option--highlight:after {
@@ -5705,13 +5704,13 @@ fieldset[disabled] .multiselect {
 
 .multiselect__option--group-selected.multiselect__option--highlight {
   background: #ff6a6a;
-  color: #fff;
+  color: var(--neutral-50);
 }
 
 .multiselect__option--group-selected.multiselect__option--highlight:after {
   background: #ff6a6a;
   content: attr(data-deselect);
-  color: #fff;
+  color: var(--neutral-50);
 }
 
 .multiselect-enter-active,
@@ -5858,7 +5857,7 @@ fieldset[disabled] .multiselect {
       .btn-primary{
         background: $base-primary-color;
         &:hover{
-          color: white;
+          color: var(--neutral-50);
         }
       }
       .btn-danger{
@@ -5883,7 +5882,7 @@ fieldset[disabled] .multiselect {
         box-shadow: unset;
       }
       .loginguard-toggle input:checked + label.red{
-        background: $red-500;
+        background: var(--red-500);
         box-shadow: unset;
       }
     }
@@ -5910,7 +5909,7 @@ fieldset[disabled] .multiselect {
   padding: 0;
   nav{
     p:hover{
-      background: $neutral-300;
+      background: var(--neutral-300);
       cursor: pointer;
     }
   }
