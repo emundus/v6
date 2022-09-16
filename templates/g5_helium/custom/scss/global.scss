@@ -54,7 +54,7 @@ h6 {
   h4,
   h5,
   h6 {
-    color: $night-blue;
+    color: var(--night-blue);
   }
 }
 
@@ -648,6 +648,13 @@ footer#g-footer img {
   background: $base-background;
 }
 
+
+.com_emunus, .view-form, .view-checklist {
+  #g-page-surround{
+    background: var(--background-color);
+  }
+}
+
 .view-registration.login.em-formRegistrationCenter #g-page-surround,
 .view-form.em-formRegistrationCenter #g-page-surround {
   overflow-y: auto;
@@ -856,7 +863,7 @@ body>.g-container {
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 .view-registration,.view-login,.view-reset,.view-form.em-formRegistrationCenter{
   #g-page-surround{
-    background: white;
+    background: $base-background;
   }
   #g-navigation #header-c{
     .g-content {
@@ -867,7 +874,7 @@ body>.g-container {
     display: none;
   }
   .em-heading-registration h1{
-    color: $neutral-900;
+    color: $accent-color-1;
   }
 }
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
@@ -920,6 +927,7 @@ body>.g-container {
 .view-programme {
 
   .campaingapplycontent {
+    color: $base-text-color;
     strong, span,  {
       color: $base-text-color;
     }
@@ -1118,34 +1126,44 @@ body>.g-container {
   }
 
   /* MODULE EMUNDUS CAMPAIGN */
-  .campaigns-list .below-content {
+  .campaigns-list {
 
-    /*COULEURS BTNS - PLUS D'INFO ET CANDIDATER */
-    a.btn.btn-primary.btn-plein.btn-blue {
-      background-color: $base-secondary-color;
-      border-color: $base-secondary-color;
-      color: #fff;
-
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: transparent;
-        color: $base-secondary-color;
-        border-color: $base-secondary-color;
+    .campaingapplycontent {
+        color: $base-text-color;
+        strong, span, b {
+          color: $base-text-color;
+        }
       }
-    }
 
-    a.btn.btn-primary.btn-creux.btn-orange {
-      background-color: transparent;
-      border-color: $base-primary-color;
-      color: $base-primary-color;
+    .below-content {
 
-      &:hover,
-      &:active,
-      &:focus {
-        background-color: $base-primary-color;
+      /*COULEURS BTNS - PLUS D'INFO ET CANDIDATER */
+      a.btn.btn-primary.btn-plein.btn-blue {
+        background-color: $base-secondary-color;
+        border-color: $base-secondary-color;
         color: #fff;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background-color: transparent;
+          color: $base-secondary-color;
+          border-color: $base-secondary-color;
+        }
+      }
+
+      a.btn.btn-primary.btn-creux.btn-orange {
+        background-color: transparent;
         border-color: $base-primary-color;
+        color: $base-primary-color;
+
+        &:hover,
+        &:active,
+        &:focus {
+          background-color: $base-primary-color;
+          color: #fff;
+          border-color: $base-primary-color;
+        }
       }
     }
   }
@@ -2752,6 +2770,10 @@ tr.fabrikFilterContainer{
 }
 
   /* CONNEXION */
+
+h1.em-titre-connectez-vous {
+  color: $accent-color-1;
+}
 
   ul.nav.nav-tabs.nav-stacked span {
     color: $base-primary-color;
