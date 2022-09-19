@@ -312,14 +312,14 @@ class EmundusModelApplication extends JModelList
                 }
 
                 if ($old_comment->reason !== $title) {
-                    array_push($logsParams['updated'], ['description' => '<b>' . $old_comment->reason . '</b>', 'element' => '<span>' . JText::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
+                    array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . JText::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
                         'old' => $old_comment->reason,
                         'new' => $title]);
                 }
 
                 /////////////
                 if ($old_comment->comment_body !== $text) {
-                    array_push($logsParams['updated'], ['description' => '<b>' . $old_comment->reason . '</b>', 'element' => '<span>' . JText::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
+                    array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . JText::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
                         'old' => $old_comment->comment_body,
                         'new' => $text]);
                 }
@@ -4608,7 +4608,7 @@ class EmundusModelApplication extends JModelList
 
                     $logsStd = new stdClass();
                     if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
-                        $logsStd->description = '<b>' . '(' . $attachmentParams['value'] . ') ' . '</b>';
+                        $logsStd->description = '<b>' . '[' . $attachmentParams['value'] . ']' . '</b>';
 
                         $logsStd->element = '<u>' . JText::_($key) . '</u>';
 
