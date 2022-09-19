@@ -11,6 +11,7 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.formvalidator');
 $document = JFactory::getDocument();
 $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_users_login.css");
+$eMConfig = JComponentHelper::getParams('com_emundus');
 ?>
 <div class="login<?php echo $this->pageclass_sfx; ?>">
     <?php if ($this->params->get('show_page_heading')) : ?>
@@ -41,8 +42,11 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
                         <div class="control-label">
                             <?php echo $field->label; ?>
                         </div>
-                        <div class="controls">
+                        <div class="controls" style="<?= $field->type === "Password" ? 'position:relative; ' : '' ?>">
                             <?php echo $field->input; ?>
+                            <?php if ($eMConfig["reveal_password"] && $field->type === "Password"): ?>
+                                <span id="toggle-password-visibility" class="material-icons-outlined em-pointer" style="position: absolute;top: 25px;right: 10px;opacity: 0.3;user-select: none;">visibility_off</span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -107,3 +111,24 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/login/style/com_use
         </div>
     <?php endif; ?>
 </div>
+
+<?php if ($eMConfig['reveal_password']): ?>
+<script>
+    const spanVisibility = document.querySelector('#toggle-password-visibility');
+    const inputPassword = document.querySelector('.controls #password');
+
+    if (spanVisibility && inputPassword) {
+        spanVisibility.addEventListener('click', function() {
+            if (spanVisibility && inputPassword) {
+                if (spanVisibility.innerText == "visibility") {
+                    spanVisibility.innerText = "visibility_off";
+                    inputPassword.type = "password";
+                }  else {
+                    spanVisibility.innerText = "visibility";
+                    inputPassword.type = "text";
+                }
+            }
+        });
+    }
+</script>
+<?php endif; ?>
