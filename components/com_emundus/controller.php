@@ -541,7 +541,8 @@ class EmundusController extends JControllerLegacy {
             $logsStd = new stdClass();
 
             // get attachment data
-            $logsStd->details = "(" . $attachmentTpe . ") : " . $fileName;
+            $logsStd->element = "[" . $attachmentTpe . "]";
+            $logsStd->details = $fileName;
             $logsParams = array('deleted' => [$logsStd]);
             EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
@@ -720,8 +721,10 @@ class EmundusController extends JControllerLegacy {
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
         $m_profile = new EmundusModelProfile;
         $m_checklist = new EmundusModelChecklist;
+        $m_application = new EmundusModelApplication;
 
         $db = JFactory::getDBO();
         $jinput = JFactory::getApplication()->input;
@@ -1253,7 +1256,10 @@ class EmundusController extends JControllerLegacy {
         // stock the attachments name //
         $logsStd = new stdClass();
 
-        //$logsStd->element = '<u>' . JText::_('COM_EMUNDUS_NEW_ATTACHMENT') . '</u>';
+        /* get attachment type */
+        $attachmentTpe = $m_application->getAttachmentByID($attachments)['value'];
+
+        $logsStd->element = '[' . $attachmentTpe . ']';
         $logsStd->details = $_FILES['file']['name'];
 
         // stock all logs into an array
