@@ -115,7 +115,7 @@ $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 // stock the attachment name
 $logsStd = new stdClass();
 
-$logsStd->element = '(' . $attachment_params->value . ') ';
+$logsStd->element = '[' . $attachment_params->value . '] ';
 $logsStd->details = str_replace("/tmp/", "", $_FILES['jos_emundus_uploads___filename']['name']);
 
 $logsParams = array('created' => [$logsStd]);

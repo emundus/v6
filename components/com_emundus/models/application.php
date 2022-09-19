@@ -429,9 +429,11 @@ class EmundusModelApplication extends JModelList
         $logsStd = new stdClass();
         // Log only the body if there is no title
         if (empty($row['reason'])) {
-            $logsStd->details = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . $row['comment_body'];
+            $logsStd->element = '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']';
+            $logsStd->details = $row['comment_body'];
         } else {
-            $logsStd->details = "(" . $row['reason'] . ") " . $row['comment_body'];
+            $logsStd->element = '[' . $row['reason'] . ']';
+            $logsStd->details = $row['comment_body'];
         }
 
         //$logsStd->details =  $row['comment_body'];
@@ -4603,7 +4605,7 @@ class EmundusModelApplication extends JModelList
 
                     $logsStd = new stdClass();
                     if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
-                        $logsStd->description = '<b>' . '(' . $attachmentParams['value'] . ') ' . '</b>';
+                        $logsStd->description = '<b>' . '[' . $attachmentParams['value'] . ']' . '</b>';
 
                         $logsStd->element = '<u>' . JText::_($key) . '</u>';
 
@@ -4627,7 +4629,7 @@ class EmundusModelApplication extends JModelList
                 $logsStd = new stdClass();
 
                 /* get attachment type by $data['id'] */
-                $logsStd->element = '(' . $attachmentParams['value'] . ') ';
+                $logsStd->element = '[' . $attachmentParams['value'] . ']';
                 $logsStd->details = $_FILES['file']['name'];
                 $logsParams = array('created' => [$logsStd]);
                 EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));

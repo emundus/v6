@@ -321,8 +321,8 @@ class EmundusModelLogs extends JModelList {
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
                     if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<div><span style="margin-bottom: 0.5rem">' . $value->element . '</span>';
-                        $action_details .= '<span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        $action_details .= '<div><span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
                         $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
@@ -334,7 +334,7 @@ class EmundusModelLogs extends JModelList {
                 break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
-                $action_details = reset($params->updated)->description;
+                $action_details = '<b>' . reset($params->updated)->description . '</b>';
                 foreach ($params->updated as $value) {
                     $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp<br>';
 
