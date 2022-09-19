@@ -1961,71 +1961,56 @@ class EmundusModelFiles extends JModelLegacy
             $profile = null;
         }
 
-
-        try {
-            if (is_array($fnums)) {
-                foreach ($fnums as $fnum) {
-
-                    $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
-                    $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state]]);
-
-                    $query = $db->getQuery(true);
-
-                    $query
-                        ->update($db->quoteName('#__emundus_campaign_candidature'))
-                        ->set($db->quoteName('status').' = '.$state)
-                        ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnum));
-
-                    $db->setQuery($query);
-                    $res = $db->execute();
-                    $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
-                    $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state]]);
-
-                    if (!empty($profile)) {
-
-                        $query = $db->getQuery(true);
-                        $query->update($db->quoteName('#__emundus_users'))
-                            ->set($db->quoteName('profile').' = '.$profile)
-                            ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
-                        $db->setQuery($query);
-                        $db->execute();
-
-                    }
+        $dispatcher->trigger('onBeforeMultipleStatusChange', [$fnums, $state]);
+        $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
+        foreach($trigger as $responses) {
+            foreach($responses as $response) {
+                if (!empty($response) && isset($response['status']) && $response['status'] === false) {
+                    return $response;
                 }
             }
-            else {
-                $dispatcher->trigger('onBeforeStatusChange', [$fnums, $state]);
-                $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnums' => $fnums, 'state' => $state]]);
-                $query = $db->getQuery(true);
+        }
 
+        try {
+            $fnums = is_array($fnums) ? $fnums : [$fnums];
+
+            foreach ($fnums as $fnum) {
+                $dispatcher->trigger('onBeforeStatusChange', [$fnum, $state]);
+                $trigger = $dispatcher->trigger('callEventHandler', ['onBeforeStatusChange', ['fnum' => $fnum, 'state' => $state]]);
+                foreach($trigger as $responses) {
+                    foreach($responses as $response) {
+                        if (!empty($response) && isset($response['status']) && $response['status'] === false) {
+                            return $response;
+                        }
+                    }
+                }
+
+                $query = $db->getQuery(true);
                 $query
                     ->update($db->quoteName('#__emundus_campaign_candidature'))
                     ->set($db->quoteName('status').' = '.$state)
-                    ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnums));
+                    ->where($db->quoteName('fnum').' LIKE '. $db->Quote($fnum));
 
                 $db->setQuery($query);
                 $res = $db->execute();
-                $dispatcher->trigger('onAfterStatusChange', [$fnums, $state]);
-                $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnums' => $fnums, 'state' => $state]]);
+                $dispatcher->trigger('onAfterStatusChange', [$fnum, $state]);
+                $dispatcher->trigger('callEventHandler', ['onAfterStatusChange', ['fnum' => $fnum, 'state' => $state]]);
 
                 if (!empty($profile)) {
                     $query = $db->getQuery(true);
                     $query->update($db->quoteName('#__emundus_users'))
                         ->set($db->quoteName('profile').' = '.$profile)
-                        ->where($db->quoteName('user_id').' = '.substr($fnums, -7));
+                        ->where($db->quoteName('user_id').' = '.substr($fnum, -7));
                     $db->setQuery($query);
                     $db->execute();
                 }
             }
 
             return $res;
-
         } catch (Exception $e) {
-
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             return false;
-
         }
     }
 
