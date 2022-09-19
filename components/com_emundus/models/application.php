@@ -383,9 +383,11 @@ class EmundusModelApplication extends JModelList
             // Log the comment in the eMundus logging system
             // Log only the body if the comment had no title
             if (empty($deleted_comment->reason)) {
-                $logsStd->details = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . $deleted_comment->comment_body;
+                $logsStd->element = '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']';
+                $logsStd->details = $deleted_comment->comment_body;
             } else {
-                $logsStd->details = "(" . $deleted_comment->reason . ") " . $deleted_comment->comment_body;
+                $logsStd->element = "[" . $deleted_comment->reason . "]";
+                $logsStd->details = $deleted_comment->comment_body;
             }
 
             $logsParams = array('deleted' => [$logsStd]);
@@ -495,7 +497,8 @@ class EmundusModelApplication extends JModelList
             // get attachment data
             $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
 
-            $logsStd->details = "(" . $attachmentTpe['value'] . ") " . $file['filename'];
+            $logsStd->element = "[" . $attachmentTpe['value'] . "]";
+            $logsStd->details = $file['filename'];
             $logsParams = array('deleted' => [$logsStd]);
 
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
@@ -4605,7 +4608,7 @@ class EmundusModelApplication extends JModelList
 
                     $logsStd = new stdClass();
                     if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
-                        $logsStd->description = '<b>' . '[' . $attachmentParams['value'] . ']' . '</b>';
+                        $logsStd->description = '<b>' . '(' . $attachmentParams['value'] . ') ' . '</b>';
 
                         $logsStd->element = '<u>' . JText::_($key) . '</u>';
 

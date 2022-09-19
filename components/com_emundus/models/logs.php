@@ -336,7 +336,7 @@ class EmundusModelLogs extends JModelList {
                 $action_name = $action_category . '_UPDATE';
                 $action_details = '<b>' . reset($params->updated)->description . '</b>';
                 foreach ($params->updated as $value) {
-                    $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp<br>';
+                    $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
 
                     if(empty($value->old) or is_null($value->old)) { $value->old = ""; }
                     if(empty($value->new) or is_null($value->new)) { $value->new = ""; }
@@ -364,15 +364,16 @@ class EmundusModelLogs extends JModelList {
                             $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
                         }
                     }
-                    $action_details .= '</div></br>';
+                    $action_details .= '</div>';
                 }
                 break;
             case ('d'):
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
                     if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp<br>';
-                        $action_details .= '</div></br>';
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp';
+                        $action_details .= '</div>';
                     } else {
                         $action_details .= '<p>' . $value . '</p>';
                     }
