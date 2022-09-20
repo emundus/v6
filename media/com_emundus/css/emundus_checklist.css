@@ -140,6 +140,15 @@ button#back:hover, button#back:active, button#back:focus,
     justify-content: center;
     align-items: center;
 }
+
+.view-checklist .dropzone .dz-preview  {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .need_ok {
     background: none;
 }

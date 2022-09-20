@@ -1973,10 +1973,21 @@ class EmundusModelUsers extends JModelList {
 	 * @since version
 	 */
     public function getUserActionByFnum($aid, $fnum, $uid, $crud) {
-        $dbo = $this->getDbo();
-        $query = "select ".$crud." from #__emundus_users_assoc where action_id = ".$aid." and user_id = ".$uid." and fnum like ".$dbo->quote($fnum);
-        $dbo->setQuery($query);
-        return $dbo->loadResult();
+        $action = false;
+
+        if (!empty($aid) && !empty($fnum) && !empty($uid) && !empty($crud)) {
+            $dbo = $this->getDbo();
+            $query = "select ".$crud." from #__emundus_users_assoc where action_id = ".$aid." and user_id = ".$uid." and fnum like ".$dbo->quote($fnum);
+            $dbo->setQuery($query);
+
+            try {
+                $action = $dbo->loadResult();
+            } catch (Exception $e) {
+                JLog::add("Error from getUserActionByFnum aid $aid, fnum $fnum, uid $uid, crud $crud",JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $action;
     }
 
 	/**
@@ -1990,10 +2001,21 @@ class EmundusModelUsers extends JModelList {
 	 * @since version
 	 */
     public function getGroupActions($gids, $fnum, $aid, $crud) {
-        $dbo = $this->getDbo();
-        $query = "select ".$crud." from #__emundus_group_assoc where action_id = ".$aid." and group_id in (".implode(',', $gids).") and fnum like ".$dbo->quote($fnum);
-        $dbo->setQuery($query);
-        return $dbo->loadAssocList();
+        $groupActions = [];
+
+        if (!empty($gids) && !empty($fnum) && !empty($aid) && !empty($crud)) {
+            $dbo = $this->getDbo();
+            $query = "select ".$crud." from #__emundus_group_assoc where action_id = ".$aid." and group_id in (".implode(',', $gids).") and fnum like ".$dbo->quote($fnum);
+            $dbo->setQuery($query);
+
+            try {
+                $groupActions = $dbo->loadAssocList();
+            } catch (Exception $e) {
+                JLog::add("Error from getGroupActions gids " . implode(',', $gids) . ", fnum $fnum, aid $aid, crud $crud",JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $groupActions;
     }
 
     /**
