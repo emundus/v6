@@ -75,20 +75,13 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 	}
 
     public function onBeforeStore() {
-        //
-        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $formModel = $this->getModel();
+        $formData = $formModel->formData;
 
-        $active_form_logs = $eMConfig->get('track_applicant_form_logs', 0);
-        if($active_form_logs === '1') {
-
-            $formModel = $this->getModel();
-            $formData = $formModel->formData;
-
-            JPluginHelper::importPlugin('emundus');
-            $dispatcher = JEventDispatcher::getInstance();
-            $dispatcher->trigger('callEventHandler', ['onBeforeStore', ['formData' => $formData]]);
-            return true;
-        }
+        JPluginHelper::importPlugin('emundus');
+        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher->trigger('callEventHandler', ['onBeforeStore', ['formData' => $formData]]);
+        return true;
     }
 
 	/**

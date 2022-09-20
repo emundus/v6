@@ -32,12 +32,6 @@
 			<option value="1">JYES</option>
 		</field>
 
-		<field name="track_applicant_form_logs" label="COM_EMUNDUS_APPLICANT_FORM_LOGS_ACTIVE" type="radio" default="0" description="COM_EMUNDUS_APPLICANT_FORM_LOGS_ACTIVE_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-
-
 		<field name="reveal_password" label="COM_EMUNDUS_REVEAL_PASSWORD" type="list" default="0" description="">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
