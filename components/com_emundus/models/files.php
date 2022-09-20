@@ -1231,6 +1231,11 @@ class EmundusModelFiles extends JModelLegacy
             $db = $this->getDbo();
             $user = JFactory::getUser()->id;
 
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+
+            $dispatcher->trigger('callEventHandler', ['onBeforeTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
+
             $query_associated_tags = $db->getQuery(true);
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
 
@@ -1266,6 +1271,8 @@ class EmundusModelFiles extends JModelLegacy
                 $db->setQuery($query);
                 $db->execute();
             }
+
+            $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags]]);
 
             return true;
         }

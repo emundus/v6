@@ -896,6 +896,7 @@ class EmundusModelFormbuilder extends JModelList {
             $query->clear()
                 ->update($db->quoteName('#__menu'))
                 ->set($db->quoteName('published') . ' = -2')
+                ->set($db->quoteName('modified_by') . ' = ' . $db->quote(JFactory::getUser()->id))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($jos_menu->id));
             $db->setQuery($query);
             return $db->execute();

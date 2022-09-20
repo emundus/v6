@@ -22,7 +22,7 @@
                        type="repeatable"
                        icon="list"
                        description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESC"
-                       label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_LABEL"
+                       label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_LABEL" filter="raw"
                        >
 
                     <fieldset hidden="true" name="list_event_handler_modal" repeat="true">
@@ -35,6 +35,7 @@
                                description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_DESC"
                                size="50"
                                type="textarea"
+                               filter="raw"
                                 />
                     </fieldset>
                 </field>
