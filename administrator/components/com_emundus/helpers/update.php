@@ -625,4 +625,57 @@ class EmundusHelperUpdate
         return ['status' => true, 'message' => "Language translations successfully inserted into files"];
     }
 
+    /**
+     *
+     * @return array|mixed|void
+     *
+     * @since version 1.33.0
+     */
+    public static function convertEventHandlers(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('extension_id,params')
+                ->from($db->quoteName('#__extensions'))
+                ->where($db->quoteName('element') . ' LIKE ' . $db->quote('custom_event_handler'));
+            $db->setQuery($query);
+            $result = $db->loadObject();
+
+
+            if(!empty($result->extension_id)) {
+                $params = json_decode($result->params);
+                $old_events = json_decode($params->event_handlers);
+
+                $events = array_values($old_events->event);
+
+                if(!empty($events)) {
+                    $codes = array_values($old_events->code);
+
+                    $new_events = new stdClass;
+                    $new_events->event_handlers = new stdClass;
+
+                    foreach ($events as $key => $event) {
+                        $new_events->event_handlers->{'event_handlers' . $key} = new stdClass;
+                        $new_events->event_handlers->{'event_handlers' . $key}->event = $event;
+
+                        $backed_file = fopen('libraries/emundus/custom/'.strtolower($event) . '.php', 'w');
+                        fwrite($backed_file, '<?php ' . $codes[$key]);
+                        fclose($backed_file);
+                        $new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
+                    }
+
+                    $query->clear()
+                        ->update($db->quoteName('#__extensions'))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($new_events)))
+                        ->where($db->quoteName('extension_id') . ' = ' . $db->quote($result->extension_id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+        } catch (Exception $e) {
+            return ['status' => false, 'message' => "Error when convert event handlers : " . $e->getMessage()];
+        }
+    }
+
 }

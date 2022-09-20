@@ -40,7 +40,7 @@ class UpdateCli extends JApplicationCli
         $this->db = JFactory::getDbo();
 
         $short_options = "vhlcu::a";
-        $long_options = ["verbose", "help", "list", "core", "update::", "all"];
+        $long_options = ["verbose", "help", "list", "core", "update::", "all","dry-run"];
         $options = getopt($short_options, $long_options);
         $args = (array)$GLOBALS['argv'];
 
@@ -99,20 +99,20 @@ class UpdateCli extends JApplicationCli
         if (isset($options["a"]) || isset($options["all"])) {
             $this->count_exec++;
             $this->updateJoomla();
-            $this->updateComponents();
+            $this->updateComponents(null,$options);
         }
         # Update 1 to n components (except Joomla)
         if (isset($options["u"]) || isset($options["update"])) {
             # Execute update for all of components name pass to args
             if (sizeof($args) == 2) {
-                $this->updateComponents();
+                $this->updateComponents(null,$options);
             } elseif (sizeof($args) > 2) {
                 $index = 2;
                 while ($index <= sizeof($args) - 1) {
                     $element[] = $args[$index];
                     $index++;
                 }
-                $this->updateComponents($element);
+                $this->updateComponents($element,$options);
             }
         }
 
@@ -241,7 +241,7 @@ class UpdateCli extends JApplicationCli
      * @return false|void
      * @throws Exception
      */
-    private function updateComponents($elements = null)
+    private function updateComponents($elements = null,$options = null)
     {
         $installer = JInstaller::getInstance();
         $success = true;
@@ -285,10 +285,12 @@ class UpdateCli extends JApplicationCli
                     $this->firstrun = true;
                     $this->out("** Script first run **");
 
-                    $this->out('Store translations tags into database for first run');
-                    require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-                    EmundusHelperUpdate::languageFileToBase();
-                    $this->out();
+                    if(empty($options) || !isset($options['dry-run'])) {
+                        $this->out('Store translations tags into database for first run');
+                        require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+                        EmundusHelperUpdate::languageFileToBase();
+                        $this->out();
+                    }
 
                     # Set schema version and align manifest cache version
                     $this->schema_version = '1.33.0';
@@ -457,7 +459,9 @@ class UpdateCli extends JApplicationCli
                     $this->out("-> " . count($component_logs) . " sql statements executed");
                 }
 
-                $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+                if(empty($options) || !isset($options['dry-run'])) {
+                    $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+                }
 
                 if ($this->verbose) {
                     $this->out("\nVersions...");

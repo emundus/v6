@@ -189,6 +189,8 @@ class com_emundusInstallerScript
 
                 EmundusHelperUpdate::insertTranslationsTag('SETUP_LETTERS_GROUP_185_INTRO',"<p>Pour rendre ce courrier dynamique, insérer des <a href='component/emundus/?view=export_select_columns&format=html&layout=all_programs' target='_blank' rel='noopener noreferrer'>balises</a> dans sa construction afin d’ajouter des informations personnalisées pour chaque candidat. Par exemple, la balise ".'<em>$APPLICANT_NAME</em>'." sera remplacée par le nom de votre candidat. Bonjour ".'<em>$APPLICANT_NAME</em>'.' deviendra Bonjour Julien.</p>','override',null,'fabrik_elements','label');
                 EmundusHelperUpdate::insertTranslationsTag('SETUP_LETTERS_GROUP_185_INTRO',"<p>To make this mail dynamic, insert <a href='component/emundus/?view=export_select_columns&format=html&layout=all_programs' target='_blank' rel='noopener noreferrer'>tags</a> in its construction in order to add personalised information for each candidate. For example, the tag ".'<em>$APPLICANT_NAME</em>'." will be replaced by the name of your candidate. Hello ".'<em>$APPLICANT_NAME</em>'." will become Hello Julien.</p>",'override',null,'fabrik_elements','label','en-GB');
+
+                EmundusHelperUpdate::convertEventHandlers();
             }
 
             EmundusHelperUpdate::languageBaseToFile();

@@ -25,10 +25,17 @@ class plgEmundusCustom_event_handler extends JPlugin {
     function callEventHandler(String $event, array $args = null): array
     {
         $events = [];
+        $codes = [];
         $params = json_decode($this->params);
-        $event_handlers = json_decode($params->event_handlers);
-        if(!empty($event_handlers->event)){
-            $events = array_keys($event_handlers->event, $event);
+        $event_handlers = $params->event_handlers;
+
+        foreach ($event_handlers as $event_handler){
+            $events[] = $event_handler->event;
+            $codes[] = $event_handler->code;
+        }
+
+        if(!empty($events)){
+            $events = array_values(array_intersect($events, [$event]));
         }
         $returned_values = [];
 
@@ -36,12 +43,11 @@ class plgEmundusCustom_event_handler extends JPlugin {
             $this->hEvents->{$event}($args);
         }
 
-        foreach ($events as $caller_index) {
+        foreach ($events as $index => $caller_index) {
             try {
-
-                $returned_values[$caller_index] = $this->_runPHP($event_handlers->code[$caller_index], $args);
+                $returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
             } catch (ParseError $p) {
-                JLog::add('Error while running event ' . $event_handlers->event[$caller_index] . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
+                JLog::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
                 continue;
             }
         }
