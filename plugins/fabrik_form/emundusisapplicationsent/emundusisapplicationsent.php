@@ -140,7 +140,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             }
 
             $is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
-            if (!$is_campaign_started) {
+            if (!$is_campaign_started && !in_array($user->id, $applicants)) {
                 // STOP HERE, the campaign or step is not started yet. Redirect to main page
                 $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
                 $mainframe->redirect('/');
