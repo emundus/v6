@@ -4597,7 +4597,8 @@ class EmundusControllerFiles extends JControllerLegacy
 
     /* get all logs */
     public function getalllogs() {
-        $m_files = $this->getModel('Files');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles();
         $logs = $m_files->getAllLogs();
 
         if($logs) {
