@@ -49,7 +49,7 @@
 //Colors
 $em-green: #12DB42;
 $em-blue: #16afe1;
-$em-grey: #5A5A72;
+$em-blue: #5A5A72;
 
 $light-blue: #26CAEA;
 $dark-blue: #16AFE1;
@@ -62,17 +62,6 @@ $dark-grey: #5A5A72;
 $grey: #B0B0BF;
 $light-grey: #F4F4F6;
 $white: #FFFFFF;
-
-/*
-$neutral-100: #FFFFFF;
-$neutral-200: #F2F2F3;
-$neutral-300: #E3E5E8;
-$neutral-400: #C5C8CE;
-$neutral-500: #ACB1B9;
-$neutral-600: #8F96A3;
-$neutral-700: #5E646E;
-$neutral-800: #2B313B;
-$neutral-900: #080C12;*/
 
 $neutral-50: #FFFFFF;
 $neutral-100: #FAFAFA;
@@ -124,12 +113,6 @@ $yellow-600: #FFB800;
 $yellow-700: #CC8100;
 $yellow-800: #805100;
 $yellow-900: #3E2200;
-
-
-$valid: #20835F;
-$focus: #1C6EF2;
-$red: #e5283B;
-
 
 // Padding
 $p-4: 4px;
@@ -320,14 +303,14 @@ $font:'Inter', sans-serif;
   position: relative;
   top: -5px;
   margin-right: -2px;
-  color: $red;
+  color: var(--red-500);
 }
 
 @mixin input-default {
   height: 48px;
   border-radius: 4px;
   padding: 0 12px 0 12px;
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
   box-shadow: none;
   margin-top: 12px;
 }
@@ -336,34 +319,34 @@ $font:'Inter', sans-serif;
   height: 48px;
   border-radius: 4px;
   padding: 0 12px 0 12px;
-  border: 1px solid $neutral-400;
+  border: 1px solid var(--neutral-400);
   box-shadow: none;
   margin: 0 6px 0 0;
 }
 
 @mixin input-focus {
-  border: 1px solid $focus;
+  border: 1px solid var(--blue-500);
   box-shadow: none;
 }
 
 @mixin input-hover {
-  border: 1px solid $neutral-600;
+  border: 1px solid var(--neutral-600);
   box-shadow: none;
 }
 
 @mixin input-error {
-  border: 1px solid $red !important;
+  border: 1px solid var(--red-500) !important;
   box-shadow: none;
 }
 
 @mixin input-valid {
-  border: 1px solid $valid !important;
+  border: 1px solid var(--main-500) !important;
   box-shadow: none;
 }
 
 @mixin input-readonly {
-  background: $neutral-400;
-  border: 1px solid $neutral-400;
+  background: var(--neutral-400);
+  border: 1px solid var(--neutral-400);
   border-radius: 4px;
   box-shadow: none;
 }
@@ -392,30 +375,30 @@ $font:'Inter', sans-serif;
 
 @mixin select-button-default {
   height: 48px !important;
-  background: $neutral-200;
+  background: var(--neutral-200);
   border-radius: 4px 0 0 4px !important;
-  color: $neutral-800;
+  color: var(--neutral-800);
 }
 
 @mixin checkbox {
   height: 16px !important;
   width: 16px !important;
-  background: $neutral-200;
+  background: var(--neutral-200);
   border-radius: 1px !important;
   margin-right: 16px;
   margin-top: 0;
-  border: 1px solid $neutral-600;
+  border: 1px solid var(--neutral-600);
   padding: 0 !important;
 }
 
 @mixin radio {
   height: 14px !important;
   width: 14px !important;
-  background: $neutral-50;
+  background: var(--neutral-50);
   border-radius: 9px !important;
   margin-right: 16px;
   margin-top: 0 !important;
-  border: 1px solid $neutral-600;
+  border: 1px solid var(--neutral-600);
   padding: 0!important;
 }
 
@@ -428,7 +411,7 @@ $font:'Inter', sans-serif;
   .calendar{
     border-radius: 5px;
     border: solid 1px #e6e6e6;
-    box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px #ffffff;
+    box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px var(--neutral-50);
     padding: 10px;
     width: 250px;
     background: white;
@@ -516,11 +499,11 @@ $font:'Inter', sans-serif;
         }
         td.selected{
           border-radius: 5px;
-          background: $neutral-800;
+          background: var(--neutral-800);
           color: white;
         }
         td.hilite{
-          background: $neutral-400;
+          background: var(--neutral-400);
           border-radius: 5px;
           color: black !important;
         }
@@ -547,16 +530,16 @@ $font:'Inter', sans-serif;
   /* SUCCESS */
   &.success input, &.has-success input {
     @include input-valid;
-    color: $neutral-800 !important;
+    color: var(--neutral-800) !important;
   }
 
   .fabrikErrorMessage {
     @include body-14;
-    color: $red-500;
+    color: var(--red-500);
     margin-top: 8px;
 
     &.help-inline {
-      color: $red-500;
+      color: var(--red-500);
       padding: 0;
 
       i.icon-warning {
@@ -575,7 +558,7 @@ $font:'Inter', sans-serif;
   /* LABEL */
   .fabrikLabel {
     @include body-16-medium;
-    color: $neutral-800;
+    color: var(--neutral-800);
     margin-bottom: 0 !important;
     padding-top: 0 !important;
 
@@ -588,7 +571,7 @@ $font:'Inter', sans-serif;
   /* TEXTE D AIDE */
   span:not(.badge):not([class^="material-icons"]):not(.icon-handle):not([class^="tox"]) {
     @include body-14;
-    color: $neutral-600;
+    color: var(--neutral-600);
     display: flex;
     margin-top: 12px;
 
@@ -638,11 +621,11 @@ $font:'Inter', sans-serif;
 
       &:focus {
         @include input-focus;
-        color: $neutral-800 !important;
+        color: var(--neutral-800) !important;
       }
 
       &.inputbox:focus {
-        color: $neutral-800 !important;
+        color: var(--neutral-800) !important;
       }
 
       &.readonly {
@@ -656,13 +639,13 @@ $font:'Inter', sans-serif;
       }
 
       &[placeholder] {
-        color: $neutral-500 !important;
+        color: var(--neutral-500) !important;
         @include body-16;
       }
 
       &[value] {
         @include body-16;
-        color: $neutral-800;
+        color: var(--neutral-800);
       }
 
       &.input-medium,
@@ -687,7 +670,7 @@ $font:'Inter', sans-serif;
     textarea {
       margin-top: 12px !important;
       resize: vertical;
-      color: $neutral-800;
+      color: var(--neutral-800);
       @include body-16;
 
       &.input-medium, &.input-small {
@@ -705,7 +688,7 @@ $font:'Inter', sans-serif;
 
     /* LIMITE */
     .label-info, .badge-info {
-      background: $focus !important;
+      background: var(--blue-500) !important;
     }
 
     /* TINYMCE */
@@ -714,17 +697,17 @@ $font:'Inter', sans-serif;
     }
 
     .label, .badge {
-      background: $neutral-600;
+      background: var(--neutral-600);
     }
 
     /* SELECT */
     select {
       @include select-default;
-      color: $neutral-800 !important;
+      color: var(--neutral-800) !important;
 
       option {
         @include body-16;
-        color: $neutral-800;
+        color: var(--neutral-800);
       }
     }
 
@@ -742,8 +725,8 @@ $font:'Inter', sans-serif;
         height: 100% !important;
 
         li.search-choice {
-          border: $neutral-400;
-          background: $neutral-200;
+          border: var(--neutral-400);
+          background: var(--neutral-200);
           @include body-14;
 
           span {
@@ -765,8 +748,8 @@ $font:'Inter', sans-serif;
         @include body-14;
 
         &.highlighted {
-          background: $neutral-200;
-          color: $neutral-900;
+          background: var(--neutral-200);
+          color: var(--neutral-900);
         }
       }
     }
@@ -779,54 +762,54 @@ $font:'Inter', sans-serif;
 
         label.btn-default.btn.btn-success.active {
           @include yes-no;
-          border: 1px solid $main-500;
-          background: $main-500;
+          border: 1px solid var(--main-500);
+          background: var(--main-500);
           border-radius: 0 4px 4px 0 !important;
           width: 55px !important;
 
           &:hover {
-            border: 1px solid $main-600;
-            background: $main-600;
+            border: 1px solid var(--main-600);
+            background: var(--main-600);
           }
 
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: $neutral-50;
+            color: var(--neutral-50);
           }
         }
 
         label.btn-default.btn.btn-danger.active {
           @include yes-no;
-          border: 1px solid $red-500;
-          background: $red-500;
+          border: 1px solid var(--red-500);
+          background: var(--red-500);
           border-radius: 4px 0 0 4px !important;
           width: 55px !important;
 
           &:hover {
-            border: 1px solid $red-600;
-            background: $red-600;
+            border: 1px solid var(--red-600);
+            background: var(--red-600);
           }
 
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: $neutral-50;
+            color: var(--neutral-50);
           }
         }
 
         label.btn-default.btn:not(.active) {
           @include yes-no;
-          border: 1px solid $neutral-200;
-          background: $neutral-200;
+          border: 1px solid var(--neutral-200);
+          background: var(--neutral-200);
           border-radius: 4px !important;
           margin-left: -2px;
           z-index: 0;
           width: 55px !important;
 
           &:hover {
-            border: 1px solid $neutral-300;
-            background: $neutral-300;
+            border: 1px solid var(--neutral-300);
+            background: var(--neutral-300);
 
             span, input {
               margin-left: 0 !important;
@@ -836,7 +819,7 @@ $font:'Inter', sans-serif;
           span {
             @include body-16-medium;
             margin-top: 0;
-            color: $neutral-900;
+            color: var(--neutral-900);
           }
         }
       }
@@ -874,22 +857,22 @@ $font:'Inter', sans-serif;
         }
 
         input[id$='cal'].inputbox{
-          color: $neutral-800 !important;
+          color: var(--neutral-800) !important;
           margin-right: 1px !important;
         }
 
         button.calendarbutton,
         button.timeButton {
-          border: 1px solid $neutral-400;
+          border: 1px solid var(--neutral-400);
           margin-top: 12px;
           width: 48px !important;
           display: flex;
           justify-content: center;
           align-items: center;
           height: 48px !important;
-          background: $neutral-200;
+          background: var(--neutral-200);
           border-radius: 0 4px 4px 0 !important;
-          color: $neutral-800;
+          color: var(--neutral-800);
           z-index: 10;
 
           i.icon-clock {
@@ -909,12 +892,12 @@ $font:'Inter', sans-serif;
 
 
     .fabrikMainError.alert.alert-error.fabrikError {
-      border-color: $red-500;
-      color: $red-500;
+      border-color: var(--red-500);
+      color: var(--red-500);
     }
 
     .fabrikMainError.alert.alert-error.fabrikError .close {
-      color: $red-500 !important;
+      color: var(--red-500) !important;
     }
 
 
@@ -942,7 +925,7 @@ $font:'Inter', sans-serif;
 
         input[type="checkbox"] {
           @include checkbox;
-          margin-left: 0px !important;
+          margin-left: 0 !important;
         }
       }
 
@@ -953,7 +936,7 @@ $font:'Inter', sans-serif;
 
         input[type="radio"] {
           @include radio;
-          margin-left: 0px !important;
+          margin-left: 0 !important;
 
           &:checked {
             background-color: initial;
@@ -966,7 +949,7 @@ $font:'Inter', sans-serif;
 
       span {
         height: auto !important;
-        color: $neutral-800;
+        color: var(--neutral-800);
         margin-top: 0 !important;
         padding: 0 !important;
         display: flex;
