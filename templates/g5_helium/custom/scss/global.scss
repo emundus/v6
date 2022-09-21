@@ -3968,11 +3968,11 @@ h1.em-titre-connectez-vous {
 .swal2-title {
   color: var( --neutral-900);
   margin: 10px 0 20px 0;
-  font-family: $font;
+  font-family: var(--font);
 }
 
 button.swal2-confirm.save-btn.sauvegarder.save_continue {
-  font-family: $font;
+  font-family: var(--font);
   background: $base-primary-color !important;
   border: 1px solid $base-primary-color !important;
   border-radius: 4px;
@@ -3987,7 +3987,7 @@ button.swal2-confirm.save-btn.sauvegarder.save_continue {
 }
 
 button.swal2-cancel.goback-btn {
-  font-family: $font;
+  font-family: var(--font);
   background: $base-secondary-color !important;
   border: 1px solid $base-secondary-color !important;
   border-radius: 4px !important;
@@ -4001,7 +4001,7 @@ button.swal2-cancel.goback-btn {
 }
 
 .swal2-content {
-  font-family: $font;
+  font-family: var(--font);
 }
 
 /******************************* FORMULAIRES ***********************************/

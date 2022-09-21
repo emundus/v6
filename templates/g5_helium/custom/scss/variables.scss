@@ -151,7 +151,7 @@ $font:'Inter', sans-serif;
 // Mixin - typo
 
 @mixin headline-1 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 80px;
   font-style: normal;
   font-weight: 600;
@@ -161,7 +161,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-2 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 64px;
   font-style: normal;
   font-weight: 600;
@@ -171,7 +171,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-3 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 48px;
   font-style: normal;
   font-weight: 600;
@@ -181,7 +181,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-4 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 32px;
   font-style: normal;
   font-weight: 600;
@@ -191,7 +191,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-5 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 24px;
   font-style: normal;
   font-weight: 600;
@@ -201,7 +201,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin headline-6 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 20px;
   font-style: normal;
   font-weight: 600;
@@ -211,7 +211,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-16 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -221,7 +221,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-16-medium {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 16px;
   font-style: normal;
   font-weight: 500 !important;
@@ -231,7 +231,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-16-semibold {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -241,7 +241,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-14 {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -251,7 +251,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-14-medium {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
@@ -261,7 +261,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin body-14-semibold {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -271,7 +271,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin caption {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
@@ -281,7 +281,7 @@ $font:'Inter', sans-serif;
 }
 
 @mixin overline {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 10px;
   font-style: normal;
   font-weight: 400;
@@ -293,7 +293,7 @@ $font:'Inter', sans-serif;
 // Mixin - form
 
 @mixin star {
-  font-family: $font;
+  font-family: var(--font);
   font-size: 5px;
   font-style: normal;
   font-weight: 400;
@@ -414,10 +414,10 @@ $font:'Inter', sans-serif;
     box-shadow: 5px 5px 11px #ebebeb, -5px -5px 11px var(--neutral-50);
     padding: 10px;
     width: 250px;
-    background: white;
+    background: var(--neutral-50);
     table{
       border: unset;
-      background: white;
+      background: var(--neutral-50);
 
       thead {
         tr:first-child {
@@ -431,7 +431,7 @@ $font:'Inter', sans-serif;
 
           td.title {
             background: transparent;
-            color: black;
+            color: var(--neutral-900);
             font-size: 12px;
             position: absolute;
             top: 17px;
@@ -450,7 +450,7 @@ $font:'Inter', sans-serif;
         }
 
         tr.headrow {
-          background: white;
+          background: var(--neutral-50);
 
           td {
             padding-bottom: 6px;
@@ -469,7 +469,7 @@ $font:'Inter', sans-serif;
         }
 
         tr.daynames {
-          background: white;
+          background: var(--neutral-50);
 
           td {
             padding: 6px;
@@ -489,7 +489,7 @@ $font:'Inter', sans-serif;
         .rowhilite{
           td {
             background: transparent;
-            color: black;
+            color: var(--neutral-900);
           }
         }
         td{
@@ -500,12 +500,12 @@ $font:'Inter', sans-serif;
         td.selected{
           border-radius: 5px;
           background: var(--neutral-800);
-          color: white;
+          color: var(--neutral-50);
         }
         td.hilite{
           background: var(--neutral-400);
           border-radius: 5px;
-          color: black !important;
+          color: var(--neutral-900) !important;
         }
       }
 
