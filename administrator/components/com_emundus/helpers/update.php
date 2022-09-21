@@ -205,8 +205,8 @@ class EmundusHelperUpdate
 
         try {
             $query->select('storage_key,storage_value')
-                ->from("#__securitycheckpro_storage")
-                ->where('storage_key LIKE ' . $db->q('%' . $name . '%'));
+                ->from($db->quoteName('#__securitycheckpro_storage'))
+                ->where($db->quoteName('storage_key') . ' LIKE ' . $db->quote('%' . $name . '%'));
             $db->setQuery($query);
             $rows = $db->loadObjectList();
 
@@ -217,9 +217,9 @@ class EmundusHelperUpdate
                 }
 
                 $query->clear()
-                    ->update("#__securitycheckpro_storage")
-                    ->set("storage_value = " .$db->quote(json_encode($params)))
-                    ->where("storage_key = " . $row->storage_key);
+                    ->update($db->quoteName('#__securitycheckpro_storage'))
+                    ->set($db->quoteName('storage_value') . ' = ' .$db->quote(json_encode($params)))
+                    ->where($db->quoteName('storage_key') . ' = ' . $db->quote($row->storage_key));
                 $db->setQuery($query);
                 $db->execute();
             }
