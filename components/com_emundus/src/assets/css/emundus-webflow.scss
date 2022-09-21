@@ -947,8 +947,8 @@ input[type="reset"] {
   position: relative;
   padding: 6px 14px;
   border-radius: 4px;
-  background-color: $main-500;
-  border: 1px solid $main-500;
+  background-color: var(--main-500);
+  border: 1px solid var(--main-500);
   -webkit-transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   transition: color 200ms ease, background-color 200ms cubic-bezier(0.55, 0.085, 0.68, 0.53);
   color: white;
@@ -962,7 +962,7 @@ input[type="reset"] {
   &:hover{
     cursor: pointer;
     background-color: transparent;
-    color: $main-500 !important;
+    color: var(--main-500) !important;
   }
   .fa-pen{
     margin-right: 10px;
@@ -1380,7 +1380,7 @@ textarea {
 
 .remove-tag{
   background: transparent;
-  color: $main-500;
+  color: var(--main-500);
   right: 0;
 }
 .vue-swatches__wrapper {
@@ -2527,7 +2527,7 @@ input[type="radio"]{
   border: unset;
   height: 40px;
   color: white;
-  background-color: $main-500;
+  background-color: var(--main-500);
 }
 
 .em-primary-disabled{
@@ -2703,7 +2703,7 @@ input:focus + .em-slider {
   color: $main-100;
 }
 .em-main-500-color{
-  color: $main-500;
+  color: var(--main-500);
 }
 .em-yellow-500-color{
   color: $yellow-500;
@@ -2737,7 +2737,7 @@ input:focus + .em-slider {
   background: #F5F6F6;
 }
 .em-bg-main-500{
-  background: $main-500;
+  background: var(--main-500);
 }
 
 .em-m-24{
@@ -2878,7 +2878,7 @@ input:focus + .em-slider {
   border-left: solid 2px $yellow-500;
 }
 .em-border-left-main-500{
-  border-left: solid 2px $main-500;
+  border-left: solid 2px var(--main-500);
 }
 .em-border-left-red-500{
   border-left: solid 2px $red-500;
@@ -2996,12 +2996,12 @@ Vue Transitions
   Focus for lables
 */
 .em-available{
-  color: $main-500;
+  color: var(--main-500);
   align-items: center;
   display: flex;
 }
 .em-border-available:focus {
-  border-color: $main-500 !important;
+  border-color: var(--main-500) !important;
 }
 .em-not-available{
   color: $red-500;

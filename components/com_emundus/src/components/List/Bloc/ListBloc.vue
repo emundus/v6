@@ -437,11 +437,11 @@ export default {
 
 		.em-primary-button {
 			width: fit-content;
-			border: 1px solid #20835F;
+			border: 1px solid var(--main-500);
 
 			&:hover {
 				background-color: white;
-				color: #20835F;
+				color: var(--main-500);
 			}
 		}
 	}

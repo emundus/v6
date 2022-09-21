@@ -21,7 +21,7 @@
 
       <div class="em-flex-row em-mb-32">
         <p>
-          <b style="color: #20835F; font-weight: 700 !important;"> {{form.label}}</b>
+          <b style="color: var(--main-500); font-weight: 700 !important;"> {{form.label}}</b>
           {{translations.From}}
           <strong>{{ form.start_date }}</strong>
           {{translations.To}}
