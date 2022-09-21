@@ -399,7 +399,7 @@ export default {
       }
 
 			&.published {
-				background: #DFF5E9;
+				background: var(--main-100);
 			}
 
 			&.unpublished {
