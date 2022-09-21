@@ -659,7 +659,7 @@ class EmundusHelperUpdate
                         $new_events->event_handlers->{'event_handlers' . $key} = new stdClass;
                         $new_events->event_handlers->{'event_handlers' . $key}->event = $event;
 
-                        $backed_file = fopen('libraries/emundus/custom/'.strtolower($event) . '.php', 'w');
+                        $backed_file = fopen('libraries/emundus/custom/'.strtolower($event) . '_' . $key . '.php', 'w');
                         fwrite($backed_file, '<?php ' . $codes[$key]);
                         fclose($backed_file);
                         $new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
