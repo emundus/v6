@@ -211,9 +211,7 @@ class com_emundusInstallerScript
     public function preflight($type, $parent)
     {
         if(version_compare(PHP_VERSION, '7.4.0', '<')) {
-            echo '<html><body><h1>This extension works with PHP 7.4.0 or newer.</h1>'.
-                '<h2>Please contact your web hosting provider to update your PHP version</h2>'.
-                'installation aborted...</body></html>';
+            echo 'This extension works with PHP 7.4.0 or newer.Please contact your web hosting provider to update your PHP version.';
             exit;
         }
     }
@@ -228,7 +226,7 @@ class com_emundusInstallerScript
      */
     function postflight($type, $parent)
     {
-        echo 'Installation terminée avec succès';
+        echo "\rComposant eMundus mis à jour avec succès !\n";
     }
 
 
