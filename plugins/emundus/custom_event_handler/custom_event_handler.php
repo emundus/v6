@@ -29,17 +29,19 @@ class plgEmundusCustom_event_handler extends JPlugin {
         $params = json_decode($this->params);
         $event_handlers = $params->event_handlers;
 
-        foreach ($event_handlers as $event_handler){
-            $events[] = $event_handler->event;
-            $codes[] = $event_handler->code;
+        if (!empty($event_handlers)) {
+            foreach ($event_handlers as $event_handler){
+                $events[] = $event_handler->event;
+                $codes[] = $event_handler->code;
+            }
         }
 
-        if(!empty($events)){
+        if (!empty($events)) {
             $events = array_values(array_intersect($events, [$event]));
         }
         $returned_values = [];
 
-        if(method_exists($this->hEvents,$event)){
+        if (method_exists($this->hEvents, $event)) {
             $this->hEvents->{$event}($args);
         }
 
