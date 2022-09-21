@@ -90,7 +90,7 @@ h1 {
   select{
     margin-bottom: 0;
     border-radius: 4px;
-    border-color: #ccc;
+    border-color: var(--light-grey-3);
     height: 40px;
     color: var(--night-blue);
   }
@@ -255,7 +255,7 @@ ul {
   margin: 0 auto;
   width: 100%;
   text-align: center;
-  background-color: rgba(242, 242, 242, 0.67);
+  background-color: var(--light-grey-2);
   height: 100%;
   z-index: 9999;
   padding-top: 20%;
@@ -610,7 +610,7 @@ p,
 
       li:nth-child(1) a {
         margin: 10px;
-        border-right: 1px solid #cccccc;
+        border-right: 1px solid var(--light-grey-3);
         padding: 0 10px;
       }
     }
@@ -1219,7 +1219,7 @@ body>.g-container {
 
   .btn {
     background: #cecece;
-    color: black;
+    color: var(--neutral-900);
     border-color: #cecece;
     opacity: 0.8;
     margin-left: -3px;
@@ -1502,7 +1502,7 @@ div.fabrikFilterContainer{
         display: flex;
         .calendarbutton{
           height: 40px;
-          color: black;
+          color: var(--neutral-900);
           border: solid 1px #ececee;
           border-radius: 0 4px 4px 0;
         }
@@ -2901,7 +2901,7 @@ h1.em-titre-connectez-vous {
   }
 
   .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    background: #f2F2F2;
+    background: var(----light-grey-2);
   }
 
   .g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
@@ -3686,7 +3686,7 @@ h1.em-titre-connectez-vous {
 }
 
   .files-board .table-hover thead th:hover {
-    background-color: #fafafa;
+    background-color: var(--neutral-100);
     cursor: pointer;
   }
 
@@ -4115,7 +4115,7 @@ button.swal2-cancel.goback-btn {
 
             span {
               height: auto !important;
-              color: #2B2B2B !important;
+              color: var(--neutral-800) !important;
               margin-top: 0 !important;
               padding: 0 !important;
               display: flex;
@@ -4521,23 +4521,23 @@ button.swal2-cancel.goback-btn {
 
     /* BURGER OUVERT */
     #g-offcanvas {
-      background: #F2F2F2;
+      background: var(--light-grey-2);
 
       .g-grid {
         margin: 50px 0;
 
         .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul {
-          background: #F2F2F2;
+          background: var(--light-grey-2);
           margin: 0;
           padding: 0;
 
           li {
-            border-bottom: 1px solid #F2F2F2;
+            border-bottom: 1px solid var(--light-grey-2);
             display: flex;
             flex-direction: row;
             align-items: baseline;
             justify-content: space-between;
-            background: #F2F2F2;
+            background: var(--light-grey-2);
             width: 100% !important;
 
             span {
@@ -4559,7 +4559,7 @@ button.swal2-cancel.goback-btn {
           }
 
           li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
-            background: #FAFAFA;
+            background: var(--neutral-100);
             border-left: 6px solid $base-secondary-color;
 
             a {
@@ -4568,7 +4568,7 @@ button.swal2-cancel.goback-btn {
           }
 
           li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
-            background: #ccc;
+            background: var(--light-grey-3);
 
             a {
               color: var(--neutral-50);
@@ -4662,23 +4662,23 @@ button.swal2-cancel.goback-btn {
 
     /* BURGER OUVERT */
     #g-offcanvas {
-      background: #F2F2F2;
+      background: var(--light-grey-2);
 
       .g-grid {
         margin: 50px 0;
 
         .user-list-menu ul, .user-menu-phone ul, #g-mobilemenu-container ul.g-toplevel, #g-mobilemenu-container ul {
-          background: #F2F2F2;
+          background: var(--light-grey-2);
           margin: 0;
           padding: 0;
 
           li {
-            border-bottom: 1px solid #F2F2F2;
+            border-bottom: 1px solid var(--light-grey-2);
             display: flex;
             flex-direction: row;
             align-items: baseline;
             justify-content: space-between;
-            background: #F2F2F2;
+            background: var(--light-grey-2);
             width: 100% !important;
 
             span {
@@ -4686,7 +4686,7 @@ button.swal2-cancel.goback-btn {
               margin-top: 15px;
 
               &::after {
-                color: var( --neutral-900);
+                color: var(--neutral-900);
                 opacity: initial;
               }
             }
@@ -4700,7 +4700,7 @@ button.swal2-cancel.goback-btn {
           }
 
           li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module).active {
-            background: #FAFAFA;
+            background: var(--neutral-100);
             border-left: 6px solid $base-secondary-color;
 
             a {
@@ -4709,7 +4709,7 @@ button.swal2-cancel.goback-btn {
           }
 
           li:not(.g-menu-item-type-particle):not(.g-menu-item-type-module):hover {
-            background: #ccc;
+            background: var(--light-grey-3);
 
             a {
               color: var(--neutral-50);
@@ -5373,7 +5373,7 @@ fieldset[disabled] .multiselect {
   line-height: 20px !important;
   border: none !important;
   border-radius: 5px !important;
-  background-color: rgb(255, 255, 255);
+  background-color: var(--neutral-50);
   -webkit-transition: border .1s ease;
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
@@ -5397,7 +5397,7 @@ fieldset[disabled] .multiselect {
   line-height: 20px !important;
   border: none !important;
   border-radius: 5px !important;
-  background-color: rgb(255, 255, 255);
+  background-color: var(--neutral-50);
   -webkit-transition: border .1s ease;
   transition: border .1s ease !important;
   -webkit-box-sizing: border-box;
@@ -5489,13 +5489,13 @@ fieldset[disabled] .multiselect {
 
 .multiselect__tag-icon:after {
   content: "×";
-  color: black;
+  color: var(--neutral-900);
   font-size: 14px;
 }
 
 .multiselect__tag-icon:focus,
 .multiselect__tag-icon:hover {
-  background: #ccc;
+  background: var(--light-grey-3);
 }
 
 .multiselect__tag-icon:focus:after,
@@ -5638,7 +5638,7 @@ fieldset[disabled] .multiselect {
 }
 
 .multiselect__option--selected {
-  background: #f3f3f3;
+  background: var(--neutral-200);
   color: #35495e;
   font-weight: bold;
 }
@@ -5862,7 +5862,7 @@ fieldset[disabled] .multiselect {
       }
       .btn-danger{
         background: transparent;
-        color: black;
+        color: var(--neutral-900);
       }
     }
   }
@@ -5979,10 +5979,10 @@ fieldset[disabled] .multiselect {
 .tooltip.popover {
   .popover-inner {
     background: #f9f9f9;
-    color: black;
+    color: var(--neutral-900);
     padding: 8px 0;
     border-radius: 5px;
-    box-shadow: 0 5px 30px rgba(black, .1);
+    box-shadow: 0 5px 30px var(--neutral-900);
   }
 
   .popover-arrow {
