@@ -679,12 +679,14 @@ class EmundusHelperUpdate
     }
 
     /**
-     * @return void
+     * @return bool
      *
      * @since version 1.33.0
      */
-    public function updateCampaignWorkflowTable()
+    public function updateCampaignWorkflowTable(): bool
     {
+        $update_campaign_workflow = false;
+
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.cli.php'], JLog::ALL, array('com_emundus.cli'));
         
@@ -732,7 +734,7 @@ class EmundusHelperUpdate
                 try {
                     $status_element_id = $db->loadResult();
                 } catch (Exception $e) {
-                    JLog::add('Could not retrieve fabrik element id from name status and group_id ' . $group_id, JLog::ERROR, 'com_emundus.cli');
+                    JLog::add('Could not retrieve fabrik element id from name status and group_id ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                 }
 
                 if (!empty($status_element_id)) {
@@ -817,7 +819,7 @@ class EmundusHelperUpdate
                         $updated = $db->execute();
                     } catch (Exception $e) {
                         $updated = false;
-                        JLog::add('Error trying to update campaign element params from group ' . $group_id, JLog::ERROR, 'com_emundus.cli');
+                        JLog::add('Error trying to update campaign element params from group ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                     }
 
                     if ($updated) {
@@ -861,7 +863,7 @@ class EmundusHelperUpdate
                             JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                         }
                     } else {
-                        JLog::add('campaign element from fabrik group ' . $group_id . ' has not been updated', JLog::WARNING, 'com_emundus');
+                        JLog::add('campaign element from fabrik group ' . $group_id . ' has not been updated', JLog::WARNING, 'com_emundus.cli');
                     }
                 }
 
@@ -873,7 +875,7 @@ class EmundusHelperUpdate
                     $output_status_inserted = $db->execute();
                 } catch (Exception $e) {
                     $output_status_inserted = false;
-                    JLog::add('Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                    JLog::add('Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                 }
 
                 if ($output_status_inserted) {
@@ -893,74 +895,89 @@ class EmundusHelperUpdate
                             }
                         } catch (Exception $e) {
                             $every_alter_succeed = false;
-                            JLog::add('Error trying to alter table jos_emundus_campaign_workflow, adding output status', JLog::ERROR, 'com_emundus');
+                            JLog::add('Error trying to alter table jos_emundus_campaign_workflow, adding output status', JLog::ERROR, 'com_emundus.cli');
                         }
                     }
 
-                    if ($every_alter_succeed && !empty($old_workflows)) {
-                        JLog::add('JSON Save values : ' . json_encode($old_workflows), JLog::INFO, 'com_emundus');
+                    if ($every_alter_succeed) {
+                        if (!empty(!empty($old_workflows))) {
 
-                        $query->clear()
-                            ->delete('#__emundus_campaign_workflow');
-                        $db->setQuery($query);
-                        $deleted = $db->execute();
+                            // before deleting, backup workflows
+                            JLog::add('JSON Save values : ' . json_encode($old_workflows), JLog::INFO, 'com_emundus.cli');
+                            $backup_file = fopen('libraries/emundus/custom/campaign_workflow_rows.json', 'w');
+                            if ($backup_file) {
+                                fwrite($backup_file, json_encode($old_workflows));
+                                fclose($backup_file);
 
-                        if ($deleted) {
-                            foreach ($old_workflows as $workflow) {
-                                $parent_id = 0;
+                                $old_workflows_reinserted = true;
                                 $query->clear()
-                                    ->insert('#__emundus_campaign_workflow')
-                                    ->columns($db->quoteName(['profile', 'start_date', 'end_date', 'output_status']))
-                                    ->values($workflow->profile . ', ' . $db->quote($workflow->start_date) . ', ' . $db->quote($workflow->end_date) . ', ' . $db->quote($workflow->output_status));
+                                    ->update('#__emundus_campaign_workflow')
+                                    ->set('campaign = NULL')
+                                    ->set('entry_status = NULL');
+
                                 $db->setQuery($query);
 
                                 try {
-                                    $db->execute();
-                                    $parent_id = $db->insertid();
+                                    $update = $db->execute();
                                 } catch (Exception $e) {
-                                    JLog::add('Failed to re insert old workflows ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                    $update = false;
+                                    JLog::add('Failed to set null values on campaign and entry_status columns', JLog::ERROR, 'com_emundus');
                                 }
 
-                                if (!empty($parent_id)) {
-                                    $query->clear()
-                                        ->insert('#__emundus_campaign_workflow_repeat_campaign')
-                                        ->columns($db->quoteName(['parent_id', 'campaign']))
-                                        ->values($parent_id. ', '. $workflow->campaign);
+                                foreach ($old_workflows as $workflow) {
+                                    if (!empty($workflow->id)) {
+                                        $query->clear()
+                                            ->insert('#__emundus_campaign_workflow_repeat_campaign')
+                                            ->columns($db->quoteName(['parent_id', 'campaign']))
+                                            ->values($workflow->id . ', ' . $workflow->campaign);
+                                        $db->setQuery($query);
 
-                                    $db->setQuery($query);
+                                        try {
+                                            $repeat_campaign_inserted = $db->execute();
+                                        } catch (Exception $e) {
+                                            $repeat_campaign_inserted = false;
+                                            JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                        }
 
-                                    try {
-                                        $db->execute();
-                                    } catch (Exception $e) {
-                                        JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                                    }
+                                        $query->clear()
+                                            ->insert('#__emundus_campaign_workflow_repeat_entry_status')
+                                            ->columns($db->quoteName(['parent_id', 'entry_status']))
+                                            ->values($workflow->id . ', ' . $workflow->status);
 
-                                    $query->clear()
-                                        ->insert('#__emundus_campaign_workflow_repeat_entry_status')
-                                        ->columns($db->quoteName(['parent_id', 'entry_status']))
-                                        ->values($parent_id . ', ' . $workflow->status);
+                                        $db->setQuery($query);
 
-                                    $db->setQuery($query);
+                                        try {
+                                            $repeat_status_inserted = $db->execute();
+                                        } catch (Exception $e) {
+                                            $repeat_status_inserted = false;
+                                            JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                        }
 
-                                    try {
-                                        $db->execute();
-                                    } catch (Exception $e) {
-                                        JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                        if (!$repeat_status_inserted || !$repeat_campaign_inserted) {
+                                            $old_workflows_reinserted = false;
+                                        }
                                     }
                                 }
+
+                                $update_campaign_workflow = $old_workflows_reinserted;
+                            } else {
+                                JLog::add('Unable to save old workflows to backup file, stop deletion', JLog::ERROR, 'com_emundus.cli');
                             }
                         } else {
-                            JLog::add('Delete statement seems to have failed', JLog::WARNING, 'com_emundus');
+                            $update_campaign_workflow = true;
                         }
-                    } else {
-                        JLog::add('output_status element in jos_fabrik_elements has not been inserted', JLog::WARNING, 'com_emundus');
                     }
                 } else {
-                    JLog::add('group_id for list jos_emundus_campaign_workflow has not been found, can not update table and fabrik elements', JLog::WARNING, 'com_emundus');
+                    JLog::add('output_status element in jos_fabrik_elements has not been inserted', JLog::WARNING, 'com_emundus.cli');
                 }
             } else {
                 JLog::add('Did not find group_id nor list_id', JLog::WARNING, 'com_emundus.cli');
             }
         }
+
+        $state_msg = $update_campaign_workflow ? "\033[32mSUCCESS\033[0m" : "\033[31mFAILED\033[0m";
+        echo "\n-> Finish update jos_emundus_campaign_workflow_table [$state_msg]\n";
+
+        return $update_campaign_workflow;
     }
 }

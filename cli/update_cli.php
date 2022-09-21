@@ -245,6 +245,7 @@ class UpdateCli extends JApplicationCli
     {
         $installer = JInstaller::getInstance();
         $success = true;
+        $failure_msg = '';
 
         # Case where element isn't defined in script parameters -> update all
         $elements = empty($elements) ? array_keys($this->components) : $elements;
@@ -393,7 +394,24 @@ class UpdateCli extends JApplicationCli
                                     $this->restoreVersion($xml_path, $new_version);
                                     $script->postflight('update', $adapter);
                                     break;
+                                case 'com_emundus':
+                                    if (method_exists($scriptClass, 'preflight')) {
+                                        $script->preflight('update', $adapter);
+                                    }
+                                    if (method_exists($scriptClass, 'update')) {
+                                        $updates = $script->update($adapter);
+                                        if (in_array(false, $updates, true)) {
+                                            $success = false;
+                                            $failure_msg = array_search(false, $updates, true);
+                                        }
+                                    }
+                                    if (method_exists($scriptClass, 'postflight')) {
+                                        $script->postflight('update', $adapter);
+                                    }
+
+                                    break;
                                 default :
+                                    ob_start();
                                     if (method_exists($scriptClass, 'preflight')) {
                                         $script->preflight('update', $adapter);
                                     }
@@ -403,6 +421,7 @@ class UpdateCli extends JApplicationCli
                                     if (method_exists($scriptClass, 'postflight')) {
                                         $script->postflight('update', $adapter);
                                     }
+                                    ob_end_clean();
                                     break;
                             }
 
@@ -468,6 +487,7 @@ class UpdateCli extends JApplicationCli
                 }
             } else {
                 echo("Fail");
+                echo "\nReason: $failure_msg";
                 $this->count_fails++;
             }
         }
