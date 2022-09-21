@@ -58,7 +58,9 @@ class com_emundusInstallerScript
 
         # Check first run
         $firstrun = false;
-        if ($cache_version == "6.1") {
+        $regex = '/^6\.[0-9]*/m';
+        preg_match_all($regex, $cache_version, $matches, PREG_SET_ORDER, 0);
+        if (!empty($matches)) {
             $cache_version = (string) $parent->manifest->version;
             $firstrun = true;
         }

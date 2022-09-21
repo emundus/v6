@@ -280,8 +280,11 @@ class UpdateCli extends JApplicationCli
                 $this->manifest_xml = simplexml_load_file($xml_path);
                 $this->out("\n*--------------------*\n");
 
+                $regex = '/^6\.[0-9]*/m';
+                preg_match_all($regex, $manifest_cache['version'], $matches, PREG_SET_ORDER, 0);
+
                 # Check if this is the first run for emundus component
-                if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" || $manifest_cache['version'] < "1.33.0")) {
+                if ($elementArr['element'] == "com_emundus" and (!empty($matches) || $manifest_cache['version'] < "1.33.0")) {
                     $this->firstrun = true;
                     $this->out("** Script first run **");
 
@@ -356,7 +359,6 @@ class UpdateCli extends JApplicationCli
                         $script = new $scriptClass();
 
                         try {
-                            ob_start();
                             $this->global_logs = $this->db->getLog();
                             switch ($elementArr["element"]) {
                                 case 'com_securitycheckpro':
@@ -376,7 +378,6 @@ class UpdateCli extends JApplicationCli
                                         // Install failed, roll back changes
                                         $this->out($e);
                                         $installer->abort($e->getMessage());
-                                        ob_end_clean();
                                         return false;
                                     }
                                     break;
@@ -434,11 +435,6 @@ class UpdateCli extends JApplicationCli
             } else {
                 $this->out("-> Manifest path doesn't exists");
                 $success = false;
-            }
-
-            # Skip html contents from scriptfiles
-            if (ob_get_length() > 0) {
-                ob_end_clean();
             }
 
             $this->schema_version = $this->getSchemaVersion($elementArr['extension_id']);
