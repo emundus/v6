@@ -127,7 +127,12 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 
         $current_phase = $m_campaign->getCurrentCampaignWorkflow($student);
         if (!empty($current_phase) && !empty($current_phase->end_date)) {
+            if (!is_null($current_phase->output_status)) {
+                $new_status = $current_phase->output_status;
+            }
+
             $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+
         } else if ($this->getParam('admission', 0) == 1) {
             $is_dead_line_passed = strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$student->fnums[$student->fnum]->admission_start_date);
         } else {

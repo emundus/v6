@@ -1197,6 +1197,24 @@ class EmundusModelFiles extends JModelLegacy
         }
     }
 
+    public function getStatusByStep($step)
+    {
+        $query = 'select id from #__emundus_setup_status where step='.$step;
+        $db = $this->getDbo();
+
+        try
+        {
+            $db->setQuery($query);
+            $status_id = $db->loadResult();
+
+            return $this->getStatusByID($status_id);
+        }
+        catch(Exception $e)
+        {
+            throw $e;
+        }
+    }
+
     /**
      * @param $fnums
      * @return mixed

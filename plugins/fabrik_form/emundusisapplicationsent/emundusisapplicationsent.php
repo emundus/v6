@@ -149,8 +149,8 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
 
             $edit_status = array();
-            if (!empty($current_phase) && !empty($current_phase->status)) {
-                $edit_status[] = $current_phase->status;
+            if (!empty($current_phase) && !empty($current_phase->entry_status)) {
+                $edit_status = $current_phase->entry_status;
             }
             $edit_status = array_merge(explode(',', $this->getParam('applicationsent_status', 0)), $edit_status);
             $is_app_sent = !in_array(@$user->status, $edit_status);
