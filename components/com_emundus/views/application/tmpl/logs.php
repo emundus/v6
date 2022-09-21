@@ -69,11 +69,11 @@ JFactory::getSession()->set('application_layout', 'logs');
                 </div>
 
                 <div id="export-logs" class="em-flex-row">
-                    <button id="log-filter-btn" class="em-w-max-content em-primary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
+                    <button id="log-filter-btn" class="em-w-auto em-primary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
                         <?= JText::_('COM_EMUNDUS_LOGS_FILTER') ?>
                     </button>
 
-                    <button id="log-export-btn" style="background: #16afe1" class="em-w-max-content em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
+                    <button id="log-export-btn" class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
                         <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
                     </button>
                 </div>
@@ -221,7 +221,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                     if(results.status) {
                         $('.logs_table').show();
                         $('#log-export-btn').show();
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-main-500-color">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-main-500-color em-p-8-12 em-float-right">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
 
                         // re-render the view (clear the logs-list)
                         $('#loading').remove();
