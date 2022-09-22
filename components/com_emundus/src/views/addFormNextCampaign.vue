@@ -410,4 +410,8 @@ export default {
   width: calc(100% - 75px) !important;
   margin-left: auto;
 }
+
+form.fabrikForm label {
+  color: var(--neutral-800);
+}
 </style>

@@ -344,6 +344,7 @@ export default {
 
 		.dates {
 			font-size: 12px;
+      color: var(--neutral-800);
 		}
 	}
 
@@ -361,6 +362,7 @@ export default {
     flex-direction: column;
     justify-content: end;
     height: 100%;
+    color: var(--neutral-800);
 
 		.associated-campaigns {
 			margin: 0 0 24px 0;

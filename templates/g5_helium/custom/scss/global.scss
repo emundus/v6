@@ -54,7 +54,7 @@ h6 {
   h4,
   h5,
   h6 {
-    color: var(--night-blue);
+    color: var(--night-blue) !important;
   }
 }
 
@@ -649,11 +649,15 @@ footer#g-footer img {
 }
 
 
-.com_emunus, .view-form, .view-checklist {
-  #g-page-surround{
-    background: var(--background-color);
-  }
+.com_emundus  #g-page-surround,
+.view-form.com_fabrik  #g-page-surround,
+.view-checklist #g-page-surround,
+.files-board #g-page-surround,
+.g-back-office-emundus-tableau #g-page-surround,
+.view-list.com_fabrik #g-page-surround {
+    background: var(--background-color) !important;
 }
+
 
 .view-registration.login.em-formRegistrationCenter #g-page-surround,
 .view-form.em-formRegistrationCenter #g-page-surround {
@@ -2859,9 +2863,27 @@ h1.em-titre-connectez-vous {
   color: #333333;
 }
 
-.com_emundus h2 {
-  color: $accent-color-1;
+.com_emundus h2,
+.com_emundus p,
+.com_emundus .em-w-custom form.fabrikForm label,
+.com_emundus .em-w-custom form.fabrikForm input,
+.com_emundus .em-w-custom form.fabrikForm input:focus,
+.com_emundus .em-w-custom form.fabrikForm select,
+.com_emundus .em-w-custom form.fabrikForm span:not(.em-red-500-color),
+.com_emundus .em-w-custom form.fabrikForm div,
+.com_emundus .em-w-custom form.fabrikForm textarea,
+.com_emundus .em-w-custom .em-document-dropzone-card,
+.com_emundus .em-w-custom .em-email-card,
+.com_emundus ul li,
+.com_emundus select{
+  color: var(--neutral-800) !important;
 }
+
+.com_emundus .em-w-custom form.fabrikForm input[placeholder] {
+  color: var(--neutral-500);
+}
+
+
 
   .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
     background: var(--grey) !important;
@@ -2901,7 +2923,7 @@ h1.em-titre-connectez-vous {
   }
 
   .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    background: var(----light-grey-2);
+    background: var(--light-grey-2);
   }
 
   .g-back-office-emundus-tableau.files-page .panel-info > .panel-heading {
