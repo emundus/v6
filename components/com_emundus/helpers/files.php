@@ -590,7 +590,7 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
-                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1 AND groupe.published = 1 AND p.id = ' . $prid;
 
@@ -664,7 +664,7 @@ class EmundusHelperFiles
                     INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
                     INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
                     LEFT JOIN #__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))
-                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+                    INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)
                     INNER JOIN #__emundus_setup_profiles as p on p.menutype=menu.menutype ';
             $where = 'WHERE tab.published = 1 AND groupe.published = 1 ';
 

@@ -572,7 +572,7 @@ class EmundusHelperEvents {
 								SELECT menu.lft
 								FROM `#__menu` AS menu
 								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.')';
                 $db->setQuery($query);
                 $link = $db->loadResult();
             } catch (Exception $e) {
@@ -590,7 +590,7 @@ class EmundusHelperEvents {
 								SELECT menu.lft
 								FROM `#__menu` AS menu
 								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.')';
                     $db->setQuery($query);
                     $link = $db->loadResult();
                 } catch (Exception $e) {
