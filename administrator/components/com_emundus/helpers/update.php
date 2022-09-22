@@ -666,8 +666,13 @@ class EmundusHelperUpdate
                         $new_events->event_handlers->{'event_handlers' . $key}->event = $event;
 
                         $backed_file = fopen('libraries/emundus/custom/'.strtolower($event) . '_' . $key . '.php', 'w');
-                        fwrite($backed_file, '<?php ' . $codes[$key]);
-                        fclose($backed_file);
+                        if ($backed_file) {
+                            fwrite($backed_file, '<?php ' . $codes[$key]);
+                            fclose($backed_file);
+                        } else {
+                            JLog::add('Failed to backup events', JLog::WARNING, 'com_emundus.cli');
+                        }
+
                         $new_events->event_handlers->{'event_handlers' . $key}->code = $codes[$key];
                     }
 
