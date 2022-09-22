@@ -80,7 +80,7 @@ button.btn-primary:hover{
     font-weight: 600;
 }
 .login .well label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -178,7 +178,7 @@ body.view-reset label#jform_username-lbl::before,
     height: 48px;
     margin-right: 0px !important;
     margin-bottom: 0px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
     font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {

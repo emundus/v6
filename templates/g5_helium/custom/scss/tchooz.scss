@@ -922,7 +922,7 @@ input:focus + .em-slider {
   TITLES
 */
 .em-h1{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 56px;
@@ -930,7 +930,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h2{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 48px;
@@ -938,7 +938,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h3{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 32px;
@@ -946,7 +946,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h4{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 24px;
@@ -954,7 +954,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h5{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 20px;
@@ -962,7 +962,7 @@ input:focus + .em-slider {
   color: $night-blue;
 }
 .em-h6{
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font);
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
