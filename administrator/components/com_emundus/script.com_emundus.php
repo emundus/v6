@@ -53,12 +53,16 @@ class com_emundusInstallerScript
      */
     public function update($parent)
     {
+        $succeed = [];
+
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
         $cache_version = $this->manifest_cache->version;
 
         # Check first run
         $firstrun = false;
-        if ($cache_version == "6.1") {
+        $regex = '/^6\.[0-9]*/m';
+        preg_match_all($regex, $cache_version, $matches, PREG_SET_ORDER, 0);
+        if (!empty($matches)) {
             $cache_version = (string) $parent->manifest->version;
             $firstrun = true;
         }
@@ -189,10 +193,15 @@ class com_emundusInstallerScript
 
                 EmundusHelperUpdate::insertTranslationsTag('SETUP_LETTERS_GROUP_185_INTRO',"<p>Pour rendre ce courrier dynamique, insérer des <a href='component/emundus/?view=export_select_columns&format=html&layout=all_programs' target='_blank' rel='noopener noreferrer'>balises</a> dans sa construction afin d’ajouter des informations personnalisées pour chaque candidat. Par exemple, la balise ".'<em>$APPLICANT_NAME</em>'." sera remplacée par le nom de votre candidat. Bonjour ".'<em>$APPLICANT_NAME</em>'.' deviendra Bonjour Julien.</p>','override',null,'fabrik_elements','label');
                 EmundusHelperUpdate::insertTranslationsTag('SETUP_LETTERS_GROUP_185_INTRO',"<p>To make this mail dynamic, insert <a href='component/emundus/?view=export_select_columns&format=html&layout=all_programs' target='_blank' rel='noopener noreferrer'>tags</a> in its construction in order to add personalised information for each candidate. For example, the tag ".'<em>$APPLICANT_NAME</em>'." will be replaced by the name of your candidate. Hello ".'<em>$APPLICANT_NAME</em>'." will become Hello Julien.</p>",'override',null,'fabrik_elements','label','en-GB');
+
+                $succeed['campaign_workflow'] = EmundusHelperUpdate::updateCampaignWorkflowTable();
+                $succeed['event_handlers'] = EmundusHelperUpdate::convertEventHandlers();
             }
 
-            EmundusHelperUpdate::languageBaseToFile();
+            $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
         }
+
+        return $succeed;
     }
 
 
@@ -206,9 +215,7 @@ class com_emundusInstallerScript
     public function preflight($type, $parent)
     {
         if(version_compare(PHP_VERSION, '7.4.0', '<')) {
-            echo '<html><body><h1>This extension works with PHP 7.4.0 or newer.</h1>'.
-                '<h2>Please contact your web hosting provider to update your PHP version</h2>'.
-                'installation aborted...</body></html>';
+            echo 'This extension works with PHP 7.4.0 or newer.Please contact your web hosting provider to update your PHP version.';
             exit;
         }
     }
@@ -223,7 +230,7 @@ class com_emundusInstallerScript
      */
     function postflight($type, $parent)
     {
-        echo 'Installation terminée avec succès';
+        echo "\rComposant eMundus mis à jour avec succès !\n";
     }
 
 

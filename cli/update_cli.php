@@ -40,7 +40,7 @@ class UpdateCli extends JApplicationCli
         $this->db = JFactory::getDbo();
 
         $short_options = "vhlcu::a";
-        $long_options = ["verbose", "help", "list", "core", "update::", "all"];
+        $long_options = ["verbose", "help", "list", "core", "update::", "all","dry-run"];
         $options = getopt($short_options, $long_options);
         $args = (array)$GLOBALS['argv'];
 
@@ -99,20 +99,20 @@ class UpdateCli extends JApplicationCli
         if (isset($options["a"]) || isset($options["all"])) {
             $this->count_exec++;
             $this->updateJoomla();
-            $this->updateComponents();
+            $this->updateComponents(null,$options);
         }
         # Update 1 to n components (except Joomla)
         if (isset($options["u"]) || isset($options["update"])) {
             # Execute update for all of components name pass to args
             if (sizeof($args) == 2) {
-                $this->updateComponents();
+                $this->updateComponents(null,$options);
             } elseif (sizeof($args) > 2) {
                 $index = 2;
                 while ($index <= sizeof($args) - 1) {
                     $element[] = $args[$index];
                     $index++;
                 }
-                $this->updateComponents($element);
+                $this->updateComponents($element,$options);
             }
         }
 
@@ -241,10 +241,11 @@ class UpdateCli extends JApplicationCli
      * @return false|void
      * @throws Exception
      */
-    private function updateComponents($elements = null)
+    private function updateComponents($elements = null,$options = null)
     {
         $installer = JInstaller::getInstance();
         $success = true;
+        $failure_msg = '';
 
         # Case where element isn't defined in script parameters -> update all
         $elements = empty($elements) ? array_keys($this->components) : $elements;
@@ -280,15 +281,20 @@ class UpdateCli extends JApplicationCli
                 $this->manifest_xml = simplexml_load_file($xml_path);
                 $this->out("\n*--------------------*\n");
 
+                $regex = '/^6\.[0-9]*/m';
+                preg_match_all($regex, $manifest_cache['version'], $matches, PREG_SET_ORDER, 0);
+
                 # Check if this is the first run for emundus component
-                if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" || $manifest_cache['version'] < "1.33.0")) {
+                if ($elementArr['element'] == "com_emundus" and (!empty($matches) || $manifest_cache['version'] < "1.33.0")) {
                     $this->firstrun = true;
                     $this->out("** Script first run **");
 
-                    $this->out('Store translations tags into database for first run');
-                    require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-                    EmundusHelperUpdate::languageFileToBase();
-                    $this->out();
+                    if(empty($options) || !isset($options['dry-run'])) {
+                        $this->out('Store translations tags into database for first run');
+                        require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+                        EmundusHelperUpdate::languageFileToBase();
+                        $this->out();
+                    }
 
                     # Set schema version and align manifest cache version
                     $this->schema_version = '1.33.0';
@@ -354,7 +360,6 @@ class UpdateCli extends JApplicationCli
                         $script = new $scriptClass();
 
                         try {
-                            ob_start();
                             $this->global_logs = $this->db->getLog();
                             switch ($elementArr["element"]) {
                                 case 'com_securitycheckpro':
@@ -374,7 +379,6 @@ class UpdateCli extends JApplicationCli
                                         // Install failed, roll back changes
                                         $this->out($e);
                                         $installer->abort($e->getMessage());
-                                        ob_end_clean();
                                         return false;
                                     }
                                     break;
@@ -390,7 +394,32 @@ class UpdateCli extends JApplicationCli
                                     $this->restoreVersion($xml_path, $new_version);
                                     $script->postflight('update', $adapter);
                                     break;
+                                case 'com_emundus':
+                                    if (method_exists($scriptClass, 'preflight')) {
+                                        $script->preflight('update', $adapter);
+                                    }
+                                    if (method_exists($scriptClass, 'update')) {
+                                        $updates = $script->update($adapter);
+
+                                        foreach($updates as $update) {
+                                            if ($update['status'] === false) {
+                                                $success = false;
+                                                $failure_msg .= $update['message'] . "\n";
+                                            }
+                                        }
+
+                                        if (in_array(false, $updates, true)) {
+                                            $success = false;
+                                            $failure_msg = array_search(false, $updates, true);
+                                        }
+                                    }
+                                    if (method_exists($scriptClass, 'postflight')) {
+                                        $script->postflight('update', $adapter);
+                                    }
+
+                                    break;
                                 default :
+                                    ob_start();
                                     if (method_exists($scriptClass, 'preflight')) {
                                         $script->preflight('update', $adapter);
                                     }
@@ -400,6 +429,7 @@ class UpdateCli extends JApplicationCli
                                     if (method_exists($scriptClass, 'postflight')) {
                                         $script->postflight('update', $adapter);
                                     }
+                                    ob_end_clean();
                                     break;
                             }
 
@@ -434,11 +464,6 @@ class UpdateCli extends JApplicationCli
                 $success = false;
             }
 
-            # Skip html contents from scriptfiles
-            if (ob_get_length() > 0) {
-                ob_end_clean();
-            }
-
             $this->schema_version = $this->getSchemaVersion($elementArr['extension_id']);
 
             # Check success of custom updates, if true overwrite new version in xml
@@ -457,7 +482,9 @@ class UpdateCli extends JApplicationCli
                     $this->out("-> " . count($component_logs) . " sql statements executed");
                 }
 
-                $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+                if(empty($options) || !isset($options['dry-run'])) {
+                    $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+                }
 
                 if ($this->verbose) {
                     $this->out("\nVersions...");
@@ -468,6 +495,7 @@ class UpdateCli extends JApplicationCli
                 }
             } else {
                 echo("Fail");
+                echo "\nReason: $failure_msg";
                 $this->count_fails++;
             }
         }
