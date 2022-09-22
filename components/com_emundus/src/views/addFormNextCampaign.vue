@@ -411,7 +411,4 @@ export default {
   margin-left: auto;
 }
 
-form.fabrikForm label {
-  color: var(--neutral-800);
-}
 </style>

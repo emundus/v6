@@ -96,6 +96,27 @@ h1 {
   }
 }
 
+.view-form {
+  input[type="text"],
+  input[type="password"],
+  input[type="datetime"],
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="month"],
+  input[type="time"],
+  input[type="week"],
+  input[type="number"],
+  input[type="email"],
+  input[type="url"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="color"],
+  .uneditable-input,
+  select{
+    background: var(--background-color);
+  }
+}
+
 .gantry input:focus  {
   @include input-focus;
 }
@@ -2883,8 +2904,6 @@ h1.em-titre-connectez-vous {
   color: var(--neutral-500);
 }
 
-
-
   .files-board .dropdown-menu > li > a:focus, .files-board .dropdown-submenu:hover > a, .files-board .dropdown-submenu:focus > a {
     background: var(--grey) !important;
   }
@@ -3455,6 +3474,18 @@ h1.em-titre-connectez-vous {
   }
 
   /* TABLEAUX */
+
+.view-list .filtertable.table {
+  textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    background-color: var(--background-color) !important;
+  }
+
+  .list-footer .limit {
+    .input-prepend > .add-on, .input-append > .add-on, select {
+      background-color: var(--background-color) !important;
+    }
+  }
+}
 
   .view-list .form-search{
     .nav{
