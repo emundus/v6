@@ -228,7 +228,7 @@ class EmundusModelLogs extends JModelList {
 
 		$db->setQuery($query);
 		$results = $db->loadObjectList();
-		
+
 		// Create a new element to store the correct date display
 		foreach ($results as $result) {
 			$result->date = EmundusHelperDate::displayDate($result->timestamp);
@@ -412,8 +412,8 @@ class EmundusModelLogs extends JModelList {
             ];
             foreach ($actions as $action) {
                 $details = $this->setActionDetails($action->action_id, $action->verb, $action->params);
-                $action_details = strip_tags($details['action_details']);
-                $action_details = str_replace("\n", "", $action_details);
+                $action_details = str_replace('&nbsp',' ',strip_tags($details['action_details']));
+                $action_details = str_replace('\n', '', $action_details);
                 $action_details = str_replace("arrow_forward", " -> ", $action_details);
 
                 $lines[] = [
