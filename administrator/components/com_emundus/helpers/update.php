@@ -568,6 +568,8 @@ class EmundusHelperUpdate
     }
 
     public static function languageBaseToFile(){
+        $updated = ['status' => true, 'message' => "Language translations successfully inserted into files"];
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -579,50 +581,54 @@ class EmundusHelperUpdate
         try {
             $platform_languages = $db->loadColumn();
         } catch (Exception $e) {
-            return ['status' => false, 'message' => "Cannot getting platform languages"];
+            $updated = ['status' => false, 'message' => "Cannot getting platform languages"];
         }
 
-        try {
-            $files = [];
-            foreach ($platform_languages as $language) {
-                $override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
-                if (file_exists($override_file)) {
-                    $files[] = $override_file;
-                }
-            }
-
-
-            foreach ($files as $file) {
-                $file_explode = explode('/', $file);
-                $file_name = end($file_explode);
-
-                $query->clear()
-                    ->select('id,tag,override,location,original_md5,override_md5')
-                    ->from($db->quoteName('#__emundus_setup_languages'))
-                    ->where($db->quoteName('location') . ' LIKE ' . $db->quote($file_name));
-                $db->setQuery($query);
-                $modified_overrides = $db->loadObjectList();
-
-                $parsed_file = JLanguageHelper::parseIniFile($file);
-                if(empty($parsed_file)) {
-                    foreach ($modified_overrides as $modified_override) {
-                        $parsed_file[$modified_override->tag] = $modified_override->override;
+        if (!empty($platform_languages)) {
+            try {
+                $files = [];
+                foreach ($platform_languages as $language) {
+                    $override_file = JPATH_BASE . '/language/overrides/' . $language . '.override.ini';
+                    if (file_exists($override_file)) {
+                        $files[] = $override_file;
                     }
-                    JLanguageHelper::saveToIniFile($file, $parsed_file);
-                } else {
-                    foreach ($modified_overrides as $modified_override) {
-                        if(empty($parsed_file[$modified_override->tag])) {
+                }
+
+
+                foreach ($files as $file) {
+                    $file_explode = explode('/', $file);
+                    $file_name = end($file_explode);
+
+                    $query->clear()
+                        ->select('id,tag,override,location,original_md5,override_md5')
+                        ->from($db->quoteName('#__emundus_setup_languages'))
+                        ->where($db->quoteName('location') . ' LIKE ' . $db->quote($file_name));
+                    $db->setQuery($query);
+                    $modified_overrides = $db->loadObjectList();
+
+                    $parsed_file = JLanguageHelper::parseIniFile($file);
+                    if (empty($parsed_file)) {
+                        foreach ($modified_overrides as $modified_override) {
                             $parsed_file[$modified_override->tag] = $modified_override->override;
                         }
+                        JLanguageHelper::saveToIniFile($file, $parsed_file);
+                    } else {
+                        foreach ($modified_overrides as $modified_override) {
+                            if(empty($parsed_file[$modified_override->tag])) {
+                                $parsed_file[$modified_override->tag] = $modified_override->override;
+                            }
+                        }
+                        JLanguageHelper::saveToIniFile($file, $parsed_file);
                     }
-                    JLanguageHelper::saveToIniFile($file, $parsed_file);
                 }
+            } catch(Exception $e){
+                $updated = ['status' => false, 'message' => "Error when import translation into file : " . $e->getMessage()];
             }
-        } catch(Exception $e){
-            return ['status' => false, 'message' => "Error when import translation into file : " . $e->getMessage()];
+        } else {
+            $updated = ['status' => false, 'message' => "Empty platform languages"];
         }
 
-        return ['status' => true, 'message' => "Language translations successfully inserted into files"];
+        return $updated;
     }
 
     /**
@@ -631,7 +637,8 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public static function convertEventHandlers(){
+    public static function convertEventHandlers() {
+        $updated = ['status' => true, 'message' => ''];
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -641,7 +648,6 @@ class EmundusHelperUpdate
                 ->where($db->quoteName('element') . ' LIKE ' . $db->quote('custom_event_handler'));
             $db->setQuery($query);
             $result = $db->loadObject();
-
 
             if(!empty($result->extension_id)) {
                 $params = json_decode($result->params);
@@ -674,8 +680,13 @@ class EmundusHelperUpdate
                 }
             }
         } catch (Exception $e) {
-            return ['status' => false, 'message' => "Error when convert event handlers : " . $e->getMessage()];
+            $updated = ['status' => false, 'message' => "Error when convert event handlers : " . $e->getMessage()];
         }
+
+        $state_msg =  $updated['status'] ? "\033[32mSUCCESS\033[0m" : "\033[31mFAILED\033[0m";
+        echo "\n-> Finish update event handlers [$state_msg]";
+
+        return $updated;
     }
 
     /**
@@ -683,9 +694,9 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public function updateCampaignWorkflowTable(): bool
+    public function updateCampaignWorkflowTable(): array
     {
-        $update_campaign_workflow = false;
+        $update_campaign_workflow = ['status' => false, 'message' => ''];
 
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.cli.php'], JLog::ALL, array('com_emundus.cli'));
@@ -751,7 +762,8 @@ class EmundusHelperUpdate
                         $updated = $db->execute();
                     } catch (Exception $e) {
                         $updated = false;
-                        JLog::add('Error trying to update status element params from group ' . $group_id, JLog::ERROR, 'com_emundus.cli');
+                        JLog::add('Error trying to update element ' . $status_element_id . ' params from group ' . $group_id, JLog::ERROR, 'com_emundus.cli');
+                        $update_campaign_workflow['message'] = 'Error trying to update element ' . $status_element_id . ' params from group ' . $group_id;
                     }
 
                     if ($updated) {
@@ -770,6 +782,7 @@ class EmundusHelperUpdate
                             $created = $db->execute();
                         } catch (Execption $e) {
                             JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
                         }
 
                         $fields = array(
@@ -793,6 +806,7 @@ class EmundusHelperUpdate
                             $joined = $db->execute();
                         } catch (Execption $e) {
                             JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_entry_status ' . $e->getMessage();
                         }
                     }
                 }
@@ -820,6 +834,7 @@ class EmundusHelperUpdate
                     } catch (Exception $e) {
                         $updated = false;
                         JLog::add('Error trying to update campaign element params from group ' . $group_id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                        $update_campaign_workflow['message'] = 'Error trying to update campaign element params from group ' . $group_id . ' : ' . $e->getMessage();
                     }
 
                     if ($updated) {
@@ -838,6 +853,7 @@ class EmundusHelperUpdate
                             $created = $db->execute();
                         } catch (Execption $e) {
                             JLog::add('Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Error trying to create jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
                         }
 
                         $fields = array(
@@ -861,9 +877,11 @@ class EmundusHelperUpdate
                             $joined = $db->execute();
                         } catch (Execption $e) {
                             JLog::add('Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                            $update_campaign_workflow['message'] = 'Cannot update fabrik element join with new table jos_emundus_campaign_workflow_repeat_campaign ' . $e->getMessage();
                         }
                     } else {
                         JLog::add('campaign element from fabrik group ' . $group_id . ' has not been updated', JLog::WARNING, 'com_emundus.cli');
+                        $update_campaign_workflow['message'] = 'campaign element from fabrik group ' . $group_id . ' has not been updated';
                     }
                 }
 
@@ -876,27 +894,49 @@ class EmundusHelperUpdate
                 } catch (Exception $e) {
                     $output_status_inserted = false;
                     JLog::add('Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                    $update_campaign_workflow['message'] = 'Error trying to insert output_status element in jos_fabrik_elements ' . $e->getMessage();
                 }
 
                 if ($output_status_inserted) {
-                    $sqls = ["ALTER TABLE jos_emundus_campaign_workflow ADD output_status int null;",
-                        "ALTER TABLE jos_emundus_campaign_workflow CHANGE status entry_status int null",
-                        "ALTER TABLE jos_emundus_campaign_workflow drop foreign key jos_emundus_campaign_workflow_ibfk_1",
-                        "ALTER TABLE jos_emundus_campaign_workflow drop foreign key jos_emundus_campaign_workflow_ibfk_3"];
-
                     $every_alter_succeed = true;
-                    foreach ($sqls as $sql) {
-                        $db->setQuery($sql);
+                    // Add output status
+                    $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'output_status'");
+                    try {
+                        $output_status = $db->loadObject();
 
-                        try {
-                            $alter_table = $db->execute();
-                            if (!$alter_table) {
+                        if (empty($output_status->Field)) {
+                            $db->setQuery("ALTER TABLE jos_emundus_campaign_workflow ADD output_status int null;");
+                            $altered = $db->execute();
+
+                            if (!$altered) {
+                                $update_campaign_workflow['message'] = 'output_status column has not been added.';
                                 $every_alter_succeed = false;
                             }
-                        } catch (Exception $e) {
-                            $every_alter_succeed = false;
-                            JLog::add('Error trying to alter table jos_emundus_campaign_workflow, adding output status', JLog::ERROR, 'com_emundus.cli');
                         }
+                    } catch (Exception $e) {
+                        JLog::add('Error on output_status creation ' . $e->getMessage(),  JLog::ERROR, 'com_emundus.cli');
+                        $update_campaign_workflow['message'] = 'Error on output_status creation ' . $e->getMessage();
+                        $every_alter_succeed = false;
+                    }
+
+                    // change status column to entry_status
+                    $db->setQuery("SHOW COLUMNS FROM `jos_emundus_campaign_workflow` LIKE 'status'");
+                    try {
+                        $status = $db->loadObject();
+
+                        if (!empty($status->Field)) {
+                            $db->setQuery("ALTER TABLE jos_emundus_campaign_workflow CHANGE status entry_status int null");
+                            $altered = $db->execute();
+
+                            if (!$altered) {
+                                $update_campaign_workflow['message'] = 'Cannot change jos_emundus_campaign_workflow status column to entry_status';
+                                $every_alter_succeed = false;
+                            }
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Error on status column change ' . $e->getMessage(),  JLog::ERROR, 'com_emundus.cli');
+                        $update_campaign_workflow['message'] = 'Error on status column ' . $e->getMessage();
+                        $every_alter_succeed = false;
                     }
 
                     if ($every_alter_succeed) {
@@ -909,7 +949,6 @@ class EmundusHelperUpdate
                                 fwrite($backup_file, json_encode($old_workflows));
                                 fclose($backup_file);
 
-                                $old_workflows_reinserted = true;
                                 $query->clear()
                                     ->update('#__emundus_campaign_workflow')
                                     ->set('campaign = NULL')
@@ -921,9 +960,11 @@ class EmundusHelperUpdate
                                     $update = $db->execute();
                                 } catch (Exception $e) {
                                     $update = false;
-                                    JLog::add('Failed to set null values on campaign and entry_status columns', JLog::ERROR, 'com_emundus');
+                                    JLog::add('Failed to set null values on campaign and entry_status columns ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+                                    $update_campaign_workflow['message'] = 'Failed to set null values on campaign and entry_status columns ' . $e->getMessage();
                                 }
 
+                                $old_workflows_reinserted = true;
                                 foreach ($old_workflows as $workflow) {
                                     if (!empty($workflow->id)) {
                                         $query->clear()
@@ -937,6 +978,7 @@ class EmundusHelperUpdate
                                         } catch (Exception $e) {
                                             $repeat_campaign_inserted = false;
                                             JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                            $update_campaign_workflow['message'] = 'Failed to join new row in jos_emundus_campaign_workflow_repeat_campaign. ' . $e->getMessage();
                                         }
 
                                         $query->clear()
@@ -951,6 +993,7 @@ class EmundusHelperUpdate
                                         } catch (Exception $e) {
                                             $repeat_status_inserted = false;
                                             JLog::add('Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                            $update_campaign_workflow['message'] = 'Failed to join new row in jos_emundus_campaign_workflow_repeat_entry_status. ' . $e->getMessage();
                                         }
 
                                         if (!$repeat_status_inserted || !$repeat_campaign_inserted) {
@@ -959,24 +1002,27 @@ class EmundusHelperUpdate
                                     }
                                 }
 
-                                $update_campaign_workflow = $old_workflows_reinserted;
+                                $update_campaign_workflow['status'] = $old_workflows_reinserted;
                             } else {
                                 JLog::add('Unable to save old workflows to backup file, stop deletion', JLog::ERROR, 'com_emundus.cli');
+                                $update_campaign_workflow['message'] = 'Unable to save old workflows to backup file, stop update';
                             }
                         } else {
-                            $update_campaign_workflow = true;
+                            $update_campaign_workflow['status'] = true;
                         }
                     }
                 } else {
                     JLog::add('output_status element in jos_fabrik_elements has not been inserted', JLog::WARNING, 'com_emundus.cli');
+                    $update_campaign_workflow['message'] = 'output_status element in jos_fabrik_elements has not been inserted';
                 }
             } else {
                 JLog::add('Did not find group_id nor list_id', JLog::WARNING, 'com_emundus.cli');
+                $update_campaign_workflow['message'] = 'Did not find group_id nor list_id';
             }
         }
 
-        $state_msg = $update_campaign_workflow ? "\033[32mSUCCESS\033[0m" : "\033[31mFAILED\033[0m";
-        echo "\n-> Finish update jos_emundus_campaign_workflow_table [$state_msg]\n";
+        $state_msg =  $update_campaign_workflow['status'] ? "\033[32mSUCCESS\033[0m" : "\033[31mFAILED\033[0m";
+        echo "\n-> Finish update jos_emundus_campaign_workflow_table [$state_msg]";
 
         return $update_campaign_workflow;
     }

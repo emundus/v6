@@ -400,6 +400,14 @@ class UpdateCli extends JApplicationCli
                                     }
                                     if (method_exists($scriptClass, 'update')) {
                                         $updates = $script->update($adapter);
+
+                                        foreach($updates as $update) {
+                                            if ($update['status'] === false) {
+                                                $success = false;
+                                                $failure_msg .= $update['message'] . "\n";
+                                            }
+                                        }
+
                                         if (in_array(false, $updates, true)) {
                                             $success = false;
                                             $failure_msg = array_search(false, $updates, true);
