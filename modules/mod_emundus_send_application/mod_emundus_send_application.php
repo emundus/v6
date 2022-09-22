@@ -86,11 +86,9 @@ if (!empty($user->fnum)) {
     }
 
     if (!empty($current_phase)) {
-        $is_app_sent = $user->status != $current_phase->status;
+        $is_app_sent = !in_array($user->status, $current_phase->entry_status);
 
-        if (!in_array($current_phase->status, $status_for_send)) {
-            $status_for_send[] = $current_phase->status;
-        }
+        $status_for_send = array_merge($status_for_send, $current_phase->entry_status);
     } else if (!empty($user->status)) {
         $is_app_sent = $user->status != 0;
     }

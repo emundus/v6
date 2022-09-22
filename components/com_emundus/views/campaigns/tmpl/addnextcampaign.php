@@ -231,7 +231,7 @@ if (count($languages) > 1) {
 }
 
 $user = JFactory::getUser();
-$coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
+$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 
 $xmlDoc = new DOMDocument();
