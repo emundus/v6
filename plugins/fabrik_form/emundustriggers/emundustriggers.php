@@ -169,7 +169,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeProcess', ['formModel' => $formModel]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onBeforeStore', ['formModel' => $formModel]]);
 
         return true;
     }
@@ -274,7 +274,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['getEndContent', ['formModel' => $formModel, 'groups' => $groups]]);
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onDeleteRowsForm', ['formModel' => $formModel, 'groups' => $groups]]);
 
         return true;
     }
