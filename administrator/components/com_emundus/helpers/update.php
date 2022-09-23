@@ -705,7 +705,7 @@ class EmundusHelperUpdate
 
         jimport('joomla.log.log');
         JLog::addLogger(['text_file' => 'com_emundus.cli.php'], JLog::ALL, array('com_emundus.cli'));
-        
+
         $error = false;
         $old_workflows = [];
 

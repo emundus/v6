@@ -1197,24 +1197,6 @@ class EmundusModelFiles extends JModelLegacy
         }
     }
 
-    public function getStatusByStep($step)
-    {
-        $query = 'select id from #__emundus_setup_status where step='.$step;
-        $db = $this->getDbo();
-
-        try
-        {
-            $db->setQuery($query);
-            $status_id = $db->loadResult();
-
-            return $this->getStatusByID($status_id);
-        }
-        catch(Exception $e)
-        {
-            throw $e;
-        }
-    }
-
     /**
      * @param $fnums
      * @return mixed
@@ -1258,7 +1240,7 @@ class EmundusModelFiles extends JModelLegacy
             $query ="insert into #__emundus_tag_assoc (fnum, id_tag, user_id) VALUES ";
 
             if (!empty($fnums) && !empty($tags)) {
-                $logsParams = array('created' => []);
+                $logger = array();
                 foreach ($fnums as $fnum) {
                     // Get tags already associated to this fnum by the current user
                     $query_associated_tags->clear()
@@ -1278,9 +1260,21 @@ class EmundusModelFiles extends JModelLegacy
                                 WHERE id =' . $tag;
                             $db->setQuery($query_log);
                             $log_tag = $db->loadResult();
-                            array_push($logsParams['created'], $log_tag);
+
+                            //stock the tag name
+                            $logsStd = new stdClass();
+
+                            $logsStd->details = $log_tag;
+                            $logger[] = $logsStd;
                         }
                     }
+
+                    if(!empty($logger)) {
+                        $logsParams = array('created' => array_unique($logger, SORT_REGULAR));
+                    } else {
+                        continue;
+                    }
+
                     // Log the tags in the eMundus logging system.
                     EmundusModelLogs::log($user, (int)substr($fnum, -7), $fnum, 14, 'c', 'COM_EMUNDUS_ACCESS_TAGS_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
@@ -3407,5 +3401,44 @@ class EmundusModelFiles extends JModelLegacy
         }
 
         return $result;
+    }
+
+    public function getStatusByStep($step)
+    {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->clear()
+                ->select('id')
+                ->from($db->quoteName('#__emundus_setup_status', 'jess'))
+                ->where($db->quoteName('jess.step') . ' = ' . $step);
+
+            $db->setQuery($query);
+            $status_id = $db->loadResult();
+
+            return $this->getStatusByID($status_id);
+        }
+        catch(Exception $e) {
+            JLog::add('component/com_emundus/models/files | Error when get status by step ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
+
+    public function getAllLogActions()
+    {
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+        $query->clear()->select('*')->from($db->quoteName('#__emundus_setup_actions', 'jesa'))->order('jesa.id ASC');
+
+        try
+        {
+            $db->setQuery($query);
+            return $db->loadObjectList();
+        }
+        catch(Exception $e)
+        {
+            JLog::add('component/com_emundus/models/files | Error when get all logs' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+        }
     }
 }
