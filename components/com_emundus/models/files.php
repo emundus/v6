@@ -3425,7 +3425,7 @@ class EmundusModelFiles extends JModelLegacy
         }
     }
 
-    public function getAllLogs()
+    public function getAllLogActions()
     {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);

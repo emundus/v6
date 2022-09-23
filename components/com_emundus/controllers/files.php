@@ -4587,10 +4587,10 @@ class EmundusControllerFiles extends JControllerLegacy
     }
 
     /* get all logs */
-    public function getalllogs() {
+    public function getalllogactions() {
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
         $m_files = new EmundusModelFiles();
-        $logs = $m_files->getAllLogs();
+        $logs = $m_files->getAllLogActions();
 
         if($logs) {
             echo json_encode((array('status' => true, 'data' => $logs)));
@@ -4604,18 +4604,23 @@ class EmundusControllerFiles extends JControllerLegacy
     public function getuserslogbyfnum() {
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', '');
-        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
-        $m_logs = new EmundusModelLogs;
 
-        if(!empty($fnum)) {
-            $users = $m_logs->getUsersLogsByFnum($fnum);
-            if(!empty($users)) {
-                echo json_encode((array('status' => true, 'data' => $users)));
+        if (EmundusHelperAccess::asAccessAction(37, 'r', JFactory::getUser()->id, $fnum)) {
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+            $m_logs = new EmundusModelLogs();
+
+            if (!empty($fnum)) {
+                $users = $m_logs->getUsersLogsByFnum($fnum);
+                if (!empty($users)) {
+                    echo json_encode((['status' => true, 'data' => $users]));
+                } else {
+                    echo json_encode((['status' => false, 'data' => []]));
+                }
             } else {
-                echo json_encode((array('status' => false, 'data' => [])));
+                echo json_encode((['status' => false, 'data' => []]));
             }
         } else {
-            echo json_encode((array('status' => false, 'data' => [])));
+            echo json_encode((['status' => false, 'data' => [], 'msg' => JText::_('ACCESS_DENIED')]));
         }
         exit;
     }

@@ -128,7 +128,7 @@ JFactory::getSession()->set('application_layout', 'logs');
         /* get all logs type */
         jQuery.ajax({
             method: "post",
-            url: "index.php?option=com_emundus&controller=files&task=getalllogs",
+            url: "index.php?option=com_emundus&controller=files&task=getalllogactions",
             dataType: 'json',
             success: function(results) {
                 if(results.status) {
