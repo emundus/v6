@@ -862,6 +862,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $res        = $m_files->updateState($validFnums, $state);
         $msg = '';
 
+        if (is_array($res)) {
+            $msg = isset($res['msg']) ? $res['msg'] : '';
+            $res = isset($res['status']) ? $res['status'] : true;
+        }
+
         if ($res !== false) {
             $m_application = $this->getModel('application');
             $status = $m_files->getStatus();
@@ -869,16 +874,6 @@ class EmundusControllerFiles extends JControllerLegacy
             $code = array();
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
-
-                /*$row = array('applicant_id' => $fnum['applicant_id'],
-                    'user_id' => $this->_user->id,
-                    'reason' => JText::_('COM_EMUNDUS_STATUS'),
-                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
-                    'fnum' => $fnum['fnum'],
-                    'status_from' => $fnum['step'],
-                    'status_to' => $state
-                );
-                $m_application->addComment($row);*/
 
                 // Log the update
                 $logsParams = array('updated' => []);
@@ -1149,10 +1144,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $msg .= JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
         } else {
-            $msg .= JText::_('STATE_ERROR');
+            $msg = empty($msg) ? JText::_('STATE_ERROR') : $msg;
         }
 
-        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+        echo json_encode(array('status' => $res, 'msg' => $msg));
         exit;
     }
 
