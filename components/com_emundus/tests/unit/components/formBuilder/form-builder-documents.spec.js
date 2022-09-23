@@ -2,6 +2,7 @@ import { mount, createLocalVue } from '@vue/test-utils';
 import FormBuilderDocuments from '../../../../src/components/FormBuilder/FormBuilderDocuments';
 import translate from '../../../mocks/mixins/translate';
 import draggable from 'vuedraggable';
+import store from '../../../../src/store/index';
 
 const localVue = createLocalVue();
 localVue.mixin(translate);
@@ -13,7 +14,8 @@ describe('FormBuilderDocuments.vue', () => {
             profile_id: 9,
             campaign_id: 1
         },
-        localVue
+        localVue,
+        store
     });
 
     it ('FormBuilderDocuments should exist', () => {

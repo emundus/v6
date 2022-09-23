@@ -13,7 +13,6 @@
 			      :name="'element-label-' + element.id"
 			      type="text"
 			      v-model="element.label[shortDefaultLang]"
-			      :value="element.label[shortDefaultLang]"
 			      @focusout="updateLabel"
 			      @keyup.enter="updateLabelKeyup"
 	      />
