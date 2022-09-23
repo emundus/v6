@@ -9,7 +9,7 @@ const localVue = createLocalVue();
 localVue.mixin(translate);
 localVue.use(VModal);
 
-store.commit("global/initDatas", {
+store.commit('global/initDatas', {
     prid: {
         value: 9
     },
