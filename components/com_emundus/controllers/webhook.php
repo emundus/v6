@@ -27,8 +27,8 @@ class EmundusControllerWebhook extends JControllerLegacy {
 	private $c_emundus;
 
 	public function __construct(array $config = array()) {
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
-		require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'controller.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+		require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'controller.php');
 
 		$this->m_files = new EmundusModelFiles;
 		$this->controller = new EmundusController;
@@ -414,7 +414,7 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $fnum 		= JFactory::getApplication()->input->get('rowid');
         $filename   = $eMConfig->get('filename');
         $url        = 'images'.DS.'emundus'.DS.'files'.DS.'archives';
-        $file       = JPATH_BASE.DS.$url.DS.$filename.'.csv';
+        $file       = JPATH_SITE.DS.$url.DS.$filename.'.csv';
         $date = date('Y-m-d');
         $time_date = date('Y-m-d H:i:s');
 
@@ -515,10 +515,9 @@ class EmundusControllerWebhook extends JControllerLegacy {
     }
 
     public function export_banner(){
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
         $mFile = new EmundusModelFiles;
 
-        $eMConfig 	= JComponentHelper::getParams('com_emundus');
         $banner_limit = JFactory::getApplication()->input->get('limit', 100);
 
         $db = JFactory::getDbo();
@@ -530,21 +529,22 @@ class EmundusControllerWebhook extends JControllerLegacy {
         header('Content-type: application/json');
         try {
             // controle des remontees --> Si is_up_banner = 0 or null, do not call api
-            $query = "SELECT    e_360_7747 as nom, e_360_7749 as prenom, e_360_7746 as civilite, e_360_7751 as dateNaissance,e_360_7755 as villeNaissance, label_fr as paysNaissance, 
-                                e_360_7752 as nationalite, ju.email as email,trim(e_362_7764) as telephone, e_362_7757 as adrPersoL1,e_362_7758 as adrPersoL2,e_362_7760 as adrPersoCodePost,
-                                e_362_7761 as adrPersoVille, e_362_7763 as adrPersoCodePays, jecc.fnum as noClientemundus, 'summer.school@sciencepo.fr' as emailAssistante, filename as photo, code_prg_banner as programme, semester as semestre,
-                        case
-                            when e.e_394_8112 = 'JYES' then 'Oui'
-                            when e.e_394_8112 = 'JNO' then 'Non'
-                            when e.e_394_8112 is null then 'Non'
-                        end as 'usagePhoto'
-                               
+            $query = "SELECT e_360_7749 as Nom, e_360_7747 as Prenom, e_360_7746 as Civilite, e_360_7751 as DateNaissance,e_360_7755 as VilleNaissance, dc.code as PaysNaissance, 
+                                dn.code as Nationalite, code_prg_banner as Programme, semester as Semestre, ju.email as Email,trim(e_362_7764) as Telephone, e_362_7757 as AdrPersoL1,e_362_7758 as AdrPersoL2,e_362_7760 as AdrPersoCodePost,
+                                e_362_7761 as AdrPersoVille, dc2.code as AdrPersoCodePays,                 
+                                case
+                                    when e.e_394_8112 = 'JYES' then 'Oui'
+                                    when e.e_394_8112 = 'JNO' then 'Non'
+                                    when e.e_394_8112 is null then 'Non'
+                        end as 'UsagePhoto', jecc.fnum as NoClientemundus, 'summer.school@sciencespo.fr' as EmailAssistante, jeu.filename as Photo
                     from #__emundus_1001_00
                     left join #__emundus_campaign_candidature jecc on #__emundus_1001_00.fnum = jecc.fnum
-                    left join data_country dc on #__emundus_1001_00.e_360_7754 = dc.id
-                    left join #__users ju on ju.id = jecc.applicant_id
                     left join #__emundus_1001_01 j on #__emundus_1001_00.fnum = j.fnum
                     left join #__emundus_1025_00 e on #__emundus_1001_00.fnum = e.fnum
+                    left join data_country dc on #__emundus_1001_00.e_360_7754 = dc.id
+                    left join data_country dc2 on j.e_362_7763 = dc2.id
+                    left join data_nationality dn on #__emundus_1001_00.e_360_7752 = dn.id
+                    left join #__users ju on ju.id = jecc.applicant_id
                     left join #__emundus_uploads jeu on #__emundus_1001_00.fnum = jeu.fnum
                     left join #__emundus_setup_campaigns jesc on jecc.campaign_id = jesc.id
                     where jecc.status = 4 
@@ -557,32 +557,38 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
             $raw = $db->loadObjectList();
 
-            $res->status = 'OK';
-            $res->count = sizeof($raw);
-            $res->message = '';
+            $res->Status = 'OK';
+            $res->Count = sizeof($raw);
+            $res->Message = '';
 
             /* encode 64 bit images + mapping prog..lbl, prog..session*/
             foreach($raw as $data) {
                 // get user_id from $data->noClientemundus
-                $fnum_Info = $mFile->getFnumsInfos([$data->noClientemundus])[$data->noClientemundus];
+                $fnum_Info = $mFile->getFnumsInfos([$data->NoClientemundus])[$data->NoClientemundus];
                 $user_id = $fnum_Info['applicant_id'];
 
                 // get url to image
-                $img_url = "images/emundus/files" . DS . $user_id . DS . $data->photo;
+                $img_url = "images/emundus/files" . DS . $user_id . DS . $data->Photo;
 
                 $handle = fopen($img_url, "r");
                 $contents = fread($handle, filesize($img_url));
                 fclose($handle);
 
-                $data->photo = base64_encode($contents);
+                $data->Photo = base64_encode($contents);
+
+                if($data->Civilite === 'Femme') {
+                    $data->Civilite = 0;
+                } else {
+                    $data->Civilite = 1;
+                }
             }
 
-            $res->results = $raw;
+            $res->Results = $raw;
             echo json_encode((array)$res);
             exit;
         } catch(Exception $e) {
-            $res->status = 'NOK';
-            $res->message = $e->getMessage();
+            $res->Status = 'NOK';
+            $res->Message = $e->getMessage();
             JLog::add('Cannot get files', JLog::ERROR, 'com_emundus.webhook');
         }
     }
@@ -598,9 +604,9 @@ class EmundusControllerWebhook extends JControllerLegacy {
 
         header('Content-type: application/json');
 
-        if (empty($cand_num) || empty($cand_idBanner)) {
+        if (empty($cand_num) || !isset($cand_idBanner) || (isset($cand_idBanner) and ($cand_idBanner == '')) || (isset($cand_num) and ($cand_num == ''))) {
             JLog::add('BAD_REQUEST_OR_MISSING_PARAMS', JLog::ERROR, 'com_emundus.webhook');
-            echo json_encode(array('status' => 400, 'message' => JText::_('BAD_REQUEST_OR_MISSING_PARAMS')));
+            echo json_encode(array('Status' => 'NOK', 'message' => JText::_('BAD_REQUEST_OR_MISSING_PARAMS')));
         } else {
             $this->update_banner($cand_idBanner, $cand_num);
         }
@@ -613,16 +619,96 @@ class EmundusControllerWebhook extends JControllerLegacy {
         $query = $db->getQuery(true);
 
         try {
-            $query->update($db->quoteName('#__emundus_campaign_candidature'))
-                ->set($db->quoteName('#__emundus_campaign_candidature.id_banner') . ' = ' . $db->quote($id))
+            /* check if fnum exists, if yes, update, if no, return error code */
+            $query->clear()
+                ->select('COUNT(*)')
+                ->from($db->quoteName('#__emundus_campaign_candidature'))
                 ->where($db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quote($fnum));
-
             $db->setQuery($query);
-            $db->execute();
-            echo json_encode(array('status' => 200, 'message' => JText::_('RECORD_UPDATED_SUCCESSFULLY')));
+            $is_exist = $db->loadResult();
+
+            if($is_exist == 1) {
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_campaign_candidature'))
+                    ->set($db->quoteName('#__emundus_campaign_candidature.id_banner') . ' = ' . $db->quote($id))
+                    ->where($db->quoteName('#__emundus_campaign_candidature.fnum') . ' = ' . $db->quote($fnum));
+
+                $db->setQuery($query);
+
+                $db->execute();
+                echo json_encode(array('Status' => 'OK', 'message' => JText::_('RECORD_UPDATED_SUCCESSFULLY')));
+            } else {
+                echo json_encode(array('Status' => 'NOK', 'message' => JText::_('NO_CLIENT_NOT_EXIST')));
+            }
             exit;
         } catch(Exception $e) {
             JLog::add('Cannot update id banner', JLog::ERROR, 'com_emundus.webhook');
+            echo json_encode(array('Status' => 'NOK', 'message' => JText::_('RECORD_UPDATED_FAILED')));
+            exit;
         }
+    }
+
+    /* get zoom session by id */
+    public function getzoomsession() {
+        $tab = array('status' => false, 'msg' => JText::_('ZOOM_SESION_RETRIEVED_FAILED'), 'data' => null);
+        $jinput = JFactory::getApplication()->input;
+        $zid = $jinput->getString('zid', null);
+
+        if (!empty($zid)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_jury', 'jej'))
+                ->where('jej.id = ' . $db->quote($zid));
+            $db->setQuery($query);
+
+            $raw = $db->loadObject();
+
+            if (!empty($raw)) {
+                $tab = array('status' => true, 'msg' => JText::_('ZOOM_SESION_RETRIEVED_SUCCESSFULLY'), 'data' => $raw);
+            }
+        }
+
+        echo json_encode($tab);
+        exit;
+    }
+
+    /**
+     * POST method
+     * Waiting for :
+     *  - callback_id
+     *  - amount
+     *  - at
+     *  - status
+     * @return string json_encoded
+     */
+    public function updateFlywirePaymentInfos()
+    {
+        $status = false;
+        $msg = JText::_('FLYWIRE_PAYMENT_INFOS_UPDATED_FAILED');
+
+        $post_data = file_get_contents('php://input');
+        $data = json_decode($post_data, true);
+
+        if (!empty($data['callback_id']) && !empty($data['status']) && !empty($data['amount'])) {
+            require_once (JPATH_ROOT.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'payment.php');
+            $m_payment = new EmundusModelPayment;
+            $status = $m_payment->updateFlywirePaymentInfos($data['callback_id'], $data);
+
+            if ($status) {
+                $msg = JText::_('FLYWIRE_PAYMENT_INFOS_UPDATED_SUCCESSFULLY');
+            }
+        } else {
+            JLog::addLogger(['text_file' => 'com_emundus.payment.php'], JLog::ALL, array('com_emundus.payment'));
+            JLog::add('[updateFlywirePaymentInfos] BAD_REQUEST_OR_MISSING_PARAMS - Malicious attempt ? Sender : ' . $_SERVER['REMOTE_ADDR'] .  ' data : ' . json_encode($data), JLog::ERROR, 'com_emundus.payment');
+            header('HTTP/1.1 400 Bad Request');
+            echo 'Error 400 - Bad Request';
+            die();
+        }
+
+        header('Content-type: application/json');
+        echo json_encode(array('status' => $status, 'msg' => $msg));
+        exit;
     }
 }

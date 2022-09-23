@@ -21,7 +21,7 @@ if ($locallang == "fr-FR") {
 <form action="index.php" method="post" id="search_program">
     <?php if (isset($searchword) && !empty($searchword)) :?>
         <div class="rt-grid-12">
-            <p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
+            <p><b><?php echo JText::_("MOD_EM_CAMPAIGN_RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
         </div>
     <?php endif; ?>
     <div class="rt-grid-12" id="navfilter">
@@ -42,18 +42,18 @@ if ($locallang == "fr-FR") {
                     <?php else :?>
                             <a href="index.php?order_date=start_date&order_time=desc"><i class="icon-chevron-up" aria-hidden="true"></i>
                     <?php endif; ?>
-                    <b><?php echo JText::_("CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("LIST_DATE_END");?></a>
+                    <b><?php echo JText::_("MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE");?></b></a> |  <a href="index.php?order_date=end_date&ordertime=<?php echo $ordertime ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_DATE_END");?></a>
                 <?php else :?>
-                    <a href="index.php?order_date=start_date&order_time=<?php echo $ordertime ?>"><?php echo JText::_("CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime == "desc") :?> <a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php else :?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php endif; ?> <b><?php echo JText::_("LIST_DATE_END");?></b></a>
+                    <a href="index.php?order_date=start_date&order_time=<?php echo $ordertime ?>"><?php echo JText::_("MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE");?></a>  |  <?php if ($ordertime == "desc") :?> <a href="index.php?order_date=end_date&order_time=asc"><i class="icon-chevron-down" aria-hidden="true"></i> <?php else :?><a href="index.php?order_date=end_date&ordertime=desc"><i class="icon-chevron-up" aria-hidden="true"></i> <?php endif; ?> <b><?php echo JText::_("MOD_EM_CAMPAIGN_LIST_DATE_END");?></b></a>
                 <?php endif; ?> </p>
         </div>
         <div class="rt-grid-4 navsearch">
             <div class="navsearch-content">
                 <div class="rt-grid-4">
                     <div class="input-group">
-                        <input name="searchword" type="text" class="form-control" placeholder=" <?php  echo JText::_("SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
+                        <input name="searchword" type="text" class="form-control" placeholder=" <?php  echo JText::_("MOD_EM_CAMPAIGN_SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
                         <span class="input-group-btn">
-                            <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
+                            <button class="btn btn-default sch" type="submit"><?php  echo JText::_("MOD_EM_CAMPAIGN_SEARCH"); ?></button>
                         </span>
                     </div><!-- /input-group -->
                 </div><!-- /.col-lg-6 -->
@@ -62,14 +62,13 @@ if ($locallang == "fr-FR") {
         <div class="rt-grid-1"></div>
     </div>
 
-
     <div class="tab-content">
         <?php if (in_array('current',$mod_em_campaign_list_tab)) :?>
         <div id="current" class="tab-pane fade in active">
             <div class="campaigns-list">
                 <?php echo $paginationCurrent->getResultsCounter(); ?>
                 <?php if (empty($currentCampaign)) {?>
-                <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+                <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
 
@@ -118,17 +117,17 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?> </strong>
                                     <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?> </strong>
                                     <?php echo date($mod_em_campaign_date_format, strtotime($result->end_date)); ?>
-                                    <?php echo (!empty($mod_em_campaign_show_timezone)) ? '<hr>'.JText::_('TIMEZONE').$offset : ''; ?>
-                                    <?php echo (!empty($mod_em_campaign_show_localedate)) ? '<hr>'.JText::_('LOCALDATE').date($mod_em_campaign_date_format, strtotime($now)) : ''; ?>
+                                    <?php echo (!empty($mod_em_campaign_show_timezone)) ? '<hr>'.JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset : ''; ?>
+                                    <?php echo (!empty($mod_em_campaign_show_localedate)) ? '<hr>'.JText::_('MOD_EM_CAMPAIGN_LOCALDATE').date($mod_em_campaign_date_format, strtotime($now)) : ''; ?>
                                 </div>
                             </div>
                             <div class="below-content">
                             <?php if ($result->apply_online == 1) :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                 <?php
                                 // The register URL does not
                                 if ($sef == 0)
@@ -136,9 +135,9 @@ if ($locallang == "fr-FR") {
 	                            else
 	                                $register_url = "registration?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
                                 ?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php endif; ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -159,7 +158,7 @@ if ($locallang == "fr-FR") {
             <div class="campaigns-list">
                 <?php echo $paginationFutur->getResultsCounter(); ?>
                 <?php if (empty($futurCampaign)) { ?>
-                    <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+                    <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
 
@@ -201,17 +200,17 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?> </strong>
                                     <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?> </strong>
                                     <?= date($mod_em_campaign_date_format, strtotime($result->end_date)); ?>
                                 </div>
                             </div>
                             <div class="below-content">
                             <?php if ($result->apply_online == 1) :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php endif; ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -230,7 +229,7 @@ if ($locallang == "fr-FR") {
             <div class="campaigns-list">
                 <?php echo $paginationPast->getResultsCounter(); ?>
                 <?php if (empty($pastCampaign)) { ?>
-                <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+                <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
 
@@ -274,17 +273,17 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?> </strong>
                                     <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?> </strong>
                                     <?php echo date($mod_em_campaign_date_format, strtotime($result->end_date)); ?>
                                 </div>
                             </div>
                             <div class="below-content">
                             <?php if ($result->apply_online == 1) :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php endif; ?>
                             </div>
                         </div><!-- Close campaign-content -->
@@ -303,7 +302,7 @@ if ($locallang == "fr-FR") {
             <div class="campaigns-list">
                 <?php echo $paginationTotal->getResultsCounter(); ?>
                 <?php if (empty($allCampaign)) { ?>
-                <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+                <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
                 <?php } else {
                     $oldmonth = '';
 
@@ -347,20 +346,20 @@ if ($locallang == "fr-FR") {
                             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                                 <div class="campaingapplycontent">
                                     <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
-                                    <strong><i class="icon-clock"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?> </strong>
                                     <?php echo date($mod_em_campaign_date_format, strtotime($result->start_date)); ?><br>
-                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?> </strong>
+                                    <strong><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?> </strong>
                                     <?php echo date($mod_em_campaign_date_format, strtotime($result->end_date)); ?>
                                 </div>
                             </div>
                             <div class="below-content">
                             <?php if ($result->apply_online == 1) :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                                 <?php if (date('Y/m/d H:i', strtotime($result->start_date)) <= date('Y/m/d H:i') && date('Y/m/d H:i', strtotime($result->end_date)) >= date('Y/m/d H:i')) {?>
-                                    <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                                    <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_users&view=registration&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid);?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                                 <?php } ?>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo ("index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2); ?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php endif; ?>
                             </div>
                         </div><!-- Close campaign-content -->

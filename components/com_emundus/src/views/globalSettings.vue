@@ -1,0 +1,163 @@
+<template>
+  <div class="em-w-100 em-mt-80">
+    <div>
+
+      <!--- MENU --->
+      <transition name="slide-right">
+        <div class="em-grid-3" style="margin-left: 10%" v-if="menuHighlight === 0">
+          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
+            <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
+            <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
+            <p class="em-font-size-14">{{translate(menu.description)}}</p>
+          </div>
+        </div>
+      </transition>
+
+      <!-- COMPONENTS -->
+      <transition name="fade">
+        <StyleTool
+            v-if="menuHighlight === 1"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        ></StyleTool>
+
+        <ContentTool
+            v-if="menuHighlight === 2"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        />
+
+        <FilesTool
+            v-if="menuHighlight === 3"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        />
+
+        <TranslationTool
+            v-if="menuHighlight === 9"
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+            ref="translations"
+        />
+      </transition>
+    </div>
+  </div>
+</template>
+
+<script>
+import EditStatus from "../components/Settings/FilesTool/EditStatus";
+import EditTags from "../components/Settings/FilesTool/EditTags";
+import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
+import ContentTool from "../components/Settings/Content/ContentTool";
+import FilesTool from "../components/Settings/FilesTool/FilesTool";
+import StyleTool from "../components/Settings/Style/StyleTool";
+
+const qs = require("qs");
+
+export default {
+  name: "globalSettings",
+
+  components: {
+    StyleTool,
+    FilesTool,
+    ContentTool,
+    TranslationTool,
+    EditStatus,
+    EditTags
+  },
+
+  props: {
+    actualLanguage: String,
+    coordinatorAccess: Number,
+    manyLanguages: Number
+  },
+
+  data: () => ({
+    menuHighlight: 0,
+    currentTitle: '',
+    langue: 0,
+    saving: false,
+    endSaving: false,
+
+    menus: [
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE_DESC",
+        icon: 'style',
+        index: 1
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT_DESC",
+        icon: 'notes',
+        index: 2
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL_DESC",
+        icon: 'source',
+        index: 3
+      },
+      {
+        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
+        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS_DESC",
+        icon: 'language',
+        index: 9
+      },
+    ],
+    modal_ready: false
+  }),
+
+  created() {
+    if (this.actualLanguage == "en") {
+      this.langue = 1;
+    }
+  },
+
+  methods: {
+    changeMenu(menu){
+      setTimeout(() => {
+        this.menuHighlight = menu.index;
+        this.currentTitle = menu.title;
+      },200);
+    }
+  },
+
+  watch: {
+    menuHighlight: function(value){
+      this.modal_ready = false;
+      setTimeout(() => {
+        switch (value){
+          case 1:
+            this.$modal.show('styleTool');
+            this.modal_ready = true;
+            break;
+          case 2:
+            this.$modal.show('contentTool');
+            this.modal_ready = true;
+            break;
+          case 3:
+            this.$modal.show('filesTool');
+            this.modal_ready = true;
+            break;
+          case 9:
+            this.$modal.show('translationTool');
+            this.modal_ready = true;
+            break;
+          default:
+            break;
+        }
+      },500)
+    }
+  }
+};
+</script>
+
+<style scoped>
+.em-hover-s-scale{
+  transition: transform 0.2s ease-in-out;
+}
+.em-hover-s-scale:hover{
+  transform: scale(1.03);
+}
+</style>

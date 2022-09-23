@@ -14,10 +14,10 @@ defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
 
 jimport('joomla.application.component.model');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
-require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'files.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'list.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'helpers' . DS . 'access.php');
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
 
 class EmundusModelEvaluation extends JModelList {
@@ -152,7 +152,7 @@ class EmundusModelEvaluation extends JModelList {
                                 FROM '.$t.'
                                 WHERE '.$t.'.parent_id='.$def_elmt->tab_name.'.id
                                 '.$publish_query.'
-                              ) AS `'.$t.'`';
+                              ) AS `'.$t.'___'.$def_elmt->element_name.'`';
                         } else {
                             $query = '(
                                 select DISTINCT '.$join_val_column.'
@@ -192,7 +192,7 @@ class EmundusModelEvaluation extends JModelList {
                     $query = preg_replace('#{my->id}#', $current_user->id, $query);
                     $query = preg_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0 , 2), $query);
                     $this->_elements_default[] = $query;
-                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton') {
+                } elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'radiobutton' || $def_elmt->element_plugin == 'checkbox') {
 
                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
                         $this->_elements_default[] = '(
@@ -205,9 +205,19 @@ class EmundusModelEvaluation extends JModelList {
                         $select = $def_elmt->tab_name . '.' . $def_elmt->element_name;
                         foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                             $select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-                                $element_attribs->sub_options->sub_labels[$key] . '")';
+                                JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
                         }
                         $this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
+                    }
+                } elseif ($def_elmt->element_plugin == 'yesno') {
+                    if (@$group_params->repeat_group_button == 1) {
+                        $this->_elements_default[] = '(
+                                                        SELECT REPLACE(REPLACE(GROUP_CONCAT('.$def_elmt->table_join.'.' . $def_elmt->element_name.'  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
+                                                        FROM '.$def_elmt->table_join.'
+                                                        WHERE '.$def_elmt->table_join.'.parent_id = '.$def_elmt->tab_name.'.id
+                                                      ) AS `'.$def_elmt->table_join.'___' . $def_elmt->element_name.'`';
+                    } else {
+                        $this->_elements_default[] = 'REPLACE(REPLACE('.$def_elmt->tab_name.'.'.$def_elmt->element_name.', "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")  AS '.$def_elmt->tab_name.'___'.$def_elmt->element_name;
                     }
                 } else {
                     if (isset($group_params->repeat_group_button) && $group_params->repeat_group_button == 1) {
@@ -487,13 +497,13 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
-        $can_be_ordering[] = 'jos_emundus_campaign_candidature.id';
-        $can_be_ordering[] = 'jos_emundus_campaign_candidature.fnum';
-        $can_be_ordering[] = 'jos_emundus_campaign_candidature.status';
+        $can_be_ordering[] = 'jecc.id';
+        $can_be_ordering[] = 'jecc.fnum';
+        $can_be_ordering[] = 'jecc.status';
         $can_be_ordering[] = 'jos_emundus_evaluations.user';
         $can_be_ordering[] = 'fnum';
         $can_be_ordering[] = 'status';
-        $can_be_ordering[] = 'c.status';
+        $can_be_ordering[] = 'jecc.status';
         $can_be_ordering[] = 'name';
         $can_be_ordering[] = 'eta.id_tag';
         $can_be_ordering[] = 'overall';
@@ -771,655 +781,15 @@ class EmundusModelEvaluation extends JModelList {
 
 
     private function _buildWhere($tableAlias = array()) {
-        $session = JFactory::getSession();
-        $params = $session->get('filt_params'); // came from search box
-        $filt_menu = $session->get('filt_menu'); // came from menu filter (see EmundusHelperFiles::resetFilter)
-
-        $db = JFactory::getDBO();
-
-        if (!is_numeric(@$params['published']) || is_null(@$params['published'])) {
-            $params['published'] = 1;
-        }
-
-        $query = array('q' => '', 'join' => '');
-
-        if (!empty($params)) {
-
-            foreach ($params as $key => $value) {
-                switch ($key) {
-
-                    case 'elements':
-                        if (!empty($value)) {
-
-                            foreach ($value as $k => $v) {
-                                $tab = explode('.', $k);
-
-                                if (isset($v['select'])) {
-                                    $adv_select = $v['select'];
-                                }
-
-                                if (isset($v['value'])) {
-                                    $v = $v['value'];
-                                }
-
-                                if (count($tab) > 1 && !empty($v)) {
-
-                                    if ($tab[0] == 'jos_emundus_training') {
-
-                                        // Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
-                                        if (isset($adv_select) && $adv_select) {
-                                            $query['q'] .= ' AND search_'.$tab[0].'.id like "'.$v.'"';
-                                        } else {
-                                            $query['q'] .= ' AND search_'.$tab[0].'.id like "%'.$v.'%"';
-                                        }
-
-                                    } else {
-                                        $query['q'] .= ' AND ';
-                                        // Check if it is a join table
-                                        $sql = 'SELECT join_from_table FROM #__fabrik_joins WHERE table_join like '.$db->Quote($tab[0]);
-                                        $db->setQuery($sql);
-                                        $join_from_table = $db->loadResult();
-
-                                        if (!empty($join_from_table)) {
-                                            $table = $join_from_table;
-                                            $table_join = $tab[0];
-
-                                            // Do not do LIKE %% search on elements that come from a <select>, we should get the exact value.
-                                            if (isset($adv_select) && $adv_select) {
-                                                $query['q'] .= $table_join.'.'.$tab[1].' like "' . $v . '"';
-                                            } else {
-                                                $query['q'] .= $table_join.'.'.$tab[1].' like "%' . $v . '%"';
-                                            }
-
-                                            if (!isset($query[$table])) {
-
-                                                $query[$table] = true;
-                                                if (!array_key_exists($table, $tableAlias) && !in_array($table, $tableAlias)) {
-                                                    $query['join'] .= ' left join '.$table.' on '.$table.'.fnum like c.fnum ';
-                                                }
-
-                                            } if (!isset($query[$table_join])) {
-
-                                                $query[$table_join] = true;
-                                                if (!array_key_exists($table_join, $tableAlias) && !in_array($table_join, $tableAlias)) {
-                                                    $query['join'] .= ' left join '.$table_join.' on '.$table.'.id='.$table_join.'.parent_id';
-                                                }
-
-                                            }
-
-                                        } else {
-
-                                            $sql = 'SELECT plugin FROM #__fabrik_elements WHERE name like '.$db->Quote($tab[1]);
-                                            $db->setQuery($sql);
-                                            $res = $db->loadResult();
-                                            if ($res == "radiobutton" || $res == "dropdown" || $res == "databasejoin" || (isset($adv_select) && $adv_select)) {
-                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "' . $v . '"';
-                                            } else {
-                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
-                                            }
-
-                                            if (!isset($query[$tab[0]])) {
-
-                                                $query[$tab[0]] = true;
-                                                if (!array_key_exists($tab[0], $tableAlias) && !in_array($tab[0], $tableAlias)) {
-                                                    $query['join'] .= ' left join '.$tab[0].' on '.$tab[0].'.fnum like c.fnum ';
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
-
-                    case 'elements_other':
-                        if (!empty($value)) {
-
-                            foreach ($value as $k => $v) {
-                                if (!empty($value)) {
-
-                                    if (!empty($v)) {
-                                        $tab = explode('.', $k);
-                                        if (count($tab)>1) {
-
-                                            if ($tab[0]=='jos_emundus_training') {
-                                                $query['q'] .= ' AND ';
-                                                $query['q'] .= ' search_'.$tab[0].'.id like "%' . $v . '%"';
-                                            } else {
-                                                $query['q'] .= ' AND ';
-                                                $query['q'] .= $tab[0].'.'.$tab[1].' like "%' . $v . '%"';
-
-                                                if (!isset($query[$tab[0]])) {
-                                                    $query[$tab[0]] = true;
-                                                    if (!array_key_exists($tab[0], $tableAlias))
-                                                        $query['join'] .= ' left join '.$tab[0].' on ' .$tab[0].'.fnum like c.fnum ';
-                                                }
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
-
-                    case 's':
-                        if (!empty($value)) {
-
-                            $q = $this->_buildSearch($value, $tableAlias);
-
-                            foreach ($q['q'] as $v) {
-                                $query['q'] .= $v;
-                            }
-
-                            foreach ($q['join'] as $u) {
-                                $query['join'] .= $u;
-                            }
-
-                            if (isset($q['users'])) {
-                                $query['users'] = true;
-                            }
-
-                            if (isset($q['em_user'])) {
-                                $query['em_user'] = true;
-                            }
-
-                        }
-                        break;
-
-                    case 'finalgrade':
-                        if (!empty($value)) {
-
-                            $query['q'] .= ' and fg.final_grade like "%' . $value . '%"';
-                            if (!isset($query['final_g'])) {
-                                $query['final_g'] = true;
-                                if (!array_key_exists('jos_emundus_final_grade', $tableAlias)) {
-                                    $query['join'] .= ' left join #__emundus_final_grade as fg on fg.fnum like c.fnum ';
-                                }
-                            }
-
-                        }
-                        break;
-
-                    case 'schoolyear':
-                        if (!empty($value)) {
-
-                            if (($value[0] == "%") || empty($value[0])) {
-                                $query['q'] .= '';
-                            } else {
-                                $query['q'] .= ' and esc.year IN ("' . implode('","', $value) . '") ';
-                            }
-
-                        }
-                        break;
-
-                    case 'programme':
-                        if (!empty($value)) {
-
-                            if ($value[0] == "%" || empty($value[0])) {
-                                $query['q'] .= ' ';
-                            } else {
-                                $query['q'] .= ' and sp.code IN ("' . implode('","', $value) . '") ';
-                            }
-
-                        }
-                        break;
-
-                    case 'campaign':
-                        if ($value) {
-                            $query['q'] .= ' AND esc.published=1 ';
-
-                            if ($value[0] == "%" || empty($value[0])) {
-                                $query['q'] .= ' ';
-                            } else {
-                                $query['q'] .= ' and esc.id IN (' . implode(',', $value) . ') ';
-                            }
-
-                        }
-                        break;
-
-                    case 'groups':
-                        if (!empty($value)) {
-
-                            $query['q'] .= ' and  (ge.group_id=' . $db->Quote($value) . ' OR ge.user_id IN (select user_id FROM #__emundus_groups WHERE group_id=' .$db->Quote($value) . ')) ';
-
-                            if (!isset($query['group_eval'])) {
-                                $query['group_eval'] = true;
-                                if (!array_key_exists('jos_emundus_groups_eval', $tableAlias))
-                                    $query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
-                            }
-
-
-                        }
-                        break;
-
-                    case 'group_assoc':
-                        if (!empty($value)) {
-                            $query['join'] .= ' 
-	                            LEFT JOIN #__emundus_group_assoc as ga on ga.fnum = c.fnum 
-	                            LEFT JOIN #__emundus_setup_groups_repeat_course as grc on grc.course LIKE esc.training 
-	                            LEFT JOIN #__emundus_setup_groups as sg on grc.parent_id = sg.id ';
-                            $query['q'] .= ' and (ga.group_id IN ('.implode(',', $value).') OR sg.id IN ('.implode(',', $value).')) ';
-                        }
-                        break;
-
-                    case 'user':
-                        if (!empty($value)) {
-
-                            $query['q'] .= ' and (ge.user_id=' . $db->Quote($value) .
-                                ' OR ge.group_id IN (select e.group_id FROM #__emundus_groups e WHERE e.user_id=' .
-                                $db->Quote($value) . '))';
-
-                            if (!isset($query['group_eval'])) {
-                                $query['group_eval'] = true;
-                                if (!array_key_exists('jos_emundus_groups_eval', $tableAlias)) {
-                                    $query['join'] .= ' left join #__emundus_groups_eval as ge on ge.applicant_id = c.applicant_id and ge.campaign_id = c.campaign_id ';
-                                }
-                            }
-
-                        }
-                        break;
-
-                    /*case 'profile':
-                        if(!empty($value))
-                        {
-                            $query['q'] .= 'and (spro.id = ' . $value . ' OR fg.result_for = ' . $value . ' OR ue.user_id IN (select user_id from #__emundus_users_profiles where profile_id = ' . $value . ')) ';
-
-                            if(!isset($query['final_g']))
-                            {
-                                $query['final_g'] = true;
-                                if (!array_key_exists('jos_emundus_final_grade', $tableAlias))
-                                    $query['join'] .=' left join #__emundus_final_grade as fg on fg.fnum like c.fnum ';
-                            }
-                            if(isset($query['em_user']))
-                            {
-                                $query['em_user'] = true;
-                                if (!array_key_exists('jos_emundus_users', $tableAlias))
-                                    $query['join'] .= ' left join #__emundus_users as ue on ue.id = c.applicant_id ';
-                            }
-                            if (!array_key_exists('jos_emundus_setup_profiles', $tableAlias))
-                                $query['join'] .= ' left join #__emundus_setup_profiles as spro on spro.id = ue.profile ';
-                        }
-                        break;*/
-
-                    case 'missing_doc':
-                        if (!empty($value)) {
-
-                            $query['q'] .=' and (' . $value . ' NOT IN (SELECT attachment_id FROM #__emundus_uploads eup WHERE #__emundus_uploads.user_id = u.id)) ';
-                            if (!array_key_exists('jos_emundus_uploads', $tableAlias)) {
-                                $query['join'] = ' left join #__emundus_uploads on #__emundus_uploads.user_id = c.applicant_id ';
-                            }
-
-                        }
-                        break;
-
-                    case 'complete':
-                        if (!empty($value)) {
-
-                            if ($value == 1) {
-                                $query['q'] .= 'and #__users.id IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
-                            } else {
-                                $query['q'] .= 'and #__users.id NOT IN (SELECT user FROM #__emundus_declaration ed WHERE #__emundus_declaration.user = #__users.id) ';
-                            }
-
-                        }
-                        break;
-
-                    case 'validate':
-                        if (!empty($value)) {
-
-                            if ($value == 1) {
-                                $query['q'] .= ' and #__emundus_declaration.validated = 1 ';
-                            } else {
-                                $query['q'] .= ' and #__emundus_declaration.validated = 0 ';
-                            }
-
-                        }
-                        break;
-
-                    case 'status':
-                        if ($value) {
-
-                            $filt_menu_defined = (isset($filt_menu['status'][0]) && $filt_menu['status'][0] != '' && $filt_menu['status'] != "%");
-
-                            // session filter is empty
-                            if ($value[0] == "%" || !isset($value[0]) || $value[0] == '' ) {
-
-                                if (!$filt_menu_defined) {
-                                    $query['q'] .= ' ';
-                                } else {
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
-                                }
-
-                            } else {
-                                // Check if session filter exist in menu filter, if at least one session filter not in menu filter, reset to menu filter
-                                $diff = array();
-                                if (is_array($value) && $filt_menu_defined) {
-                                    $diff = array_diff($value, $filt_menu['status']);
-                                }
-
-                                if (count($diff) == 0) {
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $value) . ') ';
-                                } else {
-                                    $query['q'] .= ' and c.status IN (' . implode(',', $filt_menu['status']) . ') ';
-                                }
-
-                            }
-                        }
-                        break;
-
-                    case 'tag':
-                        if ($value) {
-
-                            if ($value[0] == "%" || !isset($value[0]) || $value[0] === '') {
-                                $query['q'] .= ' ';
-                            } else {
-
-                                if (isset($filt_menu['tag'][0]) && $filt_menu['tag'][0] != '' && $filt_menu['tag'] != "%") {
-                                    // This allows hiding of files by tag.
-                                    $filt_menu_not = array_filter($filt_menu['tag'], function($e) {
-                                        return strpos($e, '!') === 0;
-                                    });
-                                }
-
-                                // This allows hiding of files by tag.
-                                $not_in = array_filter($value, function($e) {
-                                    return strpos($e, '!') === 0;
-                                });
-
-                                if (is_array($not_in) && !empty($filt_menu_not)) {
-                                    $not_in = array_unique(array_merge($not_in, $filt_menu_not));
-                                }
-
-                                if (!empty($not_in)) {
-                                    $value = array_diff($value, $not_in);
-                                    $not_in = array_map(function($v) {
-                                        return ltrim($v, '!');
-                                    }, $not_in);
-                                    $query['q'] .= ' and c.fnum NOT IN (SELECT cc.fnum FROM jos_emundus_campaign_candidature AS cc LEFT JOIN jos_emundus_tag_assoc as ta ON ta.fnum = cc.fnum WHERE ta.id_tag IN (' . implode(',', $not_in) . ')) ';
-                                }
-
-                                if (!empty($value)) {
-                                    $query['q'] .= 'AND c.fnum IN (SELECT ta.fnum FROM jos_emundus_tag_assoc as ta WHERE ta.id_tag IN ('.implode(',', $value).'))';
-                                }
-                            }
-                        }
-                        break;
-
-                    case 'published':
-                        if ($value == "-1") {
-                            $query['q'] .= ' and c.published=-1 ';
-                        } elseif ($value == 0) {
-                            $query['q'] .= ' and c.published=0 ';
-                        } else {
-                            $query['q'] .= ' and c.published=1 ';
-                        }
-                        break;
-                }
-            }
-        }
-
-        // force menu filter
-        if ((is_array($filt_menu['status']) && count($filt_menu['status']) > 0) && isset($filt_menu['status'][0]) && !empty($filt_menu['status'][0]) && $filt_menu['status'][0] != "%") {
-            $query['q'] .= ' AND c.status IN ("' . implode('","', $filt_menu['status']) . '") ';
-        }
-
-        if (isset($filt_menu['programme'][0]) && $filt_menu['programme'][0] == "%") {
-            $sql_code = '1=1';
-            $and = ' AND ';
-        } elseif (isset($filt_menu['programme'][0]) && !empty($filt_menu['programme'][0])) {
-            // ONLY FILES LINKED TO MY GROUPS OR TO MY ACCOUNT
-            // if(count($this->code)>0)
-            $sql_code = ' sp.code IN ("'.implode('","', $this->code).'") ';
-            $and = ' OR ';
-        } else {
-            if ($filt_menu['programme'][0] != "" && count($filt_menu['programme']) > 0) {
-                $sql_code = ' sp.code in ("'.implode('","', $filt_menu['programme']).'") ';
-                $and = ' AND ';
-            }
-        }
-        $sql_fnum = '';
-
-        if (count($this->fnum_assoc) > 0) {
-            $sql_fnum = $and.' c.fnum IN ("'.implode('","', $this->fnum_assoc).'") ';
-        }
-
-        if (!empty($sql_code) || !empty($sql_fnum)) {
-            $query['q'] .= ' AND (' . $sql_code . ' ' . $sql_fnum . ') ';
-        } else {
-            $query['q'] .= ' AND 1=2 ';
-        }
-        return $query;
-    }
-
-    private function _buildSearch($str_array, $tableAlias = array()) {
-
-        $q = array('q' => array(), 'join' => array());
-        $queryGroups = [
-            'all' => '',
-            'fnum' => '',
-            'id' => '',
-            'email' => '',
-            'username' => '',
-            'lastname' => '',
-            'firstname' => ''
-        ];
-        $first = true;
-
-        foreach ($str_array as $str) {
-
-            $val = explode(': ', $str);
-
-            if ($val[0] == "ALL") {
-
-                if (is_numeric($val[1])) {
-
-                    //possibly fnum ou uid
-                    if (!empty($queryGroups['all'])) {
-                        $queryGroups['all'] .= ' or (u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
-                    } else {
-                        if ($first) {
-                            $queryGroups['all'] .= ' and (((u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
-                            $first = false;
-                        } else {
-                            $queryGroups['all'] .= ' and ((u.id = ' . $val[1] . ' or c.fnum like "'.$val[1].'%") ';
-                        }
-
-                    }
-
-                    if (!in_array('jos_users', $tableAlias)) {
-                        $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
-                    }
-
-                    $q['users'] = true;
-
-                } else {
-
-                    if (filter_var($val[1], FILTER_VALIDATE_EMAIL) !== false) {
-                        //the request is an email
-                        if (!empty($queryGroups['all'])) {
-                            $queryGroups['all'] .= ' or (u.email = "'.$val[1].'") ';
-                        } else {
-                            if ($first) {
-                                $queryGroups['all'] .= ' and (((u.email = "'.$val[1].'") ';
-                                $first = false;
-                            } else {
-                                $queryGroups['all'] .= ' and ((u.email = "'.$val[1].'") ';
-                            }
-
-                        }
-
-                        if (!in_array('jos_users', $tableAlias)) {
-                            $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id ';
-                        }
-
-                        $q['users'] = true;
-
-                    } else {
-
-                        if (!empty($queryGroups['all'])) {
-                            $queryGroups['all'] .= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        } else {
-                            if ($first) {
-                                $queryGroups['all'] .= ' and (((eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                                $first = false;
-                            } else {
-                                $queryGroups['all'] .= ' and ((eu.lastname LIKE "%' . ($val[1]) . '%" OR eu.firstname LIKE "%' . ($val[1]) . '%" OR u.email LIKE "%' . ($val[1]) . '%" OR u.username LIKE "%' . ($val[1]) . '%" ) ';
-                            }
-
-                        }
-
-                        if (!in_array('jos_users', $tableAlias)) {
-                            $q['join'][] .= ' left join #__users as u on u.id = c.applicant_id';
-                            $q['users'] = true;
-                        }
-
-                        if (!in_array('jos_emundus_users', $tableAlias)){
-                            $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
-                            $q['em_user'] = true;
-                        }
-                    }
-                }
-            }
-
-
-            if ($val[0] == "FNUM" && is_numeric($val[1])) {
-                //possibly fnum ou uid
-                if (!empty($queryGroups['fnum'])) {
-                    $queryGroups['fnum'] .= ' or (c.fnum like "'.$val[1].'%") ';
-                } else {
-                    if ($first) {
-                        $queryGroups['fnum'] .= ' and (((c.fnum like "'.$val[1].'%") ';
-                        $first = false;
-                    } else {
-                        $queryGroups['fnum'] .= ' and ((c.fnum like "'.$val[1].'%") ';
-                    }
-                }
-
-                if (!in_array('jos_users', $tableAlias)) {
-                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                }
-                $q['users'] = true;
-            }
-
-
-            if ($val[0] == "ID" && is_numeric($val[1])) {
-                //possibly fnum ou uid
-                if (!empty($queryGroups['id'])) {
-                    $queryGroups['id'] .= ' or (u.id = ' . $val[1] . ') ';
-                } else {
-                    if ($first) {
-                        $queryGroups['id'] .= ' and (((u.id = ' . $val[1] . ') ';
-                        $first = false;
-                    } else {
-                        $queryGroups['id'] .= ' and ((u.id = ' . $val[1] . ') ';
-                    }
-                }
-
-                if (!in_array('jos_users', $tableAlias)) {
-                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                }
-                $q['users'] = true;
-            }
-
-
-            if ($val[0] == "EMAIL") {
-                //the request is an email
-                if (!empty($queryGroups['email'])) {
-                    $queryGroups['email'] .= ' or (u.email like "%'.$val[1].'%") ';
-                } else {
-                    if ($first) {
-                        $queryGroups['email'] .= ' and (((u.email like "%'.$val[1].'%") ';
-                        $first = false;
-                    } else {
-                        $queryGroups['email'] .= ' and ((u.email like "%'.$val[1].'%") ';
-                    }
-                }
-
-                if (!in_array('jos_users', $tableAlias)) {
-                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                }
-
-                $q['users'] = true;
-            }
-
-
-            if ($val[0] == "USERNAME") {
-                //the request is an username
-                if (!empty($queryGroups['username'])) {
-                    $queryGroups['username'] .= ' or (u.username LIKE "%' . ($val[1]) . '%" ) ';
-                } else {
-                    if ($first) {
-                        $queryGroups['username'] .= ' and (((u.username LIKE "%' . ($val[1]) . '%" ) ';
-                        $first = false;
-                    } else {
-                        $queryGroups['username'] .= ' and ((u.username LIKE "%' . ($val[1]) . '%" ) ';
-                    }
-                }
-
-                if (!in_array('jos_users', $tableAlias)) {
-                    $q['join'][] = ' left join #__users as u on u.id = c.applicant_id ';
-                }
-                $q['users'] = true;
-            }
-
-            if ($val[0] == "LAST_NAME") {
-                //the request is a lastname
-                if (!empty($queryGroups['lastname'])) {
-                    $queryGroups['lastname'] .= ' or (eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                } else {
-                    if ($first) {
-                        $queryGroups['lastname'] .= ' and (((eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                        $first = false;
-                    } else {
-                        $queryGroups['lastname'] .= ' and ((eu.lastname LIKE "%' . ($val[1]) . '%" ) ';
-                    }
-                }
-
-                if (!in_array('jos_emundus_users', $tableAlias)){
-                    $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
-                    $q['em_user'] = true;
-                }
-            }
-
-            if ($val[0] == "FIRST_NAME") {
-                //the request is a firstname
-                if (!empty($queryGroups['firstname'])) {
-                    $queryGroups['firstname'] .= ' or (eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                } else {
-                    if ($first) {
-                        $queryGroups['firstname'] .= ' and (((eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                        $first = false;
-                    } else {
-                        $queryGroups['firstname'] .= ' and ((eu.firstname LIKE "%' . ($val[1]) . '%" ) ';
-                    }
-                }
-
-                if (!in_array('jos_emundus_users', $tableAlias)) {
-                    $q['join'][] .= ' left join #__emundus_users as eu on eu.user_id = c.applicant_id ';
-                    $q['em_user'] = true;
-                }
-            }
-        }
-
-        // Close all group parentheses.
-        foreach ($queryGroups as $k => $v) {
-            if (!empty($v)) {
-                $queryGroups[$k] .= ')';
-            }
-        }
-        $query = $queryGroups['all'].$queryGroups['fnum'].$queryGroups['id'].$queryGroups['email'].$queryGroups['username'].$queryGroups['lastname'].$queryGroups['firstname'];
-
-        if (!empty($query)) {
-            $query .= ')';
-        }
-
-        $q['q'][] = $query;
-        return $q;
+        $h_files = new EmundusHelperFiles();
+        return $h_files->_buildWhere($tableAlias, 'evaluation', array(
+            'fnum_assoc' => $this->fnum_assoc,
+            'code' => $this->code
+        ));
     }
 
     public function getUsers($current_fnum = null) {
-        require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'users.php');
 
         $session = JFactory::getSession();
         $dbo = $this->getDbo();
@@ -1427,9 +797,9 @@ class EmundusModelEvaluation extends JModelList {
         $evaluators_can_see_other_eval = $eMConfig->get('evaluators_can_see_other_eval', '0');
         $current_user = JFactory::getUser();
 
-        $query = 'select c.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
+        $query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code ';
 
-        $group_by = 'GROUP BY c.fnum ';
+        $group_by = 'GROUP BY jecc.fnum ';
 
         // prevent double left join on query
         $lastTab = array('#__emundus_setup_status', 'jos_emundus_setup_status',
@@ -1447,7 +817,7 @@ class EmundusModelEvaluation extends JModelList {
                     $lastTab = array();
                 }
                 if (!in_array($elt->tab_name, $lastTab)) {
-                    $leftJoin .= 'left join '.$elt->tab_name.' ON '.$elt->tab_name.'.fnum = c.fnum ';
+                    $leftJoin .= 'left join '.$elt->tab_name.' ON '.$elt->tab_name.'.fnum = jecc.fnum ';
                 }
                 if(!empty($elt->table_join)) {
                     $lastTab[] = $elt->table_join;
@@ -1460,31 +830,30 @@ class EmundusModelEvaluation extends JModelList {
         }
         $query .= ', jos_emundus_evaluations.id AS evaluation_id, CONCAT(eue.lastname," ",eue.firstname) AS evaluator';
         $group_by .= ', evaluation_id';
+
         if (count($this->_elements_default) > 0) {
             $query .= ', '.implode(',', $this->_elements_default);
         }
 
-
-
-        $query .= ' FROM #__emundus_campaign_candidature as c
-					LEFT JOIN #__emundus_setup_status as ss on ss.step = c.status
-					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = c.campaign_id
+        $query .= ' FROM #__emundus_campaign_candidature as jecc
+					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
+					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
-					LEFT JOIN #__emundus_users as eu on eu.user_id = c.applicant_id
-					LEFT JOIN #__users as u on u.id = c.applicant_id
+					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
+					LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN (
 					  SELECT GROUP_CONCAT(id_tag SEPARATOR ", ") id_tag, fnum
 					  FROM jos_emundus_tag_assoc
 					  GROUP BY fnum
-					) eta ON c.fnum = eta.fnum ' ;
+					) eta ON jecc.fnum = eta.fnum ' ;
         $q = $this->_buildWhere($lastTab);
 
         if (EmundusHelperAccess::isCoordinator($current_user->id)
             || (EmundusHelperAccess::asEvaluatorAccessLevel($current_user->id) && $evaluators_can_see_other_eval == 1)
             || EmundusHelperAccess::asAccessAction(5, 'r', $current_user->id)) {
-            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum ';
+            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum ';
         } else {
-            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = c.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
+            $query .= ' LEFT JOIN #__emundus_evaluations as jos_emundus_evaluations on jos_emundus_evaluations.fnum = jecc.fnum AND (jos_emundus_evaluations.user='.$current_user->id.' OR jos_emundus_evaluations.user IS NULL)';
         }
 
         if (!empty($leftJoin)) {
@@ -1494,14 +863,15 @@ class EmundusModelEvaluation extends JModelList {
         $query .= $q['join'];
 
         if (empty($current_fnum)) {
-            $query .= ' WHERE c.status > 0 ';
+            $query .= ' WHERE jecc.status > 0 ';
         } else {
-            $query .= ' WHERE c.fnum like '.$current_fnum;
+            $query .= ' WHERE jecc.fnum like '. $dbo->quote($current_fnum) . ' ';
         }
 
+        $query .= ' AND esc.published = 1 ';
 
         $query .= $q['q'];
-        $query .= $group_by;
+        $query .= ' ' . $group_by;
 
         $query .=  $this->_buildContentOrderBy();
 
@@ -1526,7 +896,7 @@ class EmundusModelEvaluation extends JModelList {
             $dbo->setQuery($query);
             return $dbo->loadAssocList();
         } catch(Exception $e) {
-            echo $e->getMessage();
+            echo $query . ' ' . $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.str_replace('#_', 'jos', $query), JLog::ERROR, 'com_emundus');
         }
     }
@@ -1614,9 +984,13 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     public function getPageNavigation() : string {
+        if ($this->getPagination()->pagesTotal <= 1) {
+            return '';
+        }
+
         $pageNavigation = "<div class='em-container-pagination-selectPage'>";
         $pageNavigation .= "<ul class='pagination pagination-sm'>";
-        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'> << </a></li>";
+        $pageNavigation .= "<li><a href='#em-data' id='" . $this->getPagination()->pagesStart . "'><span class='material-icons'>navigate_before</span></a></li>";
         if ($this->getPagination()->pagesTotal > 15) {
             for ($i = 1; $i <= 5; $i++ ) {
                 $pageNavigation .= "<li ";
@@ -1662,7 +1036,7 @@ class EmundusModelEvaluation extends JModelList {
                 $pageNavigation .= "><a id='" . $i . "' href='#em-data'>" . $i . "</a></li>";
             }
         }
-        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'> >> </a></li></ul></div>";
+        $pageNavigation .= "<li><a href='#em-data' id='" .$this->getPagination()->pagesTotal . "'><span class='material-icons'>navigate_next</span></a></li></ul></div>";
 
         return $pageNavigation;
     }
@@ -2068,7 +1442,7 @@ class EmundusModelEvaluation extends JModelList {
     * 	@return int
     */
     function getEvaluationFormByProgramme($code = null) {
-
+        $form = 0;
         if ($code === NULL) {
             $session = JFactory::getSession();
             if ($session->has('filt_params')) {
@@ -2079,20 +1453,37 @@ class EmundusModelEvaluation extends JModelList {
             }
         }
 
+        $group_id = 0;
+        $query = $this->_db->getQuery(true);
+        $query->select('fabrik_group_id')
+            ->from('#__emundus_setup_programmes')
+            ->where('code like '.$this->_db->Quote($code));
+
+        $this->_db->setQuery($query);
         try {
-            $query = 'SELECT ff.form_id
-					FROM #__fabrik_formgroup ff
-					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-                $this->_db->Quote($code) . ')';
-//die(str_replace('#_', 'jos', $query));
-            $this->_db->setQuery($query);
-
-            return $this->_db->loadResult();
-
+            $group_id = $this->_db->loadResult();
         } catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+
+        if (!empty($group_id)) {
+            $query->clear()
+                ->select('ff.form_id')
+                ->from('#__fabrik_formgroup AS ff')
+                ->where('ff.group_id IN ('.$this->_db->quote($group_id).')');
+
+            $this->_db->setQuery($query);
+
+            try {
+                $form = $this->_db->loadResult();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+
+        return $form;
     }
 
     /*
@@ -2281,7 +1672,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_letters = $this->getLettersByProgrammesStatusCampaigns($_programs,$_status, $_campaigns);
-            
+
             if (!empty($_letters)) {
                 if ($attachments == true) {
                     /// from $_letters --> get distinct attachment_id
@@ -2403,12 +1794,19 @@ class EmundusModelEvaluation extends JModelList {
 
     /// generate letters
     public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode) {
-        $tmp_path = JPATH_BASE . DS . 'tmp' . DS;
+        $user = JFactory::getUser();
 
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        /* replace old documents by the latest */
+        $replace_document = $eMConfig->get('export_replace_doc', 0);
+
+        $tmp_path = JPATH_SITE . DS . 'tmp' . DS;
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'emails.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'users.php');
         require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'fpdi.php');
 
         $_mEval = new EmundusModelEvaluation;
@@ -2456,13 +1854,15 @@ class EmundusModelEvaluation extends JModelList {
                 // get attachment info
                 $attachInfo = $_mFile->getAttachmentInfos($letter->attachment_id);
 
-                /// before to generate letter, refresh all previous generated letters of current day
-                $refreshQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.attachment_id = ' . $attachInfo['id'] .
-                                    ' AND DATE(#__emundus_uploads.timedate) = current_date() ' .
-                                        ' AND #__emundus_uploads.fnum = ' . $fnum;
+                /* before to generate letter, refresh all previous generated letters of current day - if $replace_document = true */
+                if($replace_document == 1) {
+                    $refreshQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.attachment_id = ' . $attachInfo['id'] .
+                        ' AND DATE(#__emundus_uploads.timedate) = current_date() ' .
+                        ' AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
 
-                $this->_db->setQuery($refreshQuery);
-                $this->_db->execute();
+                    $this->_db->setQuery($refreshQuery);
+                    $this->_db->execute();
+                }
 
                 $type = $letter->template_type;
 
@@ -2470,7 +1870,7 @@ class EmundusModelEvaluation extends JModelList {
                     case 1:     // simple file
                         /*@unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnumInfo[$fnum]['applicant_name']) . '_' . $fnum . $attachInfo['lbl'] . '_' . ".pdf");          //// remove existing file
                         @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_.' . ".pdf");*/                                                    //// remove existing file
-                        $file = JPATH_BASE . $letter->file;
+                        $file = JPATH_SITE . $letter->file;
                         if (file_exists($file)) {
                             $res->status = true;
                             $rand = rand(0, 1000000);
@@ -2491,7 +1891,7 @@ class EmundusModelEvaluation extends JModelList {
                                 $eMConfig = JComponentHelper::getParams('com_emundus');
                                 $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
                                     $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                 } else {
@@ -2529,7 +1929,7 @@ class EmundusModelEvaluation extends JModelList {
                                 /// remove it in database
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
                                                         ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2541,18 +1941,18 @@ class EmundusModelEvaluation extends JModelList {
                                 copy($file, $original_name);
 
                                 /// reupdate in database
-                                $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                                $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+                                $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             } else {
                                 if (copy($file, $path_name) and copy($file, $original_name)) {
-                                    $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                    $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
-                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                                    $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                                 }
                             }
                         } else {
                             $res->status = false;
-                            $res->msg = JText::_("ERROR_CANNOT_GENERATE_FILE");
+                            $res->msg = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
                         }
                         break;
 
@@ -2573,7 +1973,7 @@ class EmundusModelEvaluation extends JModelList {
                             ];
 
                             // Generate PDF
-                            $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum);
+                            $tags = $_mEmail->setTags($fnumInfo[$fnum]['applicant_id'], $post, $fnum, '', $letter->title.$letter->body.$letter->footer);
 
                             require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'MYPDF.php');
                             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -2587,11 +1987,11 @@ class EmundusModelEvaluation extends JModelList {
 
                             // Get logo
                             preg_match('#src="(.*?)"#i', $letter->header, $tab);
-                            $pdf->logo = JPATH_BASE . DS . @$tab[1];
+                            $pdf->logo = JPATH_SITE . DS . @$tab[1];
 
                             // Get footer
                             preg_match('#src="(.*?)"#i', $letter->footer, $tab);
-                            $pdf->logo_footer = JPATH_BASE . DS . @$tab[1];
+                            $pdf->logo_footer = JPATH_SITE . DS . @$tab[1];
                             unset($logo, $logo_footer);
 
                             $pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
@@ -2638,7 +2038,7 @@ class EmundusModelEvaluation extends JModelList {
                                 $eMConfig = JComponentHelper::getParams('com_emundus');
                                 $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
                                     $name = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                 } else {
@@ -2670,7 +2070,7 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                     ' AND #__emundus_uploads.filename = ' . $this->_db->quote($name) .
                                                         ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2678,11 +2078,11 @@ class EmundusModelEvaluation extends JModelList {
                                 $this->_db->execute();
                             }
                             /// copy generated letter to --letters folder
-                            $upId = $_mFile->addAttachment($fnum, $name, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);         ////
+                            $upId = $_mFile->addAttachment($fnum, $name, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);         ////
 
                             $pdf->Output($path_name, 'F');
                             $pdf->Output($original_name, 'F');
-                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url);
+                            $res->files[] = array('filename' => $name, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                         }
                         unset($pdf, $path_name, $name, $url, $upIdn);
                         unset($pdf, $original_name, $name, $original_url, $upIdn);
@@ -2698,7 +2098,7 @@ class EmundusModelEvaluation extends JModelList {
                         @unlink(EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'] . DS . $this->sanitize_filename($fnum) . $attachInfo['lbl'] . '_' . ".pdf");*/
 
                         require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
+                        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'export.php');
 
                         $m_Export = new EmundusModelExport;
                         $eMConfig = JComponentHelper::getParams('com_emundus');
@@ -2719,7 +2119,7 @@ class EmundusModelEvaluation extends JModelList {
 
                         try {
                             $phpWord = new \PhpOffice\PhpWord\PhpWord();
-                            $preprocess = $phpWord->loadTemplate(JPATH_BASE . $letter->file);
+                            $preprocess = $phpWord->loadTemplate(JPATH_SITE . $letter->file);
                             $tags = $preprocess->getVariables();
 
                             $idFabrik = array();
@@ -2730,7 +2130,11 @@ class EmundusModelEvaluation extends JModelList {
                                 if (is_numeric($tag)) {
                                     $idFabrik[] = $tag;
                                 } else {
-                                    $setupTags[] = $tag;
+                                    if(strpos($tag, 'IMG_') !== false) {
+                                        $setupTags[] = trim(explode(":", $tag)[0]);
+                                    } else {
+                                        $setupTags[] = $tag;
+                                    }
                                 }
                             }
 
@@ -2799,8 +2203,10 @@ class EmundusModelEvaluation extends JModelList {
                                 }
                             }
 
-                            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE . $letter->file);
+                            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE . $letter->file);
                             if (isset($fnumInfo[$fnum])) {
+                                $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+
                                 foreach ($setupTags as $tag) {
                                     $val = "";
                                     $lowerTag = strtolower($tag);
@@ -2823,7 +2229,7 @@ class EmundusModelEvaluation extends JModelList {
                                     } elseif (!empty(@$fnumInfo[$fnum][$lowerTag])) {
                                         $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
                                     } else {
-                                        $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                        //$tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
                                         $i = 0;
                                         foreach ($tags['patterns'] as $value) {
                                             if ($value == $tag) {
@@ -2832,7 +2238,12 @@ class EmundusModelEvaluation extends JModelList {
                                             }
                                             $i++;
                                         }
-                                        $preprocess->setValue($tag, htmlspecialchars($val));
+                                        // replace tag by image if tag name start by IMG_
+                                       if(strpos($tag, 'IMG_') !== false) {
+                                            $preprocess->setImageValue($tag, $val);
+                                        } else {
+                                            $preprocess->setValue($tag, htmlspecialchars($val));
+                                       }
                                     }
                                 }
 
@@ -2855,7 +2266,7 @@ class EmundusModelEvaluation extends JModelList {
                                     $eMConfig = JComponentHelper::getParams('com_emundus');
                                     $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                     if (!empty($generated_doc_name)) {
-                                        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                         $m_checklist = new EmundusModelChecklist;
                                         $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                     } else {
@@ -2882,7 +2293,7 @@ class EmundusModelEvaluation extends JModelList {
                                 /// check if file exists or not
                                 if (file_exists($path_name) or file_exists($original_path)) {
                                     $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2898,7 +2309,12 @@ class EmundusModelEvaluation extends JModelList {
                                     //convert to PDF
                                     $dest = str_replace('.docx', '.pdf', $original_name);
                                     $filename = str_replace('.docx', '.pdf', $filename);
-                                    $m_Export->toPdf($original_name, $dest, $fnum);
+                                    try {
+                                        $m_Export->toPdf($original_name, $dest, 'docx', $fnum);
+                                    } catch(Exception $e) {
+                                        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+                                        return false;
+                                    }
 
                                     copy($original_path . DS . $filename, $path . DS . $filename);
 
@@ -2906,7 +2322,7 @@ class EmundusModelEvaluation extends JModelList {
                                     unlink($original_path . DS . $original_name);
 
                                     $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -2916,8 +2332,8 @@ class EmundusModelEvaluation extends JModelList {
                                     copy($original_name, $path_name);
                                 }
 
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             }
                         } catch (Exception $e) {
                             $res->status = false;
@@ -2933,7 +2349,7 @@ class EmundusModelEvaluation extends JModelList {
 
                         require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
-                        $inputFileName = JPATH_BASE . $letter->file;
+                        $inputFileName = JPATH_SITE . $letter->file;
                         $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($inputFileName);
                         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
 
@@ -2987,7 +2403,7 @@ class EmundusModelEvaluation extends JModelList {
                                         }
 
                                         /// call to file controller
-                                        require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
+                                        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'files.php');
                                         $_cFiles = new EmundusControllerFiles;
 
                                         $fabrikValues = $_cFiles->getValueByFabrikElts($fabrikElts, [$fnum]);
@@ -3051,7 +2467,7 @@ class EmundusModelEvaluation extends JModelList {
                                 $eMConfig = JComponentHelper::getParams('com_emundus');
                                 $generated_doc_name = $eMConfig->get('generated_doc_name', "");
                                 if (!empty($generated_doc_name)) {
-                                    require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
+                                    require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
                                     $m_checklist = new EmundusModelChecklist;
                                     $filename = $m_checklist->formatFileName($generated_doc_name, $fnum, $post);
                                 } else {
@@ -3081,7 +2497,7 @@ class EmundusModelEvaluation extends JModelList {
                                 unlink($path_name);
 
                                 $query = 'DELETE FROM #__emundus_uploads 
-                                                    WHERE #__emundus_uploads.fnum = ' . $fnum .
+                                                    WHERE #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum) .
                                                         ' AND #__emundus_uploads.filename = ' . $this->_db->quote($filename) .
                                                             ' AND DATE(#__emundus_uploads.timedate) = current_date()';
 
@@ -3094,11 +2510,11 @@ class EmundusModelEvaluation extends JModelList {
 
                                 copy($original_name, $path_name);
 
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
 
                             } else {
-                                $upId = $_mFile->addAttachment($fnum, $filename, $fnumInfo[$fnum]['applicant_id'], $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, $attachInfo['description'], $canSee);
+                                $upId = $_mFile->addAttachment($fnum, $filename, $user->id, $fnumInfo[$fnum]['campaign_id'], $letter->attachment_id, '', $canSee);
 
                                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                                 $writer->setIncludeCharts(true);
@@ -3106,7 +2522,7 @@ class EmundusModelEvaluation extends JModelList {
 
                                 copy($original_name, $path_name);
 
-                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url);
+                                $res->files[] = array('filename' => $filename, 'upload' => $upId, 'url' => $original_url, 'type' => $attachInfo['id']);
                             }
                             break;
                         }
@@ -3114,7 +2530,7 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             $_ids = array();
-            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum = " . $fnum . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
+            $getLastUploadIdQuery = "SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum LIKE " . $this->_db->quote($fnum) . " GROUP BY #__emundus_uploads.attachment_id ORDER BY attachment_id DESC";
 
             $this->_db->setQuery($getLastUploadIdQuery);
             $availableUploads = $this->_db->loadObjectList();
@@ -3124,15 +2540,17 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             /// remove all duplicate attachments (just keep the last) -- unlink
-            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
+            $getDuplicateAttachmentQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
 
             $this->_db->setQuery($getDuplicateAttachmentQuery);
             $duplicateAttachments = $this->_db->loadObjectList();
 
             /// remove unnecessary records for same attachment id in database
-            $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum = ' . $fnum;
-            $this->_db->setQuery($deleteDuplicateAttachmentsQuery);
-            $this->_db->execute();
+            if($replace_document == 1) {
+                $deleteDuplicateAttachmentsQuery = 'DELETE FROM #__emundus_uploads WHERE #__emundus_uploads.id NOT IN ( ' . implode(',', $_ids) . ' ) AND #__emundus_uploads.fnum LIKE ' . $this->_db->quote($fnum);
+                $this->_db->setQuery($deleteDuplicateAttachmentsQuery);
+                $this->_db->execute();
+            }
 
 //            foreach($duplicateAttachments as $attachment) {
 //                unlink(EMUNDUS_PATH_ABS . $attachment->user_id . DS . $attachment->filename);
@@ -3141,28 +2559,58 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         /// lastly, we get all records in jos_emundus_uploads
-        unset($res->files);
+        if($replace_document == 1) {
+            unset($res->files);
 
-        $availableFilesName = [];
+            $availableFilesName = [];
 
-        $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
-        $this->_db->setQuery($getAllUploadsQuery);
-        $_upAttachments = $this->_db->loadObjectList();
+            $getAllUploadsQuery = 'SELECT #__emundus_uploads.* FROM #__emundus_uploads WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') AND DATE(#__emundus_uploads.timedate) = current_date() AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ' )';
+            $this->_db->setQuery($getAllUploadsQuery);
+            $_upAttachments = $this->_db->loadObjectList();
 
-        foreach($_upAttachments as $_upload) {
-            $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $_upload->user_id . DS);
-            $availableFilesName[] = $_upload->filename;
-        }
+            foreach ($_upAttachments as $_upload) {
+                $folder_id = current($_mFile->getFnumsInfos(array($_upload->fnum)))['applicant_id'];
+                $res->files[] = array('filename' => $_upload->filename, 'upload' => $_upload->id, 'url' => JURI::base() . EMUNDUS_PATH_REL . $folder_id . DS);
+                $availableFilesName[] = $_upload->filename;
+            }
 
-        foreach($fnum_Array as $fnum) {
-            $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
-            $files = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] .'_' . $fnumInfo[$fnum]['applicant_id'] . DS . '*');
+            foreach ($fnum_Array as $fnum) {
+                $fnumInfo = $_mFile->getFnumsTagsInfos([$fnum]);
+                $files = glob(EMUNDUS_PATH_ABS . 'tmp' . DS . $fnumInfo[$fnum]['applicant_name'] . '_' . $fnumInfo[$fnum]['applicant_id'] . DS . '*');
 
-            foreach($files as $_f) {
-                $fname = end(explode('/', $_f));
-                if(!in_array($fname, $availableFilesName)) {
-                    unlink($_f);
+                foreach ($files as $_f) {
+                    $fname = end(explode('/', $_f));
+                    if (!in_array($fname, $availableFilesName)) {
+                        unlink($_f);
+                    }
                 }
+            }
+        } else {
+            $_idList = array();
+            /* get max upload id for each fnum and for each attachment id and in currrent_date() */
+            foreach($templates as $tmpl) {
+                $getLastUploadIdQuery = 'SELECT MAX(#__emundus_uploads.id) as uid
+                                            FROM #__emundus_uploads 
+                                                WHERE #__emundus_uploads.fnum IN (' . implode(',', $fnum_Array) . ') 
+                                                    AND DATE(#__emundus_uploads.timedate) = current_date() 
+                                                        AND #__emundus_uploads.attachment_id IN (' . $tmpl . ' ) 
+                                                            GROUP BY fnum';
+                $this->_db->setQuery($getLastUploadIdQuery);
+                $_idList[$tmpl] = $this->_db->loadAssocList();
+            }
+
+            $raw = array_reduce($_idList, 'array_merge', array());
+            $out = array();
+
+            foreach($raw as $r) { $out[] = $r['uid']; }
+
+            /* from $out, get the filename of each */
+            unset($res->files);
+            $getFiles = $_mFile->getAttachmentsById($out);
+
+            foreach($getFiles as $f) {
+                $folder_id = current($_mFile->getFnumsInfos(array($f['fnum'])))['applicant_id'];
+                $res->files[] = array('filename' => $f['filename'], 'upload' => $f['id'], 'url' => JURI::base() . EMUNDUS_PATH_REL . $folder_id . DS, 'type' => $f['attachment_id']);
             }
         }
 
@@ -3202,6 +2650,22 @@ class EmundusModelEvaluation extends JModelList {
                     if(!file_exists($mergeZipAllPath)) { mkdir($mergeZipAllPath, 0755, true); }
 
                     if(sizeof($_isEmptyTmpFolder) > 0) {
+                        if($replace_document == 0) {
+                            $keepFiles = [];
+                            foreach($res->files as $_f) {
+                                $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
+                                if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
+                                    $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                                    unset($keepFiles[$index]);
+
+                                    unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                                }
+                            }
+
+                            $diffFiles = array_diff($_isEmptyTmpFolder,$keepFiles);
+                            foreach($diffFiles as $df) { unlink($df); }
+                        }
+
                         $this->ZipLetter($_tmpFolder, $tmp_path . $_zipName, 'true');
                         $this->copy_directory($_tmpFolder . DS, $mergeZipAllPath . DS . str_replace('_tmp' , '', end(explode('/', $_tmpFolder))));
                     }
@@ -3231,6 +2695,22 @@ class EmundusModelEvaluation extends JModelList {
                     $_tmpFolder = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 
                     $fileList = glob($_tmpFolder . DS . '*');
+
+                    if(sizeof($fileList) > 0 and $replace_document == 0) {
+                        $keepFiles = [];
+                        foreach($res->files as $_f) {
+                            $keepFiles[] = $_tmpFolder . DS . $_f['filename'];
+                            if(!file_exists($_tmpFolder . DS . $_f['filename'])) {
+                                $index = array_search($_tmpFolder . DS . $_f['filename'], $keepFiles);
+                                unset($keepFiles[$index]);
+                                unlink($_tmpFolder . DS . $_f['filename']);     // remove fake files
+                            }
+                        }
+                        $diffFiles = array_diff($fileList,$keepFiles);
+                        foreach($diffFiles as $df) { unlink($df); }
+                        // re-update $fileList
+                        $fileList = glob($_tmpFolder . DS . '*');
+                    }
 
                     foreach ($fileList as $filename) {
                         // if extension is pdf --> push into the array $pdf_files
@@ -3279,14 +2759,23 @@ class EmundusModelEvaluation extends JModelList {
             }
 
             /// remove unzipped folder
-            $_deleteFolders = glob($mergeZipAllPath . DS . '*');
-            foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-            rmdir($mergeZipAllPath);
-            $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
+            if (!empty($mergeZipAllPath)) {
+                $_deleteFolders = glob($mergeZipAllPath . DS . '*');
+                foreach($_deleteFolders as $_deleteFolder) {
+                    $this->deleteAll($_deleteFolder);
+                }
+                rmdir($mergeZipAllPath);
+                $res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
+            }
         }
 
         // group letters by document type --> using table "jos_emundus_upload" --> user_id, fnum, campaign_id, attachment_id
         elseif ($showMode == 1) {
+
+            /* get real files */
+            $raw = [];
+            foreach($res->files as $rf) { $raw[] = $rf['filename']; }
+
             unset($res->zip_data_by_candidat);
             unset($res->zip_all_data_by_candidat);
 
@@ -3317,15 +2806,23 @@ class EmundusModelEvaluation extends JModelList {
                     mkdir($dir_Name_Path, 0755, true);
                     if($mergeMode == 1) { if (!file_exists($dir_Merge_Path)) { mkdir($dir_Merge_Path, 0755, true); } }
                 }
-                
-                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                       /// get uploaded file by fnums
+
+                $uploaded_Files = $_mEval->getFilesByAttachmentFnums($template, $fnum_Array);                    // get uploaded file by fnums
 
                 foreach ($uploaded_Files as $key => $file) {
-                    $_uName = $_mUser->getUsersById($file->user_id);
+                    $_uRaw = $_mFile->getFnumInfos($file->fnum);                                                // get applicant id (not evaluator id)
+
+                    $_uId = $_uRaw['applicant_id'];
+                    $_uName = $_uRaw['name'];
 
                     //$source = EMUNDUS_PATH_ABS . $file->user_id . '--letters' . DS . $file->filename;
-                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName[0]->name . '_' . $_uName[0]->id . DS . $file->filename;
-                    copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
+                    $source = EMUNDUS_PATH_ABS . 'tmp' . DS . $_uName . '_' . $_uId . DS . $file->filename;
+
+                    if(!in_array($file->filename, $raw)) {
+                        unlink($source);
+                    } else {
+                        copy($source, $dir_Name_Path . DS . $file->filename);                                       /// copy file
+                    }
 
                     /// copy into /tmp/
                     $_zipName = $dir_Name . '_' . date("Y-m-d") . '.zip';                                   // zip file name (e.g: "Convention de financement")
@@ -3394,17 +2891,24 @@ class EmundusModelEvaluation extends JModelList {
                 rmdir($dir_Name_Path);
             }
 
-            if($mergeMode == 1) {
-                $_deleteFolders = glob($zip_All_Merge_Path . DS . '*');
-                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-                $this->deleteAll($zip_All_Merge_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
-
+            if ($mergeMode == 1) {
+                if (!empty($zip_All_Merge_Path)) {
+                    $_deleteFolders = glob($zip_All_Merge_Path . DS . '*');
+                    foreach($_deleteFolders as $_deleteFolder) {
+                        $this->deleteAll($_deleteFolder);
+                    }
+                    $this->deleteAll($zip_All_Merge_Path);
+                    $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Merge_Name . '_.zip';
+                }
             } else {
-                $_deleteFolders = glob($zip_All_Path . DS . '*');
-                foreach($_deleteFolders as $_deleteFolder) { $this->deleteAll($_deleteFolder); }
-                $this->deleteAll($zip_All_Path);
-                $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
+                if (!empty($zip_All_Path)) {
+                    $_deleteFolders = glob($zip_All_Path . DS . '*');
+                    foreach ($_deleteFolders as $_deleteFolder) {
+                        $this->deleteAll($_deleteFolder);
+                    }
+                    $this->deleteAll($zip_All_Path);
+                    $res->zip_all_data_by_document = DS . 'tmp/' . $zip_All_Name . '_.zip';
+                }
             }
         }
 
@@ -3417,26 +2921,37 @@ class EmundusModelEvaluation extends JModelList {
         }
 
         // build the recap table (just get generated documents of current date)
-        $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
+        if($replace_document == 1) {
+            $query = 'SELECT #__emundus_uploads.attachment_id, COUNT(#__emundus_uploads.attachment_id) AS _count 
                         FROM #__emundus_uploads
-                            WHERE #__emundus_uploads.fnum in (' . implode(',' , $available_fnums) . ') 
+                            WHERE #__emundus_uploads.fnum in (' . implode(',', $available_fnums) . ') 
                                 AND #__emundus_uploads.attachment_id IN (' . implode(',', $templates) . ')
                                     AND DATE(#__emundus_uploads.timedate) = current_date()
                                         GROUP BY #__emundus_uploads.attachment_id';
 
-        $this->_db->setQuery($query);
-
-        $document_count = $this->_db->loadAssocList();
-
-        $res->recapitulatif_count = [];
-
-        foreach($document_count as $key => $document) {
-            $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
             $this->_db->setQuery($query);
-            $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
+            $document_count = $this->_db->loadAssocList();
+            $res->recapitulatif_count = [];
+
+            foreach ($document_count as $key => $document) {
+                $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $document['attachment_id'];
+                $this->_db->setQuery($query);
+                $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $document['_count']);
+            }
+        } else {
+            $res->recapitulatif_count = [];
+            $raw = [];
+
+            foreach($res->files as $file) { $raw[$file['type']] += 1; }
+
+           foreach($raw as $k => $v) {
+               $query = "SELECT #__emundus_setup_attachments.value FROM #__emundus_setup_attachments WHERE #__emundus_setup_attachments.id = " . $k;
+               $this->_db->setQuery($query);
+               $res->recapitulatif_count[] = array('document' => $this->_db->loadResult(), 'count' => $v);
+           }
         }
 
-        return json_encode($res);
+        return $res;
     }
 
     public function ZipLetter($source, $destination, $include_dir = false) {
@@ -3518,11 +3033,324 @@ class EmundusModelEvaluation extends JModelList {
     }
 
     private function deleteAll($dir) {
-        foreach(glob($dir . '/*') as $file) {
-            if(is_dir($file)) { deleteAll($file); }
-            else { unlink($file); }
+        if(!empty($dir) && strpos($dir,JPATH_BASE . DS . 'tmp/') !== false) {
+            foreach (glob($dir . '/*') as $file) {
+                if (is_dir($file)) {
+                    $this->deleteAll($file);
+                } else {
+                    unlink($file);
+                }
+            }
+            rmdir($dir);
+            return 0;
         }
-        rmdir($dir);
         return 0;
+    }
+
+    public function getMyEvaluations($user,$campaign,$module) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        require_once (JPATH_SITE.'/components/com_emundus/models/application.php');
+        $m_application  = new EmundusModelApplication;
+
+        require_once (JPATH_SITE.'/components/com_emundus/helpers/module.php');
+        require_once (JPATH_SITE.'/components/com_emundus/helpers/array.php');
+        $h_module  = new EmundusHelperModule;
+        $h_array  = new EmundusHelperArray;
+
+        try {
+            $params = $h_module->getParams($module);
+
+            $fnums = array();
+            $query->select('DISTINCT eua.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+                ->from($db->quoteName('#__emundus_users_assoc','eua'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('eua.fnum').' = '.$db->quoteName('ecc.fnum'))
+                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
+                ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1))
+                ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->order('ecc.date_submitted');
+            $db->setQuery($query);
+            $files_users_associated = $db->loadObjectList();
+
+            $query->clear()
+                ->select('DISTINCT ega.fnum,ecc.applicant_id,ecc.campaign_id,u.name')
+                ->from($db->quoteName('#__emundus_groups','eg'))
+                ->leftJoin($db->quoteName('#__emundus_group_assoc','ega').' ON '.$db->quoteName('ega.group_id').' = '.$db->quoteName('eg.group_id'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                ->leftJoin($db->quoteName('#__users','u').' ON '.$db->quoteName('ecc.applicant_id').' = '.$db->quoteName('u.id'))
+                ->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->order('ecc.date_submitted');
+            $db->setQuery($query);
+            $files_groups_associated = $db->loadObjectList();
+
+            $files_associated = array_merge($files_users_associated, $files_groups_associated);
+
+            foreach ($files_associated as $file) {
+                if (!in_array($file->fnum, $fnums)) {
+                    $fnums[] = $file->fnum;
+                }
+            }
+
+            $query->clear()
+                ->select('esp.fabrik_group_id')
+                ->from($db->quoteName('#__emundus_setup_programmes','esp'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esp.code').' = '.$db->quoteName('esc.training'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+                ->where($db->quoteName('ecc.fnum') . ' IN (' . implode(',',$db->quote($fnums)) . ')');
+            $db->setQuery($query);
+            $eval_groups = $db->loadColumn();
+
+            $query->clear()
+                ->select('form_id')
+                ->from($db->quoteName('#__fabrik_formgroup'))
+                ->where($db->quoteName('group_id') . ' IN (' . implode(',',$eval_groups) . ')');
+            $db->setQuery($query);
+            $form_id = $db->loadResult();
+
+            $query->clear()
+                ->select('fe.id,fe.name,fe.label,fe.show_in_list_summary,ffg.form_id')
+                ->from($db->quoteName('#__fabrik_elements','fe'))
+                ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+                ->where($db->quoteName('fe.group_id') . ' IN (' . implode(',',$eval_groups) . ')');
+            if (isset($params->more_elements) && $params->more_elements !== '') {
+                $query->orWhere($db->quoteName('fe.id') . ' IN (' . $params->more_elements . ')');
+            }
+            $query->andWhere($db->quoteName('fe.published') . ' = 1');
+            $db->setQuery($query);
+            $eval_elements = $db->loadObjectList('name');
+
+            $evaluations = array();
+            $more_elements_by_campaign = new stdClass;
+            if(isset($params->more_elements_campaign)) {
+                $more_elements_by_campaign = json_decode($params->more_elements_campaign);
+            }
+
+            foreach ($files_associated as $file) {
+                $evaluation = new stdClass;
+                $evaluation->fnum = $file->fnum;
+                $evaluation->student_id = $file->applicant_id;
+                $evaluation->campaign_id = $file->campaign_id;
+                $evaluation->applicant_name = $file->name;
+
+                $key = false;
+                if(!empty($more_elements_by_campaign->campaign)){
+                    $key = array_search($file->campaign_id,$more_elements_by_campaign->campaign);
+                }
+
+                if($key !== false){
+                    $query->clear()
+                        ->select('fe.id,fe.name,fe.label,fe.show_in_list_summary,ffg.form_id')
+                        ->from($db->quoteName('#__fabrik_elements','fe'))
+                        ->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
+                        ->where($db->quoteName('fe.id') . ' IN (' . $more_elements_by_campaign->elements[$key] . ')');
+                    $db->setQuery($query);
+                    $more_elements = $db->loadObjectList('name');
+
+                    $eval_elements = array_merge($eval_elements,$more_elements);
+                }
+
+                foreach ($eval_elements as $key => $elt) {
+                    $eval_elements[$key]->label = JText::_($elt->label);
+                    if (!in_array($elt->name,['fnum','student_id','campaign_id'])) {
+                        $evaluation->{$elt->name} = $m_application->getValuesByElementAndFnum($file->fnum,$elt->id,$elt->form_id);
+                    }
+                }
+
+                $evaluations[] = $evaluation;
+            }
+
+            $evaluations = $h_array->removeDuplicateObjectsByProperty($evaluations,'fnum');
+
+            return array('evaluations' => $evaluations,'elements' => $eval_elements,'evaluation_form' => $form_id);
+        } catch (Exception $e) {
+            JLog::add('Problem to get files associated to user '.$user.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return array('evaluations' => [],'elements' => [],'evaluation_form' => 0);
+        }
+    }
+
+    public function getCampaignsToEvaluate($user,$module) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        require_once (JPATH_SITE.'/components/com_emundus/helpers/module.php');
+        require_once (JPATH_SITE.'/components/com_emundus/helpers/array.php');
+        $h_module  = new EmundusHelperModule;
+        $h_array  = new EmundusHelperArray;
+
+        try {
+            $params = $h_module->getParams($module);
+
+            // Get files associated to me (emundus_users_assoc)
+            $query->select('DISTINCT esc.id,esc.label,count(distinct eua.fnum) as files')
+                ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('eua.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+                ->where($db->quoteName('eua.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1')
+                ->andWhere($db->quoteName('eua.action_id') . ' = ' . $db->quote(5) . ' AND ' . $db->quoteName('eua.c') . ' = ' . $db->quote(1));
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->group('esc.id');
+            $db->setQuery($query);
+            $campaigns_users_assoc = $db->loadObjectList();
+
+            // Get files associated to my groups
+            $query->clear()
+                ->select('DISTINCT esc.id,esc.label,count(distinct ega.fnum) as files')
+                ->from($db->quoteName('#__emundus_groups','eg'))
+                ->leftJoin($db->quoteName('#__emundus_group_assoc','ega').' ON '.$db->quoteName('ega.group_id').' = '.$db->quoteName('eg.group_id'))
+                ->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('ega.fnum') . ' = ' . $db->quoteName('ecc.fnum'))
+                ->leftJoin($db->quoteName('#__emundus_setup_campaigns','esc').' ON '.$db->quoteName('esc.id').' = '.$db->quoteName('ecc.campaign_id'))
+                ->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($user))
+                ->andWhere($db->quoteName('ecc.published') . ' = 1');
+
+            if (isset($params->status) && $params->status !== '') {
+                $query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',',$params->status) . ')');
+            }
+
+            if (isset($params->tags) && $params->tags !== '') {
+                $query->leftJoin($db->quoteName('#__emundus_tag_assoc','eta').' ON '.$db->quoteName('eta.fnum').' = '.$db->quoteName('ecc.fnum'))
+                    ->andWhere($db->quoteName('eta.id_tag') . ' IN (' . implode(',',$params->tags) . ')');
+            }
+
+            if (isset($params->campaign_to_exclude) && $params->campaign_to_exclude !== '') {
+                $query->andWhere($db->quoteName('ecc.campaign_id') . ' NOT IN (' . $params->campaign_to_exclude . ')');
+            }
+
+            if (!empty($params->status_to_exclude)) {
+                $query->andWhere($db->quoteName('ecc.status') . ' NOT IN (' . implode(',',$params->status_to_exclude) . ')');
+            }
+
+            if (!empty($params->tags_to_exclude)) {
+                $exclude_query = $db->getQuery(true);
+
+                $exclude_query->select('eta.fnum')
+                    ->from('jos_emundus_tag_assoc eta')
+                    ->where('eta.id_tag IN (' . implode(',', $params->tags_to_exclude) . ')');
+
+                $db->setQuery($exclude_query);
+
+                $fnums_to_exclude = $db->loadColumn();
+
+                if (!empty($fnums_to_exclude)) {
+                    $query->where('ecc.fnum NOT IN (' . implode(',', $fnums_to_exclude) . ')');
+                }
+            }
+
+            $query->group('esc.id');
+            $db->setQuery($query);
+            $campaigns_groups_assoc = $db->loadObjectList();
+
+            $campaigns = array_merge($campaigns_users_assoc,$campaigns_groups_assoc);
+            return $h_array->mergeAndSumPropertyOfSameObjects($campaigns,'id','files');
+        } catch (Exception $e) {
+            JLog::add('Problem to get campaigns to evaluate for user '.$user.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return array();
+        }
     }
 }

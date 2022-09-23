@@ -93,7 +93,7 @@ if (isset($student->email) && !empty($student->email)) {
         'REFERENCE_FORM_URL'    => $link_form,
         'CAMPAIGN_LABEL'        => $current_user->campaign_name
     );
-    $tags       = $m_emails->setTags($user->id, $post);
+    $tags       = $m_emails->setTags($user->id, $post, $current_user->fnum, '', $obj->message);
     $body       = preg_replace($tags['patterns'], $tags['replacements'], $obj->message);
     $body       = $m_emails->setTagsFabrik($body, array($current_user->fnum));
     $subject    = $m_emails->setTagsFabrik($obj->subject, array($current_user->fnum));

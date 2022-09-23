@@ -1,7 +1,7 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
@@ -129,7 +129,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 			<tr class="hikashop_downloads row<?php echo $k;?>">
 				<td data-title="<?php echo JText::_('PRODUCT'); ?>" class="hikashop_order_item_name_value">
 <?php if(!empty($downloadFile->product_id)){ ?>
-					<a class="hikashop_order_product_link" href="<?php echo hikashop_completeLink('product&task=show&cid='.$downloadFile->product_id.$url_itemid); ?>">
+					<a class="hikashop_order_product_link" href="<?php echo hikashop_contentLink('product&task=show&cid='.$downloadFile->product_id.'&name='.$downloadFile->alias.$url_itemid, $downloadFile); ?>">
 <?php } ?>
 					<p class="hikashop_order_product_name"><?php
 						echo $downloadFile->order_product_name;

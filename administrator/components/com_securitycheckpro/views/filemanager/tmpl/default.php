@@ -20,7 +20,10 @@ $status_array = array(JHtml::_('select.option', '0', JText::_('COM_SECURITYCHECK
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+}
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
@@ -321,10 +324,19 @@ if (strstr($server, "iis") ) { ?>
                                 <div>
                                     <span class="badge analyzed-files padding-10-10-10-10"><?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_ANALYZED_FILES');?></span>
                                 </div>
-                                <div class="table-responsive overflow-x-auto margin-top-10">                                    
+                                <div class="table-responsive overflow-x-auto margin-top-30">                                    
                                     <table id="filesstatus_table" class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
+											<?php 
+												if ($this->checkbox_position == 1) {
+											?>
+											<th class="filesstatus-table width-5">
+                                                <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
+                                            </th> 
+											<?php 
+												}
+											?>
                                             <th class="filesstatus-table">
                                                 <?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_NAME'); ?>
                                             </th>
@@ -346,9 +358,15 @@ if (strstr($server, "iis") ) { ?>
                                             <th class="filesstatus-table">
                                                 <?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_MODIFIED'); ?>
                                             </th>
-                                            <th class="filesstatus-table width-5">
+                                            <?php 
+												if ($this->checkbox_position == 0) {
+											?>
+											<th class="filesstatus-table width-5">
                                                 <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
-                                            </th>        
+                                            </th> 
+											<?php 
+												}
+											?>       
                                         </tr>
                                     </thead>
             <?php
@@ -356,35 +374,40 @@ if (strstr($server, "iis") ) { ?>
             if (!empty($this->items_permissions) ) {    
                 foreach ($this->items_permissions as &$row) {        
                     ?>
-                                        <td class="centrado">
+					<?php 
+					if ($this->checkbox_position == 1) {
+						echo '<td class="centrado">' . JHtml::_('grid.id', $k, $row['path'], '', 'filesstatus_table') . '</td>'; 
+					}
+					?> 
+                    <td class="centrado">
                     <?php 
                     // Obtenemos la extensión del archivo
                     $last_part = explode(DIRECTORY_SEPARATOR, $row['path']);        
                     $last_part_2 = explode('.', end($last_part));
                     $name = reset($last_part_2);    
-                    echo $name;     
+                    echo filter_var($name, FILTER_SANITIZE_STRING);     
                     ?>
-                                        </td>
-                                        <td class="centrado">
+                    </td>
+                    <td class="centrado">
                     <?php 
                     $last_part = explode(DIRECTORY_SEPARATOR, $row['path']);
                     $extension = explode(".", end($last_part));                                                                                    
-                    echo end($extension);
+                    echo filter_var(end($extension), FILTER_SANITIZE_STRING);
                     ?>
-                                        </td>
-                                        <td class="centrado">
-                    <?php echo $row['kind']; ?>
-                                        </td>
-                                        <td class="centrado malwarescan-table-info">
-                    <?php echo $row['path']; ?>
-                                        </td>
-                                        <td class="centrado">
+                    </td>
+                    <td class="centrado">
+                    <?php echo filter_var($row['kind'], FILTER_SANITIZE_STRING); ?>
+                    </td>
+                    <td class="centrado malwarescan-table-info">
+                    <?php echo filter_var($row['path'], FILTER_SANITIZE_STRING); ?>
+                    </td>
+                    <td class="centrado">
                     <?php 
                     if (file_exists($row['path']) ) {
                         echo filesize($row['path']);
                     }
                     ?>
-                                        </td>
+                    </td>
                     <?php 
                     $safe = $row['safe'];
                     if ($safe == '0' ) {
@@ -394,15 +417,17 @@ if (strstr($server, "iis") ) { ?>
                     } else if ($safe == '2' ) {
                         echo "<td class=\"centrado;\"><span class=\"badge badge-warning\">";
                     } ?>
-                    <?php echo $row['permissions']; ?>
-                                        </td>
-                                        <td class="centrado">
-                    <?php echo $row['last_modified']; ?>
-                                        </td>
-                                        <td class="centrado">
-                    <?php echo JHtml::_('grid.id', $k, $row['path'], '', 'filesstatus_table'); ?>        
-                                        </td>
-                                    </tr>
+                    <?php echo filter_var($row['permissions'], FILTER_SANITIZE_STRING); ?>
+                    </td>
+                    <td class="centrado">
+                    <?php echo filter_var($row['last_modified'], FILTER_SANITIZE_STRING); ?>
+                    </td>
+                    <?php 
+					if ($this->checkbox_position == 0) {
+						echo '<td class="centrado">' . JHtml::_('grid.id', $k, $row['path'], '', 'filesstatus_table') . '</td>'; 
+					}
+					?> 
+                </tr>
                     <?php
                     $k = $k+1;
                 }
@@ -419,7 +444,13 @@ if (strstr($server, "iis") ) { ?>
                                     </div>
             <?php } ?>
                             </div>
-        <?php } ?>
+        <?php } else {
+			if ($this->state->get('filter.malwarescan_status') == 2 ) {
+				if ($this->file_manager_include_exceptions_in_database == 0 ) { 
+					echo '<div class="alert alert-info">' . JText::_('COM_SECURITYCHECKPRO_EXCEPTIONS_NOT_INCLUDED_IN_DATABASE'). '</div>';                            
+				} 
+			}
+		}  ?>
                     </div>                
                 </div>
             </div>

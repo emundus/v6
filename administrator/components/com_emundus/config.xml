@@ -13,6 +13,29 @@
 			-2 : user login
 		-->
 		<field name="log_actions" label="LOG_ACTIONS" type="field" description="LOG_ACTIONS_DESC"/>
+		<field name="log_actions_exclude" label="LOG_ACTIONS_EXCLUDE" type="field" description="LOG_ACTIONS_EXCLUDE_DESC"/>
+		<field name="log_actions_exclude_user" label="LOG_ACTIONS_EXCLUDE_USER" default="62" type="field" description="LOG_ACTIONS_EXCLUDE_USER_DESC"/>
+
+		<field name="com_emundus_show_tags_category" menu="hide" type="list" default="0" label="COM_EMUNDUS_SHOW_TAGS_CATEGORY" description="COM_EMUNDUS_SHOW_TAGS_CATEGORY_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="display_other_user_editing_same_file" type="list" default="0" label="DISPLAY_OTHER_USER_EDITING_SAME_FILE" description="DISPLAY_OTHER_USER_EDITING_SAME_FILE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="alert_editing_time" type="number" label="DISPLAY_OTHER_USER_EDITING_TIME" default="2"></field>
+
+		<field name="block_user" label="BLOCK_USER" type="radio" default="1" description="BLOCK_USER_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="reveal_password" label="COM_EMUNDUS_REVEAL_PASSWORD" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
@@ -58,6 +81,10 @@
 			"13":{"id":10, "c":0, "r":1, "u":0, "d":0},
 			"14":{"id":14, "c":1, "r":1, "u":1, "d":0}
 			}' label="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS" description="COM_EMUNDUS_EVALUATORS_DEFAULT_ACTIONS_DESC" />
+		<field name="hide_default_actions" menu="hide" type="list" default="0" label="COM_EMUNDUS_EVALUATORS_HIDE_DEFAULT_ACTIONS">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="show_related_files" type="radio" default="0" label="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES" description="COM_EMUNDUS_EVALUATORS_SHOW_RELATED_FILES_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
@@ -107,6 +134,7 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="status_for_send" type="text" default="0" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND_DESC" />
+		<field name="status_for_delete" type="text" default="" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE_DESC" />
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_PAYMENT" name="payment" description="COM_EMUNDUS_PAYMENT_DESC">
@@ -143,6 +171,12 @@
 			<option value="fnum">FNUM</option>
 			<option value="status">STATUS</option>
 		</field>
+
+		<field
+				name="spacer1"
+				type="spacer"
+				hr="true"
+		/>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_EXPORTS" name="exports" description="COM_EMUNDUS_EXPORTS_DESC">
@@ -165,6 +199,13 @@
 		<field name="export_path" type="text" size="6" label="COM_EMUNDUS_EXPORT_PATH" description="COM_EMUNDUS_EXPORT_PATH_DESC"/>
 		<field name="application_form_order" type="text" size="6" label="COM_EMUNDUS_APPLICATION_FORM_ORDER" description="COM_EMUNDUS_APPLICATION_FORM_ORDER_DESC"/>
 		<field name="attachment_order" type="text" size="6" label="COM_EMUNDUS_CANDIDACY_FORM_ORDER" description="COM_EMUNDUS_CANDIDACY_FORM_ORDER_DESC"/>
+
+		<!-- replace generated documents (means : just get the last generated document) -->
+		<field name="export_replace_doc" type="radio" default="0" label="COM_EMUNDUS_EXPORT_REPLACE_DOC" description="COM_EMUNDUS_EXPORT_REPLACE_DOC_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer1"
 				type="spacer"
@@ -217,6 +258,8 @@
 		<field name="clientId" type="text" required="false" label="COM_EMUNDUS_CLIENTID_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTID_GOOGLE_DESC" class="inputbox" default="" ForcedDisplay="value"/>
 		<field name="clientSecret" type="text" required="false" label="COM_EMUNDUS_CLIENTSECRET_GOOGLE_LABEL" description="COM_EMUNDUS_CLIENTSECRET_GOOGLE_DESC" class="inputbox" default=""/>
 		<field name="refreshToken" type="text" required="false" label="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_LABEL" description="COM_EMUNDUS_REFRESHTOKEN_GOOGLE_DESC" class="inputbox" default=""/>
+		<field name="refreshToken_url" type="note" description="&lt;a href=&quot;/index.php?option=com_emundus&amp;controller=calendar&amp;task=authenticateclient&quot; target=&quot;_blank&quot;&gt;New Refresh Token	&lt;/a&gt;" />
+
 		<field name="parentCalId" type="text" required="false" label="COM_EMUNDUS_PARENTCAL_LABEL" description="COM_EMUNDUS_PARENTCAL_DESC" class="inputbox" default="" />
 		<field name="mailRecipients" type="text" required="false" label="COM_EMUNDUS_MAILRECIPIENTS_LABEL" description="COM_EMUNDUS_MAILRECIPIENTS_DESC" class="inputbox" default="5" />
 		<field name="bookedPrefix" type="text" required="false" label="COM_EMUNDUS_BOOKEDPREFIX_LABEL" description="COM_EMUNDUS_BOOKEDPREFIX_DESC" class="inputbox" default="BOOKED" />
@@ -266,6 +309,12 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="gotenberg_url" type="text" default="http://localhost:3000" label="COM_EMUNDUS_GOTENBERG_URL" description="COM_EMUNDUS_GOTENBERG_URL_DESC" />
+
+		<field name="gotenberg_ssl" type="radio" default="1" label="COM_EMUNDUS_GOTENBERG_SSL" description="COM_EMUNDUS_GOTENBERG_SSL_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
 		<field
 				name="spacer4"
 				type="spacer"
@@ -351,11 +400,29 @@
 		<field name="filtre_ip" type="text" default="" label="COM_EMUNDUS_FILTRE_IP" description="COM_EMUNDUS_FILTRE_IP_DESC" />
 		<field name="attachment_id" type="text" default="" label="COM_EMUNDUS_ATTACHMENT_ID" description="COM_EMUNDUS_ATTACHMENT_ID_DESC" />
 
-<!--		<field name="spacer7" type="spacer" hr="true"/>-->
+		<field name="spacer7" type="spacer" hr="true"/>
 
-<!--		<field name="export_banner" type="note" label="Export Banner"/>-->
+		<field name="zoom_jwt_title" type="note" label="COM_EMUNDUS_API_ZOOM_TITLE"/>
+		<field name="zoom_jwt" type="text" label="COM_EMUNDUS_API_ZOOM_JWT" description="COM_EMUNDUS_API_ZOOM_JWT_DESC" />
 
-<!--		<field name="banner_limit" type="text" default="10" label="COM_EMUNDUS_BANNER_LIMIT" description="COM_EMUNDUS_BANNER_LIMIT_DESC" />-->
+		<field
+				name="spacer8"
+				type="spacer"
+				hr="true"
+		/>
+		<field
+				name="flywire_integration"
+				type="note"
+				label="COM_EMUNDUS_PAYMENT_FLYWIRE"
+		/>
+		<fieldset label="COM_EMUNDUS_PAYMENT_FLYWIRE">
+			<field name="flywire_recipient" label="COM_EMUNDUS_PAYMENT_FLYWIRE_RECIPIENT_LABEL" type="text"></field>
+			<field name="flywire_mode" label="COM_EMUNDUS_PAYMENT_FLYWIRE_MODE_LABEL" type="list">
+				<option value="demo">Démo</option>
+				<option value="production">Production</option>
+			</field>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"
@@ -370,6 +437,12 @@
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_MESSENGER" name="messenger" description="COM_EMUNDUS_MESSENGER_DESC">
 		<field name="messenger_anonymous_coordinator" type="list" default="0" label="COM_EMUNDUS_MESSENGER_ANONYMOUS" description="COM_EMUNDUS_MESSENGER_ANONYMOUS_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+	<fieldset label="COM_EMUNDUS_PROFILE" name="profile_view" description="COM_EMUNDUS_PROFILE">
+		<field name="display_expires_date" type="list" default="0" label="COM_EMUNDUS_PROFILE_EXPIRES_DATE" description="COM_EMUNDUS_PROFILE_EXPIRES_DATE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>

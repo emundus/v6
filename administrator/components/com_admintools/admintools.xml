@@ -1,18 +1,18 @@
-<!--
+<!--~
   ~ @package   admintools
-  ~ @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
   ~ @license   GNU General Public License version 3, or later
   -->
 
 <extension type="component" version="3.9.0" method="upgrade">
 	<name>Admintools</name>
-	<creationDate>2020-07-14</creationDate>
+	<creationDate>2022-02-08</creationDate>
 	<author>Nicholas K. Dionysopoulos</author>
 	<authorEmail>nicholas@akeeba.com</authorEmail>
 	<authorUrl>https://www.akeeba.com</authorUrl>
 	<copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
 	<license>This component in released under the GNU/GPL v3 or later license</license>
-	<version>5.7.4</version>
+	<version>6.1.5</version>
 	<description>Security and utilitarian tools for Joomla! site administrators</description>
 
 	<!-- Public front end files -->
@@ -37,10 +37,12 @@
             <folder>assets</folder>
             <folder>Controller</folder>
             <folder>Dispatcher</folder>
+			<folder>fields</folder>
             <folder>Helper</folder>
             <folder>media</folder>
             <folder>Model</folder>
             <folder>sql</folder>
+			<folder>tmpl</folder>
             <folder>Toolbar</folder>
             <folder>View</folder>
 
@@ -56,7 +58,6 @@
 		<languages folder="language/backend">
 			<language tag="en-GB">en-GB/en-GB.com_admintools.ini</language>
 			<language tag="en-GB">en-GB/en-GB.com_admintools.sys.ini</language>
-			<language tag="en-GB">en-GB/en-GB.com_admintools.menu.ini</language>
 		</languages>
 
 	</administration>

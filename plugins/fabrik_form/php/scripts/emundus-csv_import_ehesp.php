@@ -27,7 +27,10 @@ function convert( $str ) {
 $app = JFactory::getApplication();
 
 $csv = $formModel->data['jos_emundus_setup_csv_import___csv_file_raw'];
+$campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
+$profile_id = $formModel->data['jos_emundus_setup_csv_import___profile'];
 $create_new_fnum = $formModel->data['jos_emundus_setup_csv_import___create_new_fnum'];
+$send_email = $formModel->data['jos_emundus_setup_csv_import___send_email_raw'][0];
 
 // Check if the file is a file on the server and in the right format.
 if (!is_file(JPATH_ROOT.$csv)) {
@@ -282,7 +285,6 @@ if (empty($parsed_data)) {
     return false;
 }
 
-$campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
 $status = 0;
 $email_from_sys = $app->getCfg('mailfrom');
 
@@ -746,7 +748,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
         }
     }
 
-    if ($new_user) {
+    if ($new_user && !empty($send_email) && $send_email == 1) {
         // Send email indicating account creation.
         $m_emails = new EmundusModelEmails();
 
@@ -754,15 +756,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
         if ($ldap_user) {
             $totals['ldap']++;
             $email = $m_emails->getEmail('new_ldap_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null);
+            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
         } else if ($cas_user) {
             $totals['cas']++;
             $email = $m_emails->getEmail('new_cas_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null);
+            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
         } else {
             $totals['user']++;
             $email = $m_emails->getEmail('new_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, $password);
+            $tags = $m_emails->setTags($user->id, null, $fnum, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
         }
 
         $mailer = JFactory::getMailer();

@@ -19,7 +19,6 @@
 
 .files-page .em-containerFilter-heading div.buttons {
     display: flex;
-    margin-top: -4px !important;
 }
 
 .em-containerFilter-heading div.buttons {
@@ -55,6 +54,92 @@ button.save-btn, .btn-success, .trombi_download, button.save, button.save_contin
 #trombi_preview, #trombi_generate {
     width: auto !important;
 }
+
+
+ #trombi_generate {
+    background-color: #5a5a72 !important;
+    border: 1px solid #5a5a72 !important;
+    text-shadow: none;
+}
+
+#trombi_preview {
+    background-color: #B0B0BF !important;
+    border: 1px solid #B0B0BF !important;
+    text-shadow: none;
+}
+
+.trombi_download {
+    background-color: #5A5A72 !important;
+    border: 1px solid #5A5A72 !important;
+    text-shadow: none;
+}
+
+ #trombi_generate:hover {
+     background: #B0B0BF !important;
+     background-color: #B0B0BF !important;
+     border: 1px solid #B0B0BF !important;
+     border-radius: 4px !important;
+     color: #ffffff !important;
+}
+
+#trombi_preview:hover {
+    background: #5A5A72 !important;
+    background-color: #5A5A72 !important;
+    border: 1px solid #5A5A72 !important;
+    border-radius: 4px !important;
+    color: #ffffff !important;
+}
+
+#trombi_download:hover {
+    background: #B0B0BF !important;
+    background-color: #B0B0BF !important;
+    border: 1px solid #B0B0BF !important;
+    border-radius: 4px !important;
+    color: #ffffff !important;
+}
+
+#job-form input, #job-form select {
+     color: #353544;
+}
+
+#job-form .pull-right .btn:not(.dropdown-toggle) {
+    background: #5A5A72 !important;
+    background-color: #5A5A72 !important;
+    border: 1px solid #5A5A72 !important;
+    border-radius: 4px !important;
+    color: #ffffff !important;
+}
+
+#job-form .pull-right .btn:not(.dropdown-toggle):hover {
+     background: #B0B0BF !important;
+     background-color: #B0B0BF !important;
+     border: 1px solid #B0B0BF !important;
+     border-radius: 4px !important;
+     color: #ffffff !important;
+ }
+
+#job-form .col-md-12 a {
+    color: #5A5A72;
+}
+
+#job-form .col-md-12 a:hover {
+    color: #2B2B2B;
+}
+
+.em-doc-dl {
+    background: #B0B0BF !important;
+    background-color: #B0B0BF !important;
+    border: 1px solid #B0B0BF !important;
+    border-radius: 4px !important;
+}
+
+.em-doc-dl:hover {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 1px solid #B0B0BF !important;
+    border-radius: 4px !important;
+}
+
 button.save-btn:hover, button.save-btn:active, .trombi_download:hover, button.save-btn:focus, .btn-success:hover, .btn-success:focus, .btn-success:active, button.save:hover, button.save:active, button.save:focus, button.save_continue:hover, button.save_continue:active, button.save_continue:focus, button.send:hover, button.send:active, button.send:focus, a.btn-attach:hover, a.btn-attach:active, a.btn-attach:focus, #trombi_preview:hover, #trombi_preview:active, #trombi_preview:focus, #trombi_generate:hover, #trombi_generate:active, #trombi_generate:focus, .indicateurs-page .btn:hover, .indicateurs-page .btn:active, .indicateurs-page .btn:focus, .fabrik_filter_submit:hover, .fabrik_filter_submit:active, .fabrik_filter_submit:focus, button.importation:hover, button.importation:active, button.importation:focus, a.btn-warning:hover, a.btn-warning:active, a.btn-warning:focus, a.btn-info:hover, a.btn-info:active, a.btn-info:focus, .header-right .btn-danger:hover, .header-right .btn-danger:focus, .header-right .btn-danger:active, button.btn-primary:hover, button.btn-primary:active, button.btn-primary:focus, .em-generated-docs .em-doc-zip:hover, .em-generated-docs .em-doc-zip:active, .em-generated-docs .em-doc-zip:focus, .xclsform .panel-body button#savefilter:hover, .xclsform .panel-body button#savefilter:active, .xclsform .panel-body button#savefilter:focus, .modal-dialog #chargement a.btn:hover, .modal-dialog #chargement a.btn:active, .modal-dialog #chargement a.btn:focus, a#em-doc-zip:hover, a#em-doc-zip:active, a#em-doc-zip:focus, .btn.advanced-search-apply:hover, .btn.advanced-search-apply:active, .btn.advanced-search-apply:focus, .toggle-addoption.btn:hover, .toggle-addoption.btn:active, .toggle-addoption.btn:focus, .candidacy-files-list a#send:hover, .candidacy-files-list a#send:active, .candidacy-files-list a#send:focus, .choice-statut-btn:hover, .choice-statut-btn:active, .choice-statut-btn:focus {
     background-color: transparent;
     color: #ea9262;
@@ -217,18 +302,30 @@ table .btn-group > .btn {
     padding-left: 10px;
 }
 
+.main-panel .panel-default.em-data {
+    color: #353544;
+}
+
 .suwala-doubleScroll-scroll-wrapper {
     width: 100% !important;
 }
-
+.pagination{
+    margin: 16px 12px !important;
+    height: 30px;
+}
 ul.pagination.pagination-sm a {
     color: #4E5B6D;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
 }
 
 ul.pagination.pagination-sm a:active,
 ul.pagination.pagination-sm a:focus,
 ul.pagination.pagination-sm a:hover {
     color: #404B5A;
+    text-decoration: unset;
 }
 
 #check {
@@ -334,7 +431,15 @@ button#em-close-file {
 }
 
 .panel-default>div {
-    padding-left: 1rem;
+    padding-left: 13px;
+    padding-bottom: 24px;
+}
+
+.files-board .main-panel table#em-data thead th div,
+.files-board .main-panel table#em-data tbody td div.em-cell,
+.files-board .main-panel table#em-data tbody td div.em-cell strong,
+.files-board .main-panel .panel-default .container-result {
+    color: #353544;
 }
 
 .suwala-doubleScroll-scroll-wrapper,
@@ -343,9 +448,11 @@ button#em-close-file {
 }
 
 .navbar-collapse.collapse.navbar-inverse-collapse .navbar-nav > li > .dropdown-menu {
-    border: 1px solid #dddddd;
+    padding: 10px 0 10px 0 !important;
+    border-radius: 4px;
     background: #ffffff;
     margin-top: 20px;
+    border: unset;
 }
 
 .navbar .nav>li>.dropdown-menu:before {
@@ -435,12 +542,7 @@ div#em-appli-block button.btn.btn-default {
 }
 /* Panel droit dossier */
 .em-close-minimise {
-    align-self: flex-end;
-    display: block;
-    position: absolute;
-    right: 20px;
     margin: 0;
-    top: 7px;
 }
 button#em-close-file {
     color: #ffffff;
@@ -477,7 +579,6 @@ div#em-appli-block .panel.panel-default.widget .panel-heading h3.panel-title + a
 div#em-appli-block .list-group-item {
     background-color: #ffffff;
     border-radius: 4px;
-    color: #333333;
 }
 
 div#em-appli-block button.btn.btn-default:hover, div#em-appli-block button.btn.btn-default:focus, div#em-appli-block button.btn.btn-default:active {
@@ -511,6 +612,7 @@ div#em-appli-block .active.content fieldset {
 div#em-appli-block .legend {
     font-weight: 500;
     margin-bottom: 0px;
+    color: #353544;
 }
 
 div#em-appli-block .legend::before {
@@ -574,10 +676,26 @@ div#em-modal-form {
     width: 100%;
 }
 
+div#em-modal-actions {
+    overflow: hidden;
+}
+
+div#em-modal-actions .modal-dialog {
+    max-height: 90vh !important;
+}
+
 .modal-dialog .modal-body {
     max-height: unset;
     min-height: 400px;
     height: auto !important;
+}
+
+div#em-modal-actions .modal-dialog .modal-content {
+    max-height: 90vh !important;
+}
+
+div#em-modal-actions .modal-dialog .modal-body {
+    max-height: calc(90vh - 182px) !important;
 }
 
 #em-add-user .em-hidden-nonapli-fields .chosen-container .chosen-drop {
@@ -690,12 +808,14 @@ div#em-modal-actions #savePDFfilter, div#em-modal-actions #savefilter{
     margin-right: 1%;
     border-radius: 4px;
     margin-top: 10px;
-    background: #12db42;
-    border: solid 1px #12db42;
+    background: #5a5a72;
+    border: solid 1px #5a5a72;
+    color: #fff;
 }
 div#em-modal-actions #savePDFfilter:hover, div#em-modal-actions #savefilter:hover{
-    background: transparent;
-    color: #12db42;
+   background: #b0b0bf;
+    color: #fff;
+    border: solid 1px #b0b0bf;
 }
 
 div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
@@ -729,11 +849,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau div#em-files-filters .panel-heading h3, .view-users #em-user-filters .panel-heading h3 {
     font-size: 1rem;
-    margin-top: 5px;
 }
 
 #filters #quick .selectize-control  {
-    height: 28px;
     width: 85%;
 }
 
@@ -770,7 +888,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 #filters #quick .selectize-input input {
-    height: 30px !important;
+    height: 100% !important;
 }
 
 #filters #quick #input-tags-selectized {
@@ -797,6 +915,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau .panel-body {
     background-color: #f8f8f8;
+    padding: 16px 24px;
 }
 
 .g-back-office-emundus-tableau.view-export_select_columns .panel-body {
@@ -804,9 +923,20 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 }
 
 .g-back-office-emundus-tableau .panel-info > .panel-heading {
-    height: 50px !important;
+    height: 40px !important;
     border-radius: 0;
-    padding: 10px;
+    padding: 8px 22px;
+    border-bottom: unset;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.em-containerFilter-heading div:first-of-type{
+    display: flex;
+    align-items: center;
+}
+label[for='clear-search']{
+    margin-bottom: unset !important;
 }
 
 .g-back-office-emundus-tableau .panel-body .em_label label, .g-back-office-emundus-tableau div#em_adv_filters label {
@@ -826,13 +956,10 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter{
     margin-bottom: 10px;
 }
-.g-back-office-emundus-tableau .em_filters_adv_filter .em_filters.em-filter .em_filters_adv_filter_addColumn{
-    margin-top: 5px;
-    height: 35px;
-}
 
 .g-back-office-emundus-tableau div#filters .selectize-control.input-tags.demo-default.multi.plugin-remove_button .selectize-input.items.not-full {
-    padding: 0 1rem;
+    padding: 0px;
+    height: 29px !important;
 }
 
 
@@ -841,6 +968,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
     border: 1px solid #ffffff;
     border-radius: 0 0 5px 5px;
     box-shadow: none;
+    color: #353544;
 }
 
 .g-back-office-emundus-tableau #em_filters .chosen-container-active.chosen-with-drop .chosen-single {
@@ -855,9 +983,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
     background: #ffffff;
     border: 1px solid #ccc !important;
     box-shadow: none;
-    padding: 10px;
+    padding: 5px;
     margin-top: 1px;
-    height: 31px;
+    height: 29px;
 }
 
 #em-user-filters .chosen-container-single .chosen-single  {
@@ -889,9 +1017,10 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 .g-back-office-emundus-tableau .panel-info {
     box-shadow: none;
     border-radius:0;
-   border-right: 2px solid #eee;
+    border-right: 2px solid #eee;
     border-left:none;
     border-bottom:none;
+    border-top:none;
     margin-bottom: 0px !important;
 }
 
@@ -914,9 +1043,12 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 #em_filters .chosen-container-single .chosen-single span {
     margin-top: -3.5px;
-    font-style: italic;
     opacity: 0.4;
     font-size: 15px;
+}
+
+.em_filters_filedset .SumoSelect > .CaptionCont > span.placeholder {
+    font-style: normal !important;
 }
 
 #em-files-filters td,
@@ -954,7 +1086,9 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .main-panel select#pager-select {
     width: auto;
+    color: #353544;
 }
+
 /* FILES VIEW */
 .col-md-3.side-panel div#em-files-filters div#em-appli-menu .panel-body a {
     background: #4E5B6D;
@@ -971,8 +1105,13 @@ div#em-synthesis .panel-heading h3 {
 }
 
 .list-group-item {
-    padding: 6px 20px;
+    padding: 8px 20px;
 }
+
+.list-group-item strong {
+    font-weight: 500;
+}
+
 
 .list-item-notifications{
     display: flex;
@@ -1010,6 +1149,11 @@ div#em-synthesis .panel-heading h3 {
 
 .col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body {
     background: #ffffff;
+    color: #353544;
+}
+
+.col-md-9.main-panel div#em-appli-block .em-decision-form-content textarea {
+    color: #353544;
 }
 
 .col-md-9.main-panel div#em-appli-block .panel.panel-default.widget .panel-body .span12 h1 {
@@ -1040,7 +1184,6 @@ div#em-assoc-files .panel-body {
 div#em-assoc-files h3.panel-title,
 div#em-last-open h3.panel-title {
     font-size: 1rem;
-    padding-top: 5px;
 }
 
 div#em-assoc-files .panel.panel-primary,
@@ -1086,7 +1229,11 @@ div#em-assoc-files .pull-right.btn-group {
 }
 
 div#em-synthesis .panel-body {
-    padding: 0 !important;
+    padding-left: 11px !important;
+}
+
+div#em-synthesis .panel-body ul {
+    color: #353544;
 }
 
 div#em-last-open .panel-body {
@@ -1140,18 +1287,19 @@ p {
 
 .navbar-brand{
     padding: 0;
-    height: 37px;
+    height: unset;
     font-size: 16px;
     font-weight: bold;
+    margin-left: 10px;
     /*margin-top: 5px;*/
 }
 .navbar-collapse.collapse{
     overflow: hidden;
 }
 .container-nav{
-    margin-top: 5px;
-    height: 25px;
     width: 100%;
+    display: flex;
+    align-items: center;
 }
 .em-container-assocFiles > .em-container-assocFiles-heading span.label{
     overflow: hidden;
@@ -1217,15 +1365,15 @@ td:first-child>.em-cell {
 .form-control {
     display: block !important;
     width: 100% !important;
-    height: 43px !important;
-    padding: 10px 15px !important;
-    font-size: 15px !important;
+    height: 43px;
+    padding: 10px 15px;
+    font-size: 15px;
     line-height: 1.42857 !important;
     color: rgb(44, 62, 80);
     background-color: rgb(255, 255, 255);
     background-image: none;
     border: 1px solid rgb(220, 228, 236);
-    border-radius: 0px !important;
+    border-radius: 0;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
 }
@@ -1281,8 +1429,8 @@ textarea>.input-group-btn>.btn {
 
 label {
     color: #000;
-    margin-bottom: 5px !important;
-    font-weight: bold !important;
+    margin-bottom: 8px !important;
+    font-weight: bold;
     display: inline;
 }
 
@@ -2045,6 +2193,7 @@ label[for="em-file_to_upload"]:hover {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 0 !important;
 }
 
 .tooltipSelectAttachments{
@@ -2155,6 +2304,10 @@ label[for="em-file_to_upload"]:hover {
     color: #fff !important;
 }
 
+.modal .modal-body .excel.panel-info > .panel-heading label {
+    color: #000 !important;
+}
+
 .em-export-item {
     display: flex;
     align-items: center;
@@ -2197,6 +2350,8 @@ footer#g-footer {
 #em-last-open .list-group-item{
     background-color: #fafafa !important;
     border: 1px solid #fafafa;
+    padding-left: 11px;
+    justify-content: flex-start;
 }
 
 .list-group a.list-group-item.active, .list-group a.list-group-item.active:hover, .list-group a.list-group-item.active:focus {
@@ -2247,7 +2402,7 @@ div#em-assoc-files .panel > .panel-heading {
 .g-back-office-emundus-tableau #em_select_filter #del-filter {
     font-size: 19px !important;
     border-radius: 4px !important;
-    padding-top: 0px;
+    padding: unset !important;
 }
 
 .g-back-office-emundus-tableau button#search:hover ,  .g-back-office-emundus-tableau button#clear-search:hover, .g-back-office-emundus-tableau button#save-filter:hover , .g-back-office-emundus-tableau button#add-filter:hover,  .g-back-office-emundus-tableau input#search:hover ,  .g-back-office-emundus-tableau input#clear-search:hover, .g-back-office-emundus-tableau input#save-filter:hover , .g-back-office-emundus-tableau input#add-filter:hover  {
@@ -2302,15 +2457,6 @@ div#em-assoc-files .panel > .panel-heading {
     padding: 11px;
 }
 
-.g-back-office-emundus-tableau .em-container-mail .panel-heading.em-container-mail-heading h3 span, .g-back-office-emundus-tableau .em-container-comment .panel-heading.em-container-comment-heading h3 span, .g-back-office-emundus-tableau .em-container-share .panel-heading.em-container-share-heading h3 span, .g-back-office-emundus-tableau .em-container-attachment.em-container-form .panel-heading.em-container-form-heading h3 span  {
-    margin-top: 10px;
-}
-
-.g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading .btn-group.pull-right, .g-back-office-emundus-tableau.admissions-page .main-panel .panel-heading .btn-group.pull-right {
-    position: relative;
-    top: -29px;
-}
-
 .g-back-office-emundus-tableau.evaluations-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right, .g-back-office-emundus-tableau.decision-page .main-panel .panel-heading.em-container-evaluation-heading .btn-group.pull-right {
     position: relative;
     top: 0px;
@@ -2326,7 +2472,7 @@ div#em-assoc-files .panel > .panel-heading {
     top: 0px;
 }
 .g-back-office-emundus-tableau.evaluations-page .em-container-share-table .em-container-share-table-left, .g-back-office-emundus-tableau.decision-page .em-container-share-table .em-container-share-table-left {
-    margin-top: 13px;
+    margin-top: 0px;
 }
 
 button#em-close-file {
@@ -2335,7 +2481,11 @@ button#em-close-file {
     text-shadow: none;
     background-image: none;
     margin-top: -3px;
-    height: 36px;
+    height: 34px;
+}
+#em-close-file span{
+    color: white;
+    font-weight: bold;
 }
 
 button#em-close-file:hover, button#em-close-file:focus, button#em-close-file:active {
@@ -2398,7 +2548,9 @@ table#groups-table a:hover {
 /* MENU ACTIONS */
 .navbar.navbar-inverse {
     border-radius: 0;
-    padding: 10px;
+    padding: 8px 7px;
+    height: 40px !important;
+    min-height: auto !important;
 }
 
 .em-cell a:focus {
@@ -2604,7 +2756,7 @@ a.copy-0:focus {
     box-shadow: 0px 6px 10px rgba(5, 47, 55, 0.07), 0px 1px 18px rgba(5, 47, 55, 0.06), 0px 3px 5px rgba(5, 47, 55, 0.1);
     border-radius: 4px;
     max-width: 500px !important;
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
 }
 
 .email___candidat .email___message_body .email___message_body_item {

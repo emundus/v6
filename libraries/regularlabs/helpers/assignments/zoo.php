@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -120,89 +120,6 @@ class RLAssignmentsZoo extends RLAssignment
 		return $this->passSimple($cats);
 	}
 
-	public function passItems()
-	{
-		if ( ! $this->request->id || $this->request->option != 'com_zoo')
-		{
-			return $this->pass(false);
-		}
-
-		if ($this->request->view != 'item')
-		{
-			return $this->pass(false);
-		}
-
-		$pass = false;
-
-		// Pass Article Id
-		if ( ! $this->passItemByType($pass, 'ContentIds'))
-		{
-			return $this->pass(false);
-		}
-
-		// Pass Authors
-		if ( ! $this->passItemByType($pass, 'Authors'))
-		{
-			return $this->pass(false);
-		}
-
-		return $this->pass($pass);
-	}
-
-	public function passPageTypes()
-	{
-		return $this->passByPageTypes('com_zoo', $this->selection, $this->assignment);
-	}
-
-	private function getCatParentIds($id = 0)
-	{
-		$parent_ids = [];
-
-		if ( ! $id)
-		{
-			return $parent_ids;
-		}
-
-		while ($id)
-		{
-			if (substr($id, 0, 3) == 'app')
-			{
-				$parent_ids[] = $id;
-				break;
-			}
-
-			$query = $this->db->getQuery(true)
-				->select('c.parent')
-				->from('#__zoo_category AS c')
-				->where('c.id = ' . (int) $id);
-			$this->db->setQuery($query);
-			$pid = $this->db->loadResult();
-
-			if ( ! $pid)
-			{
-				$query = $this->db->getQuery(true)
-					->select('c.application_id')
-					->from('#__zoo_category AS c')
-					->where('c.id = ' . (int) $id);
-				$this->db->setQuery($query);
-				$app = $this->db->loadResult();
-
-				if ($app)
-				{
-					$parent_ids[] = 'app' . $app;
-				}
-
-				break;
-			}
-
-			$parent_ids[] = $pid;
-
-			$id = $pid;
-		}
-
-		return $parent_ids;
-	}
-
 	private function getCategories()
 	{
 		if ($this->article && isset($this->article->catid))
@@ -286,5 +203,88 @@ class RLAssignmentsZoo extends RLAssignment
 			default:
 				return false;
 		}
+	}
+
+	private function getCatParentIds($id = 0)
+	{
+		$parent_ids = [];
+
+		if ( ! $id)
+		{
+			return $parent_ids;
+		}
+
+		while ($id)
+		{
+			if (substr($id, 0, 3) == 'app')
+			{
+				$parent_ids[] = $id;
+				break;
+			}
+
+			$query = $this->db->getQuery(true)
+				->select('c.parent')
+				->from('#__zoo_category AS c')
+				->where('c.id = ' . (int) $id);
+			$this->db->setQuery($query);
+			$pid = $this->db->loadResult();
+
+			if ( ! $pid)
+			{
+				$query = $this->db->getQuery(true)
+					->select('c.application_id')
+					->from('#__zoo_category AS c')
+					->where('c.id = ' . (int) $id);
+				$this->db->setQuery($query);
+				$app = $this->db->loadResult();
+
+				if ($app)
+				{
+					$parent_ids[] = 'app' . $app;
+				}
+
+				break;
+			}
+
+			$parent_ids[] = $pid;
+
+			$id = $pid;
+		}
+
+		return $parent_ids;
+	}
+
+	public function passItems()
+	{
+		if ( ! $this->request->id || $this->request->option != 'com_zoo')
+		{
+			return $this->pass(false);
+		}
+
+		if ($this->request->view != 'item')
+		{
+			return $this->pass(false);
+		}
+
+		$pass = false;
+
+		// Pass Article Id
+		if ( ! $this->passItemByType($pass, 'ContentIds'))
+		{
+			return $this->pass(false);
+		}
+
+		// Pass Authors
+		if ( ! $this->passItemByType($pass, 'Authors'))
+		{
+			return $this->pass(false);
+		}
+
+		return $this->pass($pass);
+	}
+
+	public function passPageTypes()
+	{
+		return $this->passByPageTypes('com_zoo', $this->selection, $this->assignment);
 	}
 }

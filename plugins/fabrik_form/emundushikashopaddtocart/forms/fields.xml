@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-emundushikashopaddtocart" label="PLG_FABRIK_FORM_EMUNDUSHIKASHOPADDTOCART_FIELDS">
+            <field name="elts_to_check" type="field" default="" description="PLG_FABRIK_FORM_EMUNDUSHIKASHOPADDTOCART_ELTS_DESC" label="PLG_FABRIK_FORM_EMUNDUSHIKASHOPADDTOCART_ELTS_LABEL" />
+        </fieldset>
+    </fields>
+</form>

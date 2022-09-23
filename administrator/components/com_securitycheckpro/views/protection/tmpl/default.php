@@ -32,7 +32,10 @@ function xframeoptions( $name, $attribs = null, $selected = null, $id=false )
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+}
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
@@ -475,7 +478,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                                 <div class="col-lg-3">
                                     <textarea readonly rows="5" cols="30" name="backend_exceptions" id="backend_exceptions"><?php echo $this->protection_config['backend_exceptions'] ?></textarea>                            
                                 </div>
-                                <div class="col-lg-3" class="margin-left-60 margin-top-50">
+                                <div class="col-lg-6 margin-left-60 margin-top-50">
                                     <div class="input-group">
             <?php 
             if (version_compare(JVERSION, '3.20', 'lt') ) {
@@ -508,7 +511,7 @@ require JPATH_ADMINISTRATOR.'/components/com_securitycheckpro/helpers/protection
                                                     <div class="input-group margin-left-60">
                                                         <input type="text" class="form-control span8" aria-label="exception" name="exception" id="exception" placeholder="<?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_YOUR_EXCEPTION_HERE') ?>">
                                                         <div class="input-group-append">
-                                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?></button>
+                                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo JText::_('COM_SECURITYCHECKPRO_ACTIONS') ?></button>
                                                             <div class="dropdown-menu">
                                                                 <a class="dropdown-item" id="add_exception_button" href="#backend_exceptions"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_ADD_EXCEPTION_TEXT') ?></a>
                                                                 <a class="dropdown-item" id="delete_exception_button" href="#backend_exceptions"><?php echo JText::_('COM_SECURITYCHECKPRO_HIDE_BACKEND_DELETE_EXCEPTION_TEXT') ?></a>

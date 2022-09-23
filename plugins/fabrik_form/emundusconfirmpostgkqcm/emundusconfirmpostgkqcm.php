@@ -164,39 +164,148 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
         $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
         // Get status by element
-        $tables = explode(',',$this->getParam('qcmcomplete_parenttable', 'jos_emundus_qcm'));
-        $repeat_table = explode(',',$this->getParam('qcmcomplete_repeattable', 'jos_emundus_qcm_880_repeat'));
-        $formid = explode(',',$this->getParam('qcmcomplete_formid', '287'));
-        $itemid = explode(',',$this->getParam('qcmcomplete_itemid', '3185'));
-        $results_success = explode(',',$this->getParam('emundusconfirmpostqcm__results_success', ''));
-        $results_failed = explode(',',$this->getParam('emundusconfirmpostqcm__results_failed', ''));
-        $results_waiting = explode(',',$this->getParam('emundusconfirmpostqcm__results_studying', ''));
-        $statuses = explode(',',$this->getParam('emundusconfirmpostqcm__status', '5'));
-
-        $total_elt = 'qcm_total';
-        $query = $db->getQuery(true);
         $status_defined = false;
         $status = 0;
 
-        foreach ($tables as $key => $table){
-            if(!$status_defined) {
-                // Total QCM
+        // Get criteres
+        $query = $db->getQuery(true);
+        $query->select('dcr.*')
+            ->from($db->quoteName('data_criteres_qcm','dcr'))
+            ->where($db->quoteName('dcr.campaign') . ' = ' . $db->quote($student->fnums[$student->fnum]->campaign_id));
+        $db->setQuery($query);
+        $criteres = $db->loadObject();
+
+        if(!empty($criteres)){
+            //No eligible
+            $query->clear()
+                ->select('*')
+                ->from($db->quoteName('data_criteres_qcm_1050_repeat'))
+                ->where($db->quoteName('parent_id') . ' = ' . $db->quote($criteres->id));
+            $db->setQuery($query);
+            $non_eligibles_rules = $db->loadObjectList();
+
+            foreach ($non_eligibles_rules as $non_eligible_rule){
                 $query->clear()
-                    ->select($total_elt)
+                    ->select('db_table_name')
+                    ->from($db->quoteName('#__fabrik_lists'))
+                    ->where($db->quoteName('form_id') . ' = ' . $db->quote($non_eligible_rule->qcm));
+                $db->setQuery($query);
+                $table = $db->loadResult();
+
+                $query->clear()
+                    ->select('qcm_total')
                     ->from($db->quoteName($table))
                     ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($student->fnum));
                 $db->setQuery($query);
-                $total = explode('/', $db->loadResult())[0];
+                $note = (int)explode('/', $db->loadResult())[0];
 
-                if ($total >= $results_success[$key] && $status != 7) {
-                    $status = $statuses[0];
-                } elseif ($total <= $results_failed[$key]) {
-                    $status = $statuses[1];
+                if ($note <= $non_eligible_rule->note) {
+                    $status = $criteres->status_noneligible;
                     $status_defined = true;
-                } elseif ($total > $results_failed[$key] && $total < $results_success[$key]) {
-                    $status = $statuses[2];
-                } else {
-                    $status = $statuses[2];
+                    break;
+                }
+            }
+
+            if(!$status_defined){
+                //A verifier
+                $query->clear()
+                    ->select('*')
+                    ->from($db->quoteName('data_criteres_qcm_1049_repeat'))
+                    ->where($db->quoteName('parent_id') . ' = ' . $db->quote($criteres->id));
+                $db->setQuery($query);
+                $a_verifier_rules = $db->loadObjectList();
+
+                foreach ($a_verifier_rules as $a_verifier_rule){
+                    $query->clear()
+                        ->select('db_table_name')
+                        ->from($db->quoteName('#__fabrik_lists'))
+                        ->where($db->quoteName('form_id') . ' = ' . $db->quote($a_verifier_rule->qcm));
+                    $db->setQuery($query);
+                    $table = $db->loadResult();
+
+                    $query->clear()
+                        ->select('qcm_total')
+                        ->from($db->quoteName($table))
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($student->fnum));
+                    $db->setQuery($query);
+                    $note = (int)explode('/', $db->loadResult())[0];
+
+                    if ($note <= $a_verifier_rule->note) {
+                        $status = $criteres->status_averifier;
+                        $status_defined = true;
+                        break;
+                    }
+                }
+            }
+
+            if(!$status_defined){
+                //Eligible
+                $query->clear()
+                    ->select('*')
+                    ->from($db->quoteName('data_criteres_qcm_1048_repeat'))
+                    ->where($db->quoteName('parent_id') . ' = ' . $db->quote($criteres->id));
+                $db->setQuery($query);
+                $eligible_rules = $db->loadObjectList();
+
+                foreach ($eligible_rules as $eligible_rule){
+                    $query->clear()
+                        ->select('db_table_name')
+                        ->from($db->quoteName('#__fabrik_lists'))
+                        ->where($db->quoteName('form_id') . ' = ' . $db->quote($eligible_rule->qcm));
+                    $db->setQuery($query);
+                    $table = $db->loadResult();
+
+                    $query->clear()
+                        ->select('qcm_total')
+                        ->from($db->quoteName($table))
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($student->fnum));
+                    $db->setQuery($query);
+                    $note = (int)explode('/', $db->loadResult())[0];
+
+                    if ($note >= $eligible_rule->note) {
+                        $status = $criteres->status_eligible;
+                    } else {
+                        $status = $criteres->status_averifier;
+                        $status_defined = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            $tables = explode(',', $this->getParam('emundusconfirmpostqcm__parenttable', 'jos_emundus_qcm'));
+            $repeat_table = explode(',', $this->getParam('emundusconfirmpostqcm__repeattable', 'jos_emundus_qcm_880_repeat'));
+            $formid = explode(',', $this->getParam('emundusconfirmpostqcm__formid', '287'));
+            $itemid = explode(',', $this->getParam('emundusconfirmpostqcm__itemid', '3185'));
+            $results_success = explode(',', $this->getParam('emundusconfirmpostqcm__results_success', ''));
+            $results_failed = explode(',', $this->getParam('emundusconfirmpostqcm__results_failed', ''));
+            $results_waiting = explode(',', $this->getParam('emundusconfirmpostqcm__results_studying', ''));
+            $statuses = explode(',', $this->getParam('emundusconfirmpostqcm__status', '5'));
+
+            $total_elt = 'qcm_total';
+            $query = $db->getQuery(true);
+
+
+            foreach ($tables as $key => $table) {
+                if (!$status_defined) {
+                    // Total QCM
+                    $query->clear()
+                        ->select($total_elt)
+                        ->from($db->quoteName($table))
+                        ->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($student->fnum));
+                    $db->setQuery($query);
+                    $total = explode('/', $db->loadResult())[0];
+                    if (isset($results_success[$key]) && isset($results_failed[$key])) {
+                        if ($total >= $results_success[$key] && $status != $statuses[2]) {
+                            $status = $statuses[0];
+                        } elseif ($total <= $results_failed[$key]) {
+                            $status = $statuses[1];
+                            $status_defined = true;
+                        } elseif ($total > $results_failed[$key] && $total < $results_success[$key]) {
+                            $status = $statuses[2];
+                        } else {
+                            $status = $statuses[2];
+                        }
+                    }
                 }
             }
         }
@@ -220,12 +329,11 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
 		$dispatcher->trigger('onAfterSubmitFile', [$student->id, $student->fnum]);
-        $dispatcher->trigger('callEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
 		$student->candidature_posted = 1;
 
 		// Send emails defined in trigger
-		$step = $this->getParam('emundusconfirmpost_status', '1');
+		$step = $status;
 		$code = array($student->code);
 		$to_applicant = '0,1';
 		$m_emails->sendEmailTrigger($step, $code, $to_applicant, $student);
@@ -279,7 +387,7 @@ class PlgFabrik_FormEmundusconfirmpostgkqcm extends plgFabrik_Form
 
 				// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
 				$post = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
-				$tags = $m_emails->setTags($student->id, $post, $fnum);
+				$tags = $m_emails->setTags($student->id, $post, $fnum, '', $application_form_name.$export_path);
 				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
 				$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 

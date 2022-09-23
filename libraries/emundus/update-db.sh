@@ -19,8 +19,10 @@ mysql_host=`cat $configuration_file | grep -Po "(?<=public .host = ')[^']+(?=:)"
 mysql_port="4008"
 db_prefix="jos"
 
-if [[ -z $mysql_host ]]; then
-
+if [[ $1 ]]; then
+	mysql_host=$1
+	mysql_port="3306"
+elif [[ -z $mysql_host ]]; then
 	mysql_host="localhost"
 	mysql_port="3306"
 fi
@@ -33,7 +35,7 @@ fi
         find $tmp_path -name '*.xlsx' -mtime +7 -exec rm {} \;
         find $tmp_path -name '*.pdf' -mtime +7 -exec rm {} \;
         find $tmp_path -name '*.zip' -mtime +7 -exec rm {} \;
-        echo "Folder ` $tmp_path ` is cleaned at $current_date" >> $tmp_log_path
+        echo "Folder $tmp_path is cleaned at $current_date" >> $tmp_log_path
         echo "-----------------------------------------------------------------------------" >> $tmp_log_path
 
 

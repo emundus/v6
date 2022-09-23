@@ -152,7 +152,7 @@ function generateLetterFromHtml($letter, $fnum, $user_id, $training) {
         'FNUM' 				=> $fnum
     ];
 
-    $tags = $m_emails->setTags($user_id, $post, $fnum);
+    $tags = $m_emails->setTags($user_id, $post, $fnum, '', $letter->body);
     $htmldata = "";
     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -470,7 +470,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
             }
 
         } else { // From HTML : $letter['template_type'] == 2
-            $tags = $m_emails->setTags($user_id, $post, $fnum);
+            $tags = $m_emails->setTags($user_id, $post, $fnum, '', $letter["body"]);
             $htmldata = "";
             $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -777,7 +777,7 @@ function data_to_img($match) {
 }
 
 /// add $elements as optional params
-function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null) {
+function application_form_pdf($user_id, $fnum = null, $output = true, $form_post = 1, $form_ids = null, $options = null, $application_form_order = null, $profile_id = null, $file_lbl = null, $elements = null, $attachments = true) {
     jimport('joomla.html.parameter');
     set_time_limit(0);
     require_once(JPATH_LIBRARIES . DS . 'emundus' . DS . 'tcpdf' . DS . 'tcpdf.php');
@@ -786,7 +786,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
     require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus_onboard' . DS . 'models' . DS . 'form.php');
+    require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
 
     if (empty($file_lbl)) {
         $file_lbl = "_application";
@@ -802,7 +802,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
     $m_profile = new EmundusModelProfile;
     $m_application = new EmundusModelApplication;
     $m_files = new EmundusModelFiles;
-    $m_form = new EmundusonboardModelform;
+    $m_form = new EmundusModelform;
 
     $db = JFactory::getDBO();
     $app = JFactory::getApplication();
@@ -850,15 +850,15 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 $htmldata .= '<table width="100%"><tr>';
 
                 $htmldata .= '<h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3>';
-                if (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
                     $htmldata .=
                         '<tr><td>
-                                        <img src="'.EMUNDUS_PATH_REL . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" />
+                                        <img src="'.EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar . '" width="100" align="right" />
                                     </td></tr>';
-                } elseif (file_exists(EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
+                } elseif (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar) && !empty($item->avatar) && is_image_ext($item->avatar)) {
                     $htmldata .=
                         '<tr><td>
-                                        <img src="' . EMUNDUS_PATH_REL . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" />
+                                        <img src="' . EMUNDUS_PATH_ABS . @$item->user_id . '/' . @$item->avatar . '" width="100" align="right" />
                                     </td></tr>';
                 }
                 $htmldata .= '<tr><td class="name" colspan="2">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</td></tr>';
@@ -928,11 +928,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     }
                     $forms .= '<h1>' . $m_form->getProfileLabelByProfileId($profile_id)->label . '</h1>';
                 }
-                $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids);
+                $forms .= $m_application->getFormsPDF($user_id, $fnum, $fids, $gids, $profile_id, $eids, $attachments);
             }
         }
         else {
-            $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id);
+            $forms = $m_application->getFormsPDF($user_id, $fnum, $form_ids, $application_form_order, $profile_id, null, $attachments);
         }
 
         // Create PDF object
@@ -985,7 +985,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         //get title
         $title = $config->get('sitename');
         if (is_file($logo)) {
-            $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+            $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
         }
 
         unset($logo);
@@ -1244,7 +1244,7 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
     //get title
     $title = $config->get('sitename');
     if (is_file($logo)) {
-        $pdf->SetHeaderData($logo, PDF_HEADER_LOGO_WIDTH, $title, PDF_HEADER_STRING);
+        $pdf->SetHeaderData($logo, 20, $title, PDF_HEADER_STRING);
     }
 
     unset($logo);
@@ -1469,12 +1469,12 @@ function generatePDFfromHTML($html, $path = null, $footer = '') {
 
     // Generate a random file name in case one isn't supplied.
     if (empty($path)) {
-	    $path = DS.'images'.DS.'emundus'.DS.'pdf'.substr(md5(microtime()), rand(0, 26), 5).'.pdf';
+	    $path = EMUNDUS_PATH_ABS.'pdf'.substr(md5(microtime()), rand(0, 26), 5).'.pdf';
     }
 
-    if (!file_exists(dirname(JPATH_BASE.$path))) {
-        mkdir(dirname(JPATH_BASE.$path), 0755, true);
-        chmod(dirname(JPATH_BASE.$path), 0755);
+    if (!file_exists(dirname($path))) {
+        mkdir(dirname($path), 0755, true);
+        chmod(dirname($path), 0755);
     }
 
     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);

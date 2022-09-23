@@ -1,21 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.3.0
+ * @version	4.4.0
  * @author	hikashop.com
  * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-if($this->display_method == 1) {
-	$this->simplified_registration=explode(',',$this->simplified_registration);
 
-	if(in_array('2',$this->simplified_registration)){ $registration=2; }
-	if(in_array('0',$this->simplified_registration)){ $registration=0; }
-	if(in_array('1',$this->simplified_registration)){ $registration=1; }
-	if(in_array('3',$this->simplified_registration)){ $registration=3; }
-	$this->simplified_registration = $registration;
+if($this->display_method == 1) {
+	$this->simplified_registration = explode(',',$this->simplified_registration);
+	$this->simplified_registration = array_shift($this->simplified_registration);
 }
 
 ?>

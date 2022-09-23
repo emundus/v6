@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -20,7 +20,7 @@ require_once JPATH_LIBRARIES . '/regularlabs/autoload.php';
 
 JFormHelper::loadFieldClass('range');
 
-class JFormFieldRL_Range extends \JFormFieldRange
+class JFormFieldRL_Range extends JFormFieldRange
 {
 	protected $layout = 'range';
 
@@ -40,14 +40,6 @@ class JFormFieldRL_Range extends \JFormFieldRange
 		return parent::getInput();
 	}
 
-	protected function getLayoutPaths()
-	{
-		$paths   = parent::getLayoutPaths();
-		$paths[] = JPATH_LIBRARIES . '/regularlabs/layouts';
-
-		return $paths;
-	}
-
 	protected function getLayoutData()
 	{
 		$data = parent::getLayoutData();
@@ -59,5 +51,13 @@ class JFormFieldRL_Range extends \JFormFieldRange
 		];
 
 		return array_merge($data, $extraData);
+	}
+
+	protected function getLayoutPaths()
+	{
+		$paths   = parent::getLayoutPaths();
+		$paths[] = JPATH_LIBRARIES . '/regularlabs/layouts';
+
+		return $paths;
 	}
 }

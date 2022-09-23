@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-cron-emundusapogee-ws" label="PLG_APOGEE_WEBSERVICE">
+
+			<field name="webservice_url"
+				   type="text"
+				   description="PLG_APOGEE_WSDL_DESC"
+				   label="PLG_APOGEE_WSDL"
+				   size="30"
+			/>
+
+			<field name="webservice_authentication" type="list" default="2" label="PLG_APOGEE_AUTHENTICATION" description="PLG_APOGEE_AUTHENTICATION_DESC">
+				<option value="0">No Auth</option>
+				<option value="1">Bearer Token</option>
+				<option value="2">Basic Auth</option>
+				<option value="3">Digest Auth</option>
+			</field>
+
+			<field name="webservice_username"
+				   type="text"
+				   description="PLG_APOGEE_LOGIN_USERNAME_DESC"
+				   label="PLG_APOGEE_LOGIN_USERNAME"
+				   size="30"
+			/>
+
+			<field name="webservice_password"
+				   type="password"
+				   description="PLG_APOGEE_LOGIN_PASSWORD_DESC"
+				   label="PLG_APOGEE_LOGIN_PASSWORD"
+				   size="30"
+			/>
+		</fieldset>
+
+		<fieldset name="plg-cron-emundusapogee-sql" label="PLG_APOGEE_SQL">
+			<field name="plg-cron-emundusapogee-sql-code"
+				   type="fabrikeditor"
+				   description="PLG_FABRIK_CRON_PHP_CODE_DESC"
+				   label="PLG_FABRIK_CRON_PHP_CODE_LABEL"
+			/>
+
+		</fieldset>
+
+		<fieldset name="plg-cron-emundusapogee-json" label="PLG_APOGEE_JSON_LOAD">
+			<field name="xml_description_json"
+				   type="text"
+				   description="PLG_APOGEE_XML_DESCRIPTION_DESC"
+				   label="PLG_APOGEE_XML_DESCRIPTION"
+				   size="30"
+			/>
+
+			<field name="xml_data_json"
+				   type="text"
+				   description="PLG_APOGEE_XML_DATA_DESC"
+				   label="PLG_APOGEE_XML_DATA"
+				   size="30"
+			/>
+		</fieldset>
+
+		<fieldset name="plg-cron-emundusapogee-status" label="PLG_APOGEE_REQUEST_SENDING_STATUS">
+			<field name="status_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_STATUS_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_STATUS"
+				   size="30"
+			/>
+		</fieldset>
+
+		<fieldset name="plg-cron-emundusapogee-logs" label="PLG_APOGEE_REQUEST_SENDING_LOGS">
+			<field name="logs_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_LOGS_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_LOGS"
+				   size="30"
+			/>
+
+			<field name="actions_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_ACTIONS_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_ACTIONS"
+				   size="30"
+			/>
+
+			<field name="is_today" type="radio" default="1" label="PLG_APOGEE_SET_TODAY" description="PLG_APOGEE_SET_TODAY_DESC">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="log_date"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_DATE_DESC"
+				   label="PLG_APOGEE_REQUEST_DATE"
+			/>
+		</fieldset>
+
+		<fieldset name="plg-cron-emundusapogee-offset" label="PLG_APOGEE_REQUEST_SENDING_OFFSET">
+			<field name="offset_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_OFFSET_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_OFFSET"
+				   size="30"
+				   default="20"
+			/>
+
+			<field name="time_offset_to_send_request"
+				   type="text"
+				   description="PLG_APOGEE_REQUEST_SENDING_TIME_OFFSET_DESC"
+				   label="PLG_APOGEE_REQUEST_SENDING_TIME_OFFSET"
+				   size="30"
+				   default="150"
+			/>
+
+		</fieldset>
+
+		<fieldset name="plg-cron-emundusapogee-customs" label="PLG_APOGEE_CUSTOMS">
+			<field name="plg-cron-emundusapogee-customs-php"
+				   type="fabrikeditor"
+				   description="PLG_APOGEE_CUSTOMS_DESC"
+				   label="PLG_APOGEE_CUSTOMS_LABEL"
+			/>
+		</fieldset>
+
+	</fields>
+</form>

@@ -91,7 +91,7 @@ class PlgEmundusHopitaux_paris_auto_final_grade extends JPlugin {
                     $db->setQuery($query);
                     $value_exist = $db->loadResult();
 
-                    if(is_null($value_exist) || $value_exist == '') {
+                    if(is_null($value_exist) || $value_exist == '' || $value_exist == 0.00) {
                         $query->clear()
                             ->update($db->quoteName($table))
                             ->set($db->quoteName($element) . ' = ' . $db->quote($value_expected))

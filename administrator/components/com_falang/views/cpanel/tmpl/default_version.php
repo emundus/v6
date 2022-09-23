@@ -32,11 +32,9 @@ defined('_JEXEC') or die;
                         echo $this->currentVersion;
                     }
                     ?>
-                <?php if (!$this->updateInfo->supported) {?>
-                    <span class="update-msg-new"><?php echo JText::_('COM_FALANG_CPANEL_LIVEUPDATE_NOT_SUPPORTED'); ?></span>
-                <?php } elseif ($this->updateInfo->hasUpdates) {?>
+                <?php if ($this->updateInfo->hasUpdate) {?>
                         <span class="update-msg-new"><?php echo JText::_('COM_FALANG_CPANEL_OLD_VERSION'); ?>
-                            <a href="index.php?option=com_falang&view=liveupdate"><?php echo JText::_('COM_FALANG_CPANEL_UPDATE_LINK'); ?></a>
+                            <a href="index.php?option=com_installer&view=update&filter[search]=falang&filter[type]=package"><?php echo JText::_('COM_FALANG_CPANEL_UPDATE_LINK'); ?></a>
                         </span>
                      <?php } else { ?>
                             <span class="update-msg-info"><?php echo JText::_('COM_FALANG_CPANEL_LATEST_VERSION'); ?></span>
@@ -48,8 +46,8 @@ defined('_JEXEC') or die;
             <th>
             </th>
             <td>
-                <!-- display check button only if update supported curl or fopen available-->
-                <?php if ($this->updateInfo->supported) {?>
+                <!-- display check button only if no update is reported -->
+                <?php if (!$this->updateInfo->hasUpdate) {?>
                     <input type="button" value="<?php echo JText::_('COM_FALANG_CPANEL_CHECK_UPDATES'); ?>" onclick="checkUpdates();">
                     <span id="falang-update-progress"></span>
                 <?php } ?>

@@ -673,6 +673,8 @@ class SecuritycheckprosModelProtection extends \Joomla\CMS\MVC\Model\BaseDatabas
             $rules .= PHP_EOL . "RewriteCond %{HTTP_REFERER} !" . $site_url;
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !" . $this->getValue("hide_backend_url") . "$";
             $rules .= PHP_EOL . "RewriteCond %{QUERY_STRING} !com_securitycheckprocontrolcenter [NC]";
+			// Added to avoid errors in Joomla 4.1
+			$rules .= PHP_EOL . "RewriteCond %{REQUEST_URI} !templates/administrator [NC]";
             if (!is_null($this->getValue("hide_backend_url"))) {
                 $backend_exceptions = explode(",", $this->getValue("backend_exceptions"));
                 foreach ($backend_exceptions as $exception)
@@ -756,7 +758,7 @@ class SecuritycheckprosModelProtection extends \Joomla\CMS\MVC\Model\BaseDatabas
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ($this->getValue("redirect_to_www")) {        
+        if ( ($this->getValue("redirect_to_www")) && (!$this->ConfigApplied['redirect_to_www']) ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;
@@ -781,7 +783,7 @@ class SecuritycheckprosModelProtection extends \Joomla\CMS\MVC\Model\BaseDatabas
         }
     
         /* Comprobamos si hay que redirigir las peticiones no www a www */
-        if ($this->getValue("redirect_to_non_www")) {        
+        if ( ($this->getValue("redirect_to_non_www")) && (!$this->ConfigApplied['redirect_to_non_www']) ){        
             $isSecure = false;
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
                 $isSecure = true;

@@ -343,7 +343,9 @@ class plgSystemSecuritycheckpro extends JPlugin
             }
         }
         
-		/* Regex checker: https://regex101.com/ */
+		/* Regex checker: https://regex101.com/
+			https://www.functions-online.com/preg_match.html
+		*/
                                             
         /* XSS Prevention */
         //Strip html and php tags from string
@@ -472,9 +474,9 @@ class plgSystemSecuritycheckpro extends JPlugin
                             
             if (!(strstr($line_comments_exceptions, $pageoption)) && !(strstr($line_comments_exceptions, '*')) && ($pageoption != 'com_users') && (!$modified)) {
                 // Line Comments
-                $lineComments = array("/--/","/[^\=]#/","/\/\*/","/\*\//");
+                $lineComments = array("/--/","/[^\=]#/","/\/\*/","/\*\//","/(?=(%2f|\/)).+\*\*/i");
                 $string_sanitized = preg_replace($lineComments, "", $string);
-                                                    
+				                                                    
                 if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
                     if ($base64) {
                         $this->grabar_log($logs_attacks, $ip, 'LINE_COMMENTS', '[' .$methods_options .':' .$a .']', 'SQL_INJECTION_BASE64', $request_uri, $string, $username, $pageoption);
@@ -487,7 +489,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                     $modified = true;
                 }
             }
-                            
+			                            
             $sqlpatterns = array("/delete(?=(\s|\+|%20|%u0020|%uff00)).+\b(from)\b(?=(\s|\+|%20|%u0020|%uff00))/i","/update(?=(\s|\+|%20|%u0020|%uff00)).+\b(set)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
             "/drop(?=(\s|\+|%20|%u0020|%uff00)).+\b(database|user|table|index)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
             "/insert(?=(\s|\+|%20|%u0020|%uff00)).+\b(values|set|select)\b(?=(\s|\+|%20|%u0020|%uff00))/i", "/union(?=(\s|\+|%20|%u0020|%uff00)).+\b(select)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
@@ -607,13 +609,13 @@ class plgSystemSecuritycheckpro extends JPlugin
 			}
                                 
         }    
-                        
+		                        
         /* LFI Prevention */
-        $lfiStatements = array("/\.\.\//","/\?\?\?/");
+        $lfiStatements = array("/\.\.\//","/\?\?\?/","/\/\./");
         if ((!(strstr($lfi_exceptions, $pageoption)) || $extension_vulnerable) && !(strstr($lfi_exceptions, '*'))) {
             if (!$modified) {                        
                 $string_sanitized = preg_replace($lfiStatements, '', $string);
-                if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
+				if (strcmp($string_sanitized, $string) !== 0) { //Se han eliminado caracteres; escribimos en el log
                     if ($base64) {
                              $this->grabar_log($logs_attacks, $ip, 'LFI', '[' .$methods_options .':' .$a .']', 'LFI_BASE64', $request_uri, $string, $username, $pageoption);
                     }else
@@ -1270,7 +1272,7 @@ class plgSystemSecuritycheckpro extends JPlugin
                     $option = $this->get_component();
 
                     $req = $this->cleanQuery($attack_ip, $req, $methods_options, $a, $request_uri, $modified, $check_base_64, $logs_attacks, $option);
-                    
+					                    
                     if ($modified) {
                         /* Actualizamos la lista negra dinámica */
                         $this->actualizar_lista_dinamica($attack_ip);
@@ -1603,11 +1605,6 @@ class plgSystemSecuritycheckpro extends JPlugin
             // Borramos los logs no necesarios
             $this->delete_logs();
             
-            // Chequeamos el estado de las subscripciones
-            include_once JPATH_ROOT.'/administrator/components/com_securitycheckpro/library/model.php';
-            $model = new SecuritycheckproModel();
-            $model->get_subscriptions_status();
-                        
             if ($email_on_admin_login) {            
                 // Extraemos los datos que se mandarán por correo
                 $ip = $this->get_ip();                               
@@ -2484,12 +2481,31 @@ class plgSystemSecuritycheckpro extends JPlugin
                     }
                 }
                 
-                // Decodificamos el array, que vendrá en formato json_decode
+                // Decodificamos el array, que vendrá en formato json
                 $previous_admins = json_decode($previous_admins, true);
-            
-                // Extraemos el id del nuevo usuario creado
-                $new_user_added = array_diff($actual_admins, $previous_admins);
-                                
+				
+				if (!is_null($previous_admins)) {
+					// Extraemos el id del nuevo usuario creado
+					$new_user_added = array_diff($actual_admins, $previous_admins);
+				} else {
+					// Something went wrong decoding the json to extract previous admins. Let's create an empty array
+					$new_user_added = array();
+					// Instanciamos un objeto para almacenar los datos que serán sobreescritos
+					$object = new StdClass();                    
+					$object->id = 1;
+					$object->users = json_encode($actual_admins);
+					$object->contador = count($actual_admins);
+					
+					try 
+					{
+						// Añadimos los datos a la BBDD
+						$db->updateObject('#__securitycheckpro_users_control', $object, 'id');    
+							
+					} catch (Exception $e) {    
+						return;
+					}
+				}
+                                            
                 foreach ($new_user_added as $new_user)
                 {                        
                     // Creamos una instancia del usuario

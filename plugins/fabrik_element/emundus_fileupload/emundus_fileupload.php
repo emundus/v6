@@ -39,7 +39,8 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         jimport('joomla.filesystem.file');
 
-        $jinput = $this->app->input;
+        $jinput = JFactory::getApplication()->input;
+
         $current_user = JFactory::getSession()->get('emundusUser');
 
         if (JFactory::getUser()->guest) {
@@ -55,115 +56,136 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
 
         $attachId = $jinput->post->get('attachId');
 
-        $eMConfig = JComponentHelper::getParams('com_emundus');
-        $can_submit_encrypted = ($jinput->post->get('encrypt') == 2)?$eMConfig->get('can_submit_encrypted', 1):$jinput->post->get('encrypt');
+        if(!empty($attachId)) {
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $can_submit_encrypted = ($jinput->post->get('encrypt') == 2) ? $eMConfig->get('can_submit_encrypted', 1) : $jinput->post->get('encrypt');
 
-        $attachmentResult = $this->getAttachment($attachId);
-        $label = $attachmentResult->lbl;
+            $attachmentResult = $this->getAttachment($attachId);
+            $label = $attachmentResult->lbl;
 
-        $files = $jinput->files->get('file');
+            $files = $jinput->files->get('file');
 
-        $cid = $this->getCampaignId($fnum);
-        $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
-        $nbAttachment = count($uploadResult);
-        $lengthFile = count($files);
-        $nbMaxFile = (int)$attachmentResult->nbmax;
+            $cid = $this->getCampaignId($fnum);
+            $uploadResult = $this->getUploads($attachId, $user, $cid, $fnum);
+            $nbAttachment = count($uploadResult);
+            $lengthFile = count($files);
+            $nbMaxFile = (int)$attachmentResult->nbmax;
 
-        $acceptedExt = [];
+            $acceptedExt = [];
 
-        if (!file_exists(EMUNDUS_PATH_ABS.$user)) {
-            // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
-            if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
-                touch(EMUNDUS_PATH_ABS.'index.html');
+            if (!file_exists(EMUNDUS_PATH_ABS . $user)) {
+                // An error would occur when the index.html file was missing, the 'Unable to create user file' error appeared yet the folder was created.
+                if (!file_exists(EMUNDUS_PATH_ABS . 'index.html')) {
+                    touch(EMUNDUS_PATH_ABS . 'index.html');
+                }
+
+                if (!mkdir(EMUNDUS_PATH_ABS . $user) || !copy(EMUNDUS_PATH_ABS . 'index.html', EMUNDUS_PATH_ABS . $user . DS . 'index.html')) {
+                    $error = JUri::getInstance() . ' :: USER ID : ' . $user . ' -> Unable to create user file';
+                    JLog::add($error, JLog::ERROR, 'com_emundus');
+                    return false;
+                }
             }
+            chmod(EMUNDUS_PATH_ABS . $user, 0755);
 
-            if (!mkdir(EMUNDUS_PATH_ABS.$user) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$user.DS.'index.html')){
-                $error = JUri::getInstance().' :: USER ID : '.$user.' -> Unable to create user file';
-                JLog::add($error, JLog::ERROR, 'com_emundus');
-                return false;
-            }
-        }
-        chmod(EMUNDUS_PATH_ABS.$user, 0755);
+            foreach ($files as $file) {
 
-        foreach ($files as $file) {
+                $fileName = $this->getFileName($user, $attachId, $label, $file['name'], $fnum);
 
-            $fileName = $this->getFileName($user, $attachId, $label, $file['name'], $fnum);
+                $tmp_name = $file['tmp_name'];
+                $fileSize = $file['size'];
 
-            $tmp_name = $file['tmp_name'];
-            $fileSize = $file['size'];
+                $target = $this->getPath($user, $fileName);
 
-            $target = $this->getPath($user,$fileName);
+                $extension = explode('.', $fileName);
+                $extensionAttachment = $attachmentResult->allowed_types;
+                $typeExtension = $extension[1];
 
-            $extension = explode('.', $fileName);
-            $extensionAttachment = $attachmentResult->allowed_types;
-            $typeExtension = $extension[1];
+                $acceptedExt[] = stristr($extensionAttachment, $typeExtension);
 
-            $acceptedExt[] = stristr($extensionAttachment, $typeExtension);
+                if (!in_array(false, $acceptedExt)) {
+                    $ext = true;
 
-            if (!in_array(false, $acceptedExt)) {
-                $ext = true;
-
-                if ($can_submit_encrypted == 0 &&  $typeExtension == 'pdf') {
-                    if ($this->isEncrypted($tmp_name) == 1) {
-                        $encrypt = false;
-                    } else {
-                        $encrypt = true;
+                    if ($can_submit_encrypted == 0 && $typeExtension == 'pdf') {
+                        if ($this->isEncrypted($tmp_name) == 1) {
+                            $encrypt = false;
+                        } else {
+                            $encrypt = true;
+                        }
                     }
-                }
 
-                // The maximum size is equal to the smallest of the two sizes, either the size configured in the plugin or in the server itself.
-                $postSize = $jinput->post->getInt('size', 0);
-                $iniSize = $this->file_upload_max_size();
-                $sizeMax = ($postSize >= $iniSize) ? $iniSize : $postSize;
+                    // The maximum size is equal to the smallest of the two sizes, either the size configured in the plugin or in the server itself.
+                    $postSize = $jinput->post->getInt('size', 0);
+                    $iniSize = $this->file_upload_max_size();
+                    $sizeMax = ($postSize >= $iniSize) ? $iniSize : $postSize;
 
-                if (!empty($fileName)) {
-                    $insert[] = $user.' , '.$db->quote($fnum).' , '.$cid.' , '.$attachId.' , '.$db->quote($fileName).' , '.'0'.' , '.'1';
-                }
+                    if (!empty($fileName)) {
+                        $insert[] = $user . ' , ' . $db->quote($fnum) . ' , ' . $cid . ' , ' . $attachId . ' , ' . $db->quote($fileName) . ' , ' . '0' . ' , ' . '1';
+                    }
 
 
-                $fileLimitObtained = false;
+                    $fileLimitObtained = false;
 
-                if (($lengthFile + $nbAttachment) > $nbMaxFile) {
-                    $fileLimitObtained = true;
+                    if (($lengthFile + $nbAttachment) > $nbMaxFile) {
+                        $fileLimitObtained = true;
+                    } else {
+                        if ($fileSize < $sizeMax) {
+                            move_uploaded_file($tmp_name, $target);
+                            $size = true;
+                        } else {
+                            $size = false;
+                        }
+                    }
+
+                    $sizeMax = $this->formatBytes($sizeMax);
+
+                    $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $fileLimitObtained, 'filename' => $fileName, 'target' => $target, 'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
+                    if ($size === false || $fileLimitObtained === true) {
+                        echo json_encode($result);
+                        return true;
+                    }
                 } else {
-                    if ($fileSize < $sizeMax) {
-                        move_uploaded_file($tmp_name, $target);
-                        $size = true;
-                    } else {
-                        $size = false;
-                    }
+                    $size = true;
+                    $ext = false;
+                    $result[] = array('size' => $size, 'ext' => $ext, 'filename' => $fileName, 'target' => $target, 'nbAttachment' => $nbAttachment);
+                    echo json_encode($result);
+                    return true;
                 }
 
-                $sizeMax = $this->formatBytes($sizeMax);
-
-                $result[] = array('size' => $size, 'ext' => $ext, 'nbMax' => $fileLimitObtained, 'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment, 'encrypt' => $encrypt, 'maxSize' => $sizeMax);
-            } else {
-                $size = true;
-                $ext = false;
-                $result[] = array('size' => $size, 'ext' => $ext,  'filename' => $fileName, 'target' => $target,'nbAttachment' => $nbAttachment);
             }
 
-        }
-
-        if (empty($uploadResult) && $attachmentResult->nbmax >= 1 && $fileLimitObtained === false) {
-            $this->insertFile($insert);
-        }
-
-        if (!empty($uploadResult)) {
-
-            if ($fileLimitObtained != false) {
-                $fileNameUpdate = $jinput->post->get($name.'_filename0');
-                if (!empty($fileNameUpdate)) {
-                    $this->updateFile($fnum, $cid, $attachId, $fileNameUpdate);
-                }
-            }
-            else {
+            if (empty($uploadResult) && $attachmentResult->nbmax >= 1 && $fileLimitObtained === false) {
                 $this->insertFile($insert);
             }
-        }
 
-        echo json_encode($result);
-        return true;
+            if (!empty($uploadResult)) {
+
+                if ($fileLimitObtained != false) {
+                    $fileNameUpdate = $jinput->post->get($name . '_filename0');
+                    if (!empty($fileNameUpdate)) {
+                        $this->updateFile($fnum, $cid, $attachId, $fileNameUpdate);
+                    }
+                } else {
+                    $this->insertFile($insert);
+                }
+            }
+
+            // track the LOGS (ATTACHMENT_CREATE)
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+            $user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE');
+
+            echo json_encode($result);
+            return true;
+        } else {
+            $result = array('status' => false);
+            echo json_encode($result);
+            return false;
+        }
     }
 
     // Returns a file size limit in bytes based on the PHP upload_max_filesize
@@ -284,6 +306,16 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element {
         if (!file_exists($target) && empty($uploadResult)) {
             $status = false;
         }
+
+        // track the LOGS (ATTACHMENT_DELETE)
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
 
         echo json_encode(['status' => $status]);
         return true;

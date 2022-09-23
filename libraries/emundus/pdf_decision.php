@@ -6,7 +6,7 @@ function pdf_decision($user_id, $fnum = null, $output = true, $name = null, $opt
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'config'.DS.'lang'.DS.'eng.php');
 	require_once(JPATH_LIBRARIES.DS.'emundus'.DS.'tcpdf'.DS.'tcpdf.php');
 
-	require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
+	require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'filters.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'files.php');
 	include_once(JPATH_COMPONENT.DS.'models'.DS.'profile.php');

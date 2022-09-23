@@ -20,7 +20,10 @@ $status_array = array(JHtml::_('select.option', '0', JText::_('COM_SECURITYCHECK
 
 // Cargamos los archivos javascript necesarios
 $document = JFactory::getDocument();
-$document->addScript(JURI::root().'media/system/js/core.js');
+if ( version_compare(JVERSION, '3.20', 'lt') )
+{	
+	$document->addScript(JURI::root().'media/system/js/core.js');
+}
 
 $document->addScript(JURI::root().'media/com_securitycheckpro/new/js/sweetalert.min.js');
 // Bootstrap core JavaScript
@@ -320,10 +323,19 @@ if (empty($this->files_status) ) {
             ?>
                                 </div>
                                 
-                                <div class="table-responsive overflow-x-auto margin-top-10">
+                                <div class="table-responsive overflow-x-auto margin-top-30">
                                     <table id="filesintegritystatus_table" class="table table-bordered table-hover">
                                     <thead>
                                         <tr>
+											<?php 
+												if ($this->checkbox_position == 1) {
+											?>
+											<th class="filesintegrity-table width-5">
+                                                <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
+                                            </th> 
+											<?php 
+												}
+											?>
                                             <th class="filesintegrity-table">
                                                 <?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_NAME'); ?>
                                             </th>
@@ -339,9 +351,15 @@ if (empty($this->files_status) ) {
                                             <th class="filesintegrity-table">
                                                 <?php echo JText::_('COM_SECURITYCHECKPRO_FILEMANAGER_LAST_MODIFIED'); ?>
                                             </th>
-                                            <th class="filesintegrity-table">
+                                            <?php 
+												if ($this->checkbox_position == 0) {
+											?>
+											<th class="filesintegrity-table width-5">
                                                 <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this)" />
-                                            </th>
+                                            </th> 
+											<?php 
+												}
+											?>
                                         </tr>
                                     </thead>
             <?php
@@ -350,21 +368,28 @@ if (empty($this->files_status) ) {
                 foreach ($this->items as &$row) {
                     $safe_integrity = $row['safe_integrity'];
                     ?>
-                                        <td class="centrado">
+					<?php 
+					if ($this->checkbox_position == 1) {
+						echo '<td class="centrado">' . JHtml::_('grid.id', $k, $row['path'], '', 'filesintegritystatus_table') . '</td>'; 
+					}
+					?>
+                    <td class="centrado">
                     <?php 
                     $last_part = explode(DIRECTORY_SEPARATOR, $row['path']);
-                    echo end($last_part); ?>
-                                        </td>
-                                        <td class="centrado malwarescan-table-info">
-                    <?php echo $row['path']; ?>
-                                        </td>
-                                        <td class="centrado">
+					$end = end($last_part);
+                    echo filter_var($end, FILTER_SANITIZE_STRING); ?>
+                    </td>
+                    <td class="centrado malwarescan-table-info">
+                    <?php echo filter_var($row['path'], FILTER_SANITIZE_STRING); ?>
+                    </td>
+                    <td class="centrado">
                     <?php 
                     if (file_exists($row['path']) ) {
-                        echo filesize($row['path']);
+						$size = filesize($row['path']);
+                        echo filter_var($size, FILTER_SANITIZE_STRING);
                     } 
                     ?>
-                                        </td>
+                    </td>
                     <?php 
                     if ($safe_integrity == '0' ) {
                         echo "<td class=\"centrado;\"><span class=\"badge badge-danger\">";
@@ -375,8 +400,8 @@ if (empty($this->files_status) ) {
                         echo date('Y-m-d H:i:s', filemtime($row['path']));
                     }
                     ?>
-                                        </span>
-                                        </td>
+                    </span>
+                    </td>
                     <?php 
                     if ($safe_integrity == '0' ) {
                         echo "<td class=\"centrado;\"><span class=\"badge badge-danger\">";
@@ -385,13 +410,15 @@ if (empty($this->files_status) ) {
                     } else if ($safe_integrity == '2' ) {
                         echo "<td class=\"centrado;\"><span class=\"badge badge-warning\">";
                     } ?>
-                    <?php echo $row['notes']; ?>
-                                        </span>
-                                        </td>
-                                        <td class="centrado">
-                    <?php echo JHtml::_('grid.id', $k, $row['path'], '', 'filesintegritystatus_table'); ?>        
-                                        </td>
-                                    </tr>
+                    <?php echo filter_var($row['notes'], FILTER_SANITIZE_STRING); ?>
+                    </span>
+                    </td>
+                    <?php 
+					if ($this->checkbox_position == 0) {
+						echo '<td class="centrado">' . JHtml::_('grid.id', $k, $row['path'], '', 'filesintegritystatus_table') . '</td>'; 
+					}
+					?>
+                    </tr>
                     <?php
                     $k = $k+1;
                 }
@@ -409,7 +436,13 @@ if (empty($this->files_status) ) {
                                     </div>
             <?php } ?>    
                                 </div>
-        <?php } ?>
+        <?php } else {
+			if ($this->state->get('filter.malwarescan_status') == 2 ) {
+				if ($this->file_manager_include_exceptions_in_database == 0 ) { 
+					echo '<div class="alert alert-info">' . JText::_('COM_SECURITYCHECKPRO_EXCEPTIONS_NOT_INCLUDED_IN_DATABASE'). '</div>';                            
+				} 
+			}
+		} ?>
                     </div>        
                 </div>
             </div>

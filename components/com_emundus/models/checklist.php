@@ -210,10 +210,10 @@ class EmundusModelChecklist extends JModelList
 
 		if (!empty($applicant_file_name)) {
 
-			require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+			require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 			$m_emails = new EmundusModelEmails;
 
-			$tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum']);
+			$tags = $m_emails->setTags($fnumInfos['applicant_id'], null, $fnumInfos['fnum'], '', $applicant_file_name);
 			$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $applicant_file_name);
 			$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnumInfos['fnum']));
 
@@ -233,11 +233,11 @@ class EmundusModelChecklist extends JModelList
 
 
     public function formatFileName(String $file, String $fnum, Array $post= []): string {
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
         $m_emails = new EmundusModelEmails;
 
         $aid = intval(substr($fnum, 21, 7));
-        $tags = $m_emails->setTags($aid, $post, $fnum);
+        $tags = $m_emails->setTags($aid, $post, $fnum, '', $file);
         $formatted_file = preg_replace($tags['patterns'], $tags['replacements'], $file);
         $formatted_file = $m_emails->setTagsFabrik($formatted_file, array($fnum));
 
