@@ -1,7 +1,8 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import FormBuilderElements from '../../../../src/components/FormBuilder/FormBuilderElements';
 import translate from '../../../mocks/mixins/translate';
-import draggable from "vuedraggable";
+import store from '../../../../src/store/index';
+import draggable from 'vuedraggable';
 
 const localVue = createLocalVue();
 localVue.mixin(translate);
@@ -12,7 +13,8 @@ describe('FormBuilderElements.vue', () => {
         propsData: {
 
         },
-        localVue
+        localVue,
+        store
     });
 
     it ('FormBuilderElements should exist', () => {
