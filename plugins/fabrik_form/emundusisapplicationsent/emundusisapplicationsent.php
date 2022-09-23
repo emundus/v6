@@ -140,7 +140,7 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             }
 
             $is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
-            if (!$is_campaign_started) {
+            if (!$is_campaign_started && !in_array($user->id, $applicants)) {
                 // STOP HERE, the campaign or step is not started yet. Redirect to main page
                 $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
                 $mainframe->redirect('/');
@@ -149,8 +149,8 @@ class PlgFabrik_FormEmundusisapplicationsent extends plgFabrik_Form {
             $is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
 
             $edit_status = array();
-            if (!empty($current_phase) && !empty($current_phase->status)) {
-                $edit_status[] = $current_phase->status;
+            if (!empty($current_phase) && !empty($current_phase->entry_status)) {
+                $edit_status = $current_phase->entry_status;
             }
             $edit_status = array_merge(explode(',', $this->getParam('applicationsent_status', 0)), $edit_status);
             $is_app_sent = !in_array(@$user->status, $edit_status);

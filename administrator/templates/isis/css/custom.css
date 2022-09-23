@@ -14,3 +14,11 @@
 .em-red{
   color: #DB333E;
 }
+.textarea_event_handler__code{
+  resize: none;
+  width: 100%;
+}
+
+.subform-repeatable-group td:nth-child(1){
+  width: 20%;
+}
