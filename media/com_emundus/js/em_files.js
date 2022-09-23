@@ -6499,7 +6499,7 @@ $(document).ready(function() {
                     url:url,
                     dataType:'json',
                     data:({
-                        fnums:checkInput,
+                        fnums: checkInput,
                         state: state,
                         to_applicant: "1"
                     }),
@@ -6530,7 +6530,6 @@ $(document).ready(function() {
                                         dataType:'json',
                                         data:({fnums:checkInput, state: state}),
                                         success: function(result) {
-
                                             $('.modal-footer').hide();
                                             if (result.status) {
                                                 $('.modal-body').empty();
@@ -6548,10 +6547,15 @@ $(document).ready(function() {
                                                 Swal.fire({
                                                     position: 'center',
                                                     type: 'warning',
-                                                    title: result.msg
+                                                    title: result.msg,
+                                                    showConfirmButton: true,
+                                                    reverseButtons: true,
+                                                    customClass: {
+                                                        title: 'em-swal-title',
+                                                        confirmButton: 'em-swal-confirm-button',
+                                                    },
                                                 });
                                             }
-
 
                                             $('#em-modal-actions').modal('hide');
 
@@ -6597,10 +6601,15 @@ $(document).ready(function() {
                                         Swal.fire({
                                             position: 'center',
                                             type: 'warning',
-                                            title: result.msg
+                                            title: result.msg,
+                                            showConfirmButton: true,
+                                            reverseButtons: true,
+                                            customClass: {
+                                                title: 'em-swal-title',
+                                                confirmButton: 'em-swal-confirm-button',
+                                            },
                                         });
                                     }
-
 
                                     $('#em-modal-actions').modal('hide');
 
