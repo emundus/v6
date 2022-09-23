@@ -14,29 +14,38 @@
     </files>
     <folder>language</folder>
     <config>
-        <fields name="params">
+        <fields name="params" addfieldpath="/administrator/components/com_fabrik/models/fields">
 
             <fieldset name="basic">
 
                 <field name="event_handlers"
-                       type="repeatable"
-                       icon="list"
-                       description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESC"
+                       type="subform"
                        label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_LABEL"
-                       >
-
-                    <fieldset hidden="true" name="list_event_handler_modal" repeat="true">
-                        <field name="event" type="sql"
+                       description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESC"
+                       multiple="true"
+                       min="1"
+                       max="20"
+                       filter="raw"
+                       layout="joomla.form.field.subform.repeatable-table"
+                >
+                    <form>
+                        <field name="event"
+                               type="sql"
                                key_field="label" value_field="label"
                                query="SELECT label FROM #__emundus_plugin_events where published"
-                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL" description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"/>
+                               label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL" description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"
+                               class="sql_event_handler__event"
+                        />
                         <field name="code"
+                               type="textarea"
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_LABEL"
                                description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_CODE_DESC"
-                               size="50"
-                               type="textarea"
-                                />
-                    </fieldset>
+                               rows="10"
+                               cols="5"
+                               filter="raw"
+                               class="textarea_event_handler__code"
+                        />
+                    </form>
                 </field>
             </fieldset>
         </fields>

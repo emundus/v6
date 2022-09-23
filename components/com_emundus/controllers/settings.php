@@ -917,5 +917,12 @@ class EmundusControllersettings extends JControllerLegacy {
         }
         exit;
     }
+
+    public function isexpiresdatedisplayed(){
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+
+        echo json_encode(array('display_expires_date' => $eMConfig->get('display_expires_date')));
+        exit;
+    }
 }
 

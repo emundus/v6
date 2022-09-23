@@ -2,7 +2,7 @@
   <div class="campaigns__add-campaign">
     <div v-if="typeof campaignId == 'undefined'">
       <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons">arrow_back</span>
+        <span class="material-icons-outlined">arrow_back</span>
         <p class="em-ml-8">{{ translate('BACK') }}</p>
       </div>
 
@@ -27,7 +27,7 @@
                 v-model="form.label[actualLanguage]"
                 required
                 :class="{ 'is-invalid': errors.label }"
-                class="form-control fabrikinput"
+                class="form-control fabrikinput em-w-100"
                 @focusout="onFormChange()"
             />
           </div>
@@ -120,6 +120,7 @@
             />
           </div>
 
+          <label>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
           <div class="em-mb-16" v-if="typeof form.description != 'undefined'">
             <editor
                 :height="'30em'"
@@ -145,7 +146,7 @@
           <div class="em-flex-row em-mb-16">
             <select
                 id="select_prog"
-                class="form-control fabrikinput"
+                class="form-control fabrikinput em-w-100"
                 v-model="form.training"
                 v-on:change="setCategory"
                 :disabled="this.programs.length <= 0"
@@ -172,7 +173,7 @@
                   <input
                       type="text"
                       id="prog_label"
-                      class="form-control fabrikinput"
+                      class="form-control fabrikinput em-w-100"
                       placeholder=" "
                       v-model="programForm.label"
                       :class="{ 'is-invalid': errors.progLabel }"
@@ -210,6 +211,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import axios from "axios";
 import { Datetime } from "vue-datetime";
 import { DateTime as LuxonDateTime, Settings } from "luxon";
@@ -319,7 +321,7 @@ export default {
       this.campaignId = this.$props.campaign;
     }
 
-    this.actualLanguage = this.$store.getters['global/actualLanguage'];
+    this.actualLanguage = this.$store.getters['global/shortLang'];
     this.coordinatorAccess = this.$store.getters['global/coordinatorAccess'];
 
     // Configure datetime
@@ -328,8 +330,9 @@ export default {
 
     let now = new Date();
     this.form.start_date = LuxonDateTime.local(now.getFullYear(),now.getMonth() + 1,now.getDate(),0,0,0).toISO();
-    this.getLanguages();
-    this.getCampaignById();
+    this.getLanguages().then(() => {
+      this.getCampaignById();
+    });
   },
   methods: {
     getCampaignById() {
@@ -382,10 +385,14 @@ export default {
     getAllPrograms() {
       axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
           .then(response => {
-            this.programs = response.data.data;
-            if(Object.keys(this.programs).length !== 0) {
-              this.programs.sort((a, b) => a.id - b.id);
-            }
+	          if (response.data.status > 0) {
+		          this.programs = response.data.data;
+		          if(Object.keys(this.programs).length !== 0) {
+			          this.programs.sort((a, b) => a.id - b.id);
+		          }
+	          } else {
+		          this.programs = [];
+	          }
           }).catch(e => {
               console.log(e);
           });
@@ -406,13 +413,17 @@ export default {
 
       this.getStatus();
     },
-    getLanguages() {
-      axios({
+    async getLanguages() {
+      const response = await axios({
         method: "get",
         url: "index.php?option=com_emundus&controller=settings&task=getactivelanguages"
-      }).then(response => {
-        this.languages = response.data.data;
       });
+
+      if (response) {
+        this.languages = response.data.data;
+      }
+
+      return response;
     },
 
     setCategory(e) {
@@ -443,15 +454,30 @@ export default {
         },
         data: qs.stringify({body: programForm})
       }).then((rep) => {
-        this.form.progid = rep.data.data.programme_id;
-        this.form.training = rep.data.data.programme_code;
-        this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
-        this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
+        if (rep.data.status) {
+          this.form.progid = rep.data.data.programme_id;
+          this.form.training = rep.data.data.programme_code;
+          this.form.start_date = LuxonDateTime.fromISO(this.form.start_date).toISO();
+          this.form.end_date = LuxonDateTime.fromISO(this.form.end_date).toISO();
 
-        campaignService.createCampaign(this.form).then((response) => {
-          this.campaignId = response.data.data;
-          this.quitFunnelOrContinue(this.quit);
-        });
+          campaignService.createCampaign(this.form).then((response) => {
+            this.campaignId = response.data.data;
+            this.quitFunnelOrContinue(this.quit);
+          });
+        } else {
+          Swal.fire({
+            title: this.translate(rep.data.msg),
+            text: rep.data.data,
+            type: "error",
+            confirmButtonText: this.translate("OK"),
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-flex-center',
+            }
+          });
+
+          this.submitted = false;
+        }
       });
     },
 

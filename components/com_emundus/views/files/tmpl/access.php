@@ -4,7 +4,9 @@
  * User: brivalland
  * Date: 22/11/14
  * Time: 17:36
- */ ?>
+ */
+$current_user = JFactory::getUser();
+?>
 
 
 <div>
@@ -48,6 +50,7 @@
 
 	<div class="panel panel-info em-access">
 		<div class="form-group em-access em-access-form">
+            <?php if(EmundusHelperAccess::asAccessAction(23,'r', $current_user->id)){ ?>
             <div class="em-mb-8">
                 <label class="col-lg-2 control-label  em-access"><?= JText::_('COM_EMUNDUS_GROUPS')?></label>
                 <select class="col-lg-7 modal-chzn-select  em-access" multiple="true" data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_GROUP'); ?>" name="em-access-groups-eval" id="em-access-groups-eval" value="">
@@ -56,7 +59,7 @@
                     <?php endforeach; ?>
                 </select>
             </div>
-
+            <?php } ?>
             <div class="em-mb-8">
                 <label class="col-lg-2 control-label em-access"><?= JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS'); ?></label>
                 <select class="col-lg-7 modal-chzn-select" multiple="true" data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'); ?>" name="em-access-evals" id="em-access-evals" value="">

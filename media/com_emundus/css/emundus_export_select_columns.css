@@ -1,6 +1,6 @@
 /* view export select columns */
 .view-export_select_columns .panel-info > .panel-heading label{
-    color:#fff;
+    color:#353544 !important;
     margin:0!important;
 }
 .panel{
@@ -23,12 +23,31 @@
 .panel-info.excel {
     min-height: inherit!important;
 }
+
+a.btn.btn-info,
+button.btn.btn-primary {
+    background: #20835F;
+    border: 1px solid #20835F;
+    text-shadow: none;
+    text-transform: initial;
+    padding: 8px 12px;
+}
+
+a.btn.btn-info:hover, a.btn.btn-info:focus, a.btn.btn-info:active,
+button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-primary:active {
+    background-color: transparent;
+    color: #20835F;
+    outline: none;
+    border: 1px solid #20835F;
+}
+
 .panel-primary {
-    border-color: #E3E5E8;
+    border-color: #00316b;
 }
 .panel-primary.excel>.panel-heading {
-    background-color: #00316b;
+    background-color: #353544;
 }
+
 .panel-heading label {
     color: #FFFFFF!important;
     font-weight: bold!important;
@@ -51,6 +70,8 @@
 }
 
 #program-categories-group {
+    display: flex;
+    justify-content: space-around;
 }
 
 .em-element-id {
@@ -75,7 +96,8 @@
     margin: 10px 0;
 }
 
-#em-select-program {
+#em-select-program,
+#em-select-campaign {
     margin-bottom: 40px;
 }
 
@@ -84,7 +106,13 @@
 #result h1,
 #other-result h1 {
     font-size: 20px;
+    color: #353544;
 }
+
+.view-export_select_columns h1 {
+   color: #353544;
+}
+
 
 .panel-primary > .panel-heading{
     background-color: #20835F !important;

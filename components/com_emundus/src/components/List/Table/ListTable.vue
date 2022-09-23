@@ -23,7 +23,7 @@
 
 <script>
 import ListTableBody from './ListTableBody.vue'
-import rows from '../../../data/tableRows'
+import rows from '../../../../data/tableRows'
 
 export default {
 	components: {

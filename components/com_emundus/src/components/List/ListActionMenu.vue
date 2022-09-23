@@ -1,5 +1,22 @@
 <template>
 	<div class="list-actions-menu">
+    <v-popover
+        v-if="showTootlip === true"
+        class="em-pointer"
+        :popoverArrowClass="'custom-popover-arrow'"
+    >
+      <span class="tooltip-target b3 material-icons-outlined">more_vert</span>
+      <template slot="popover">
+        <actions
+            :data="{type: type}"
+            :selected="itemId"
+            :published="isPublished"
+            :nb_files="nb_files"
+            @validateFilters="validateFilters()"
+            @updateLoading="updateLoading"
+        ></actions>
+      </template>
+    </v-popover>
     <button
 			v-if="type == 'email'"
 			type="button"
@@ -9,22 +26,6 @@
 		>
       <span class="material-icons-outlined">visibility</span>
     </button>
-		<v-popover
-			v-if="showTootlip === true"
-      class="em-pointer"
-			:popoverArrowClass="'custom-popover-arrow'"
-		>
-      <span class="tooltip-target b3 material-icons">more_vert</span>
-			<template slot="popover">
-				<actions
-					:data="{type: type}"
-					:selected="itemId"
-					:published="isPublished"
-					@validateFilters="validateFilters()"
-					@updateLoading="updateLoading"
-				></actions>
-			</template>
-		</v-popover>
 	</div>
 </template>
 
@@ -49,7 +50,11 @@ export default {
 		showTootlip : {
 			type: Boolean,
 			default: true
-		}
+		},
+    nb_files : {
+      type: Number,
+      default: 0
+    }
 	},
 	data() {
 		return {

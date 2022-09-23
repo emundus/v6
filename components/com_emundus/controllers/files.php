@@ -514,20 +514,11 @@ class EmundusControllerFiles extends JControllerLegacy
         }
         unset($fnums);
 
-        JPluginHelper::importPlugin('emundus');
-        $dispatcher = JEventDispatcher::getInstance();
-
-        $dispatcher->trigger('callEventHandler', ['onBeforeTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
-
         /*$tagged = $m_files->getTaggedFile($tag);
         $tagged_fnums = array_map(function($n) {return $n["fnum"];}, $tagged);
 
         $validFnums = array_diff($validFnums, $tagged_fnums);*/
         $res = $m_files->tagFile($validFnums, $tag);
-
-        if ($res) {
-            $dispatcher->trigger('callEventHandler', ['onAfterTagAdd', ['fnums' => $validFnums, 'tag' => $tag]]);
-        }
 
         echo json_encode((object)(array('status' => $res, 'msg' => JText::_('COM_EMUNDUS_TAGS_SUCCESS'), 'tagged' => $validFnums)));
         exit;
@@ -871,6 +862,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $res        = $m_files->updateState($validFnums, $state);
         $msg = '';
 
+        if (is_array($res)) {
+            $msg = isset($res['msg']) ? $res['msg'] : '';
+            $res = isset($res['status']) ? $res['status'] : true;
+        }
+
         if ($res !== false) {
             $m_application = $this->getModel('application');
             $status = $m_files->getStatus();
@@ -878,16 +874,6 @@ class EmundusControllerFiles extends JControllerLegacy
             $code = array();
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
-
-                /*$row = array('applicant_id' => $fnum['applicant_id'],
-                    'user_id' => $this->_user->id,
-                    'reason' => JText::_('COM_EMUNDUS_STATUS'),
-                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
-                    'fnum' => $fnum['fnum'],
-                    'status_from' => $fnum['step'],
-                    'status_to' => $state
-                );
-                $m_application->addComment($row);*/
 
                 // Log the update
                 $logsParams = array('updated' => []);
@@ -898,7 +884,9 @@ class EmundusControllerFiles extends JControllerLegacy
             //*********************************************************************
             // Get triggered email
             include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
+            include_once(JPATH_SITE.'/components/com_emundus/models/users.php');
             $m_email = new EmundusModelEmails;
+            $m_users = new EmundusModelUsers;
             $trigger_emails = $m_email->getEmailTrigger($state, $code, 1);
             $toAttach = [];
 
@@ -979,6 +967,15 @@ class EmundusControllerFiles extends JControllerLegacy
                                     continue;
                                 }
 
+                                // Check if user defined a cc address
+                                $cc = [];
+                                $emundus_user = $m_users->getUserById($file['applicant_id'])[0];
+                                if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
+                                    if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
+                                        $cc[] = $emundus_user->email_cc;
+                                    }
+                                }
+
                                 $mailer = JFactory::getMailer();
 
                                 $post = array('FNUM' => $file['fnum'],'CAMPAIGN_LABEL' => $file['label'], 'CAMPAIGN_END' => $file['end_date']);
@@ -1019,6 +1016,10 @@ class EmundusControllerFiles extends JControllerLegacy
                                 $mailer->Encoding = 'base64';
                                 $mailer->setBody($body);
                                 $mailer->addAttachment($toAttach);
+
+                                if (!empty($cc)) {
+                                    $mailer->addCc($cc);
+                                }
 
                                 $send = $mailer->Send();
                                 if ($send !== true) {
@@ -1143,10 +1144,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $msg .= JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
         } else {
-            $msg .= JText::_('STATE_ERROR');
+            $msg = empty($msg) ? JText::_('STATE_ERROR') : $msg;
         }
 
-        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+        echo json_encode(array('status' => $res, 'msg' => $msg));
         exit;
     }
 
@@ -4445,14 +4446,20 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $user = JFactory::getUser()->id;
         $fnum = $jinput->post->getString('fnum');
-        $offset = $jinput->post->getInt('offset');
+        $offset = $jinput->post->getInt('offset', null);
+
+        // get request data //
+        $crud = $jinput->post->get('crud');                 // crud
+        $types = $jinput->post->get('types');               // log id
+        $persons = $jinput->post->get('persons');           // person
+
         $fnumErrorList = [];
 
         if (EmundusHelperAccess::asAccessAction(37, 'r', $user, $fnum)) {
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
             $m_logs = new EmundusModelLogs;
 
-            $res = $m_logs->getActionsOnFnum($fnum, null, null, null, $offset);
+            $res = $m_logs->getActionsOnFnum($fnum, $persons, $types, $crud, $offset);
             $details = [];
 
             if (empty($res)) {
@@ -4522,11 +4529,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', '');
 
+        // get crud, types, persons
+        $crud = json_decode($jinput->getString('crud', ''));
+        $types = json_decode($jinput->getString('types', ''));
+        $persons = json_decode($jinput->getString('persons', ''));
+
         if (!empty($fnum)) {
             if (EmundusHelperAccess::asAccessAction(37, 'r', $user->id, $fnum)) {
                 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
                 $m_logs = new EmundusModelLogs;
-                $res = $m_logs->exportLogs($fnum);
+                $res = $m_logs->exportLogs($fnum,$persons,$types,$crud);
             } else {
                 $res = array(
                     'status' => false,
@@ -4567,5 +4579,44 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         return !empty($data) ? $data : false;
+    }
+
+    /* get all logs */
+    public function getalllogactions() {
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles();
+        $logs = $m_files->getAllLogActions();
+
+        if($logs) {
+            echo json_encode((array('status' => true, 'data' => $logs)));
+        } else {
+            echo json_encode((array('status' => false, 'data' => [])));
+        }
+        exit;
+    }
+
+    /* get users logs by fnum */
+    public function getuserslogbyfnum() {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', '');
+
+        if (EmundusHelperAccess::asAccessAction(37, 'r', JFactory::getUser()->id, $fnum)) {
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+            $m_logs = new EmundusModelLogs();
+
+            if (!empty($fnum)) {
+                $users = $m_logs->getUsersLogsByFnum($fnum);
+                if (!empty($users)) {
+                    echo json_encode((['status' => true, 'data' => $users]));
+                } else {
+                    echo json_encode((['status' => false, 'data' => []]));
+                }
+            } else {
+                echo json_encode((['status' => false, 'data' => []]));
+            }
+        } else {
+            echo json_encode((['status' => false, 'data' => [], 'msg' => JText::_('ACCESS_DENIED')]));
+        }
+        exit;
     }
 }

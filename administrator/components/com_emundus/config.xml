@@ -26,6 +26,16 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="alert_editing_time" type="number" label="DISPLAY_OTHER_USER_EDITING_TIME" default="2"></field>
+
+		<field name="block_user" label="BLOCK_USER" type="radio" default="1" description="BLOCK_USER_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="reveal_password" label="COM_EMUNDUS_REVEAL_PASSWORD" type="list" default="0" description="">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	<fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
 		<field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS" description="ALLOW_MULTIPLE_EVALUATIONS_DESC">
@@ -124,6 +134,7 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="status_for_send" type="text" default="0" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_SEND_DESC" />
+		<field name="status_for_delete" type="text" default="" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE" description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE_DESC" />
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_PAYMENT" name="payment" description="COM_EMUNDUS_PAYMENT_DESC">
@@ -160,6 +171,12 @@
 			<option value="fnum">FNUM</option>
 			<option value="status">STATUS</option>
 		</field>
+
+		<field
+				name="spacer1"
+				type="spacer"
+				hr="true"
+		/>
 	</fieldset>
 
 	<fieldset label="COM_EMUNDUS_EXPORTS" name="exports" description="COM_EMUNDUS_EXPORTS_DESC">
@@ -403,6 +420,24 @@
 		<field name="external_storage_ged_alfresco_password" type="password" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_PASSWORD" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_PASSWORD_DESC" />
 		<field name="external_storage_ged_alfresco_max_level" type="text" default="3" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_LEVEL_DESC" />
 		<field name="external_storage_ged_alfresco_max_folders_by_level" type="text" default="1" label="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_FOLDERS_BY_LEVEL" description="COM_EMUNDUS_EXTERNAL_STORAGE_GED_ALFRESCO_MAX_FOLDERS_BY_LEVEL_DESC" />
+		<field
+				name="spacer8"
+				type="spacer"
+				hr="true"
+		/>
+		<field
+				name="flywire_integration"
+				type="note"
+				label="COM_EMUNDUS_PAYMENT_FLYWIRE"
+		/>
+		<fieldset label="COM_EMUNDUS_PAYMENT_FLYWIRE">
+			<field name="flywire_recipient" label="COM_EMUNDUS_PAYMENT_FLYWIRE_RECIPIENT_LABEL" type="text"></field>
+			<field name="flywire_mode" label="COM_EMUNDUS_PAYMENT_FLYWIRE_MODE_LABEL" type="list">
+				<option value="demo">Démo</option>
+				<option value="production">Production</option>
+			</field>
+		</fieldset>
+
 	</fieldset>
 	<fieldset
 			name="permissions"
@@ -435,6 +470,12 @@
 			<option value="1">JYES</option>
 		</field>
 		<field name="attachment_storage" label="COM_EMUNDUS_MODULES_ATTACHMENT_STORAGE" type="radio" default="0" description="COM_EMUNDUS_MODULES_ATTACHMENT_STORAGE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+	<fieldset label="COM_EMUNDUS_PROFILE" name="profile_view" description="COM_EMUNDUS_PROFILE">
+		<field name="display_expires_date" type="list" default="0" label="COM_EMUNDUS_PROFILE_EXPIRES_DATE" description="COM_EMUNDUS_PROFILE_EXPIRES_DATE_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
