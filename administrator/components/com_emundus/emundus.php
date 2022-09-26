@@ -10,7 +10,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // Access check.
-if (!JFactory::getUser()->authorise('core.manage', 'com_emundus')) 
+if (!JFactory::getUser()->authorise('core.manage', 'com_emundus'))
 {
 	throw new Exception(JText::_('JERROR_ALERTNOAUTHOR'));
 }
@@ -19,7 +19,7 @@ jimport('joomla.application.component.controller');
 jimport('joomla.filesystem.file');
 $version = new JVersion();
 $sversion = $version->getShortVersion();
-// TODO: Update this to PHP 7 once done 
+// TODO: Update this to PHP 7 once done
 if (version_compare( phpversion(), '5.0.0', '<')) {
     echo 'Sorry you are using ' .  phpversion() . ". You need to have PHP5 installed to run eMundus\n";
     return;
@@ -42,7 +42,7 @@ if (in_array( 'suhosin', get_loaded_extensions()) ) {
 // Require the base controller
 require_once( JPATH_COMPONENT.DS.'controller.php' );
 
-$controllers = explode(',', 'panel,actions,fabrik');
+$controllers = explode(',', 'panel,actions,fabrik,modules');
 if (!JRequest::getWord('controller'))
 	JRequest::setVar( 'controller', $controllers[0] );
 
