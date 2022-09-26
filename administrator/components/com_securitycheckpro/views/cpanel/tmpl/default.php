@@ -147,10 +147,8 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
           </ol>
 		  
 	  
-    <?php
-                $app = JComponentHelper::getParams('com_securitycheckpro');
-                $downloadid = $app->get('downloadid');
-    if (empty($downloadid) ) {
+    <?php                
+    if (empty($this->downloadid) ) {
         ?>        
             <div class="card text-center mb-3">
                 <div class="card-header">

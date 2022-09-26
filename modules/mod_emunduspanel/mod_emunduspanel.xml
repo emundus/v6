@@ -32,7 +32,7 @@
 				<field
 						name="title"
 						type="text"
-						default="Tableau de bord"
+						default=""
 						label="MOD_EMUNDUSPANEL_TCHOOZ_TITLE_LABEL"
 						description="MOD_EMUNDUSPANEL_TCHOOZ_TITLE_DESC"
 						showon="panel_style:tchooz_dashboard"
@@ -43,7 +43,7 @@
 						type="textarea"
 						rows="4"
 						columns="2"
-						default="Retrouvez vos statistiques"
+						default=""
 						label="MOD_EMUNDUSPANEL_TCHOOZ_DESC_LABEL"
 						showon="panel_style:tchooz_dashboard"
 						size="60">

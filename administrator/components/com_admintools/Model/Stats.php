@@ -1,17 +1,17 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\AdminTools\Admin\Model;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 use AkeebaUsagestats;
 use Exception;
-use FOF30\Model\Model;
+use FOF40\Model\Model;
 use Joomla\CMS\Uri\Uri;
 
 class Stats extends Model
@@ -97,8 +97,8 @@ class Stats extends Model
 		// I can't use list since dev release don't have any dots
 		$at_parts    = explode('.', ADMINTOOLS_VERSION);
 		$at_major    = $at_parts[0];
-		$at_minor    = isset($at_parts[1]) ? $at_parts[1] : '';
-		$at_revision = isset($at_parts[2]) ? $at_parts[2] : '';
+		$at_minor    = $at_parts[1] ?? '';
+		$at_revision = $at_parts[2] ?? '';
 
 		[$php_major, $php_minor, $php_revision] = explode('.', phpversion());
 		$php_qualifier = strpos($php_revision, '~') !== false ? substr($php_revision, strpos($php_revision, '~')) : '';
@@ -256,134 +256,6 @@ class Stats extends Model
 			return mcrypt_create_iv($bytes, MCRYPT_DEV_URANDOM);
 		}
 
-		return $this->genRandomBytes($bytes);
-	}
-
-	/**
-	 * Generate random bytes. Adapted from Joomla! 3.2.
-	 *
-	 * @param   integer  $length  Length of the random data to generate
-	 *
-	 * @return  string  Random binary data
-	 */
-	public function genRandomBytes($length = 32)
-	{
-		$length = (int) $length;
-		$sslStr = '';
-
-		/*
-		 * Collect any entropy available in the system along with a number
-		 * of time measurements of operating system randomness.
-		 */
-		$bitsPerRound  = 2;
-		$maxTimeMicro  = 400;
-		$shaHashLength = 20;
-		$randomStr     = '';
-		$total         = $length;
-
-		// Check if we can use /dev/urandom.
-		$urandom = false;
-		$handle  = null;
-
-		// This is PHP 5.3.3 and up
-		if (function_exists('stream_set_read_buffer') && @is_readable('/dev/urandom'))
-		{
-			$handle = @fopen('/dev/urandom', 'rb');
-
-			if ($handle)
-			{
-				$urandom = true;
-			}
-		}
-
-		while ($length > strlen($randomStr))
-		{
-			$bytes = ($total > $shaHashLength) ? $shaHashLength : $total;
-			$total -= $bytes;
-
-			/*
-			 * Collect any entropy available from the PHP system and filesystem.
-			 * If we have ssl data that isn't strong, we use it once.
-			 */
-			$entropy = rand() . uniqid(mt_rand(), true) . $sslStr;
-			$entropy .= implode('', @fstat(fopen(__FILE__, 'r')));
-			$entropy .= memory_get_usage();
-			$sslStr  = '';
-
-			if ($urandom)
-			{
-				stream_set_read_buffer($handle, 0);
-				$entropy .= @fread($handle, $bytes);
-			}
-			else
-			{
-				/*
-				 * There is no external source of entropy so we repeat calls
-				 * to mt_rand until we are assured there's real randomness in
-				 * the result.
-				 *
-				 * Measure the time that the operations will take on average.
-				 */
-				$samples  = 3;
-				$duration = 0;
-
-				for ($pass = 0; $pass < $samples; ++$pass)
-				{
-					$microStart = microtime(true) * 1000000;
-					$hash       = sha1(mt_rand(), true);
-
-					for ($count = 0; $count < 50; ++$count)
-					{
-						$hash = sha1($hash, true);
-					}
-
-					$microEnd = microtime(true) * 1000000;
-					$entropy  .= $microStart . $microEnd;
-
-					if ($microStart >= $microEnd)
-					{
-						$microEnd += 1000000;
-					}
-
-					$duration += $microEnd - $microStart;
-				}
-
-				$duration = $duration / $samples;
-
-				/*
-				 * Based on the average time, determine the total rounds so that
-				 * the total running time is bounded to a reasonable number.
-				 */
-				$rounds = (int) (($maxTimeMicro / $duration) * 50);
-
-				/*
-				 * Take additional measurements. On average we can expect
-				 * at least $bitsPerRound bits of entropy from each measurement.
-				 */
-				$iter = $bytes * (int) ceil(8 / $bitsPerRound);
-
-				for ($pass = 0; $pass < $iter; ++$pass)
-				{
-					$microStart = microtime(true);
-					$hash       = sha1(mt_rand(), true);
-
-					for ($count = 0; $count < $rounds; ++$count)
-					{
-						$hash = sha1($hash, true);
-					}
-
-					$entropy .= $microStart . microtime(true);
-				}
-			}
-
-			$randomStr .= sha1($entropy, true);
-		}
-
-		if ($urandom)
-		{
-			@fclose($handle);
-		}
-
-		return substr($randomStr, 0, $length);
+		return random_bytes($bytes);
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   admintools
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -15,7 +15,7 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Registry\Registry;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
 /**
  * Implements the Rescue URL feature. This feature lets a Super User suspend the backend protection of Admin Tools for
@@ -29,7 +29,7 @@ abstract class AtsystemUtilRescueurl
 	/**
 	 * This string is used in the 'series' column of #__user_keys to signify an Admin Tools Rescue URL token.
 	 */
-	const series = 'com_admintools_rescue';
+	public const series = 'com_admintools_rescue';
 
 	/**
 	 * Is this a CLI application?
@@ -162,9 +162,6 @@ abstract class AtsystemUtilRescueurl
 		// Remove all expired tokens
 		self::removeExpiredTokens();
 
-		// Get a reference to the session. I cannot use FOF 3 here because it is not loaded yet.
-		$session = Factory::getSession();
-
 		// If the token is present AND it's not marked as used, process it
 		$app      = Factory::getApplication();
 		$token    = $app->input->getCmd('admintools_rescue_token', '');
@@ -173,12 +170,12 @@ abstract class AtsystemUtilRescueurl
 		// In case of a valid token I have to set a few things in the session
 		if (!empty($username))
 		{
-			$session->set('rescue_timestamp', time(), 'com_admintools');
-			$session->set('rescue_username', $username, 'com_admintools');
+			self::setSessionVar('rescue_timestamp', time(), 'com_admintools');
+			self::setSessionVar('rescue_username', $username, 'com_admintools');
 		}
 
 		// Is the timestamp saved in the session within the time limit?
-		$expiresOn = (int) $session->get('rescue_timestamp', 0, 'com_admintools')
+		$expiresOn = (int) self::getSessionVar('rescue_timestamp', 0, 'com_admintools')
 			+ (self::getTimeout() * 60);
 
 		if (time() > $expiresOn)
@@ -187,10 +184,10 @@ abstract class AtsystemUtilRescueurl
 		}
 
 		// We must be guest OR the username must match the one in the token.
-		$currentUser = Factory::getUser();
-		$username    = $session->get('rescue_username', '', 'com_admintools');
+		$currentUser = method_exists($app, 'getIdentity') ? $app->getIdentity() : Factory::getUser();
+		$username    = self::getSessionVar('rescue_username', '', 'com_admintools');
 
-		if (!$currentUser->guest && ($currentUser->username != $username))
+		if (!empty($currentUser) && !$currentUser->guest && ($currentUser->username != $username))
 		{
 			return false;
 		}
@@ -583,4 +580,95 @@ abstract class AtsystemUtilRescueurl
 		{
 		}
 	}
+
+	/**
+	 * @return \Joomla\CMS\Session\Session
+	 * @throws Exception
+	 */
+	private static function getSession()
+	{
+		if (version_compare(JVERSION, '3.999.999', 'le'))
+		{
+			return Factory::getSession();
+		}
+
+		return Factory::getApplication()->getSession();
+	}
+
+	/**
+	 * Get a variable from the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $default    (optional) The default value to return if the variable does not exit, default: null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  mixed
+	 */
+	private static function getSessionVar($name, $default = null, $namespace = 'default')
+	{
+		$session = self::getSession();
+
+		// Joomla 3
+		if (version_compare(JVERSION, '3.9999.9999', 'le'))
+		{
+			return $session->get($name, $default, $namespace);
+		}
+
+		// Joomla 4
+		if (empty($namespace))
+		{
+			return $session->get($name, $default);
+		}
+
+		$registry = $session->get('registry');
+
+		if (is_null($registry))
+		{
+			$registry = new Registry();
+
+			$session->set('registry', $registry);
+		}
+
+		return $registry->get($namespace . '.' . $name, $default);
+	}
+
+	/**
+	 * Set a variable in the user session
+	 *
+	 * @param   string  $name       The name of the variable to set
+	 * @param   string  $value      (optional) The value to set it to, default is null
+	 * @param   string  $namespace  (optional) The variable's namespace e.g. the component name. Default: 'default'
+	 *
+	 * @return  void
+	 */
+	private static function setSessionVar($name, $value = null, $namespace = 'default')
+	{
+		$session = self::getSession();
+
+		// Joomla 3
+		if (version_compare(JVERSION, '3.9999.9999', 'le'))
+		{
+			$session->set($name, $value, $namespace);
+		}
+
+		// Joomla 4
+		if (empty($namespace))
+		{
+			$session->set($name, $value);
+
+			return;
+		}
+
+		$registry = $session->get('registry');
+
+		if (is_null($registry))
+		{
+			$registry = new Registry();
+
+			$session->set('registry', $registry);
+		}
+
+		$registry->set($namespace . '.' . $name, $value);
+	}
+
 }

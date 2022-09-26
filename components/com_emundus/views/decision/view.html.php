@@ -7,7 +7,7 @@
  * @license    GNU/GPL
  * @author     Benjamin Rivalland
 */
- 
+
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
 //error_reporting(E_ALL);
@@ -17,7 +17,7 @@ jimport( 'joomla.application.component.view');
  *
  * @package    Emundus
  */
- 
+
 class EmundusViewDecision extends JViewLegacy
 {
 	//var $_user = null;
@@ -34,7 +34,7 @@ class EmundusViewDecision extends JViewLegacy
     {
         $current_user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
-            die( JText::_('RESTRICTED_ACCESS') );
+            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         $this->itemId = JFactory::getApplication()->input->getInt('Itemid', null);
 	    //$this->cfnum = JFactory::getApplication()->input->getString('cfnum', null);

@@ -130,7 +130,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
             $marge_css_bottom = $tab_margin[0];
         }
         // Génération du HTML
-        include_once(JPATH_BASE.'/components/com_emundus/models/emails.php');
+        include_once(JPATH_SITE.'/components/com_emundus/models/emails.php');
 
         $emails = new EmundusModelEmails();
         $body = '';
@@ -146,7 +146,7 @@ class EmundusControllerTrombinoscope extends EmundusController {
                 'CAMPAIGN_END' => $fnumInfo['end_date'],
                 'SITE_URL' => JURI::base()
             ];
-            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum']);
+            $tags = $emails->setTags($fnum["applicant_id"], $post, $fnum['fnum'], '', $template);
             $body_tags = preg_replace($tags['patterns'], $tags['replacements'], $template);
             $body_tmp = $emails->setTagsFabrik($body_tags, array($fnum["fnum"]));
             $body .= $body_tmp;

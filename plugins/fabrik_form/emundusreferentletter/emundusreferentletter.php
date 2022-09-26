@@ -202,7 +202,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
                         'REFERENT_NAME'  => $recipient['name'],
                         'REFERENT_FIRST_NAME'  => $recipient['firstname']
 					];
-					$tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum);
+					$tags = $m_emails->setTags($fnum_detail['applicant_id'], $post, $fnum, '', $obj[0]->subject.$obj[0]->message);
 					$subject = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->subject);
 					$body = preg_replace($tags['patterns'], $tags['replacements'], $obj[0]->message);
 
@@ -225,7 +225,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 					if ($send !== true) {
 
 						JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_NOT_SENT').' : '.$recipient['email'], 'error');
-						JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
+                        JLog::add($send, JLog::ERROR, 'com_emundus');
 
 					} else {
 

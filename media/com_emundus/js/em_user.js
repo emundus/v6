@@ -98,13 +98,13 @@ function formCheck(id) {
 }
 
 function reloadData() {
-	addDimmer();
+	addLoader();
 	$.ajax({
 		type: "GET",
 		url: 'index.php?option=com_emundus&view=users&format=raw&layout=user&Itemid=' + itemId,
 		dataType: 'html',
 		success: function (data) {
-			$('.em-dimmer').remove();
+			removeLoader();
 			$(".col-md-9 .panel.panel-default").empty();
 			$(".col-md-9 .panel.panel-default").append(data);
 		},
@@ -114,8 +114,11 @@ function reloadData() {
 	})
 }
 
-function addDimmer() {
-	$('.row').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+function addLoader() {
+	$('#g-main-mainbody').after('<div class="em-page-loader" id="em-dimmer"></div>');
+}
+function removeLoader() {
+	$('#em-dimmer').remove();
 }
 
 function refreshFilter() {
@@ -793,7 +796,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							}).then(function() {
 								window.location.replace('/user');
 							});
@@ -919,7 +927,7 @@ $(document).ready(function () {
 			}
 		}
 
-		if ($('.modal-body .em-dimmer').is(':visible')) {
+		if ($('#em-dimmer').is(':visible')) {
 			return false;
 		}
 
@@ -941,7 +949,7 @@ $(document).ready(function () {
 					progs = progs.substr(0, progs.length - 1);
 				}
 
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 
 				$.ajax({
 					type: 'POST',
@@ -953,7 +961,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 						if (result.status) {
 
 							Swal.fire({
@@ -970,7 +978,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 						}
 					},
@@ -1016,7 +1029,7 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
@@ -1036,7 +1049,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1044,7 +1057,7 @@ $(document).ready(function () {
 								type: 'success',
 								title: result.msg,
 								showConfirmButton: false,
-								timer: 1500
+								timer: 1500,
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-success">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1061,7 +1074,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1101,7 +1119,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1122,7 +1140,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1175,28 +1198,33 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
+
+				let addUserData = {
+					login: login,
+					firstname: fn,
+					lastname: ln,
+					campaigns: campaigns.substr(0, campaigns.length - 1),
+					oprofiles: oprofiles.substr(0, oprofiles.length - 1),
+					groups: groups.substr(0, groups.length - 1),
+					profile: profile,
+					jgr: $('#profiles option:selected').attr('id'),
+					email: email,
+					newsletter: $('#news').is(':checked') ? 1 : 0,
+					university_id: $('#univ').val()
+				}
+
+				if($('#em-add-user').attr('action').indexOf('edituser') !== -1) {
+					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
+				}
 
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
-					data: {
-						id: $('.em-check:checked').attr('id').split('_')[0],
-						login: login,
-						firstname: fn,
-						lastname: ln,
-						campaigns: campaigns.substr(0, campaigns.length - 1),
-						oprofiles: oprofiles.substr(0, oprofiles.length - 1),
-						groups: groups.substr(0, groups.length - 1),
-						profile: profile,
-						jgr: $('#profiles option:selected').attr('id'),
-						email: email,
-						newsletter: $('#news').is(':checked') ? 1 : 0,
-						university_id: $('#univ').val()
-					},
+					data: addUserData,
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1218,7 +1246,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1235,7 +1268,7 @@ $(document).ready(function () {
 
 			case 26:
 				var checkInput = getUserCheck();
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId,
@@ -1244,7 +1277,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1270,7 +1303,12 @@ $(document).ready(function () {
 							Swal.fire({
 								position: 'center',
 								type: 'warning',
-								title: result.msg
+								title: result.msg,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: "em-swal-single-action",
+								},
 							});
 							/*$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
 								'<button type="button" class="close" data-dismiss="alert">×</button>' +
@@ -1289,6 +1327,8 @@ $(document).ready(function () {
 				var usersData = getUserCheck();/*get objectJson with id et uid*/
 				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
 
+				addLoader();
+
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=regeneratepassword',
@@ -1298,20 +1338,29 @@ $(document).ready(function () {
 
 					dataType: 'json',
 					success: function (result) {
+						removeLoader();
 
 						if (result.status) {
-							setTimeout(function() {
-								$('#system-message-container').prepend('<div class="alert alert-dismissable alert-success" style="width: 70%;margin: 0 auto 10px auto;display: flex;">' +
-									'<button type="button" class="close" data-dismiss="alert">×</button>' +
-									'<strong>' + result.msg + '</strong>' +
-									'</div>');
-							},500);
+							Swal.fire({
+								text: result.msg,
+								type: "success",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 							$('.close').click();
 						} else {
-							$('.modal-body').prepend('<div class="alert alert-dismissable alert-danger">' +
-								'<button type="button" class="close" data-dismiss="alert">×</button>' +
-								'<strong>' + result.msg + '</strong> ' +
-								'</div>');
+							Swal.fire({
+								text: result.msg,
+								type: "error",
+								showConfirmButton: false,
+								timer: 2500,
+								customClass: {
+									title: 'em-swal-title',
+								},
+							});
 						}
 					},
 					error: function (jqXHR, textStatus, errorThrown) {
@@ -1367,14 +1416,24 @@ $(document).ready(function () {
 
 								Swal.fire({
 									type: 'success',
-									title: Joomla.JText._('EMAILS_SENT') + result.sent.length,
-									html:  sent_to + '</ul>'
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+									html:  sent_to + '</ul>',
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								});
 
 							} else {
 								Swal.fire({
 									type: 'error',
-									title: Joomla.JText._('NO_EMAILS_SENT')
+									title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT'),
+									customClass: {
+										title: 'em-swal-title',
+										confirmButton: 'em-swal-confirm-button',
+										actions: "em-swal-single-action",
+									},
 								})
 							}
 
@@ -1409,7 +1468,7 @@ $(document).ready(function () {
 			e.handle = true;
 			var id = $(this).val();
 			var text = $('#em-modal-actions #em-export-form option:selected').attr('data-value');
-			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="glyphicon glyphicon-trash"></span></button></li>');
+			$('#em-export').append('<li class="em-export-item" id="' + id + '-item"><strong>' + text + '</strong><button class="btn btn-danger btn-xs pull-right"><span class="material-icons">delete_outline</span></button></li>');
 		}
 	});
 

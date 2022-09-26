@@ -157,7 +157,7 @@
 }
 
 .rotate-me.blue, .rotate-me.orange {
-    width: 100vw;
+    width: 100%;
 }
 
 .navsearch-content {
@@ -233,6 +233,10 @@
 .em-campaign-dropfiles li {
     align-self: center;
     list-style: none;
+}
+
+.em-campaign-dropfiles li span {
+    margin-left: 8px;
 }
 
 .em-campaign-dropfiles ul a:focus {

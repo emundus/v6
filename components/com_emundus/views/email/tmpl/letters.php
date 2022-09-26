@@ -1,10 +1,10 @@
-<?php 
-defined('_JEXEC') or die('Restricted access'); 
+<?php
+defined('_JEXEC') or die('Restricted access');
 
 $document = JFactory::getDocument();
 
-JHTML::_('behavior.modal'); 
-JHTML::_('behavior.tooltip'); 
+JHTML::_('behavior.modal');
+JHTML::_('behavior.tooltip');
 JHTML::stylesheet( 'media/com_emundus/cssemundus.css/' );
 JHTML::stylesheet( 'templates/system/css/general.css' );
 JHTML::stylesheet( 'templates/system/csssystem.css/' );
@@ -18,11 +18,11 @@ require_once (JPATH_COMPONENT.DS.'helpers'.DS.'filters.php');
 $current_user = JFactory::getUser();
 if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	echo "<script>window.setTimeout('closeme();', 1500); function closeme() { parent.SqueezeBox.close(); }</script>";
-	die('<h1><img src="'.$this->baseurl.'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("SAVED").'</h1>');
+	die('<h1><img src="'.$this->baseurl.'/media/com_emundus/images/icones/admin_val.png" width="80" height="80" align="middle" /> '.JText::_("COM_EMUNDUS_SAVED").'</h1>');
 } else {
-	$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0); 
-	$evaluations_id = JRequest::getVar('jos_emundus_evaluations___id', null, 'GET', 'INT',0); 
-	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0); 
+	$student_id = JRequest::getVar('jos_emundus_evaluations___student_id', null, 'GET', 'INT',0);
+	$evaluations_id = JRequest::getVar('jos_emundus_evaluations___id', null, 'GET', 'INT',0);
+	$itemid = JRequest::getVar('Itemid', null, 'GET', 'INT',0);
 
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'evaluation.php');
 	include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
@@ -38,11 +38,11 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	$user = JFactory::getUser($student_id);
 
-	$final_grade = $evaluations->getFinalGrade($student_id, $evaluation[0]["campaign_id"]); 
+	$final_grade = $evaluations->getFinalGrade($student_id, $evaluation[0]["campaign_id"]);
 
 	$chemin = EMUNDUS_PATH_REL;
 
-	// Get email 
+	// Get email
 	$email = $emails->getEmail("candidature_decision");
 
 	?>
@@ -57,7 +57,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	$attachments = $evaluations->getEvaluationDocuments($student_id, $campaign['id']);
 
 	if ( (!empty($result_id) && empty($final_grade['result_sent'])) || count($attachments) == 0 ) {
-		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php'); 
+		require(JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
 		$files = letter_pdf($user->id, @$result_id, $campaign['training'], $campaign['id'], $evaluations_id, "F");
 	} else {
 		if (!empty($attachments)) {
@@ -74,7 +74,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		}
 	}
 
-	echo '<fieldset><legend>'.JText::_('ATTACHMENTS').'</legend>'; 
+	echo '<fieldset><legend>'.JText::_('COM_EMUNDUS_ATTACHMENTS_ATTACHMENTS').'</legend>';
 	?>
 	<script type="text/javascript">
 			function startCallback() {
@@ -89,17 +89,17 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 				submit_attachment = document.getElementById('submit_attachment');
 				submit_attachment.disabled=false;
 				submit_attachment.style="background: url('')";
-				submit_attachment.value = "<?php echo JText::_('UPLOAD'); ?>";
+				submit_attachment.value = "<?php echo JText::_('COM_EMUNDUS_UPLOAD'); ?>";
     			var objJSON = JSON.parse(response);
 				var html = '<div id="em_dl_'+objJSON.id+'" class="em_dl"><a class="dO" target="_blank" href="'+objJSON.url+'"><div class="vI">'+objJSON.name+'</div> <div class="vJ"> ('+objJSON.filesize+' <?php echo JText::_("BYTES") ?>)</div></a><div class="em_email_icon" id="attachment_'+objJSON.id+'">';
-				html += '<img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
-				
+				html += '<img src="<?php echo JURI::base(); ?>media/com_emundus/images/icones/x_8px.png" alt="<?php echo JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT"); ?>" title="<?php echo JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT"); ?>" onClick="if (confirm(\'<?php echo htmlentities(JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT_CONFIRM")); ?>\')) {deleteAttachment('+objJSON.id+');}"/></div>';
+
 				document.getElementById("em_attachment").innerHTML += html;
 
 				$('mail_attachments').value += "," + "<?php echo str_replace('\\', '\\\\', EMUNDUS_PATH_ABS.$student_id.DS); ?>" + objJSON.filename;
 			}
 		</script>
- 
+
 	<form action="<?php echo JURI::base(); ?>index.php?option=com_emundus&controller=application&format=raw&task=upload_attachment" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 		<div>
 			<?php echo EmundusHelperFilters::setEvaluationList($result_id); ?>
@@ -110,11 +110,11 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 			<input name="can_be_deleted" type="hidden" value="0" />
 			<input name="MAX_FILE_SIZE" type="hidden" value="10000000" />
 			<input name="filename" type="file" />
-			<input id="submit_attachment" type="submit" value="<?php echo JText::_('UPLOAD'); ?>" />
+			<input id="submit_attachment" type="submit" value="<?php echo JText::_('COM_EMUNDUS_UPLOAD'); ?>" />
 		</div>
 	</form>
 	<?php
-	echo '<hr />'; 
+	echo '<hr />';
 
 	echo '<ul class="em_attachments_list">';
 	$files_path = "";
@@ -128,7 +128,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 						<div class="vJ"></div>
 					</a>
 					<div class="em_email_icon" id="attachment_'.$file['id'].'">
-						<img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("DELETE_ATTACHMENT").'" title="'.JText::_("DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
+						<img src="'.JURI::base().'media/com_emundus/images/icones/x_8px.png" alt="'.JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT").'" title="'.JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT").'" onClick="if (confirm('.htmlentities('"'.JText::_("COM_EMUNDUS_ATTACHMENTS_DELETE_ATTACHMENT_CONFIRM").'"').')) {deleteAttachment('.$file['id'].');}"/>
 					</div>
 				</div>
 			</div>';
@@ -137,7 +137,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 		echo '</ul>';
 	} else {
 		echo '<div id="em_attachment">';
-		echo '<a href="index.php?option=com_fabrik&view=list&listid=108">'.JText::_('NO_FILE_FROM_TEMPLATE').'<a>';
+		echo '<a href="index.php?option=com_fabrik&view=list&listid=108">'.JText::_('COM_EMUNDUS_LETTERS_NO_FILE_FROM_TEMPLATE').'<a>';
 		echo '</div>';
 	}
 	echo '</fieldset>';
@@ -146,12 +146,12 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 
 	<script>
 	function OnSubmitForm() {
-		var btn = document.getElementsByName(document.pressed); 
+		var btn = document.getElementsByName(document.pressed);
 		btn[0].disabled = true;
-		btn[0].value = "<?php echo JText::_('SENDING_EMAIL'); ?>";
+		btn[0].value = "<?php echo JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAIL'); ?>";
 
 		switch(document.pressed) {
-			case 'evaluation_result_email': 
+			case 'evaluation_result_email':
 				document.adminForm.action ="index.php?option=com_emundus&task=sendmail_applicant&Itemid=<?php echo $itemid ?>";
 			break;
 			default: return false;
@@ -163,7 +163,7 @@ if (!EmundusHelperAccess::isCoordinator($current_user->id)) {
 	var mail_attachments = document.getElementById("mail_attachments");
 	mail_body.value = "<?php echo preg_replace('~[.[:cntrl:]]~', '', $email->message); ?>";
 	mail_subject.value = "<?php echo $campaign['label']; ?>";
-	mail_attachments.value = "<?php echo $files_path; ?>"; 
+	mail_attachments.value = "<?php echo $files_path; ?>";
 
 	</script>
 <?php } ?>

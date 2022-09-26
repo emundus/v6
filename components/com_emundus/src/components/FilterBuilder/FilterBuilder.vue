@@ -32,11 +32,11 @@
       </div>
       <div class="actions">
         <div class="btn-primary-vue" @click="addGroup">
-          <span class="material-icons"> add </span>
+          <span class="material-icons-outlined"> add </span>
           Ajouter un groupe
         </div>
         <div class="btn-primary-vue" @click="addFilter">
-          <span class="material-icons"> add </span>
+          <span class="material-icons-outlined"> add </span>
           Ajouter un filtre
         </div>
       </div>
@@ -116,7 +116,7 @@ export default {
      * When you remove an item of your array, you shift every index from the removal point up by one, which means only one index disappears from the array: the last one.
      */
     removeFilter(id) {
-      // find filter position 
+      // find filter position
       const index = this.orderedElements.findIndex((element) => {
         return element.id == id;
       });
@@ -124,7 +124,7 @@ export default {
       this.orderedElements.splice(index, 1);
     },
     removeGroup(id) {
-      // find filter position 
+      // find filter position
       const index = this.orderedElements.findIndex((element) => {
         return element.group == id;
       });

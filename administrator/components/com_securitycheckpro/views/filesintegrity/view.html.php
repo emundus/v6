@@ -40,6 +40,8 @@ class SecuritycheckprosViewFilesIntegrity extends JViewLegacy
         $hash_alg = $params->get('file_integrity_hash_alg', 'SHA1');
         $scan_executables_only = $params->get('scan_executables_only', 0);
 		$this->file_manager_include_exceptions_in_database = $params->get('file_manager_include_exceptions_in_database', 0);
+		// Consultamos dónde han de ir los 'checkboxes'
+		$this->checkbox_position = $params->get('checkbox_position','0');
 
         // Información para la barra de navegación
         $logs_pending = $model->LogsPending();

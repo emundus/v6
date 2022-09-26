@@ -31,7 +31,7 @@ class modemundusApplicationsHelper {
 			}
 		}
 
-        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class ';
+        $query = 'SELECT ecc.date_time AS campDateTime, ecc.*, esc.*, ess.step, ess.value, ess.class, ecc.published as published';
 
 		// CCI-RS layout needs to get the start and end date of each application
 		if ($layout == '_:ccirs') {
@@ -64,6 +64,7 @@ class modemundusApplicationsHelper {
 		$result = $db->loadObjectList('fnum');
 		return (array) $result;
 	}
+
     // get State of the files (published, removed, archived)
     static function getStatusFiles(){
         $user = JFactory::getUser();
@@ -155,19 +156,18 @@ class modemundusApplicationsHelper {
 
 		$db = JFactory::getDbo();
 
-		$query = 'SELECT count(c.id)
+		$query = 'SELECT c.id
 					FROM #__emundus_setup_campaigns AS c
 					LEFT JOIN #__emundus_setup_programmes AS p ON p.code LIKE c.training
 					WHERE c.published = 1
 					AND p.apply_online = 1
 					AND c.end_date >= NOW()
-					AND c.start_date <= NOW()';
+					AND c.start_date <= NOW()
+					LIMIT 1';
 
 		try {
-
 			$db->setQuery($query);
-			return $db->loadResult() > 0;
-
+			return !empty($db->loadResult());
 		} catch (Exception $e) {
 			JLog::add("Error at query : ".$query, JLog::ERROR, 'com_emundus');
 			return false;
@@ -321,7 +321,7 @@ class modemundusApplicationsHelper {
         }
 
         $query
-            ->select([$db->quoteName('jhos.orderstatus_namekey'), $db->quoteName('jhos.orderstatus_color')])
+            ->select([$db->quoteName('jhos.orderstatus_namekey'), $db->quoteName('jhos.orderstatus_color'), $db->quoteName('eh.order_id')])
             ->from($db->quoteName('#__emundus_hikashop', 'eh'))
             ->leftJoin($db->quoteName('#__hikashop_order','ho').' ON '.$db->quoteName('ho.order_id').' = '.$db->quoteName('eh.order_id'))
             ->leftJoin($db->quoteName('#__hikashop_orderstatus','jhos').' ON '.$db->quoteName('jhos.orderstatus_namekey').' = '.$db->quoteName('ho.order_status'))

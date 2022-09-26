@@ -41,7 +41,7 @@ $student = JFactory::getUser($upload->user_id);
 $query = 'SELECT profile FROM #__emundus_users WHERE user_id='.$upload->user_id;
 $db->setQuery( $query );
 $profile=$db->loadResult();
-$query = 'SELECT ap.displayed, attachment.lbl 
+$query = 'SELECT ap.displayed, attachment.lbl, attachment.value
 			FROM #__emundus_setup_attachments AS attachment
 			LEFT JOIN #__emundus_setup_attachment_profiles AS ap ON attachment.id = ap.attachment_id AND ap.profile_id='.$profile.'
 			WHERE attachment.id ='.$aid.' ';
@@ -100,6 +100,28 @@ if ($attachment_params->lbl=="_photo") {
     $student->avatar = $nom;
 }
 
+# get fnum                $fnum
+# get logged user id      JFactory::getUser()->id
+# get applicant id        $upload->user_id
+
+// TRACK THE LOGS
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+$user = JFactory::getSession()->get('emundusUser'); # logged user #
+
+require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+$mFile = new EmundusModelFiles();
+$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+// stock the attachment name
+$logsStd = new stdClass();
+
+$logsStd->element = '[' . $attachment_params->value . '] ';
+$logsStd->details = str_replace("/tmp/", "", $_FILES['jos_emundus_uploads___filename']['name']);
+
+$logsParams = array('created' => [$logsStd]);
+
+EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams,JSON_UNESCAPED_UNICODE));
+
 // Pour tous les mails
 $user = JFactory::getUser();
 $fnumInfos = $m_files->getFnumInfos($fnum);
@@ -114,60 +136,16 @@ $from_id = $user->id;
 
 if ($inform_applicant_by_email == 1) {
 	// Récupération des données du mail à l'étudiant
-	$db->setQuery('SELECT id, subject, emailfrom, name, message FROM #__emundus_setup_emails WHERE lbl="attachment"');
-	$email=$db->loadObject();
-	$from = $email->emailfrom;
-	$fromname = $email->name;
-	$recipient[] = $student->email;
-	$subject = $email->subject;
-	$body = preg_replace($patterns, $replacements, $email->message).'<br/>'.@$file_url;
-	$replyto = $email->emailfrom;
-	$replytoname = $email->name;
+    try {
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+        $c_messages = new EmundusControllerMessages;
 
-	$mailer = JFactory::getMailer();
-
-    // setup mail
-    $app = JFactory::getApplication();
-	$email_from_sys = $app->getCfg('emailfrom');
-	$mail_from_name = $fromname;//$app->getCfg('fromname');
-	// If the email sender has the same domain as the system sender address.
-	if (!empty($from) && substr(strrchr($from, "@"), 1) === substr(strrchr($email_from_sys, "@"), 1)) {
-        $mail_from_address = $from;
+        $post = array('FILE_URL' => @$file_url);
+        $send = $c_messages->sendEmail($fnum, "attachment", $post);
     }
-	else {
-        $mail_from_address = $email_from_sys;
-    }
-
-		// Set sender
-	$sender = [
-		$mail_from_address,
-		$mail_from_name
-	];
-
-    $mailer->setSender($sender);
-    $mailer->addReplyTo($from, $fromname);
-    $mailer->setSender($sender);
-    $mailer->addRecipient($recipient);
-    $mailer->setSubject($subject);
-    $mailer->isHTML(true);
-    $mailer->Encoding = 'base64';
-    $mailer->setBody($body);
-    if ($can_be_view == 1) {
-        $mailer->addAttachment($attachment);
-    }
-
-    $send = $mailer->Send();
-    if ( $send !== true ) {
-        echo 'Error sending email: ' . $send->__toString(); die();
-    } else {
-        $sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
-					VALUES ('".$from_id."', '".$student->id."', '".$subject."', '".$body."', NOW())";
-        $db->setQuery( $sql );
-        try {
-            $db->execute();
-        } catch (Exception $e) {
-            // catch any database errors.
-        }
+    catch (Exception $e){
+        echo $e->getMessage();
+        JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
     }
 }
 ?>

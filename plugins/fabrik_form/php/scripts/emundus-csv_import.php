@@ -18,16 +18,56 @@ JLog::addLogger(array('text_file' => 'com_emundus.csvimport.php'), JLog::ALL, ar
 
 //setlocale(LC_ALL, "en_GB.ISO-8859-1");
 
-//Force conversion for file comming from Excel
+//Force conversion for file comming from Excel. WARNING: this methode use a lot of memory
 function convert( $str ) {
     return iconv( "Windows-1252", "UTF-8", $str );
 }
+
+/**
+* @param string $filePath
+* @param int $checkLines
+* @return string
+*/
+function getCsvDelimiter($filePath, $checkLines = 3)
+{
+    $delimiters =[",", ";", "\t"];
+
+    $default =",";
+
+    $fileObject = new \SplFileObject($filePath);
+    $results = [];
+    $counter = 0;
+    while ($fileObject->valid() && $counter <= $checkLines) {
+        $line = $fileObject->fgets();
+        foreach ($delimiters as $delimiter) {
+            $fields = explode($delimiter, $line);
+            $totalFields = count($fields);
+            if ($totalFields > 1) {
+                if (!empty($results[$delimiter])) {
+                    $results[$delimiter] += $totalFields;
+                } else {
+                    $results[$delimiter] = $totalFields;
+                }
+            }
+        }
+        $counter++;
+    }
+    if (!empty($results)) {
+        $results = array_keys($results, max($results));
+
+        return $results[0];
+    }
+    return $default;
+ }
 
 
 $app = JFactory::getApplication();
 
 $csv = $formModel->data['jos_emundus_setup_csv_import___csv_file_raw'];
+$campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
+$profile_id = $formModel->data['jos_emundus_setup_csv_import___profile'];
 $create_new_fnum = $formModel->data['jos_emundus_setup_csv_import___create_new_fnum'];
+$send_email = $formModel->data['jos_emundus_setup_csv_import___send_email_raw'][0];
 
 // Check if the file is a file on the server and in the right format.
 if (!is_file(JPATH_ROOT.$csv)) {
@@ -45,7 +85,6 @@ if (pathinfo($csv, PATHINFO_EXTENSION) !== 'csv') {
 // auto_detect_line_endings allows PHP to detect MACOS line endings or else things get ugly...
 ini_set('auto_detect_line_endings', TRUE);
 
-
 $handle = fopen(JPATH_ROOT.$csv, 'r');
 if (!$handle) {
     JLog::add('ERROR: Could not open import file.', JLog::ERROR, 'com_emundus.csvimport');
@@ -58,7 +97,8 @@ JPluginHelper::importPlugin('emundus');
 $dispatcher = JEventDispatcher::getInstance();
 $dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', ['data' => array(
     'csv' => $csv,
-    'create_new_fnum' => $create_new_fnum
+    'create_new_fnum' => $create_new_fnum,
+    'formData' => $formModel->formData,
 )]]);
 
 // Prepare data structure for parsing.
@@ -74,12 +114,15 @@ $profile = $formModel->data['jos_emundus_setup_csv_import___profile_raw'][0];
 $group = $formModel->data['jos_emundus_setup_csv_import___group_raw'][0];
 
 $row = 0;
-if (($data = fgetcsv($handle, 0, ';')) !== false) {
+
+$delimiter = getCsvDelimiter(JPATH_ROOT.$csv);
+
+if (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
 
     foreach ($data as $column_number => $column) {
 
         //try to convert char
-        $data = array_map( "convert", $data );
+        //$data = array_map( "convert", $data );
 
         // If the file name is not in the following format : table___element; mark column as bad.
         $column = explode("___", trim(preg_replace('/[^\PC\s]/u', '', $column)));
@@ -217,21 +260,34 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 }
 
 $parsed_data = [];
-while (($data = fgetcsv($handle, 0, ';')) !== false) {
+
+if(empty($campaign_column) && empty($campaign)){
+    JLog::add('ERROR: Could not get campaign_id from Fabrik form or csv file [campaign] in row.', JLog::ERROR, 'com_emundus.csvimport');
+    $app->enqueueMessage('ERROR: Could not get campaign_id from Fabrik form or csv file [campaign] in row.', 'error');
+    return false;
+}
+
+while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
 
     //try to convert char
-    $data = array_map("convert", $data);
+    //$data = array_map("convert", $data);
 
     foreach ($data as $column_number => $column) {
 
         // Clean up data from any invisible chars in xls.
         $column = trim(preg_replace('/[^\PC\s]/u', '', $column));
 
-        if ($column_number === $profile_column) {
+        if($profile_id > 0) {
+            $profile_row[$row] = $profile_id;
+        } elseif ($column_number === $profile_column) {
             $profile_row[$row] = $column;
+        } else {
+            JLog::add('WARNING: Could not get profile from Fabrik form or csv file [profile] in row.', JLog::WARNING, 'com_emundus.csvimport');
         }
 
-        if ($column_number === $campaign_column) {
+        if($campaign > 0) {
+            $campaign_row[$row] = $campaign; 
+        } elseif ($column_number === $campaign_column) {
             $campaign_row[$row] = $column;
 
             // If we have no profile, we must get the associated one using the campaign.
@@ -253,7 +309,9 @@ while (($data = fgetcsv($handle, 0, ';')) !== false) {
             }
 
             continue;
-        } elseif ($column_number === $status_column) {
+        }
+        
+        if ($column_number === $status_column) {
             $status_row[$row] = $column;
             continue;
         } elseif ($column_number === $cas_column) {
@@ -298,7 +356,7 @@ if (empty($parsed_data)) {
     return false;
 }
 
-$campaign = $formModel->data['jos_emundus_setup_csv_import___campaign_raw'][0];
+
 $status = 0;
 $email_from_sys = $app->getCfg('mailfrom');
 
@@ -424,8 +482,8 @@ foreach ($parsed_data as $row_id => $insert_row) {
 
         $username = (!empty($insert_row['jos_emundus_users']['username'])) ? $insert_row['jos_emundus_users']['username'] : strtolower($insert_row['jos_emundus_users']['email']);
         $email = $insert_row['jos_emundus_users']['email'];
-        $firstname = $insert_row['jos_emundus_personal_detail']['first_name'];
-        $lastname = $insert_row['jos_emundus_personal_detail']['last_name'];
+        $firstname = $insert_row['jos_emundus_users']['firstname'];
+        $lastname = $insert_row['jos_emundus_users']['lastname'];
         $ldap_user = false;
 
         // No user could be found either by id, username, email, or fnum: so we need to make a new one.
@@ -580,7 +638,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
     if (empty($fnum) && !empty($campaign)) {
         $fnum_date = date('YmdHis');
         $fnum_date = date('YmdHis',strtotime('+'.$row_id.' seconds',strtotime($fnum_date)));
-        $fnum = $fnum_date.str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);		$query->clear()
+        $fnum = $fnum_date.str_pad($campaign, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);       $query->clear()
             ->insert($db->quoteName('#__emundus_campaign_candidature'))
             ->columns($db->quoteName(['applicant_id', 'user_id', 'campaign_id', 'fnum', 'status']))
             ->values($user->id.', '.JFactory::getUser()->id.', '.$campaign.', '.$db->quote($fnum).', '.$status);
@@ -774,7 +832,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
         }
     }
 
-    if ($new_user) {
+    if ($new_user && !empty($send_email) && $send_email == 1) {
         // Send email indicating account creation.
         $m_emails = new EmundusModelEmails();
 
@@ -782,15 +840,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
         if ($ldap_user) {
             $totals['ldap']++;
             $email = $m_emails->getEmail('new_ldap_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null);
+            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
         } else if ($cas_user) {
             $totals['cas']++;
             $email = $m_emails->getEmail('new_cas_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, null);
+            $tags = $m_emails->setTags($user->id, null, $fnum, null, $email->emailfrom.$email->name.$email->subject.$email->message);
         } else {
             $totals['user']++;
             $email = $m_emails->getEmail('new_account');
-            $tags = $m_emails->setTags($user->id, null, $fnum, $password);
+            $tags = $m_emails->setTags($user->id, null, $fnum, $password, $email->emailfrom.$email->name.$email->subject.$email->message);
         }
 
         $mailer = JFactory::getMailer();
@@ -832,7 +890,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
                 JLog::add('No email configuration!', JLog::ERROR, 'com_emundus.csvimport');
             } else {
 
-                JLog::add('Email account sent: '.$user->email, JLog::ERROR, 'com_emundus.csvimport');
+                JLog::add('Email account sent: '.$user->email, JLog::INFO, 'com_emundus.csvimport');
 
                 if (JComponentHelper::getParams('com_emundus')->get('logUserEmail', '0') == '1') {
                     $message = array(
@@ -889,6 +947,7 @@ $data = array(
     'checked_tables' => $checked_tables,
     'repeat_tables' => $repeat_tables,
     'database_elements' => $database_elements,
+    'formData' => $formModel->formData,
 );
 
 JPluginHelper::importPlugin('emundus');

@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `#__securitycheckpro`;
 CREATE TABLE `#__securitycheckpro` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`Product` VARCHAR(100) NOT NULL,
+`Product` TEXT NOT NULL,
 `sc_type` VARCHAR(35),
 `Installedversion` VARCHAR(30) DEFAULT '---',
 `Vulnerable` VARCHAR(10) NOT NULL DEFAULT 'No',
@@ -10,16 +10,16 @@ PRIMARY KEY (`id`)
 
 DROP TABLE IF EXISTS `#__securitycheckpro_dynamic_blacklist`;
 CREATE TABLE `#__securitycheckpro_dynamic_blacklist` (
-`ip` VARCHAR(26) NOT NULL,
+`ip` VARCHAR(255) NOT NULL,
 `timeattempt` DATETIME NOT NULL,
 `counter` INT NOT NULL DEFAULT 1,
-PRIMARY KEY (`ip`)
+PRIMARY KEY (`ip`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_vuln_components`;
 CREATE TABLE `#__securitycheckpro_vuln_components` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`Product` VARCHAR(35) NOT NULL,
+`Product` TEXT NOT NULL,
 `vuln_id` INT(11) UNSIGNED NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -535,7 +535,7 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ip` VARCHAR(35) NOT NULL,
+`ip` VARCHAR(255) NOT NULL,
 `geolocation` VARCHAR(150) DEFAULT '---',
 `username` VARCHAR(150) DEFAULT '---',
 `time` DATETIME NOT NULL,
@@ -562,7 +562,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
 `userid` INT(4) UNSIGNED NOT NULL,
 `session_id` VARCHAR(200) NOT NULL,
 `username` VARCHAR(150) NOT NULL,
-`ip` VARCHAR(26) NOT NULL,
+`ip` VARCHAR(255) NOT NULL,
 `user_agent` VARCHAR(300) NOT NULL,
 PRIMARY KEY (`userid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -626,7 +626,7 @@ PRIMARY KEY (`id`)
 DROP TABLE IF EXISTS `#__securitycheckpro_rules_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_rules_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ip` VARCHAR(35) NOT NULL,
+`ip` VARCHAR(255) NOT NULL,
 `username` VARCHAR(150) NOT NULL,
 `last_entry` DATETIME,
 `reason` VARCHAR(300),
@@ -657,7 +657,7 @@ INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.4');
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
 `id` INT(1) UNSIGNED NOT NULL AUTO_INCREMENT,
-`users` VARCHAR(100) NOT NULL,
+`users` TEXT NOT NULL,
 `contador` INT(3) UNSIGNED NOT NULL,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -665,7 +665,7 @@ PRIMARY KEY (`id`)
 DROP TABLE IF EXISTS `#__securitycheckpro_url_inspector_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`ip` VARCHAR(100) NOT NULL,
+`ip` VARCHAR(255) NOT NULL,
 `uri` VARCHAR(100),
 `forbidden_words` VARCHAR(300) NOT NULL,
 `date_added` DATETIME,
@@ -678,7 +678,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_trackactions` (
 `log_date` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
 `extension` VARCHAR(50) NOT NULL DEFAULT '',
 `user_id` INT(11) NOT NULL DEFAULT '0',
-`ip_address` VARCHAR(40) NOT NULL DEFAULT '0.0.0.0',
+`ip_address` VARCHAR(255) NOT NULL DEFAULT '0.0.0.0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -735,11 +735,11 @@ INSERT IGNORE INTO `#__securitycheckpro_trackactions_tables_data` (`id`, `type_t
 (18, 'banner_client', 'com_banners.client', 'name', '{"table_type":"Client","table_prefix":"BannersTable"}');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_blacklist` (
-`ip` VARCHAR(26) NOT NULL,
-PRIMARY KEY (`ip`)
+`ip` VARCHAR(255) NOT NULL,
+PRIMARY KEY (`ip`(191))
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_whitelist` (
-`ip` VARCHAR(26) NOT NULL,
-PRIMARY KEY (`ip`)
+`ip` VARCHAR(255) NOT NULL,
+PRIMARY KEY (`ip`(191))
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

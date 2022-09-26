@@ -1,0 +1,49 @@
+[
+  {
+    "id": 0,
+    "value": "img",
+    "icon": "collections",
+    "extensions": "png;jpg;jpeg",
+    "name": "COM_EMUNDUS_FORM_BUILDER_FORMATS_IMG",
+    "published": true
+  },
+  {
+    "id": 1,
+    "value": "audio",
+    "icon": "audio_file",
+    "extensions": "mp3",
+    "name": "COM_EMUNDUS_FORM_BUILDER_FORMATS_AUDIO",
+    "published": true
+  },
+  {
+    "id": 2,
+    "value": "video",
+    "icon": "video_library",
+    "extensions": "mp4",
+    "name": "COM_EMUNDUS_FORM_BUILDER_FORMATS_VIDEO",
+    "published": true
+  },
+  {
+    "id": 3,
+    "value": "pdf",
+    "icon": "picture_as_pdf",
+    "extensions": "pdf",
+    "name": "COM_EMUNDUS_FORM_BUILDER_FORMATS_PDF",
+    "published": true
+  },
+  {
+    "id": 4,
+    "value": "table",
+    "icon": "table_view",
+    "extensions": "xls;xlsx;odf",
+    "name": "COM_EMUNDUS_FORM_BUILDER_FORMATS_TABLE",
+    "published": true
+  },
+  {
+    "id": 5,
+    "value": "other",
+    "icon": "add_to_photos",
+    "name": "COM_EMUNDUS_FORM_BUILDER_FORMATS_OTHER",
+    "published": true
+  }
+]

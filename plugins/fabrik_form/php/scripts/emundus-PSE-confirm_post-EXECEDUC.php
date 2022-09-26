@@ -159,7 +159,7 @@ if ($export_pdf == 1) {
 
         // Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
         $post = array('FNUM' => $fnum);
-        $tags = $emails->setTags($student->id, $post);
+        $tags = $emails->setTags($student->id, $post, $fnum, '', $application_form_name);
         $application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
         $application_form_name = $emails->setTagsFabrik($application_form_name, array($fnum));
         

@@ -28,10 +28,10 @@ $site_offset = $config->get('offset');
                 <h4><?php echo JText::_("FORMATION_SEARCH");?></h4>
                 <div class="input-group em-flex-row">
                     <label for="searchword">
-                        <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("PLACEHOLDER_SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
+                        <input name="searchword" type="text" class="form-control" placeholder="<?php  echo JText::_("MOD_EM_CAMPAIGN_PLACEHOLDER_SEARCH")."..." ; ?>" <?php if (isset($searchword) && !empty($searchword)) { echo "value=".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8');}; ?>>
                     </label>
                     <span class="input-group-btn">
-                        <button class="btn btn-default sch" type="submit"><?php  echo JText::_("SEARCH"); ?></button>
+                        <button class="btn btn-default sch" type="submit"><?php  echo JText::_("MOD_EM_CAMPAIGN_SEARCH"); ?></button>
                     </span>
                 </div>
             </div>
@@ -56,7 +56,7 @@ $site_offset = $config->get('offset');
                             <a href="index.php?order_date=<?php echo $order ;?>&order_time=asc">
                                 <i class="icon-chevron-down" aria-hidden="true"></i>
                                 <b>
-                                    <?php echo JText::_("FORMATION_START_DATE");?>
+                                    <?php echo JText::_("MOD_EM_CAMPAIGN_FORMATION_START_DATE");?>
                                 </b>
                             </a>
                         </li>
@@ -65,20 +65,20 @@ $site_offset = $config->get('offset');
                             <a href="index.php?order_date=<?php echo $order ;?>&order_time=desc">
                                 <i class="icon-chevron-up" aria-hidden="true"></i>
                                 <b>
-                                    <?php echo JText::_("FORMATION_START_DATE");?>
+                                    <?php echo JText::_("MOD_EM_CAMPAIGN_FORMATION_START_DATE");?>
                                 </b>
                             </a>
                         </li>
                         <?php endif; ?>
                         <li role="presentation" class="acive">
                             <a href="index.php?order_date=end_date&order_time=<?php echo $ordertime ?>">
-                                <?php echo JText::_("LIST_DATE_END");?>
+                                <?php echo JText::_("MOD_EM_CAMPAIGN_LIST_DATE_END");?>
                             </a>
                         </li>
                     <?php else :?>
                         <li role="presentation" class="acive">
                             <a href="index.php?order_date=<?php echo $mod_em_campaign_order ;?>&order_time=<?php echo $ordertime ?>">
-                                <?php echo JText::_("FORMATION_START_DATE");?>
+                                <?php echo JText::_("MOD_EM_CAMPAIGN_FORMATION_START_DATE");?>
                             </a>
                         </li>
                         <?php if ($ordertime=="desc") :?>
@@ -86,7 +86,7 @@ $site_offset = $config->get('offset');
                                 <a href="index.php?order_date=end_date&order_time=asc">
                                     <i class="icon-chevron-down" aria-hidden="true"></i>
                                     <b>
-                                        <?php echo JText::_("LIST_DATE_END");?>
+                                        <?php echo JText::_("MOD_EM_CAMPAIGN_LIST_DATE_END");?>
                                     </b>
                                 </a>
                             </li>
@@ -95,7 +95,7 @@ $site_offset = $config->get('offset');
                                 <a href="index.php?order_date=end_date&order_time=desc">
                                     <i class="icon-chevron-up" aria-hidden="true"></i>
                                     <b>
-                                        <?php echo JText::_("LIST_DATE_END");?>
+                                        <?php echo JText::_("MOD_EM_CAMPAIGN_LIST_DATE_END");?>
                                     </b>
                                 </a>
                             </li>
@@ -109,14 +109,14 @@ $site_offset = $config->get('offset');
     <div class="tab-content">
         <?php if (isset($searchword) && !empty($searchword)) :?>
             <div class="g-block size-100">
-                <p><b><?php echo JText::_("RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
+                <p><b><?php echo JText::_("MOD_EM_CAMPAIGN_RESULT_FOR")." : ".htmlspecialchars($searchword, ENT_QUOTES, 'UTF-8'); ?></b></p>
             </div>
         <?php endif; ?>
         <div id="current" class="tab-pane fade in active">
             <div class="campaigns-list">
                 <?php echo $paginationCurrent->getResultsCounter(); ?>
                 <?php if (empty($currentCampaign)) {?>
-                    <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+                    <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
                 <?php } else {
                 $oldmonth = '';
 
@@ -194,40 +194,40 @@ $site_offset = $config->get('offset');
                         <div class="campaingapplycontent">
 
                             <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
-                                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>: </strong>
+                                <strong><i class="icon-time"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?>: </strong>
                                 <span class="em-camp-start"><?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
                             <?php endif; ?>
 
                             <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-                                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>: </strong>
+                                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?> </strong>
                                 <span class="em-camp-end"><?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
                             <?php endif; ?>
 
                             <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
-                                <strong><?php echo JText::_('FORMATION_START_DATE'); ?>: </strong>
+                                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>: </strong>
                                 <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
                             <?php endif;?>
 
                             <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
-                                <strong><?php echo JText::_('FORMATION_END_DATE'); ?>: </strong>
+                                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>: </strong>
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
                             <?php endif; ?>
                             <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') :?>
-                                <strong><?php echo JText::_('ADMISSION_START_DATE'); ?>: </strong>
+                                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>: </strong>
                                 <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br>
                             <?php endif;?>
 
                             <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') :?>
-                                <strong><?php echo JText::_('ADMISSION_END_DATE'); ?>: </strong>
+                                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>: </strong>
                                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                 <br/>
                             <?php endif; ?>
-                            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('TIMEZONE').$offset : ''; ?>
+                            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset : ''; ?>
                         </div>
                     </div>
                     <div class="below-content">
@@ -235,9 +235,9 @@ $site_offset = $config->get('offset');
 
                         <?php if ($result->apply_online == 1) :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php endif; ?>
                             <?php
                             // The register URL does not work  with SEF, this workaround helps counter this.
@@ -250,12 +250,12 @@ $site_offset = $config->get('offset');
                                 $register_url = $redirect_url."?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                             }
                             ?>
-                            <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
+                            <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
                         <?php else :?>
                             <?php if ($mod_em_campaign_get_link) :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php else :?>
-                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+                                <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
@@ -274,7 +274,7 @@ $site_offset = $config->get('offset');
         <div class="campaigns-list">
             <?php echo $paginationFutur->getResultsCounter(); ?>
             <?php if (empty($futurCampaign)) { ?>
-                <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+                <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
             <?php } else {
             $oldmonth = '';
 
@@ -330,37 +330,37 @@ $site_offset = $config->get('offset');
             <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
 
             <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
-                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>: </strong>
+                <strong><i class="icon-time"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?>: </strong>
                 <span class="em-camp-start"><?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>: </strong>
+                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?> </strong>
                 <span class="em-camp-end"><?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('FORMATION_START_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>: </strong>
                 <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif;?>
 
             <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('FORMATION_END_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>: </strong>
                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br/>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('ADMISSION_START_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>: </strong>
                 <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif;?>
 
             <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('ADMISSION_END_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>: </strong>
                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br/>
             <?php endif; ?>
@@ -374,9 +374,9 @@ $site_offset = $config->get('offset');
             $btn_class = "btn btn-primary btn-plein btn-blue";
         } ?>
         <?php if ($mod_em_campaign_get_link) :?>
-            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
         <?php else :?>
-            <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+            <a class="btn btn-primary btn-creux btn-orange" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
         <?php endif; ?>
     </div>
 </div><!-- Close campaign-content -->
@@ -393,7 +393,7 @@ $oldmonth = $month;
         <div class="campaigns-list">
             <?php echo $paginationPast->getResultsCounter(); ?>
             <?php if (empty($pastCampaign)) { ?>
-                <div class="alert alert-warning"><?php echo JText::_('NO_RESULT_FOUND') ?></div>
+                <div class="alert alert-warning"><?php echo JText::_('MOD_EM_CAMPAIGN_NO_RESULT_FOUND') ?></div>
             <?php } else {
             $oldmonth = '';
 
@@ -449,36 +449,36 @@ $oldmonth = $month;
             <b><?php echo JText::_('MOD_EM_CAMPAIGN_PERIOD'); ?></b><br />
 
             <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') :?>
-                <strong><i class="icon-time"></i> <?php echo JText::_('CAMPAIGN_START_DATE'); ?>: </strong>
+                <strong><i class="icon-time"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?>: </strong>
                 <span class="em-camp-start"><?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') :?>
-                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('CAMPAIGN_END_DATE'); ?>: </strong>
+                <strong><i class="icon-time <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?> </strong>
                 <span class="em-camp-end"><?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('FORMATION_START_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>: </strong>
                 <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif;?>
 
             <?php if ($mod_em_campaign_show_formation_end_date && $result->formation_end !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('FORMATION_END_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_END_DATE'); ?>: </strong>
                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->formation_end, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br/>
             <?php endif; ?>
             <?php if ($mod_em_campaign_show_admission_start_date && $result->admission_start_date !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('ADMISSION_START_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>: </strong>
                 <span class="em-formation-start"><?php echo JFactory::getDate(new JDate($result->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br>
             <?php endif;?>
 
             <?php if ($mod_em_campaign_show_admission_end_date && $result->admission_end_date !== '0000-00-00 00:00:00') :?>
-                <strong><?php echo JText::_('ADMISSION_END_DATE'); ?>: </strong>
+                <strong><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>: </strong>
                 <span class="em-formation-end"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                 <br/>
             <?php endif; ?>
@@ -491,9 +491,9 @@ $oldmonth = $month;
             $btn_class = "btn btn-primary btn-plein btn-blue";
         } ?>
         <?php if ($mod_em_campaign_get_link) :?>
-            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
         <?php else :?>
-            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
+            <a class="<?php echo $btn_class; ?>" role="button" href='<?php echo "index.php?option=com_emundus&view=programme&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid2; ?>' target="_blank" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_MORE_INFO'); ?></a>
         <?php endif; ?>
     </div>
 </div><!-- Close campaign-content -->

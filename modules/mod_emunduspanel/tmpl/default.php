@@ -32,7 +32,7 @@ if (!empty($tab)) :?>
             }
 
             /*if (!empty($user->emProfiles) && sizeof($user->emProfiles) > 1 && (($lean_mode && !$only_applicant) || !$lean_mode)) {
-                echo '<p>'.JText::_('SELECT_PROGRAMME').'</p>';
+                echo '<p>'.JText::_('MOD_EMUNDUSPANEL_SELECT_PROGRAMME').'</p>';
                 echo '<br/><div class="select">';
                 echo '<legend><select class="form-control form-control-sm" id="profile" name="profiles" onchange="postCProfile()"> ';
                 foreach ($user->emProfiles as $profile) {

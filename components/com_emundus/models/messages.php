@@ -197,37 +197,18 @@ class EmundusModelMessages extends JModelList {
      * Gets a message template.
      *
      * @param Mixed The ID or label of the email.
-     * @param Bool Whether or not to also get the candidate file attachments linked to this template, this is an option use for compatibility because some DBs may not have this table.
-     * @param Bool Whether or not to also get the letter attachments linked to this template.
      * @return Object The email we seek, false if none is found.
      */
-    function getEmail($id, $candidateAttachments = false, $letterAttachments = false) {
-
+    function getEmail($id) {
         $db = JFactory::getDBO();
         $query = $db->getQuery(true);
 
-        $select = 'e.*, et.*, GROUP_CONCAT(etr.tags) as tags';
-
-        if ($candidateAttachments) {
-            $select .= ', GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments';
-        }
-
-        if ($letterAttachments) {
-            $select .= ', GROUP_CONCAT(la.letter_attachment) AS letter_attachments';
-        }
-
-        $query->select($select)
+        $query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments')
             ->from($db->quoteName('#__emundus_setup_emails','e'))
             ->leftJoin($db->quoteName('#__emundus_email_templates','et').' ON '.$db->quoteName('e.email_tmpl').' = '.$db->quoteName('et.id'))
-            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'));
-
-        if ($candidateAttachments) {
-            $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'));
-        }
-
-        if ($letterAttachments) {
-            $query->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
-        }
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_tags','etr').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('etr.parent_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment','ca').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('ca.parent_id'))
+            ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment','la').' ON '.$db->quoteName('e.id').' = '.$db->quoteName('la.parent_id'));
 
         // Allow the function to dynamically decide if it is getting by ID or label depending on the value submitted.
         if (is_numeric($id)) {
@@ -238,13 +219,11 @@ class EmundusModelMessages extends JModelList {
 
 
         try {
-
             $db->setQuery($query);
             return $db->loadObject();
-
         } catch (Exception $e) {
             JLog::add('Error getting template in model/messages at query :'.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            return false;
+            return new stdClass;
         }
 
     }
@@ -263,10 +242,12 @@ class EmundusModelMessages extends JModelList {
         $query = $db->getQuery(true);
 
         $query->select('id, subject')
-            ->from($db->quoteName('#__emundus_setup_emails'));
+            ->from($db->quoteName('#__emundus_setup_emails'))
+            ->where($db->quoteName('type') . ' = 2')
+            ->andWhere($db->quoteName('published') . ' = 1');
 
         if ($category != 'all')
-            $query->where($db->quoteName('category').' = '.$db->Quote($category));
+            $query->andWhere($db->quoteName('category').' = '.$db->quote($category));
 
         try {
 
@@ -474,7 +455,7 @@ class EmundusModelMessages extends JModelList {
         try {
 
             $phpWord = new \PhpOffice\PhpWord\PhpWord();
-            $preprocess = $phpWord->loadTemplate(JPATH_BASE.$letter->file);
+            $preprocess = $phpWord->loadTemplate(JPATH_SITE.$letter->file);
             $tags = $preprocess->getVariables();
 
             $idFabrik   = array();
@@ -546,7 +527,7 @@ class EmundusModelMessages extends JModelList {
 
             }
 
-            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_BASE.$letter->file);
+            $preprocess = new \PhpOffice\PhpWord\TemplateProcessor(JPATH_SITE.$letter->file);
             if (isset($fnumsInfos)) {
 
                 foreach ($setupTags as $tag) {
@@ -1150,8 +1131,8 @@ class EmundusModelMessages extends JModelList {
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-        require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
         $_mEval = new EmundusModelEvaluation;
         $_mFile = new EmundusModelFiles;
@@ -1170,8 +1151,10 @@ class EmundusModelMessages extends JModelList {
 
                 /// get message template from attachment list
                 $query->clear()
-                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
+//                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
+                    ->select('distinct jos_emundus_setup_emails.*, jos_emundus_email_templates.Template')
                     ->from($db->quoteName('#__emundus_setup_emails'))
+                    ->leftJoin($db->quoteName('#__emundus_email_templates') . ' ON ' . $db->quoteName('#__emundus_email_templates.id') . ' = ' . $db->quoteName('#__emundus_setup_emails.email_tmpl'))
                     ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
                     ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
 
@@ -1182,29 +1165,18 @@ class EmundusModelMessages extends JModelList {
                 $uploads = array();
 
                 foreach($attachment_list as $key => $attach) {
+                    /* generate letters each time get instant message */
+                    $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
 
-                    $upload_files = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
+                    $upload_id = current($letter->files)['upload'];
+                    $upload_filename = current($letter->files)['url'] . current($letter->files)['filename'];
 
-                    /// $uploaded_files is not empty --> get this file
-                    if(!empty($upload_files)) {
-                        /// check this file exist on disk or not
-                        $file_path = EMUNDUS_PATH_ABS . $upload_files[0]->user_id . DS. $upload_files[0]->filename;
-                        if(file_exists($file_path)) {
-                            $uploads[] = array('is_existed' => true, 'id' => $upload_files[0]->id, 'value' => $upload_files[0]->value, 'label' => $upload_files[0]->lbl, 'dest' => JURI::base() . EMUNDUS_PATH_REL . $upload_files[0]->user_id . DS . $upload_files[0]->filename);
-                        } else {
-                            /// generate document
-                            $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
-                            $_generated_letter = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
-                            $uploads[] = array('is_existed' => true, 'id' => $_generated_letter[0]->id, 'value' => $_generated_letter[0]->value, 'label' => $_generated_letter[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $_generated_letter[0]->user_id . DS. $_generated_letter[0]->filename);
-                        }
-                    } else {
-                        /// if upload file does not exist --> generate this file
-                        //$letter = $_mEval->getLetterTemplateForFnum($fnum, [$attach]);
+                    $attachment_raw = $_mFile->getSetupAttachmentsById([$attach]);
 
-                        $letter = $_mEval->generateLetters($fnum, [$attach], 0,0,0);
-                        $_generated_letter = $_mEval->getFilesByAttachmentFnums($attach, [$fnum]);
-                        $uploads[] = array('is_existed' => true, 'id' => $_generated_letter[0]->id, 'value' => $_generated_letter[0]->value, 'label' => $_generated_letter[0]->lbl, 'dest' => JURI::base().EMUNDUS_PATH_REL . $_generated_letter[0]->user_id . DS. $_generated_letter[0]->filename);
-                    }
+                    $attachment_value = current($attachment_raw)['value'];
+                    $attachment_label = current($attachment_raw)['lbl'];
+
+                    $uploads[] = array('is_existed' => true, 'id' => $upload_id, 'value' => $attachment_value, 'label' => $attachment_label, 'dest' => $upload_filename);
                 }
 
                 /// get tags by email
@@ -1262,6 +1234,7 @@ class EmundusModelMessages extends JModelList {
                         $m_files->tagFile([$fnum_info['fnum']], [$tag->id]);
                     }
                 }
+                return true;
             }
         } else {
             return false;
@@ -1275,8 +1248,8 @@ class EmundusModelMessages extends JModelList {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
-            require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
             $_mEval = new EmundusModelEvaluation;
             $_mFile = new EmundusModelFiles;
@@ -1284,30 +1257,37 @@ class EmundusModelMessages extends JModelList {
             try {
                 $attachment_ids = $_mEval->getLettersByFnums($fnum, $attachments = true);
 
-                $attachment_list = array();
-                foreach ($attachment_ids as $key => $value) {
-                    $attachment_list[] = $value['id'];
-                }
+                if(count($attachment_ids) > 0) {
 
-                $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
+                    $attachment_list = array();
+                    foreach ($attachment_ids as $key => $value) {
+                        $attachment_list[] = $value['id'];
+                    }
 
-                /// get message template from attachment list
-                $query->clear()
-                    ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
-                    ->from($db->quoteName('#__emundus_setup_emails'))
-                    ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
-                    ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+                    $attachment_list = array_unique(array_filter($attachment_list));            /// this line ensures that all attachment ids will appear once
 
-                $db->setQuery($query);
-                $_message_Info = $db->loadObjectList();
-                if(!empty($_message_Info)) {
-                    return true;
+                    /// get message template from attachment list
+                    $query->clear()
+                        ->select('distinct #__emundus_setup_emails.id, #__emundus_setup_emails.lbl, #__emundus_setup_emails.subject, #__emundus_setup_emails.message')
+                        ->from($db->quoteName('#__emundus_setup_emails'))
+                        ->leftJoin($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment') . ' ON ' . $db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.parent_id') . ' = ' . $db->quoteName('#__emundus_setup_emails.id'))
+                        ->where($db->quoteName('#__emundus_setup_emails_repeat_letter_attachment.letter_attachment') . ' IN (' . implode(',', $attachment_list) . ')');
+
+                    $db->setQuery($query);
+                    $_message_Info = $db->loadObjectList();
+                    if(!empty($_message_Info)) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
                 }
                 else {
                     return false;
                 }
             } catch(Exception $e) {
-                /// if in catch --> return false
+                JLog::add('Error get getActionByFnum : '.$e->getMessage(), JLog::ERROR, 'com_emundus.message');
+                return false;
             }
         } else {
             return false;
@@ -1340,8 +1320,8 @@ class EmundusModelMessages extends JModelList {
 
         if(!empty($fnums) and !is_null($fnums)) {
             try {
-                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
-                require_once(JPATH_BASE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'profile.php');
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus' . DS . 'models' . DS . 'files.php');
 
                 $_mProfiles = new EmundusModelProfile;
                 $_mFiles = new EmundusModelFiles;
@@ -1349,10 +1329,15 @@ class EmundusModelMessages extends JModelList {
                 $_profiles = array();
 
                 foreach($fnums as $fnum) {
-                    $profile = $_mProfiles->getProfileByStatus($fnum)['profile'];
+                    $fnumInfos = $_mFiles->getFnumInfos($fnum);
 
-                    if(!is_null($profile)) {
-                        $_profiles[] = $profile;
+                    //$profile = $_mProfiles->getProfileByStatus($fnum)['profile'];
+                    $profiles = $_mProfiles->getProfilesIDByCampaign([$fnumInfos['id']]);
+
+                    if(!is_null($profiles)) {
+                        foreach ($profiles as $profile) {
+                            $_profiles[] = $profile;
+                        }
                     }
                     else {
                         /// if profile is null, get default profile of campaign
@@ -1399,7 +1384,8 @@ class EmundusModelMessages extends JModelList {
         try {
             $query->clear()
                 ->select('#__emundus_setup_attachments.*')
-                ->from($db->quoteName('#__emundus_setup_attachments'));
+                ->from($db->quoteName('#__emundus_setup_attachments'))
+                ->where($db->quoteName('published') . " = 1");
 
             $db->setQuery($query);
             return $db->loadObjectList();

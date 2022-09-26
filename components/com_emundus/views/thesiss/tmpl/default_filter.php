@@ -23,7 +23,7 @@ $doctoral_school = $input->get('doctoral_school',$this->state->get('filter.docto
 $ed = @EmundusHelperFiles::getElements(array('csc'), array(4359));
 $query_params = json_decode($ed[0]->element_attribs);
 $option_list =  @EmundusHelperFiles::buildOptions($ed[0]->element_name, $query_params);
-$options[] = JHTML::_('select.option', "", JText::_('PLEASE_SELECT'));
+$options[] = JHTML::_('select.option', "", JText::_('COM_EMUNDUS_PLEASE_SELECT'));
 $i=0;
 if(!empty($option_list))
 {

@@ -106,7 +106,7 @@ if (!empty($status)) {
 						$mailer = JFactory::getMailer();
 
 						$post = array('FNUM' => $file['fnum']);
-						$tags = $m_email->setTags($file['applicant_id'], $post);
+						$tags = $m_email->setTags($file['applicant_id'], $post, $file['fnum'], $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 						$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 						$from_id = 62;
@@ -165,7 +165,7 @@ if (!empty($status)) {
 					$mailer = JFactory::getMailer();
 
 					$post = array();
-					$tags = $m_email->setTags($recipient['id'], $post);
+					$tags = $m_email->setTags($recipient['id'], $post, $fnum, $trigger['tmpl']['emailfrom'].$trigger['tmpl']['name'].$trigger['tmpl']['subject'].$trigger['tmpl']['message']);
 
 					$from = preg_replace($tags['patterns'], $tags['replacements'], $trigger['tmpl']['emailfrom']);
 					$from_id = 62;
