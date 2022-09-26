@@ -165,15 +165,30 @@ function defineCheckboxLimit(element, max) {
 }
 
 /**
- * Uppercase a value (working on keyup event)
+ * Uppercase the first letter of a value (working on keyup event)
  *
  * Examples :
- * upperCase(fab.get('jos_emundus_1001_00___name'));
+ * firstLetterToUppercase(fab.get('jos_emundus_1001_00___name'));
  *
  * @param element
  */
-function upperCase(element) {
+function firstLetterToUppercase(element) {
     if (element.get('value').length > 1) {
         element.set(element.get('value')[0].toUpperCase() + element.get('value').substring(1));
     }
+}
+
+/**
+ * Show/Hide an element depends on a value of checkbox
+ *
+ * Examples :
+ * displayElementFromCheckboxValue(fab.get('jos_emundus_1001_00___grade'),'other',fab.get('jos_emundus_1001_00___other'));
+ *
+ * @param element
+ * @param value
+ * @param element_to_display
+ * @param action
+ */
+function displayElementFromCheckboxValue(element, value, element_to_display, action = 'show') {
+    //TODO : create the method
 }
