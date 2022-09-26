@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,6 +16,7 @@ class UserController extends hikashopController {
 
 		$this->modify_views = array_merge($this->modify_views, array(
 			'editaddress',
+			'batch',
 			'pay',
 			'pay_process'
 		));
@@ -57,6 +58,13 @@ class UserController extends hikashopController {
 			}
 		}
 		$this->edit();
+	}
+
+	public function batch(){
+		$params = new HikaParameter('');
+		$params->set('table', 'user');
+		$js = '';
+		echo hikashop_getLayout('massaction', 'batch', $params, $js);
 	}
 
 	public function setdefault() {
@@ -109,7 +117,7 @@ class UserController extends hikashopController {
 		$type .= 'address';
 		$fieldClass = hikashop_get('class.field');
 		$addressData = $fieldClass->getInput(array('address', $type),$oldData);
-
+		$new = empty($addressData->address_id);
 		$ok = true;
 		if(empty($addressData)) {
 			$ok=false;
@@ -121,6 +129,24 @@ class UserController extends hikashopController {
 			$app = JFactory::getApplication();
 			echo '<html><head><script type="text/javascript">javascript: history.go(-1);</script></head><body></body></html>';
 			exit;
+		}
+
+		if($new) {
+			$same_address = hikaInput::get()->getInt('same_address');
+			if(!empty($same_address)) {
+				unset($addressData->address_id);
+				if(!empty($addressData->address_type)) {
+					if($addressData->address_type == 'billing')
+						$addressData->address_type = 'shipping';
+					elseif($addressData->address_type == 'shipping')
+						$addressData->address_type = 'billing';
+					else
+						unset($addressData->address_type);
+					if(!empty($addressData->address_type)) {
+						$addressClass->save($addressData);
+					}
+				}
+			}
 		}
 		$url = hikashop_completeLink('user&task=edit&user_id='.$addressData->address_user_id,false,true);
 		echo '<html><head><script type="text/javascript">parent.window.location.href=\''.$url.'\';</script></head><body></body></html>';
@@ -185,7 +211,7 @@ class UserController extends hikashopController {
 		}
 
 		$userClass->loadPartnerData($user);
-		if(!bccomp($user->accumulated['currenttotal'], 0, 5)) {
+		if(!bccomp(sprintf('%F',$user->accumulated['currenttotal']), 0, 5)) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage('No affiliate money accumulated');
 			return false;

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,6 +26,25 @@ defined('_JEXEC') or die('Restricted access');
 		</td>
 		<td>
 			<input type="text" name="data[shipping][shipping_params][account_number]" value="<?php echo @$this->element->shipping_params->account_number; ?>" />
+		</td>
+	</tr>
+
+	<tr>
+		<td class="key">
+			<label for="data[shipping][shipping_params][environment]">
+				<?php echo JText::_( 'ENVIRONMENT' ); ?>
+			</label>
+		</td>
+		<td>
+			<?php
+				$arr = array(
+					JHTML::_('select.option', 'production', 'Production' ),
+					JHTML::_('select.option', 'test', 'Test' ),
+				);
+				if(empty($this->element->shipping_params->environment))
+					$this->element->shipping_params->environment = 'production';
+				echo JHTML::_('hikaselect.genericlist', $arr, "data[shipping][shipping_params][environment]", 'class="custom-select" size="1"', 'value', 'text', $this->element->shipping_params->environment);
+			?>
 		</td>
 	</tr>
 	<tr>

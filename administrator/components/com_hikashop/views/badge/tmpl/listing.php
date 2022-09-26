@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,8 +34,17 @@ defined('_JEXEC') or die('Restricted access');
 					echo JHTML::_('grid.sort', JText::_('POSITION'), 'a.badge_position', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
 				?></th>
 				<th class="title titleorder"><?php
-					if($this->order->ordering)
-						echo JHTML::_('grid.order', $this->rows);
+					if ($this->order->ordering) {
+						$keys = array_keys($this->rows);  
+						$rows_nb = end($keys);
+						$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
+						?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
+							<button class="button-apply btn btn-success" type="button">
+<!--							<span class="icon-apply" aria-hidden="true"></span> -->
+								<i class="fas fa-save"></i>
+							</button>
+						</a><?php
+					}
 					echo JHTML::_('grid.sort', JText::_('HIKA_ORDER'), 'a.badge_ordering',$this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
 				?></th>
 				<th class="title titletoggle"><?php
@@ -53,7 +62,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="9">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>

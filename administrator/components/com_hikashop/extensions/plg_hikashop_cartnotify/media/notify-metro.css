@@ -1,8 +1,8 @@
 .notifyjs-metro-base,
 .notifyjs-metro-lite-base{
 	position: relative;
-    min-height: 52px;
-    color:#444;
+	min-height: 52px;
+	color:#444;
 }
 .notifyjs-metro-base .image {
 	display: table;

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -131,6 +131,16 @@ class reportViewReport extends hikashopView {
 			$element->widget_name='New report '.$widget_id;
 			$element->widget_params->limit='7';
 		}
+		if(empty($element->widget_params->content))
+			$element->widget_params->content = 'sales';
+		if(empty($element->widget_params->date_group))
+			$element->widget_params->date_group = '%j %Y';
+		if(empty($element->widget_params->date_type))
+			$element->widget_params->date_type = 'created';
+		if(empty($element->widget_params->periodType))
+			$element->widget_params->periodType = 'proposedPeriod';
+		if(empty($element->widget_params->proposedPeriod))
+			$element->widget_params->proposedPeriod = 'thisMonth';
 
 		$class->loadDatas($element);
 		if(isset($element->widget_params->table)){
