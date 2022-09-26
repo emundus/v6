@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,35 +40,44 @@ class hikashopSpreadsheetHelper {
 		$this->progressive = false;
 		$this->headerSent = false;
 		$this->excelSecurity = "'";
+		$this->decimal_separator = $decimal_separator;
+
+		if( empty($this->filename) )
+			$this->filename = 'export';
 
 		switch( strtolower($format) ) {
+			case 'xlsx':
+				$this->xlsxwriter = hikashop_get('inc.xlsxwriter');
+				$this->xlsxwriter->setAuthor('HikaShop');
+				$this->data = array();
+				$this->format = 2;
+				$this->filename .= '.xlsx';
+				$this->header = array();
+				break;
 			case 'xls':
 				$this->format = 1;
 				$this->buffer .= pack("ssssss", 0x809, 0x8, 0x0, 0x10, 0x0, 0x0);
+				$this->filename .= '.xls';
 				break;
 
 			default:
 			case 'csv':
 				$this->format = 0;
 				$this->separator = $sep;
-				$this->decimal_separator = $decimal_separator;
 				$this->buffer .= chr(239) . chr(187) . chr(191);
+				$this->filename .= '.csv';
 				break;
 		}
-
-		if( empty($this->filename) )
-			$this->filename = 'export';
-
-		if( $this->format == 1 )
-			$this->filename .= '.xls';
-		else
-			$this->filename .= '.csv';
 	}
 
 	function send() {
 		if(!$this->headerSent) {
 			if( $this->format == 1 )
 				$this->buffer .= pack("ss", 0x0A, 0x00);
+			elseif( $this->format == 2) {
+				$this->xlsxwriter->writeSheet($this->data,'Export', $this->header);
+				$this->buffer = $this->xlsxwriter->writeToString();
+			}
 
 			header('Pragma: public');
 			header('Expires: 0');
@@ -103,8 +112,12 @@ class hikashopSpreadsheetHelper {
 	}
 
 	function get() {
-		if( $this->format == 1 )
+		if( $this->format == 1 ) {
 			$this->buffer .= pack('vv',0x000A,0x0000);
+		} elseif( $this->format == 2) {
+			$this->xlsxwriter->writeSheet($this->data,'Export', $this->header);
+			$this->buffer = $this->xlsxwriter->writeToString();
+		}
 
 		$ret = $this->buffer;
 		$this->buffer = '';
@@ -113,7 +126,16 @@ class hikashopSpreadsheetHelper {
 	}
 
 	function writeNumber($row, $col, $value, $lastOne) {
-		if( $this->format == 1 ) {
+		if( $this->format == 2 ) {
+			 if($row == 0){
+				$this->header[$value] = 'number';
+			} else {
+				if(strpos($value, '.') && $this->decimal_separator != '.')
+					$this->data[$row-1][$col] = str_replace('.', $this->decimal_separator, $value);
+				else
+					$this->data[$row-1][$col] = $value;
+			}
+		} elseif( $this->format == 1 ) {
 			$this->currLine = $row;
 			$this->buffer .= pack("sssss", 0x203, 14, $row, $col, 0x0);
 			$this->buffer .= pack("d", $value);
@@ -137,6 +159,12 @@ class hikashopSpreadsheetHelper {
 		if( empty($value) || is_array($value) || is_object($value)) {
 			$value = '';
 		}
+		if( $this->format == 2 ) {
+			if($row == 0)
+				$this->header[$value] = 'string';
+			else
+				$this->data[$row-1][$col] = $value;
+		} else
 		if( $this->format == 1 ) {
 			$this->currLine = $row;
 			$len = strlen($value);
@@ -167,7 +195,7 @@ class hikashopSpreadsheetHelper {
 		}
 	}
 
-	function writeLine($data) {
+	function writeLine($data, $multi = null) {
 		$i = 0;
 		$this->currLine++;
 		if( $this->currLine > 0 )
@@ -183,6 +211,11 @@ class hikashopSpreadsheetHelper {
 				continue;
 
 			if(isset($this->types[$i]) && in_array($this->types[$i], array('text', 'number'))) {
+
+				if(!empty($multi) && is_array($multi) && in_array($i, $multi) && $this->types[$i] == 'number') {
+					$this->types[$i] = 'text';
+				}
+
 				$type = $this->types[$i];
 				if($type == 'number' && $value === '')
 					$type = 'text';

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -177,29 +177,34 @@ class hikashopImageHelper {
 				$memory_limit = 0;
 		}
 		$memory_limit = (int)$memory_limit;
+		return $memory_limit;
 	}
 
 	public function getImage($filename, &$extension) {
-		$types = array('gif' => 1, 'jpg' => 2, 'jpeg' => 2, 'png' => 3);
-		$data = @getimagesize($filename);
-		if(@$types[$extension] != $data[2]) {
-			$extension = array_search($data[2], $types);
-		}
-		$extension = strtolower(trim($extension));
+		if(file_exists($filename)) {
+			$types = array('gif' => 1, 'jpg' => 2, 'jpeg' => 2, 'png' => 3, 'webp' => 18);
+			$data = @getimagesize($filename);
+			if(!empty($data) && @$types[$extension] != $data[2]) {
+				$extension = array_search($data[2], $types);
+			}
+			$extension = strtolower(trim($extension));
 
-		$res = false;
-		switch($this->image_mode) {
-			case 'Imagick':
-				$res = $this->getImage_Imagick($filename, $extension);
-				break;
-			case 'GD':
-			default:
-				$res = $this->getImage_GD($filename, $extension);
-				break;
+			$res = false;
+			switch($this->image_mode) {
+				case 'Imagick':
+					$res = $this->getImage_Imagick($filename, $extension);
+					break;
+				case 'GD':
+				default:
+					$res = $this->getImage_GD($filename, $extension);
+					break;
+			}
+
+			if($res !== false)
+				return $res;
 		}
 
-		if($res !== false)
-			return $res;
+		hikashop_writeToLog('Image '. $filename . ' could not be opened when trying to generate its thumbnail');
 
 		static $done = false;
 		$app = JFactory::getApplication();
@@ -226,6 +231,12 @@ class hikashopImageHelper {
 					return false;
 				$ret['res'] = imagecreatefromjpeg($filename);
 				break;
+			case 'webp':
+				case 'webp':
+					if(!function_exists('imagecreatefromwebp'))
+						return false;
+					$ret['res'] = imagecreatefromwebp($filename);
+					break;
 			case 'png':
 				if(!function_exists('imagecreatefrompng'))
 					return false;
@@ -531,6 +542,12 @@ class hikashopImageHelper {
 				$res['res']->setImageCompressionQuality($res['quality']);
 				$res['res']->setImageFormat('jpeg');
 				break;
+			case 'webp':
+				if(empty($res['quality']))
+					$res['quality'] = 95;
+				$res['res']->setImageCompressionQuality($res['quality']);
+				$res['res']->setImageFormat('webp');
+				break;
 			case 'png':
 				if(empty($res['quality']))
 					$res['quality'] = 9;
@@ -552,6 +569,11 @@ class hikashopImageHelper {
 				if(empty($res['quality']))
 					$res['quality'] = 95;
 				$status = imagejpeg($res['res'], $filename, $res['quality']);
+				break;
+			case 'webp':
+				if(empty($res['quality']))
+					$res['quality'] = 95;
+				$status = imagewebp($res['res'], $filename, $res['quality']);
 				break;
 			case 'png':
 				if(empty($res['quality']))
@@ -577,6 +599,7 @@ class hikashopImageHelper {
 		switch($res['ext']) {
 			case 'jpg':
 			case 'jpeg':
+			case 'webp':
 				$res['res']->setImageCompressionQuality($res['quality']);
 				break;
 			case 'png':
@@ -595,6 +618,9 @@ class hikashopImageHelper {
 			case 'jpg':
 			case 'jpeg':
 				$status = imagejpeg($res['res'], null, $res['quality']);
+				break;
+			case 'webp':
+				$status = imagewebp($res['res'], null, $res['quality']);
 				break;
 			case 'png':
 				$status = imagepng($res['res'], null, $res['quality']);
@@ -626,7 +652,8 @@ class hikashopImageHelper {
 	}
 
 	protected function freeRes_GD(&$res) {
-		@imagedestroy($res['res']);
+		if(!empty($res['res']))
+			@imagedestroy($res['res']);
 	}
 
 	public function orientateImage(&$res){
@@ -763,7 +790,7 @@ class hikashopImageHelper {
 		$ret->req_height = $size['y'];
 		$ret->req_width = $size['x'];
 
-		if(preg_match('#^https?://#i', $filename) === 1) {
+		if(!empty($filename) && preg_match('#^https?://#i', $filename) === 1) {
 			$ret->url = $ret->origin_url = $filename;
 			$ret->filename = basename($filename);
 			$urlArray = parse_url($filename);
@@ -856,15 +883,15 @@ class hikashopImageHelper {
 			if($scaling !== false) {
 				$this->thumbnail_x = $scaling[0];
 				$this->thumbnail_y = $scaling[1];
+				if(empty($size['x']))
+					$size['x'] = $scaling[0];
+				if(empty($size['y']))
+					$size['y'] = $scaling[1];
 			} else {
 				$this->thumbnail_x = $origin->width;
 				$this->thumbnail_y = $origin->height;
 			}
 
-			if(empty($size['x']))
-				$size['x'] = $scaling[0];
-			if(empty($size['y']))
-				$size['y'] = $scaling[1];
 
 			if($cachePath !== false && JFile::exists($cachePath . $destFolder . DS . $filename)) {
 				$ret->success = true;
@@ -886,7 +913,10 @@ class hikashopImageHelper {
 							$options['webp_quality'] = $config->get('webp_image_quality', 80);
 						if(in_array($resThumb['ext'], array('gif','png')))
 							imagepalettetotruecolor($resThumb['res']);
-						$status = imagewebp($resThumb['res'], $cachePath . $destFolder . DS . $webpfile, $options['webp_quality']);
+						if(!empty($resThumb['res']))
+							$status = imagewebp($resThumb['res'], $cachePath . $destFolder . DS . $webpfile, $options['webp_quality']);
+						else
+							$status = false;
 					}
 
 					if($status)
@@ -904,6 +934,7 @@ class hikashopImageHelper {
 			$ret->width = $origin->width;
 			$ret->height = $origin->height;
 			$ret->filename = $filename;
+			$ret->data = file_get_contents($fullFilename);
 			$ret->url = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $ret->path);
 			if(empty($ret->origin_url))
 				$ret->origin_url = $this->uploadFolder_url . ltrim(str_replace(array('\\/', '\\', '//') , '/', $filename), '/');
@@ -919,7 +950,10 @@ class hikashopImageHelper {
 							$options['webp_quality'] = $config->get('webp_image_quality', 80);
 					if(in_array($resMain['ext'], array('gif','png')))
 						imagepalettetotruecolor($resMain['res']);
-					$status = imagewebp($resMain['res'], $webpfile, $options['webp_quality']);
+					if(!empty($resMain['res']))
+						$status = imagewebp($resMain['res'], $webpfile, $options['webp_quality']);
+					else
+						$status = false;
 				}
 
 				if($status) {
@@ -936,6 +970,7 @@ class hikashopImageHelper {
 
 		$quality = array(
 			'jpg' => 95,
+			'webp' => 95,
 			'png' => 9
 		);
 		if(!empty($options['quality'])) {
@@ -944,6 +979,8 @@ class hikashopImageHelper {
 					$quality['jpg'] = (int)$options['quality']['jpg'];
 				if(!empty($options['quality']['png']))
 					$quality['png'] = (int)$options['quality']['png'];
+				if(!empty($options['quality']['webp']))
+					$quality['webp'] = (int)$options['quality']['webp'];
 			} elseif((int)$options['quality'] > 0) {
 				$quality['jpg'] = (int)$options['quality'];
 			}
@@ -984,6 +1021,7 @@ class hikashopImageHelper {
 				break;
 			case 'jpg':
 			case 'jpeg':
+			case 'webp':
 				$this->setResQuality($resThumb, $quality['jpg']);
 				break;
 		}
@@ -1026,7 +1064,10 @@ class hikashopImageHelper {
 
 				if(in_array($resThumb['ext'], array('gif','png')))
 					imagepalettetotruecolor($resThumb['res']);
-				$status = imagewebp($resThumb['res'], $cachePath . $destFolder . DS . $webpfile, $options['webp_quality']);
+				if(!empty($resThumb['res']))
+					$status = imagewebp($resThumb['res'], $cachePath . $destFolder . DS . $webpfile, $options['webp_quality']);
+				else
+					$status = false;
 				if($status)
 					$ret->webpurl = $this->uploadFolder_url . str_replace(array('\\/', '\\', '//') , '/', $destFolder . DS . $webpfile);
 			}
@@ -1291,19 +1332,27 @@ window.hikashop.ready( function() {
 		$image = $this->uploadFolder.$file_path;
 		$extension = $this->getFileExtension($image);
 		$resMain = $this->getImage($image, $extension);
-		if($resMain['autorotate']) {
+		if(!empty($resMain) && $resMain['autorotate']) {
 			$this->orientateImage($resMain);
 			$this->saveResImage($resMain, $image);
 		}
 		$this->freeRes($resMain);
 	}
 
-	function resizeImage($file_path, $type = 'image') {
+	function resizeImage($file_path, $type = 'image', $options = array()) {
 
 		$config =& hikashop_config();
 		$image_x = $config->get('image_x',0);
 		$image_y = $config->get('image_y',0);
 		$watermark_name = $config->get('watermark','');
+
+		if(!empty($options['image_x']) || !empty($options['image_y'])) {
+			$image_x = $options['image_x'];
+			$image_y = $options['image_y'];
+		}
+		if(isset($options['watermark'])) {
+			$watermark_name = $options['watermark'];
+		}
 
 		$ok = true;
 		if(($image_x || $image_y) || !empty($watermark_name)){
@@ -1429,6 +1478,8 @@ window.hikashop.ready( function() {
 				if($bgcolor === false || $bgcolor === -1)
 					$bgcolor = imagecolorallocate($resource, hexdec($rgb[0]), hexdec($rgb[1]), hexdec($rgb[2]));
 			}
+		} else {
+			$bgcolor = imagecolorallocatealpha($resource, 255, 255, 255, 127);
 		}
 		if($bgcolor === false) {
 			$bgcolor = imagecolorallocatealpha($resource, 255, 255, 255, 0);

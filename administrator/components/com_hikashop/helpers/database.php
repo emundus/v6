@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,6 +11,8 @@ defined('_JEXEC') or die('Restricted access');
 class hikashopDatabaseHelper {
 	protected $db = null;
 	public static $check_results = null;
+	public $createTable = array();
+	public $structure = array();
 
 	public function __construct() {
 		$this->db = JFactory::getDBO();
@@ -52,6 +54,23 @@ class hikashopDatabaseHelper {
 		}
 
 		return false;
+	}
+
+	function removeColumn($table, $column) {
+
+		$query = 'ALTER TABLE `'.hikashop_table(str_replace('`', '',$table)).'` DROP `'.str_replace('`', '', $column).'`;';
+		$this->db->setQuery($query);
+		$err = false;
+
+		try {
+			$this->db->execute();
+		}catch(Exception $e) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage($e->getMessage(), 'error');
+			$err = true;
+		}
+
+		return !$err;
 	}
 
 	public function parseTableFile($filename, &$createTable, &$structure) {
@@ -96,10 +115,11 @@ class hikashopDatabaseHelper {
 		}
 	}
 
-	public function checkdb() {
-		$createTable = array();
-		$structure = array();
-		$this->parseTableFile(HIKASHOP_BACK . 'tables.sql', $createTable, $structure);
+	public function loadStructure() {
+		$this->createTable = array();
+		$this->structure = array();
+
+		$this->parseTableFile(HIKASHOP_BACK . 'tables.sql', $this->createTable, $this->structure);
 
 		try{
 			$this->db->setQuery("SELECT * FROM #__hikashop_field");
@@ -110,16 +130,18 @@ class hikashopDatabaseHelper {
 		}
 
 		$ret = array();
+
 		ob_start();
 
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$obj =& $this;
-		$app->triggerEvent('onHikashopBeforeCheckDB', array(&$createTable, &$custom_fields, &$structure, &$obj));
+		$app->triggerEvent('onHikashopBeforeCheckDB', array(&$this->createTable, &$custom_fields, &$this->structure, &$obj));
 
 		$html = ob_get_clean();
 		if(!empty($html))
 			$ret[] = $html;
+
 
 		if(!empty($custom_fields)){
 			foreach($custom_fields as $custom_field) {
@@ -133,22 +155,28 @@ class hikashopDatabaseHelper {
 						break;
 					case 'item':
 						$table = '#__hikashop_cart_product';
-						if(!isset($structure[$table][$custom_field->field_namekey]))
-							$structure[$table][$custom_field->field_namekey] = '`'.$custom_field->field_namekey.'` TEXT NULL';
+						if(!isset($this->structure[$table][$custom_field->field_namekey]))
+							$this->structure[$table][$custom_field->field_namekey] = '`'.$custom_field->field_namekey.'` TEXT NULL';
 						$table = '#__hikashop_order_product';
-						if(!isset($structure[$table][$custom_field->field_namekey]))
-							$structure[$table][$custom_field->field_namekey] = '`'.$custom_field->field_namekey.'` TEXT NULL';
+						if(!isset($this->structure[$table][$custom_field->field_namekey]))
+							$this->structure[$table][$custom_field->field_namekey] = '`'.$custom_field->field_namekey.'` TEXT NULL';
 						break;
 					default:
 						$table = '#__hikashop_'.$custom_field->field_table;
-						if(!isset($structure[$table][$custom_field->field_namekey]))
-							$structure[$table][$custom_field->field_namekey] = '`'.$custom_field->field_namekey.'` TEXT NULL';
+						if(!isset($this->structure[$table][$custom_field->field_namekey]))
+							$this->structure[$table][$custom_field->field_namekey] = '`'.$custom_field->field_namekey.'` TEXT NULL';
 						break;
 				}
 			}
 		}
+		return $ret;
+	}
 
-		$tableName = array_keys($structure);
+	public function checkdb() {
+		$app = JFactory::getApplication();
+		$ret = $this->loadStructure();
+
+		$tableName = array_keys($this->structure);
 		$structureDB = array();
 
 		foreach($tableName as $oneTableName) {
@@ -175,7 +203,7 @@ class hikashopDatabaseHelper {
 
 				$msg = '';
 				try {
-					$this->db->setQuery($createTable[$oneTableName]);
+					$this->db->setQuery($this->createTable[$oneTableName]);
 					$isError = $this->db->execute();
 				} catch(Exception $e) {
 					$isError = null;
@@ -222,8 +250,9 @@ class hikashopDatabaseHelper {
 			if(!empty($structureDB[$oneTableName]))
 				$t = $structureDB[$oneTableName];
 
-			$resultCompare[$oneTableName] = array_diff(array_keys($structure[$oneTableName]), $t, array('AUTO_INCREMENT','PRIMARY_KEY'));
-
+			if(!empty($this->structure[$oneTableName])) {
+				$resultCompare[$oneTableName] = array_diff(array_keys($this->structure[$oneTableName]), $t, array('AUTO_INCREMENT','PRIMARY_KEY'));
+			}
 			$table_name = str_replace('#__', '', $oneTableName);
 
 			if(empty($resultCompare[$oneTableName])) {
@@ -245,7 +274,7 @@ class hikashopDatabaseHelper {
 
 				$msg = '';
 				try{
-					$this->db->setQuery('ALTER TABLE ' . $oneTableName . ' ADD ' . $structure[$oneTableName][$oneField]);
+					$this->db->setQuery('ALTER TABLE ' . $oneTableName . ' ADD ' . $this->structure[$oneTableName][$oneField]);
 					$isError = $this->db->execute();
 				} catch(Exception $e) {
 					$isError = null;
@@ -286,16 +315,16 @@ class hikashopDatabaseHelper {
 				continue;
 
 			$primary_keys = array();
-			if(isset($structure[$oneTableName]['PRIMARY_KEY'])){
-				if(strpos($structure[$oneTableName]['PRIMARY_KEY'], "`,`") !== false)
-					$primary_keys = explode( "`,`", $structure[$oneTableName]['PRIMARY_KEY']);
+			if(isset($this->structure[$oneTableName]['PRIMARY_KEY'])){
+				if(strpos($this->structure[$oneTableName]['PRIMARY_KEY'], "`,`") !== false)
+					$primary_keys = explode( "`,`", $this->structure[$oneTableName]['PRIMARY_KEY']);
 				else
-					$primary_keys[] = $structure[$oneTableName]['PRIMARY_KEY'];
+					$primary_keys[] = $this->structure[$oneTableName]['PRIMARY_KEY'];
 			}
 
 			$auto_increments = array();
-			if(isset($structure[$oneTableName]['AUTO_INCREMENT'])){
-				$auto_increments = $structure[$oneTableName]['AUTO_INCREMENT'];
+			if(isset($this->structure[$oneTableName]['AUTO_INCREMENT'])){
+				$auto_increments = $this->structure[$oneTableName]['AUTO_INCREMENT'];
 			}
 
 			$deletePrimary = false;
@@ -585,10 +614,6 @@ class hikashopDatabaseHelper {
 			$this->db->setQuery($query);
 			$order_statuses = $this->db->loadObjectList();
 		} catch(Exception $e) {
-			$ret[] = array(
-				'error',
-				$e->getMessage()
-			);
 		}
 		if(!empty($statuses_in_orders) && !empty($order_statuses)) {
 			$moves = array();

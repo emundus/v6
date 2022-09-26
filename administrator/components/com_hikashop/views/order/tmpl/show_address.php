@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,55 +16,58 @@ $show_url = 'order&task=show&subtask='.$name.'&cid='.$this->order->order_id;
 $save_url = 'order&task=save&subtask='.$name.'&cid='.$this->order->order_id;
 $update_url = 'order&task=edit&subtask='.$name.'&cid='.$this->order->order_id;
 
-	if(!isset($this->edit) || $this->edit !== true ) {
-?>		<div class="hika_edit"><a class="btn btn-primary" href="<?php echo hikashop_completeLink($update_url, true);?>" onclick="return window.hikashop.get(this,'hikashop_order_field_<?php echo $name; ?>');">
-			<i class="fas fa-pen"></i> <?php echo JText::_('HIKA_EDIT'); ?>
-		</a></div>
+if(!isset($this->edit) || $this->edit !== true ) {
+?>
+	<div class="hika_edit"><a class="btn btn-primary" href="<?php echo hikashop_completeLink($update_url, true);?>" onclick="return window.hikashop.get(this,'hikashop_order_field_<?php echo $name; ?>');">
+		<i class="fas fa-pen"></i> <?php echo JText::_('HIKA_EDIT'); ?>
+	</a></div>
 <?php
-	} else {
-?>		<div class="hika_edit">
-			<a class="btn btn-success" href="<?php echo hikashop_completeLink($save_url, true);?>" onclick="return window.hikashop.form(this,'hikashop_order_field_<?php echo $name; ?>');">
-				<i class="fa fa-save"></i> <?php echo JText::_('HIKA_SAVE'); ?>
-			</a>
-			<a class="btn btn-danger" href="<?php echo hikashop_completeLink($show_url, true);?>" onclick="return window.hikashop.get(this,'hikashop_order_field_<?php echo $name; ?>');">
-				<i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ?>
-			</a>
-		</div>
+} else {
+?>
+	<div class="hika_edit">
+		<a class="btn btn-success" href="<?php echo hikashop_completeLink($save_url, true);?>" onclick="return window.hikashop.form(this,'hikashop_order_field_<?php echo $name; ?>');">
+			<i class="fa fa-save"></i> <?php echo JText::_('HIKA_SAVE'); ?>
+		</a>
+		<a class="btn btn-danger" href="<?php echo hikashop_completeLink($show_url, true);?>" onclick="return window.hikashop.get(this,'hikashop_order_field_<?php echo $name; ?>');">
+			<i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ?>
+		</a>
+	</div>
 <?php
-	}
+}
+$address =& $this->order->$name;
+$display = 'field_backend';
+if(!empty($this->order->$fields_type)) {
 ?>
 <table class="admintable table">
 <?php
-$address =& $this->order->$name;
-$display = 'field_backend';
-if(isset($this->edit) && $this->edit === true ) {
-	foreach($this->order->$fields_type as $field){
-		if($field->$display){
-			$fieldname = $field->field_namekey;
+	if(isset($this->edit) && $this->edit === true ) {
+		foreach($this->order->$fields_type as $field){
+			if($field->$display){
+				$fieldname = $field->field_namekey;
 ?>
 	<tr class="hikashop_<?php echo $this->type;?>order_address_<?php echo $fieldname;?>">
 		<td class="key"><label><?php echo $this->fieldsClass->trans($field->field_realname);?></label></td>
 		<td><?php
-			$onWhat = 'onchange';
-			if($field->field_type == 'radio')
-				$onWhat = 'onclick';
+				$onWhat = 'onchange';
+				if($field->field_type == 'radio')
+					$onWhat = 'onclick';
 
-			$field->table_name = 'order';
-			echo $this->fieldsClass->display(
-					$field,
-					@$address->$fieldname,
-					'data['.$name.']['.$fieldname.']',
-					false,
-					'', // disable toggleField for now as it's normally not needed ' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\''.$name.'\',0);"',
-					false,
-					$this->order->$fields_type,
-					$address
-			);
+				$field->table_name = 'order';
+				echo $this->fieldsClass->display(
+						$field,
+						@$address->$fieldname,
+						'data['.$name.']['.$fieldname.']',
+						false,
+						'', // disable toggleField for now as it's normally not needed ' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\''.$name.'\',0);"',
+						false,
+						$this->order->$fields_type,
+						$address
+				);
 		?></td>
 	</tr>
 <?php
+			}
 		}
-	}
 ?>
 	<tr class="hikashop_<?php echo $this->type;?>_history">
 		<td class="key"><label><?php echo JText::_('HISTORY'); ?></label></td>
@@ -83,17 +86,18 @@ window.orderMgr.<?php echo $this->type;?>_history_changed = function(el) {
 </script>
 <?php
 
-	echo JHTML::_( 'form.token' );
-} else {
-	foreach($this->order->$fields_type as $field){
-		if($field->$display){
-			$fieldname = $field->field_namekey;
+		echo JHTML::_( 'form.token' );
+	} else {
+		foreach($this->order->$fields_type as $field){
+			if($field->$display){
+				$fieldname = $field->field_namekey;
 ?>
 	<tr class="hikashop_<?php echo $this->type;?>order_address_<?php echo $fieldname;?>">
 		<td class="key"><label><?php echo $this->fieldsClass->trans($field->field_realname);?></label></td>
 		<td><span><?php echo $this->fieldsClass->show($field, @$address->$fieldname);?></span></td>
 	</tr>
 <?php
+			}
 		}
 	}
 ?></table>
@@ -102,6 +106,6 @@ window.orderMgr.<?php echo $this->type;?>_history_changed = function(el) {
 ?>
 <script type="text/javascript">
 window.orderMgr.update<?php echo ucfirst($this->type);?> = function() {
-	window.Oby.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask='.$this->type.'_address&cid='.$this->order->order_id, true, false, true); ?>',{update:'hikashop_order_field_<?php echo $this->type; ?>_address'});
+	window.hikashop.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask='.$this->type.'_address&cid='.$this->order->order_id, true, false, true); ?>',{update:'hikashop_order_field_<?php echo $this->type; ?>_address'});
 }
 </script>
