@@ -196,6 +196,13 @@ class com_emundusInstallerScript
 
                 $succeed['campaign_workflow'] = EmundusHelperUpdate::updateCampaignWorkflowTable();
                 $succeed['event_handlers'] = EmundusHelperUpdate::convertEventHandlers();
+
+                EmundusHelperUpdate::addYamlVariable('location','/media/com_emundus/js/fabrik.js',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript',true,true);
+                EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
+                EmundusHelperUpdate::addYamlVariable('in_footer','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
+                EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
+                EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
+                EmundusHelperUpdate::addYamlVariable('name','Fabrik',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
