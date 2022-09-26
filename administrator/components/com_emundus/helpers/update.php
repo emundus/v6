@@ -282,6 +282,37 @@ class EmundusHelperUpdate
         file_put_contents($file, $new_yaml);
     }
 
+    public static function addYamlVariable($key,$value,$file,$parent = null,$breakline = false,$check_existing = false) {
+        $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents($file));
+
+        if (!empty($parent) && isset($yaml[$parent])){
+            $already_exist = false;
+
+            if($check_existing) {
+                foreach ($yaml[$parent] as $object) {
+                    if (isset($object[$key]) && $object[$key] == $value) {
+                        $already_exist = true;
+                        break;
+                    }
+                }
+            }
+
+            if(!$already_exist) {
+                if ($breakline) {
+                    $yaml[$parent][][$key] = $value;
+                } else {
+                    $yaml[$parent][sizeof($yaml[$parent]) - 1][$key] = $value;
+                }
+            }
+        } else {
+            echo ("Key " . $parent . ' not found in file ' . $file);
+        }
+
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml,3,2);
+
+        file_put_contents($file, $new_yaml);
+    }
+
     /**
      * @param $tag
      * @param $value
@@ -699,7 +730,7 @@ class EmundusHelperUpdate
      *
      * @since version 1.33.0
      */
-    public function updateCampaignWorkflowTable(): array
+    public static function updateCampaignWorkflowTable(): array
     {
         $update_campaign_workflow = ['status' => false, 'message' => ''];
 
