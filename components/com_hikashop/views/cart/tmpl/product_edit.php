@@ -1,20 +1,22 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?>
-<?php
+?><?php
 $labelcolumnclass = 'hkc-xs-4';
 $inputcolumnclass = 'hkc-xs-8';
 ?>
 <form action="<?php echo hikashop_completeLink('cart&task=product_save'); ?>" method="post" name="hikashop_cart_product_form" enctype="multipart/form-data">
 	<fieldset class="hkform-horizontal">
+<!-- TITLE -->
 		<h3><?php echo JText::_('EDIT_PRODUCT_INFORMATION_IN_THE_CART'); ?></h3>
+<!-- EO TITLE -->
+<!-- NAME -->
 		<div class="hkform-group control-group hikashop_item_product_name_line" id="hikashop_item_product_name">
 			<div class="<?php echo $labelcolumnclass;?> hkcontrol-label">
 <?php
@@ -78,6 +80,8 @@ if(!empty($this->product->prices) && !empty($default_params['show_price'])) {
 				</div>
 			</div>
 		</div>
+<!-- EO NAME -->
+<!-- CHARACTERISTICS -->
 <?php
 
 if(!empty($this->parentProduct->characteristics)) {
@@ -492,7 +496,10 @@ function hikashopUpdateVariantData(selection) {
 </div>
 <?php
 }
-
+?>
+<!-- EO CHARACTERISTICS -->
+<!-- OPTIONS -->
+<?php
 
 if(!empty($this->options)) {
 	$this->show_option_quantity = false;
@@ -744,51 +751,71 @@ if(!empty($this->options)) {
 	$doc->addScriptDeclaration("\n<!--\n".$js."\n//-->\n");
 
 }
-$formData = hikaInput::get()->get('data', array(), 'array');
-foreach ($this->itemFields as $fieldName => $oneExtraField) {
-	$itemData = @$this->product->$fieldName;
-	if(isset($formData['item'][$fieldName]))
-		$itemData = $formData['item'][$fieldName];
+?>
+<!-- EO OPTIONS -->
+<!-- CUSTOM ITEM FIELDS -->
+<?php
+if(!empty($this->itemFields)) {
+	$formData = hikaInput::get()->get('data', array(), 'array');
+	$after = array();
+	foreach ($this->itemFields as $fieldName => $oneExtraField) {
+		$itemData = @$this->product->$fieldName;
+		if(isset($formData['item'][$fieldName]))
+			$itemData = $formData['item'][$fieldName];
+		$onWhat='onchange';
+		if($oneExtraField->field_type=='radio')
+			$onWhat='onclick';
+		$oneExtraField->product_id = $this->product->product_id;
+		$html = $this->fieldsClass->display(
+			$oneExtraField,
+			$itemData,
+			'data[item]['.$oneExtraField->field_namekey.']',
+			false,
+			' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'item\',0);"',
+			false,
+			null,
+			null,
+			false
+		);
+		if($oneExtraField->field_type=='hidden') {
+			$after[] = $html;
+			continue;
+		}
 ?>
 		<div class="hkform-group control-group hikashop_item_<?php echo $oneExtraField->field_namekey;?>_line" id="hikashop_item_<?php echo $oneExtraField->field_namekey; ?>">
 <?php
-	$classname = $labelcolumnclass.' hkcontrol-label';
-	echo $this->fieldsClass->getFieldName($oneExtraField, true, $classname);
+		$classname = $labelcolumnclass.' hkcontrol-label';
+		echo $this->fieldsClass->getFieldName($oneExtraField, true, $classname);
 ?>
 			<div class="<?php echo $inputcolumnclass;?>">
 <?php
-	$onWhat='onchange';
-	if($oneExtraField->field_type=='radio')
-		$onWhat='onclick';
-	$oneExtraField->product_id = $this->product->product_id;
-	echo $this->fieldsClass->display(
-		$oneExtraField,
-		$itemData,
-		'data[item]['.$oneExtraField->field_namekey.']',
-		false,
-		' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'item\',0);"',
-		false,
-		null,
-		null,
-		false
-	);
+		echo $html;
 ?>
 			</div>
 		</div>
 <?php
+	}
+	if(count($after)) {
+		echo implode("\r\n", $after);
+	}
 }
 ?>
+<!-- EO CUSTOM ITEM FIELDS -->
 	</div>
 	<div class="hikashop_checkout_buttons">
 		<div class="buttons_left">
+<!-- CANCEL BUTTON -->
 				<a href="#" onclick="window.parent.hikashop.closeBox();return false;" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn_cart_product_edit_cancel" id="hikabtn_cart_product_edit_cancel">
 					<i class="fa fa-times"></i> <?php echo JText::_('HIKA_CANCEL'); ;?>
 				</a>
+<!-- EO CANCEL BUTTON -->
 		</div>
 		<div class="buttons_right" id="buttons_right">
+<!-- SAVE BUTTON -->
 			<button id="hikabtn_cart_product_edit_save" type="submit" class="<?php echo $this->config->get('css_button','hikabtn'); ?> hikabtn-success hikabtn_cart_product_edit_save">
 				<i class="fa fa-save"></i> <?php echo JText::_('HIKA_OK'); ;?>
 			</button>
+<!-- EO SAVE BUTTON -->
 		</div>
 	</div>
 	<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />

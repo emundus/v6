@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -66,6 +66,8 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 			'LG FLAT RATE BOX' => 'Large flat rate box',
 			'RECTANGULAR' => 'Rectangular',
 			'NONRECTANGULAR' => 'Non rectangular',
+			'REGIONALRATEBOXA' => 'Regional box A',
+			'REGIONALRATEBOXB' => 'Regional box B',
 		))
 		,'debug' => array('debug', 'boolean')
 	);
@@ -232,7 +234,9 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 				'NONRECTANGULAR'
 			);
 
-
+			$country = @$order->shipping_address_full->shipping_address->address_country->zone_code_2;
+			if(empty($country))
+				$country = 'US';
 			if(in_array($rate->shipping_params->container, $variable)) {
 				$limit['w'] = 1120;
 				if($rate->shipping_params->with_dimension)
@@ -250,6 +254,23 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 				$limit['w'] = 1120;
 				if($rate->shipping_params->with_dimension)
 					$limit['length_girth'] = 130;
+			} elseif($rate->shipping_params->container == 'REGIONALRATEBOXA'){
+				$limit = array(
+					'x' => 4.75,
+					'y' => 7,
+					'z' => 10
+				);
+				if($country == 'US')
+					$limit['w'] = 240;
+				else
+					$limit['w'] = 160;
+			} elseif($rate->shipping_params->container == 'REGIONALRATEBOXB'){
+				$limit = array(
+					'x' => 5,
+					'y' => 10.25,
+					'z' => 12
+				);
+				$limit['w'] = 320;
 			} else
 				$limit['unit'] = 1;
 
@@ -290,7 +311,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 					$parcel->Length = $girth[2];
 					$parcel->Width = $girth[1];
 					$parcel->Height = $girth[0];
-					$parcel->Girth = (($parcel->Height + $parcel->Width) * 2) + $parcel->Length;
+					$parcel->Girth = (($parcel->Height + $parcel->Width) * 2);
 				} else {
 					$parcel->Length = '';
 					$parcel->Width = '';
@@ -329,7 +350,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 						$parcel->Length = $girth[2];
 						$parcel->Width = $girth[1];
 						$parcel->Height = $girth[0];
-						$parcel->Girth = (($parcel->Height + $parcel->Width) * 2) + $parcel->Length;
+						$parcel->Girth = (($parcel->Height + $parcel->Width) * 2);
 					} else {
 						$parcel->Length = '';
 						$parcel->Width = '';
@@ -371,8 +392,8 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 			$i = 0;
 
 			if(empty($rates)) {
-				$messages['no_shipping_quotes'] = 'Failed to obtain shipping quotes.';
-				$cache_messages['no_shipping_quotes'] = 'Failed to obtain shipping quotes.';
+				$messages['no_shipping_quotes'] = JText::_('FAILED_TO_OBTAIN_SHIPPING_QUOTES');
+				$cache_messages['no_shipping_quotes'] = JText::_('FAILED_TO_OBTAIN_SHIPPING_QUOTES');
 				continue;
 			}
 
@@ -506,13 +527,13 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 
 		if($response_xml->Number) {
 			if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
-				$app->enqueueMessage( 'USPS error: ' . $response_xml->Number . ' ' . $response_xml->Description);
+				$app->enqueueMessage( 'USPS ('.$type.') error: ' . $response_xml->Number . ' ' . $response_xml->Description);
 			$responseError = true;
 		}
 
 		if($response_xml->Package->Error) {
 			if(!empty($rate->shipping_params->debug) && $ctrl == 'checkout')
-				$app->enqueueMessage( 'USPS error: ' . $response_xml->Package->Error->Number . ' ' . $response_xml->Package->Error->Description);
+				$app->enqueueMessage( 'USPS ('.$type.') error: ' . $response_xml->Package->Error->Number . ' ' . $response_xml->Package->Error->Description);
 			$responseError = true;
 		}
 
@@ -691,7 +712,7 @@ class plgHikashopshippingUSPS extends hikashopShippingPlugin {
 		if($domesticShipment == false)
 			$apiName = 'IntlRateV2';
 
-		$url = 'http://production.shippingapis.com/ShippingAPI.dll?API=' . $apiName . '&XML=' . urlencode($XMLRequest);
+		$url = 'https://production.shippingapis.com/ShippingAPI.dll?API=' . $apiName . '&XML=' . urlencode($XMLRequest);
 
 		$session = curl_init();
 		curl_setopt($session, CURLOPT_FRESH_CONNECT,  true);

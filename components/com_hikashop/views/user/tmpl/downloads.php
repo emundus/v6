@@ -1,15 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 global $Itemid;
 $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
+$css_button = $this->config->get('css_button','hikabtn');
 ?>
 <div id="hikashop_download_listing">
 	<?php echo $this->toolbarHelper->process($this->toolbar, $this->title); ?>
@@ -42,13 +43,10 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 				echo JText::_('NB_DOWNLOADED');
 			?></th>
 			<th class="hikashop_download_limit title"><?php
-				echo JHTML::_('grid.sort', JText::_('DOWNLOAD_NUMBER_LIMIT'), 'f.file_limit', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+				echo JHTML::_('grid.sort', JText::_('HIKASHOP_CHECKOUT_STATUS'), 'f.file_limit', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
 			?></th>
 			<th class="hikashop_order_date_title title"><?php
-				echo JHTML::_('grid.sort', JText::_('FIRST_PURCHASED_AT'), 'min_order_created', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
-			?></th>
-			<th class="hikashop_order_date_title title"><?php
-				echo JHTML::_('grid.sort', JText::_('LAST_PURCHASED_AT'), 'max_order_created', $this->pageInfo->filter->order->dir,$this->pageInfo->filter->order->value );
+				echo JText::_('PURCHASED_AT');
 			?></th>
 		</tr>
 	</thead>
@@ -58,7 +56,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 				<div class="pagination">
 					<form action="<?php echo hikashop_completeLink('user&task=downloads'.$url_itemid); ?>" method="post" name="adminForm_bottom">
 						<?php $this->pagination->form = '_bottom'; echo $this->pagination->getListFooter(); ?>
-						<?php echo $this->pagination->getResultsCounter(); ?>
+						<?php echo '<span class="hikashop_results_counter">'.$this->pagination->getResultsCounter().'</span>'; ?>
 						<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 						<input type="hidden" name="task" value="downloads" />
 						<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
@@ -95,11 +93,15 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 		if($single_limit == 0)
 			$single_limit = (int)$this->config->get('download_number_limit', 50);
 
+		$download_time_limit = $this->download_time_limit;
+		if(!empty($downloadFile->file_time_limit))
+			$download_time_limit = $downloadFile->file_time_limit;
+
 		if(!empty($downloadFile->orders)) {
 			if($single_limit > 0){
 				foreach($downloadFile->orders as $o) {
 					if(
-					 (empty($order_date) || $o->order_created < $order_date || (($this->download_time_limit + $o->order_created) >= time() &&  ($this->download_time_limit + $order_date) < time())) &&
+					 (empty($order_date) || $o->order_created < $order_date || (($download_time_limit + $o->order_created) >= time() &&  ($download_time_limit + $order_date) < time())) &&
 					 (empty($o->file_qty) || ($o->download_total < ($single_limit * (int)$o->order_product_quantity)))
 					) {
 						$order_id = (int)$o->order_id;
@@ -108,7 +110,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 				}
 			} else {
 				foreach($downloadFile->orders as $o) {
-					if(($this->download_time_limit + $o->order_created) >= time() &&  ($this->download_time_limit + $order_date) < time()){
+					if(($download_time_limit + $o->order_created) >= time() &&  ($download_time_limit + $order_date) < time()){
 						$order_id = (int)$o->order_id;
 						$order_date = (int)$o->order_created;
 					}
@@ -121,7 +123,7 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 		if(empty($order_date))
 			$order_date = $downloadFile->order_created;
 
-		if(!empty($this->download_time_limit) && ($this->download_time_limit + $order_date) < time()) {
+		if(!empty($download_time_limit) && ($download_time_limit + $order_date) < time()) {
 			$fileHtml = JText::_('TOO_LATE_NO_DOWNLOAD');
 			$periodNotReached = false;
 		}
@@ -152,14 +154,21 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 			if(!empty($downloadFile->file_pos)) {
 				$file_pos = '&file_pos='.$downloadFile->file_pos;
 			}
-
+			$tooltip = 'data-toggle="hk-tooltip" data-title="'.JText::_('DOWNLOAD_NOW').' '.strip_tags($downloadFile->file_name).'" data-original-title="" title=""';
 			if(in_array(substr($downloadFile->file_path, 0, 1), array('@', '#')) && (int)$downloadFile->file_quantity > 1) {
 				for($i = 1; $i <= (int)$downloadFile->file_quantity; $i++) {
-					echo '<a href="'.hikashop_completeLink('order&task=download&file_id='.$downloadFile->file_id.'&order_id='.$order_id.'&file_pos='.$i.$url_itemid).'">'.$downloadFile->file_name.'</a><br/>';
+					echo '<a class="'.$css_button.'" '.$tooltip.' href="'.hikashop_completeLink('order&task=download&file_id='.$downloadFile->file_id.'&order_id='.$order_id.'&file_pos='.$i.$url_itemid).'">'.
+						'<span class="hikashop_file_name">'.$downloadFile->file_name.'</span>'.
+						'<i class="fas fa-download"></i>'.
+					'</a><br/>';
 				}
 				$fileHtml = '';
 			} else {
-				$fileHtml = '<a href="'.hikashop_completeLink('order&task=download&file_id='.$downloadFile->file_id.'&order_id='.$order_id.$file_pos.$url_itemid).'">'.$downloadFile->file_name.'</a>';
+				$fileHtml = ''.
+				'<a class="'.$css_button.'" '.$tooltip.' href="'.hikashop_completeLink('order&task=download&file_id='.$downloadFile->file_id.'&order_id='.$order_id.$file_pos.$url_itemid).'">'.
+					'<span class="hikashop_file_name">'.$downloadFile->file_name.'</span>'.
+					'<i class="fas fa-download"></i>'.
+				'</a>';
 			}
 		} else {
 			$fileHtml = $downloadFile->file_name;
@@ -209,12 +218,16 @@ $url_itemid = (!empty($Itemid) ? '&Itemid='.$Itemid : '');
 		echo $downloadLimit;
 ?>
 				</td>
-				<td data-title="<?php echo JText::_('FIRST_PURCHASED_AT'); ?>" ><?php
+				<td class="hikashop_purchased_date">
+					<p data-title="<?php echo JText::_('FIRST_PURCHASED_AT'); ?>" ><?php
+					echo JText::_('HIKASHOP_FIRST').' : ';
 					echo hikashop_getDate($downloadFile->min_order_created,'%Y-%m-%d');
-				?></td>
-				<td data-title="<?php echo JText::_('LAST_PURCHASED_AT'); ?>" ><?php
+					?></p>
+					<p data-title="<?php echo JText::_('LAST_PURCHASED_AT'); ?>" ><?php
+					echo JText::_('HIKASHOP_LAST').' : ';
 					echo hikashop_getDate($downloadFile->max_order_created,'%Y-%m-%d');
-				?></td>
+					?></p>
+				</td>
 			</tr>
 <?php
 	}

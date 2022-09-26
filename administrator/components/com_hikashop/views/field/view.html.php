@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -49,6 +49,10 @@ class FieldViewField extends hikashopView {
 			$allFields = null;
 		}
 		$this->assignRef('allFields', $allFields);
+
+		if(in_array($field->field_type, array('radio', 'checkbox', 'singledropdown', 'multipledropdown')) && !empty($field->field_options['mysql_query']) && !empty($field->field_options['allow_add'])) {
+			$app->enqueueMessage(JText::_('THE_ALLOW_NEW_VALUES_SETTING_CANT_BE_USED_WHEN_DATA_COMES_FROM_MYSQL_QUERY'), 'error');
+		}
 
 		$fieldTitle = '';
 		if(!empty($field->field_id))
@@ -217,17 +221,67 @@ function setVisible(value) {
 		if(!isset($this->field->field_display))
 			$this->field->field_display = new stdClass();
 
-		$popup = hikashop_get('helper.popup');
-		$this->assignRef('popup', $popup);
-
-		$nameboxType = hikashop_get('type.namebox');
-		$this->assignRef('nameboxType', $nameboxType);
+		$this->popup = hikashop_get('helper.popup');
+		$this->nameboxType = hikashop_get('type.namebox');
+		$this->config = hikashop_config();
+		if($this->config->get('multi_language_edit')) {
+			$this->translationHelper = hikashop_get('helper.translation');
+			$this->translations = $this->translationHelper->loadLanguages();
+		}
 
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$obj =& $this;
 		$app->triggerEvent('onCustomfieldEdit', array(&$field, &$obj));
 	}
+
+
+	public function edit_translation() {
+		$language_id = hikaInput::get()->getInt('language_id', 0);
+		$this->assignRef('language_id', $language_id);
+
+		$field_id = hikashop_getCID('field_id');
+
+		$config = hikashop_config();
+		$this->assignRef('config', $config);
+
+		$fieldClass = hikashop_get('class.field');
+		$field = $fieldClass->get($field_id);
+
+		$this->translationHelper = hikashop_get('helper.translation');
+		if($this->translationHelper && $this->translationHelper->isMulti()) {
+			$this->translationHelper->load('hikashop_field', @$field->field_id, $field, $language_id);
+		}
+
+		$toggle = hikashop_get('helper.toggle');
+		$this->assignRef('toggle', $toggle);
+
+		$this->assignRef('field', $field);
+
+		$this->custom_text = false;
+		if($field->field_type == 'customtext') {
+			$this->custom_text = true;
+		}
+
+		$fieldsType = hikashop_get('type.fields');
+		$fieldsType->load($field->field_type);
+		$this->values = false;
+		foreach($fieldsType->allValues as $key => $options) {
+			if($key == $field->field_type && in_array('multivalues', $options['options'])) {
+				$this->values = true;
+			}
+		}
+
+		$this->toolbar = array(
+			array(
+				'url' => '#save',
+				'linkattribs' => 'onclick="return window.hikashop.submitform(\'save_translation\',\'adminForm\');"',
+				'icon' => 'save',
+				'name' => JText::_('HIKA_SAVE'), 'pos' => 'right'
+			)
+		);
+	}
+
 
 	public function listing() {
 		$app = JFactory::getApplication();
@@ -295,6 +349,23 @@ function setVisible(value) {
 		$lg = JFactory::getLanguage();
 		$lg->load('com_hikashop_config', JPATH_SITE);
 		$loaded = true;
+	}
+
+	public function add_value() {
+		$field_id = hikaInput::get()->getInt('field_id');
+		$fieldClass = hikashop_get('class.field');
+		$this->field = $fieldClass->getField($field_id);
+	}
+
+	public function save_value() {
+		$field_id = hikaInput::get()->getInt('field_id');
+		$fieldClass = hikashop_get('class.field');
+		$this->field = $fieldClass->getField($field_id);
+		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
+		$this->new = new stdClass();
+		$this->new->value = $safeHtmlFilter->clean(hikaInput::get()->getVar('value_value'), 'raw');
+		$this->new->title = $safeHtmlFilter->clean(hikaInput::get()->getVar('value_title'), 'raw');
+		$this->new->disabled = $safeHtmlFilter->clean(hikaInput::get()->getVar('value_disabled'), 'string');
 	}
 
 	public function getDoc($key) {

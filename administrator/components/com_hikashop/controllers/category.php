@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,6 +22,7 @@ class CategoryController extends hikashopController {
 		$this->display[] = 'selectstatus';
 		$this->display[] = 'getTree';
 		$this->display[] = 'findList';
+		$this->display[] = 'points_row';
 		$this->display[] = 'form';
 		$this->modify_views[] = 'edit_translation';
 		$this->modify[] = 'save_translation';
@@ -29,9 +30,16 @@ class CategoryController extends hikashopController {
 		$this->modify_views[] = 'selectparentlisting';
 		$this->modify_views[] = 'selectimage';
 		$this->modify[] = 'addimage';
+		$this->modify_views[] = 'batch';
 	}
 	function form(){
 		return $this->edit();
+	}
+	public function batch(){
+		$params = new HikaParameter('');
+		$params->set('table', 'category');
+		$js = '';
+		echo hikashop_getLayout('massaction', 'batch', $params, $js);
 	}
 
 	function addimage(){
@@ -41,6 +49,11 @@ class CategoryController extends hikashopController {
 			hikaInput::get()->set('layout', 'selectimage');
 		return parent::display();
 	}
+	function points_row(){
+		hikaInput::get()->set('layout', 'points_row');
+		return parent::display();
+	}
+
 	function selectimage(){
 		hikaInput::get()->set('layout', 'selectimage');
 		return parent::display();

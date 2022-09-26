@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -42,6 +42,8 @@ if(hikashop_level(2)){
 <?php
 		if(!isset($this->element['limit']))
 			$this->element['limit'] = '20';
+		if(!isset($this->element['columns']))
+			$this->element['columns'] = '3';
 		$colsNb = @$this->element['columns'];
 		$rowsNb = 0;
 		if(@$this->element['columns'] != 0)
@@ -95,9 +97,9 @@ if(hikashop_level(2)){
 			<?php if((($this->menu == 'product') || ($this->menu == 'category')) && ($this->type == 'product')){ ?>
 			<dl class="hika_options"><?php
 				if(!isset($this->element['enable_switcher'])) $this->element['enable_switcher'] = 0; ?>
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('HIKA_SWITCHER_MODE');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('HIKA_SWITCHER_MODE'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value">
 					<?php
 					if(!isset($this->element['enable_switcher'])) $this->element['enable_switcher'] = '-1';
@@ -113,78 +115,78 @@ if(hikashop_level(2)){
 		<div class="hikashop_menu_subblock_content">
 			<div class="hikashop_menu_subblock_title hikashop_menu_edit_display_settings_div_title"><?php echo JText::_('HIKA_ITEM_LAYOUT'); ?></div>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('HIKA_LAYOUT_TYPE');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('HIKA_LAYOUT_TYPE'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value"><?php
 					if(!isset($this->element['div_item_layout_type'])) $this->element['div_item_layout_type'] = 'inherit';
 					echo $this->itemType->display($this->name.'[div_item_layout_type]',@$this->element['div_item_layout_type'],$this->js, '');
 				?></dd>
 			</dl>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('IMAGE_X');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('HIKA_LAYOUT_TYPE'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value">
 					<input size=12 name="<?php echo $this->name; ?>[image_width]" type="text" value="<?php echo @$this->element['image_width'];?>" /> px
 				</dd>
 			</dl>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('IMAGE_Y');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('IMAGE_Y'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value">
 					<input size=12 name="<?php echo $this->name; ?>[image_height]" type="text" value="<?php echo @$this->element['image_height'];?>" /> px
 				</dd>
 			</dl>
 <?php if(hikashop_level(2)){ ?>
 			<dl class="hika_options layouteffect_hide layoutfade_hide" id="product_effect" <?php echo $productEffect; ?>>
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('HIKA_TRANSITION_EFFECT');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('HIKA_TRANSITION_EFFECT'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value"><?php
 					echo $this->transition_effectType->display($this->name.'[product_transition_effect]',@$this->element['product_transition_effect']);
 				?></dd>
 			</dl>
 			<dl class="hika_options layouteffect_hide" id="product_effect_duration" <?php echo $productEffectDuration; ?>>
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('HIKA_EFFECT_DURATION');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('HIKA_EFFECT_DURATION'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value">
 					<input size=12 name="<?php echo $this->name; ?>[product_effect_duration]" type="text" value="<?php echo @$this->element['product_effect_duration'];?>" /> ms
 				</dd>
 			</dl>
 <?php } ?>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('PANE_HEIGHT');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('PANE_HEIGHT'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value">
 					<input size=12 name="<?php echo $this->name; ?>[pane_height]" type="text" value="<?php echo @$this->element['pane_height'];?>" /> px
 				</dd>
 			</dl>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('TEXT_CENTERED');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('TEXT_CENTERED'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value"><?php
 					if(!isset($this->element['text_center'])) $this->element['text_center'] = -1;
 					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[text_center]', @$this->element['text_center']);
 				?></dd>
 			</dl>
 			<dl class="hika_options showdescription_hide" <?php echo $showDescription; ?>>
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('ELEMENT_DESCRIPTION');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('ELEMENT_DESCRIPTION'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value"><?php
 					if(!isset($this->element['show_description_listing'])) $this->element['show_description_listing'] = 0;
 					echo JHTML::_('hikaselect.booleanlist', $this->name.'[show_description_listing]', '', @$this->element['show_description_listing']);
 				?></dd>
 			</dl>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('HIKA_HEIGHT_CONSISTENCY');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('HIKA_HEIGHT_CONSISTENCY'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value"><?php
 					if(!isset($this->element['consistencyheight'])) $this->element['consistencyheight'] = 1;
 					echo JHTML::_('hikaselect.booleanlist', $this->name.'[consistencyheight]', '', @$this->element['consistencyheight']);
@@ -192,9 +194,9 @@ if(hikashop_level(2)){
 			</dl>
 			<?php if($this->menu == 'product' || ($this->menu == 'category' && $this->type == 'product')){ ?>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><?php
-					echo JText::_('HIKA_INFINITE_SCROLL');
-				?></dt>
+				<dt class="hikashop_option_name">
+					<label><?php echo JText::_('HIKA_INFINITE_SCROLL'); ?></label>
+				</dt>
 				<dd class="hikashop_option_value"><?php
 					if(!isset($this->element['infinite_scroll'])) $this->element['infinite_scroll'] = 0;
 					echo JHTML::_('hikaselect.booleanlist', $this->name.'[infinite_scroll]', '', @$this->element['infinite_scroll']);
@@ -208,7 +210,7 @@ if(hikashop_level(2)){
 			<div class="hikashop_menu_subblock_title hikashop_menu_edit_display_settings_div_title"><?php echo JText::_('HIKA_ITEM_BOX_SETTINGS'); ?></div>
 			<dl class="hika_options">
 				<dt class="hikashop_option_name">
-					<?php echo JText::_('BOX_COLOR');?>
+					<label><?php echo JText::_('BOX_COLOR'); ?></label>
 				</dt>
 				<dd class="hikashop_option_value">
 					<?php echo $this->colorType->displayAll('',$this->name.'[background_color]',@$this->element['background_color']); ?>
@@ -216,7 +218,7 @@ if(hikashop_level(2)){
 			</dl>
 			<dl class="hika_options">
 				<dt class="hikashop_option_name">
-					<?php echo JText::_('BOX_MARGIN');?>
+					<label><?php echo JText::_('BOX_MARGIN'); ?></label>
 				</dt>
 				<dd class="hikashop_option_value">
 					<input name="<?php echo $this->name; ?>[margin]" type="text" value="<?php echo @$this->element['margin'];?>" /> px
@@ -224,7 +226,7 @@ if(hikashop_level(2)){
 			</dl>
 			<dl class="hika_options">
 				<dt class="hikashop_option_name">
-					<?php echo JText::_('BOX_BORDER');?>
+					<label><?php echo JText::_('BOX_BORDER'); ?></label>
 				</dt>
 				<dd class="hikashop_option_value">
 					<?php
@@ -235,7 +237,7 @@ if(hikashop_level(2)){
 			</dl>
 			<dl class="hika_options">
 				<dt class="hikashop_option_name">
-					<?php echo JText::_('BOX_ROUND_CORNER');?>
+					<label><?php echo JText::_('BOX_ROUND_CORNER'); ?></label>
 				</dt>
 				<dd class="hikashop_option_value">
 					<?php
@@ -243,6 +245,17 @@ if(hikashop_level(2)){
 					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[rounded_corners]', @$this->element['rounded_corners']);
 					?>
 				</dd>
+			</dl>
+			<dl class="hika_options">
+				<dt class="hikashop_option_name">
+					<label for="data_menu__zoom_on_hover">
+						<?php echo JText::_('HIKA_ZOOM_HOVER');?>
+					</label>
+				</dt>
+				<dd class="hikashop_option_value"><?php
+					if(!isset($this->element['zoom_on_hover'])) $this->element['zoom_on_hover'] = '-1';
+					echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[zoom_on_hover]', $this->element['zoom_on_hover']);
+				?></dd>
 			</dl>
 		</div>
 	</div>
