@@ -74,39 +74,6 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 		return $params->get($pname);
 	}
 
-    public function dataFormCompare($old,$new,$key) : array {
-        $diffElements = array();
-
-        if(!is_array($new[$key])) { $new[$key] = array($new[$key]); }
-
-        /* handle new data */
-        if(is_array(current($new[$key])) === false) {
-            $new[$key] = array_values($new[$key]);
-        } else {
-            if(count($new[$key]) >= 1) {    // the sub array
-                $new[$key] = call_user_func_array('array_merge', array_values($new[$key]));
-            }
-        }
-
-        if(trim(implode("", array_values($old[$key]))) === trim(implode("", array_values($new[$key])))) {
-            return array();
-        } else {
-            if (array_values($old[$key]) !== array_values($new[$key])) {
-                if (empty(trim(implode("", $old[$key]))) and empty(trim(implode("", $new[$key])))) {
-                    return array();
-                } else {
-                    $diffElements['key_data'] = $key;
-                    $diffElements['old_data'] = $old[$key];
-                    $diffElements['new_data'] = $new[$key];
-                }
-            } else {
-                return array();
-            }
-        }
-
-        return $diffElements;       /* empty or not-empty array */
-    }
-
 	/**
 	 * Before the record is stored, this plugin will see if it should process
 	 * and if so store the form data in the session.
