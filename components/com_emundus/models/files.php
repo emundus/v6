@@ -1820,6 +1820,9 @@ class EmundusModelFiles extends JModelLegacy
                 }
 
                 if ($params_group->repeat_group_button == 1 || $is_join == 1) {
+                    $if = array();
+                    $endif = '';
+
                     // Get the table repeat table name using this query
                     $repeat_join_table_query = 'SELECT table_join FROM #__fabrik_joins WHERE group_id=' . $elt->group_id . ' AND table_join_key like "parent_id"';
                     try {
