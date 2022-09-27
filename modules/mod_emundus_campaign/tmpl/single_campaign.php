@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $app = JFactory::getApplication();
-
+$user = JFactory::getUser();
 $lang = JFactory::getLanguage();
 $locallang = $lang->getTag();
 
@@ -98,9 +98,12 @@ $currentCampaign = is_array($allCampaign) ? $allCampaign[0] : $allCampaign;
                                 	if(!isset($redirect_url) || empty($redirect_url)) {
                                 		$redirect_url = "index.php?option=com_users&view=registration";
                                 	}
-                                    $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                                    $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
                                 } else {
-                                    $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                                    $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+                                }
+                                if(!$user->guest) {
+                                    $register_url .= "&redirect=" . $formUrl;
                                 }
                             ?>
 							<a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
