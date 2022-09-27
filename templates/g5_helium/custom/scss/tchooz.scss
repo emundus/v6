@@ -463,9 +463,19 @@ input:focus + .em-slider {
 }
 
 /** HOVER **/
+.em-no-hover{
+  &:hover{
+    color: unset;
+  }
+}
 .em-hover-blue-500{
   &:hover{
     color: $blue-500;
+  }
+}
+.em-hover-background-neutral-300{
+  &:hover{
+    background: $neutral-300;
   }
 }
 
@@ -493,6 +503,10 @@ input:focus + .em-slider {
 
 .em-h-40{
   height: 40px;
+}
+
+.em-h-50{
+  height: 50px;
 }
 
 .em-min-height-100{
