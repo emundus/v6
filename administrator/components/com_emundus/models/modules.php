@@ -8,6 +8,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
+require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+
 class EmundusModelModules extends JModelList {
 
 	public function installQCM() {
@@ -138,6 +140,137 @@ class EmundusModelModules extends JModelList {
             }
 
             // TODO : Create Fabrik lists and elements
+            $datas = [
+                'label' => 'QCM - Questions',
+            ];
+            $form_questions = EmundusHelperUpdate::addFabrikForm($datas);
+
+            if($form_questions['status']) {
+                $datas = [
+                    'label' => 'QCM - Questions',
+                    'introduction' => '',
+                    'form_id' => $form_questions['id'],
+                    'db_table_name' => 'jos_emundus_qcm_questions',
+                    'access' => 7,
+                ];
+                $list_questions = EmundusHelperUpdate::addFabrikList($datas);
+
+                $datas = [
+                    'name' => 'QCM - Questions',
+                ];
+                $group_questions = EmundusHelperUpdate::addFabrikGroup($datas);
+                if($group_questions['status']){
+                    EmundusHelperUpdate::joinFormGroup($form_questions['id'],[$group_questions['id']]);
+                }
+
+                $repeat_params = [
+                    'repeat_group_button' => 1
+                ];
+                $datas = [
+                    'name' => 'QCM - Proposals',
+                    'is_join' => '1'
+                ];
+                $group_proposals = EmundusHelperUpdate::addFabrikGroup($datas,$repeat_params);
+                if($group_proposals['status']){
+                    EmundusHelperUpdate::joinFormGroup($form_questions['id'],[$group_proposals['id']]);
+
+                    $datas = [
+                        'list_id' => $list_questions['id'],
+                        'join_from_table' => 'jos_emundus_qcm_questions',
+                        'table_join' => 'jos_emundus_qcm_questions_765_repeat',
+                        'table_key' => 'id',
+                        'table_join_key' => 'parent_id',
+                        'group_id' => $group_proposals['id'],
+                    ];
+                    $join_params = [
+                        'type' => 'group',
+                        'pk' => '`jos_emundus_qcm_questions_765_repeat`.`id`',
+                    ];
+                    EmundusHelperUpdate::addFabrikJoin($datas,$join_params);
+                }
+            }
+
+            $datas = [
+                'label' => 'QCM - Section',
+            ];
+            $form_sections = EmundusHelperUpdate::addFabrikForm($datas);
+
+            if($form_sections['status']) {
+                $datas = [
+                    'label' => 'QCM - Section',
+                    'introduction' => '',
+                    'form_id' => $form_sections['id'],
+                    'db_table_name' => 'jos_emundus_qcm_section',
+                    'access' => 7,
+                ];
+                EmundusHelperUpdate::addFabrikList($datas);
+
+                $datas = [
+                    'name' => 'QCM - Section',
+                ];
+                $group_sections = EmundusHelperUpdate::addFabrikGroup($datas);
+                if($group_sections['status']){
+                    EmundusHelperUpdate::joinFormGroup($form_sections['id'],[$group_sections['id']]);
+                }
+            }
+
+            $datas = [
+                'label' => 'QCM - Setup',
+            ];
+            $form_setup = EmundusHelperUpdate::addFabrikForm($datas);
+
+            if($form_setup['status']) {
+                $datas = [
+                    'label' => 'QCM - Setup',
+                    'introduction' => '',
+                    'form_id' => $form_setup['id'],
+                    'db_table_name' => 'jos_emundus_qcm_section',
+                    'access' => 7,
+                ];
+                EmundusHelperUpdate::addFabrikList($datas);
+
+                $datas = [
+                    'name' => 'QCM - Setup',
+                ];
+                $group_setup = EmundusHelperUpdate::addFabrikGroup($datas);
+                if($group_setup['status']){
+                    EmundusHelperUpdate::joinFormGroup($form_setup['id'],[$group_setup['id']]);
+                }
+            }
+
+            $plugin_qcm_setup = [
+                'plugin_state' => ['1'],
+                'only_process_curl' => ['onBeforeStore'],
+                'form_php_file' => ['emundus-qcm-setup.php'],
+                'form_php_require_once' => ['0'],
+                'plugins' => ['php'],
+                'plugin_locations' => ['both'],
+                'plugin_events' => ['both'],
+                'plugin_description' => ['Setup QCM'],
+            ];
+            $datas = [
+                'label' => 'QCM - Applicants',
+            ];
+            $form_applicants = EmundusHelperUpdate::addFabrikForm($datas,$plugin_qcm_setup);
+
+            if($form_applicants['status']) {
+                $datas = [
+                    'label' => 'QCM - Applicants',
+                    'introduction' => '',
+                    'form_id' => $form_applicants['id'],
+                    'db_table_name' => 'jos_emundus_qcm_applicants',
+                    'access' => 7,
+                ];
+                EmundusHelperUpdate::addFabrikList($datas);
+
+                $datas = [
+                    'name' => 'QCM - Applicants',
+                ];
+                $group_applicants = EmundusHelperUpdate::addFabrikGroup($datas);
+                if($group_applicants['status']){
+                    EmundusHelperUpdate::joinFormGroup($form_applicants['id'],[$group_applicants['id']]);
+                }
+            }
 		} catch (Exception $e) {
 			return false;
 		}
