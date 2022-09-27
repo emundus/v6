@@ -91,7 +91,6 @@ class EmundusModelLogs extends JModelList {
     }
 
 
-
     /**
 	 * Gets the actions done by a user. Can be filtered by action and/or CRUD.
 	 * If the user is not specified, use the currently signed in one.
@@ -312,13 +311,7 @@ class EmundusModelLogs extends JModelList {
             case ('c'):
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<div class="em-flex-row"><span>' . $value->element . '</span>';
-                        $action_details .= '<span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
-                        $action_details .= '</div>';
-                    } else {
-                        $action_details .= '<p>' . $value . '</p>';
-                    }
+                    $action_details .= '<p>"' . $value . '"</p>';
                 }
                 break;
             case ('r'):
@@ -326,37 +319,12 @@ class EmundusModelLogs extends JModelList {
                 break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
-
                 foreach ($params->updated as $value) {
-                    $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp<br>';
-
-                    if(empty($value->old) or is_null($value->old)) { $value->old = ""; }
-                    if(empty($value->new) or is_null($value->new)) { $value->new = ""; }
-
-                    $value->old = explode('<#>',$value->old);
-                    foreach($value->old as $_old) {
-                        if(!isset($_old) or is_null($_old) or empty(trim($_old))) {
-                            $_old = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
-                            $action_details .= '<span class="em-blue-500-color">' . $_old . '</span>&nbsp';
-                        } else {
-                            //$_old = (strlen($_old) > 25) ? substr($_old, 0, 25) . '...' : $_old;
-                            $action_details .= '<span class="em-red-500-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
-                        }
-                    }
-
-                    $action_details .= '<span>' . JText::_('COM_EMUNDUS_CHANGE_TO') . '</span>&nbsp';
-
-                    $value->new = explode('<#>',$value->new);
-                    foreach($value->new as $_new) {
-                        if(!isset($_new) or is_null($_new) or empty(trim($_new))) {
-                            $_new = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
-                            $action_details .= '<span class="em-blue-500-color">' . $_new . '</span>&nbsp';
-                        } else {
-                            //$_new = (strlen($_new) > 25) ? substr($_new, 0, 25) . '...' : $_new;
-                            $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
-                        }
-                    }
-                    $action_details .= '</div></br>';
+                    $action_details .= '<div class="em-flex-row">
+                        <span class="label label-default">' . $value->old . '</span>
+                        <span class="material-icons">arrow_forward</span>
+                        <span class="label label-default">' . $value->new . '</span>
+                    </div>';
                 }
                 break;
             case ('d'):
