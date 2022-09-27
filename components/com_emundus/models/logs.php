@@ -330,12 +330,7 @@ class EmundusModelLogs extends JModelList {
             case ('d'):
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
-                    if(isset($value->details) and ($value->details) !== null) {
-                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp<br>';
-                        $action_details .= '</div></br>';
-                    } else {
-                        $action_details .= '<p>' . $value . '</p>';
-                    }
+                    $action_details .= '<p>"' . $value . '"</p>';
                 }
                 break;
             default:

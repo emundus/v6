@@ -56,7 +56,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                         foreach ($this->fileLogs as $log) { ?>
                         <tr>
                             <td><?= $log->date; ?></td>
-                            <!--<td><?= $log->ip_from; ?></td>-->
+                            <td><?= $log->ip_from; ?></td>
                             <td><?= $log->firstname . ' ' . $log->lastname; ?></td>
                             <td><?= $log->details['action_category']; ?></td>
                             <td><?= $log->details['action_name']; ?></td>
