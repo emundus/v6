@@ -454,6 +454,10 @@ class EmundusController extends JControllerLegacy {
             return false;
         }
 
+        $dispatcher = JDispatcher::getInstance();
+        JPluginHelper::importPlugin('emundus', 'sync_file');
+        $dispatcher->trigger('onDeleteFile', array(array('upload_id' => $upload_id)));
+
         if (isset($layout))
             $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid;
         else
@@ -1219,6 +1223,11 @@ class EmundusController extends JControllerLegacy {
                 $db->setQuery( $query );
                 $db->execute();
                 $id = $db->insertid();
+
+                // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
+                $dispatcher = JEventDispatcher::getInstance();
+                JPluginHelper::importPlugin('emundus', 'sync_file');
+                $dispatcher->trigger('onAfterUploadFile', [['upload_id' => $id]]);
 
                 $dispatcher = JEventDispatcher::getInstance();
                 $dispatcher->trigger('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
