@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 		<div class="hikashop_module_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('HIKA_DATA_DISPLAY'); ?></div>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<?php echo JText::_('TYPE_OF_CONTENT');?>
+				<label><?php echo JText::_('TYPE_OF_CONTENT');?></label>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo $this->contentType->display($this->name.'[content_type]',@$this->element['content_type'],$this->js,true,'_'.$this->id,true); ?>
@@ -84,7 +84,9 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		 <dl class="hika_options">
 			<dt class="hikashop_option_name">
+				<label>
 				<?php echo hikashop_hktooltip(JText::_('SYNCHRO_WITH_ITEM'), '', JText::_('HIKA_SYNCHRONIZE'), '', 0);?>
+				</label>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[content_synchronize]', @$this->element['content_synchronize']); ?>
@@ -92,10 +94,12 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name" >
+				<label>
 				<?php echo JText::_('MENU'); ?>
+				</label>
 			</dt>
 			<dd class="hikashop_option_value">
-				<?php echo JHTML::_('hikaselect.genericlist', $this->hikashop_menu, $this->name.'[itemid]' , 'size="1"', 'value', 'text', @$this->element['itemid']); ?>
+				<?php echo JHTML::_('hikaselect.genericlist', $this->hikashop_menu, $this->name.'[itemid]' , 'size="1" class="custom-select"', 'value', 'text', @$this->element['itemid']); ?>
 			</dd>
 		</dl>
 

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,6 +12,257 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 {
 	var $accepted_currencies = array(
 		978 => 'EUR'
+	);
+	var $country_codes = array(
+		'AD' => '020',
+		'AE' => '784',
+		'AF' => '004',
+		'AG' => '028',
+		'AI' => '660',
+		'AL' => '008',
+		'AM' => '051',
+		'AO' => '024',
+		'AQ' => '010',
+		'AR' => '032',
+		'AS' => '016',
+		'AT' => '040',
+		'AU' => '036',
+		'AW' => '533',
+		'AX' => '248',
+		'AZ' => '031',
+		'BA' => '070',
+		'BB' => '052',
+		'BD' => '050',
+		'BE' => '056',
+		'BF' => '854',
+		'BG' => '100',
+		'BH' => '048',
+		'BI' => '108',
+		'BJ' => '204',
+		'BL' => '652',
+		'BM' => '060',
+		'BN' => '096',
+		'BO' => '068',
+		'BQ' => '535',
+		'BR' => '076',
+		'BS' => '044',
+		'BT' => '064',
+		'BV' => '074',
+		'BW' => '072',
+		'BY' => '112',
+		'BZ' => '084',
+		'CA' => '124',
+		'CC' => '166',
+		'CD' => '180',
+		'CF' => '140',
+		'CG' => '178',
+		'CH' => '756',
+		'CI' => '384',
+		'CK' => '184',
+		'CL' => '152',
+		'CM' => '120',
+		'CN' => '156',
+		'CO' => '170',
+		'CR' => '188',
+		'CU' => '192',
+		'CV' => '132',
+		'CW' => '531',
+		'CX' => '162',
+		'CY' => '196',
+		'CZ' => '203',
+		'DE' => '276',
+		'DJ' => '262',
+		'DK' => '208',
+		'DM' => '212',
+		'DO' => '214',
+		'DZ' => '012',
+		'EC' => '218',
+		'EE' => '233',
+		'EG' => '818',
+		'EH' => '732',
+		'ER' => '232',
+		'ES' => '724',
+		'ET' => '231',
+		'FI' => '246',
+		'FJ' => '242',
+		'FK' => '238',
+		'FM' => '583',
+		'FO' => '234',
+		'FR' => '250',
+		'GA' => '266',
+		'GB' => '826',
+		'GD' => '308',
+		'GE' => '268',
+		'GF' => '254',
+		'GG' => '831',
+		'GH' => '288',
+		'GI' => '292',
+		'GL' => '304',
+		'GM' => '270',
+		'GN' => '324',
+		'GP' => '312',
+		'GQ' => '226',
+		'GR' => '300',
+		'GS' => '239',
+		'GT' => '320',
+		'GU' => '316',
+		'GW' => '624',
+		'GY' => '328',
+		'HK' => '344',
+		'HM' => '334',
+		'HN' => '340',
+		'HR' => '191',
+		'HT' => '332',
+		'HU' => '348',
+		'ID' => '360',
+		'IE' => '372',
+		'IL' => '376',
+		'IM' => '833',
+		'IN' => '356',
+		'IO' => '086',
+		'IQ' => '368',
+		'IR' => '364',
+		'IS' => '352',
+		'IT' => '380',
+		'JE' => '832',
+		'JM' => '388',
+		'JO' => '400',
+		'JP' => '392',
+		'KE' => '404',
+		'KG' => '417',
+		'KH' => '116',
+		'KI' => '296',
+		'KM' => '174',
+		'KN' => '659',
+		'KP' => '408',
+		'KR' => '410',
+		'KW' => '414',
+		'KY' => '136',
+		'KZ' => '398',
+		'LA' => '418',
+		'LB' => '422',
+		'LC' => '662',
+		'LI' => '438',
+		'LK' => '144',
+		'LR' => '430',
+		'LS' => '426',
+		'LT' => '440',
+		'LU' => '442',
+		'LV' => '428',
+		'LY' => '434',
+		'MA' => '504',
+		'MC' => '492',
+		'MD' => '498',
+		'ME' => '499',
+		'MF' => '663',
+		'MG' => '450',
+		'MH' => '584',
+		'MK' => '807',
+		'ML' => '466',
+		'MM' => '104',
+		'MN' => '496',
+		'MO' => '446',
+		'MP' => '580',
+		'MQ' => '474',
+		'MR' => '478',
+		'MS' => '500',
+		'MT' => '470',
+		'MU' => '480',
+		'MV' => '462',
+		'MW' => '454',
+		'MX' => '484',
+		'MY' => '458',
+		'MZ' => '508',
+		'NA' => '516',
+		'NC' => '540',
+		'NE' => '562',
+		'NF' => '574',
+		'NG' => '566',
+		'NI' => '558',
+		'NL' => '528',
+		'NO' => '578',
+		'NP' => '524',
+		'NR' => '520',
+		'NU' => '570',
+		'NZ' => '554',
+		'OM' => '512',
+		'PA' => '591',
+		'PE' => '604',
+		'PF' => '258',
+		'PG' => '598',
+		'PH' => '608',
+		'PK' => '586',
+		'PL' => '616',
+		'PM' => '666',
+		'PN' => '612',
+		'PR' => '630',
+		'PS' => '275',
+		'PT' => '620',
+		'PW' => '585',
+		'PY' => '600',
+		'QA' => '634',
+		'RE' => '638',
+		'RO' => '642',
+		'RS' => '688',
+		'RU' => '643',
+		'RW' => '646',
+		'SA' => '682',
+		'SB' => '090',
+		'SC' => '690',
+		'SD' => '729',
+		'SE' => '752',
+		'SG' => '702',
+		'SH' => '654',
+		'SI' => '705',
+		'SJ' => '744',
+		'SK' => '703',
+		'SL' => '694',
+		'SM' => '674',
+		'SN' => '686',
+		'SO' => '706',
+		'SR' => '740',
+		'SS' => '728',
+		'ST' => '678',
+		'SV' => '222',
+		'SX' => '534',
+		'SY' => '760',
+		'SZ' => '748',
+		'TC' => '796',
+		'TD' => '148',
+		'TF' => '260',
+		'TG' => '768',
+		'TH' => '764',
+		'TJ' => '762',
+		'TK' => '772',
+		'TL' => '626',
+		'TM' => '795',
+		'TN' => '788',
+		'TO' => '776',
+		'TR' => '792',
+		'TT' => '780',
+		'TV' => '798',
+		'TW' => '158',
+		'TZ' => '834',
+		'UA' => '804',
+		'UG' => '800',
+		'UM' => '581',
+		'US' => '840',
+		'UY' => '858',
+		'UZ' => '860',
+		'VA' => '336',
+		'VC' => '670',
+		'VE' => '862',
+		'VG' => '092',
+		'VI' => '850',
+		'VN' => '704',
+		'VU' => '548',
+		'WF' => '876',
+		'WS' => '882',
+		'YE' => '887',
+		'YT' => '175',
+		'ZA' => '710',
+		'ZM' => '894',
+		'ZW' => '716',
 	);
 
 	var $multiple = true;
@@ -22,6 +273,12 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		'pbx_rang' => array('Rang', 'input'),
 		'pbx_indentifiant' => array('Identifiant', 'input'),
 		'hash' => array('HMAC', 'input'),
+		'bank' => array('Banque', 'list', array(
+			'' => 'par défaut',
+			'sofinco' => 'Sofinco',
+			'ca' => 'e-transactions (Crédit Agricole)',
+		)),
+		'debug' => array('DEBUG', 'boolean','0'),
 		'payment_methods' => array('Payment methods', 'list',array(
 			'_' => 'All',
 			'CARTE_' => '- All cards -',
@@ -32,6 +289,8 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			'CARTE_JCB' => 'JCB',
 			'CARTE_COFINOGA' => 'COFINOGA',
 			'CARTE_SOFINCO' => 'SOFINCO',
+			'LIMONETIK_SOF3X' =>'Limonetik SOFINCO 3X',
+			'LIMONETIK_SOF3XSF' =>'Limonetik SOFINCO 3XSF',
 			'CARTE_AURORE' => 'AURORE',
 			'CARTE_CDGP' => 'CDGP',
 			'CARTE_24H00' => '24H00',
@@ -80,15 +339,8 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
 		$srv = 'tpeweb.paybox.com';
-
 		if($this->payment_params->sandbox) {
 			$srv = 'preprod-tpeweb.paybox.com';
-		}
-
-		$this->url = 'https://'.$srv.'/cgi/FramepagepaiementRWD.cgi';
-
-		if(!empty($this->payment_params->iframe)) {
-			$this->url = 'https://'.$srv.'/cgi/MYframepagepaiement_ip.cgi';
 		}
 
 		$amount = (int)(round($order->cart->full_total->prices[0]->price_value_with_tax, 2) * 100);
@@ -101,6 +353,8 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			'PBX_DEVISE' => 978,
 			'PBX_CMD' => (int)$order->order_id,
 			'PBX_PORTEUR' => $this->user->user_email,
+			'PBX_SHOPPINGCART' => $this->getCartInformation($order),
+			'PBX_BILLING' => $this->getBillingInformation($order),
 			'PBX_RETOUR' => 'mt:M;ref:R;auth:A;err:E;sign:K',
 			'PBX_HASH' => 'SHA512',
 			'PBX_TIME' => date('c'),
@@ -110,6 +364,34 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 			'PBX_ANNULE' => (HIKASHOP_LIVE.'paybox_'.$method_id.'.php?pbx=user&t=cancel'),
 			'PBX_REPONDRE_A' => (HIKASHOP_LIVE.'paybox_'.$method_id.'.php')
 		);
+
+
+		switch(@$this->payment_params->bank) {
+			case 'ca':
+				$this->vars['PBX_SOURCE'] = 'RWD';
+				$srv = 'tpeweb.e-transactions.fr';
+
+				if($this->payment_params->sandbox) {
+					$srv = 'recette-tpeweb.e-transactions.fr';
+				}
+				break;
+			case 'sofinco':
+				$simpleXMLElement = new SimpleXMLElement("<Customer/>");
+				$simpleXMLElement->addChild('Id',$this->user->user_id);        
+				$this->vars['PBX_CUSTOMER'] = $simpleXMLElement->asXML();
+				break;
+			case '':
+			default:
+				break;
+		}
+
+
+		$this->url = 'https://'.$srv.'/cgi/FramepagepaiementRWD.cgi';
+
+		if(!empty($this->payment_params->iframe)) {
+			$this->url = 'https://'.$srv.'/cgi/MYframepagepaiement_ip.cgi';
+		}
+
 
 		if(!empty($this->payment_params->ticket)){
 			$this->vars['PBX_PORTEUR'] = $this->payment_params->ticket;
@@ -140,9 +422,448 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 
 		$binKey = pack('H*', $this->payment_params->hash);
 		$this->vars['PBX_HMAC'] = strtoupper(hash_hmac('sha512', $msg, $binKey));
+		$this->vars['PBX_SHOPPINGCART'] = htmlspecialchars($this->vars['PBX_SHOPPINGCART'], ENT_QUOTES,'UTF-8');
+		$this->vars['PBX_BILLING'] =  htmlspecialchars($this->vars['PBX_BILLING'], ENT_QUOTES,'UTF-8');
 		unset($msg);
 
+		if(!empty($this->payment_params->debug)) {
+			hikashop_writeToLog($this->vars);
+		}
+
 		return $this->showPage('end');
+	}
+
+	function getBillingInformation(&$order) {
+		$country = 'FR';
+		if(empty($order->cart->billing_address->address_country->zone_code_2)) {
+			$country = $order->cart->billing_address->address_country->zone_code_2;
+		}
+		if(isset($this->country_codes[$country]))
+			$country = $this->country_codes[$country];
+		else
+			$country = '250';
+		$xml = '<?xml version="1.0" encoding="utf-8"?><Billing><Address><FirstName>'.
+			$this->formatTextValue($order->cart->billing_address->address_firstname, 'ANP', 30).
+		'</FirstName><LastName>'.
+			$this->formatTextValue($order->cart->billing_address->address_lastname, 'ANP', 30).
+		'</LastName><Address1>'.
+			$this->formatTextValue($order->cart->billing_address->address_street, 'ANS', 50).
+		'</Address1><Address2>'.
+			$this->formatTextValue($order->cart->billing_address->address_street2, 'ANS', 50).
+		'</Address2><ZipCode>'.
+			$this->formatTextValue($order->cart->billing_address->address_post_code, 'ANS', 16).
+		'</ZipCode><City>'.
+			$this->formatTextValue($order->cart->billing_address->address_city, 'ANS', 50).
+		'</City><CountryCode>'.
+			$country.
+		'</CountryCode></Address></Billing>';
+
+		return $this->exportToXml($xml);
+	}
+
+	function exportToXml($xml) {
+		if (class_exists('DOMDocument')) {
+			$doc = new DOMDocument();
+			$doc->loadXML($xml);
+			$xml = $doc->saveXML();
+		} elseif (function_exists('simplexml_load_string')) {
+			$xml = simplexml_load_string($xml)->asXml();
+		}
+
+		$xml = trim(preg_replace('/(\s*)(' . preg_quote('<?xml version="1.0" encoding="utf-8"?>') . ')(\s*)/', '$2', $xml));
+		$xml = trim(preg_replace("/\r|\n/", '', $xml));
+
+		return $xml;
+	}
+
+
+	function formatTextValue($value, $type, $maxLength = null) {
+
+		switch ($type) {
+			default:
+			case 'AN':
+				$value = $this->remove_accents($value);
+				break;
+			case 'ANP':
+				$value = $this->remove_accents($value);
+				$value = preg_replace('/[^-. a-zA-Z0-9]/', '', $value);
+				break;
+			case 'ANS':
+				break;
+			case 'N':
+				$value = preg_replace('/[^0-9.]/', '', $value);
+				break;
+			case 'A':
+				$value = $this->remove_accents($value);
+				$value = preg_replace('/[^A-Za-z]/', '', $value);
+				break;
+		}
+		$value = trim(preg_replace("/\r|\n/", '', $value));
+
+		if (!empty($maxLength) && is_numeric($maxLength) && $maxLength > 0) {
+			if (function_exists('mb_strlen')) {
+				if (mb_strlen($value) > $maxLength) {
+					$value = mb_substr($value, 0, $maxLength);
+				}
+			} elseif (strlen($value) > $maxLength) {
+				$value = substr($value, 0, $maxLength);
+			}
+		}
+
+		return $value;
+	}
+
+	function remove_accents( $string ) {
+		if ( ! preg_match( '/[\x80-\xff]/', $string ) ) {
+			return $string;
+		}
+
+		$chars = array(
+			'ª' => 'a',
+			'º' => 'o',
+			'À' => 'A',
+			'Á' => 'A',
+			'Â' => 'A',
+			'Ã' => 'A',
+			'Ä' => 'A',
+			'Å' => 'A',
+			'Æ' => 'AE',
+			'Ç' => 'C',
+			'È' => 'E',
+			'É' => 'E',
+			'Ê' => 'E',
+			'Ë' => 'E',
+			'Ì' => 'I',
+			'Í' => 'I',
+			'Î' => 'I',
+			'Ï' => 'I',
+			'Ð' => 'D',
+			'Ñ' => 'N',
+			'Ò' => 'O',
+			'Ó' => 'O',
+			'Ô' => 'O',
+			'Õ' => 'O',
+			'Ö' => 'O',
+			'Ù' => 'U',
+			'Ú' => 'U',
+			'Û' => 'U',
+			'Ü' => 'U',
+			'Ý' => 'Y',
+			'Þ' => 'TH',
+			'ß' => 's',
+			'à' => 'a',
+			'á' => 'a',
+			'â' => 'a',
+			'ã' => 'a',
+			'ä' => 'a',
+			'å' => 'a',
+			'æ' => 'ae',
+			'ç' => 'c',
+			'è' => 'e',
+			'é' => 'e',
+			'ê' => 'e',
+			'ë' => 'e',
+			'ì' => 'i',
+			'í' => 'i',
+			'î' => 'i',
+			'ï' => 'i',
+			'ð' => 'd',
+			'ñ' => 'n',
+			'ò' => 'o',
+			'ó' => 'o',
+			'ô' => 'o',
+			'õ' => 'o',
+			'ö' => 'o',
+			'ø' => 'o',
+			'ù' => 'u',
+			'ú' => 'u',
+			'û' => 'u',
+			'ü' => 'u',
+			'ý' => 'y',
+			'þ' => 'th',
+			'ÿ' => 'y',
+			'Ø' => 'O',
+			'Ā' => 'A',
+			'ā' => 'a',
+			'Ă' => 'A',
+			'ă' => 'a',
+			'Ą' => 'A',
+			'ą' => 'a',
+			'Ć' => 'C',
+			'ć' => 'c',
+			'Ĉ' => 'C',
+			'ĉ' => 'c',
+			'Ċ' => 'C',
+			'ċ' => 'c',
+			'Č' => 'C',
+			'č' => 'c',
+			'Ď' => 'D',
+			'ď' => 'd',
+			'Đ' => 'D',
+			'đ' => 'd',
+			'Ē' => 'E',
+			'ē' => 'e',
+			'Ĕ' => 'E',
+			'ĕ' => 'e',
+			'Ė' => 'E',
+			'ė' => 'e',
+			'Ę' => 'E',
+			'ę' => 'e',
+			'Ě' => 'E',
+			'ě' => 'e',
+			'Ĝ' => 'G',
+			'ĝ' => 'g',
+			'Ğ' => 'G',
+			'ğ' => 'g',
+			'Ġ' => 'G',
+			'ġ' => 'g',
+			'Ģ' => 'G',
+			'ģ' => 'g',
+			'Ĥ' => 'H',
+			'ĥ' => 'h',
+			'Ħ' => 'H',
+			'ħ' => 'h',
+			'Ĩ' => 'I',
+			'ĩ' => 'i',
+			'Ī' => 'I',
+			'ī' => 'i',
+			'Ĭ' => 'I',
+			'ĭ' => 'i',
+			'Į' => 'I',
+			'į' => 'i',
+			'İ' => 'I',
+			'ı' => 'i',
+			'Ĳ' => 'IJ',
+			'ĳ' => 'ij',
+			'Ĵ' => 'J',
+			'ĵ' => 'j',
+			'Ķ' => 'K',
+			'ķ' => 'k',
+			'ĸ' => 'k',
+			'Ĺ' => 'L',
+			'ĺ' => 'l',
+			'Ļ' => 'L',
+			'ļ' => 'l',
+			'Ľ' => 'L',
+			'ľ' => 'l',
+			'Ŀ' => 'L',
+			'ŀ' => 'l',
+			'Ł' => 'L',
+			'ł' => 'l',
+			'Ń' => 'N',
+			'ń' => 'n',
+			'Ņ' => 'N',
+			'ņ' => 'n',
+			'Ň' => 'N',
+			'ň' => 'n',
+			'ŉ' => 'n',
+			'Ŋ' => 'N',
+			'ŋ' => 'n',
+			'Ō' => 'O',
+			'ō' => 'o',
+			'Ŏ' => 'O',
+			'ŏ' => 'o',
+			'Ő' => 'O',
+			'ő' => 'o',
+			'Œ' => 'OE',
+			'œ' => 'oe',
+			'Ŕ' => 'R',
+			'ŕ' => 'r',
+			'Ŗ' => 'R',
+			'ŗ' => 'r',
+			'Ř' => 'R',
+			'ř' => 'r',
+			'Ś' => 'S',
+			'ś' => 's',
+			'Ŝ' => 'S',
+			'ŝ' => 's',
+			'Ş' => 'S',
+			'ş' => 's',
+			'Š' => 'S',
+			'š' => 's',
+			'Ţ' => 'T',
+			'ţ' => 't',
+			'Ť' => 'T',
+			'ť' => 't',
+			'Ŧ' => 'T',
+			'ŧ' => 't',
+			'Ũ' => 'U',
+			'ũ' => 'u',
+			'Ū' => 'U',
+			'ū' => 'u',
+			'Ŭ' => 'U',
+			'ŭ' => 'u',
+			'Ů' => 'U',
+			'ů' => 'u',
+			'Ű' => 'U',
+			'ű' => 'u',
+			'Ų' => 'U',
+			'ų' => 'u',
+			'Ŵ' => 'W',
+			'ŵ' => 'w',
+			'Ŷ' => 'Y',
+			'ŷ' => 'y',
+			'Ÿ' => 'Y',
+			'Ź' => 'Z',
+			'ź' => 'z',
+			'Ż' => 'Z',
+			'ż' => 'z',
+			'Ž' => 'Z',
+			'ž' => 'z',
+			'ſ' => 's',
+			'Ș' => 'S',
+			'ș' => 's',
+			'Ț' => 'T',
+			'ț' => 't',
+			'€' => 'E',
+			'£' => '',
+			'Ơ' => 'O',
+			'ơ' => 'o',
+			'Ư' => 'U',
+			'ư' => 'u',
+			'Ầ' => 'A',
+			'ầ' => 'a',
+			'Ằ' => 'A',
+			'ằ' => 'a',
+			'Ề' => 'E',
+			'ề' => 'e',
+			'Ồ' => 'O',
+			'ồ' => 'o',
+			'Ờ' => 'O',
+			'ờ' => 'o',
+			'Ừ' => 'U',
+			'ừ' => 'u',
+			'Ỳ' => 'Y',
+			'ỳ' => 'y',
+			'Ả' => 'A',
+			'ả' => 'a',
+			'Ẩ' => 'A',
+			'ẩ' => 'a',
+			'Ẳ' => 'A',
+			'ẳ' => 'a',
+			'Ẻ' => 'E',
+			'ẻ' => 'e',
+			'Ể' => 'E',
+			'ể' => 'e',
+			'Ỉ' => 'I',
+			'ỉ' => 'i',
+			'Ỏ' => 'O',
+			'ỏ' => 'o',
+			'Ổ' => 'O',
+			'ổ' => 'o',
+			'Ở' => 'O',
+			'ở' => 'o',
+			'Ủ' => 'U',
+			'ủ' => 'u',
+			'Ử' => 'U',
+			'ử' => 'u',
+			'Ỷ' => 'Y',
+			'ỷ' => 'y',
+			'Ẫ' => 'A',
+			'ẫ' => 'a',
+			'Ẵ' => 'A',
+			'ẵ' => 'a',
+			'Ẽ' => 'E',
+			'ẽ' => 'e',
+			'Ễ' => 'E',
+			'ễ' => 'e',
+			'Ỗ' => 'O',
+			'ỗ' => 'o',
+			'Ỡ' => 'O',
+			'ỡ' => 'o',
+			'Ữ' => 'U',
+			'ữ' => 'u',
+			'Ỹ' => 'Y',
+			'ỹ' => 'y',
+			'Ấ' => 'A',
+			'ấ' => 'a',
+			'Ắ' => 'A',
+			'ắ' => 'a',
+			'Ế' => 'E',
+			'ế' => 'e',
+			'Ố' => 'O',
+			'ố' => 'o',
+			'Ớ' => 'O',
+			'ớ' => 'o',
+			'Ứ' => 'U',
+			'ứ' => 'u',
+			'Ạ' => 'A',
+			'ạ' => 'a',
+			'Ậ' => 'A',
+			'ậ' => 'a',
+			'Ặ' => 'A',
+			'ặ' => 'a',
+			'Ẹ' => 'E',
+			'ẹ' => 'e',
+			'Ệ' => 'E',
+			'ệ' => 'e',
+			'Ị' => 'I',
+			'ị' => 'i',
+			'Ọ' => 'O',
+			'ọ' => 'o',
+			'Ộ' => 'O',
+			'ộ' => 'o',
+			'Ợ' => 'O',
+			'ợ' => 'o',
+			'Ụ' => 'U',
+			'ụ' => 'u',
+			'Ự' => 'U',
+			'ự' => 'u',
+			'Ỵ' => 'Y',
+			'ỵ' => 'y',
+			'ɑ' => 'a',
+			'Ǖ' => 'U',
+			'ǖ' => 'u',
+			'Ǘ' => 'U',
+			'ǘ' => 'u',
+			'Ǎ' => 'A',
+			'ǎ' => 'a',
+			'Ǐ' => 'I',
+			'ǐ' => 'i',
+			'Ǒ' => 'O',
+			'ǒ' => 'o',
+			'Ǔ' => 'U',
+			'ǔ' => 'u',
+			'Ǚ' => 'U',
+			'ǚ' => 'u',
+			'Ǜ' => 'U',
+			'ǜ' => 'u',
+		);
+
+		$chars['Ä'] = 'Ae';
+		$chars['ä'] = 'ae';
+		$chars['Ö'] = 'Oe';
+		$chars['ö'] = 'oe';
+		$chars['Ü'] = 'Ue';
+		$chars['ü'] = 'ue';
+		$chars['ß'] = 'ss';
+		$chars['Æ'] = 'Ae';
+		$chars['æ'] = 'ae';
+		$chars['Ø'] = 'Oe';
+		$chars['ø'] = 'oe';
+		$chars['Å'] = 'Aa';
+		$chars['å'] = 'aa';
+		$chars['l·l'] = 'll';
+		$chars['Đ'] = 'DJ';
+		$chars['đ'] = 'dj';
+
+		$string = strtr( $string, $chars );
+
+		return $string;
+	}
+
+	function getCartInformation(&$order) {
+		$total = 0;
+		if (!empty($order) && !empty($order->products)) {
+			foreach ($order->products as $item) {
+				$total+= $item->order_product_quantity;
+			}
+		} else {
+			$total = 1;
+		}
+		$total = max(1, min($total, 99));
+
+		return '<?xml version="1.0" encoding="utf-8"?><shoppingcart><total><totalQuantity>'.$total.'</totalQuantity></total></shoppingcart>';
 	}
 
 	function onPaymentNotification(&$statuses) {
@@ -182,6 +903,10 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 		if(empty($this->payment_params))
 			exit;
 
+		if(!empty($this->payment_params->debug)) {
+			hikashop_writeToLog($_REQUEST);
+		}
+
 		if(!empty($this->payment_params->ips)){
 			$ip = hikashop_getIP();
 			$valid = false;
@@ -200,7 +925,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 				$action = false;
 				$this->modifyOrder($action, null, null, $email);
 
-				JError::raiseError(403, JText::_('Access Forbidden'));
+				$this->app->enqueueMessage(JText::_('Access Forbidden'), 'error');
 				exit;
 			}
 		}
@@ -229,7 +954,7 @@ class plgHikashoppaymentPaybox extends hikashopPaymentPlugin
 					$action = false;
 					$this->modifyOrder($action, null, null, $email);
 
-					JError::raiseError(403, JText::_('Access Forbidden'));
+					$this->app->enqueueMessage(JText::_('Access Forbidden'), 'error');
 					exit;
 				}
 			}

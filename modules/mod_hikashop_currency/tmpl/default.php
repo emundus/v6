@@ -1,13 +1,13 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><div class="hikashop_currency_module <?php echo @$module->params['moduleclass_sfx']; ?>" id="hikashop_currency_module_<?php echo $module->id; ?>">
+?><div class="hikashop_currency_module <?php echo (!empty($module->params) && is_array($module->params) ? @$module->params['moduleclass_sfx'] : ''); ?>" id="hikashop_currency_module_<?php echo $module->id; ?>">
 <?php if(empty($mode_noform)) { ?>
 	<form action="<?php echo hikashop_completeLink('currency&task=update'); ?>" method="post" name="hikashop_currency_form_<?php echo $module->id; ?>">
 		<input type="hidden" name="return_url" value="<?php echo urlencode($redirectUrl); ?>" />

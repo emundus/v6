@@ -1,106 +1,108 @@
 <template>
-  <div class="em-w-custom">
-  <div>
-    <ModalWarningFormBuilder
-        :pid="getProfileId"
-        :cid="campaignId"
-    />
-    <div>
-      <div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
-        <span class="material-icons-outlined">arrow_back</span>
-        <p class="em-ml-8">{{ translate('BACK') }}</p>
-      </div>
-      <div class="em-flex-row em-mt-16">
-        <h2 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h2>
-        <h2 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h2>
-      </div>
-      <p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])" style="margin-top: 20px"></p>
-      <p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])" style="margin-top: 20px"></p>
+	<div id="add-form-next-campaign">
+		<div class="em-w-custom"></div>
+		<div>
+			<ModalWarningFormBuilder
+					:pid="getProfileId"
+					:cid="campaignId"
+			/>
+			<div>
+				<div class="em-flex-row em-mt-16 em-pointer" @click="redirectJRoute('index.php?option=com_emundus&view=campaigns')">
+					<span class="material-icons-outlined">arrow_back</span>
+					<p class="em-ml-8">{{ translate('BACK') }}</p>
+				</div>
+				<div class="em-flex-row em-mt-16">
+					<h2 v-if="menuHighlight != -1">{{this.translate(formCategories[menuHighlight])}}</h2>
+					<h2 v-if="menuHighlightProg != -1">{{this.translate(formPrograms[menuHighlightProg])}}</h2>
+				</div>
+				<p v-if="menuHighlight != -1" v-html="this.translate(formCategoriesDesc[menuHighlight])" style="margin-top: 20px"></p>
+				<p v-if="menuHighlightProg != -1" v-html="this.translate(formProgramsDesc[menuHighlightProg])" style="margin-top: 20px"></p>
 
-      <hr>
+				<hr>
 
-      <div class="em-flex-row em-mb-32">
-        <p>
-          <b style="color: #20835F; font-weight: 700 !important;"> {{form.label}}</b>
-          {{translations.From}}
-          <strong>{{ form.start_date }}</strong>
-          {{translations.To}}
-          <strong>{{ form.end_date }}</strong>
-        </p>
-      </div>
+				<div class="em-flex-row em-mb-32">
+					<p>
+						<b style="color: #20835F; font-weight: 700 !important;"> {{form.label}}</b>
+						{{translations.From}}
+						<strong>{{ form.start_date }}</strong>
+						{{translations.To}}
+						<strong>{{ form.end_date }}</strong>
+					</p>
+				</div>
 
-      <!--- start Menu --->
-      <div class="em-flex-row" >
-        <ul class="nav nav-tabs topnav">
+				<!--- start Menu --->
+				<div class="em-flex-row" >
+					<ul class="nav nav-tabs topnav">
 
-          <li v-for="(formCat, index) in formCategories" :key="'category-' + index" v-show="closeSubmenu">
-            <a  @click="profileId != null ? changeToCampMenu(index): ''"
-                class="em-neutral-700-color em-pointer"
-                :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-              {{ translate(formCat) }}
-            </a>
-          </li>
+						<li v-for="(formCat, index) in formCategories" :key="'category-' + index" v-show="closeSubmenu">
+							<a  @click="profileId != null ? changeToCampMenu(index): ''"
+							    class="em-neutral-700-color em-pointer"
+							    :class="[(menuHighlight == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+								{{ translate(formCat) }}
+							</a>
+						</li>
 
-          <li v-for="(formProg, index) in formPrograms" :key="'program-' + index" v-show="closeSubmenu">
-            <a @click="profileId != null ? changeToProgMenu(index) : ''"
-               class="em-neutral-700-color em-pointer"
-               :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
-              {{ translate(formProg) }}
-            </a>
-          </li>
-        </ul>
-      </div>
-      <br>
+						<li v-for="(formProg, index) in formPrograms" :key="'program-' + index" v-show="closeSubmenu">
+							<a @click="profileId != null ? changeToProgMenu(index) : ''"
+							   class="em-neutral-700-color em-pointer"
+							   :class="[(menuHighlightProg == index ? 'w--current' : ''), (profileId == null ? 'grey-link' : '')]">
+								{{ translate(formProg) }}
+							</a>
+						</li>
+					</ul>
+				</div>
+				<br>
 
 
-      <!-- end Menu -->
+				<!-- end Menu -->
 
-      <div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
-        <p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{translations.ProgramWarning}}</p>
-        <ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32">
-          <li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
-        </ul>
-      </div>
-      <transition name="slide-right">
-        <add-campaign
-            v-if="menuHighlight == 0 && campaignId !== ''"
-            :campaign="campaignId"
-            :coordinatorAccess="true"
-            :actualLanguage="actualLanguage"
-            :manyLanguages="manyLanguages"
-            @nextSection="menuHighlight++"
-            @getInformations="initInformations"
-            @updateHeader="updateHeader"
-        ></add-campaign>
-        <addFormulaire
-            v-if="menuHighlight == 2"
-            :profileId="profileId"
-            :campaignId="campaignId"
-            :profiles="profiles"
-            :key="formReload"
-            @profileId="setProfileId"
-            :visibility="null"
-        ></addFormulaire>
+				<div v-if="menuHighlightProg != -1" class="warning-message-program mb-1">
+					<p class="em-red-500-color em-flex-row"><span class="material-icons-outlined em-mr-8 em-red-500-color">warning_amber</span>{{translations.ProgramWarning}}</p>
+					<ul v-if="campaignsByProgram.length > 0" class="em-mt-8 em-mb-32">
+						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
+					</ul>
+				</div>
+				<transition name="slide-right">
+					<add-campaign
+							v-if="menuHighlight == 0 && campaignId !== ''"
+							:campaign="campaignId"
+							:coordinatorAccess="true"
+							:actualLanguage="actualLanguage"
+							:manyLanguages="manyLanguages"
+							@nextSection="menuHighlight++"
+							@getInformations="initInformations"
+							@updateHeader="updateHeader"
+					></add-campaign>
+					<addFormulaire
+							v-if="menuHighlight == 2"
+							:profileId="profileId"
+							:campaignId="campaignId"
+							:profiles="profiles"
+							:key="formReload"
+							@profileId="setProfileId"
+							:visibility="null"
+					></addFormulaire>
 
-        <add-documents-dropfiles
-            v-if="menuHighlight == 1"
-            :funnelCategorie="formCategories[langue][menuHighlight]"
-            :profileId="getProfileId"
-            :campaignId="campaignId"
-            :menuHighlight="menuHighlight"
-            :langue="actualLanguage"
-            :manyLanguages="manyLanguages"
-        />
+					<add-documents-dropfiles
+							v-if="menuHighlight == 1"
+							:funnelCategorie="formCategories[langue][menuHighlight]"
+							:profileId="getProfileId"
+							:campaignId="campaignId"
+							:menuHighlight="menuHighlight"
+							:langue="actualLanguage"
+							:manyLanguages="manyLanguages"
+					/>
 
-        <add-email
-            v-if="menuHighlightProg == 0 && program.id != 0"
-            :prog="Number(program.id)"
-        ></add-email>
-      </transition>
-    </div>
+					<add-email
+							v-if="menuHighlightProg == 0 && program.id != 0"
+							:prog="Number(program.id)"
+					></add-email>
+				</transition>
+			</div>
 
-    <div class="em-page-loader" v-if="loading"></div>
-  </div>
+			<div class="em-page-loader" v-if="loading"></div>
+		</div>
+	</div>
 </template>
 
 <script>

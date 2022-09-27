@@ -489,23 +489,23 @@ class EmundusModelApplication extends JModelList
 
             $query = 'DELETE FROM #__emundus_uploads WHERE id=' . $id;
             $this->_db->setQuery($query);
-            $this->_db->execute();
+            $deleted = $this->_db->execute();
 
-            // Log the tag in the eMundus logging system.
-            $logsStd = new stdClass();
+            if ($deleted) {
+                // Log the tag in the eMundus logging system.
+                $logsStd = new stdClass();
 
-            // get attachment data
-            $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
+                // get attachment data
+                $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
 
-            $logsStd->element = "[" . $attachmentTpe['value'] . "]";
-            $logsStd->details = $file['filename'];
-            $logsParams = array('deleted' => [$logsStd]);
+                $logsStd->element = "[" . $attachmentTpe['value'] . "]";
+                $logsStd->details = $file['filename'];
+                $logsParams = array('deleted' => [$logsStd]);
 
-            EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
 
-            return true;
-            //return $this->_db->Query();
-
+            return $deleted;
         } catch (Exception $e) {
             JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
         }
@@ -4572,7 +4572,6 @@ class EmundusModelApplication extends JModelList
         ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
         ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
 
-        //execute query
         try {
             $db->setQuery($query);
             $db->execute();

@@ -15,7 +15,6 @@
 			        class="editable-data em-w-100"
 			        :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
 			        v-model="section.label[shortDefaultLang]"
-			        :value="section.label[shortDefaultLang]"
 			        @focusout="updateTitle"
 			        @keyup.enter="blurElement('#section-title')"
 			        maxlength="50"

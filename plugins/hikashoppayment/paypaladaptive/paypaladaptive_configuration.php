@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -150,6 +150,16 @@ window.hikashop.ready(function(){
 			It won't work correctly if you have several vendors in a single order.</em>
 		</p>
 	</td>
+</tr>
+<tr>
+	<td class="key">
+		<label for="data[payment][payment_params][require_paypal_email_for_all]"><?php
+			echo 'Require paypal email for all';
+		?></label>
+	</td>
+	<td><?php
+		echo JHTML::_('hikaselect.booleanlist', "data[payment][payment_params][require_paypal_email_for_all]" , '', @$this->element->payment_params->require_paypal_email_for_all);
+	?></td>
 </tr>
 <tr>
 	<td class="key">

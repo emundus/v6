@@ -4269,6 +4269,10 @@ $(document).ready(function() {
                             },
                             async: false,
                             success: function(result) {
+                                if (result.scalar !== undefined && result.scalar === false) {
+                                    $('#loadingimg-campaign').remove();
+                                    return;
+                                }
 
                                 let profile_labels = Object.values(result.profile_label);
                                 let profile_ids = Object.values(result.profile_id);

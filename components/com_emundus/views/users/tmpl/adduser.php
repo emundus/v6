@@ -129,7 +129,7 @@ $applicant_option_others = false;
 			<select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen em-mt-4">
 				<option value="0" disabled="disabled"><?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
 				<?php foreach ($this->campaigns as $campaign) :?>
-				    <option value="<?= $campaign->id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('START_DATE').' : '.$campaign->start_date);?></option>
+				    <option value="<?= $campaign->id; ?>" <?= (($this->edit == 1) && (array_key_exists($campaign->id, $this->uCamps)))?'selected="true"':''; ?>><?= trim($campaign->label.' ('.$campaign->year.') - '.$campaign->training.' | '.JText::_('COM_EMUNDUS_ONBOARD_START_DATE').' : '.$campaign->start_date);?></option>
 				<?php endforeach;?>
 			</select>
 		</div>

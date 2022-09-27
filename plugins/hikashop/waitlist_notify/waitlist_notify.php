@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -36,7 +36,7 @@ class plgHikashopWaitlist_notify extends JPlugin
 	}
 
 	function checkWaitlists() {
-		$config =& hikashop_config();
+		$config = hikashop_config();
 		$app = JFactory::getApplication();
 		$db = JFactory::getDBO();
 
@@ -58,6 +58,9 @@ class plgHikashopWaitlist_notify extends JPlugin
 		$cpt = 0;
 		$infos = null;
 		$sends = array();
+
+		$productClass = hikashop_get('class.product');
+
 		foreach($notifies as $notify) {
 			if( !isset($sends[$notify->product_id]) ) {
 				$sends[$notify->product_id] = array();
@@ -67,27 +70,53 @@ class plgHikashopWaitlist_notify extends JPlugin
 			if( $c >= $notify->product_quantity && $notify->product_quantity >= 0 )
 				continue;
 			if( $c >= $waitlist_send_limit && $waitlist_send_limit > 0 )
-				continue;
+				break;
+
+			$product = $notify;
+			$product_id = $notify->product_id;
 
 			if(!empty($notify->language)) {
 				$reload = $this->_setLocale($notify->language);
+				if($reload)
+					$product = $productClass->get($product_id);
 			}
 
-			if($notify->product_type == 'variant') {
-				if(!isset($productClass))
-					$productClass = hikashop_get('class.product');
-
+			if($product->product_type == 'variant') {
 				$db->setQuery('SELECT * FROM '.hikashop_table('variant').' AS a LEFT JOIN '.hikashop_table('characteristic') .' AS b ON a.variant_characteristic_id=b.characteristic_id WHERE a.variant_product_id='.(int)$notify->product_id.' ORDER BY a.ordering');
-				$notify->characteristics = $db->loadObjectList();
+				$product->characteristics = $db->loadObjectList();
+				$product_id = $notify->product_parent_id;
+				$parentProduct = $productClass->get((int)$product_id);
+				$productClass->checkVariant($product, $parentProduct);
+			}
 
-				$parentProduct = $productClass->get((int)$notify->product_parent_id);
-				$productClass->checkVariant($notify, $parentProduct);
+			$query = 'SELECT pr.product_id, pr.product_related_id, pr.product_related_quantity, FLOOR(p.product_quantity / pr.product_related_quantity) as bundle_quantity '.
+				' FROM '.hikashop_table('product_related').' AS pr '.
+				' INNER JOIN '.hikashop_table('product').' AS p ON pr.product_related_id = p.product_id '.
+				' WHERE pr.product_id = ' . (int)$product_id . ' AND pr.product_related_type = ' . $db->Quote('bundle') . ' AND p.product_quantity >= 0';
+			$db->setQuery($query);
+			$bundles = $db->loadObjectList();
+			if(!empty($bundles) && count($bundles)) {
+				$ok = true;
+				foreach($bundles as $bundle) {
+					if($bundle->bundle_quantity<1) {
+						$ok = false;
+						break;
+					} elseif($product->product_quantity == -1 || $product->product_quantity > $bundle->bundle_quantity) {
+						$product->product_quantity = $bundle->bundle_quantity;
+					}
+				}
+				if(!$ok) {
+					continue;
+				}
 			}
 
 			if(!isset($mailClass))
 				$mailClass = hikashop_get('class.mail');
 
 			$sends[$notify->product_id][] = $notify->waitlist_id;
+
+			$notify = (object) array_merge(
+				(array) $notify, (array) $product);
 
 			$mail = $mailClass->get('waitlist_notification', $notify);
 			$mail->subject = JText::sprintf($mail->subject, HIKASHOP_LIVE);
