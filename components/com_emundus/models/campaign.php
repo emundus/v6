@@ -2142,15 +2142,18 @@ class EmundusModelCampaign extends JModelList {
      *
      * @since version 1.30.0
      */
-    public function getCurrentCampaignWorkflow($emundusUser) {
-        $current_phase = null;
+    public function getCurrentCampaignWorkflow($emundusUser): stdClass
+    {
+        $current_phase = new stdClass();
 
         if (!empty($emundusUser->fnum) && !empty($emundusUser->fnums[$emundusUser->fnum])) {
             $query = $this->_db->getQuery(true);
-            $query->select('id, start_date, end_date, status')
-                ->from($this->_db->quoteName('#__emundus_campaign_workflow'))
-                ->where('campaign =' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->campaign_id))
-                ->andWhere('status = ' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->status));
+            $query->select('DISTINCT ecw.id, ecw.start_date, ecw.end_date, ecw.profile, ecw.output_status, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
+                ->from('#__emundus_campaign_workflow as ecw')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
+                ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
+                ->where('ecw_camp.campaign = ' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->campaign_id))
+                ->andWhere('ecw_status.entry_status = ' . $this->_db->quote($emundusUser->fnums[$emundusUser->fnum]->status));
 
             $this->_db->setQuery($query);
 
@@ -2159,6 +2162,8 @@ class EmundusModelCampaign extends JModelList {
             } catch (Exception $e) {
                 JLog::add('[getCurrentCampaignWorkflow] Error getting current campaign workflow in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
             }
+
+            $current_phase->entry_status = !empty($current_phase->entry_status) ? explode(',', $current_phase->entry_status) : [];
         }
 
         return $current_phase;

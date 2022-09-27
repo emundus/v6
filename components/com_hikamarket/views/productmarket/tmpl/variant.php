@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -220,7 +220,7 @@ window.productMgr.saveVariantEditor = function() { <?php echo $this->editor->jsC
 </div>
 <input type="hidden" name="data[variant][product_id]" value="<?php echo $this->product->product_id; ?>" />
 <script type="text/javascript">
-if(JoomlaCalendar && JoomlaCalendar.init){
+if(typeof(JoomlaCalendar) !== "undefined" && JoomlaCalendar.init){
 	setTimeout(function(){
 		var section = document.getElementById('hikamarket_product_variant_edition_<?php echo $this->product->product_id; ?>');
 		if(!section) return;

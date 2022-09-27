@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div id="evaluation-builder" class="container-fluid">
     <notifications
             group="foo-velocity"
             animation-type="velocity"

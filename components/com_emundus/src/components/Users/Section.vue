@@ -14,6 +14,7 @@ import field from './Elements/field'
 import radiobutton from './Elements/radiobutton'
 import databasejoin from "./Elements/databasejoin";
 import checkbox from "./Elements/checkbox";
+import calc from "./Elements/calc";
 /* IMPORT YOUR SERVICES */
 import user from "com_emundus/src/services/user";
 
@@ -23,7 +24,8 @@ export default {
     field,
     radiobutton,
     databasejoin,
-    checkbox
+    checkbox,
+    calc
   },
   props: {
     group: Object,

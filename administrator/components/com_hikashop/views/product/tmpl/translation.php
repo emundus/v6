@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 if($this->config->get('multilang_display')=='popups'&&!empty($this->element->product_id)){
 	echo '<div class="hikashop_multilang_buttons" id="hikashop_multilang_buttons">';
 	foreach($this->element->translations as $language_id => $translation){
-		echo '<a class="modal" rel="{handler: \'iframe\', size: {x: 760, y: 480}}" href="'.hikashop_completeLink("product&task=edit_translation&product_id=".@$this->element->product_id.'&language_id='.$language_id,true ).'"><div class="hikashop_multilang_button">'.$this->transHelper->getFlag($language_id).'</div></a>';
+		echo '<a class="modal" rel="{handler: \'iframe\', size: {x:'.(int)$this->config->get('multi_language_edit_x', 760).', y: '.(int)$this->config->get('multi_language_edit_y', 480).'}}" href="'.hikashop_completeLink("product&task=edit_translation&product_id=".@$this->element->product_id.'&language_id='.$language_id,true ).'"><div class="hikashop_multilang_button hikashop_language_'.$language_id.'"">'.$this->transHelper->getFlag($language_id).'</div></a>';
 	}
 	echo '</div>';
 }
@@ -25,7 +25,7 @@ if($this->config->get('multilang_display')=='popups'&&!empty($this->element->pro
 			foreach($this->element->translations as $language_id => $translation){
 				$this->product_name_input = "translation[product_name][".$language_id."]";
 				$this->element->product_name = @$translation->product_name->value;
-				if(isset($translation->product_name->published)){
+				if(!empty($this->transHelper->falang) && isset($translation->product_name->published)){
 					$this->product_name_published = $translation->product_name->published;
 					$this->product_name_id = $translation->product_name->id;
 				}

@@ -1087,6 +1087,9 @@ body>.g-container {
 
 /* PAGE ACCUEIL */
 .homepage {
+  .content-bottom-a{
+    margin-top: -30px;
+  }
   h1:first-child {
     margin-bottom: 25px;
   }
@@ -2510,11 +2513,6 @@ tr.fabrikFilterContainer{
   }
 
   /* ALERT */
-  .alert,
-  .alert h4,
-  .text-warning {
-    color: #4E5B6D;
-  }
 
   #system-message-container #system-message {
     margin: 20px;
@@ -2548,16 +2546,17 @@ tr.fabrikFilterContainer{
       float: right;
       right: unset;
       background: transparent;
-      color: $base-primary-color;
     }
 
     h4 {
       font-weight: 500;
     }
 
+    p {
+      color: inherit;
+    }
+
     &:not(.em-alert-filter) {
-      background-color: #ffffff;
-      border-color: #4E5B6D;
       padding: 0.938rem;
       display: inline-flex;
       width: 100%;

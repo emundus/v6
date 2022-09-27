@@ -1973,10 +1973,21 @@ class EmundusModelUsers extends JModelList {
 	 * @since version
 	 */
     public function getUserActionByFnum($aid, $fnum, $uid, $crud) {
-        $dbo = $this->getDbo();
-        $query = "select ".$crud." from #__emundus_users_assoc where action_id = ".$aid." and user_id = ".$uid." and fnum like ".$dbo->quote($fnum);
-        $dbo->setQuery($query);
-        return $dbo->loadResult();
+        $action = false;
+
+        if (!empty($aid) && !empty($fnum) && !empty($uid) && !empty($crud)) {
+            $dbo = $this->getDbo();
+            $query = "select ".$crud." from #__emundus_users_assoc where action_id = ".$aid." and user_id = ".$uid." and fnum like ".$dbo->quote($fnum);
+            $dbo->setQuery($query);
+
+            try {
+                $action = $dbo->loadResult();
+            } catch (Exception $e) {
+                JLog::add("Error from getUserActionByFnum aid $aid, fnum $fnum, uid $uid, crud $crud",JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $action;
     }
 
 	/**
@@ -1990,10 +2001,21 @@ class EmundusModelUsers extends JModelList {
 	 * @since version
 	 */
     public function getGroupActions($gids, $fnum, $aid, $crud) {
-        $dbo = $this->getDbo();
-        $query = "select ".$crud." from #__emundus_group_assoc where action_id = ".$aid." and group_id in (".implode(',', $gids).") and fnum like ".$dbo->quote($fnum);
-        $dbo->setQuery($query);
-        return $dbo->loadAssocList();
+        $groupActions = [];
+
+        if (!empty($gids) && !empty($fnum) && !empty($aid) && !empty($crud)) {
+            $dbo = $this->getDbo();
+            $query = "select ".$crud." from #__emundus_group_assoc where action_id = ".$aid." and group_id in (".implode(',', $gids).") and fnum like ".$dbo->quote($fnum);
+            $dbo->setQuery($query);
+
+            try {
+                $groupActions = $dbo->loadAssocList();
+            } catch (Exception $e) {
+                JLog::add("Error from getGroupActions gids " . implode(',', $gids) . ", fnum $fnum, aid $aid, crud $crud",JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
+        return $groupActions;
     }
 
     /**
@@ -2295,6 +2317,10 @@ class EmundusModelUsers extends JModelList {
                 $params->rollover = JText::_($params->rollover);
 
                 $element->params = json_encode($params);
+
+                if($element->plugin == 'calc'){
+                    $element->value = eval($params->calc_calculation);
+                }
             }
 
             return $elements;
@@ -2402,15 +2428,29 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    public function deleteProfileAttachment($id){
+    public function deleteProfileAttachment($id,$user_id){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         try {
-            $query->delete($db->quoteName('#__emundus_users_attachments'))
+            $query->select('attachment_id,filename')
+                ->from($db->quoteName('#__emundus_users_attachments'))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($id));
             $db->setQuery($query);
-            return $db->execute();
+            $default_attachment = $db->loadObject();
+
+            $query->clear()
+                ->delete($db->quoteName('#__emundus_users_attachments'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($id));
+            $db->setQuery($query);
+            $result = $db->execute();
+
+            JPluginHelper::importPlugin('emundus');
+            $dispatcher = JEventDispatcher::getInstance();
+            $dispatcher->trigger('onAfterProfileAttachmentDelete', [$user_id, (int)$default_attachment->attachment_id]);
+            $dispatcher->trigger('callEventHandler', ['onAfterProfileAttachmentDelete', ['user_id' => $user_id, 'attachment_id' => (int)$default_attachment->attachment_id, 'filename' => $default_attachment->filename]]);
+
+            return $result;
         } catch (Exception $e) {
             JLog::add(' com_emundus/models/users.php | Cannot delete document from jos_emundus_users_attachments with id ' . $id . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             return false;

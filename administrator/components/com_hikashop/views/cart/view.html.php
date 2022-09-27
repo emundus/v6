@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -145,6 +145,19 @@ class CartViewCart extends hikashopView {
 		if(!empty($cart_id)) {
 			$cartClass = hikashop_get('class.cart');
 			$cart = $cartClass->getFullCart($cart_id);
+			if(!empty($cart->messages)) {
+				$tmpl = hikaInput::get()->getCmd('tmpl', '');
+				if(in_array($tmpl, array('component', 'ajax', 'raw'))) {
+					ob_end_clean();
+					echo json_encode($cart->messages);
+					exit;
+				} else {
+					$app = JFactory::getApplication();
+					foreach($cart->messages as $message) {
+						$app->enqueueMessage($message['msg'], $message['type']);
+					}
+				}
+			}
 
 			$cart->cart_currency_id = (int)hikashop_getCurrency();
 			if(isset($cart->full_total) && isset($cart->full_total->prices[0])) {
@@ -244,7 +257,6 @@ class CartViewCart extends hikashopView {
 		$this->form($tpl);
 
 		$this->ajax = true;
-
 		if(in_array($block, array('product'))) {
 			$this->product = null;
 			$this->cart_product = null;
@@ -258,8 +270,9 @@ class CartViewCart extends hikashopView {
 				$this->cart_product = $this->cart->cart_products[$k];
 				break;
 			}
-			if($this->pid > 0 && empty($this->product))
+			if($this->pid > 0 && empty($this->product)) {
 				return false;
+			}
 		}
 
 		$this->setLayout('form_block_' . $block);

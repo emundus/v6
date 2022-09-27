@@ -90,7 +90,6 @@ class EmundusModelLogs extends JModelList {
         }
     }
 
-
     /**
 	 * Gets the actions done by a user. Can be filtered by action and/or CRUD.
 	 * If the user is not specified, use the currently signed in one.
@@ -182,40 +181,40 @@ class EmundusModelLogs extends JModelList {
 	/**
 	 * Gets the actions done on an fnum. Can be filtered by user doing the action, the action itself, CRUD and/or banned logs.
 	 * @param int $fnum
-	 * @param int $user_from
-	 * @param int $action
-	 * @param string $crud
+     * @param array $user_from  // optional
+     * @param array $action     // optional
+     * @param array $crud       // optional
 	 * @param int $offset
      * @param int $limit
 	 * @since 3.8.8
 	 * @return Mixed Returns false on error and an array of objects on success.
 	 */
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
-
-		// If the user ID from is not a number, something is wrong.
-		if (!empty($user_from) && !is_numeric($user_from)) {
-			JLog::add('Getting actions on fnum in model/logs with a user ID that isnt a number.', JLog::ERROR, 'com_emundus');
-			return false;
-		}
-
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-		// Build a where depending on what params are present.
-		$where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
-		if (!empty($user_from))
-			$where .= ' AND '.$db->quoteName('user_id_from').'='.$user_from;
-		if (!empty($action) && is_numeric($action))
-			$where .= ' AND '.$db->quoteName('action_id').'='.$action;
-		if (!empty($crud))
-			$where .= ' AND '.$db->quoteName('verb').' LIKE '.$db->quote($crud);
+        $user_from = implode(',', $user_from);
+        $action = implode(',', $action);
+        $crud = implode(',', $db->quote($crud));
 
-		$query->select('*')
+		// Build a where depending on what params are present.
+        $where = $db->quoteName('fnum_to').' LIKE '.$db->quote($fnum);
+        if (!empty($user_from))
+            $where .= ' AND '.$db->quoteName('user_id_from').' IN ('.$user_from . ')';
+        if (!empty($action))
+            $where .= ' AND '.$db->quoteName('action_id').' IN ('. $action . ')';
+        if (!empty($crud))
+            $where .= ' AND '.$db->quoteName('verb').' IN ( '. $crud . ')';
+
+        $query->select('lg.*, us.firstname, us.lastname')
 			->from($db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($db->quoteName('#__emundus_users', 'us').' ON '.$db->QuoteName('us.user_id').' = '.$db->QuoteName('lg.user_id_from'))
 			->where($where)
-			->order($db->QuoteName('lg.id') . ' DESC')
-			->setLimit($limit, $offset);
+            ->order($db->QuoteName('lg.id') . ' DESC');
+
+        if(!is_null($offset)) {
+            $query->setLimit($limit, $offset);
+        }
 
 		$db->setQuery($query);
 		$results = $db->loadObjectList();
@@ -311,7 +310,13 @@ class EmundusModelLogs extends JModelList {
             case ('c'):
                 $action_name = $action_category . '_CREATE';
                 foreach ($params->created as $value) {
-                    $action_details .= '<p>"' . $value . '"</p>';
+                    if(isset($value->details) and ($value->details) !== null) {
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        $action_details .= '<div><span class="em-main-500-color" style="margin-bottom: 0.5rem">' . $value->details . '</span>';
+                        $action_details .= '</div>';
+                    } else {
+                        $action_details .= '<p>' . $value . '</p>';
+                    }
                 }
                 break;
             case ('r'):
@@ -319,18 +324,49 @@ class EmundusModelLogs extends JModelList {
                 break;
             case ('u'):
                 $action_name = $action_category . '_UPDATE';
+                $action_details = '<b>' . reset($params->updated)->description . '</b>';
                 foreach ($params->updated as $value) {
-                    $action_details .= '<div class="em-flex-row">
-                        <span class="label label-default">' . $value->old . '</span>
-                        <span class="material-icons">arrow_forward</span>
-                        <span class="label label-default">' . $value->new . '</span>
-                    </div>';
+                    $action_details .= '<div class="em-flex-row"><span>' . $value->element . '&nbsp</span>&nbsp';
+
+                    if(empty($value->old) or is_null($value->old)) { $value->old = ""; }
+                    if(empty($value->new) or is_null($value->new)) { $value->new = ""; }
+
+                    $value->old = explode('<#>',$value->old);
+                    foreach($value->old as $_old) {
+                        if(!isset($_old) or is_null($_old) or empty(trim($_old))) {
+                            $_old = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
+                            $action_details .= '<span class="em-blue-500-color">' . $_old . '</span>&nbsp';
+                        } else {
+                            //$_old = (strlen($_old) > 25) ? substr($_old, 0, 25) . '...' : $_old;
+                            $action_details .= '<span class="em-red-500-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+                        }
+                    }
+
+                    $action_details .= '<span>' . JText::_('COM_EMUNDUS_CHANGE_TO') . '</span>&nbsp';
+
+                    $value->new = explode('<#>',$value->new);
+                    foreach($value->new as $_new) {
+                        if(!isset($_new) or is_null($_new) or empty(trim($_new))) {
+                            $_new = JText::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF');
+                            $action_details .= '<span class="em-blue-500-color">' . $_new . '</span>&nbsp';
+                        } else {
+                            //$_new = (strlen($_new) > 25) ? substr($_new, 0, 25) . '...' : $_new;
+                            $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+                        }
+                    }
+                    $action_details .= '</div>';
                 }
                 break;
             case ('d'):
                 $action_name = $action_category . '_DELETE';
                 foreach ($params->deleted as $value) {
-                    $action_details .= '<p>"' . $value . '"</p>';
+                    if(isset($value->details) and ($value->details) !== null) {
+                        $action_details .= '<span style="margin-bottom: 0.5rem"><b>' . $value->element . '</b></span>';
+                        $action_details .= '<div class="em-flex-row"><span class="em-red-500-color">' . $value->details . '&nbsp</span>&nbsp';
+                        $action_details .= '</div>';
+                    } else {
+                        $action_details .= '<p>' . $value . '</p>';
+                    }
                 }
                 break;
             default:
@@ -351,9 +387,9 @@ class EmundusModelLogs extends JModelList {
 		return $details;
 	}
 
-    public function exportLogs($fnum)
+    public function exportLogs($fnum,$users,$actions,$crud)
     {
-        $actions = $this->getActionsOnFnum($fnum, null, null, null, null, 1000);
+        $actions = $this->getActionsOnFnum($fnum, $users, $actions, $crud, null, null);
         if (!empty($actions)) {
             $lines = [
                 [
@@ -366,8 +402,8 @@ class EmundusModelLogs extends JModelList {
             ];
             foreach ($actions as $action) {
                 $details = $this->setActionDetails($action->action_id, $action->verb, $action->params);
-                $action_details = strip_tags($details['action_details']);
-                $action_details = str_replace("\n", "", $action_details);
+                $action_details = str_replace('&nbsp',' ',strip_tags($details['action_details']));
+                $action_details = str_replace('\n', '', $action_details);
                 $action_details = str_replace("arrow_forward", " -> ", $action_details);
 
                 $lines[] = [
@@ -398,5 +434,31 @@ class EmundusModelLogs extends JModelList {
         }
 
         return false;
+    }
+
+    /* get all #users #logs by fnum [make left join with table jos_users] */
+    public function getUsersLogsByFnum($fnum) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        /* if no fnum is set ==> return empty array */
+        if(empty($fnum)) {
+            return [];
+        } else {
+            try {
+                $query->clear()
+                    ->select('distinct(ju.id) as uid, ju.name')
+                    ->from($db->quoteName('jos_users', 'ju'))
+                    ->leftJoin($db->quoteName('#__emundus_logs', 'jel') . ' ON ' . $db->quoteName('jel.user_id_from') . ' = ' . $db->quoteName('ju.id'))
+                    ->where($db->quoteName('jel.fnum_to') . ' = ' . $db->quote($fnum));
+
+                $db->setQuery($query);
+                $results = $db->loadObjectList();
+
+                return $results;
+            } catch(Exception $e) {
+                JLog::add('component/com_emundus/models/files | Error when get all affected user by fnum' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage() . '#fnum = ' . $fnum), JLog::ERROR, 'com_emundus');
+            }
+        }
     }
 }

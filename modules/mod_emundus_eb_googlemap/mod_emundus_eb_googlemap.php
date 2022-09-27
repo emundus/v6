@@ -34,6 +34,16 @@ $ae_session = JFactory::getSession()->get('ae_filters');
 if(is_null($ae_session)){
     $ae_session = new stdClass;
 }
+if(!empty($jinput->get('search', null))){
+    $ae_session->search = $jinput->get('search', null);
+} else {
+    $ae_session->search = null;
+}
+if(!empty($jinput->get('location_id', null))){
+    $ae_session->location_id = $jinput->get('location_id', null);
+} else {
+    $ae_session->location_id = null;
+}
 
 // Load locations
 $locations_events_filtered = modEventBookingGoogleMapHelper::getLocationsByFilter($ae_session);
@@ -73,9 +83,11 @@ $locations = modEventBookingGoogleMapHelper::loadAllLocations($params, $Itemid, 
 
 if (empty($locations))
 {
-    echo Text::_('EB_NO_EVENTS');
+
+    echo '<div class="em-carte-vide">'.Text::_('EB_NO_EVENTS').'</div>';
 
     return;
+
 }
 
 // Calculate center location of the map

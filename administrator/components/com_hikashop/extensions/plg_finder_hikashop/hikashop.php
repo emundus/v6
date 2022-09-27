@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,6 +22,15 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 	protected $type_title = 'Product';
 	protected $table = '#__hikashop_product';
 	protected $state_field = 'product_published';
+	protected $item = null;
+	public function __construct(&$subject, $config) {
+		parent::__construct($subject, $config);
+		if(isset($this->params))
+			return;
+
+		$plugin = JPluginHelper::getPlugin('finder', 'hikashop');
+		$this->params = new JRegistry(@$plugin->params);
+	}
 
 	public function onFinderCategoryChangeState($extension, $pks, $value)
 	{
@@ -33,11 +42,11 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 
 	public function onFinderAfterDelete($context, $table)
 	{
-		if ($context == 'com_hikashop.product')
+		if ($context == 'com_hikashop.product' && !empty($table->product_id))
 		{
-			$id = $table->id;
+			$id = $table->product_id;
 		}
-		else if ($context == 'com_finder.index')
+		else if ($context == 'com_finder.index' && !empty($table->link_id))
 		{
 			$id = $table->link_id;
 		}
@@ -54,7 +63,18 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 		if ($context == 'com_hikashop.product')
 		{
 
-			$this->reindex($row->id);
+			if(!empty($row->categories)) {
+				$query = 'SELECT category_id FROM #__hikashop_category WHERE category_id IN('.implode(',', $row->categories).') AND category_published=1;';
+				$db = JFactory::getDBO();
+				$db->setQuery($query);
+				$res = $db->loadResult();
+
+				if(!$res) {
+					return $this->remove($row->product_id);
+				}
+			}
+
+			$this->reindex($row->product_id);
 		}
 
 		return true;
@@ -63,6 +83,22 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 	public function onFinderBeforeSave($context, $row, $isNew)
 	{
 		return true;
+	}
+
+	protected function translateState($item, $category = null)
+	{
+		if(!empty($this->item->id)) {
+			$query = 'SELECT c.category_id FROM #__hikashop_category AS c LEFT JOIN #__hikashop_product_category AS pc ON pc.category_id = c.category_id WHERE c.category_published=1 AND pc.product_id ='.$this->item->id;
+			$db = JFactory::getDBO();
+			$db->setQuery($query);
+			$res = $db->loadResult();
+			if($res)
+				$category = 1;
+			else
+				$category = 0;
+		}
+
+		return parent::translatestate($item, $category);
 	}
 
 	public function onFinderChangeState($context, $pks, $value)
@@ -122,32 +158,40 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 			else
 				$extra = '';
 		}
-		return 'index.php?option=' . $extension . 'ctrl=' . $view . '&task=show&product_id=' . $id . $extra;
+		$productClass = hikashop_get('class.product');
+		$item = $productClass->get($id);
+		return 'index.php?option=' . $extension . '&ctrl=' . $view . '&task=show&cid=' . $id ."&name=".$item->alias. $extra;
 	}
 
 	protected function getListQuery($query = null)
 	{
+		$category = (bool)$this->params->get('index_per_category');
 		$db = JFactory::getDbo();
 		$query = $query instanceof JDatabaseQuery ? $query : $db->getQuery(true)
-			->select('a.product_id AS id, c.category_id AS catid, a.product_name AS title, a.product_alias AS alias, "" AS link, a.product_description AS summary')
+			->select('a.product_id AS id, a.product_name AS title, a.product_alias AS alias, "" AS link, a.product_description AS summary')
 			->select('a.product_keywords AS metakey, a.product_meta_description AS metadesc, "" AS metadata, a.product_access AS access')
 			->select('"" AS created_by_alias, a.product_modified AS modified, "" AS modified_by')
 			->select('a.product_sale_start AS publish_start_date, a.product_sale_end AS publish_end_date')
 			->select('a.product_published AS state, a.product_sale_start AS start_date, 1 AS access')
-			->select('c.category_name AS category, c.category_alias as categoryalias, c.category_published AS cat_state, 1 AS cat_access')
 			->select('brand.category_name AS brand, brand.category_alias as brandalias, brand.category_published AS brand_state, 1 AS brand_access');
+		if($category) {
+			$query->select('c.category_name AS category, c.category_alias as categoryalias, c.category_published AS cat_state, 1 AS cat_access');
+		}
 
 		$case_when_item_alias = ' CASE WHEN a.product_alias != "" THEN a.product_alias ELSE a.product_name END as slug';
 		$query->select($case_when_item_alias);
+		if($category) {
+			$case_when_category_alias = 'c.category_id AS catid, CASE WHEN c.category_alias != "" THEN c.category_alias ELSE c.category_name END as catslug';
+			$query->select($case_when_category_alias);
+		}
 
-		$case_when_category_alias = ' CASE WHEN c.category_alias != "" THEN c.category_alias ELSE c.category_name END as catslug';
-		$query->select($case_when_category_alias)
+		$query->from('#__hikashop_product AS a')
+			->join('LEFT', '#__hikashop_category AS brand ON a.product_manufacturer_id = brand.category_id');
 
-			->from('#__hikashop_product AS a')
-			->join('LEFT', '#__hikashop_product_category AS pc ON a.product_id = pc.product_id')
-			->join('LEFT', '#__hikashop_category AS c ON pc.category_id = c.category_id')
-			->join('LEFT', '#__hikashop_category AS brand ON a.product_manufacturer_id = brand.category_id')
-			->where( $db->quoteName('a.product_published') . ' = 1' );
+		if($category) {
+			$query->join('LEFT', '#__hikashop_product_category AS pc ON a.product_id = pc.product_id')
+				->join('LEFT', '#__hikashop_category AS c ON pc.category_id = c.category_id');
+		}
 		return $query;
 	}
 	protected function getItem($id)
@@ -158,7 +202,14 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 		$this->db->setQuery($query);
 		$row = $this->db->loadAssoc();
 
-		$item = ArrayHelper::toObject((array) $row, 'FinderIndexerResult');
+		if(empty($row))
+			$row = array();
+
+		if(HIKASHOP_J30) {
+			$item = Joomla\Utilities\ArrayHelper::toObject($row, 'FinderIndexerResult');
+		} else {
+			$item = ArrayHelper::toObject((array) $row, 'FinderIndexerResult');
+		}
 
 		$item->type_id = $this->type_id;
 
@@ -241,7 +292,7 @@ abstract class plgFinderHikashopBridge extends FinderIndexerAdapter
 		$query->select('a.product_published AS state, c.category_published AS cat_state');
 		$query->select('1 AS access,  1 AS cat_access')
 			->from($this->table . ' AS a')
-			->join('LEFT', '#__hikashop_product_category AS pcc ON a.product_id = pc.product_id')
+			->join('LEFT', '#__hikashop_product_category AS pc ON a.product_id = pc.product_id')
 			->join('LEFT', '#__hikashop_category AS c ON pc.category_id = c.category_id');
 
 		return $query;

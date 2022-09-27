@@ -125,7 +125,7 @@ class plgEventbookingEmundus extends CMSPlugin
                     $redirect_url = '/index.php?option=com_fabrik&view=form&formid=449&cid='.$campaign;
                 }
                 if($save_quit == 1){
-                    $redirect_url = '/index.php?option=com_fabrik&view=form&formid=350&cid='.$campaign;
+                    $redirect_url = '/index.php?option=com_fabrik&view=form&formid=350&eid='.$row->id;
                 }
             } else {
                 $query->clear()
@@ -170,6 +170,13 @@ class plgEventbookingEmundus extends CMSPlugin
                     $db->setQuery($query);
                     $db->execute();
                 }
+            } elseif ($custom_fields->field_cm != 3){
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_campaigns'))
+                    ->set($db->quoteName('event_cms') . ' = null')
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($campaign));
+                $db->setQuery($query);
+                $db->execute();
             }
 
             $query->clear()

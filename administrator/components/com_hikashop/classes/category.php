@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,7 +22,7 @@ class hikashopCategoryClass extends hikashopClass {
 		$this->type = $type;
 	}
 
-	function get($element, $withimage = false) {
+	function get($element, $withimage = false, $translate = true) {
 		if(in_array($element, array('product', 'status', 'tax', 'manufacturer')))
 			$this->getMainElement($element);
 
@@ -37,10 +37,12 @@ class hikashopCategoryClass extends hikashopClass {
 			$category = parent::get($element);
 		}
 
-		if(!empty($category->category_name))
-			$category->category_name = hikashop_translate($category->category_name);
-		if(!empty($category->category_description))
-			$category->category_description = hikashop_translate($category->category_description);
+		if($translate) {
+			if(!empty($category->category_name))
+				$category->category_name = hikashop_translate($category->category_name);
+			if(!empty($category->category_description))
+				$category->category_description = hikashop_translate($category->category_description);
+		}
 
 		return $category;
 	}
@@ -58,13 +60,16 @@ class hikashopCategoryClass extends hikashopClass {
 		return $this->database->loadObjectList();
 	}
 
-	function addAlias(&$element) {
+	function addAlias(&$element, $language_code = null) {
 		if(empty($element))
 			return;
 		if(empty($element->category_alias))
 			$element->alias = $element->category_name;
 		else
 			$element->alias = $element->category_alias;
+
+		$translationHelper = hikashop_get('helper.translation');
+		$translationHelper->translateAlias($element, 'category', $language_code);
 
 		$jconfig = JFactory::getConfig();
 		if(!$jconfig->get('unicodeslugs')) {
@@ -176,20 +181,21 @@ class hikashopCategoryClass extends hikashopClass {
 		$table = hikashop_table(end($this->tables));
 		$recalculate = false;
 		$new = true;
+		$element->old = new stdClass();
 		if(!empty($element->$pkey)) {
 			$new = false;
-			$old = $this->get($element->$pkey);
+			$element->old = $this->get($element->$pkey);
 
 			if(isset($element->category_parent_id)) {
 				if(!$element->category_parent_id)
 					$element->category_parent_id = 1;
 				$newParentElement = $this->get($element->category_parent_id);
-				if($old->category_parent_id != $element->category_parent_id) {
+				if($element->old->category_parent_id != $element->category_parent_id) {
 
 					if($element->category_parent_id == $element->$pkey)
 						return false;
 
-					if(($newParentElement->category_left > $old->category_left) && ($newParentElement->category_right < $old->category_right))
+					if(($newParentElement->category_left > $element->old->category_left) && ($newParentElement->category_right < $element->old->category_right))
 						return false;
 
 					$recalculate = true;
@@ -203,10 +209,10 @@ class hikashopCategoryClass extends hikashopClass {
 			}
 
 			if(empty($element->category_type)) {
-				if(empty($old->category_type) || $old->category_type == 'root')
+				if(empty($element->old->category_type) || $element->old->category_type == 'root')
 					$element->category_type = $this->type;
 				else
-					$element->category_type = $old->category_type;
+					$element->category_type = $element->old->category_type;
 			}
 
 			$element->category_modified = time();
@@ -348,6 +354,10 @@ class hikashopCategoryClass extends hikashopClass {
 		if(!$do)
 			return false;
 
+
+		$fieldClass = hikashop_get('class.field');
+		$fieldClass->handleBeforeDelete($elements, 'category');
+
 		foreach($elements as $element) {
 			if(!$status)
 				continue;
@@ -447,6 +457,9 @@ class hikashopCategoryClass extends hikashopClass {
 
 			$fileClass = hikashop_get('class.file');
 			$fileClass->deleteFiles('category',$elements);
+
+			$fieldClass->handleAfterDelete($elements, 'category');
+
 			$translationHelper = hikashop_get('helper.translation');
 			$translationHelper->deleteTranslations('category',$elements);
 		}
@@ -939,7 +952,10 @@ class hikashopCategoryClass extends hikashopClass {
 		$db = JFactory::getDBO();
 		$app = JFactory::getApplication();
 
-		$category_type = array('product','root','vendor','manufacturer');
+		$category_type = array('product','root','vendor');
+
+		if(!isset($options['brand']) || $options['brand'] === true)
+			$category_type[] = 'manufacturer';
 		if(!empty($typeConfig['params']['category_type']))
 			$category_type = $typeConfig['params']['category_type'];
 		if(is_string($category_type))
@@ -1240,7 +1256,7 @@ class hikashopCategoryClass extends hikashopClass {
 		}
 
 		if(!empty($where)) {
-			$where = ' WHERE (' . implode($where,') AND ('). ')';
+			$where = ' WHERE (' . implode(') AND (', $where). ')';
 		} else {
 			$where = '';
 		}
