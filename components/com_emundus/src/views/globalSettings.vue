@@ -5,7 +5,7 @@
       <!--- MENU --->
       <transition name="slide-right">
         <div class="em-grid-3" style="margin-left: 10%" v-if="menuHighlight === 0">
-          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
+          <div v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
             <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
             <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
             <p class="em-font-size-14">{{translate(menu.description)}}</p>
@@ -139,11 +139,11 @@ export default {
       this.em_params = params.data.config;
 
       // Give access to modules
-      this.menus[0].access = parseInt(this.em_params.style);
-      this.menus[1].access = parseInt(this.em_params.content);
+      this.menus[0].access = this.em_params.style != undefined ? parseInt(this.em_params.style) : 1;
+      this.menus[1].access = this.em_params.content != undefined ? parseInt(this.em_params.content) : 1;
       this.menus[2].access = 1;
-      this.menus[3].access = parseInt(this.em_params.translations);
-      this.menus[9].access = parseInt(this.em_params.attachment_storage);
+      this.menus[3].access = this.em_params.translations != undefined  ? parseInt(this.em_params.translations) : 1;
+      this.menus[4].access = this.em_params.attachment_storage != undefined ? parseInt(this.em_params.attachment_storage) : 0;
       //
 
       this.loading = false;
@@ -158,6 +158,14 @@ export default {
       },200);
     }
   },
+
+	computed: {
+		displayedMenus() {
+			return this.menus.filter((menu) => {
+				return menu.access === 1;
+			})
+		}
+	},
 
   watch: {
     menuHighlight: function(value){

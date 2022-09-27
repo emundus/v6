@@ -1225,14 +1225,10 @@ class EmundusController extends JControllerLegacy {
                 $db->execute();
                 $id = $db->insertid();
 
-                $data = array(
-                    'upload_id' => $id,
-                );
-
                 // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
                 $dispatcher = JEventDispatcher::getInstance();
                 JPluginHelper::importPlugin('emundus', 'sync_file');
-                $dispatcher->trigger('onAfterUploadFile', [$data]);
+                $dispatcher->trigger('onAfterUploadFile', [['upload_id' => $id]]);
 
                 $dispatcher = JEventDispatcher::getInstance();
                 $dispatcher->trigger('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);

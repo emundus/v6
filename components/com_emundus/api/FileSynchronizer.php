@@ -248,7 +248,7 @@ class FileSynchronizer
         return $documentLibrary;
     }
 
-    private function getGEDEmundusRootDirectory($parentId)
+    private function getGEDEmundusRootDirectory($parentId): bool
     {
         $found = false;
 
