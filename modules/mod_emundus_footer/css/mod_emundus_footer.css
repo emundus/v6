@@ -113,6 +113,7 @@ hr.footer-separation {
     .em-container-footer-cand .row:nth-child(1) .em-col-2-footer,
     .em-container-footer-cand .row:nth-child(1) .em-col-3-footer {
         align-items: center;
+        align-self: center;
     }
 
 

@@ -2763,7 +2763,6 @@ tr.fabrikFilterContainer{
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
     color: #fff;
-    //font-family: "Lato", sans-serif;
     text-transform: initial;
     width: 100%;
     height: 48px;
@@ -4217,7 +4216,6 @@ button.swal2-cancel.goback-btn {
     }
 
     .view-form,.em-form .fabrikGroup {
-      padding: 48px 32px 48px 32px !important;
       .fabrikElement {
         #mceu_57-body {
           display: flex;
@@ -4733,6 +4731,10 @@ button.swal2-cancel.goback-btn {
 
       .bas-footer {
         width: 100%;
+      }
+
+      .em-container-footer-cand .em-col-3-footer p {
+        text-align: right;
       }
     }
 
