@@ -4455,7 +4455,7 @@ button.swal2-cancel.goback-btn {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
+        align-items: center !important;
 
         .mod-languages.advanced-dropdown {
           margin: 15px 15px 15px 0px;
@@ -4721,10 +4721,6 @@ button.swal2-cancel.goback-btn {
     }
 
     footer#g-footer {
-
-      img.logo {
-        max-width: 100%;
-      }
 
       .g-grid {
         height: auto !important;
@@ -5020,6 +5016,7 @@ button.swal2-cancel.goback-btn {
   /* FOOTER */
   footer#g-footer .footer-rgpd {
     flex-direction: row;
+    height: 70px;
 
     .footer-rgpd-links p {
       text-align: center;
@@ -5083,8 +5080,7 @@ button.swal2-cancel.goback-btn {
       }
 
       #header-a {
-        justify-content: center;
-        //margin-bottom: 18px;
+        justify-content: flex-start;
         left: 0;
       }
     }
