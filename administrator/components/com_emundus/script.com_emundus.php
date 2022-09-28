@@ -205,6 +205,10 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addYamlVariable('name','Fabrik',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
             }
 
+            if (version_compare($cache_version, '1.34.0', '<') || $firstrun) {
+                $succeed['campaign_workflow'] = EmundusHelperUpdate::addProgramToCampaignWorkflow();
+            }
+
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
         }
 
