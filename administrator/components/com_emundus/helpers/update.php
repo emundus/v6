@@ -1084,46 +1084,43 @@ class EmundusHelperUpdate
                 JLog::add('Failed to add programs column to campaign workflow' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                 $update['message'] = 'Failed to add programs column to campaign workflow ' . $e->getMessage();
             }
-        } else {
-            $added = true;
-        }
 
-        if ($added) {
-            $query = $db->getQuery(true);
+            if ($added) {
+                $query = $db->getQuery(true);
 
-            $query->select('jff.group_id, jfl.id')
-                ->from('#__fabrik_formgroup AS jff')
-                ->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jff.form_id')
-                ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'));
+                $query->select('jff.group_id, jfl.id')
+                    ->from('#__fabrik_formgroup AS jff')
+                    ->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jff.form_id')
+                    ->where('jfl.db_table_name = ' . $db->quote('jos_emundus_campaign_workflow'));
 
-            $group_id = 0;
-            $list_id = 0;
-
-            try {
-                $db->setQuery($query);
-                $data = $db->loadObject();
-                $group_id = $data->group_id;
-                $list_id = $data->id;
-            } catch (Exception $e) {
-                JLog::add('Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-            }
-
-            if (!empty($group_id) && !empty($list_id)) {
-                $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_programmes","join_key_column":"code","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"108","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}';
-                $sql = 'INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params) VALUES ("programs",' . $group_id . ', "databasejoin", "Programmes", DEFAULT, NOW(), NOW(), 62, "admin", NOW(), 62, 50, 6, " ", 0, 0, 4, 1, null, 0, 1, 0, 0, 0, 1, 0, 0, \'' . $params . '\')';
-                $db->setQuery($sql);
+                $group_id = 0;
+                $list_id = 0;
 
                 try {
-                    $element_created  = $db->execute();
-                    $program_element_id = $db->insertid();
+                    $db->setQuery($query);
+                    $data = $db->loadObject();
+                    $group_id = $data->group_id;
+                    $list_id = $data->id;
                 } catch (Exception $e) {
-                    $element_created = false;
-                    JLog::add('Failed to create fabrik_element \'programs\' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                    $update['message'] =  'Failed to create fabrik_element \'programs\' ' . $e->getMessage();
+                    JLog::add('Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
                 }
 
-                if ($element_created && !empty($program_element_id)) {
-                    $sql = 'CREATE TABLE IF NOT EXISTS `jos_emundus_campaign_workflow_repeat_programs` (
+                if (!empty($group_id) && !empty($list_id)) {
+                    $params = '{"database_join_display_type":"multilist","join_conn_id":"1","join_db_name":"jos_emundus_setup_programmes","join_key_column":"code","join_val_column":"label","join_val_column_concat":"","database_join_where_sql":"","database_join_where_access":"1","database_join_where_access_invert":"0","database_join_where_when":"3","databasejoin_where_ajax":"0","databasejoin_where_ajax_default_eval":"","database_join_filter_where_sql":"","database_join_show_please_select":"1","database_join_noselectionvalue":"","database_join_noselectionlabel":"","placeholder":"","databasejoin_popupform":"108","fabrikdatabasejoin_frontend_add":"0","join_popupwidth":"","databasejoin_readonly_link":"0","fabrikdatabasejoin_frontend_select":"0","advanced_behavior":"1","dbjoin_options_per_row":"4","dbjoin_multiselect_max":"0","dbjoin_multilist_size":"6","dbjoin_autocomplete_size":"20","dbjoin_autocomplete_rows":"10","bootstrap_class":"input-large","dabase_join_label_eval":"","join_desc_column":"","dbjoin_autocomplete_how":"contains","clean_concat":"0","show_in_rss_feed":"0","show_label_in_rss_feed":"0","use_as_rss_enclosure":"0","rollover":"","tipseval":"0","tiplocation":"top-left","labelindetails":"0","labelinlist":"0","comment":"","edit_access":"1","edit_access_user":"","view_access":"1","view_access_user":"","list_view_access":"1","encrypt":"0","store_in_db":"1","default_on_copy":"0","can_order":"0","alt_list_heading":"","custom_link":"","custom_link_target":"","custom_link_indetails":"1","use_as_row_class":"0","include_in_list_query":"1","always_render":"0","icon_folder":"0","icon_hovertext":"1","icon_file":"","icon_subdir":"","filter_length":"20","filter_access":"1","full_words_only":"0","filter_required":"0","filter_build_method":"0","filter_groupby":"text","inc_in_adv_search":"1","filter_class":"input-medium","filter_responsive_class":"","tablecss_header_class":"","tablecss_header":"","tablecss_cell_class":"","tablecss_cell":"","sum_on":"0","sum_label":"Sum","sum_access":"1","sum_split":"","avg_on":"0","avg_label":"Average","avg_access":"1","avg_round":"0","avg_split":"","median_on":"0","median_label":"Median","median_access":"1","median_split":"","count_on":"0","count_label":"Count","count_condition":"","count_access":"1","count_split":"","custom_calc_on":"0","custom_calc_label":"Custom","custom_calc_query":"","custom_calc_access":"1","custom_calc_split":"","custom_calc_php":"","validations":[]}';
+                    $sql = 'INSERT INTO jos_fabrik_elements (name, group_id, plugin, label, checked_out, checked_out_time, created, created_by, created_by_alias, modified, modified_by, width, height, `default`, hidden, eval, ordering, show_in_list_summary, filter_type, filter_exact_match, published, link_to_detail, primary_key, auto_increment, access, use_in_page_title, parent_id, params) VALUES ("programs",' . $group_id . ', "databasejoin", "Programmes", DEFAULT, NOW(), NOW(), 62, "admin", NOW(), 62, 50, 6, " ", 0, 0, 4, 1, null, 0, 1, 0, 0, 0, 1, 0, 0, \'' . $params . '\')';
+                    $db->setQuery($sql);
+
+                    try {
+                        $element_created  = $db->execute();
+                        $program_element_id = $db->insertid();
+                    } catch (Exception $e) {
+                        $element_created = false;
+                        JLog::add('Failed to create fabrik_element \'programs\' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                        $update['message'] =  'Failed to create fabrik_element \'programs\' ' . $e->getMessage();
+                    }
+
+                    if ($element_created && !empty($program_element_id)) {
+                        $sql = 'CREATE TABLE IF NOT EXISTS `jos_emundus_campaign_workflow_repeat_programs` (
                             `id` int NOT NULL AUTO_INCREMENT,
                             `parent_id` int DEFAULT NULL,
                             `programs` varchar(50) DEFAULT NULL,
@@ -1132,43 +1129,46 @@ class EmundusHelperUpdate
                             KEY `fb_parent_fk_parent_id_INDEX` (`parent_id`),
                             KEY `fb_repeat_el_programs_INDEX` (`programs`))';
 
-                    $db->setQuery($sql);
-
-                    try {
-                        $table_created  = $db->execute();
-                    } catch (Exception $e) {
-                        $table_created = false;
-                        JLog::add('Failed to create fabrik_element \'programs\' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                        $update['message'] =  'Failed to add create table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage();
-                    }
-
-                    if ($table_created) {
-                        $db->setQuery('INSERT INTO vanilla.jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params) VALUES ('. $list_id .', ' . $program_element_id . ', "jos_emundus_campaign_workflow", "jos_emundus_campaign_workflow_repeat_programs", "programs", "parent_id", "left", 0, \'{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_programs`.`id`"}\')');
+                        $db->setQuery($sql);
 
                         try {
-                            $joined = $db->execute();
-                        } catch (Execption $e) {
-                            $joined = false;
-                            JLog::add('Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
-                            $update['message'] = 'Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage();
+                            $table_created  = $db->execute();
+                        } catch (Exception $e) {
+                            $table_created = false;
+                            JLog::add('Failed to create fabrik_element \'programs\' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                            $update['message'] =  'Failed to add create table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage();
                         }
 
-                        if ($joined) {
-                            $update['status'] = true;
+                        if ($table_created) {
+                            $db->setQuery('INSERT INTO vanilla.jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params) VALUES ('. $list_id .', ' . $program_element_id . ', "jos_emundus_campaign_workflow", "jos_emundus_campaign_workflow_repeat_programs", "programs", "parent_id", "left", 0, \'{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_programs`.`id`"}\')');
+
+                            try {
+                                $joined = $db->execute();
+                            } catch (Execption $e) {
+                                $joined = false;
+                                JLog::add('Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cli');
+                                $update['message'] = 'Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ' . $e->getMessage();
+                            }
+
+                            if ($joined) {
+                                $update['status'] = true;
+                            } else {
+                                $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ';
+                            }
                         } else {
-                            $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to update fabrik element join with new table jos_emundus_campaign_workflow_repeat_programs ';
+                            $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to add create table jos_emundus_campaign_workflow_repeat_programs';
                         }
                     } else {
-                        $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to add create table jos_emundus_campaign_workflow_repeat_programs';
+                        $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to create fabrik element \'programs\' ';
                     }
                 } else {
-                    $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to create fabrik element \'programs\' ';
+                    $update['message'] = 'Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids ' . $query->__toString();
                 }
             } else {
-                $update['message'] = 'Could not retrieve jos_emundus_campaign_workflow fabrik group and list ids ' . $query->__toString();
+                $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to add programs column to campaign workflow ';
             }
         } else {
-            $update['message'] = !empty($update['message']) ? $update['message'] : 'Failed to add programs column to campaign workflow ';
+            $update['status'] = true;
         }
 
         $state_msg =  $update['status'] ? "\033[32mSUCCESS\033[0m" : "\033[31mFAILED\033[0m";
