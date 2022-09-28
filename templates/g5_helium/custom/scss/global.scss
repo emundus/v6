@@ -1167,7 +1167,7 @@ body>.g-container {
 /** MODULE SINGLE CAMPAIGN **/
 
 .em-campaign-dropfiles ul a:focus {
-  color: $base-secondary-color;
+  color: $base-primary-color;
 }
 
 .single-campaign-tabs {
@@ -5014,6 +5014,28 @@ button.swal2-cancel.goback-btn {
       width: auto;
     }
   }
+
+@media screen and (min-width: 480px) and (max-width: 825px) {
+
+  /* FOOTER */
+  footer#g-footer .footer-rgpd {
+    flex-direction: row;
+
+    .footer-rgpd-links p {
+      text-align: center;
+    }
+  }
+
+  /* HEADER */
+
+  #g-navigation .g-container #header-c {
+    justify-content: center;
+
+    .g-content .platform-content:nth-child(1) {
+      margin: 0 !important;
+    }
+  }
+}
 
   @media all and (min-width: 768px) and (max-width: 959px) {
     button.save {
