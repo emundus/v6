@@ -1165,6 +1165,11 @@ body>.g-container {
 }
 
 /** MODULE SINGLE CAMPAIGN **/
+
+.em-campaign-dropfiles ul a:focus {
+  color: $base-secondary-color;
+}
+
 .single-campaign-tabs {
   .btn:first-child {
     border-top-left-radius: 4px !important;
