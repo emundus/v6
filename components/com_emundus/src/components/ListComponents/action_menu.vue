@@ -21,12 +21,12 @@
               <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type !== 'formulaire' && data.type !== 'campaign'">
                 {{ translations.ActionDelete }}
               </a>
-              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type === 'campaign' && filesCount == 0">
+              <a v-on:click="deleteSelected(checkItem)" class="action-submenu" v-if="data.type === 'campaign' && nb_files === 0">
                 {{ translations.ActionDelete }}
               </a>
-              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
+<!--              <a v-on:click="unpublishSelected(checkItem)" class="action-submenu" style="border-left: 0"  v-if="data.type === 'formulaire' && published">
                 {{ translations.Archive }}
-              </a>
+              </a>-->
             </nav>
         </div>
       </transition>
@@ -38,7 +38,6 @@
 <script>
   import axios from "axios";
   import Swal from "sweetalert2";
-  ;
 
   const qs = require("qs");
 
@@ -50,6 +49,7 @@
       isEmpty: Boolean,
       selected: String,
       published: Boolean,
+      nb_files: Number,
     },
 
     computed: {
@@ -61,7 +61,6 @@
     data() {
       return {
         loading: false,
-        filesCount: null,
         translations: {
           ActionPublish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_PUBLISH"),
           ActionUnpublish: this.translate("COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH"),
@@ -72,74 +71,10 @@
         },
       };
     },
-    mounted() {
-      if(this.data.type === 'campaign'){
-        this.filesNumber();
-      }
-    },
 
     methods: {
-      filesNumber() {
-        axios({
-          method: "get",
-          url: "index.php?option=com_emundus&controller=dashboard&task=getfilesbycampaign",
-          params: {
-            cid: this.selected,
-          },
-          paramsSerializer: params => {
-            return qs.stringify(params);
-          }
-        }).then(response => {
-          this.filesCount = parseInt(response.data.data);
-        });
-      },
-
       deleteSelected(id) {
         switch (this.data.type) {
-          case "program":
-            Swal.fire({
-              title: this.translate("COM_EMUNDUS_ONBOARD_PROGDELETE"),
-              text: this.translate("COM_EMUNDUS_ONBOARD_CANT_REVERT"),
-              type: "warning",
-              showCancelButton: true,
-              confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-              cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
-              reverseButtons: true,
-              customClass: {
-                title: 'em-swal-title',
-                cancelButton: 'em-swal-cancel-button',
-                confirmButton: 'em-swal-confirm-button',
-              },
-            }).then(result => {
-              if (result.value) {
-                this.$emit("updateLoading",true);
-                axios({
-                  method: "post",
-                  url: "index.php?option=com_emundus&controller=programme&task=deleteprogram",
-                  data: qs.stringify({ id })
-                }).then(response => {
-                  this.$emit("updateLoading",false);
-                  this.$store.commit("lists/deleteSelected", id);
-                  Swal.fire({
-                    title: this.translate("COM_EMUNDUS_ONBOARD_PROGDELETED"),
-                    type: "success",
-                    showConfirmButton: false,
-                    timer: 2000
-                  });
-                }).then(() => {
-                  axios.get(
-                          "index.php?option=com_emundus&controller=programme&task=getprogramcount"
-                  ).then(response => {
-                    this.total = response.data.data;
-                    this.updateTotal(this.total);
-                  });
-                }).catch(error => {
-                  console.log(error);
-                });
-              }
-            });
-            break;
-
           case "campaign":
             Swal.fire({
               title: this.translate("COM_EMUNDUS_ONBOARD_CAMPDELETE"),
@@ -173,19 +108,12 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get(
-                          "index.php?option=com_emundus&controller=campaign&task=getcampaigncount"
-                  ).then(response => {
-                    this.total = response.data.data;
-                    this.updateTotal(this.total);
                     this.$emit('validateFilters');
-                  });
                 }).catch(error => {
                   console.log(error);
                 });
               }
             });
-
             break;
 
           case "email":
@@ -221,18 +149,12 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get("index.php?option=com_emundus&controller=email&task=getemailcount")
-                          .then(response => {
-                            this.total = response.data.data;
-                            this.updateTotal(this.total);
-                            this.$emit('validateFilters');
-                          });
+                  this.$emit('validateFilters');
                 }).catch(error => {
                   console.log(error);
                 });
               }
             });
-
             break;
 
           case "formulaire":
@@ -268,18 +190,12 @@
                     timer: 2000
                   });
                 }).then(() => {
-                  axios.get("index.php?option=com_emundus&controller=form&task=getformcount")
-                          .then(response => {
-                            this.total = response.data.data;
-                            this.updateTotal(this.total);
-                            this.$emit('validateFilters');
-                          });
+                  this.$emit('validateFilters');
                 }).catch(error => {
                   console.log(error);
                 });
               }
             });
-
             break;
         }
       },
@@ -574,7 +490,7 @@
     color: black;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
     &:hover {
-     color: #16AFE1;
+     color: #20835F;
    }
   }
 </style>

@@ -24,23 +24,28 @@ class EmundusModelMessenger extends JModelList
     }
 
     function getFilesByUser() {
+        $files = [];
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         $user = JFactory::getSession()->get('emundusUser');
 
-        try {
+        if (!empty($user)) {
             $query->select('sc.*,cc.fnum,cc.published as file_publish')
                 ->from($db->quoteName('#__emundus_campaign_candidature','cc'))
                 ->leftJoin($db->quoteName('#__emundus_setup_campaigns','sc').' ON '.$db->quoteName('sc.id').' = '.$db->quoteName('cc.campaign_id'))
-                ->where($db->quoteName('cc.applicant_id') .' = ' . $user->id)
-                ->group('sc.id');
-            $db->setQuery($query);
-            return $db->loadObjectList();
-        } catch (Exception $e){
-            JLog::add('component/com_emundus_messages/models/messages | Error when try to get files associated to user : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
+                ->where($db->quoteName('cc.applicant_id') .' = ' . $user->id);
+                //->group('sc.id');
+
+            try {
+                $db->setQuery($query);
+                $files = $db->loadObjectList();
+            } catch (Exception $e){
+                JLog::add('component/com_emundus_messages/models/messages | Error when try to get files associated to user : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $files;
     }
 
     function getMessagesByFnum($fnum,$offset = 0) {

@@ -46,6 +46,14 @@ class EmundusModelTranslationTest extends TestCase
     }
 
     public function testInsertTranslation(){
+        // Test insert translation with empty key return false
+        $inserted = $this->m_translations->insertTranslation('', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999);
+        $this->assertFalse($inserted);
+
+        // Make sure $^*()=+\[<?; are not allowed in tag
+        $inserted = $this->m_translations->insertTranslation('E[L<$EN^()T_TE\T', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999);
+        $this->assertFalse($inserted);
+
         if(empty($this->m_translations->getTranslations('override','fr-FR','','','',0,'ELEMENT_TEST'))) {
             // TEST 1 - Insert a basic translation of a fabrik_element
             $this->assertSame(true, $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999));
@@ -96,17 +104,26 @@ class EmundusModelTranslationTest extends TestCase
     }
 
     public function testUpdateTranslations() {
+        $override_original_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
+
+
         // TEST 1 - Update the translations created before in french
-        $this->assertSame(true,$this->m_translations->updateTranslation('ELEMENT_TEST','Mon élement modifié','fr-FR'));
+        $this->assertSame('ELEMENT_TEST', $this->m_translations->updateTranslation('ELEMENT_TEST','Mon élement modifié','fr-FR'));
 
         // TEST 2 - Update the translations created before in english
-        $this->assertSame(true,$this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
+        $this->assertSame('ELEMENT_TEST', $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','en-GB'));
 
         // TEST 3 - Failed waiting - Update the translations created before in portuguesh
-        $this->assertSame(false,$this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','pt-PT'));
+        $this->assertSame(false, $this->m_translations->updateTranslation('ELEMENT_TEST','My updated element','pt-PT'));
 
-        // TEST 4 - Succes waiting - Update translations of com_emundus not possible so we insert it in override file
-        $this->assertSame(true,$this->m_translations->updateTranslation('COM_EMUNDUS_EMAIL','Un nouvel email','fr-FR','component'));
+        // TEST 4 - If no tag given, traduction should return false, request sould not work
+        $this->assertSame(false, $this->m_translations->updateTranslation('','My updated element','fr-FR'), 'Make sure that we can\'t add empty tag into override file');
+
+        $override_new_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
+        $this->assertGreaterThanOrEqual($override_original_file_size, $override_new_file_size, 'New override file size is greater or equal than original override file (make sure override file is not destroyed)');
+
+        // TEST 6 - Succes waiting - Update translations of com_emundus not possible so we insert it in override file
+        //$this->assertSame(true,$this->m_translations->updateTranslation('COM_EMUNDUS_EMAIL','Un nouvel email','fr-FR','component'));
     }
 
     public function testDeleteTranslations() {
@@ -128,5 +145,20 @@ class EmundusModelTranslationTest extends TestCase
 
     public function testgetOrphelins(){
         $this->assertIsArray($this->m_translations->getOrphelins('fr-FR','en-GB'));
+    }
+
+    public function testCheckSetup(){
+        $this->assertNotNull($this->m_translations->checkSetup());
+    }
+
+    public function testGetPlatformLanguages(){
+        $this->assertNotEmpty($this->m_translations->getPlatformLanguages());
+    }
+
+    public function testCheckTagIsCorrect()
+    {
+        $this->assertFalse($this->m_translations->checkTagIsCorrect('', 'Ma traduction', 'insert', 'fr'));
+        $this->assertFalse($this->m_translations->checkTagIsCorrect('E[L<$EN^()T_TE\T', 'Ma traduction', 'insert', 'fr'));
+        $this->assertTrue($this->m_translations->checkTagIsCorrect('MON_ELEMENT', 'Ma traduction', 'insert', 'fr'));
     }
 }

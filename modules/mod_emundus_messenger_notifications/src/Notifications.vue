@@ -18,6 +18,7 @@ import axios from "axios";
 import Messages from "../../../components/com_emundus/src/components/Messages/Messages";
 
 const qs = require("qs");
+axios.defaults.baseURL = '/';
 
 export default {
   name: 'Notifications',

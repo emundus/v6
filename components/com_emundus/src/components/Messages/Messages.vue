@@ -14,7 +14,7 @@
           @closed="beforeClose"
           @opened="getFilesByUser"
       >
-        <div class="drag-window em-grid-2-20-80">
+        <div class="drag-window em-flex-row em-w-100">
           <div class="messages__campaigns-list">
             <div v-for="file in files" @click="fileSelected = file.fnum" :class="file.fnum == fileSelected ? 'messages__active-campaign' : ''" class="messages__block">
               <div class="messages__campaign-block">
@@ -29,7 +29,13 @@
             </div>
           </div>
 
-          <div class="messages__list">
+	        <div class="messages__campaigns-list-select">
+		        <select v-model="fileSelected">
+			        <option v-for="file in files" :value="file.fnum">{{ file.label }} - {{ file.fnum }}</option>
+		        </select>
+	        </div>
+
+          <div class="messages__list em-w-100">
             <div class="message__header">
               <label class="text-center" style="width: 100%">{{translations.messages}}</label>
               <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
@@ -277,7 +283,7 @@ export default {
   },
 
   watch: {
-    fileSelected: function(){
+    fileSelected: function() {
       this.getMessagesByFnum(true);
     }
   }

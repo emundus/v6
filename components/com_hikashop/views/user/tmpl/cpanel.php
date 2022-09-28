@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -52,11 +52,11 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 
 	$flag = false;
-	foreach($this->buttons as $btn) {
+	foreach($this->buttons as $name => $btn) {
 		$data = isset($btn['counter']) ? $btn['counter'] : false;
 
 ?>
-		<a class="hika_cpanel_icon" href="<?php echo hikashop_level($btn['level']) ? $btn['link'] : '#'; ?>" data-toggle="hk-tooltip" data-title="<?php echo htmlspecialchars('<strong>'.$btn['text'].'</strong><br/>'.$btn['description']); ?>">
+		<a class="hika_cpanel_icon hikashop_cpanel_<?php echo $name; ?>_div" href="<?php echo hikashop_level($btn['level']) ? $btn['link'] : '#'; ?>" data-toggle="hk-tooltip" data-title="<?php echo htmlspecialchars('<strong>'.$btn['text'].'</strong><br/>'.$btn['description']); ?>">
 <?php
 			if (!empty($btn['fontawesome'])) {
 ?>

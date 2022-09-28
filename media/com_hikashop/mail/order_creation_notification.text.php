@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,10 +30,10 @@ foreach($data->cart->products as $item){
 	echo strip_tags($item->order_product_name) . "\t" . $currencyHelper->format($item->order_product_price,$data->order_currency_id)."\t".$item->order_product_quantity."\t".$currencyHelper->format($price,$data->order_currency_id)."\n";
 }
 
-if(bccomp($data->order_discount_price,0,5)){
+if($data->order_discount_price > 0.0){
 	echo JText::_('HIKASHOP_COUPON').' : '.$currencyHelper->format($data->order_discount_price*-1,$data->order_currency_id)."\n";
 }
-if(bccomp($data->order_shipping_price,0,5)){
+if($data->order_shipping_price > 0.0){
 	echo JText::_('HIKASHOP_SHIPPING_METHOD').' : '.$currencyHelper->format($data->order_shipping_price,$data->order_currency_id)."\n";
 }
 if(!empty($data->additional)) {

@@ -139,5 +139,6 @@
 }
 
 #g-container-main .g-container{
-  width: 90%;
+  width: 100%;
+  padding-left: 100px !important;
 }

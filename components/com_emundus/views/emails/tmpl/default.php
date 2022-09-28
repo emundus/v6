@@ -155,7 +155,8 @@ JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TYPE_SYSTEM');
 JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TYPE_MODEL');
 
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0, 2);
+$short_lang = substr($lang->getTag(), 0 , 2);
+$current_lang = $lang->getTag();
 $languages = JLanguageHelper::getLanguages();
 if (count($languages) > 1) {
     $many_languages = '1';
@@ -164,12 +165,25 @@ if (count($languages) > 1) {
 }
 
 $user = JFactory::getUser();
-$coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
+$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
+$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0, 2);
+$short_lang = substr($lang->getTag(), 0 , 2);
+$current_lang = $lang->getTag();
+
+$xmlDoc = new DOMDocument();
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
 ?>
 
-<list id="em-component-vue" component="list" type="email" coordinatorAccess="<?= $coordinator_access ?>" actualLanguage="<?= $actualLanguage ?>" manyLanguages="<?= $many_languages ?>">
+<list id="em-component-vue"
+      component="list"
+      type="email"
+      coordinatorAccess="<?= $coordinator_access ?>"
+      sysadminAccess="<?= $sysadmin_access ?>"
+      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
+      manyLanguages="<?= $many_languages ?>">
 </list>
 
-<script src="media/com_emundus_vue/app_emundus.js"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>

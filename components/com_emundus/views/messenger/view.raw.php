@@ -26,7 +26,12 @@ class EmundusViewMessenger extends JViewLegacy {
     function display($tpl = null) {
         $jinput = JFactory::getApplication()->input;
 
-        JHTML::script( 'media/com_emundus_vue/app_emundus.js');
+        $xmlDoc = new DOMDocument();
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
+
+        JHTML::script( 'media/com_emundus_vue/app_emundus.js?'.$release_version);
         JHTML::script( 'media/com_emundus_vue/chunk-vendors_emundus.js');
         JHtml::stylesheet( 'media/com_emundus_vue/app_emundus.css');
 

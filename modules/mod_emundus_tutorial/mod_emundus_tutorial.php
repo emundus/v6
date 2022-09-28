@@ -29,14 +29,20 @@ if (!$user->guest) {
 			$run = false;
 		}
 
-        $locallang = JFactory::getLanguage()->getTag();
-        $lang = '';
+        if(!$run) {
+            $document = JFactory::getDocument();
+            $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@9');
+            $document->addStyleSheet("modules/mod_emundus_tutorial/style/mod_emundus_tutorial.css" );
 
-        if($locallang == 'fr-FR'){
-            $lang = 'fr/';
+            $locallang = JFactory::getLanguage()->getTag();
+            $lang = '';
+
+            if ($locallang == 'fr-FR') {
+                $lang = 'fr/';
+            }
+
+            $articles = $helper->getArticles($artids);
+            require JModuleHelper::getLayoutPath('mod_emundus_tutorial', $params->get('layout', 'default'));
         }
-
-		$articles = $helper->getArticles($artids);
-		require JModuleHelper::getLayoutPath('mod_emundus_tutorial', $params->get('layout', 'default'));
 	}
 }

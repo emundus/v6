@@ -22,23 +22,31 @@
     <hr/>
 
     <FilesName @updateName="updateName" :name="name" v-if="buildedComponent" />
+
+    <hr/>
+
+    <Aspects :aspects="aspects" @update-aspects="updateAspects"></Aspects>
   </div>
 </template>
 
 <script>
 import Tree from "../Tree";
 import FilesName from "../FilesName";
+import Aspects from "./Aspects";
 
-import storageService from "com_emundus/src/services/storage";
+import syncService from "com_emundus/src/services/sync";
 import mixin from "../../../../mixins/mixin";
 
 export default {
   name: "IntegrationGED",
-  components: {FilesName, Tree},
+  components: {FilesName, Tree, Aspects},
   mixins: [mixin],
   props:{
     site: String,
-    level_max: Number
+    level_max: {
+      type: Number,
+      default: 3
+    }
   },
   data() {
     return {
@@ -47,20 +55,19 @@ export default {
 
       emundus_tags: [],
       nodes: [],
+      aspects: [],
       name: '',
     }
   },
   created() {
-    storageService.getConfig('ged').then((response) => {
+    syncService.getConfig('ged').then((response) => {
       if(response.data.data !== null) {
         this.nodes = response.data.data.tree;
         this.name = response.data.data.name;
+        this.aspects = response.data.data.aspects;
       }
       this.buildedComponent = true;
     });
-    /*storageService.getEmundusTags().then((response) => {
-      this.emundus_tags = response.data.data;
-    })*/
   },
 
   methods: {
@@ -102,15 +109,22 @@ export default {
       this.saveConfig();
     },
 
-    deleteNode(id){
-      let node_found = this.nodes.findIndex(function(node, index) {
-        if(node.id === id)
-          return true;
-      });
-
-      this.nodes.splice(node_found,1);
+    deleteNode(node) {
+      this.deleteNodeById(this.nodes, node.id);
+      this.saveConfig();
     },
+    deleteNodeById(nodes, id) {
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].id === id) {
+          nodes.splice(i, 1);
+          return;
+        }
 
+        if (nodes[i].childrens.length > 0) {
+          this.deleteNodeById(nodes[i].childrens, id);
+        }
+      }
+    },
     updateName(name){
       this.name = name;
 
@@ -118,17 +132,22 @@ export default {
         this.saveConfig();
       }
     },
+    updateAspects(aspects) {
+      this.aspects = aspects;
+      this.saveConfig();
+    },
 
     saveConfig(){
       this.$emit('updateSaving',true)
       let config = {
         tree: this.nodes,
-        name: this.name
+        name: this.name,
+        aspects: this.aspects
       }
-      storageService.saveConfig(config,'ged').then(() => {
+      syncService.saveConfig(config,'ged').then(() => {
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
         this.$emit('updateSaving',false);
-      })
+      });
     }
   }
 }

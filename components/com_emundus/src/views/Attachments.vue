@@ -1,34 +1,6 @@
 <template>
   <div id="em-attachments" class="em-w-100">
-    <div class="head em-w-100 em-flex-row em-flex-space-between">
-      <div class="displayed-user em-flex-row em-flex-start">
-        <p class="name">
-          {{ canSee ? displayedUser.firstname + " " + displayedUser.lastname : displayedFnum}}
-        </p>
-        <p class="email">{{ displayedUser.email }} </p>
-
-        <p class="attachment-progress" v-if="progress">  - {{ progress }}% {{ translate('COM_EMUNDUS_ATTACHMENTS_COMPLETED') }}</p>
-      </div>
-      <div class="prev-next-files em-flex-row em-flex-space-between">
-        <div
-            v-if="fnums.length > 1"
-            class="prev em-flex-row em-flex-center"
-            :class="{ active: fnumPosition > 0 }"
-            @click="changeFile(fnumPosition - 1)"
-        >
-          <span class="material-icons">arrow_back</span>
-        </div>
-        <div
-            v-if="fnums.length > 1"
-            class="next em-flex-row em-flex-center"
-            :class="{ active: fnumPosition < fnums.length - 1 }"
-            @click="changeFile(fnumPosition + 1)"
-        >
-          <span class="material-icons">arrow_forward</span>
-        </div>
-      </div>
-    </div>
-    <div class="wrapper" :class="{ loading: loading}">
+    <div class="wrapper" :class="{loading: loading}">
       <div id="filters" class="em-flex-row em-flex-space-between">
         <div class="searchbar-wrapper">
           <input
@@ -38,8 +10,8 @@
               :placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
               @input="searchInFiles"
           />
-          <span class="material-icons search">search</span>
-          <span class="material-icons clear em-pointer" @click="resetSearch">clear</span>
+          <span class="material-icons-outlined search">search</span>
+          <span class="material-icons-outlined clear em-pointer" @click="resetSearch">clear</span>
         </div>
         <div class="actions em-flex-row">
           <select
@@ -49,12 +21,8 @@
               ref="categoryFilter"
               @change="filterByCategory"
           >
-            <option value="all">{{ translate("COM_EMUNDUS_EMAILS_SELECT_CATEGORY") }}</option>
-            <option
-                v-for="(category, key) in thisAttachmentCategories"
-                :key="key"
-                :value="key"
-            >
+            <option value="all">{{ translate("COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY") }}</option>
+            <option v-for="(category, key) in thisAttachmentCategories" :key="key" :value="key">
               {{ category }}
             </option>
           </select>
@@ -64,13 +32,13 @@
               @click="exportAttachments"
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
-            <span class="material-icons export">file_upload</span>
+            <span class="material-icons-outlined export">file_upload</span>
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
           <div
-              v-if="sync"
+              v-if="sync && canSync"
               class="btn-icon-text"
-              @click="synchronizeAttachments"
+              @click="synchronizeAttachments(checkedAttachments)"
               :class="{ disabled: checkedAttachments.length < 1 }"
           >
             <span
@@ -82,7 +50,7 @@
             <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE") }}</span>
           </div>
           <span
-              class="material-icons refresh em-pointer"
+              class="material-icons-outlined refresh em-pointer"
               @click="refreshAttachments(true)"
               :title="translate('COM_EMUNDUS_ATTACHMENTS_REFRESH_TITLE')"
           >
@@ -90,7 +58,7 @@
 					</span>
           <span
               v-if="canDelete"
-              class="material-icons delete"
+              class="material-icons-outlined delete"
               :class="{ disabled: checkedAttachments.length < 1 }"
               @click="confirmDeleteAttachments"
               :title="translate('COM_EMUNDUS_ATTACHMENTS_DELETE_TITLE')"
@@ -100,128 +68,58 @@
         </div>
       </div>
       <div class="em-mt-16 em-mb-16">
-        <a v-if="exportLink" :href="exportLink" target="_blank" @click="exportLink = ''">{{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}</a>
+        <a v-if="exportLink" :href="exportLink" target="_blank" @click="exportLink = ''">
+          {{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}
+        </a>
       </div>
       <div v-if="attachments.length" class="table-wrapper">
-        <table
-            :class="{ loading: loading }"
-            aria-describedby="Table of attachments information"
-        >
+        <table :class="{ loading: loading }" aria-describedby="Table of attachments information">
           <thead>
           <tr>
-            <th id="check-th">
-              <input
-                  class="attachment-check"
-                  type="checkbox"
-                  @change="updateAllCheckedAttachments"
-              />
-            </th>
+            <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
             <th id="name" @click="orderBy('value')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_FILE_NAME") }}
-              <span
-                  v-if="sort.orderBy == 'value' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'value' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              {{ translate("NAME") }}
+              <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="date" class="date" @click="orderBy('timedate')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SEND_DATE") }}
-              <span
-                  v-if="sort.orderBy == 'timedate' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'timedate' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              <span v-if="sort.orderBy == 'timedate' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="desc" class="desc" @click="orderBy('upload_description')">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}
-              <span
-                  v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              {{ translate("DESCRIPTION") }}
+              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="category" class="category" @click="orderBy('category')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CATEGORY") }}
-              <span
-                  v-if="sort.orderBy == 'category' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'category' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              <span v-if="sort.orderBy == 'category' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'category' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="status" class="status" @click="orderBy('is_validated')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}
-              <span
-                  v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'is_validated' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="canSee" id="user" @click="orderBy('user_id')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY") }}
-              <span
-                  v-if="sort.orderBy == 'user_id' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'user_id' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              <span v-if="sort.orderBy == 'user_id' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'user_id' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th v-if="canSee" id="modified_by" @click="orderBy('modified_by')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY") }}
-              <span
-                  v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'modified_by' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="modified" class="date" @click="orderBy('modified')">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}
-              <span
-                  v-if="sort.orderBy == 'modified' && sort.order == 'asc'"
-                  class="material-icons"
-              >arrow_upward</span
-              >
-              <span
-                  v-if="sort.orderBy == 'modified' && sort.order == 'desc'"
-                  class="material-icons"
-              >arrow_downward</span
-              >
+              <span v-if="sort.orderBy == 'modified' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
+              <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
-            <th id="permissions" class="permissions">
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}
+            <th id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
+            <th v-if="sync" id="sync" class="sync" @click="orderBy('sync')">
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
             </th>
             <th v-if="sync" id="sync" class="sync">
               {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
@@ -254,14 +152,12 @@
     <modal
         id="edit-modal"
         name="edit"
-        height="100vh"
-        width="100vw"
+        :resizable="true"
+        :draggable="true"
         styles="display:flex;flex-direction:column;justify-content:center;align-items:center;"
     >
       <div class="modal-head em-w-100 em-flex-row em-flex-space-between">
-        <div id="actions-left" class="em-flex-row em-flex-start">
-          <span>{{ selectedAttachment.filename }}</span>
-        </div>
+        <div id="actions-left" class="em-flex-row em-flex-start"><span>{{ selectedAttachment.filename }}</span></div>
         <div id="actions-right" class="em-flex-row">
           <a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text em-mr-24">
             <span class="material-icons"> file_download </span>
@@ -269,7 +165,7 @@
           </a>
           <div class="prev-next-attachments em-flex-row em-flex-space-between em-mr-8">
             <div
-                class="prev em-flex-row"
+                class="prev em-flex-row em-mr-4"
                 :class="{ active: selectedAttachmentPosition > 0 }"
                 @click="changeAttachment(selectedAttachmentPosition - 1, true)"
             >
@@ -277,7 +173,7 @@
             </div>
             <span class="lvl">{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span>
             <div
-                class="next em-flex-row"
+                class="next em-flex-row em-ml-4"
                 :class="{active: selectedAttachmentPosition < displayedAttachments.length - 1}"
                 @click="changeAttachment(selectedAttachmentPosition + 1)"
             >
@@ -288,16 +184,14 @@
         </div>
       </div>
       <transition :name="slideTransition" @before-leave="beforeLeaveSlide">
-        <div class="modal-body" v-if="!modalLoading && displayedUser.user_id && displayedFnum">
-          <AttachmentPreview
-              @fileNotFound="canDownload = false"
-              @canDownload="canDownload = true"
-              :user="displayedUser.user_id"
-          ></AttachmentPreview>
+        <div v-if="!modalLoading && displayedUser.user_id && displayedFnum" class="modal-body em-flex-row" :class="{'only-preview': onlyPreview}">
+          <AttachmentPreview @fileNotFound="canDownload = false" @canDownload="canDownload = true" :user="displayedUser.user_id"></AttachmentPreview>
           <AttachmentEdit
-              @closeModal="closeModal"
-              @saveChanges="updateAttachment"
-              :fnum="displayedFnum"
+		          :fnum="displayedFnum"
+							:is-displayed="!onlyPreview"
+		          @closeModal="closeModal"
+		          @saveChanges="updateAttachment"
+		          @update-displayed="toggleOnlyPreview"
           ></AttachmentEdit>
         </div>
       </transition>
@@ -333,12 +227,21 @@ export default {
       type: String,
       required: true,
     },
+	  defaultAttachments: {
+			type: Array,
+		  default: null
+	  },
+	  defaultRights: {
+			type: Object,
+		  default: null
+	  }
   },
   mixins: [mixin],
   data() {
     return {
       loading: true,
       attachments: [],
+	    displayedAttachments: [],
       categories: {},
       fnums: [],
       users: [],
@@ -357,78 +260,55 @@ export default {
       canDelete: false,
       canDownload: true,
       canUpdate: false,
+      canSync: false,
       modalLoading: false,
       slideTransition: "slide-fade",
+	    onlyPreview: false,
       changeFileEvent: null,
-      exportLink: "",
       sync: false,
+      exportLink: "",
     };
   },
   created() {
-    this.changeFileEvent = new Event("changeFile");
-    this.canSee = !this.$store.state.global.anonyme;
-    window.addEventListener('message', function (e) {
-      if (e.data == 'addFileToFnum') {
-        this.refreshAttachments(true);
-      }
-    }.bind(this));
+	  this.canSee = !this.$store.state.global.anonyme;
+	  this.$store.dispatch('user/setCurrentUser', this.user);
 
-    syncService.isSyncModuleActive().then((response) => {
-      this.sync = response.data;
-    }).catch((error) => {
-      this.sync = false;
-    });
+		syncService.isSyncModuleActive().then((response) => {
+		  this.sync = response.data;
+	  }).catch((error) => {
+		  this.sync = false;
+	  });
   },
   mounted() {
     this.loading = true;
-    this.getFormProgress();
-    this.getFnums()
-        .then(
-            () => {
-              this.getUsers().then(
-                  () => {
-                    this.getAttachments().then(
-                        () => {
-                          this.setAccessRights().then(
-                              () => {
-                                this.loading = false;
-                              }
-                          );
-                        }
-                    ).catch((e) => {
-                      this.loading = false;
-                      this.displayErrorMessage(e);
-                    });
-                  },
-              ).catch((e) => {
-                this.loading = false;
-                this.displayErrorMessage(e);
-              });
-            }
-        ).catch((e) => {
-      this.loading = false;
-      this.displayErrorMessage(e);
-    });
+		this.setDisplayedUser().then(() => {
+			if (this.defaultAttachments != null) {
+				this.getAttachmentCategories().then((response) => {
+					this.categories = response ? response : {};
+					this.attachments = this.defaultAttachments;
+					this.displayedAttachments = this.attachments;
+					this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+						fnum: [this.displayedFnum],
+						attachments: this.attachments,
+					});
+					this.setAccessRights().then(() => {
+						this.loading = false;
+					});
+				});
+			} else {
+				this.getAttachments().then(() => {
+					this.setAccessRights().then(() => {
+						this.loading = false;
+					});
+				}).catch((e) => {
+					this.loading = false;
+					this.displayErrorMessage(e);
+				});
+			}
+		});
   },
   methods: {
     // Getters and setters
-    async getFormProgress() {
-      const response = await attachmentService.getAttachmentProgress(this.displayedFnum);
-
-      if (response.status) {
-        this.progress = response.progress[0].attachment_progress;
-      }
-    },
-    async getFnums() {
-      const fnumsOnPage = document.getElementsByClassName('em_file_open');
-      for (let fnum of fnumsOnPage) {
-        this.fnums.push(fnum.id);
-      }
-    },
-    async getUsers() {
-      this.$store.dispatch("user/setCurrentUser", this.user);
-      await this.setDisplayedUser();
-    },
     async setDisplayedUser() {
       const response = await fileService.getFnumInfos(this.displayedFnum);
 
@@ -443,7 +323,7 @@ export default {
             this.users.push(resp.user[0]);
             this.displayedUser = resp.user[0];
             this.$store.dispatch("user/setDisplayedUser", this.displayedUser.user_id);
-            this.$store.dispatch("user/setUsers", resp.user);
+            this.$store.dispatch('user/setUsers', resp.user);
           } else {
             this.displayErrorMessage(
                 this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
@@ -465,7 +345,8 @@ export default {
         await this.refreshAttachments();
       } else {
         this.attachments = this.$store.state.attachment.attachments[this.displayedFnum];
-        this.categories = this.$store.state.attachment.categories;
+	      this.displayedAttachments = this.attachments;
+	      this.categories = this.$store.state.attachment.categories;
       }
     },
     async refreshAttachments(addLoading = false) {
@@ -480,7 +361,8 @@ export default {
 
       if (response.status) {
         this.attachments = response.attachments;
-        this.$store.dispatch("attachment/setAttachmentsOfFnum", {
+	      this.displayedAttachments = this.attachments;
+	      this.$store.dispatch("attachment/setAttachmentsOfFnum", {
           fnum: [this.displayedFnum],
           attachments: this.attachments,
         });
@@ -502,6 +384,7 @@ export default {
       this.getAttachments();
       this.$modal.hide("edit");
       this.selectedAttachment = {};
+      this.checkedAttachments = [];
     },
     updateStatus($event, selectedAttachment) {
       if (this.canUpdate) {
@@ -561,7 +444,18 @@ export default {
         );
       }
     },
-
+    synchronizeAttachments(aids)
+    {
+      if (aids.length > 0) {
+        syncService.synchronizeAttachments(aids).then((response) => {
+          if (response && response.status === false) {
+            this.displayErrorMessage(response.msg);
+          } else {
+            this.refreshAttachments(true);
+          }
+        });
+      }
+    },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
         const response = await userService.getAccessRights(
@@ -570,38 +464,27 @@ export default {
         );
 
         if (response.status === true) {
-          this.$store.dispatch("user/setAccessRights", {
-            fnum: this.displayedFnum,
-            rights: response.rights,
-          });
+          this.$store.dispatch("user/setAccessRights", {fnum: this.displayedFnum, rights: response.rights});
         }
       }
-      this.canExport = this.$store.state.user.rights[this.displayedFnum]
-          ? this.$store.state.user.rights[this.displayedFnum].canExport
-          : false;
-      this.canDelete = this.$store.state.user.rights[this.displayedFnum]
-          ? this.$store.state.user.rights[this.displayedFnum].canDelete
-          : false;
-      this.canUpdate = this.$store.state.user.rights[this.displayedFnum]
-          ? this.$store.state.user.rights[this.displayedFnum].canUpdate
-          : false;
+      this.canExport = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canExport : false;
+      this.canDelete = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canDelete : false;
+      this.canUpdate = this.$store.state.user.rights[this.displayedFnum] ? this.$store.state.user.rights[this.displayedFnum].canUpdate : false;
     },
     async exportAttachments() {
       if (this.canExport) {
-        attachmentService
-            .exportAttachments(
-                this.displayedUser.user_id,
-                this.displayedFnum,
-                this.checkedAttachments
-            )
-            .then((response) => {
-              if (response.data.status === true) {
-                window.open(response.data.link, "_blank");
-                this.exportLink = response.data.link;
-              } else {
-                this.displayErrorMessage(response.data.msg);
-              }
-            });
+        attachmentService.exportAttachments(
+		        this.displayedUser.user_id,
+		        this.displayedFnum,
+		        this.checkedAttachments
+        ).then((response) => {
+	        if (response.data.status === true) {
+		        window.open(response.data.link, "_blank");
+		        this.exportLink = response.data.link;
+	        } else {
+		        this.displayErrorMessage(response.data.msg);
+	        }
+        });
       }
     },
 
@@ -649,9 +532,6 @@ export default {
         );
       }
     },
-    async synchronizeAttachments() {
-
-    },
     async deleteAttachments() {
       if (this.canDelete) {
         // remove all checked attachments from attachments array
@@ -659,12 +539,22 @@ export default {
             (attachment) => !this.checkedAttachments.includes(attachment.aid)
         );
 
-        // delete all checkedAttachments
-        const response = await attachmentService.deleteAttachments(
-            this.displayedFnum,
-            this.displayedUser.user_id,
-            this.checkedAttachments
-        );
+        let response = null;
+        if (this.sync) {
+          syncService.deleteAttachments(this.checkedAttachments).then(async (response) => {
+            response = await attachmentService.deleteAttachments(
+                this.displayedFnum,
+                this.displayedUser.user_id,
+                this.checkedAttachments
+            );
+          });
+        } else {
+          response = await attachmentService.deleteAttachments(
+              this.displayedFnum,
+              this.displayedUser.user_id,
+              this.checkedAttachments
+          );
+        }
 
         if (response.status === true) {
           // Display tooltip deleted succesfully
@@ -675,57 +565,7 @@ export default {
         );
       }
     },
-
-    // navigation functions
-    changeFile(position) {
-      this.loading = true;
-
-      const oldFnumPosition = this.fnumPosition;
-      this.displayedFnum = this.fnums[position];
-      this.getFormProgress();
-      this.attachments = [];
-      this.$store.dispatch("attachment/setCheckedAttachments", []);
-      this.setAccessRights();
-      this.resetOrder();
-      this.resetSearch();
-      this.resetCategoryFilters();
-
-      fileService.getFnumInfos(this.displayedFnum).then((response) => {
-        if (response.status === true) {
-          this.changeFileEvent.detail = {
-            fnum: response.fnumInfos,
-            next: position > oldFnumPosition ? true : false,
-            previous: position < oldFnumPosition ? true : false,
-          };
-
-          document
-              .querySelector(".com_emundus_vue")
-              .dispatchEvent(this.changeFileEvent);
-        } else {
-          this.displayErrorMessage(response.msg);
-        }
-      });
-
-      this.setDisplayedUser()
-          .then(() => {
-            this.getAttachments()
-                .then(() => {
-                  this.attachments.forEach((attachment) => {
-                    attachment.show = true;
-                  });
-                  this.loading = false;
-                })
-                .catch((error) => {
-                  this.displayErrorMessage(error);
-                  this.loading = false;
-                });
-          })
-          .catch((error) => {
-            this.displayErrorMessage(error);
-            this.loading = false;
-          });
-    },
-    changeAttachment(position, reverse = false) {
+	  changeAttachment(position, reverse = false) {
       this.slideTransition = reverse ? "slide-fade-reverse" : "slide-fade";
       this.modalLoading = true;
       this.selectedAttachment = this.displayedAttachments[position];
@@ -745,28 +585,31 @@ export default {
         // if attachment description contains the search term, show it
         // lowercase the search term to avoid case sensitivity
         if (
-            attachment.upload_description
-                .toLowerCase()
-                .includes(this.$refs["searchbar"].value.toLowerCase()) ||
-            attachment.value
-                .toLowerCase()
-                .includes(this.$refs["searchbar"].value.toLowerCase())
+						attachment.upload_description.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase()) ||
+            attachment.value.toLowerCase().includes(this.$refs["searchbar"].value.toLowerCase())
         ) {
           this.attachments[index].show = true;
         } else {
-          // remove attachments from checkedAttachment list
           this.checkedAttachments = this.checkedAttachments.filter(
               (aid) => aid !== attachment.aid
           );
           this.attachments[index].show = false;
         }
       });
+
+			this.displayedAttachments = this.attachments.filter((attachment) => {
+				return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
+			});
     },
     resetSearch() {
       this.attachments.forEach((attachment, index) => {
         this.attachments[index].show = true;
       });
       this.$refs["searchbar"].value = "";
+
+			this.displayedAttachments = this.attachments.filter((attachment) => {
+		    return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
+	    });
     },
     resetOrder() {
       this.sort = {
@@ -849,7 +692,6 @@ export default {
       }
     },
 
-    // Modal methods
     openModal(attachment) {
       if (this.displayedUser.user_id && this.displayedFnum) {
         this.$modal.show("edit");
@@ -878,25 +720,18 @@ export default {
         el.style.transform = "translateX(-100%)";
       }
 
-      el.setAttribute(
-          "class",
-          "modal-body " +
-          this.slideTransition +
-          "-leave-active " +
-          this.slideTransition +
-          "-leave-to"
-      );
+      el.setAttribute("class", "modal-body " + this.slideTransition + "-leave-active " + this.slideTransition + "-leave-to");
     },
+	  toggleOnlyPreview(editDisplayed) {
+			this.onlyPreview = editDisplayed ? false : true;
+	  }
   },
   computed: {
-    displayedAttachments() {
+    /*displayedAttachments() {
       return this.attachments.filter((attachment) => {
-        return (
-            (attachment.show === true || attachment.show == undefined) &&
-            attachment.can_be_viewed
-        );
+        return ((attachment.show === true || typeof attachment.show == 'undefined' || attachment.show == null ));
       });
-    },
+    },*/
     fnumPosition() {
       return this.fnums.indexOf(this.displayedFnum);
     },
@@ -904,21 +739,14 @@ export default {
       return this.displayedAttachments.indexOf(this.selectedAttachment);
     },
     attachmentPath() {
-      return (
-          this.$store.state.attachment.attachmentPath +
-          this.displayedUser.user_id +
-          "/" +
-          this.selectedAttachment.filename
-      );
+      return this.$store.state.attachment.attachmentPath + this.displayedUser.user_id + "/" + this.selectedAttachment.filename;
     },
     thisAttachmentCategories() {
       let displayedCategories = {};
       if (Object.entries(this.categories).length > 0) {
         for (let category in this.categories) {
           for (let attachment in this.attachments) {
-            // if the attachment category is the same as the category
             if (this.attachments[attachment].category == category) {
-              // add the category to the displayedCategories object
               displayedCategories[category] = this.categories[category];
             }
           }
@@ -940,6 +768,13 @@ export default {
 #em-attachments {
   font-size: 14px;
   width: 100%;
+
+	.v--modal-box.v--modal {
+		height: 100vh !important;
+		width: 100vw !important;
+		top: 0 !important;
+		left: 0 !important;
+	}
 
   .head {
     align-items: center;
@@ -1012,13 +847,13 @@ export default {
 
     .searchbar-wrapper {
       position: relative;
-      .material-icons.search {
+      .material-icons-outlined.search {
         position: absolute;
         top: 11px;
         left: 18px;
       }
 
-      .material-icons.clear {
+      .material-icons-outlined.clear {
         position: absolute;
         top: 11px;
         right: 10px;
@@ -1052,7 +887,7 @@ export default {
           color: var(--disabled-color);
           pointer-events: none;
 
-          .material-icons {
+          .material-icons, .material-icons-outlined {
             color: var(--disabled-color);
           }
         }
@@ -1083,7 +918,7 @@ export default {
       min-height: 50vh;
     }
 
-    .material-icons.delete {
+    .material-icons-outlined.delete {
       transition: all 0.3s;
       width: 30px;
       color: var(--grey-color);
@@ -1156,7 +991,7 @@ export default {
           border-bottom: 1px solid #e0e0e0;
           white-space: nowrap;
 
-          .material-icons {
+          .material-icons, .material-icons-outlined {
             transform: translateY(3px);
           }
         }
@@ -1188,7 +1023,7 @@ export default {
         height: 32px;
         color: black;
 
-        .material-icons {
+        .material-icons, .material-icons-outlined {
           font-size: 18px;
         }
 
@@ -1205,12 +1040,10 @@ export default {
         }
 
         .prev {
-          margin-right: 4px;
           border-radius: 4px 0px 0px 4px;
         }
 
         .next {
-          margin-left: 4px;
           border-radius: 0px 4px 4px 0px;
         }
 
@@ -1269,6 +1102,21 @@ export default {
     display: flex;
     padding: 0;
     max-height: unset !important;
+
+	  &.only-preview {
+		  #em-attachment-preview {
+			  width: 100% !important;
+		  }
+
+		  #attachment-edit {
+			  width: 0% !important;
+			  padding: 0;
+
+			  .wrapper, .actions {
+				  display: none;
+			  }
+		  }
+	  }
   }
 }
 </style>

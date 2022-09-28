@@ -53,6 +53,7 @@ class plgEmundusSync_file extends JPlugin {
      */
     private function getSyncType($upload_id): string
     {
+        $type = '';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('type')
@@ -65,9 +66,9 @@ class plgEmundusSync_file extends JPlugin {
 
         try {
             $type = $db->loadResult();
+            $type = empty($type) ? '' : $type;
         } catch (Exception $e) {
             JLog::add('[SYNC_FILE_PLUGIN] Error getting sync type for upload_id '.$upload_id, JLog::ERROR, 'com_emundus');
-            return '';
         }
 
         return $type;

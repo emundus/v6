@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -311,6 +311,45 @@ class ViewViewView extends hikashopView{
 		$this->assignRef('ftp',$ftp);
 	}
 
+	public function diff() {
+		$id = hikaInput::get()->getString('id','');
+		$viewClass = hikashop_get('class.view');
+		$this->element = $viewClass->get($id);
+
+		$this->element->src = hikaInput::get()->getVar('src');
+		$cookie_key = str_replace('.', '_', $this->element->view.'_'.$this->element->file.'_src');
+		if(empty($this->element->src)) {
+			$this->element->src = hikaInput::get()->cookie->get($cookie_key);
+		}
+		if(!empty($this->element->src)) {
+			setcookie($cookie_key, $this->element->src, time()+31556926, '/');
+		}
+		if(!JFile::exists($this->element->path) && !empty($this->element->folder) && !empty($this->element->filename)) {
+			$origFiles = JFolder::files($this->element->folder);
+			if(!empty($origFiles)) {	
+				$this->element->possible_source_files = array();
+				$override_parts = explode('_', $this->element->filename);
+				foreach($origFiles as $origFile) {
+					$parts = explode('_', $origFile);
+					if($override_parts[0] == $parts[0]) {
+						$this->element->possible_source_files[] = $origFile;
+					}
+				}
+			}
+		}
+
+
+		$this->diffInc = hikashop_get('inc.diff');
+
+		$this->toolbar = array(
+			array('name' => 'link', 'icon'=>'edit','alt'=>JText::_('HIKA_EDIT'),'url'=>hikashop_completeLink('view&task=edit&id='.str_replace('.','%2E',strip_tags($this->element->id)))),
+			'cancel',
+		);
+
+		hikashop_setTitle(JText::_('FILE_MODIFICATIONS'),$this->icon,$this->ctrl.'&task=diff&id='.$id);
+
+	}
+
 	public function form() {
 		$id = hikaInput::get()->getString('id','');
 		$viewClass = hikashop_get('class.view');
@@ -318,8 +357,13 @@ class ViewViewView extends hikashopView{
 
 		if($obj) {
 			jimport('joomla.filesystem.file');
-			$obj->content = htmlspecialchars(file_get_contents($obj->edit), ENT_COMPAT, 'UTF-8');
+			$obj->content = file_get_contents($obj->edit);
 		}
+
+		$viewClass->initStructure($obj);
+
+		if(!empty($obj->content))
+			$obj->content = htmlspecialchars($obj->content, ENT_COMPAT, 'UTF-8');
 
 		$this->toolbar = array(
 			array('name' => 'group', 'buttons' => array( 'apply', 'save')),
@@ -327,6 +371,10 @@ class ViewViewView extends hikashopView{
 			'|',
 			array('name' => 'pophelp', 'target' => $this->ctrl.'-form')
 		);
+
+		if($obj->overriden) {
+			array_unshift($this->toolbar, array('name' => 'link', 'icon'=>'file','alt'=>JText::_('SEE_MODIFICATIONS'),'url'=>hikashop_completeLink('view&task=diff&id='.str_replace('.','%2E',strip_tags($obj->id)))));
+		}
 
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task=edit&id='.$id);
 

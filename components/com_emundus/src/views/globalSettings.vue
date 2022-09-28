@@ -2,17 +2,10 @@
   <div class="em-w-100 em-mt-80">
     <div>
 
-      <!-- HEADER -->
-      <div class="em-flex-row em-flex-start em-pointer em-m-24" v-if="menuHighlight === 1" style="margin-left: 10%" @click="menuHighlight = 0">
-        <span class="material-icons-outlined">arrow_back</span><span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
-      </div>
-      <h5 class="em-h5 em-m-24" v-if="menuHighlight === 0 && !modal_ready" style="margin-left: 10%">{{ translate("COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER") }}</h5>
-      <h5 class="em-h5 em-m-24" v-else-if="menuHighlight === 1" style="margin-left: 10%">{{ translate(currentTitle) }}</h5>
-
       <!--- MENU --->
       <transition name="slide-right">
-        <div class="em-settings-menu" style="margin-left: 10%" v-if="menuHighlight === 0">
-          <div v-for="(menu,index) in menus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-if="menu.access === 1" v-wave @click="changeMenu(menu)">
+        <div class="em-grid-3" style="margin-left: 10%" v-if="menuHighlight === 0">
+          <div v-for="(menu,index) in displayedMenus" :key="'menu_' + menu.index" class="em-shadow-cards col-md-3 em-hover-s-scale" v-wave @click="changeMenu(menu)">
             <span class="material-icons-outlined em-gradient-icons em-mb-16">{{menu.icon}}</span>
             <p class="em-body-16-semibold em-mb-8">{{translate(menu.title)}}</p>
             <p class="em-font-size-14">{{translate(menu.description)}}</p>
@@ -22,10 +15,11 @@
 
       <!-- COMPONENTS -->
       <transition name="fade">
-        <editStyle
+        <StyleTool
             v-if="menuHighlight === 1"
-            ref="styling"
-        ></editStyle>
+            v-show="modal_ready"
+            @resetMenuIndex="menuHighlight = 0"
+        ></StyleTool>
 
         <ContentTool
             v-if="menuHighlight === 2"
@@ -40,7 +34,7 @@
         />
 
         <TranslationTool
-            v-if="menuHighlight === 4"
+            v-if="menuHighlight === 9"
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
             ref="translations"
@@ -67,14 +61,14 @@
 <script>
 import EditStatus from "../components/Settings/FilesTool/EditStatus";
 import EditTags from "../components/Settings/FilesTool/EditTags";
-import EditStyle from "../components/Settings/EditStyle";
 import TranslationTool from "../components/Settings/TranslationTool/TranslationTool";
 import ContentTool from "../components/Settings/Content/ContentTool";
 import FilesTool from "../components/Settings/FilesTool/FilesTool";
+import StyleTool from "../components/Settings/Style/StyleTool";
 import AttachmentStorage from "../components/Settings/AttachmentStorage/AttachmentStorage";
+import DashboardTool from "../components/Settings/DashboardTool/DashboardTool";
 
 import settingsService from "com_emundus/src/services/settings";
-import DashboardTool from "../components/Settings/DashboardTool/DashboardTool";
 
 const qs = require("qs");
 
@@ -82,14 +76,14 @@ export default {
   name: "globalSettings",
 
   components: {
-    DashboardTool,
+	  DashboardTool,
+	  StyleTool,
     AttachmentStorage,
     FilesTool,
     ContentTool,
     TranslationTool,
     EditStatus,
-    EditTags,
-    EditStyle
+    EditTags
   },
 
   props: {
@@ -113,28 +107,28 @@ export default {
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_STYLE_DESC",
         icon: 'style',
         index: 1,
-        access: 0,
+        access: 1,
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CONTENT_DESC",
         icon: 'notes',
         index: 2,
-        access: 0,
+        access: 1,
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_FILES_TOOL_DESC",
         icon: 'source',
         index: 3,
-        access: 0,
+        access: 1,
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS",
         description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_TRANSLATIONS_DESC",
         icon: 'language',
-        index: 4,
-        access: 0,
+        index: 9,
+        access: 1,
       },
       {
         title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_ATTACHMENT_STORAGE",
@@ -143,13 +137,13 @@ export default {
         index: 5,
         access: 0,
       },
-      {
-        title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DASHBOARD",
-        description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DASHBOARD_DESC",
-        icon: 'table_chart',
-        index: 6,
-        access: 0,
-      },
+	    {
+		    title: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DASHBOARD",
+		    description: "COM_EMUNDUS_ONBOARD_SETTINGS_MENU_DASHBOARD_DESC",
+		    icon: 'table_chart',
+		    index: 6,
+		    access: 0,
+	    },
     ],
     modal_ready: false
   }),
@@ -160,13 +154,13 @@ export default {
       this.em_params = params.data.config;
 
       // Give access to modules
-      this.menus[0].access = parseInt(this.em_params.style);
-      this.menus[1].access = parseInt(this.em_params.content);
+      this.menus[0].access = this.em_params.style != undefined ? parseInt(this.em_params.style) : 1;
+      this.menus[1].access = this.em_params.content != undefined ? parseInt(this.em_params.content) : 1;
       this.menus[2].access = 1;
-      this.menus[3].access = parseInt(this.em_params.translations);
-      this.menus[4].access = parseInt(this.em_params.attachment_storage);
-      this.menus[5].access = (parseInt(this.em_params.dashboard_settings) === 1 && parseInt(this.$store.state.global.datas.sysadminaccess.value) === 1) ? 1 : 0;
-      //
+      this.menus[3].access = this.em_params.translations != undefined  ? parseInt(this.em_params.translations) : 1;
+      this.menus[4].access = this.em_params.attachment_storage != undefined ? parseInt(this.em_params.attachment_storage) : 0;
+	    this.menus[5].access = (parseInt(this.em_params.dashboard_settings) === 1 && parseInt(this.$store.state.global.datas.sysadminaccess.value) === 1) ? 1 : 0;
+	    //
 
       this.loading = false;
     });
@@ -181,11 +175,23 @@ export default {
     }
   },
 
+	computed: {
+		displayedMenus() {
+			return this.menus.filter((menu) => {
+				return menu.access === 1;
+			})
+		}
+	},
+
   watch: {
     menuHighlight: function(value){
       this.modal_ready = false;
       setTimeout(() => {
         switch (value){
+          case 1:
+            this.$modal.show('styleTool');
+            this.modal_ready = true;
+            break;
           case 2:
             this.$modal.show('contentTool');
             this.modal_ready = true;
@@ -194,7 +200,7 @@ export default {
             this.$modal.show('filesTool');
             this.modal_ready = true;
             break;
-          case 4:
+          case 9:
             this.$modal.show('translationTool');
             this.modal_ready = true;
             break;

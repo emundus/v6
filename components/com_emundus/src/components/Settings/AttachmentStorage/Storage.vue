@@ -11,7 +11,7 @@
           <th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNCHRO') }}</th>
         </tr>
         <tr v-for="document in documents">
-          <td>{{document.value}}</td>
+          <td @click="openAttachmentParameters(document)">{{document.value}}</td>
           <td></td>
           <td>
             <select class="em-mr-8 em-clear-dropdown" v-model="document.sync" @change="updateSync(document.id,document.sync)">
@@ -28,48 +28,67 @@
       </thead>
     </table>
 
+    <modal
+        :name="'attachmentParameters'"
+        transition="fade"
+        :delay="100"
+        :adaptive="true"
+        id="modal-attachment-parameters"
+        class="em-h-100 em-w-25"
+    >
+      <AttachmentParameters :attachment="selectedDocument"></AttachmentParameters>
+    </modal>
+
     <div class="em-page-loader" v-if="loading"></div>
   </div>
 </template>
 
 <script>
-import storageService from "com_emundus/src/services/storage";
+import syncService from "com_emundus/src/services/sync";
 import syncs from '../../../data/ged/syncType'
 import mixin from "../../../mixins/mixin";
+import AttachmentParameters from "./AttachmentParameters";
 
 export default {
   name: "Storage",
+  components: {
+    AttachmentParameters
+  },
   mixins: [mixin],
   data() {
     return {
       loading: false,
-
       documents: [],
       syncTypes: [],
+      selectedDocument: {},
     }
   },
   mounted() {
     this.syncTypes = syncs['sync_type'];
   },
   created(){
-    storageService.getDocuments().then((response) => {
+    syncService.getDocuments().then((response) => {
       this.documents = response.data.data;
     });
   },
   methods:{
     updateSync(did,sync){
       this.$emit('updateSaving',true);
-      storageService.updateSync(did,sync).then(() => {
+      syncService.updateSync(did,sync).then(() => {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
       })
     },
     updateSyncMethod(did,sync_method){
       this.$emit('updateSaving',true);
-      storageService.updateSyncMethod(did,sync_method).then(() => {
+      syncService.updateSyncMethod(did,sync_method).then(() => {
         this.$emit('updateSaving',false);
         this.$emit('updateLastSaving',this.formattedDate('','LT'));
       })
+    },
+    openAttachmentParameters(document){
+      this.selectedDocument = document;
+      this.$modal.show('attachmentParameters');
     }
   }
 }

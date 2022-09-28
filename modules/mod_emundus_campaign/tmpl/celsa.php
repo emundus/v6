@@ -17,7 +17,7 @@ if ($locallang == "fr-FR") {
 // Check if user don't already have an opened fnum
 $user = JFactory::getSession()->get('emundusUser');
 
-// check if user is not connected as coordinator 
+// check if user is not connected as coordinator
 $unallowed_menutypes = [
     "partnermenu",
     "coordinatormenu"
@@ -83,10 +83,10 @@ function removeNotAllowedCampaigns($campaigns, $allowedFormationLevels) {
         ->leftJoin('data_formation ON data_formation_level.id = data_formation.level')
         ->leftJoin('#__emundus_setup_campaigns ON data_formation.id = #__emundus_setup_campaigns.formation')
         ->where('#__emundus_setup_campaigns.id = '.$campaign->id);
-    
+
         $db->setQuery($query);
         $formationLevel = $db->loadResult();
-    
+
         // remove campaign if user has an opened fnum for the formation level
         if (!in_array($formationLevel, $allowedFormationLevels)) {
             unset($campaigns[$key]);
@@ -322,13 +322,13 @@ usort($futurCampaign, function($a, $b) {
             <?php $formUrl = base64_encode('index.php?option=com_fabrik&view=form&formid=102&course=' . $result->code . '&cid=' . $result->id); ?>
 
             <?php if ($result->apply_online == 1 && $m_campaign->isLimitObtained($result->id) !== true) : ?>
-                <?php if (!empty($result->formation_url)) : 
+                <?php if (!empty($result->formation_url)) :
                     echo "<a class='btn btn-primary btn-creux btn-orange' role='button' href='#' onclick='goTo(\"". $result->formation_url ."\", true)' data-toggle='sc-modal'>" . JText::_('MORE_INFO') . "</a>";
                 ?>
                 <?php elseif ($mod_em_campaign_get_link) : ?>
                     <a class="btn btn-primary btn-creux btn-orange" role="button"
                        href='<?php echo !empty($result->link) ? $result->link : "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
-                       target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>    
+                       target="_blank" data-toggle="sc-modal"><?php echo JText::_('MORE_INFO'); ?></a>
                <?php else : ?>
                     <a class="btn btn-primary btn-creux btn-orange" role="button"
                        href='<?php echo "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'
@@ -340,15 +340,18 @@ usort($futurCampaign, function($a, $b) {
                     if (!isset($redirect_url) || empty($redirect_url)) {
                         $redirect_url = "index.php?option=com_users&view=registration";
                     }
-                    $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
+                    $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
                 } else {
-                    $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
+                    $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
+                }
+                if(!$user->guest) {
+                    $register_url .= "&redirect=" . $formUrl;
                 }
                 ?>
                 <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url; ?>'
                    data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
             <?php else : ?>
-                <?php if (!empty($result->formation_url)) : 
+                <?php if (!empty($result->formation_url)) :
                     echo "<a class='btn btn-primary btn-plein btn-blue' role='button' href='#' onclick='goTo(\"". $result->formation_url ."\", true)' data-toggle='sc-modal'>" . JText::_('MORE_INFO') . "</a>";
                 ?>
                 <?php elseif ($mod_em_campaign_get_link) : ?>
@@ -433,8 +436,8 @@ usort($futurCampaign, function($a, $b) {
                             $btn_class = "btn btn-primary btn-plein btn-blue";
                         } ?>
 
-                        <?php if (!empty($result->formation_url)) : 
-                            echo "<a class='" . $btn_class . "' role='button' href='#' onclick='goTo(\"". $result->formation_url ."\", true)' data-toggle='sc-modal'>" . JText::_('MORE_INFO') . "</a>";    
+                        <?php if (!empty($result->formation_url)) :
+                            echo "<a class='" . $btn_class . "' role='button' href='#' onclick='goTo(\"". $result->formation_url ."\", true)' data-toggle='sc-modal'>" . JText::_('MORE_INFO') . "</a>";
                         ?>
                         <?php elseif ($mod_em_campaign_get_link) : ?>
                             <a class="<?php echo $btn_class; ?>" role="button"
@@ -579,13 +582,13 @@ usort($futurCampaign, function($a, $b) {
             }
 
             // open url in new tab
-            window.open(url, '_blank');        
+            window.open(url, '_blank');
         } else {
             console.warn('URL is not valid');
             return;
         }
     }
-    
+
     jQuery(document).ready(function () {
 
         var tabsidshow = jQuery.cookie("tabactive");

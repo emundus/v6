@@ -44,6 +44,7 @@
 <script>
 import Configuration from "./Configuration";
 import Storage from "./Storage";
+
 export default {
   name: "attachmentStorage",
   props: { },

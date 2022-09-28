@@ -15,7 +15,7 @@
         <span class="tooltip-target b3 material-icons">more_horiz</span>
         <template slot="popover">
           <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300" v-if="node.level < level_max" @click="$emit('addNode',node)">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}</div>
-          <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300 em-red-500-color" @click="$emit('deleteNode',node.id);">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}</div>
+          <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300 em-red-500-color" @click="$emit('deleteNode', node);">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}</div>
         </template>
       </v-popover>
     </div>
@@ -33,7 +33,10 @@ export default {
   name: "Tree",
   props:{
     node: Object,
-    level_max: Number,
+    level_max: {
+      type: Number,
+      default: 3
+    },
     emundus_tags: Array,
   },
   data() {
@@ -52,17 +55,8 @@ export default {
     addNode(node){
       this.$emit('addNode',node);
     },
-    deleteNode(id){
-      let node_found = this.node.childrens.findIndex(function(node, index) {
-        if(node.id === id)
-          return true;
-      });
-
-      if(node_found !== -1) {
-        this.node.childrens.splice(node_found, 1);
-      } else {
-        this.$emit('deleteNode',id);
-      }
+    deleteNode(node){
+      this.$emit('deleteNode', node);
     },
     updateNodeType(event){
       this.node.type = event.target.value;

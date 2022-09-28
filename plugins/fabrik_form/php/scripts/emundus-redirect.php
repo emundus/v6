@@ -118,7 +118,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 	$mFile = new EmundusModelFiles();
 	$applicant_id = ($mFile->getFnumInfos($user->fnum))['applicant_id'];
 
-	EmundusModelLogs::log($user->id, $applicant_id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'FORM_ADDED_BY_APPLICANT');
+	//EmundusModelLogs::log($user->id, $applicant_id, $user->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'FORM_ADDED_BY_APPLICANT');
 } else {
 	try {
 		$query = 'SELECT db_table_name FROM `#__fabrik_lists` WHERE `form_id` ='.$formid;
@@ -161,7 +161,7 @@ if (in_array($user->profile, $applicant_profiles) && EmundusHelperAccess::asAppl
 	$mFile = new EmundusModelFiles();
 	$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-	EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'FORM_ADDED_BY_COORDINATOR');
+	//EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'FORM_ADDED_BY_COORDINATOR');
 
 	exit;
 

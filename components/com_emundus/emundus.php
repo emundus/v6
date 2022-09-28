@@ -190,6 +190,21 @@ JText::script('COM_EMUNDUS_APPLICATION_VALIDATE_CHANGE_STATUT');
 JText::script('COM_EMUNDUS_APPLICATION_CANCEL_CHANGE_STATUT');
 JText::script('COM_EMUNDUS_APPLICATION_DOCUMENT_PRINTED_ON');
 JText::script('COM_EMUNDUS_APPLICATION_APPLICANT');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_FOUND_TEXT_2');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_FILES_UPLOAD');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_TEXT');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_UPDATE');
+JText::script('COM_EMUNDUS_CHECKLIST_PROFILE_ATTACHMENT_FOUND_CONTINUE_WITHOUT_UPDATE');
+JText::script('COM_EMUNDUS_USERS_MY_DOCUMENTS_LOAD');
+JText::script('COM_EMUNDUS_ACCOUNT_INFORMATIONS');
+JText::script('COM_EMUNDUS_ACCOUNT_PERSONAL_DETAILS');
+JText::script('COM_EMUNDUS_USERS_DEFAULT_LANGAGE');
+JText::script('COM_EMUNDUS_USERS_NATIONALITY');
+JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PASSWORD');
+
 
 // view user
 JText::script('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL');
@@ -209,6 +224,9 @@ JText::script('COM_EMUNDUS_STATE');
 JText::script('COM_EMUNDUS_PROFILE_SWITCH_PROFILE');
 JText::script('COM_EMUNDUS_PROFILE_PROFILE_CHOSEN');
 Jtext::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_REGENERATE_PASSWORD');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TITLE');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_TEXT');
+Jtext::script('COM_EMUNDUS_USERS_EDIT_PROFILE_PICTURE_ERROR_UPDATE_TEXT');
 
 //Export Excel
 JText::script('COM_EMUNDUS_ADD_DATA_TO_CSV');
@@ -320,6 +338,7 @@ JText::script('FNUM');
 JText::script('COM_EMUNDUS_APPLICATION_SENT_ON');
 JText::script('DOCUMENT_PRINTED_ON');
 JText::script('COM_EMUNDUS_USERS_ARE_YOU_SURE_TO_DELETE_USERS');
+JText::script('COM_EMUNDUS_USERS_EDIT_PROFILE_NO_FORM_FOUND');
 
 // Submit application
 JText::script('COM_EMUNDUS_CONGRATULATIONS');
@@ -466,12 +485,13 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_COMPLETED');
-JText::script('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_READ');
 
+JText::script('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_EMAILS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_EXPORTS_EXPORT');
 JText::script('COM_EMUNDUS_ACTIONS_SEARCH');
@@ -481,6 +501,8 @@ JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
 JText::script('COM_EMUNDUS_FILES_ARE_EDITED_BY_OTHER_USERS');
 JText::script('COM_EMUNDUS_FILES_IS_EDITED_BY_OTHER_USER');
 JText::script('COM_EMUNDUS_FILE_EDITED_BY_ANOTHER_USER');
+JText::script('COM_EMUNDUS_LIST_RETRIEVED');
+JText::script('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST');
 
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
@@ -489,35 +511,68 @@ JText::script('COM_EMUNDUS_EXPORT_FAILED');
 JText::script('COM_EMUNDUS_LOGS_DOWNLOAD');
 JText::script('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR');
 JText::script('COM_EMUNDUS_LOGS_EXPORT');
+
+JText::script('COM_EMUNDUS_CRUD_FILTER_LABEL');
+JText::script('COM_EMUNDUS_LOG_READ_TYPE');
+JText::script('COM_EMUNDUS_LOG_CREATE_TYPE');
+JText::script('COM_EMUNDUS_LOG_UPDATE_TYPE');
+JText::script('COM_EMUNDUS_LOG_DELETE_TYPE');
+JText::script('COM_EMUNDUS_NO_ACTION_FOUND');
+JText::script('COM_EMUNDUS_NO_LOG_USERS_FOUND');
+JText::script('COM_EMUNDUS_NO_LOGS_FILTER_FOUND');
+
+JText::script('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER');
+JText::script('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER');
+JText::script('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER');
+JText::script('COM_EMUNDUS_ACCESS_FORM_READ');
+JText::script('COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS');
+
+JText::script('COM_EMUNDUS_CRUD_LOG_FILTER_HINT');
+JText::script('COM_EMUNDUS_TYPES_LOG_FILTER_HINT');
+JText::script('COM_EMUNDUS_ACTOR_LOG_FILTER_HINT');
+
+JText::script('COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS');
+
+// ADD LABEL OF LOGS CATEGORY
+JText::script('COM_EMUNDUS_ACCESS_FILE');                   # 1
+JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');             # 4
+JText::script('COM_EMUNDUS_ACCESS_EVALUATION');             # 5
+JText::script('COM_EMUNDUS_ACCESS_EXPORT_EXCEL');           # 6
+JText::script('COM_EMUNDUS_ACCESS_EXPORT_ZIP');             # 7
+JText::script('COM_EMUNDUS_ACCESS_EXPORT_PDF');             # 8
+JText::script('COM_EMUNDUS_ACCESS_MAIL_APPLICANT');         # 9
+JText::script('COM_EMUNDUS_ACCESS_COMMENT_FILE');           # 10
+JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE');            # 11
+JText::script('COM_EMUNDUS_ACCESS_USER');                   # 12
+JText::script('COM_EMUNDUS_ACCESS_STATUS');                 # 13
+JText::script('COM_EMUNDUS_ACCESS_TAGS');                   # 14
+JText::script('COM_EMUNDUS_ACCESS_MAIL_EVALUATOR');         # 15
+JText::script('COM_EMUNDUS_ACCESS_MAIL_GROUP');             # 16
+JText::script('COM_EMUNDUS_ACCESS_MAIL_EXPERT');            # 18
+JText::script('COM_EMUNDUS_ACCESS_GROUPS');                 # 19
+JText::script('COM_EMUNDUS_ADD_USER');                      # 20
+JText::script('COM_EMUNDUS_ACTIVATE');                      # 21
+JText::script('COM_EMUNDUS_DEACTIVATE');                    # 22
+JText::script('COM_EMUNDUS_AFFECT');                        # 23
+JText::script('COM_EMUNDUS_EDIT_USER');                     # 24
+JText::script('COM_EMUNDUS_SHOW_RIGHT');                    # 25
+JText::script('COM_EMUNDUS_DELETE_USER');                   # 26
+JText::script('COM_EMUNDUS_ACCESS_LETTERS');                # 27
+JText::script('COM_EMUNDUS_PUBLISH');                       # 28
+JText::script('COM_EMUNDUS_DECISION');                      # 29
+JText::script('COM_EMUNDUS_COPY_FILE');                     # 30
+JText::script('COM_EMUNDUS_ACCESS_MULTI_LETTERS');          # 31
+JText::script('COM_EMUNDUS_ADMISSION');                     # 32
+JText::script('COM_EMUNDUS_EXTENAL_EXPORT');                # 33
+JText::script('COM_EMUNDUS_INTERVIEW');                     # 34
+JText::script('COM_EMUNDUS_FICHE_DE_SYNTHESE');             # 35
+JText::script('COM_EMUNDUS_MESSENGER');                     # 36
+JText::script('COM_EMUNDUS_ACCESS_LOGS');                   # 37
+
+JText::script('COM_EMUNDUS_EDIT_COMMENT_BODY');
+JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
+
 // ONBOARD
-
-JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
-JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
-JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
-JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
-JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
-JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
-JHTML::script('media/com_emundus/js/em_files.js');
-JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
-JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
-
-JHTML::script('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js');
-JHTML::script('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/helpers.esm.min.js');
-
-JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js');
-JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js');
-
-JHtml::styleSheet('media/com_emundus_messenger/app_messenger.css');
-JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
-JHtml::styleSheet('media/com_emundus/css/reset.css');
-JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
-JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
-JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
-JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
-JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
-JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
-JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
-JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 $app = JFactory::getApplication();
 
@@ -545,7 +600,33 @@ $token = $app->input->get('token', '', 'ALNUM');
 
 if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHTML::script("//cdnjs.cloudflare.com/ajax/libs/tinymce/4.4.1/tinymce.min.js");
+    JHtml::script('media/com_emundus/lib/jquery-1.12.4.min.js');
+    JHtml::script('media/com_emundus/lib/jquery-ui-1.12.1.min.js');
+    JHtml::script('media/com_emundus/lib/jquery.doubleScroll.js' );
+    JHtml::script('media/com_emundus/lib/bootstrap-emundus/js/bootstrap.min.js');
+    JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
+    JHTML::script('media/com_emundus/js/em_files.js');
+    JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
+    JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
+
+    JHTML::script('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js');
+    JHTML::script('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/helpers.esm.min.js');
+    JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js');
+    JHTML::script('https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js');
+
+    JHtml::styleSheet('media/com_emundus/css/reset.css');
+    JHtml::styleSheet('media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css' );
+    JHtml::styleSheet('media/com_emundus/lib/chosen/chosen.min.css');
+    JHtml::styleSheet('media/com_emundus/lib/bootstrap-emundus/css/bootstrap.min.css');
+    JHtml::styleSheet('media/com_emundus/css/emundus_files.css');
+    JHTML::stylesheet('libraries/emundus/selectize/dist/css/normalize.css' );
+    JHTML::stylesheet('libraries/emundus/selectize/dist/css/selectize.default.css' );
+    JHTML::stylesheet('libraries/emundus/sumoselect/sumoselect.css');
 }
+JHTML::script('media/com_emundus_vue/chunk-vendors_emundus.js');
+
+JHtml::styleSheet('media/com_emundus_vue/app_emundus.css');
+JHTML::styleSheet('https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined');
 
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).

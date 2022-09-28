@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -138,7 +138,7 @@ window.addressMgr.delete = function(el, cid, uid, type) {
 			if(target) target.parentNode.removeChild(target);
 			window.Oby.fireAjax('hikashop_address_deleted',{'type':type,'cid':cid,'uid':uid,'el':el});
 		} else if(xhr.responseText != '0')
-			o.updateElem(uid, xhr.responseText);
+			window.hikashop.updateElem(uid, xhr.responseText);
 	});
 	return false;
 };

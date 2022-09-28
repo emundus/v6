@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -74,7 +74,7 @@ class CartViewCart extends HikaShopView {
 
 		if($this->config->get('group_options', 0)) {
 			$prices = $this->product->prices;
-			$this->options = $productClass->loadProductOptions($this->product, array('user_id' => hikashop_loadUser(false)));
+			$this->options = $productClass->loadProductOptions($this->mainProduct, array('user_id' => hikashop_loadUser(false)));
 			$this->product->prices = $prices;
 		}
 		if(!empty($this->parentProduct))
@@ -176,11 +176,13 @@ class CartViewCart extends HikaShopView {
 		}
 		$pathway->addItem(JText::_($title), hikashop_completeLink('cart&task=show&cid='.$cart_id.'&Itemid='.$Itemid));
 
-		if(empty($cart)) {
+		if(empty($cart) || empty($cart->products)) {
 			$this->checkbox_column = false;
 			$this->productFields = null;
 			if($type == 'wishlist')
 				$app->enqueueMessage(JText::_('WISHLIST_EMPTY'));
+			else
+				$app->enqueueMessage(JText::_('CART_EMPTY'));
 			return false;
 		}
 
@@ -357,6 +359,23 @@ class CartViewCart extends HikaShopView {
 		$this->assignRef('params', $params);
 
 		$toolbar = array();
+
+		if(!empty($manage)) {
+			$txt = 'EMPTY_THE_CART';
+			if($cart->cart_type == 'wishlist') {
+				$txt = 'EMPTY_THE_WISHLIST';
+			}
+			$toolbar['empty'] = array(
+				'icon' => 'delete',
+				'name' => JText::_($txt),
+				'url' => hikashop_completeLink('cart&task=remove&cid='.$cart->cart_id.'&'.hikashop_getFormToken().'=1&Itemid='.$Itemid),
+				'javascript' => 'if(window.localPage && window.localPage.confirmDelete) return window.localPage.confirmDelete()',
+				'fa' => array(
+					'html' => '<i class="far fa-trash-alt"></i>',
+				),
+			);
+		}
+
 		if($cart->cart_type == 'wishlist' && !empty($this->manage)) {
 			$toolbar['share'] = array(
 				'icon' => 'email',
@@ -385,22 +404,26 @@ class CartViewCart extends HikaShopView {
 				'fa' => array('html' => '<i class="fas fa-print"></i>')
 			);
 		}
-		if($cart->cart_type != 'wishlist') {
-			$toolbar['cart'] = array(
-				'icon' => 'cart',
-				'name' => JText::_('CHECKOUT'),
-				'url' => $url_checkout,
-				'fa' => array('html' => '<i class="fas fa-shopping-cart"></i>')
-			);
-		} else {
-			$toolbar['cart'] = array(
-				'icon' => 'cart',
-				'name' => JText::_('ADD_TO_CART'),
-				'javascript' => 'return window.cartMgr.moveProductsToCart(0)',
-				'fa' => array('html' => '<i class="fas fa-cart-plus"></i>')
-			);
+
+		$catalogue_mode = $config->get('catalogue', false);
+		if(!$catalogue_mode) {
+			if($cart->cart_type != 'wishlist') {
+				$toolbar['cart'] = array(
+					'icon' => 'cart',
+					'name' => JText::_('CHECKOUT'),
+					'url' => $url_checkout,
+					'fa' => array('html' => '<i class="fas fa-shopping-cart"></i>')
+				);
+			} else {
+				$toolbar['cart'] = array(
+					'icon' => 'cart',
+					'name' => JText::_('ADD_TO_CART'),
+					'javascript' => 'return window.cartMgr.moveProductsToCart(0)',
+					'fa' => array('html' => '<i class="fas fa-cart-plus"></i>')
+				);
+			}
 		}
-		if($this->config->get('enable_multicart') && !$juser->guest) {
+		if($this->config->get('enable_multicart') && !$juser->guest && !$catalogue_mode) {
 			$dropData = array();
 			foreach($user_carts as $user_cart) {
 				$cart_name = !empty($user_cart->cart_name) ? $user_cart->cart_name : '';
@@ -472,7 +495,7 @@ class CartViewCart extends HikaShopView {
 				$toolbar['move_to']['dropdown']['data'] = array_merge($cart_header, $toolbar['move_to']['dropdown']['data'], $wishlist_header, $dropData);
 			}
 		}
-		if(!empty($manage)) {
+		if(!empty($manage) && !empty($cart) && !empty($cart->products)) {
 			$toolbar['save'] = array(
 				'icon' => 'save',
 				'name' => JText::_('HIKA_SAVE'),
@@ -485,7 +508,7 @@ class CartViewCart extends HikaShopView {
 			if($cart->cart_type == 'wishlist')
 				$multi_cart = (int)$config->get('enable_multiwishlist', 1);
 
-			$link = hikashop_completeLink('user&task=cpanel');
+			$link = hikashop_completeLink('user&task=cpanel&Itemid='.$Itemid);
 			if($multi_cart) {
 				$link = hikashop_completeLink('cart&task=listing&cart_type=' . $cart->cart_type.'&Itemid='.$Itemid);
 			}

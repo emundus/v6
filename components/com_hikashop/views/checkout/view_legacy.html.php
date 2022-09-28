@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -257,7 +257,8 @@ function hikashopCheckMethods() {
 			$redirect_url = $config->get('redirect_url_when_cart_is_empty');
 			$redirect_url = hikashop_translate($redirect_url);
 			if(!preg_match('#^https?://#',$redirect_url)) $redirect_url = JURI::base().ltrim($redirect_url,'/');
-			$app->redirect( JRoute::_($redirect_url,false), JText::_('CART_EMPTY'));
+			$app->enqueueMessage( JText::_('CART_EMPTY'));
+			$app->redirect( JRoute::_($redirect_url,false));
 			return true;
 		}
 		$shipping = (!empty($done->usable_methods->shipping) || !empty($done->package['weight']['value']));
@@ -431,7 +432,11 @@ function displayRegistration(el) {
 		if(!hikashop_level(2))
 			return;
 
-		JHTML::_('behavior.formvalidation');
+		$jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
+		if(version_compare($jversion, '3.4.0', '>='))
+			JHTML::_('behavior.formvalidator');
+		else
+			JHTML::_('behavior.formvalidation');
 
 		$app = JFactory::getApplication();
 		$order = $app->getUserState( HIKASHOP_COMPONENT.'.checkout_fields',null);
@@ -903,7 +908,10 @@ var ccHikaErrors = {
 	function ccinfo() {
 		$app = JFactory::getApplication();
 
-		JHTML::_('behavior.tooltip');
+		if(HIKASHOP_J40)
+			JHtml::_('bootstrap.tooltip', '.hasTooltip', array('placement' => 'left'));
+		else
+			JHTML::_('behavior.tooltip');
 
 		$payment_method = $app->getUserState( HIKASHOP_COMPONENT.'.payment_method');
 		$payment_id = $app->getUserState( HIKASHOP_COMPONENT.'.payment_id');

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,8 +13,9 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 	var $accepted_currencies = array(
 		'AUD','BRL','CAD','EUR','GBP','JPY','USD','NZD','CHF','HKD','SGD','SEK',
 		'DKK','PLN','NOK','HUF','CZK','MXN','MYR','PHP','TWD','THB','ILS','TRY',
-		'RUB'
 	);
+
+	var $rounding = array('TWD' => 0, 'MYR' => 0, 'JPY' => 0, 'HUF' => 0);
 
 	var $multiple = true;
 	var $name = 'paypal';
@@ -66,6 +67,10 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 
 		if($this->currency->currency_locale['int_frac_digits'] > 2)
 			$this->currency->currency_locale['int_frac_digits'] = 2;
+
+		$rounding = 2;
+		if(isset($this->rounding[$this->currency->currency_code]))
+			$rounding = $this->rounding[$this->currency->currency_code];
 
 		$notify_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&lang='.$this->locale . $this->url_itemid;
 		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=after_end&order_id='.$order->order_id . $this->url_itemid;
@@ -151,7 +156,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 		}
 
 		if(empty($this->payment_params->details)) {
-			$vars['amount_1'] = number_format(round($order->cart->full_total->prices[0]->price_value_with_tax, (int)$this->currency->currency_locale['int_frac_digits']), 2, '.', '');
+			$vars['amount_1'] = number_format(round($order->cart->full_total->prices[0]->price_value_with_tax, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
 			$vars['item_name_1'] = JText::_('CART_PRODUCT_TOTAL_PRICE');
 		} else {
 			$i = 1;
@@ -162,7 +167,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 				if($group && $product->order_product_option_parent_id) continue;
 				$vars['item_name_' . $i] = substr(strip_tags($product->order_product_name), 0, 127);
 				$vars['item_number_' . $i] = $product->order_product_code;
-				$vars['amount_'.$i] = number_format(round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']), 2, '.', '');
+				$vars['amount_'.$i] = number_format(round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
 				$vars['quantity_' . $i] = $product->order_product_quantity;
 				$tax += round($product->order_product_tax, (int)$this->currency->currency_locale['int_frac_digits']) * $product->order_product_quantity;
 				$i++;
@@ -173,32 +178,32 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 					if(empty($product->order_product_price) || $product->order_product_price <= 0) continue;
 					$vars['item_name_' . $i] = substr(JText::_(strip_tags($product->order_product_name)), 0, 127);
 					$vars['item_number_' . $i] = $product->order_product_code;
-					$vars['amount_'.$i] = number_format(round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']), 2, '.', '');
+					$vars['amount_'.$i] = number_format(round($product->order_product_price, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
 					$vars['quantity_' . $i] = 1;
 					$tax += round($product->order_product_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 					$i++;
 				}
 			}
 
-			if(!empty($order->order_shipping_price) && bccomp($order->order_shipping_price, 0, 5)) {
+			if(!empty($order->order_shipping_price) && bccomp(sprintf('%F',$order->order_shipping_price), 0, 5)) {
 				$vars['item_name_' . $i] = JText::_('HIKASHOP_SHIPPING');
-				$vars['amount_' . $i] = number_format(round($order->order_shipping_price - @$order->order_shipping_tax, (int)$this->currency->currency_locale['int_frac_digits']), 2, '.', '');
+				$vars['amount_' . $i] = number_format(round($order->order_shipping_price - @$order->order_shipping_tax, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
 				$tax += round($order->order_shipping_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 				$vars['quantity_' . $i] = 1;
 				$i++;
 			}
 
-			if(!empty($order->order_payment_price) && bccomp($order->order_payment_price, 0, 5)) {
+			if(!empty($order->order_payment_price) && bccomp(sprintf('%F',$order->order_payment_price), 0, 5)) {
 				$vars['item_name_' . $i] = JText::_('HIKASHOP_PAYMENT');
-				$vars['amount_' . $i] = number_format(round($order->order_payment_price - @$order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']), (int)$this->currency->currency_locale['int_frac_digits']);
+				$vars['amount_' . $i] = number_format(round($order->order_payment_price - @$order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
 				$tax += round($order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 				$vars['quantity_' . $i] = 1;
 				$i++;
 			}
 
-			if(bccomp($tax, 0, 5))
-				$vars['tax_cart'] = number_format(round($tax, (int)$this->currency->currency_locale['int_frac_digits']), 2, '.', '');
-			if(!empty($order->cart->coupon) && bccomp($order->order_discount_price, 0, 5)){
+			if(bccomp(sprintf('%F',$tax), 0, 5))
+				$vars['tax_cart'] = number_format(round($tax, (int)$this->currency->currency_locale['int_frac_digits']), $rounding, '.', '');
+			if(!empty($order->cart->coupon) && bccomp(sprintf('%F',$order->order_discount_price), 0, 5)){
 				$vars['discount_amount_cart'] = round($order->order_discount_price, (int)$this->currency->currency_locale['int_frac_digits']);
 			}
 			if(!empty($order->cart->additional)){
@@ -209,7 +214,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 				}
 			}
 			if(isset($vars['discount_amount_cart']))
-				$vars['discount_amount_cart'] = number_format($vars['discount_amount_cart'], 2, '.', '');
+				$vars['discount_amount_cart'] = number_format($vars['discount_amount_cart'], $rounding, '.', '');
 		}
 
 		if((isset($this->payment_params->validation) && $this->payment_params->validation) || (isset($this->payment_params->enable_validation) && !$this->payment_params->enable_validation)) {
@@ -278,7 +283,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 				$action = false;
 				$this->modifyOrder($action, null, null, $email);
 
-				JError::raiseError(403, JText::_('Access Forbidden'));
+				$this->app->enqueueMessage(JText::_('Access Forbidden'), 'error');
 				return false;
 			}
 		}
@@ -321,7 +326,7 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			$action = false;
 			$this->modifyOrder($action, null, null, $email);
 
-			JError::raiseError( 403, JText::_( 'Access Forbidden' ));
+			$this->app->enqueueMessage(JText::_( 'Access Forbidden' ), 'error');
 			return false;
 		}
 
@@ -366,8 +371,18 @@ class plgHikashoppaymentPaypal extends hikashopPaymentPlugin
 			return false;
 		}
 
-		$price_check = round($dbOrder->order_full_price, (int)$this->currency->currency_locale['int_frac_digits']);
-		if($price_check != @$vars['mc_gross'] || $this->currency->currency_code != @$vars['mc_currency']) {
+
+		$rounding = 2;
+		if(isset($this->rounding[$this->currency->currency_code]))
+			$rounding = $this->rounding[$this->currency->currency_code];
+		$price_check = number_format(round($dbOrder->order_full_price, (int)$this->currency->currency_locale['int_frac_digits']), $rounding,'.', '');
+		$amount = 0;
+		if(!empty($vars['mc_gross']))
+			$amount = $vars['mc_gross'];
+		$amount = number_format($amount, $rounding, '.', '');
+		if($price_check != $amount || $this->currency->currency_code != @$vars['mc_currency']) {
+			if($this->payment_params->debug)
+				$this->writeToLog('Invalid amount. Received: ' . $amount.@$vars['mc_currency'].' instead of '.$price_check.$this->currency->currency_code);
 			$email = new stdClass();
 			$email->subject = JText::sprintf('NOTIFICATION_REFUSED_FOR_THE_ORDER','Paypal').JText::_('INVALID_AMOUNT');
 			$email->body = str_replace('<br/>', "\r\n", JText::sprintf('AMOUNT_RECEIVED_DIFFERENT_FROM_ORDER', 'Paypal', $history->amount, $price_check . $this->currency->currency_code)) . "\r\n\r\n" . JText::sprintf('CHECK_DOCUMENTATION', HIKASHOP_HELPURL . 'payment-paypal-error#amount') . $order_text;
@@ -609,7 +624,7 @@ function paypal_refreshIps() {
 	public function getPaymentDefaultValues(&$element) {
 		$element->payment_name = 'PayPal';
 		$element->payment_description='You can pay by credit card or paypal using this payment method';
-		$element->payment_images = 'MasterCard,VISA,Credit_card,PayPal';
+		$element->payment_images = 'MasterCard,VISA,Credit_card,PayPal,Discover';
 
 		$element->payment_params->url = 'https://www.paypal.com/cgi-bin/webscr';
 		$element->payment_params->notification = 1;

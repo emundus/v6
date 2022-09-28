@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="hikashop" method="upgrade">
 	<name>HikaShop: Vendor Selection Custom Field</name>
-	<creationDate>04 octobre 2021</creationDate>
-	<version>4.0.0</version>
+	<creationDate>22 juin 2022</creationDate>
+	<version>4.1.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
-	<copyright>Copyright (C) 2012-2021 OBSIDEV SARL - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2012-2022 OBSIDEV SARL - All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>HikaShop: Vendor Selection Custom Field</description>
 	<files>

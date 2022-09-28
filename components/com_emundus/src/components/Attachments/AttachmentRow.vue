@@ -16,7 +16,7 @@
 			<span>{{ attachment.value }}</span>
 			<span
 				v-if="!attachment.existsOnServer"
-				class="material-icons warning file-not-found"
+				class="material-icons-outlined warning file-not-found"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_FILE_NOT_FOUND')"
 			>
 				warning
@@ -63,14 +63,14 @@
 		<td class="date">{{ formattedDate(attachment.modified) }}</td>
 		<td class="permissions">
 			<span
-				class="material-icons visibility-permission"
+				class="material-icons-outlined visibility-permission"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW')"
 				>visibility</span
 			>
 			<span
-				class="material-icons delete-permission"
+				class="material-icons-outlined delete-permission"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"
 				:title="translate('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE')"
@@ -80,29 +80,30 @@
     <td v-if="sync">
       <div v-if="attachment.sync > 0">
         <span
-            v-if="attachment.sync_method == 'write'"
+            v-if="attachment.sync_method == 'write' && !syncLoading"
             class="material-icons sync"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
             }"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
-            @click="syncAttachment(attachment.aid)"
+            @click="synchronizeAttachments(attachment.aid)"
         >
           cloud_upload
         </span>
         <span
-            v-else-if="attachment.sync_method == 'read'"
+            v-else-if="attachment.sync_method == 'read' && !syncLoading"
             class="material-icons sync"
             :class="{
               success: synchronizeState == 1,
               error: synchronizeState != 1,
             }"
             :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_READ')"
-            @click="syncAttachment(attachment.aid)"
+            @click="synchronizeAttachments(attachment.aid)"
         >
           cloud_download
         </span>
+        <div v-if="syncLoading" class="sync-loader em-loader"></div>
       </div>
     </td>
 	</tr>
@@ -130,7 +131,7 @@ export default {
     sync: {
       type: Boolean,
       default: false,
-    },
+		},
     canSee: {
       type: Boolean,
       default: true,
@@ -143,11 +144,15 @@ export default {
 			category: "",
 			checkedAttachments: [],
       synchronizeState: false,
+      syncLoading: false,
 		};
 	},
 	mounted() {
 		this.categories = this.$store.state.attachment.categories;
-    this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
+		if (Object.entries(this.categories).length > 0) {
+			this.category = this.categories[this.attachment.category] ? this.categories[this.attachment.category] : "";
+		}
+
 		this.checkedAttachments = this.checkedAttachmentsProp;
 
     if (this.sync) {
@@ -182,16 +187,32 @@ export default {
 			}
 		},
     async getSynchronizeState(aid) {
-      const response = await syncService.getSynchronizeState(aid);
+      const response = await syncService.checkAttachmentsExists([aid]);
 
       if (response.status) {
-        return response.data;
+        return response.data[0];
       }
 
       return false;
     },
-    syncAttachment(aid) {
-      this.$emit("sync-attachment", aid);
+    synchronizeAttachments(aid)
+    {
+      if (aid.length > 0) {
+        this.syncLoading = true;
+        syncService.synchronizeAttachments([aid]).then((response) => {
+          if (response && response.status === false) {
+            //
+          } else {
+            this.getSynchronizeState(aid).then((response) => {
+              this.synchronizeState = response;
+              this.syncLoading = false;
+            }).catch((error) => {
+              this.synchronizeState = false;
+              this.syncLoading = false;
+            });
+          }
+        });
+      }
     },
 	},
 	watch: {
@@ -254,9 +275,8 @@ export default {
 		}
 	}
 	.permissions {
-		.material-icons {
+		.material-icons, .material-icons-outlined {
 			margin: 0 10px;
-			cursor: pointer;
 			opacity: 0.3;
 
 			&.active {
@@ -266,6 +286,8 @@ export default {
 	}
 
   .material-icons {
+    cursor: pointer;
+
     &.success {
       color: var(--success-color);
     }
@@ -287,5 +309,10 @@ export default {
 			transform: translate(10px, 3px);
 		}
 	}
+
+  .sync-loader {
+    width: 30px !important;
+    height: 30px !important;
+  }
 }
 </style>

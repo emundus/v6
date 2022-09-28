@@ -45,7 +45,7 @@
 
 .vdatetime-popup__header {
   padding: 18px 30px;
-  background: #3f51b5;
+  background: #20835F;
   color: #fff;
   font-size: 32px;
 }
@@ -84,7 +84,7 @@
   padding: 10px 20px;
   background: transparent;
   font-size: 16px;
-  color: #3f51b5;
+  color: #20835F;
   cursor: pointer;
   transition: color 0.3s;
 }
@@ -205,7 +205,7 @@
 .vdatetime-calendar__month__day--selected > span > span,
 .vdatetime-calendar__month__day--selected:hover > span > span {
   color: #fff;
-  background: #3f51b5;
+  background: #20835F;
 }
 
 .vdatetime-calendar__month__day--disabled {
@@ -268,7 +268,7 @@
 }
 
 .vdatetime-time-picker__item--selected {
-  color: #3f51b5;
+  color: #20835F;
   font-size: 32px;
 }
 
@@ -324,7 +324,7 @@
 }
 
 .vdatetime-year-picker__item--selected {
-  color: #3f51b5;
+  color: #20835F;
   font-size: 32px;
 }
 
@@ -384,7 +384,7 @@
 }
 
 .vdatetime-month-picker__item--selected {
-  color: #3f51b5;
+  color: #20835F;
   font-size: 32px;
 }
 

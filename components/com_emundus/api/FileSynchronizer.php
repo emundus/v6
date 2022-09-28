@@ -18,48 +18,48 @@ class FileSynchronizer
     /**
      * @var string $type of api used
      */
-    public string $type = 'ged';
+    public $type = 'ged';
 
     /**
      * @var array $auth
      */
-    private array $auth = array();
+    private $auth = array();
 
     /**
      * @var array $headers
      */
-    private array $headers = array();
+    private $headers = array();
 
     /**
      * @var string $baseUrl
      */
-    private string $baseUrl = '';
+    private $baseUrl = '';
 
     /**
      * @var string $authenticationUrl
      */
-    private string $authenticationUrl = '';
+    private $authenticationUrl = '';
 
 
     /**
      * @var string $coreUrl
      */
-    private string $coreUrl = '';
+    private $coreUrl = '';
 
     /**
      * @var string $modelUrl
      */
-    private string $modelUrl = '';
+    private $modelUrl = '';
 
     /**
      * @var string $searchUrl
      */
-    private string $searchUrl = '';
+    private $searchUrl = '';
 
     /**
      * @var string $emundusRootDirectory
      */
-    private string $emundusRootDirectory = '';
+    private $emundusRootDirectory = '';
 
     /**
      * @param $client GuzzleClient
@@ -68,10 +68,11 @@ class FileSynchronizer
 
     public function __construct($type = 'ged')
     {
+        JLog::addLogger(['text_file' => 'com_emundus.sync.php'], JLog::ERROR, 'com_emundus.sync');
         $this->setType($type);
     }
 
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -118,7 +119,7 @@ class FileSynchronizer
         );
     }
 
-    private function getHeaders()
+    private function getHeaders(): array
     {
         return $this->headers;
     }
@@ -136,7 +137,7 @@ class FileSynchronizer
         }
     }
 
-    private function getBaseUrl()
+    private function getBaseUrl(): string
     {
         return $this->baseUrl;
     }
@@ -165,17 +166,18 @@ class FileSynchronizer
                 ->from('#__emundus_setup_sync')
                 ->where('type = '.$db->quote($this->type));
             $db->setQuery($query);
-            $params = $db->loadResult();
-            $params = json_decode($params, true);
-            $this->emundusRootDirectory = !empty($params['emundus_root_directory']) ? $params['emundus_root_directory'] : '';
 
-            if (!empty($this->emundusRootDirectory)) {
-                // check if emundus root directory exists
-                $exists = $this->checkEmundusRootDirectoryExists($this->emundusRootDirectory);
+            try {
+                $params = $db->loadResult();
+                $params = json_decode($params, true);
+                $this->emundusRootDirectory = !empty($params['emundus_root_directory']) ? $params['emundus_root_directory'] : '';
+            } catch (Exception $e) {
+                JLog::add('Error getting sync type params : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
+                $this->emundusRootDirectory = '';
+            }
 
-                if (!$exists) {
-                    $this->emundusRootDirectory = '';
-                }
+            if (!empty($this->emundusRootDirectory) && !$this->checkEmundusRootDirectoryExists($this->emundusRootDirectory)) {
+                $this->emundusRootDirectory = '';
             }
         }
 
@@ -246,7 +248,7 @@ class FileSynchronizer
         return $documentLibrary;
     }
 
-    private function getGEDEmundusRootDirectory($parentId)
+    private function getGEDEmundusRootDirectory($parentId): bool
     {
         $found = false;
 
@@ -302,7 +304,7 @@ class FileSynchronizer
 
             return json_decode($response->getBody());
         } catch (\Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('[POST] ' .$e->getMessage(), JLog::ERROR, 'com_emundus.sync');
             return $e->getMessage();
         }
     }
@@ -317,7 +319,7 @@ class FileSynchronizer
 
             return json_decode($response->getBody());
         } catch (\Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('[POST-multipart] : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
             return $e->getMessage();
         }
     }
@@ -332,7 +334,7 @@ class FileSynchronizer
 
             return json_decode($response->getBody());
         } catch (\Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add('[GET] ' .$e->getMessage(), JLog::ERROR, 'com_emundus.sync');
             return $e->getMessage();
         }
     }
@@ -345,15 +347,35 @@ class FileSynchronizer
                 'query' => $params
             ]);
 
-            return json_decode($response->getBody());
+            return $response->getStatusCode();
         } catch (\Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            $type = $e->getCode() == 404 ? JLog::WARNING : JLog::ERROR; // 404 means the file does not exist, thus we can ignore it
+            JLog::add('[DELETE] ' . $e->getMessage(), $type, 'com_emundus.sync');
+
+            return $e->getCode();
+        }
+    }
+
+    private function put($url, $params = array())
+    {
+        try {
+            $response = $this->client->put($url, [
+                'auth' => [$this->auth['consumer_key'], $this->auth['consumer_secret']],
+                'body' => json_encode($params),
+                'headers' => ['Content-Type' => 'application/json']
+            ]);
+
+            return $response->getBody();
+        } catch (\Exception $e) {
+            JLog::add('[PUT] ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
             return $e->getMessage();
         }
     }
 
 
     public function addFile($upload_id) {
+        $saved = false;
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('sync')
@@ -370,7 +392,7 @@ class FileSynchronizer
                 $path = $this->replaceTypes($relativePath, $upload_id);
 
                 if (empty($path)) {
-                    JLog::add('Could not rewrite path for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+                    JLog::add('Could not rewrite path for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
                     continue;
                 }
 
@@ -381,70 +403,159 @@ class FileSynchronizer
                 $filename = $this->getFileName($upload_id, $path);
 
                 if (empty($filepath) || empty($filename)) {
-                    JLog::add('Could not get filepath or filename for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+                    JLog::add('Could not get filepath or filename for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
                     continue;
                 }
 
                 switch ($this->type) {
                     case 'ged':
-                        $this->addGEDFile($upload_id, $filename, $filepath, $path);
+                        $saved = $this->addGEDFile($upload_id, $filename, $filepath, $path);
                         break;
                     default:
                         break;
                 }
             }
         }
+
+        return $saved;
     }
 
     public function addGEDFile($upload_id, $filename, $filepath, $relativePath) {
         $saved = false;
         $ext = pathinfo($filepath, PATHINFO_EXTENSION);
+        $file_pointer = fopen($filepath, 'r');
 
-        $params = array(
-            array(
-                'name' => 'name',
-                'contents' => $filename . '.' . $ext
-            ),
-            array(
-                'name' => 'nodeType',
-                'contents' => 'cm:content',
-            ),
-            array(
-                'name' => 'relativePath',
-                'contents' => $relativePath,
-            ),
-            array(
-                'name' => 'filedata',
-                'contents' => fopen($filepath, 'r'),
-            )
-        );
+        if ($file_pointer) {
+            $params = array(
+                array(
+                    'name' => 'name',
+                    'contents' => $filename . '.' . $ext
+                ),
+                array(
+                    'name' => 'nodeType',
+                    'contents' => 'cm:content',
+                ),
+                array(
+                    'name' => 'relativePath',
+                    'contents' => $relativePath,
+                ),
+                array(
+                    'name' => 'filedata',
+                    'contents' => $file_pointer,
+                ),
+            );
+            $properties = $this->getGEDProperties($upload_id);
+            foreach($properties as $key => $property) {
+                $params[] = array(
+                    'name' => $key,
+                    'contents' => $property
+                );
+            }
 
-        $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
+            $response = $this->postFormData($this->coreUrl . "/nodes/$this->emundusRootDirectory/children", $params);
 
-        if (!empty($response->entry)) {
-            $saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);
+            fclose($filepath);
 
-            if (!$saved) {
-                JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+            if (!empty($response->entry)) {
+                $saved = $this->saveNodeId($upload_id, $response->entry->id, $relativePath . '/' . $filename);
+
+                if (!$saved) {
+                    JLog::add('Could not save node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
+                }
+            } else {
+                JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
             }
         } else {
-            JLog::add('Could not add file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus');
+            JLog::add('Could not open file for upload_id ' . $upload_id . ' with file name :' . $filename . ' and file path : ' . $filepath, JLog::ERROR, 'com_emundus.sync');
         }
 
         return $saved;
     }
 
-    public function deleteFile($upload_id) {
+    public function updateFile($upload_id)
+    {
+        $updated = false;
+        $deleted = false;
         $nodeId = $this->getNodeId($upload_id);
 
         if (!empty($nodeId)) {
-            return $this->delete($this->coreUrl . "/nodes/$nodeId");
+            $deleted = $this->deleteFile($upload_id);
+        }
+
+        if (empty($nodeId) || $deleted) {
+            $updated = $this->addFile($upload_id);
+        }
+
+        return $updated;
+    }
+
+    public function deleteFile($upload_id): bool
+    {
+        $nodeId = $this->getNodeId($upload_id);
+
+        if (!empty($nodeId)) {
+            $response_code = $this->delete($this->coreUrl . "/nodes/$nodeId");
+
+            // 404 means the node doesn't exist
+            if ($response_code == 204 || $response_code == 404) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->delete('#__emundus_uploads_sync')
+                    ->where('node_id = ' . $db->quote($nodeId));
+                $db->setQuery($query);
+                $db->execute();
+
+                return true;
+            } else {
+                JLog::add('Could not delete file for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
+            }
+        } else {
+            JLog::add('Could not get node id for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
         }
 
         return false;
     }
 
-    private function getRelativePaths()
+    public function checkFileExists($upload_id): bool {
+        $exists = false;
+
+        switch ($this->type) {
+            case 'ged':
+                $nodeId = $this->getNodeId($upload_id);
+                if (!empty($nodeId)) {
+                    $response = $this->get($this->coreUrl . "/nodes/$nodeId");
+
+                    if (!empty($response->entry->id)) {
+                        $exists = true;
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        // update upload sync state
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $state = $exists ? 1 : 0;
+        $query->update('#__emundus_uploads_sync')
+            ->set('state = ' . $db->quote($state))
+            ->where('upload_id = ' . $db->quote($upload_id));
+
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Could not update upload sync state for upload_id ' . $upload_id, JLog::ERROR, 'com_emundus.sync');
+        }
+
+        return $exists;
+    }
+
+    private function getRelativePaths(): array
     {
         $paths = array();
 
@@ -466,7 +577,7 @@ class FileSynchronizer
                 $paths[] = $this->createPathsFromTree($node);
             }
         } catch (\Exception $e) {
-            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $paths;
@@ -489,7 +600,8 @@ class FileSynchronizer
         return $path;
     }
 
-    private function replaceTypes($path, $upload_id) {
+    private function replaceTypes($path, $upload_id)
+    {
         $unchangedPath = $path;
         $userId = $this->getApplicantId($upload_id);
         $fnum = $this->getFnum($upload_id);
@@ -512,12 +624,12 @@ class FileSynchronizer
 
                 $path = str_replace($tags['patterns'], $tags['replacements'], $path);
             } else {
-                JLog::add('EmundusModelEmails class not found', JLog::ERROR, 'com_emundus');
+                JLog::add('EmundusModelEmails class not found', JLog::ERROR, 'com_emundus.sync');
             }
         }
 
         if ($path == $unchangedPath) {
-            JLog::add('Could not replace types for path ' . $path, JLog::ERROR, 'com_emundus');
+            JLog::add('Could not replace types for path ' . $path, JLog::ERROR, 'com_emundus.sync');
             return false;
         }
 
@@ -539,7 +651,12 @@ class FileSynchronizer
             ->where("upload_id = " . $db->quote($upload_id));
         $db->setQuery($query);
 
-        return $db->loadResult();
+        try {
+            return $db->loadResult();
+        } catch (\Exception $e) {
+            JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus.sync');
+            return '';
+        }
     }
 
     private function saveNodeId($upload_id, $node_id, $path)
@@ -564,10 +681,38 @@ class FileSynchronizer
         } catch (Exception $e) {
             $app = JFactory::getApplication();
             $app->enqueueMessage($e->getMessage(), 'error');
-            JLog::add('Error inserting into #__emundus_uploads_sync: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error inserting into #__emundus_uploads_sync: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $saved;
+    }
+
+    private function updateNodeId($upload_id, $node_id, $params)
+    {
+        $updated = false;
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->update('#__emundus_uploads_sync')
+            ->set('node_id = ' . $db->quote($node_id))
+            ->where("upload_id = " . $db->quote($upload_id));
+
+        if (!empty($params)) {
+            foreach ($params as $key => $value) {
+                $query->set($key . ' = ' . $db->quote($value));
+            }
+        }
+
+        $db->setQuery($query);
+
+        try {
+            $updated = $db->execute();
+        } catch (Exception $e) {
+            $app = JFactory::getApplication();
+            $app->enqueueMessage($e->getMessage(), 'error');
+            JLog::add('Error updating #__emundus_uploads_sync: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+        }
+
+        return $updated;
     }
 
     private function getSyncId()
@@ -584,7 +729,7 @@ class FileSynchronizer
         try {
             $sync_id = $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('Error getting sync_id: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting sync_id: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $sync_id;
@@ -609,6 +754,7 @@ class FileSynchronizer
         }
 
         $filename = str_replace(' ', '', $filename);
+        $filename = str_replace(['/', '\\'], '', $filename);
 
         // check if filename already exists
         $query->clear()
@@ -625,7 +771,7 @@ class FileSynchronizer
                 $filename = $this->getUniqueFileName($filename, $path, $existing_files);
             }
         } catch (Exception $e) {
-            JLog::add('Error getting existing files: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting existing files: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $filename;
@@ -642,7 +788,7 @@ class FileSynchronizer
         return $filename;
     }
 
-    private function getFnum($upload_id)
+    private function getFnum($upload_id): string
     {
         $fnum = '';
         $db = JFactory::getDbo();
@@ -656,15 +802,13 @@ class FileSynchronizer
         try {
             $fnum = $db->loadResult();
         } catch (Exception $e) {
-            JLog::add('Error getting fnum: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting fnum: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $fnum;
     }
 
-
-
-    private function getFilePath($upload_id)
+    private function getFilePath($upload_id): string
     {
         $filePath = "";
         $user = $this->getApplicantId($upload_id);
@@ -680,14 +824,15 @@ class FileSynchronizer
             $filename = $db->loadResult();
             $filePath = JPATH_BASE . DS . EMUNDUS_PATH_REL . DS . $user . DS . $filename;
         } catch (Exception $e) {
-            JLog::add('Error getting filename: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            JLog::add('Error getting filename: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
         }
 
         return $filePath;
     }
 
-    private function getApplicantId($upload_id)
+    private function getApplicantId($upload_id): string
     {
+        $applicant_id = '';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('applicant_id')
@@ -696,13 +841,19 @@ class FileSynchronizer
             ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
 
         $db->setQuery($query);
-        $applicant_id = $db->loadResult();
+
+        try {
+            $applicant_id = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting applicant_id: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+        }
 
         return trim($applicant_id);
     }
 
-    private function getCampaignLabel($upload_id)
+    private function getCampaignLabel($upload_id): string
     {
+        $campaign_label = '';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('#__emundus_setup_campaigns.label')
@@ -712,13 +863,19 @@ class FileSynchronizer
             ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
 
         $db->setQuery($query);
-        $campaign_label = $db->loadResult();
+
+        try {
+            $campaign_label = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting campaign label: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+        }
 
         return trim($campaign_label);
     }
 
-    private function getCampaignYear($upload_id)
+    private function getCampaignYear($upload_id): string
     {
+        $year = '';
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('#__emundus_setup_campaigns.year')
@@ -728,13 +885,19 @@ class FileSynchronizer
             ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
 
         $db->setQuery($query);
-        $year = $db->loadResult();
+
+        try {
+            $year = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting year: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+        }
 
         return trim($year);
     }
 
-    private function getDocumentType($upload_id)
+    private function getDocumentType($upload_id): string
     {
+        $type = "";
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
         $query->select('value')
@@ -743,8 +906,183 @@ class FileSynchronizer
             ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
 
         $db->setQuery($query);
-        $fnum = $db->loadResult();
+        try {
+            $type = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting document type: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+        }
 
-        return trim($fnum);
+        return trim($type);
+    }
+
+    public function getAspect($aspect_id)
+    {
+        $response = $this->get($this->modelUrl . '/aspects/' . $aspect_id);
+
+        if (!empty($response)) {
+            return $response->entry;
+        } else {
+            JLog::add('Error getting aspect: ' . preg_replace("/[\r\n]/"," ",$this->modelUrl . '/aspects/' . $aspect_id), JLog::ERROR, 'com_emundus.sync');
+            return false;
+        }
+    }
+
+    public function getAspects()
+    {
+       $response = $this->get($this->modelUrl . '/aspects');
+
+       if (!empty($response)) {
+           return $response->entries;
+       } else {
+           JLog::add('Error getting aspects', JLog::ERROR, 'com_emundus.sync');
+           return false;
+       }
+    }
+
+    private function getGEDProperties($upload_id): array
+    {
+        $properties = [];
+
+        if (!empty($upload_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('params')
+                ->from('#__emundus_setup_attachments')
+                ->leftJoin('#__emundus_uploads ON #__emundus_uploads.attachment_id = #__emundus_setup_attachments.id')
+                ->where('#__emundus_uploads.id = ' . $db->quote($upload_id));
+
+            $db->setQuery($query);
+
+            try {
+                $params = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Error getting params: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+            }
+
+            if (!empty($params)) {
+                $params = json_decode($params);
+
+                if (!empty($params->aspects)) {
+                    $params->aspects = json_decode($params->aspects);
+                    $attachment_aspects = $params->aspects->default ? $this->getConfigAspects() : $params->aspects->aspects;
+                } else {
+                    $attachment_aspects = $this->getConfigAspects();
+                }
+            } else {
+                $attachment_aspects = $this->getConfigAspects();
+            }
+
+            foreach ($attachment_aspects as $aspect) {
+                if (!empty($aspect->mapping)) {
+                    $query->clear()
+                        ->select('tag')
+                        ->from('#__emundus_setup_tags')
+                        ->where('id = ' . $db->quote($aspect->mapping));
+
+                    $db->setQuery($query);
+
+                    try {
+                        $tag = $db->loadResult();
+
+                        if (!empty($tag)) {
+                            $properties[$aspect->name] = $tag;
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Error getting tag: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+                    }
+                }
+            }
+        }
+
+        return $this->replaceValues($properties, $upload_id);
+    }
+
+    private function getAspectNames()
+    {
+        $aspectNames = [];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('params')
+            ->from('#__emundus_setup_sync')
+            ->where('type = ' . $db->quote($this->type));
+
+        $db->setQuery($query);
+
+        try {
+            $params = $db->loadResult();
+            $params = json_decode($params, true);
+
+            if (!empty($params['aspectNames'])){
+                $aspectNames = $params['aspectNames'];
+            }
+        } catch (Exception $e) {
+            JLog::add('Error getting config: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+        }
+
+        return $aspectNames;
+    }
+
+
+    private function getConfigAspects(): array
+    {
+        $aspects = [];
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('config')
+            ->from('#__emundus_setup_sync')
+            ->where('type = ' . $db->quote($this->type));
+
+        $db->setQuery($query);
+
+        try {
+            $config = $db->loadResult();
+        } catch (Exception $e) {
+            JLog::add('Error getting config: ' . preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus.sync');
+        }
+
+        if (!empty($config)) {
+            $config = json_decode($config);
+            if (!empty($config->aspects)) {
+                $aspects = $config->aspects;
+            }
+        }
+
+        return $aspects;
+    }
+
+    private function replaceValues($values, $upload_id)
+    {
+        if (!empty($values) && !empty($upload_id)) {
+            $userId = $this->getApplicantId($upload_id);
+            $fnum = $this->getFnum($upload_id);
+
+            if (!empty($userId) && !empty($fnum)) {
+                if (class_exists('EmundusModelEmails')) {
+                    $m_emails = new EmundusModelEmails();
+                    try {
+                        $tags = $m_emails->setTags($userId, [], $fnum);
+
+                        foreach ($values as $key => $value) {
+                            $old_value = $value;
+
+                            $new_value = str_replace($tags['patterns'], $tags['replacements'], '/\[' . $value . '\]/',);
+
+                            if ('[' . $old_value . ']' !== $new_value) {
+                                $values[$key] = $new_value;
+                            } else {
+                                unset($values[$key]);
+                            }
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Error getting tags: ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), JLog::ERROR, 'com_emundus.sync');
+                    }
+                }
+            }
+        }
+
+        return $values;
     }
 }

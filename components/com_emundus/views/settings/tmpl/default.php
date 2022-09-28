@@ -121,6 +121,8 @@ JText::script('COM_EMUNDUS_ONBOARD_HOME_TITLE');
 JText::script('COM_EMUNDUS_ONBOARD_HOME_CONTENT');
 JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
 JText::script('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS');
+JText::script('COM_EMUNDUS_ONBOARD_STYLE_TOOL_GENERAL');
+JText::script('COM_EMUNDUS_FORM_BUILDER_ALLOWED_FORMATS');
 
 ## TUTORIAL ##
 JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
@@ -219,6 +221,13 @@ JText::script('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SYNC_TYPE_LOC
 JText::script('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SYNC_TYPE_GED');
 JText::script('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_READ');
 JText::script('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_WRITE');
+JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS');
+JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD');
+JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MAPPING');
+JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_UPDATE');
+JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD');
+JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD_ADD_FROM_FILE');
+JText::script('COM_EMUNDUS_ATTACHMENT_STORAGE_DEFAULT_ASPECTS_MAPPING');
 ## END ##
 
 ## DASHBOARD ##
@@ -268,26 +277,38 @@ JText::script('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_DOUGHNUT');
 JText::script('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_POLARAREA');
 JText::script('COM_EMUNDUS_ONBOARD_DASHBOARD_TOOL_WIDGETS_RADAR');
 ## END ##
+
 $lang = JFactory::getLanguage();
-$actualLanguage = substr($lang->getTag(), 0 , 2);
+$short_lang = substr($lang->getTag(), 0 , 2);
+$current_lang = $lang->getTag();
 $languages = JLanguageHelper::getLanguages();
-if(count($languages) > 1){
+if (count($languages) > 1) {
     $many_languages = '1';
+    require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+    $m_translations = new EmundusModelTranslations();
+    $default_lang = $m_translations->getDefaultLanguage()->lang_code;
 } else {
     $many_languages = '0';
+    $default_lang = $current_lang;
 }
 
 $user = JFactory::getUser();
-$coordinator_access = EmundusHelperAccess::isCoordinator($user->id);
+$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
 $sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
+
+$xmlDoc = new DOMDocument();
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $release_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
 ?>
 
 <div id="em-component-vue"
      component="settings"
-     actualLanguage="<?= $actualLanguage ?>"
+     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
+     defaultLang="<?= $default_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"
      sysadminAccess="<?= $sysadmin_access ?>"
      manyLanguages="<?= $many_languages ?>"
 ></div>
 
-<script src="media/com_emundus_vue/app_emundus.js"></script>
+<script src="media/com_emundus_vue/app_emundus.js?<?php echo $release_version ?>"></script>
