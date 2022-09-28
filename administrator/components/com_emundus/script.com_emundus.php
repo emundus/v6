@@ -82,7 +82,7 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_emundusflow', array('show_programme'), array('0'));
                 EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log', 'log_email', 'cron_rungate') , array('0', 'mail@emundus.fr', '1'));
 
-                EmundusHelperUpdate::updateConfigurationFile('lifetime', '180');
+                EmundusHelperUpdate::updateConfigurationFile('lifetime', '45');
 
                 # Insert translations in override file
                 EmundusHelperUpdate::insertTranslationsTag('CREATE_A_NEW_FILE','Créer un nouveau dossier pour un utilisateur existant','override',null,'fabrik_elements','label');
