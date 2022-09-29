@@ -40,13 +40,13 @@
 			<tbody>
 				<template v-if="hasBeenGroupBy">
 					<template v-for="group in items">
-						<tr :class="retrieveGroupeClassColor(group)">
+						<tr @click.self="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
 							<td :colspan="showingListColumns.length+1">
 								<input type="checkbox" class="em-switch input" style="margin-top: -2px;" @change="(e) => toggleCheckGroupRows(e, group)">
 								<span class="em-ml-32"><b>{{ rowGroupByRowKeyName(group) }}</b></span>
 							</td>
 							<td style="border-left: none;text-align: end">
-								<div @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)">
+								<div>
 									<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons" >arrow_drop_down</span>
 									<span v-else class="material-icons">arrow_drop_up</span>
 								</div>
@@ -183,7 +183,7 @@ export default {
 		},
 		retrieveGroupeClassColor(group) {
 			const data = this.groupByItemArraySubValues(group);
-			let valueToHighlight = "fait";
+			let valueToHighlight = 'fait';
 
 			if (data.find((item) => {return item.etat == 'a_faire' || item.etat == 'sans_objet'})) {
 				valueToHighlight = 'a_faire';
