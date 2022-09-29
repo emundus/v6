@@ -514,9 +514,6 @@
     .campaign-content .below-content a{
         width: 19.3%;
     }
-    .campaingapplycontent strong {
-        width: 150px;
-    }
 }
 
 @media all and (max-width: 1227px) {

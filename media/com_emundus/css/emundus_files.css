@@ -2325,9 +2325,11 @@ label[for="em-file_to_upload"]:hover {
 .em-container-form-body{
     padding: 20px;
 }
-footer#g-footer {
+
+.gantry:not(.view-programme) footer#g-footer {
     padding: 20px 20px 20px 80px !important;
 }
+
 footer#g-footer {
     background: transparent;
     border-top: 1px solid #bbb;
