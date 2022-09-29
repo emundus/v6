@@ -40,7 +40,7 @@
 			<tbody>
 				<template v-if="hasBeenGroupBy">
 					<template v-for="group in items">
-						<tr @click.self="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)" :class="retrieveGroupeClassColor(group)">
+						<tr @click="(e) => {toggle(rowGroupByRowKeyName(group), e); retrieveGroupeClassColor(group)}" :class="retrieveGroupeClassColor(group)">
 							<td :colspan="showingListColumns.length+1">
 								<input type="checkbox" class="em-switch input" style="margin-top: -2px;" @change="(e) => toggleCheckGroupRows(e, group)">
 								<span class="em-ml-32"><b>{{ rowGroupByRowKeyName(group) }}</b></span>
@@ -158,7 +158,8 @@ export default {
 		this.retrieveListData();
 	},
 	methods: {
-		toggle(key) {
+		toggle(key, e) {
+			console.log(e, 'event toggle');
 			const index = this.opened.indexOf(key);
 			if (index > -1) {
 				this.opened.splice(index, 1);
