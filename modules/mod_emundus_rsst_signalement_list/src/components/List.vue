@@ -159,8 +159,7 @@ export default {
 	},
 	methods: {
 		toggle(key, e) {
-			console.log(e.target.classList, 'event toggle');
-			if (!e.target.classList.includes('em-switch')) {
+			if (!e.target.classList.contains('em-switch')) {
 				const index = this.opened.indexOf(key);
 				if (index > -1) {
 					this.opened.splice(index, 1);
