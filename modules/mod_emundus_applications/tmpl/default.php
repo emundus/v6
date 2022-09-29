@@ -9,15 +9,14 @@
 defined('_JEXEC') or die;
 ?>
 <div class="add-application-actions">
-    <?php
-        echo $description;
-    ?>
     <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
         <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
             <span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
         </a>
-        <hr>
     <?php endif; ?>
+    <?php
+    echo $description;
+    ?>
 </div>
 <?php if (!empty($applications)) : ?>
     <div class="<?= $moduleclass_sfx ?>">
@@ -189,11 +188,11 @@ defined('_JEXEC') or die;
     echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
     echo '<hr>';
 endif; ?>
-
+<div class="add-application-actions">
 <?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
     <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
-
+</div>
 <?php if (!empty($filled_poll_id) && !empty($poll_url) && $filled_poll_id == 0 && $poll_url != "") : ?>
     <div class="modal fade" id="em-modal-form" style="z-index:99999" tabindex="-1" role="dialog" aria-labelledby="em-modal-form" aria-hidden="true">
         <div class="modal-dialog modal-lg">
