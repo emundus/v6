@@ -159,12 +159,14 @@ export default {
 	},
 	methods: {
 		toggle(key, e) {
-			console.log(e, 'event toggle');
-			const index = this.opened.indexOf(key);
-			if (index > -1) {
-				this.opened.splice(index, 1);
-			} else {
-				this.opened.push(key)
+			console.log(e.target.classList, 'event toggle');
+			if (!e.target.classList.includes('em-switch')) {
+				const index = this.opened.indexOf(key);
+				if (index > -1) {
+					this.opened.splice(index, 1);
+				} else {
+					this.opened.push(key)
+				}
 			}
 		},
 		groupByItemArraySubValues(item) {
