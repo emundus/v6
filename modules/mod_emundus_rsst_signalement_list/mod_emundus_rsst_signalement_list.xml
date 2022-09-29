@@ -31,6 +31,17 @@
                 <field name="fabrik_list_particular_conditional_column_values" type="string" label="Particular Showing where column value (SQL clause column values), multiple column values separed by '|' . Ex : col1_value_1|col1_value_2,col2_value,col3_value"></field>
                 <field name="fabrik_list_column_to_be_shown_as_badge" type="string" label="Particular Showing column as badge . Columns list separed by comma Ex: col1,col2,col3"></field>
                 <field name="fabrik_list_column_to_not_show_when_filtered_by" type="string" label="Unwanted columns to show in table list when filtered by . Columns list separed by comma Ex: col1,col2,col3"></field>
+                <field
+                        name="fabrik_list_readonly_profiles"
+                        type="sql"
+                        multiple="true"
+                        label="Profiles eMundus en lecture seule"
+                        query="SELECT id, label FROM #__emundus_setup_profiles where published = 0"
+                        description="Liste Fabrik à afficher"
+                        key_field="id"
+                        value_field="label"
+                >
+                </field>
             </fieldset>
         </fields>
     </config>

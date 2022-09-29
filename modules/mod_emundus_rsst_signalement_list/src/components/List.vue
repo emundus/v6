@@ -62,7 +62,8 @@
 	               :listColumnShowingAsBadge="listColumnShowingAsBadge"
 	               :filterColumnUsedActually="filterColumnUsedActually"
 	               :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
-	               @toggle-check="toggleCheckRow"
+	               :readOnly="readOnly"
+						     @toggle-check="toggleCheckRow"
 						/>
 					</template>
 				</template>
@@ -77,6 +78,7 @@
 				     :listColumnShowingAsBadge="listColumnShowingAsBadge"
 				     :filterColumnUsedActually="filterColumnUsedActually"
 				     :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+				     :readOnly="readOnly"
 				     @toggle-check="toggleCheckRow"
 				/>
 				<tr v-if="items.length == 0">
@@ -127,6 +129,10 @@ export default {
 		listColumnToNotShowingWhenFilteredBy:{
 			type:String,
 			required: false
+		},
+		readOnly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: () => ({

@@ -1,8 +1,12 @@
 <template>
     <div id="app">
-        <List :listId="fabrikListId" :ListActionColumn="fabrikListActionColumn" :listParticularConditionalColumn="fabrikListParticularConditionalColumn"
-              :listParticularConditionalColumnValues="fabrikListParticularConditionalColumnValues" :listColumnShowingAsBadge="fabrikListColumnShowingAsBadge"
+        <List :listId="fabrikListId"
+              :ListActionColumn="fabrikListActionColumn"
+              :listParticularConditionalColumn="fabrikListParticularConditionalColumn"
+              :listParticularConditionalColumnValues="fabrikListParticularConditionalColumnValues"
+              :listColumnShowingAsBadge="fabrikListColumnShowingAsBadge"
               :listColumnToNotShowingWhenFilteredBy="fabrikListColumnToNotShowingWhenFilteredBy"
+              :readOnly="readOnly"
         />
     </div>
 </template>
@@ -40,7 +44,11 @@ export default {
         fabrikListColumnToNotShowingWhenFilteredBy:{
             type: String,
             required: false
-        }
+        },
+	      readOnly: {
+		        type: Boolean,
+		        default: false
+	      }
     },
 	created() {
 			moment.locale('fr');
