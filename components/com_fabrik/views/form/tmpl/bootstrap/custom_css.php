@@ -99,7 +99,8 @@ echo <<<EOT
 }
 
 .view-form main#g-main-mainbody {
-    padding-right: 5%;
+    width: 90%;
+    margin-left: 8%;
 }
 
 .view-registration main#g-main-mainbody {

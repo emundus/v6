@@ -1211,12 +1211,7 @@ body>.g-container {
 .tchooz-single-campaign {
   margin-top: 3%;
 
-  .single-campaign{
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  #faq,#documents {
+   #faq,#documents {
     flex-direction: column;
   }
 
@@ -5044,6 +5039,20 @@ button.swal2-cancel.goback-btn {
 
 
   @media screen and (min-width: 768px) and (max-width: 959px) {
+
+    /* SINGLE CAMPAIGN */
+
+    .view-programme .tchooz-single-campaign .single-campaign {
+      flex-direction: column;
+
+      .right-side {
+        width: 64% !important;
+      }
+      .below-content {
+        overflow: initial;
+        width: 38%;
+      }
+    }
 
     /* FORMULAIRES  - GP REPEAT TABLEAU */
     .view-form .fabrikGroup .repeatGroupTable  {
