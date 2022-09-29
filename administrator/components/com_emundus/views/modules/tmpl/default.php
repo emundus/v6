@@ -12,13 +12,14 @@ defined('_JEXEC') or die('RESTRICTED');
 <table width="100%" border="0">
   <tr>
       <td><h1>Installer des modules</h1></td>
-      <?php foreach ($this->modules as $module) ?>
+      <?php foreach ($this->modules as $module): ?>
         <tr>
-        <td><h3><?php echo $module ?></h3></td>
+        <td><h3><?php echo $module->label ?></h3></td>
         </tr>
         <tr>
-            <td><button class="em-primary-button em-w-auto" type="button" onclick="install('<?php echo strtolower($module) ?>')">Installer le module</button></td>
+            <td><button class="em-primary-button em-w-auto" type="button" onclick="install('<?php echo strtolower($module->module) ?>')">Installer le module</button></td>
         </tr>
+    <?php endforeach; ?>
   </tr>
 </table>
 </body></html>
@@ -38,7 +39,7 @@ defined('_JEXEC') or die('RESTRICTED');
                     console.log('here')
                     Swal.fire({
                         title: 'Installation effectuée',
-                        text: 'Installation du module ' + module + ' effectuée avec succès',
+                        text: 'Installation du module effectuée avec succès',
                         type: "success",
                         showCancelButton: false,
                         reverseButtons: true,

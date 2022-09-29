@@ -277,4 +277,61 @@ class EmundusModelModules extends JModelList {
 
 		return true;
 	}
+
+    public function installHomepage(){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('introtext')
+                ->from($db->quoteName('#__content'))
+                ->where($db->quoteName('id') . ' = 52');
+            $db->setQuery($query);
+            $introtext = $db->loadResult();
+
+            $query->clear()
+                ->update($db->quoteName('#__content'))
+                ->set($db->quoteName('state') . ' = 0')
+                ->where($db->quoteName('id') . ' = 52');
+            $db->setQuery($query);
+            $db->execute();
+
+            $query->clear()
+                ->select('id, params')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' like ' . $db->quote('mod_emundus_campaign'))
+                ->andWhere($db->quoteName('published') . ' = 1');
+            $db->setQuery($query);
+            $modules = $db->loadObjectList();
+
+            foreach ($modules as $module){
+                $params = json_decode($module->params);
+                if($params->mod_em_campaign_layout == 'default_g5'){
+                    $params->mod_em_campaign_layout = 'default_tchooz';
+                    $params->mod_em_campaign_intro = $introtext;
+
+                    $query->clear()
+                        ->update($db->quoteName('#__modules'))
+                        ->set($db->quoteName('showtitle') . ' = 0')
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('id') . ' = ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    $query->clear()
+                        ->update($db->quoteName('#__falang_content'))
+                        ->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($params)))
+                        ->where($db->quoteName('reference_table') . ' like ' . $db->quote('modules'))
+                        ->andWhere($db->quoteName('reference_field') . ' like ' . $db->quote('params'))
+                        ->andWhere($db->quoteName('reference_id') . ' like ' . $db->quote($module->id));
+                    $db->setQuery($query);
+                    $db->execute();
+                }
+            }
+
+            EmundusHelperUpdate::installExtension('MOD_EMUNDUS_BANNER_XML','mod_emundus_banner','{"name":"MOD_EMUNDUS_BANNER_XML","type":"module","creationDate":"October 2022","author":"HUBINET Brice, GRANDIN Laura","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"contact@emundus.fr","authorUrl":"www.emundus.fr","version":"1.34.0","description":"MOD_EMUNDUS_BANNER_XML_DESCRIPTION","group":"","filename":"mod_emundus_banner"}','module');
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }

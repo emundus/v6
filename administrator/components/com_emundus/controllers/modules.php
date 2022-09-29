@@ -30,6 +30,9 @@ class EmundusControllerModules extends JControllerLegacy
             case 'qcm':
                 $result['status'] = $this->installQcm();
                 break;
+            case 'homepage':
+                $result['status'] = $this->installHomepage();
+                break;
             default:
                 $result['message'] = 'Module not found';
         }
@@ -65,6 +68,14 @@ class EmundusControllerModules extends JControllerLegacy
         ];
         EmundusHelperUpdate::addJoomlaMenu($params,$parent['id']);
 
+
+        return true;
+    }
+
+    function installHomepage() {
+        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/modules.php');
+        $mModules = new EmundusModelModules();
+        $mModules->installHomepage();
 
         return true;
     }

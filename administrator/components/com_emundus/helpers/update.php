@@ -63,6 +63,41 @@ class EmundusHelperUpdate
         }
     }
 
+    public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('extension_id')
+                ->from($db->quoteName('#__extensions'))
+                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
+            $db->setQuery($query);
+            $is_existing = $db->loadResult();
+
+            if(empty($is_existing)){
+                $query->clear()
+                    ->insert($db->quoteName('#__extensions'))
+                    ->set($db->quoteName('name') . ' = ' . $db->quote($name))
+                    ->set($db->quoteName('type') . ' = ' . $db->quote($type))
+                    ->set($db->quoteName('element') . ' = ' . $db->quote($element))
+                    ->set($db->quoteName('folder') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
+                    ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
+                    ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
+                $db->setQuery($query);
+                return $db->execute();
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+
+        return true;
+    }
+
+
     /**
      * Update a parameter of a Joomla module
      *

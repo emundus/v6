@@ -37,7 +37,16 @@ class EmundusViewModules extends JViewLegacy
         JToolBarHelper::preferences('com_emundus', '580', '750');
         JToolBarHelper::help('screen.cpanel', true);
 
-        $modules = ['QCM'];
+        $qcm_module = new stdClass();
+        $qcm_module->label = 'QCM';
+        $qcm_module->module = 'qcm';
+        $modules[] = $qcm_module;
+
+        $homepage_module = new stdClass();
+        $homepage_module->label = 'Nouvelle page d\'accueil';
+        $homepage_module->module = 'homepage';
+        $modules[] = $homepage_module;
+
         $this->assignRef('modules', $modules);
 
         parent::display($tpl);
