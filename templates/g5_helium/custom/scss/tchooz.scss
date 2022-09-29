@@ -402,6 +402,13 @@ input:focus + .em-slider {
   align-items: end;
 }
 
+.em-flex-row-justify-end{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: end;
+}
+
 .em-flex-row-start{
   display: flex;
   flex-direction: row;
@@ -1104,6 +1111,20 @@ input:focus + .em-slider {
   height: 8px;
   border-radius: 50%;
   background-color: $yellow-500;
+}
+
+.em-card-neutral-100{
+  background-color: $neutral-100;
+  border-radius: 16px;
+  padding: 32px;
+  cursor: pointer;
+}
+
+.em-card-white{
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  cursor: pointer;
 }
 
 /** SWAL CUSTOM CLASSES **/
