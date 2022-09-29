@@ -434,6 +434,12 @@ p,
   left: 75px;
 }
 
+.view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
+  width: auto;
+  left: 38px;
+  position: relative;
+}
+
 .g-container.g-flushed{
   width: calc(100% - 75px) !important;
   margin: unset;
@@ -446,12 +452,6 @@ p,
 .view-list #g-container-main {
     padding-left: 5% !important;
     padding-right: 5% !important;
-}
-
-.view-list #g-container-main .g-container {
-  width: auto;
-  left: 38px;
-  position: relative;
 }
 
 .row-fluid .span3 {
@@ -1230,10 +1230,6 @@ body>.g-container {
 
   .below-content{
     width: 30%;
-  }
-
-  .campaingapply{
-    padding-right: 50px;
   }
 
   .campaign-documents{
@@ -5008,7 +5004,7 @@ button.swal2-cancel.goback-btn {
     }
   }
 
-@media screen and (min-width: 480px) and (max-width: 825px) {
+@media screen and (min-width: 480px) and (max-width: 959px) {
 
   /* FOOTER */
   footer#g-footer .footer-rgpd {
@@ -5166,6 +5162,10 @@ button.swal2-cancel.goback-btn {
   @media screen and (max-width: 991px) {
     section.container {
       float: none !important;
+    }
+
+    .tchooz-single-campaign .right-side {
+      width: 64%;
     }
   }
 
