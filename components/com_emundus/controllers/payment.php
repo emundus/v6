@@ -111,4 +111,8 @@ class EmundusControllerPayment extends JControllerLegacy
         echo json_encode(array('status' => $updated));
         exit;
     }
+
+    public function resetHikashopSession() {
+        JFactory::getSession()->set('emundusHikashopUser', null);
+    }
 }

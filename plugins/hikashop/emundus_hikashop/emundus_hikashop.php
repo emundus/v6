@@ -24,8 +24,19 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
         parent::__construct($subject, $config);
     }
 
-    public function onAfterOrderCreate(&$order){
+    public function onBeforeOrderCreate(&$order, &$do) {
+        $app = JFactory::getApplication();
+        $valid_session = $this->checkHikashopSession();
 
+        if (!$valid_session) {
+            $do = false;
+            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+            $app->redirect('index.php');
+            exit;
+        }
+    }
+
+    public function onAfterOrderCreate(&$order){
         // We get the emundus payment type from the config
         $eMConfig = JComponentHelper::getParams('com_emundus');
         $em_application_payment = $eMConfig->get('application_payment', 'user');
@@ -146,7 +157,10 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
     public function onAfterOrderUpdate(&$order)
     {
-        JFactory::getSession()->set('emundusHikashopUser', null);
+        $status_reset_session = ['cancelled', 'confirmed'];
+        if (in_array($order['order_status'], $status_reset_session)) {
+            JFactory::getSession()->set('emundusHikashopUser', null);
+        }
 
         $db = JFactory::getDbo();
         $order_id = $order->order_parent_id ?: $order->order_id;
@@ -221,17 +235,66 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
     public function onBeforeCartSave(&$element,&$do) {
         $app = JFactory::getApplication();
 
-        // check if input goBackInHistory is clicked
-        if (isset($_POST['goBackInHistory'])) {
-            $goBackInHistory = filter_input(INPUT_POST, 'goBackInHistory', FILTER_SANITIZE_STRING);
-            if (!empty($goBackInHistory)) {
-                // delete hikashop session user
-                JFactory::getSession()->set('emundusHikashopUser', null);
-
-                $do = false;
-                return $app->redirect('index.php');
-            }
+        if (!$this->checkHikashopSession()) {
+            $do = false;
+            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+            $app->redirect('index.php');
+            exit;
         }
+    }
+
+    public function onHikashopBeforeDisplayView(&$view) {
+        if (!$this->checkHikashopSession()) {
+            $app = JFactory::getApplication();
+            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
+            $app->redirect('index.php');
+            exit;
+        }
+        $user = JFactory::getSession()->get('emundusUser');
+
+        echo '<h3 style="margin: 16px 0;">Récapitulatif</h3><p>Vous êtes sur le paiement de votre dossier ' . $user->fnum . ' de la campagne ' . $user->campaign_name . '</p>
+        <form id="quitPaymentForm" style="margin: 16px 0;">
+            <input id="goBackToForms" class="btn btn-primary" type="button" value="Revenir au formulaire">
+            <input id="goBackToHomepage" class="btn btn-primary" type="button" value="Revenir à la page d\'accueil" onclick="window.location.assign(window.location.origin)">
+        </form>
+        <script>
+            const fnum = "' . $user->fnum  . '";
+            const url = window.location.origin + \'/component/emundus/?task=openfile&fnum=\' + fnum;
+            document.querySelector("#goBackToForms").addEventListener("click", (e) => {
+                e.preventDefault();
+                
+                xhr = new XMLHttpRequest();
+                xhr.open("POST", "index.php?option=com_emundus&controller=payment&task=resetHikashopSession", true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            window.location.assign(url);
+                        }
+                    }
+                };
+                xhr.send();
+            });
+            
+            document.querySelector("#goBackToHomepage").addEventListener("click", (e) => {
+                e.preventDefault();
+                
+                xhr = new XMLHttpRequest();
+                xhr.open("POST", "index.php?option=com_emundus&controller=payment&task=resetHikashopSession", true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            window.location.assign(window.location.origin);
+                        }
+                    }
+                };
+                xhr.send();
+            });
+        </script>';
+    }
+
+    private function checkHikashopSession(): bool
+    {
+        $valid_session = true;
 
         $hikashop_user = JFactory::getSession()->get('emundusHikashopUser');
         $user = JFactory::getSession()->get('emundusUser');
@@ -243,12 +306,11 @@ class PlgHikashopEmundus_hikashop extends JPlugin {
 
             JFactory::getSession()->set('emundusHikashopUser', $hikashop_user);
         } else if ($hikashop_user->fnum != $user->fnum) {
-            $do = false;
             $user->fnum = $hikashop_user->fnum;
             JFactory::getSession()->set('emundusUser', $user);
-
-            $app->enqueueMessage(JText::_('ANOTHER_HIKASHOP_SESSION_OPENED'), 'error');
-            $app->redirect('index.php');
+            $valid_session = false;
         }
+
+        return $valid_session;
     }
 }
