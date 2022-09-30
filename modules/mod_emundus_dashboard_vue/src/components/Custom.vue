@@ -33,21 +33,9 @@
 						:clear-on-select="false"
 						:searchable="true"
 					></multiselect>
-					<multiselect
-						v-model="selectedWidget"
-						:class="'tchooz-widget__select'"
-						label="label"
-						track-by="id"
-						:options="widgets"
-						:multiple="false"
-						:taggable="false"
-						select-label=""
-						selected-label=""
-						deselect-label=""
-						:close-on-select="true"
-						:clear-on-select="false"
-						:searchable="false"
-					></multiselect>
+          <select v-model="selectedWidgetId" @change="updateWidgetRender">
+            <option v-for="widget in widgets" :value="widget.id">{{ widget.label }}</option>
+          </select>
 				</div>
 				<div v-if="loading" class="lds-ring">
 					<div></div>
@@ -96,6 +84,7 @@ export default {
 		chart_render: 0,
 		position: null,
 		selectedWidget: null,
+		selectedWidgetId: null,
 		selectedFilters: [],
 		filters: [],
 		translations: {
@@ -110,6 +99,16 @@ export default {
 		dataSource: {},
 		chart_values: [],
 	}),
+
+  created() {
+    this.getTranslations();
+    this.selectedWidget = this.widget;
+    this.selectedWidgetId = this.widget.id;
+    this.position = this.selectedWidget.position;
+    this.render();
+    this.getWidgets();
+  },
+
 	methods: {
 		getTranslations() {
 			this.translations.selectfilter = this.translate(
@@ -140,7 +139,7 @@ export default {
 			this.loading = true;
 			axios({
 				method: "post",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=renderchartbytag",
+				url: "index.php?option=com_emundus&controller=dashboard&task=renderchartbytag",
 				data: qs.stringify({
 					widget: this.selectedWidget.id,
 					filters: this.selectedFilters,
@@ -166,7 +165,7 @@ export default {
 		getArticle() {
 			axios({
 				method: "get",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getarticle",
+				url: "index.php?option=com_emundus&controller=dashboard&task=getarticle",
 				params: {
 					widget: this.selectedWidget.id,
 					article: this.selectedWidget.article_id,
@@ -187,7 +186,7 @@ export default {
 		getEval() {
 			axios({
 				method: "get",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=geteval",
+				url: "index.php?option=com_emundus&controller=dashboard&task=geteval",
 				params: {
 					widget: this.selectedWidget.id,
 				},
@@ -207,7 +206,7 @@ export default {
 		getWidgets() {
 			axios({
 				method: "get",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getallwidgetsbysize",
+				url: "index.php?option=com_emundus&controller=dashboard&task=getallwidgetsbysize",
 				params: {
 					size: this.selectedWidget.size,
 				},
@@ -231,7 +230,7 @@ export default {
 		updateDashboard() {
 			axios({
 				method: "post",
-				url: "index.php?option=com_emundus_onboard&controller=dashboard&task=updatemydashboard",
+				url: "index.php?option=com_emundus&controller=dashboard&task=updatemydashboard",
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded",
 				},
@@ -252,7 +251,7 @@ export default {
 			return new Promise((resolve, reject) => {
 				axios({
 					method: "get",
-					url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilters",
+					url: "index.php?option=com_emundus&controller=dashboard&task=getfilters",
           params: {
             widget: this.selectedWidget.id,
           },
@@ -269,24 +268,16 @@ export default {
 					});
 			});
 		},
-	},
-
-	created() {
-		this.getTranslations();
-		this.selectedWidget = this.widget;
-		this.position = this.selectedWidget.position;
-    this.render();
-		this.getWidgets();
+    updateWidgetRender(){
+      this.selectedWidget = this.widgets.find((widget) => widget.id == this.selectedWidgetId)
+      if (this.chart_render !== 0) {
+        this.updateDashboard();
+      }
+    }
 	},
 
 	watch: {
-		selectedWidget: function () {
-			if (this.chart_render !== 0) {
-				this.updateDashboard();
-			}
-		},
-
-		selectedFilters: function () {
+    selectedFilters: function () {
 			if (this.chart_render !== 0) {
 				this.renderChart();
 			}

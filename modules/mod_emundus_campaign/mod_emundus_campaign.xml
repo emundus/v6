@@ -20,14 +20,15 @@
 			<fields name="params">
 				<fieldset name="basic" label="Options">
 					<field type="list" name="mod_em_campaign_layout" label="MOD_EM_CAMPAIGN_LAYOUT" description="MOD_EM_CAMPAIGN_LAYOUT_DESC">
-						<option value="default">LIST_DEFAULT</option>
-						<option value="default_g5">LIST_DEFAULT_G5</option>
+						<option value="default">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
+						<option value="default_g5">MOD_EM_CAMPAIGN_LIST_DEFAULT_G5</option>
 						<option value="institut_fr">Institut Français</option>
 						<option value="nantes">Nantes</option>
-						<option value="old">LIST_OLD</option>
+						<option value="old">MOD_EM_CAMPAIGN_LIST_OLD</option>
 						<option value="single_campaign">Single Campaign</option>
 						<option value="tchooz_single_campaign">Tchooz Single Campaign</option>
 						<option value="celsa">Celsa</option>
+						<option value="paris2">Paris 2</option>
 					</field>
 
 					<field type="text" name="mod_em_campaign_itemid" label="MOD_EM_CAMPAIGN_ITEMID" description="MOD_EM_CAMPAIGN_ITEMID_DESC" />
@@ -133,7 +134,6 @@
 					</field>
 
 					<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
-					<field type="text" name="mod_em_ignored_program_code" label="MOD_EM_PROGRAM_CODE_IGNORE" description="MOD_EM_PROGRAM_CODE_IGNORE_DESC"/>
 				</fieldset>
 				<fieldset name="single" label="Paramètres des détails">
 					<field type="checkboxes" name="mod_em_campaign_modules_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
@@ -145,14 +145,14 @@
 					<field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP_DESC" />
 				</fieldset>
 
-				<fieldset name="other" label="Autres (Depreciated)">
-					<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">
-						<option value="">LIST_DEFAULT</option>
-						<option value="red">LIST_RED</option>
-						<option value="orange">LIST_ORANGE</option>
-						<option value="blue">LIST_BLUE</option>
-						<option value="purple">LIST_PURPLE</option>
-						<option value="black">LIST_BLACK</option>
+			<fieldset name="other" label="Autres (Depreciated)">
+				<field type="list" name="mod_em_campaign_class" label="MOD_EM_CAMPAIGN_CLASS" description="MOD_EM_CAMPAIGN_CLASS_DESC">
+					<option value="">MOD_EM_CAMPAIGN_LIST_DEFAULT</option>
+					<option value="red">MOD_EM_CAMPAIGN_LIST_RED</option>
+					<option value="orange">MOD_EM_CAMPAIGN_LIST_ORANGE</option>
+					<option value="blue">MOD_EM_CAMPAIGN_LIST_BLUE</option>
+					<option value="purple">MOD_EM_CAMPAIGN_LIST_PURPLE</option>
+					<option value="black">MOD_EM_CAMPAIGN_LIST_BLACK</option>
 					</field>
 
 					<field type="list" name="mod_em_campaign_show_localedate" label="MOD_EM_CAMPAIGN_SHOW_LOCALEDATE" description="MOD_EM_CAMPAIGN_SHOW_LOCALEDATE_DESC" default="0">

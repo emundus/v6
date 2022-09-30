@@ -163,7 +163,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
         }
 
         $fileName = "trombinoscope-".time().".pdf";
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$fileName;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$fileName;
         $pdf->Output($tmpName, 'F');
 
         return JURI::base().'tmp'.DS.$fileName;
@@ -178,7 +178,7 @@ class EmundusModelTrombinoscope extends JModelLegacy
         $lbl = $this->selectLabelSetupAttachments($format);
 
         $fileName = $lbl['lbl']."_".time().".pdf";
-        $tmpName = JPATH_BASE.DS.'tmp'.DS.$fileName;
+        $tmpName = JPATH_SITE.DS.'tmp'.DS.$fileName;
 
         $pdf = new DOMPDF();
         $pdf->set_paper("A4", "portrait");

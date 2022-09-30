@@ -22,7 +22,7 @@ echo $description;
             </div>
 
             <div class="col-md-2">
-                <strong><?php echo JText::_('STATUS'); ?></strong>
+                <strong><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?></strong>
             </div>
         </div>
 
@@ -113,9 +113,21 @@ echo $description;
 
 //TODO do the delete if we need to
     function deletefile(fnum){
-        if (confirm("<?php echo JText::_('CONFIRM_DELETE_FILE'); ?>")) {
-            document.location.href="index.php?option=com_emundus&task=deletefile&fnum="+fnum;
-        }
+        Swal.fire({
+            title: "<?= JText::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#dc3545",
+            reverseButtons: true,
+            confirmButtonText: "<?php echo JText::_('JYES');?>",
+            cancelButtonText: "<?php echo JText::_('JNO');?>"
+        }).then((confirm) => {
+            if (confirm.value) {
+                document.location.href = "index.php?option=com_emundus&task=deletefile&fnum=" + fnum+"&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+            }
+        });
     }
 
 </script>

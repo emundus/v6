@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,8 @@ class hikashopShippingClass extends hikashopClass {
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$do = true;
-		if(empty($element->shipping_id))
+		$new = empty($element->shipping_id);
+		if($new)
 			$app->triggerEvent('onBeforeHikaPluginCreate', array('shipping', &$element, &$do));
 		else {
 			if(!isset($element->old))
@@ -44,6 +45,13 @@ class hikashopShippingClass extends hikashopClass {
 			return $status;
 
 		$this->get('reset_cache');
+
+		if($status) {
+			if($new)
+				$app->triggerEvent('onAfterHikaPluginCreate', array('shipping', &$element));
+			else
+				$app->triggerEvent('onAfterHikaPluginUpdate', array('shipping', &$element));
+		}
 
 		$translationHelper = hikashop_get('helper.translation');
 		if($translationHelper->isMulti()) {
@@ -78,7 +86,18 @@ class hikashopShippingClass extends hikashopClass {
 	}
 
 	function delete(&$elements) {
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeHikaPluginDelete', array('shipping', &$elements, &$do));
+
+		if(!$do)
+			return false;
+
 		$status = parent::delete($elements);
+		if($status) {
+			$app->triggerEvent('onAfterHikaPluginDelete', array('shipping', &$elements));
+		}
 		if(!$status)
 			return $status;
 
@@ -135,7 +154,7 @@ class hikashopShippingClass extends hikashopClass {
 		$pluginClass = hikashop_get('class.plugins');
 		$rates = $pluginClass->getMethods('shipping', '', '', $currency);
 
-		if(isset($order->total->prices[0]->price_value) && bccomp($order->total->prices[0]->price_value,0,5) && !empty($rates)){
+		if(isset($order->total->prices[0]->price_value) && bccomp(sprintf('%F',$order->total->prices[0]->price_value),0,5) && !empty($rates)){
 			$currencyClass = hikashop_get('class.currency');
 			$currencyClass->convertShippings($rates);
 		}
@@ -162,13 +181,13 @@ class hikashopShippingClass extends hikashopClass {
 		$config =& hikashop_config();
 		$usable_methods = array();
 
-		if(!$config->get('force_shipping') && ((isset($order->package['weight']) && $order->package['weight']['value'] <= 0.0) || (isset($order->weight) && bccomp($order->weight, 0, 5) <= 0)))
+		if(!$config->get('force_shipping') && ((isset($order->package['weight']) && $order->package['weight']['value'] <= 0.0) || (isset($order->weight) && bccomp(sprintf('%F',$order->weight), 0, 5) <= 0)))
 			return $usable_methods;
 
 		$this->getShippingProductsData($order);
 
 		$zoneClass = hikashop_get('class.zone');
-		$zones = $zoneClass->getOrderZones($order);
+		$zones = $zoneClass->getOrderZones($order, $config->get('shipping_methods_zone_address_type','shipping_address'));
 
 		$currency = @$order->total->prices[0]->price_currency_id;
 		if(empty($currency))
@@ -275,8 +294,9 @@ class hikashopShippingClass extends hikashopClass {
 
 			$cartClass = hikashop_get('class.cart');
 			$currencyClass = hikashop_get('class.currency');
-
+			$warehouse_order = 0;
 			foreach($shipping_groups as $key => &$group) {
+				$warehouse_order++;
 				$order->products = $group->products;
 				$group_usable_methods = array();
 				$rates_copy = array();
@@ -323,7 +343,7 @@ class hikashopShippingClass extends hikashopClass {
 				}
 
 				$cartClass->calculateWeightAndVolume($order);
-				if(((isset($order->package['weight']) && $order->package['weight']['value'] <= 0.0) || (isset($order->weight) && bccomp($order->weight, 0, 5) <= 0)) && !$config->get('force_shipping')) {
+				if(((isset($order->package['weight']) && $order->package['weight']['value'] <= 0.0) || (isset($order->weight) && bccomp(sprintf('%F',$order->weight), 0, 5) <= 0)) && !$config->get('force_shipping')) {
 					$group->no_weight = true;
 					continue;
 				}
@@ -337,20 +357,27 @@ class hikashopShippingClass extends hikashopClass {
 
 				unset($order->shipping_warehouse_id);
 				$order->cache->shipping_key = $shipping_key;
+
+				if(empty($group_usable_methods)) {
+					$name = (!empty($group->name) ? $group->name : $warehouse_order);
+					$local_errors['no_rates'] = JText::sprintf('NO_SHIPPING_METHOD_FOUND_FOR_WAREHOUSE', $name);
+				} else {
+					foreach($group_usable_methods as $method) {
+						if(isset($method->shipping_warehouse_id) && $method->shipping_warehouse_id != $key)
+							$method = clone($method);
+						if(!in_array($method->shipping_id, $group->shippings))
+							$group->shippings[] = $method->shipping_id;
+						$method->shipping_warehouse_id = $key;
+						$usable_methods[] = $method;
+					}
+				}
+				unset($method);
+
 				if(!empty($local_errors)) {
 					$errors = array_merge($errors, $local_errors);
 					$group->errors = $local_errors;
 				}
 
-				foreach($group_usable_methods as $method) {
-					if(isset($method->shipping_warehouse_id) && $method->shipping_warehouse_id != $key)
-						$method = clone($method);
-					if(!in_array($method->shipping_id, $group->shippings))
-						$group->shippings[] = $method->shipping_id;
-					$method->shipping_warehouse_id = $key;
-					$usable_methods[] = $method;
-				}
-				unset($method);
 			}
 
 			foreach($order_backup as $k => $v) {
@@ -504,6 +531,7 @@ class hikashopShippingClass extends hikashopClass {
 			$order->shipping_prices[0]->weight = @$order->weight;
 			$order->shipping_prices[0]->volume = @$order->volume;
 			$order->shipping_prices[0]->total_quantity = @$order->total_quantity;
+			$order->shipping_prices[0]->total_quantity_real = @$order->total_quantity_real;
 		}
 
 		$key = 0;
@@ -522,6 +550,7 @@ class hikashopShippingClass extends hikashopClass {
 		$order->shipping_prices[$key]->volume = 0.0;
 		$order->shipping_prices[$key]->weight = 0.0;
 		$order->shipping_prices[$key]->total_quantity = 0;
+		$order->shipping_prices[$key]->total_quantity_real = 0;
 
 		if(empty($order->products))
 			return $key;
@@ -534,10 +563,16 @@ class hikashopShippingClass extends hikashopClass {
 		$volumeHelper = hikashop_get('helper.volume');
 		$weightHelper = hikashop_get('helper.weight');
 
+		$config = hikashop_config();
+		$group_options = $config->get('group_options',0);
+		$shipping_group_product_options = $config->get('shipping_group_product_options',0);
+
 		foreach($order->products as $k => $row) {
 			if(!empty($products) && !isset($products[$k]))
 				continue;
 
+			if($group_options == 1 && (int)$shipping_group_product_options != 0 && isset($row->cart_product_option_parent_id) && (int)$row->cart_product_option_parent_id > 0)
+				continue;
 			if(empty($order->shipping_prices[$key]->products[$row->product_id]))
 				$order->shipping_prices[$key]->products[$row->product_id] = 0;
 			$order->shipping_prices[$key]->products[$row->product_id] += @$row->cart_product_quantity;
@@ -559,7 +594,7 @@ class hikashopShippingClass extends hikashopClass {
 
 
 			if(!empty($row->cart_product_parent_id)) {
-				if(!bccomp($row->product_length, 0, 5) || !bccomp($row->product_width, 0, 5) || !bccomp($row->product_height, 0, 5)) {
+				if(!bccomp(sprintf('%F',$row->product_length), 0, 5) || !bccomp(sprintf('%F',$row->product_width), 0, 5) || !bccomp(sprintf('%F',$row->product_height), 0, 5)) {
 					foreach($order->products as $l => $elem) {
 						if($elem->cart_product_id == $row->cart_product_parent_id) {
 							$row->product_length = $elem->product_length;
@@ -570,7 +605,7 @@ class hikashopShippingClass extends hikashopClass {
 						}
 					}
 				}
-				if(!bccomp($row->product_weight, 0, 5)) {
+				if(!bccomp(sprintf('%F',$row->product_weight), 0, 5)) {
 					foreach($order->products as $l => $elem) {
 						if($elem->cart_product_id == $row->cart_product_parent_id) {
 							$row->product_weight = $elem->product_weight;
@@ -581,7 +616,7 @@ class hikashopShippingClass extends hikashopClass {
 				}
 			}
 
-			if(bccomp($row->product_length, 0, 5) && bccomp($row->product_width, 0, 5) && bccomp($row->product_height, 0, 5)) {
+			if(bccomp(sprintf('%F',$row->product_length), 0, 5) && bccomp(sprintf('%F',$row->product_width), 0, 5) && bccomp(sprintf('%F',$row->product_height), 0, 5)) {
 				if(!isset($row->product_total_volume)) {
 					$row->product_volume = $row->product_length * $row->product_width * $row->product_height;
 					$row->product_total_volume = $row->product_volume * $row->cart_product_quantity;
@@ -594,7 +629,7 @@ class hikashopShippingClass extends hikashopClass {
 				$order->shipping_prices[$key]->volume += $row->product_total_volume;
 			}
 
-			if(bccomp($row->product_weight, 0, 5)) {
+			if(bccomp(sprintf('%F',$row->product_weight), 0, 5)) {
 
 				$order_weight_unit = isset($order->weight_unit) ? $order->weight_unit : @$order->weight['unit'];
 				if($row->product_weight_unit != $order_weight_unit) {
@@ -608,6 +643,10 @@ class hikashopShippingClass extends hikashopClass {
 			}
 
 			$order->shipping_prices[$key]->total_quantity += $row->cart_product_quantity;
+
+			if(bccomp(sprintf('%F',$row->product_weight), 0, 5)) {
+				$order->shipping_prices[$key]->total_quantity_real += $row->cart_product_quantity;
+			}
 		}
 
 		$currencyClass = hikashop_get('class.currency');
@@ -952,9 +991,9 @@ class hikashopShippingClass extends hikashopClass {
 				$row->plugin_params = hikashop_unserialize($row->shipping_params);
 
 			$prices = array();
-			if(bccomp($row->shipping_price, 0, 3))
+			if(bccomp(sprintf('%F',$row->shipping_price), 0, 3))
 				$prices[] = $view->currencyClass->displayPrices(array($row), 'shipping_price', 'shipping_currency_id');
-			if(isset($row->plugin_params->shipping_percentage) && bccomp($row->plugin_params->shipping_percentage, 0, 3))
+			if(isset($row->plugin_params->shipping_percentage) && bccomp(sprintf('%F',$row->plugin_params->shipping_percentage), 0, 3))
 				$prices[] = $row->plugin_params->shipping_percentage.'%';
 			if(!empty($row->plugin_params->shipping_formula))
 				$prices[] = $row->plugin_params->shipping_formula;
@@ -971,11 +1010,11 @@ class hikashopShippingClass extends hikashopClass {
 			if(!empty($row->plugin_params->shipping_max_weight))
 				$restrictions[] = JText::_('SHIPPING_MAX_WEIGHT') . ': ' . $row->plugin_params->shipping_max_weight . $row->plugin_params->shipping_weight_unit;
 
-			if(isset($row->plugin_params->shipping_min_price) && bccomp($row->plugin_params->shipping_min_price, 0, 5)) {
+			if(isset($row->plugin_params->shipping_min_price) && bccomp(sprintf('%F',$row->plugin_params->shipping_min_price), 0, 5)) {
 				$row->shipping_min_price = $row->plugin_params->shipping_min_price;
 				$restrictions[] = JText::_('SHIPPING_MIN_PRICE') . ': ' . $view->currencyClass->displayPrices(array($row), 'shipping_min_price', 'shipping_currency_id');
 			}
-			if(isset($row->plugin_params->shipping_max_price) && bccomp($row->plugin_params->shipping_max_price, 0, 5)) {
+			if(isset($row->plugin_params->shipping_max_price) && bccomp(sprintf('%F',$row->plugin_params->shipping_max_price), 0, 5)) {
 				$row->shipping_max_price = $row->plugin_params->shipping_max_price;
 				$restrictions[] = JText::_('SHIPPING_MAX_PRICE') . ': ' . $view->currencyClass->displayPrices(array($row), 'shipping_max_price', 'shipping_currency_id');
 			}
@@ -1050,10 +1089,17 @@ class hikashopShippingClass extends hikashopClass {
 			1 => array()
 		);
 
+		if(!isset($options['main_only']))
+			$options['main_only'] = false;
+
 		$query = 'SELECT * FROM ' . hikashop_table('shipping') . ' WHERE shipping_published = 1 ORDER BY shipping_ordering';
 		$this->db->setQuery($query);
 		$methods = $this->db->loadObjectList('shipping_id');
 		foreach($methods as $method) {
+			if($options['main_only']) {
+				$ret[0][$method->shipping_id] = $method->shipping_name;
+				continue;
+			}
 			$plugin = null;
 			if($method->shipping_type != 'manual')
 				$plugin = hikashop_import('hikashopshipping', $method->shipping_type);

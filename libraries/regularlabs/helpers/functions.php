@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -44,6 +44,11 @@ class RLFunctions
 		self::script($url, $version);
 	}
 
+	public static function script($file, $version = '')
+	{
+		class_exists('RegularLabs\Library\Document') && RL_Document::script($file, $version);
+	}
+
 	public static function addStyleSheetVersion($url)
 	{
 		jimport('joomla.filesystem.file');
@@ -56,6 +61,11 @@ class RLFunctions
 		}
 
 		self::stylesheet($url, $version);
+	}
+
+	public static function stylesheet($file, $version = '')
+	{
+		class_exists('RegularLabs\Library\Document') && RL_Document::stylesheet($file, $version);
 	}
 
 	public static function extensionInstalled($extension, $type = 'component', $folder = 'system')
@@ -126,16 +136,6 @@ class RLFunctions
 	public static function loadLanguage($extension = 'plg_system_regularlabs', $basePath = '', $reload = false)
 	{
 		return class_exists('RegularLabs\Library\Language') && RL_Language::load($extension, $basePath, $reload);
-	}
-
-	public static function script($file, $version = '')
-	{
-		class_exists('RegularLabs\Library\Document') && RL_Document::script($file, $version);
-	}
-
-	public static function stylesheet($file, $version = '')
-	{
-		class_exists('RegularLabs\Library\Document') && RL_Document::stylesheet($file, $version);
 	}
 
 	public static function xmlToObject($url, $root = '')

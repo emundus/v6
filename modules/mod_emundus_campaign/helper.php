@@ -28,7 +28,7 @@ class modEmundusCampaignHelper {
         $db = JFactory::getDbo();
         $query  = $db->getQuery(true);
         if ($teachingUnityDates) {
-            $query->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes')
+            $query->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
@@ -61,7 +61,7 @@ class modEmundusCampaignHelper {
         $query  = $db->getQuery(true);
         if ($teachingUnityDates) {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
+                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
@@ -88,7 +88,7 @@ class modEmundusCampaignHelper {
 
         if ($teachingUnityDates) {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end')
+                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
@@ -115,7 +115,7 @@ class modEmundusCampaignHelper {
 
         if ($teachingUnityDates) {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.notes as desc')
+                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.notes as desc,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
@@ -210,7 +210,8 @@ class modEmundusCampaignHelper {
             ->select('c.id,c.title,c.introtext')
             ->from($db->quoteName('#__content', 'c'))
             ->leftJoin($db->quoteName('#__categories', 'ca') . ' ON ' . $db->quoteName('ca.id') . ' = '. $db->quoteName('c.catid'))
-            ->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'));
+            ->where($db->quoteName('ca.alias') . ' LIKE ' . $db->quote('f-a-q'))
+            ->andWhere($db->quoteName('c.state') . ' = 1');
 
         try {
             $db->setQuery($query);
@@ -300,23 +301,23 @@ class modEmundusCampaignHelper {
         }
     }
 
-    public function addClassToData($data, $formations) 
+    public function addClassToData($data, $formations)
     {
         // Add a custom class parameter to data items
         $data = array_map(function($item) use ($formations) {
             $item->class = !isset($item->class) ? '' : $item->class;
-        
+
             // find formation associated to item inside formations array
             foreach ($formations as $formation) {
                 if ($formation->id == $item->formation) {
                     $item->class .= 'formation_type-' . $formation->type;
                     $item->class .= ' formation_level-' . $formation->level;
-                
+
                     foreach ($formation->voies_d_acces as $voie) {
                         $item->class .= ' voie_d_acces-' . $voie->voie_d_acces;
-                    
+
                     }
-                
+
                     break;
                 }
             }

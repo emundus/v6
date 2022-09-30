@@ -14,7 +14,10 @@ $document->addStyleSheet("modules/mod_emundus_help/style/mod_emundus_help.css" )
 $document->addStyleSheet('https://fonts.googleapis.com/icon?family=Material+Icons' );
 
 // Get release version
-$file_version = file_get_contents('version.txt');
+$xmlDoc = new DOMDocument();
+if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml')) {
+    $file_version = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
+}
 //
 
 require JModuleHelper::getLayoutPath('mod_emundus_help', 'default');

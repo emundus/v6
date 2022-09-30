@@ -9,6 +9,11 @@
 $document = JFactory::getDocument();
 $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 ?>
+<style>
+    .em-cell .material-icons{
+        font-size: 24px !important;
+    }
+</style>
 <input type="hidden" id="view" name="view" value="users">
 <?php if (!empty($this->users)) :?>
 	<div class="container-result">
@@ -40,14 +45,14 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                         <div class="selectAll" id="selectAll">
                             <label for="em-check-all">
                                 <input value="-1" id="em-check-all" type="checkbox" class="em-check" />
-                                <span id="span-check-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL');?></span>
+                                <span id="span-check-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL');?></span>
                             </label>
                             <label class="em-check-all-all" for="em-check-all-all">
                                 <input value="all" id="em-check-all-all" type="checkbox" class="em-check-all-all" />
-                                <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_CHECK_ALL_ALL'); ?></span>
+                                <span id="span-check-all-all"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_ALL_ALL'); ?></span>
                             </label>
                             <label class="em-check-none" for="em-check-none">
-                                <span id="span-check-none"><?= JText::_('COM_EMUNDUS_CHECK_NONE'); ?></span>
+                                <span id="span-check-none"><?= JText::_('COM_EMUNDUS_FILTERS_CHECK_NONE'); ?></span>
                             </label>
                         </div>
                         <th id="<?php echo $key?>">
@@ -63,6 +68,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                             </p>
                         </th>
                     <?php else :?>
+                        <?php if($key !== 'active') : ?>
                         <th id="<?php echo $key?>">
                         <?php if ($this->lists['order'] == $key) :?>
                                 <p class="em-cell">
@@ -71,14 +77,15 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                 <?php else :?>
                                         <span class="glyphicon glyphicon-sort-by-attributes"></span>
                                 <?php endif; ?>
-                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
                                 </p>
                         <?php else :?>
                             <p class="em-cell">
-                                <strong><?php echo JText::_(strtoupper($key))?></strong>
+                                <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key))?></strong>
                             </p>
                         <?php endif; ?>
                         </th>
+                     <?php endif; ?>
                      <?php endif; ?>
 				<?php endforeach; ?>
 			</tr>
@@ -88,7 +95,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 			<?php foreach ($this->users as $l => $user) :?>
 				<tr>
 					<?php foreach ($user as $k => $value) :?>
-
+                        <?php if ($k != 'active') :?>
 								<?php if ($k == 'id') :?>
                                     <td>
                                         <div class="em-cell" >
@@ -104,20 +111,26 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
                                             </label>
                                         </div>
                                     </td>
-								<?php elseif ($k == 'active') :?>
-									<?php if ($value == 0) :?>
+                                <?php elseif ($k == 'block') :?>
+                                    <?php if ($value == 0 && $user->active != -1) :?>
                                         <td>
                                             <div class="em-cell" >
-										        <span class="glyphicon glyphicon-ok" style="color: #00c500"></span>
+                                                <span class="material-icons em-main-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_ACCOUNT_SINGLE') ?>">verified</span>
                                             </div>
                                         </td>
-									<?php else:?>
+                                    <?php elseif($user->active == -1):?>
                                         <td>
                                             <div class="em-cell" >
-										        <span class="glyphicon glyphicon-ban-circle" style="color: #ff0000"></span>
+                                                <span class="material-icons em-yellow-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_ACTIVATE_WAITING') ?>">new_releases</span>
                                             </div>
                                         </td>
-									<?php endif; ?>
+                                    <?php else : ?>
+                                        <td>
+                                            <div class="em-cell" >
+                                                <span class="material-icons em-red-500-color" title="<?php echo JText::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE') ?>">block</span>
+                                            </div>
+                                        </td>
+                                    <?php endif; ?>
 								<?php elseif ($k == 'newsletter') :?>
 									<?php if ($value == 1) :?>
                                         <td>
@@ -141,6 +154,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 								<?php endif;?>
 							</div>
 						</td>
+                        <?php endif; ?>
 					<?php endforeach; ?>
 				</tr>
 			<?php  endforeach;?>
@@ -148,9 +162,9 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 		</table>
 	</div>
 	<div class="em-container-pagination">
-        <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('DISPLAY')?></label>
+        <label for = "pager-select" class="em-container-pagination-label"><?php echo JText::_('COM_EMUNDUS_DISPLAY')?></label>
         <select name="pager-select" class="chzn-select" id="pager-select">
-            <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('ALL')?></option>
+            <option value="0" <?php if($this->pagination->limit == 100000){echo "selected=true";}?>><?php echo JText::_('COM_EMUNDUS_ACTIONS_ALL')?></option>
             <option value="5" <?php if($this->pagination->limit == 5){echo "selected=true";}?>>5</option>
             <option value="10" <?php if($this->pagination->limit == 10){echo "selected=true";}?>>10</option>
             <option value="15" <?php if($this->pagination->limit == 15){echo "selected=true";}?>>15</option>
@@ -195,7 +209,7 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
     </div>
 
 <?php else :?>
-	<?php echo JText::_('NO_RESULT'); ?>
+	<?php echo JText::_('COM_EMUNDUS_NO_RESULT'); ?>
 <?php endif; ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
@@ -256,11 +270,11 @@ $document->addScript('https://cdn.jsdelivr.net/npm/sweetalert2@8');
 
         let countCheckedCheckbox = $('.em-check').not('#em-check-all.em-check,#em-check-all-all.em-check ').filter(':checked').length;
         let allCheck = $('.em-check-all-all#em-check-all-all').is(':checked');
-        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_SELECT_ALL') : countCheckedCheckbox;
+        let nbChecked = allCheck == true ? Joomla.JText._('COM_EMUNDUS_FILTERS_SELECT_ALL') : countCheckedCheckbox;
         //console.log(countCheckedCheckbox);
-        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_SELECT_USERS');
+        let files = countCheckedCheckbox === 1 ? Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USER') : Joomla.JText._('COM_EMUNDUS_USERS_SELECT_USERS');
         if (countCheckedCheckbox !== 0) {
-            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
+            $('#countCheckedCheckbox').html('<p>'+Joomla.JText._('COM_EMUNDUS_FILTERS_YOU_HAVE_SELECT') + nbChecked + ' ' + files+'</p>');
         } else {
             $('#countCheckedCheckbox').html('');
         }

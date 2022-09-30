@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package    Joomla
  * @subpackage emundus
@@ -20,7 +19,7 @@ $tmpl = JRequest::getVar('tmpl', null, 'GET', 'none', 0);
 
 // Load the WYSIWYG editor used to edit the mail body.
 $editor = JFactory::getEditor('tinymce');
-$mail_body = $editor->display('mail_body', JText::_('DEAR') . ' [NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
+$mail_body = $editor->display('mail_body', JText::_('COM_EMUNDUS_EMAILS_DEAR').' [NAME], ', '100%', '400', '20', '20', false, 'mail_body', null, null, array('mode' => 'simple'));
 
 $m_messages = new EmundusModelMessages();
 
@@ -50,6 +49,11 @@ if ($allowed_attachments !== true) {
 ?>
 
 <!-- WYSIWYG Editor -->
+<style>
+    #emailForm #mceu_15 {
+        display: none;
+    }
+</style>
 <link rel="stylesheet" href="components/com_jce/editor/libraries/css/editor.min.css" type="text/css">
 <script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/tinymce.min.js"></script>
 <script data-cfasync="false" type="text/javascript" src="media/editors/tinymce/js/tinymce.min.js"></script>
@@ -63,7 +67,7 @@ if ($allowed_attachments !== true) {
 <div id="em-email-messages"></div>
 
 <div class="em-modal-sending-emails" id="em-modal-sending-emails">
-    <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('SENDING_EMAILS'); ?></div>
+    <div id="em-sending-email-caption" class="em-sending-email-caption"><?= JText::_('COM_EMUNDUS_EMAILS_SENDING_EMAILS'); ?></div>
     <img class="em-sending-email-img" id="em-sending-email-img" src="media/com_emundus/images/sending-email.gif">
 </div>
 
@@ -74,12 +78,12 @@ if ($allowed_attachments !== true) {
 
             <!-- Dropdown to select the email categories used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectCategory">
-                <label for="select_category"><?= JText::_('SELECT_CATEGORY'); ?></label>
+                <label for="select_category" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?></label>
                 <select name="select_category" class="form-control" onChange="setCategory(this);">
                     <?php if (!$message_categories) : ?>
-                        <option value="%"> <?= JText::_('NO_CATEGORIES_FOUND'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_CATEGORIES_FOUND'); ?> </option>
                     <?php else : ?>
-                        <option value="%"> <?= JText::_('SELECT_CATEGORY'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_CATEGORY'); ?> </option>
                         <?php foreach ($message_categories as $message_category) : ?>
                             <?php if (!empty($message_category)) : ?>
                                 <option value="<?= $message_category; ?>"> <?= $message_category; ?></option>
@@ -91,12 +95,12 @@ if ($allowed_attachments !== true) {
 
             <!-- Dropdown to select the email template used. -->
             <div class="form-group col-md-6 col-sm-6 em-form-selectTypeEmail">
-                <label for="select_template"><?= JText::_('SELECT_TEMPLATE'); ?></label>
+                <label for="select_template" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?></label>
                 <select name="select_template" id="message_template" class="form-control" onChange="getTemplate(this);">
                     <?php if (!$message_templates) : ?>
-                        <option value="%"> <?= JText::_('NO_TEMPLATES_FOUND'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_TEMPLATES_FOUND'); ?> </option>
                     <?php else : ?>
-                        <option value="%"> <?= JText::_('SELECT_TEMPLATE'); ?> </option>
+                        <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_SELECT_TEMPLATE'); ?> </option>
                         <?php foreach ($message_templates as $message_template) : ?>
                             <option value="<?= $message_template->id; ?>"> <?= $message_template->subject; ?></option>
                         <?php endforeach; ?>
@@ -124,7 +128,7 @@ if ($allowed_attachments !== true) {
         <div class="form-group em-form-recipients">
             <!-- List of users / their emails, gotten from the fnums selected. -->
             <div class="well well-sm" id="em-recipitents">
-                <span class='label label-grey'><?= JText::_('TO'); ?>:</span>
+                <span class='label label-grey'><?= JText::_('COM_EMUNDUS_TO'); ?>:</span>
                 <?php foreach ($this->users as $user) : ?>
 
                     <?php if (!empty($user['email']) && !in_array($user['email'], $email_list)) : ?>
@@ -148,7 +152,7 @@ if ($allowed_attachments !== true) {
         </div>
         <div class="form-group em-form-subject">
             <div class="inputbox input-xlarge form-control form-inline">
-                <span class='label label-grey' for="mail_from"><?= JText::_('SUBJECT'); ?>:</span>
+                <span class='label label-grey' for="mail_from" ><?= JText::_('COM_EMUNDUS_EMAILS_SUBJECT'); ?>:</span>
                 <div class="form-group" style="display:inline-block !important;" id="mail_subject" contenteditable="true"><?= JFactory::getConfig()->get('sitename'); ?></div>
             </div>
 
@@ -163,16 +167,16 @@ if ($allowed_attachments !== true) {
 
         <div class="form-inline row em-form-attachments">
             <div class="form-group col-sm-12 col-md-5">
-                <label for="em-select_attachment_type"><?= JText::_('SELECT_ATTACHMENT_TYPE'); ?></label>
+                <label for="em-select_attachment_type" ><?= JText::_('COM_EMUNDUS_EMAILS_SELECT_ATTACHMENT_TYPE'); ?></label>
                 <select name="em-select_attachment_type" id="em-select_attachment_type" class="form-control download" onChange="toggleAttachmentType(this);">
-                    <option value=""> <?= JText::_('PLEASE_SELECT'); ?> </option>
-                    <option value="upload"> <?= JText::_('UPLOAD'); ?> </option>
+                    <option value=""> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
+                    <option value="upload"> <?= JText::_('COM_EMUNDUS_UPLOAD'); ?> </option>
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
-                        <option value="candidate_file"> <?= JText::_('CANDIDATE_FILE'); ?> </option>
+                        <option value="candidate_file"> <?= JText::_('COM_EMUNDUS_EMAILS_CANDIDATE_FILE'); ?> </option>
                     <?php endif; ?>
                     <?php if (!empty($_applicant_letters)) { ?>
                         <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
-                            <option value="setup_letters"> <?= JText::_('SETUP_LETTERS_ATTACH'); ?> </option>
+                            <option value="setup_letters"> <?= JText::_('COM_EMUNDUS_EMAILS_SETUP_LETTERS_ATTACH'); ?> </option>
                         <?php endif; ?>
                     <?php } ?>
                 </select>
@@ -183,9 +187,9 @@ if ($allowed_attachments !== true) {
                 <div class="hidden upload-file em-form-attachments-uploadFile" id="upload_file">
 
                     <div class="file-browse">
-                        <span id="em-filename"><?= JText::_('FILE_NAME'); ?></span>
+                        <span id="em-filename"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_NAME'); ?></span>
 
-                        <label for="em-file_to_upload" type="button"><?= JText::_('SELECT_FILE_TO_UPLOAD') ?>
+                        <label for="em-file_to_upload" type="button"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_SELECT_FILE_TO_UPLOAD') ?>
                             <input type="file" id="em-file_to_upload" onChange="addFile();">
                         </label>
                     </div>
@@ -198,10 +202,10 @@ if ($allowed_attachments !== true) {
                 <!-- Get a file from setup_attachments -->
                 <?php if (EmundusHelperAccess::asAccessAction(4, 'r')) : ?>
                     <div class="hidden em-form-attachments-candidateFile" id="candidate_file">
-                        <label for="em-select_candidate_file"><?= JText::_('UPLOAD'); ?></label>
+                        <label for="em-select_candidate_file" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
                         <select id="em-select_candidate_file" name="candidate_file" class="form-control download" onchange="addFile();">
                             <?php if (!$setup_attachments) : ?>
-                                <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
+                                <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_FILES_FOUND'); ?> </option>
                             <?php else : ?>
                                 <option value="%"> <?= JText::_('JGLOBAL_SELECT_AN_OPTION'); ?> </option>
                             <?php endif; ?>
@@ -213,12 +217,12 @@ if ($allowed_attachments !== true) {
                 <?php if (!empty($_applicant_letters)) { ?>
                     <?php if (EmundusHelperAccess::asAccessAction(4, 'c') && EmundusHelperAccess::asAccessAction(27, 'c')) : ?>
                         <div class="hidden em-form-attachments-setupLetters" id="setup_letters">
-                            <label for="em-select_setup_letters"><?= JText::_('UPLOAD'); ?></label>
+                            <label for="em-select_setup_letters" ><?= JText::_('COM_EMUNDUS_UPLOAD'); ?></label>
                             <select id="em-select_setup_letters" name="setup_letters" class="form-control" onchange="addFile();">
                                 <?php if (!$setup_letters) : ?>
-                                    <option value="%"> <?= JText::_('NO_FILES_FOUND'); ?> </option>
+                                    <option value="%"> <?= JText::_('COM_EMUNDUS_EMAILS_NO_FILES_FOUND'); ?> </option>
                                 <?php else : ?>
-                                    <option value="%"> <?= JText::_('PLEASE_SELECT'); ?> </option>
+                                    <option value="%"> <?= JText::_('COM_EMUNDUS_PLEASE_SELECT'); ?> </option>
                                     <?php foreach ($setup_letters as $letter) : ?>
                                         <option value="<?= $letter->id; ?>"> <?= $letter->value; ?></option>
                                     <?php endforeach; ?>
@@ -254,6 +258,7 @@ if ($allowed_attachments !== true) {
         plugins: ["remove_button"],
         create: true,
         preload: true,
+        placeholder: '<?= JText::_('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER'); ?>',
         render: {
             item: function(data, escape) {
                 var val = data.value;
@@ -271,6 +276,7 @@ if ($allowed_attachments !== true) {
         plugins: ["remove_button"],
         create: true,
         preload: true,
+        placeholder: '<?= JText::_('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER'); ?>',
         render: {
             item: function(data, escape) {
                 var val = data.value;
@@ -321,12 +327,6 @@ if ($allowed_attachments !== true) {
     // Editor loads disabled by default, we apply must toggle it active on page load.
     $(document).ready(function() {
         tinyMCE.execCommand('mceToggleEditor', true, 'mail_body');
-
-        // add cc placeholder
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER') + '</label>');
-
-        // add bcc placeholder
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER') + '</label>');
     });
 
     // Change file upload string to selected file and reset the progress bar.
@@ -353,17 +353,13 @@ if ($allowed_attachments !== true) {
         $("label[for='cc-emails']").empty();
         $("label[for='bcc-emails']").empty();
 
-        // remake CC / BCC placeholder
-        $('#cc-box .selectize-input').append('<label for="cc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_CC_PLACEHOLDER') + '</label>');
-        $('#bcc-box .selectize-input').append('<label for="bcc-emails" style="font-size: 15px !important; color: #cecece; font-weight: normal !important">' + Joomla.JText._('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER') + '</label>');
-
         // clear em-attachment-list
         $('#em-attachment-list').empty();
 
         // call ajax to getemailbyid
         $.ajax({
             type: 'POST',
-            url: 'index.php?option=com_emundus_onboard&controller=email&task=getemailbyid',
+            url: 'index.php?option=com_emundus&controller=email&task=getemailbyid',
             dataType: 'JSON',
             data: {
                 id: select.value

@@ -40,7 +40,7 @@ export default {
     renderFilesByStatus() {
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_onboard&controller=dashboard&task=getfilescountbystatus",
+        url: "index.php?option=com_emundus&controller=dashboard&task=getfilescountbystatus",
         params: {
           program: this.program,
         },

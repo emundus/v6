@@ -58,7 +58,7 @@ class EmundusControllerInterview extends JControllerLegacy
         $student_id = $jinput->getInt('student_id', $jinput->getInt('user', $this->_user->id));
 
         if (!EmundusHelperAccess::asAccessAction(8, 'c', $this->_user->id, $fnum) )
-            die(JText::_('RESTRICTED_ACCESS'));
+            die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
         $m_profile = $this->getModel('profile');
         $m_campaign = $this->getModel('campaign');
@@ -67,7 +67,7 @@ class EmundusControllerInterview extends JControllerLegacy
             $candidature = $m_profile->getFnumDetails($fnum);
             $campaign = $m_campaign->getCampaignByID($candidature['campaign_id']);
             $name = 'interview-'.$fnum.'.pdf';
-            $tmpName = JPATH_BASE.DS.'tmp'.DS.$name;
+            $tmpName = JPATH_SITE.DS.'tmp'.DS.$name;
         }
 
         $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf_interview'.$campaign['training'].'.php';

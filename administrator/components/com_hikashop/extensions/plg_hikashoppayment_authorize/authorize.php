@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -89,6 +89,10 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$vars["x_tran_key"] = $this->payment_params->transaction_key;
 		$post_string = "";
 
+		if($this->payment_params->debug){
+			hikashop_writeToLog($vars);
+		}
+
 		foreach( $vars as $key => $value ){
 			if(is_array($value)){
 				foreach($value as $v){
@@ -107,8 +111,12 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
 		$post_response = curl_exec($request);
 
+		if($this->payment_params->debug){
+			hikashop_writeToLog($post_response);
+		}
+
 		if(empty($post_response)){
-			$this->app->enqueueMessage('The connection to the payment plateform did not succeed. It is often caused by the hosting company blocking external connections so you should contact him for further guidance. The cURL error message was: '.curl_error($request),'error');
+			$this->app->enqueueMessage('The connection to the payment platform did not succeed. It is often caused by the hosting company blocking external connections so you should contact him for further guidance. The cURL error message was: '.curl_error($request),'error');
 			$do = false;
 			return false;
 		}
@@ -228,25 +236,25 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$vars["x_email"]=$this->user->user_email;
 
 		if(!empty($order->cart->billing_address)){
-			$vars["x_first_name"]=substr(@$order->cart->billing_address->address_firstname,0,50);
-			$vars["x_last_name"]=substr(@$order->cart->billing_address->address_lastname,0,50);
-			$vars["x_address"]=substr(@$order->cart->billing_address->address_street,0,60);
-			$vars["x_company"]=substr(@$order->cart->billing_address->address_company,0,50);
-			$vars["x_country"]=substr(@$order->cart->billing_address->address_country->zone_name_english,0,60);
-			$vars["x_zip"]=substr(@$order->cart->billing_address->address_post_code,0,20);
-			$vars["x_city"]=substr(@$order->cart->billing_address->address_city,0,40);
-			$vars["x_state"]=substr(@$order->cart->billing_address->address_state->zone_name_english,0,40);
-			$vars["x_phone"]=substr(@$order->cart->billing_address->address_telephone,0,25);
+			$vars["x_first_name"]=mb_substr(@$order->cart->billing_address->address_firstname,0,50);
+			$vars["x_last_name"]=mb_substr(@$order->cart->billing_address->address_lastname,0,50);
+			$vars["x_address"]=mb_substr(@$order->cart->billing_address->address_street,0,60);
+			$vars["x_company"]=mb_substr(@$order->cart->billing_address->address_company,0,50);
+			$vars["x_country"]=mb_substr(@$order->cart->billing_address->address_country->zone_name_english,0,60);
+			$vars["x_zip"]=mb_substr(@$order->cart->billing_address->address_post_code,0,20);
+			$vars["x_city"]=mb_substr(@$order->cart->billing_address->address_city,0,40);
+			$vars["x_state"]=mb_substr(@$order->cart->billing_address->address_state->zone_name_english,0,40);
+			$vars["x_phone"]=mb_substr(@$order->cart->billing_address->address_telephone,0,25);
 		}
 		if(!empty($order->cart->shipping_address)){
-			$vars["x_ship_to_first_name"]=substr(@$order->cart->shipping_address->address_firstname,0,50);
-			$vars["x_ship_to_last_name"]=substr(@$order->cart->shipping_address->address_lastname,0,50);
-			$vars["x_ship_to_address"]=substr(@$order->cart->shipping_address->address_street,0,60);
-			$vars["x_ship_to_company"]=substr(@$order->cart->shipping_address->address_company,0,50);
-			$vars["x_ship_to_country"]=substr(@$order->cart->shipping_address->address_country->zone_name_english,0,60);
-			$vars["x_ship_to_zip"]=substr(@$order->cart->shipping_address->address_post_code,0,20);
-			$vars["x_ship_to_city"]=substr(@$order->cart->shipping_address->address_city,0,40);
-			$vars["x_ship_to_state"]=substr(@$order->cart->shipping_address->address_state->zone_name_english,0,40);
+			$vars["x_ship_to_first_name"]=mb_substr(@$order->cart->shipping_address->address_firstname,0,50);
+			$vars["x_ship_to_last_name"]=mb_substr(@$order->cart->shipping_address->address_lastname,0,50);
+			$vars["x_ship_to_address"]=mb_substr(@$order->cart->shipping_address->address_street,0,60);
+			$vars["x_ship_to_company"]=mb_substr(@$order->cart->shipping_address->address_company,0,50);
+			$vars["x_ship_to_country"]=mb_substr(@$order->cart->shipping_address->address_country->zone_name_english,0,60);
+			$vars["x_ship_to_zip"]=mb_substr(@$order->cart->shipping_address->address_post_code,0,20);
+			$vars["x_ship_to_city"]=mb_substr(@$order->cart->shipping_address->address_city,0,40);
+			$vars["x_ship_to_state"]=mb_substr(@$order->cart->shipping_address->address_state->zone_name_english,0,40);
 		}
 
 		if(isset($this->payment_params->details) && !$this->payment_params->details){
@@ -261,13 +269,13 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		foreach($order->cart->products as $product){
 			if($group && !empty($product->order_product_option_parent_id))
 				continue;
-			if(bccomp($product->order_product_tax,0,5)){
+			if(bccomp(sprintf('%F',$product->order_product_tax),0,5)){
 				$tax+=$product->order_product_quantity*round($product->order_product_tax,(int)$this->currency->currency_locale['int_frac_digits']);
 				$has_tax = 'YES';
 			}else{
 				$has_tax = 'NO';
 			}
-			$vars["x_line_item"][]=substr($product->order_product_code,0,30).'<|>'.substr(strip_tags($product->order_product_name),0,30).'<|>'.substr(strip_tags($product->order_product_name),0,30).'<|>'.$product->order_product_quantity.'<|>'.round($product->order_product_price,(int)$this->currency->currency_locale['int_frac_digits']).'<|>'.$has_tax;
+			$vars["x_line_item"][]=mb_substr($product->order_product_code,0,30).'<|>'.mb_substr(strip_tags($product->order_product_name),0,30).'<|>'.mb_substr(strip_tags($product->order_product_name),0,30).'<|>'.$product->order_product_quantity.'<|>'.round($product->order_product_price,(int)$this->currency->currency_locale['int_frac_digits']).'<|>'.$has_tax;
 		}
 
 		if(!empty($order->cart->coupon) && @$order->cart->coupon->discount_value>0){
@@ -281,15 +289,15 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		}
 
 		if(count($vars["x_line_item"])>=30){
-			if(bccomp($tax,0,5)){
+			if(bccomp(sprintf('%F',$tax),0,5)){
 				$has_tax = 'YES';
 			}else{
 				$has_tax = 'NO';
 			}
-			$vars["x_line_item"]=array(substr(strip_tags(JText::_('HIKASHOP_FINAL_TOTAL')),0,30).'<|>'.substr(strip_tags(JText::_('HIKASHOP_FINAL_TOTAL')),0,30).'<|><|>1<|>'.round($order->cart->full_total->prices[0]->price_value,(int)$this->currency->currency_locale['int_frac_digits']).'<|>'.$has_tax);
+			$vars["x_line_item"]=array(mb_substr(strip_tags(JText::_('HIKASHOP_FINAL_TOTAL')),0,30).'<|>'.mb_substr(strip_tags(JText::_('HIKASHOP_FINAL_TOTAL')),0,30).'<|><|>1<|>'.round($order->cart->full_total->prices[0]->price_value,(int)$this->currency->currency_locale['int_frac_digits']).'<|>'.$has_tax);
 		}
 
-		if(bccomp($tax,0,5)){
+		if(bccomp(sprintf('%F',$tax),0,5)){
 			$vars['x_tax']=$tax;
 			$vars['x_tax_exempt']='FALSE';
 		}else{
@@ -329,6 +337,9 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			}
 			$this->vars = $vars;
 		}
+		if($this->payment_params->debug){
+			hikashop_writeToLog($this->vars);
+		}
 
 		return $this->showPage($viewType);
 	}
@@ -345,6 +356,10 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 		$vars = array();
 		$data = array();
 		$filter = JFilterInput::getInstance();
+
+		if($this->payment_params->debug){
+			hikashop_writeToLog($_REQUEST);
+		}
 		foreach($_REQUEST as $key => $value){
 			$key = $filter->clean($key);
 			$value = hikaInput::get()->getString($key);
@@ -358,8 +373,8 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			return false;
 		$this->loadOrderData($dbOrder);
 		if($this->payment_params->debug){
-			echo print_r($vars,true)."\n\n\n";
-			echo print_r($dbOrder,true)."\n\n\n";
+			hikashop_writeToLog($vars);
+			hikashop_writeToLog($dbOrder);
 		}
 		if(empty($dbOrder)){
 			echo "Could not load any order for your notification ".@$vars['x_po_num'];
@@ -388,7 +403,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 			return $msg;
 		}
 
-		$vars['x_Hash_calculated']=$this->hash($vars);
+		$vars['x_Hash_calculated']=$this->hash($_REQUEST);
 
 		$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$order_id;
 		$order_text = "\r\n".JText::sprintf('NOTIFICATION_OF_ORDER_ON_WEBSITE',$dbOrder->order_number,HIKASHOP_LIVE);
@@ -515,7 +530,7 @@ class plgHikashoppaymentAuthorize extends hikashopPaymentPlugin
 	function getPaymentDefaultValues(&$element) {
 		$element->payment_name='Authorize';
 		$element->payment_description='You can pay by credit card using this payment method';
-		$element->payment_images='MasterCard,VISA,Credit_card,American_Express';
+		$element->payment_images='MasterCard,VISA,Credit_card,American_Express,Discover';
 
 		$element->payment_params->url='https://secure.authorize.net/gateway/transact.dll';
 		$element->payment_params->api='sim';

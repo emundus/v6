@@ -275,7 +275,7 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
 				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
-				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
+				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)
 				WHERE tab.published = 1
 					AND (tab.id IN ( '.implode(',', $fl).' ) OR tab.id IN ( '.$export_pdf.' ) )
 					AND element.published=1
@@ -478,12 +478,12 @@ class EmundusHelperFilters {
 		$current_filter = "";
 		if (!empty($selected)) {
 			if ($selected->element_plugin == "databasejoin"){
-				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
+				$query_paramsdefs = JPATH_SITE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'field.xml';
 				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
 				$query_params = json_decode($query_params);
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
-				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				<option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
 				if (!empty($option_list)) {
 					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';
@@ -494,12 +494,12 @@ class EmundusHelperFilters {
 				}
 				$current_filter .= '</select>';
 			} elseif($selected->element_plugin == "checkbox" || $selected->element_plugin == "radiobutton" || $selected->element_plugin == "dropdown"){
-				$query_paramsdefs = JPATH_BASE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.'field.xml';
+				$query_paramsdefs = JPATH_SITE.DS.'plugins'.DS.'fabrik_element'.DS.$selected->element_plugin.DS.'field.xml';
 				$query_params = new JParameter($selected->element_attribs, $query_paramsdefs);
 				$query_params = json_decode($query_params);
 				$option_list =  @EmundusHelperFilters::buildOptions($selected->element_name, $query_params);
 				$current_filter .= '<select name="'.$elements_values.'[]" id="'.$elements_values.'" onChange="document.adminForm.task.value=\'\'; javascript:submit()">
-				<option value="">'.JText::_('PLEASE_SELECT').'</option>';
+				<option value="">'.JText::_('COM_EMUNDUS_PLEASE_SELECT').'</option>';
 				if (!empty($option_list)) {
 					foreach ($option_list as $value) {
 						$current_filter .= '<option value="'.$value->elt_key.'"';

@@ -64,7 +64,7 @@ class EmundusViewUsers extends JViewLegacy {
 			'newsletter'		=> 1,
 			'group'             => 1,
 			'institution'       => 1,
-			'spam_suspect'		=> 1,
+			'spam_suspect'		=> 0,
 			'not_adv_filter'	=> 1,
 		];
 		$filts_options 	= [
@@ -162,9 +162,7 @@ class EmundusViewUsers extends JViewLegacy {
     function display($tpl = null) {
 	    JHtml::stylesheet( 'media/com_emundus/css/emundus_files.css');
 
-	    if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			die("ACCESS_DENIED");
-		}
+        $edit_profile = 0;
 
 		$layout = JFactory::getApplication()->input->getString('layout', null);
 		switch ($layout) {
@@ -194,6 +192,9 @@ class EmundusViewUsers extends JViewLegacy {
 				$m_actions->syncAllActions(false, $gid);
 				$this->_loadGroupRights($gid);
 				break;
+            case 'edit':
+                $edit_profile = 1;
+                break;
 			default :
                 JHTML::script( 'media/com_emundus/js/em_user.js');
                 @EmundusHelperFiles::clear();
@@ -217,6 +218,10 @@ class EmundusViewUsers extends JViewLegacy {
 			    $this->assignRef('actions', $acts);
 			 break;
 		}
+
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id) && !$edit_profile) {
+            die("ACCESS_DENIED");
+        }
 
 		$onSubmitForm = EmundusHelperJavascript::onSubmitForm();
 		$this->assignRef('onSubmitForm', $onSubmitForm);

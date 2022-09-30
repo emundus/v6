@@ -15,9 +15,10 @@
 
 <script>
 import axios from "axios";
-import Messages from "../../../components/com_emundus_messenger/src/components/Messages";
+import Messages from "../../../components/com_emundus/src/components/Messages/Messages";
 
 const qs = require("qs");
+axios.defaults.baseURL = '/';
 
 export default {
   name: 'Notifications',
@@ -42,7 +43,7 @@ export default {
     getNotifications(){
       axios({
         method: "get",
-        url: "index.php?option=com_emundus_messenger&controller=messages&task=getnotifications",
+        url: "index.php?option=com_emundus&controller=messenger&task=getnotifications",
         params: {
           user: this.user,
         },

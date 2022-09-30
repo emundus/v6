@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -38,7 +38,7 @@ class EasyblogCategory extends Easyblog
 
 		$cats = $this->makeArray($this->getCategories());
 
-		$pass = $this->passSimple($cats, 'include');
+		$pass = $this->passSimple($cats, false, 'include');
 
 		if ($pass && $this->params->inc_children == 2)
 		{
@@ -53,11 +53,6 @@ class EasyblogCategory extends Easyblog
 		}
 
 		return $this->passSimple($cats);
-	}
-
-	private function getCatParentIds($id = 0)
-	{
-		return $this->getParentIds($id, 'easyblog_category', 'parent_id');
 	}
 
 	private function getCategories()
@@ -75,6 +70,11 @@ class EasyblogCategory extends Easyblog
 			default:
 				return '';
 		}
+	}
+
+	private function getCatParentIds($id = 0)
+	{
+		return $this->getParentIds($id, 'easyblog_category', 'parent_id');
 	}
 
 	private function getCategoryIDFromItem()

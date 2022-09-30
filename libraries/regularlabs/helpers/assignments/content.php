@@ -1,11 +1,11 @@
 <?php
 /**
  * @package         Regular Labs Library
- * @version         21.9.16879
+ * @version         22.4.18687
  * 
  * @author          Peter van Westen <info@regularlabs.com>
  * @link            http://regularlabs.com
- * @copyright       Copyright © 2021 Regular Labs All Rights Reserved
+ * @copyright       Copyright © 2022 Regular Labs All Rights Reserved
  * @license         http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
  */
 
@@ -188,30 +188,6 @@ class RLAssignmentsContent extends RLAssignment
 		return $this->pass($pass);
 	}
 
-	public function passPageTypes()
-	{
-		$components = ['com_content', 'com_contentsubmit'];
-		if ( ! in_array($this->request->option, $components))
-		{
-			return $this->pass(false);
-		}
-		if ($this->request->view == 'category' && $this->request->layout == 'blog')
-		{
-			$view = 'categoryblog';
-		}
-		else
-		{
-			$view = $this->request->view;
-		}
-
-		return $this->passSimple($view);
-	}
-
-	private function getCatParentIds($id = 0)
-	{
-		return $this->getParentIds($id, 'categories');
-	}
-
 	private function getCategoryIds($is_category = false)
 	{
 		if ($is_category)
@@ -241,5 +217,29 @@ class RLAssignmentsContent extends RLAssignment
 		}
 
 		return (array) ($menuparams->catid ?? $catid);
+	}
+
+	private function getCatParentIds($id = 0)
+	{
+		return $this->getParentIds($id, 'categories');
+	}
+
+	public function passPageTypes()
+	{
+		$components = ['com_content', 'com_contentsubmit'];
+		if ( ! in_array($this->request->option, $components))
+		{
+			return $this->pass(false);
+		}
+		if ($this->request->view == 'category' && $this->request->layout == 'blog')
+		{
+			$view = 'categoryblog';
+		}
+		else
+		{
+			$view = $this->request->view;
+		}
+
+		return $this->passSimple($view);
 	}
 }

@@ -109,6 +109,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 		$export_pdf                 = $eMConfig->get('export_application_pdf', 0);
 		$export_path                = $eMConfig->get('export_path', null);
 		$id_applicants              = explode(',',$eMConfig->get('id_applicants', '0'));
+        $new_status                 = $this->getParam('emundusconfirmpost_status', '1');
 
 		$m_application  = new EmundusModelApplication;
 		$m_files        = new EmundusModelFiles;
@@ -124,7 +125,15 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			echo $e->getMessage() . '<br />';
 		}
 
-        if ($this->getParam('admission', 0) == 1) {
+        $current_phase = $m_campaign->getCurrentCampaignWorkflow($student);
+        if (!empty($current_phase) && !empty($current_phase->end_date)) {
+            if (!is_null($current_phase->output_status)) {
+                $new_status = $current_phase->output_status;
+            }
+
+            $is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+
+        } else if ($this->getParam('admission', 0) == 1) {
             $is_dead_line_passed = strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->admission_end_date) || strtotime(date($now)) < strtotime(@$student->fnums[$student->fnum]->admission_start_date);
         } else {
             $is_dead_line_passed = (strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->end_date)) ? true : false;
@@ -155,23 +164,36 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 				// catch any database errors.
 				JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 			}
-
 		}
 
+        $old_status = $student->fnums[$student->fnum]->status;
 		JPluginHelper::importPlugin('emundus');
 		$dispatcher = JEventDispatcher::getInstance();
 		$dispatcher->trigger('onBeforeSubmitFile', [$student->id, $student->fnum]);
         $dispatcher->trigger('callEventHandler', ['onBeforeSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
 
-		$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$this->getParam('emundusconfirmpost_status', '1').' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
+		$query = 'UPDATE #__emundus_campaign_candidature SET submitted=1, date_submitted=' . $db->Quote($now) . ', status='.$new_status.' WHERE applicant_id='.$student->id.' AND campaign_id='.$student->campaign_id. ' AND fnum like '.$db->Quote($student->fnum);
 		$db->setQuery($query);
 
 		try {
-			$db->execute();
-
+			$updated = $db->execute();
 		} catch (Exception $e) {
+            $updated = false;
 			JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 		}
+
+        // track the LOGS (FILE_UPDATE)
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+        $user = JFactory::getSession()->get('emundusUser');		# logged user #
+
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $mFile = new EmundusModelFiles();
+        $applicant_id = ($mFile->getFnumInfos($student->fnum))['applicant_id'];
+
+
+        if ($updated && $old_status != $new_status) {
+            $this->logUpdateState($old_status, $new_status, $user->id, $applicant_id, $student->fnum);
+        }
 
 		$query = 'UPDATE #__emundus_declaration SET time_date=' . $db->Quote($now) . ' WHERE user='.$student->id. ' AND fnum like '.$db->Quote($student->fnum);
 		$db->setQuery($query);
@@ -241,7 +263,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 
 				// Build filename from tags, we are using helper functions found in the email model, not sending emails ;)
 				$post = array('FNUM' => $fnum, 'CAMPAIGN_YEAR' => $fnumInfo['year'], 'PROGRAMME_CODE' => $fnumInfo['training']);
-				$tags = $m_emails->setTags($student->id, $post, $fnum);
+				$tags = $m_emails->setTags($student->id, $post, $fnum, '', $application_form_name.$export_path);
 				$application_form_name = preg_replace($tags['patterns'], $tags['replacements'], $application_form_name);
 				$application_form_name = $m_emails->setTagsFabrik($application_form_name, array($fnum));
 
@@ -290,6 +312,8 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 				copy(JPATH_BASE.DS.'tmp'.DS.$application_form_name.".pdf", JPATH_BASE.DS."images".DS."emundus".DS."files".DS.$student->id.DS.$fnum."_application_form_pdf.pdf");
 			}
 		}
+
+        //EmundusModelLogs::log($user->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 	}
 
 	/**
@@ -316,4 +340,32 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			$err[$field][0][] = $msg;
 		}
 	}
+
+    private function logUpdateState($old_status, $new_status, $user_id, $applicant_id, $fnum)
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $query->select('step, value')
+            ->from('#__emundus_setup_status')
+            ->where('step IN (' . implode(',', array($old_status, $new_status)) .  ')');
+
+        $db->setQuery($query);
+
+        try {
+            $status_labels = $db->loadObjectList('step');
+
+            EmundusModelLogs::log($user_id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_STATUS_UPDATE', json_encode(array(
+                "updated" => array(
+                    array(
+                        'old' => $status_labels[$old_status]->value,
+                        'new' => $status_labels[$new_status]->value,
+                        'old_id' => $old_status,
+                        'new_id' => $new_status
+                    )
+                )
+            )), JSON_UNESCAPED_UNICODE);
+        } catch (Exception $e) {
+            JLog::add('Error getting status labels in plugin confirmpost at line: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+        }
+    }
 }

@@ -1,8 +1,8 @@
 <?php
 /**
  * @package   FOF
- * @copyright Copyright (c)2010-2021 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 2, or later
+ * @copyright Copyright (c)2010-2022 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace FOF40\Autoloader;
@@ -26,7 +26,7 @@ class Autoloader
 	 */
 	protected static $aliases = [
 		'FOF40\Utils\CacheCleaner'                => 'FOF40\JoomlaAbstraction\CacheCleaner',
-		'FOF40\Utils\ComponentVersion'            => 'FOF40\Utils\ComponentVersion',
+		'FOF40\Utils\ComponentVersion'            => 'FOF40\JoomlaAbstraction\ComponentVersion',
 		'FOF40\Utils\DynamicGroups'               => 'FOF40\JoomlaAbstraction\DynamicGroups',
 		'FOF40\Utils\FEFHelper\BrowseView'        => 'FOF40\Html\FEFHelper\BrowseView',
 		'FOF40\Utils\InstallScript\BaseInstaller' => 'FOF40\InstallScript\BaseInstaller',

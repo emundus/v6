@@ -22,6 +22,7 @@ if ($jinput->get('view') == 'form') {
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 	 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
+     require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
 
 	$user = JFactory::getSession()->get('emundusUser');
 
@@ -39,14 +40,18 @@ if ($jinput->get('view') == 'form') {
     $scholarship_document_id 	= $params->get('scholarship_document_id', NULL);
 	$application_fee 			= $params->get('application_fee', 0);
 
-  $m_profile = new EmundusModelProfile;
-  $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
+    $m_profile = new EmundusModelProfile;
+    $application_fee = (!empty($application_fee) && !empty($m_profile->getHikashopMenu($user->profile)));
 
 	$m_application = new EmundusModelApplication;
+    $m_emails = new EmundusModelEmails;
 	$attachments = $m_application->getAttachmentsProgress($user->fnum);
 	$forms = $m_application->getFormsProgress($user->fnum);
 
 	if ($application_fee) {
+        $m_files = new EmundusModelFiles;
+        $fnumInfos = $m_files->getFnumInfos($user->fnum);
+
 		// If students with a scholarship have a different fee.
 		// The form ID will be appended to the URL, taking him to a different checkout page.
 		if (isset($scholarship_document_id)) {
@@ -74,7 +79,7 @@ if ($jinput->get('view') == 'form') {
 
 			if (empty($uploaded_document)) {
 				$scholarship_document_id = null;
-			} else if (!empty($pay_scholarship)) {
+            } else if (!empty($pay_scholarship)  && empty($m_application->getHikashopOrder($fnumInfos))) {
 				$scholarship_product = $params->get('scholarship_product', 0);
 				if (!empty($scholarship_product)) {
 					$return_url = $m_application->getHikashopCheckoutUrl($user->profile);
@@ -85,17 +90,18 @@ if ($jinput->get('view') == 'form') {
 			}
 		}
 
-		$m_files = new EmundusModelFiles;
-		$fnumInfos = $m_files->getFnumInfos($user->fnum);
-
 		// This allows users who have started a bank transfer or cheque to go through even if it has not been marked as received yet.
 		$accept_other_payments = $params->get('accept_other_payments', 0);
 
 		if (count($fnumInfos) > 0) {
+            $checkout_url = $m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document_id);
+            if(strpos($checkout_url,'${') !== false) {
+                $checkout_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
+            }
 			// If $accept_other_payments is 2 : that means we do not redirect to the payment page.
 			if ($accept_other_payments != 2 && empty($m_application->getHikashopOrder($fnumInfos)) && $attachments >= 100 && $forms >= 100) {
 				// Profile number and document ID are concatenated, this is equal to the menu corresponding to the free option (or the paid option in the case of document_id = NULL)
-				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($m_application->getHikashopCheckoutUrl($user->profile . $scholarship_document_id)));
+				$checkout_url = 'index.php?option=com_hikashop&ctrl=product&task=cleancart&return_url=' . urlencode(base64_encode($checkout_url));
 				$mainframe->redirect($checkout_url);
 			}
 		} else {

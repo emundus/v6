@@ -22,7 +22,7 @@ class EmundusViewTrombinoscope extends JViewLegacy
     {
         $current_user = JFactory::getUser();
         if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id) )
-            die( JText::_('RESTRICTED_ACCESS') );
+            die( JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS') );
 
         parent::display($tpl);
     }

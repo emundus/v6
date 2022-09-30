@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "com_emundus_onboard",
-    "com_emundus_messenger",
     "com_emundus"
   ],
   "scripts": {
@@ -18,13 +16,15 @@
     "@fortawesome/fontawesome-free": "^5.15.1",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "inputmask": "^5.0.7",
     "lodash": "^4.17.20",
     "luxon": "^1.25.0",
     "moment": "^2.29.1",
     "qs": "^6.9.4",
     "sweetalert2": "^8.19.0",
-    "tinymce": "^5.5.1",
+    "tinymce": "^5.10.3",
     "v-tooltip": "^2.0.3",
+    "v-wave": "^1.3.3",
     "velocity-animate": "^1.5.2",
     "vue": "^2.6.12",
     "vue-bootstrap-datetimepicker": "^5.0.1",
@@ -45,11 +45,11 @@
     "weekstart": "^1.0.1"
   },
   "devDependencies": {
-    "@vue/eslint-config-airbnb": "^5.3.0",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-service": "^4.5.8",
     "@vue/cli-plugin-unit-jest": "~4.5.0",
+    "@vue/cli-service": "^4.5.8",
+    "@vue/eslint-config-airbnb": "^4.0.0",
     "@vue/test-utils": "^1.0.3",
     "babel-eslint": "^10.1.0",
     "chai": "^4.1.2",

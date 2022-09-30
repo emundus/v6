@@ -210,7 +210,7 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
         $offset = $app->get('offset', 'UTC');
 
         # in case of CELSA, the meeting session will start 15 min before
-        $startTimeCELSA =  !empty($juryStartDate) ?  date('Y-m-d\TH:i:s\Z', strtotime($juryStartDate) - (15 * 60)) : date('Y-m-d\TH:i:s\Z');
+        $startTimeCELSA = !empty($juryStartDate) ? gmdate('Y-m-d\TH:i:s\Z', strtotime($juryStartDate) - (15 * 60)) : gmdate('Y-m-d\TH:i:s\Z');
 
         ######################################################################################################################
 
@@ -293,8 +293,8 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                     # set email body (creation)
                     $post = [
                         'ZOOM_SESSION_NAME' => $response['topic'],
-                        'ZOOM_SESSION_START_TIME' => date("Y-m-d H:i:s", strtotime($response['start_time'])),       # convert UTC time to local time
-                        'ZOOM_SESSION_UPDATE_TIME' => date('Y-m-d H:i:s'),
+                        'ZOOM_SESSION_START_TIME' => date("d/m/Y H\hi", strtotime($response['start_time'])),       # convert UTC time to local time
+                        'ZOOM_SESSION_UPDATE_TIME' => date('d/m/Y H\hi'),
                         'ZOOM_SESSION_HOST' => $host_first_name . ' ' . $host_last_name
                     ];
                 } catch(Exception $e) {
@@ -344,12 +344,9 @@ class PlgFabrik_FormEmunduszoommeeting extends plgFabrik_Form {
                         $post = [
                             'ZOOM_SESSION_PREVIOUS_NAME' => '<span style="font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_NAME . '</span>',
                             'ZOOM_SESSION_NAME' => '<span style="font-weight: normal">' . $response['topic'] . '</span>',
-
                             'ZOOM_SESSION_PREVIOUS_START_TIME' => '<span style="font-weight: normal;text-decoration: line-through">' . $zoomSession->ZOOM_SESSION_START_TIME . '</span>',
                             'ZOOM_SESSION_START_TIME' => '<span style="font-weight: normal">' . $juryStartDate . '</span>',
-
-                            'ZOOM_SESSION_UPDATE_TIME' => date('Y-m-d H:i:s'),
-
+                            'ZOOM_SESSION_UPDATE_TIME' => date('d/m/Y H\hi'),
                             'ZOOM_SESSION_HOST' => $host_first_name . ' ' . $host_last_name
                         ];
                     } catch(Exception $e) {

@@ -11,22 +11,22 @@ JFactory::getSession()->set('application_layout', 'tag');
             <div class="panel-heading em-container-tags-heading">
                 <h3 class="panel-title">
                     <span class="glyphicon glyphicon-tags"></span>
-                    <?php echo JText::_('TAGS'); ?>
+                    <?php echo JText::_('COM_EMUNDUS_TAGS'); ?>
                     <span class="label label-info" style="float:unset"><?php echo count($this->tags); ?></span>
                     <div class="em-flex-row em-w-40-vw">
-                        <?php if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $this->fnum)) :?>
-                            <select class="chzn-select" multiple id="mytags">
-                                <?php foreach($this->groupedTags as $category => $value) :?>
-                                    <optgroup value="<?php echo $category; ?>" label="<?= empty($category) ? JText::_('UNCATEGORIZED_TAGS') : JText::_($category) ;?>">
-                                        <?php foreach($value as $tag) :?>
-                                            <option value="<?php echo $tag['id']; ?>"><?php echo $tag['label']; ?></option>
-                                        <?php endforeach; ?>
-                                    </optgroup>
-                                <?php endforeach; ?>
+	            <?php if (EmundusHelperAccess::asAccessAction(14, 'c', $this->_user->id, $this->fnum)) :?>
+                    <select class="chzn-select" multiple id="mytags">
+                        <?php foreach($this->groupedTags as $category => $value) :?>
+                            <optgroup value="<?php echo $category; ?>" label="<?= empty($category) ? JText::_('UNCATEGORIZED_TAGS') : JText::_($category) ;?>">
+                            <?php foreach($value as $tag) :?>
+                                <option value="<?php echo $tag['id']; ?>"><?php echo $tag['label']; ?></option>
+                            <?php endforeach; ?>
+                            </optgroup>
+                        <?php endforeach; ?>
 
-                            </select>&ensp;&ensp;
-                            <button class="btn btn-success btn-xs" id="add-tags">
-                                <?php echo JText::_('ADD'); ?>
+                    </select>&ensp;&ensp;
+                    <button class="btn btn-success btn-xs" id="add-tags">
+                        <?php echo JText::_('COM_EMUNDUS_ADD'); ?>
                             </button>
                         <?php endif;?>
                     </div>
@@ -56,7 +56,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                                         <div class="comment-text em-tags-action">
                                             <h2><span class="label <?php echo $tag['class']; ?>" style="float:unset"><?php echo $tag['label']; ?></span>
                                                 <?php if($this->_user->id == $tag['user_id'] || EmundusHelperAccess::asAccessAction(14, 'd', $this->_user->id, $this->fnum)):?>
-                                                        <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('DELETE');?>">
+                                                        <button type="button" class="btn btn-danger btn-xs" title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_DELETE');?>">
                                                             <span class="material-icons">delete_outline</span>
                                                         </button>
                                                 <?php endif; ?>
@@ -69,7 +69,7 @@ JFactory::getSession()->set('application_layout', 'tag');
                             <?php
                             $i++;
                         }
-                    } else echo JText::_('NO_TAG');
+                    } else echo JText::_('COM_EMUNDUS_TAGS_NO_TAG');
                     ?>
                 </ul>
             </div>
@@ -122,7 +122,7 @@ JFactory::getSession()->set('application_layout', 'tag');
     });
     $(document).ready(function()
 	{
-        $('.chzn-select').chosen({placeholder_text_multiple: Joomla.JText._('PLEASE_SELECT_TAG'),
+        $('.chzn-select').chosen({placeholder_text_multiple: Joomla.JText._('COM_EMUNDUS_FILES_PLEASE_SELECT_TAG'),
             width:'50%'});
         $('.chzn-select').trigger("chosen:updated");
     })

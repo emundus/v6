@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,12 +16,16 @@ defined('_JEXEC') or die('Restricted access');
 
 		<?php echo JText::_('DESCFTP'); ?>
 
-		<?php if(JError::isError($this->ftp)){ ?>
-			<p><?php
-				if(method_exists($this->ftp, '__toString'))
-					$msg = $this->ftp->__toString();
-				else
-					$msg = @$this->ftp->message;
+		<?php
+			if(!empty($this->ftp) && method_exists($this->ftp, '__toString'))
+				$msg = $this->ftp->__toString();
+			else
+				$msg = @$this->ftp->message;
+		?>
+
+		<?php if(!empty($msg)){ ?>
+			<p>
+			<?php
 				echo JText::_( $msg );
 			?></p>
 		<?php } ?>
@@ -73,7 +77,22 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		?></th>
 	</tr>
+<?php
+			$display = '';
+			if(!empty( $this->element->structure)) {
+?>
 	<tr>
+		<td>
+			<?php
+				$this->setLayout('builder');
+				echo $this->loadTemplate();
+			?>
+		</td>
+	</tr>
+<?php
+			}
+?>
+	<tr <?php echo $display; ?>>
 		<td>
 			<?php echo $this->editor->displayCode('filecontent',$this->element->content); ?>
 		</td>

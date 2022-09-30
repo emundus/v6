@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 				<th></th>
 				<th>
 					<?php echo JText::_('FILTER');?>:
-					<input type="text" name="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" onchange="document.adminForm.submit();" />
+					<input type="text" id="search" name="search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button class="btn" onclick="document.adminForm.limitstart.value=0;this.form.submit();"><?php echo JText::_( 'GO' ); ?></button>
 					<button class="btn" onclick="document.adminForm.limitstart.value=0;document.getElementById('search').value='';this.form.submit();"><?php echo JText::_( 'RESET' ); ?></button>
 				</th>
@@ -30,7 +30,7 @@ defined('_JEXEC') or die('Restricted access');
 				<td></td>
 				<td>
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
+					<?php echo '<span class="hikashop_results_counter">'.$this->pagination->getResultsCounter().'</span>'; ?>
 				</td>
 			</tr>
 		</tfoot>
