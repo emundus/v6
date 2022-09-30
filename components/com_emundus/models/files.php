@@ -2062,14 +2062,18 @@ class EmundusModelFiles extends JModelLegacy
                     $endif = '';
 
 
-                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton') {
+                    if ($elt->element_plugin == 'dropdown' || $elt->element_plugin == 'radiobutton'|| $elt->element_plugin == 'checkbox') {
                         if($raw == 1){
                             $select = 'REPLACE(`'.$tableAlias[$elt->tab_name] . '`.`' . $elt->element_name.'`, "\t", "" )';
                         }
                         else{
                             $element_attribs = json_decode($elt->element_attribs);
                             foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-                                $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                if($elt->element_plugin == 'checkbox'){
+                                    $if[] = 'IF(' . $select . '="[\"' . $value . '\"]","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                } else {
+                                    $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                }
                                 $endif .= ')';
                             }
                             $select = implode(',', $if) . ',' . $select . $endif;
