@@ -212,7 +212,7 @@
 					name="for_specific_profiles"
 					type="text"
 					label="MOD_EMUNDUS_SPECIFIC_PROFILES"
-					description="MOD_EMUNDUS_SPECIFIC_PROFILES"
+					description="MOD_EMUNDUS_SPECIFIC_PROFILES_DESC"
 					default=""
 				/>
 			</fieldset>
