@@ -988,9 +988,11 @@ class EmundusHelperEvents {
                 $table_name = explode('___', $key)[0];
                 $column_name = explode('___', $key)[1];
 
-                //TODO : Get parent table using jos_fabrik_joins, not working if multiple groups as repeatable
-                if (strpos($key, '___id')) {
-                    $parentTable = $table_name;
+                //CASE : AT LEAST 2 REPEAT GROUPS ON PAGE
+                if(!strpos($table_name,'repeat')) {
+                    if (strpos($key, '___id')) {
+                        $parentTable = $table_name;
+                    }
                 }
 
                 if (strpos($key, '___fnum') && empty($fnum)) {
@@ -1036,7 +1038,7 @@ class EmundusHelperEvents {
                     /* get element data (getObject) */
 
                     $query->clear()
-                        ->select("distinct jfe.id as element_id, jfe.name as element_name, jfe.label as element_label, jfe.params as element_params, jfg.id as group_id, jfg.name as group_name, jfg.label as group_label, jff1.id as form_id, jff1.label as form_label, jfe.plugin, instr(jfg.params, '\"repeat_group_button\":\"1\"') as group_repeat")
+                        ->select("distinct jfe.id as element_id, jfe.name as element_name, jfe.label as element_label, jfe.params as element_params, jfg.id as group_id, jfg.name as group_name, jfg.label as group_label, jff1.id as form_id, jff1.label as form_label, jfe.plugin, instr(jfg.params, '\"repeat_group_button\":1') as group_repeat")
                         ->from($db->quoteName('#__fabrik_elements', 'jfe'))
                         ->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jfg.id'))
                         ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jff') . ' ON ' . $db->quoteName('jff.group_id') . ' = ' . $db->quoteName('jfg.id'))
@@ -1219,16 +1221,16 @@ class EmundusHelperEvents {
                                 if (array_values($oldsValues) === array_values($newsValues)) {
                                     $oldsLabels = $newsLabels = '';
                                 } else {
-                                    $oldsLabels = count($oldsLabels) > 1 ? (empty(trim(implode("", $oldsLabels))) === true ? '' : implode('', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
-                                    $newsLabels = count($newsLabels) > 1 ? (empty(trim(implode("", $newsLabels))) === true ? '' : implode('', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                                    $oldsLabels = count($oldsLabels) > 1 ? (empty(trim(implode("", $oldsLabels))) === true ? '' : implode('<#>', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                                    $newsLabels = count($newsLabels) > 1 ? (empty(trim(implode("", $newsLabels))) === true ? '' : implode('<#>', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
                                 }
                                 $diffs['old_data'] = $oldsLabels;
                                 $diffs['new_data'] = $newsLabels;
 
 
                             } else {
-                                $diffs['old_data'] = count($diffs['old_data']) > 1 ? (empty(trim(implode('', $diffs['old_data']))) === true ? '' : implode('', $diffs['old_data'])) : (is_array($diffs['old_data']) === true ? $diffs['old_data'][0] : $diffs['old_data']);
-                                $diffs['new_data'] = count($diffs['new_data']) > 1 ? (empty(trim(implode('', $diffs['new_data']))) === true ? '' : implode('', $diffs['new_data'])) : (is_array($diffs['new_data']) === true ? $diffs['new_data'][0] : $diffs['new_data']);
+                                $diffs['old_data'] = count($diffs['old_data']) > 1 ? (empty(trim(implode('', $diffs['old_data']))) === true ? '' : implode('<#>', $diffs['old_data'])) : (is_array($diffs['old_data']) === true ? $diffs['old_data'][0] : $diffs['old_data']);
+                                $diffs['new_data'] = count($diffs['new_data']) > 1 ? (empty(trim(implode('', $diffs['new_data']))) === true ? '' : implode('<#>', $diffs['new_data'])) : (is_array($diffs['new_data']) === true ? $diffs['new_data'][0] : $diffs['new_data']);
                             }
                         } else {
                             $query->clear()
@@ -1261,8 +1263,8 @@ class EmundusHelperEvents {
                                 }
                             }
 
-                            $diffs['old_data'] = count($oldsLabels) > 1 ? (empty(trim(implode('', $oldsLabels))) === true ? '' : implode('', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
-                            $diffs['new_data'] = count($newsLabels) > 1 ? (empty(trim(implode('', $newsLabels))) === true ? '' : implode('', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                            $diffs['old_data'] = count($oldsLabels) > 1 ? (empty(trim(implode('', $oldsLabels))) === true ? '' : implode('<#>', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                            $diffs['new_data'] = count($newsLabels) > 1 ? (empty(trim(implode('', $newsLabels))) === true ? '' : implode('<#>', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
                         }
                     }
 
@@ -1295,10 +1297,6 @@ class EmundusHelperEvents {
             require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
             $mFile = new EmundusModelFiles();
             $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
-
-
-            /* get form id from POST */
-
 
             if (!empty($logParams['updated'])) {
                 EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', json_encode($logParams, JSON_UNESCAPED_UNICODE));

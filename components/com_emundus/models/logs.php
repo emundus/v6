@@ -351,7 +351,7 @@ class EmundusModelLogs extends JModelList {
                             $action_details .= '<span class="em-blue-500-color">' . $_new . '</span>&nbsp';
                         } else {
                             //$_new = (strlen($_new) > 25) ? substr($_new, 0, 25) . '...' : $_new;
-                            $action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+                            $action_details .= '<span class="em-main-500-color">[' . $_new . ']</span>&nbsp';
                         }
                     }
                     $action_details .= '</div>';
