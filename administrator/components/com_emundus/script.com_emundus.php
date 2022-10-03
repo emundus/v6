@@ -73,9 +73,6 @@ class com_emundusInstallerScript
                 # Delete emundus sql files in con_admin
                 #$this->deleteOldSqlFiles();
 
-                EmundusHelperUpdate::updateModulesParams('mod_emundusflow','show_programme' , '0');
-                EmundusHelperUpdate::updateFabrikCronParams('emundusrecall',array('log','log_email','cron_rungate') , array('0','mail@emundus.fr','1'));
-
                 # Update SCP params
                 EmundusHelperUpdate::updateSCPParams('pro_plugin', array('email_active','email_on_admin_login'), array('0','0'));
 
@@ -209,6 +206,8 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
                 EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
                 EmundusHelperUpdate::addYamlVariable('name','Material Icons',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+
+                EmundusHelperUpdate::updateFont('family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext');
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

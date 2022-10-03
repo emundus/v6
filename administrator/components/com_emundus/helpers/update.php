@@ -313,6 +313,17 @@ class EmundusHelperUpdate
         file_put_contents($file, $new_yaml);
     }
 
+    public static function updateFont($font = 'family=Maven+Pro:500,700,900,400&subset=latin,vietnamese,latin-ext') {
+        $yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents(JPATH_BASE . '/templates/g5_helium/custom/config/default/styles.yaml'));
+
+        $yaml['font']['family-default'] = $font;
+        $yaml['font']['family-title'] = $font;
+
+        $new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
+
+        file_put_contents(JPATH_BASE . '/templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
+    }
+
     /**
      * @param $tag
      * @param $value
