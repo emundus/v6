@@ -276,6 +276,27 @@ export default {
     },
 	  saveDocument()
     {
+	    let empty_names = true;
+			Object.values(this.document.name).forEach((name) => {
+				if (name != "") {
+					empty_names = false;
+				}
+			});
+
+			if (empty_names === true) {
+				Swal.fire({
+					type: 'warning',
+					title: 'Veuillez remplir le champ "Type de document"',
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: "em-swal-single-action",
+					},
+				});
+				return false;
+			}
+
       const isModel = this.models.find((model) => {
         return model.id == this.document.id;
       });
@@ -286,6 +307,20 @@ export default {
           types.push(entry[0]);
         }
       });
+
+			if (types.length < 1) {
+				Swal.fire({
+					type: 'warning',
+					title: 'Veuillez sélectionner au moins un format de document',
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: "em-swal-single-action",
+					},
+				});
+				return false;
+			}
 
       if (!isModel) {
         this.document.id = null;
