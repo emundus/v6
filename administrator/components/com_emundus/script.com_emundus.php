@@ -203,6 +203,12 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
                 EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
                 EmundusHelperUpdate::addYamlVariable('name','Fabrik',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
+
+                EmundusHelperUpdate::addYamlVariable('location','https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css',true,true);
+                EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('name','Material Icons',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
