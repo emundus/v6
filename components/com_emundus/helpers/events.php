@@ -1038,7 +1038,9 @@ class EmundusHelperEvents {
                     /* get element data (getObject) */
 
                     $query->clear()
-                        ->select("distinct jfe.id as element_id, jfe.name as element_name, jfe.label as element_label, jfe.params as element_params, jfg.id as group_id, jfg.name as group_name, jfg.label as group_label, jff1.id as form_id, jff1.label as form_label, jfe.plugin, instr(jfg.params, '\"repeat_group_button\":1') as group_repeat")
+                        ->select("distinct jfe.id as element_id, jfe.name as element_name, jfe.label as element_label, jfe.params as element_params, jfg.id as group_id, jfg.name as group_name, jfg.label as group_label, jff1.id as form_id, jff1.label as form_label, jfe.plugin
+                                            , instr(jfg.params, '\"repeat_group_button\":1') as group_repeat, instr(jfg.params, '\"repeat_group_button\":\"1\"') as group_repeat_bis"
+                        )
                         ->from($db->quoteName('#__fabrik_elements', 'jfe'))
                         ->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jfg.id'))
                         ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jff') . ' ON ' . $db->quoteName('jff.group_id') . ' = ' . $db->quoteName('jfg.id'))
@@ -1054,7 +1056,7 @@ class EmundusHelperEvents {
                         continue;
                     }
 
-                    if ($element['group_repeat'] == 0) {
+                    if ($element['group_repeat'] == 0 and $element['group_repeat_bis'] == 0) {
 
                         // flat old data and new data
                         $diffs['old_data'] = reset($diffs['old_data']);
