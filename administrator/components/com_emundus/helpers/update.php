@@ -1427,4 +1427,144 @@ class EmundusHelperUpdate
         $result['status'] = true;
         return $result;
     }
+
+    public static function addFabrikElement($datas,$params = null) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['name'])){
+            $result['message'] = 'INSERTING FABRIK ELEMENT : Please indicate a name.';
+            return $result;
+        }
+        if(empty($datas['group_id'])){
+            $result['message'] = 'INSERTING FABRIK ELEMENT : Please provide a group.';
+            return $result;
+        }
+        if(empty($datas['plugin'])){
+            $result['message'] = 'INSERTING FABRIK ELEMENT : Please provide a plugin.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+            ->from($db->quoteName('#__fabrik_elements'))
+            ->where($db->quoteName('name') . ' LIKE ' . $db->quote($datas['name']))
+            ->andWhere($db->quoteName('group_id') . ' LIKE ' . $db->quote($datas['group_id']));
+        $db->setQuery($query);
+        $is_existing = $db->loadResult();
+
+        if(!$is_existing) {
+            require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
+            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin']);
+            $params = array_merge($default_params, $params);
+
+            try {
+                $query->clear()
+                    ->select('max(ordering)')
+                    ->from($db->quoteName('#__fabrik_elements'))
+                    ->where($db->quoteName('group_id') . ' = ' . $db->quote($datas['group_id']));
+                $db->setQuery($query);
+                $ordering = $db->loadResult();
+
+                if (!is_null($ordering)) {
+                    $ordering += 1;
+                } else {
+                    $ordering = 0;
+                }
+
+                $inserting_datas = [
+                    'name' => $datas['name'],
+                    'group_id' => $datas['group_id'],
+                    'plugin' => $datas['plugin'],
+                    'label' => $datas['label'] ?: '',
+                    'checked_out' => 0,
+                    'checked_out_time' => date('Y-m-d H:i:s'),
+                    'created' => date('Y-m-d H:i:s'),
+                    'created_by' => 62,
+                    'created_by_alias' => 'sysadmin',
+                    'modified' => date('Y-m-d H:i:s'),
+                    'modified_by' => 62,
+                    'width' => $datas['width'] ?: 30,
+                    'height' => $datas['height'] ?: 6,
+                    'default' => $datas['default'] ?: '',
+                    'hidden' => $datas['hidden'] ?: 0,
+                    'eval' => $datas['eval'] ?: 0,
+                    'ordering' => $ordering,
+                    'show_in_list_summary' => $datas['show_in_list_summary'] ?: 0,
+                    'filter_type' => $datas['filter_type'] ?: '',
+                    'filter_exact_match' => $datas['filter_exact_match'] ?: 0,
+                    'published' => $datas['published'] ?: 1,
+                    'link_to_detail' => $datas['link_to_detail'] ?: 0,
+                    'primary_key' => $datas['primary_key'] ?: 0,
+                    'auto_increment' => $datas['auto_increment'] ?: 0,
+                    'access' => $datas['access'] ?: 1,
+                    'use_in_page_title' => $datas['use_in_page_title'] ?: 0,
+                    'parent_id' => $datas['parent_id'] ?: 0,
+                    'params' => json_encode($params)
+                ];
+
+                $query->clear()
+                    ->insert($db->quoteName('#__fabrik_elements'))
+                    ->columns($db->quoteName(array_keys($inserting_datas)))
+                    ->values(implode(',', $db->quote(array_values($inserting_datas))));
+                $db->setQuery($query);
+                $db->execute();
+
+                $result['id'] = $db->insertid();
+            } catch (Exception $e) {
+                $result['message'] = 'INSERTING FABRIK ELEMENT : Error : ' . $e->getMessage();
+                return $result;
+            }
+        } else {
+            $result['id'] = $is_existing;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
+
+    public static function addJsAction($datas,$params = null) {
+        $result = ['status' => false, 'message' => ''];
+
+        if(empty($datas['element_id'])){
+            $result['message'] = 'INSERTING FABRIK JSACTION : Please provide an element.';
+            return $result;
+        }
+
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            if(empty($params)){
+                $params = [
+                    'js_e_event' => '',
+                    'js_e_trigger' => '',
+                    'js_e_condition' => '',
+                    'js_e_value' => '',
+                    'js_published' => '1',
+                ];
+            }
+            $inserting_datas = [
+                'element_id' => $datas['element_id'],
+                'action' => $datas['action'] ?: 'load',
+                'code' => $datas['code'] ?: '',
+                'params' => json_encode($params)
+            ];
+
+            $query->clear()
+                ->insert($db->quoteName('#__fabrik_jsactions'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $db->execute();
+        } catch (Exception $e) {
+            $result['message'] = 'INSERTING FABRIK JSACTION : Error : ' . $e->getMessage();
+            return $result;
+        }
+
+        $result['status'] = true;
+        return $result;
+    }
 }

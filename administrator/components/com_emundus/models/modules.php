@@ -188,6 +188,112 @@ class EmundusModelModules extends JModelList {
                     ];
                     EmundusHelperUpdate::addFabrikJoin($datas,$join_params);
                 }
+
+                if($group_questions['status']) {
+                    $datas = [
+                        'name' => 'id',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'internalid',
+                        'label' => 'id',
+                        'width' => '3',
+                        'height' => '0',
+                        'hidden' => '1',
+                        'link_to_detail' => '1',
+                        'primary_key' => '1',
+                        'auto_increment' => '1',
+                    ];
+                    $elt_params = [
+                        'edit_access' => 1,
+                        'view_access' => 1,
+                        'list_view_access' => 1,
+                        'filter_access' => 1,
+                        'sum_access' => 1,
+                        'avg_access' => 1,
+                        'median_access' => 1,
+                        'count_access' => 1,
+                        'custom_calc_access' => 1,
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas,$elt_params);
+
+                    $datas = [
+                        'name' => 'date_time',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'date',
+                        'label' => 'date_time',
+                        'width' => '0',
+                        'height' => '0',
+                        'hidden' => '1',
+                        'link_to_detail' => '1'
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas = [
+                        'name' => 'section',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'databasejoin',
+                        'label' => 'QCM_SECTION',
+                    ];
+                    $elt_params = [
+                        'database_join_display_type' => 'dropdown',
+                        'join_db_name' => 'jos_emundus_qcm_section',
+                        'join_key_column' => 'id',
+                        'join_val_column' => 'name',
+                    ];
+                    $elt_section = EmundusHelperUpdate::addFabrikElement($datas,$elt_params);
+
+                    if($elt_section['status']) {
+                        $datas = [
+                            'element_id' => $elt_section['id'],
+                            'join_from_table' => '',
+                            'table_join' => 'jos_emundus_qcm_section',
+                            'table_key' => 'section',
+                            'table_join_key' => 'id',
+                            'group_id' => $group_questions['id'],
+                        ];
+                        $join_params = [
+                            'join-label' => 'name',
+                            'type' => 'element',
+                            'pk' => '`jos_emundus_qcm_section`.`id`',
+                        ];
+                        EmundusHelperUpdate::addFabrikJoin($datas, $join_params);
+                    }
+
+                    $datas = [
+                        'name' => 'code',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'field',
+                        'label' => 'CODE',
+                        'hidden' => 1,
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas = [
+                        'name' => 'question',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'textarea',
+                        'label' => 'QCM_QUESTION',
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas = [
+                        'name' => 'time',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'field',
+                        'label' => 'QCM_TIME_QUESTION',
+                    ];
+                    $elt_params = [
+                        'password' => 6,
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas,$elt_params);
+
+                    $datas = [
+                        'name' => 'answers',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'field',
+                        'label' => 'QCM_ANSWERS',
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+                }
             }
 
             $datas = [
@@ -211,6 +317,51 @@ class EmundusModelModules extends JModelList {
                 $group_sections = EmundusHelperUpdate::addFabrikGroup($datas);
                 if($group_sections['status']){
                     EmundusHelperUpdate::joinFormGroup($form_sections['id'],[$group_sections['id']]);
+
+                    $datas = [
+                        'name' => 'id',
+                        'group_id' => $group_sections['id'],
+                        'plugin' => 'internalid',
+                        'label' => 'id',
+                        'width' => '3',
+                        'height' => '0',
+                        'hidden' => '1',
+                        'link_to_detail' => '1',
+                        'primary_key' => '1',
+                        'auto_increment' => '1',
+                    ];
+                    $elt_params = [
+                        'edit_access' => 1,
+                        'view_access' => 1,
+                        'list_view_access' => 1,
+                        'filter_access' => 1,
+                        'sum_access' => 1,
+                        'avg_access' => 1,
+                        'median_access' => 1,
+                        'count_access' => 1,
+                        'custom_calc_access' => 1,
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas,$elt_params);
+
+                    $datas = [
+                        'name' => 'date_time',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'date',
+                        'label' => 'date_time',
+                        'width' => '0',
+                        'height' => '0',
+                        'hidden' => '1',
+                        'link_to_detail' => '1'
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas = [
+                        'name' => 'name',
+                        'group_id' => $group_questions['id'],
+                        'plugin' => 'field',
+                        'label' => 'QCM_NAME',
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
                 }
             }
 
@@ -233,10 +384,225 @@ class EmundusModelModules extends JModelList {
                     'name' => 'QCM - Setup',
                 ];
                 $group_setup = EmundusHelperUpdate::addFabrikGroup($datas);
-                if($group_setup['status']){
-                    EmundusHelperUpdate::joinFormGroup($form_setup['id'],[$group_setup['id']]);
+                if ($group_setup['status']) {
+                    EmundusHelperUpdate::joinFormGroup($form_setup['id'], [$group_setup['id']]);
+
+                    $datas = [
+                        'name' => 'id',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'internalid',
+                        'label' => 'id',
+                        'width' => '3',
+                        'height' => '0',
+                        'hidden' => '1',
+                        'link_to_detail' => '1',
+                        'primary_key' => '1',
+                        'auto_increment' => '1',
+                    ];
+                    $elt_params = [
+                        'edit_access' => 1,
+                        'view_access' => 1,
+                        'list_view_access' => 1,
+                        'filter_access' => 1,
+                        'sum_access' => 1,
+                        'avg_access' => 1,
+                        'median_access' => 1,
+                        'count_access' => 1,
+                        'custom_calc_access' => 1,
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas, $elt_params);
+
+                    $datas = [
+                        'name' => 'date_time',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'date',
+                        'label' => 'date_time',
+                        'width' => '0',
+                        'height' => '0',
+                        'hidden' => '1',
+                        'link_to_detail' => '1'
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas = [
+                        'name' => 'name',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'field',
+                        'label' => 'QCM_NAME',
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas);
+
+                    $datas = [
+                        'name' => 'form_id',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'databasejoin',
+                        'label' => 'QCM_FORM',
+                    ];
+                    $elt_params = [
+                        'database_join_display_type' => 'dropdown',
+                        'join_db_name' => 'jos_fabrik_forms',
+                        'join_key_column' => 'id',
+                        'join_val_column' => 'label',
+                    ];
+                    $elt_form_id = EmundusHelperUpdate::addFabrikElement($datas, $elt_params);
+
+                    if ($elt_form_id['status']) {
+                        $datas = [
+                            'element_id' => $elt_form_id['id'],
+                            'join_from_table' => '',
+                            'table_join' => 'jos_fabrik_forms',
+                            'table_key' => 'form_id',
+                            'table_join_key' => 'id',
+                            'group_id' => $group_setup['id'],
+                        ];
+                        $join_params = [
+                            'join-label' => 'name',
+                            'type' => 'element',
+                            'pk' => '`jos_fabrik_forms`.`id`',
+                        ];
+                        EmundusHelperUpdate::addFabrikJoin($datas, $join_params);
+                    }
+
+                    $datas = [
+                        'name' => 'questionid',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'databasejoin',
+                        'label' => 'QCM_QUESTIONS',
+                    ];
+                    $elt_params = [
+                        'database_join_display_type' => 'checkbox',
+                        'join_db_name' => 'jos_emundus_qcm_questions',
+                        'join_key_column' => 'id',
+                        'join_val_column' => 'question',
+                    ];
+                    $elt_question_id = EmundusHelperUpdate::addFabrikElement($datas, $elt_params);
+
+                    if ($elt_question_id['status']) {
+                        $datas = [
+                            'element_id' => $elt_question_id['id'],
+                            'join_from_table' => 'jos_emundus_setup_qcm',
+                            'table_join' => 'jos_emundus_setup_qcm_repeat_questionid',
+                            'table_key' => 'questionid',
+                            'table_join_key' => 'parent_id',
+                            'group_id' => $group_setup['id'],
+                        ];
+                        $join_params = [
+                            'type' => 'repeatElement',
+                            'pk' => '`jos_emundus_setup_qcm_repeat_questionid`.`id`',
+                        ];
+                        EmundusHelperUpdate::addFabrikJoin($datas, $join_params);
+                    }
+
+                    $datas = [
+                        'name' => 'sectionid',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'databasejoin',
+                        'label' => 'QCM_SECTION',
+                    ];
+                    $elt_params = [
+                        'database_join_display_type' => 'checkbox',
+                        'join_db_name' => 'jos_emundus_qcm_section',
+                        'join_key_column' => 'id',
+                        'join_val_column' => 'name',
+                    ];
+                    $elt_section_id = EmundusHelperUpdate::addFabrikElement($datas, $elt_params);
+
+                    if ($elt_section_id['status']) {
+                        $datas = [
+                            'element_id' => $elt_section_id['id'],
+                            'join_from_table' => 'jos_emundus_setup_qcm',
+                            'table_join' => 'jos_emundus_setup_qcm_repeat_sectionid',
+                            'table_key' => 'sectionid',
+                            'table_join_key' => 'parent_id',
+                            'group_id' => $group_setup['id'],
+                        ];
+                        $join_params = [
+                            'type' => 'repeatElement',
+                            'pk' => '`jos_emundus_setup_qcm_repeat_sectionid`.`id`',
+                        ];
+                        EmundusHelperUpdate::addFabrikJoin($datas, $join_params);
+                    }
+
+                    $datas = [
+                        'name' => 'type_choices',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'radiobutton',
+                        'label' => 'QCM_QUESTION_OR_SECTIONS',
+                    ];
+                    $sub_options = [
+                        'sub_values' => ["1", "2"],
+                        'sub_labels' => ["QCM_QUESTIONS", "QCM_SECTION"],
+                    ];
+                    $elt_params = [
+                        'sub_options' => json_encode($sub_options),
+                        'options_per_row' => 2
+                    ];
+                    $elt_type_choices = EmundusHelperUpdate::addFabrikElement($datas, $elt_params);
+                    if ($elt_type_choices['status']) {
+                        $datas = [
+                            'element_id' => $elt_type_choices,
+                            'code' => 'var value = this.get(&#039;value&#039;);
+                                       var fab = this.form.elements;
+                                        
+                                       var questions = fab.get(&#039;jos_emundus_setup_qcm___questionid&#039;);
+                                       var sections = fab.get(&#039;jos_emundus_setup_qcm___sectionid&#039;);
+                                        
+                                       if(value == 1){
+                                         sections.hide();
+                                         questions.show();
+                                       } else {
+                                         questions.hide();
+                                         sections.show();
+                                       }',
+                        ];
+
+                        EmundusHelperUpdate::addJsAction($datas);
+                    }
+
+                    $datas = [
+                        'name' => 'count',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'field',
+                        'label' => 'QCM_QUESTIONS_COUNT',
+                    ];
+                    $elt_params = [
+                        'password' => 6,
+                    ];
+                    EmundusHelperUpdate::addFabrikElement($datas, $elt_params);
+
+                    $datas = [
+                        'name' => 'group_id',
+                        'group_id' => $group_setup['id'],
+                        'plugin' => 'databasejoin',
+                        'label' => 'QCM_GROUP',
+                    ];
+                    $elt_params = [
+                        'database_join_display_type' => 'dropdown',
+                        'join_db_name' => 'jos_fabrik_groups',
+                        'join_key_column' => 'id',
+                        'join_val_column' => 'label',
+                    ];
+                    $elt_group_id = EmundusHelperUpdate::addFabrikElement($datas, $elt_params);
+
+                    if ($elt_question_id['status']) {
+                        $datas = [
+                            'element_id' => $elt_question_id['id'],
+                            'join_from_table' => 'jos_emundus_setup_qcm',
+                            'table_join' => 'jos_fabrik_groups',
+                            'table_key' => 'group_id',
+                            'table_join_key' => 'id',
+                            'group_id' => $group_setup['id'],
+                        ];
+                        $join_params = [
+                            'join-label' => 'label',
+                            'type' => 'element',
+                            'pk' => '`jos_fabrik_groups`.`id`',
+                        ];
+                        EmundusHelperUpdate::addFabrikJoin($datas, $join_params);
+                    }
                 }
             }
+
 
             $plugin_qcm_setup = [
                 'plugin_state' => ['1'],
