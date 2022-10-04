@@ -155,9 +155,7 @@ $applicant_option_others = false;
 		$('alertes-details').css({padding:"30px"});
 		$('.em-chosen').chosen({width:'100%'});
 
-		if (edit == '1') {
-            renderingSelects();
-		}
+        renderingSelects();
 
         let loginField = $('#login_field');
 
