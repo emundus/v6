@@ -31,7 +31,7 @@
 						<span v-else-if="sort.orderBy == data.column_name && sort.order == 'desc'" class="material-icons">arrow_downward</span>
 						{{ translate(data.label) }}
 					</th>
-					<th>
+					<th v-if="!readOnly">
 						<span v-if="checkedRows.length > 0" class="material-icons em-pointer" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span>
 						<more-options v-if="checkedRows.length > 0 && moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
 					</th>
