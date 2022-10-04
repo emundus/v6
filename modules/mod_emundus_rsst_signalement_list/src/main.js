@@ -17,6 +17,8 @@ Vue.use(Vuex);
 
 const modRsstSignalementList = document.getElementById('em-rsst-signalement-list-vue');
 if (modRsstSignalementList) {
+    console.log(modRsstSignalementList);
+
     const vue = new Vue({
         el: '#em-rsst-signalement-list-vue',
         store,
@@ -31,7 +33,7 @@ if (modRsstSignalementList) {
                     fabrikListParticularConditionalColumnValues: modRsstSignalementList.getAttribute('listParticularConditionalColumnValues'),
                     fabrikListColumnShowingAsBadge: modRsstSignalementList.getAttribute('listColumnShowingAsBadge'),
                     fabrikListColumnToNotShowingWhenFilteredBy: modRsstSignalementList.getAttribute('listColumnToNotShowingWhenFilteredBy'),
-                    readOnly: modRsstSignalementList.getAttribute('readOnly')
+                    readOnly: modRsstSignalementList.getAttribute('readOnly') == 1 ? true : false
                 }
             });
         }
