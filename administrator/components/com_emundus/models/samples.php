@@ -159,6 +159,35 @@ class EmundusModelSamples extends JModelList {
             $db->setQuery($query);
             $db->execute();
 
+            $inserting_datas = [
+                'parent_id' => 1,
+                'course' => 'prog',
+            ];
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $db->execute();
+
+            $end_date = new DateTime();
+            $end_date->modify('+1 year');
+            $inserting_datas = [
+                'label' => '2022-2023',
+                'schoolyear' => '2022-2023',
+                'code' => 'prog',
+                'published' => 1,
+                'date_start' => date('Y-m-d H:i:s'),
+                'date_end' => $end_date->format('Y-m-d H:i:s'),
+                'profile_id' => 9,
+            ];
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_teaching_unity'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $db->execute();
+
             $training = 'prog';
         }
 
