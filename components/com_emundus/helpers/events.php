@@ -188,7 +188,7 @@ class EmundusHelperEvents {
             $is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
             if (!$is_campaign_started && !in_array($user->id, $applicants)) {
                 // STOP HERE, the campaign or step is not started yet. Redirect to main page
-                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
+                $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_NOT_STARTED'), 'warning');
                 $mainframe->redirect('/');
             }
 
@@ -227,11 +227,11 @@ class EmundusHelperEvents {
                     //try to access detail view or other
                     else {
                         if (!$can_edit && $is_app_sent) {
-                            $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
+                            $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
                         } else if ($fnumDetail['published'] == -1) {
-                            $mainframe->enqueueMessage(JText::_('DELETED_FILE'), 'error');
+                            $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');
                         } else if ($is_dead_line_passed) {
-                            $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                            $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
                         }
                         $reload_url = false;
                     }
@@ -267,9 +267,9 @@ class EmundusHelperEvents {
                     if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true) {
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
-                                $mainframe->enqueueMessage(JText::_('APPLICATION_LIMIT_OBTAINED'), 'error');
+                                $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED'), 'warning');
                             } else {
-                                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                                $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
                             }
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
@@ -782,7 +782,7 @@ class EmundusHelperEvents {
         // If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
         if ((($is_dead_line_passed && $can_edit_after_deadline != 1) || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
             if ($isLimitObtained === true) {
-                $params['formModel']->formErrorMsg = JText::_('LIMIT_OBTAINED');
+                $params['formModel']->formErrorMsg = JText::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED');
             } else {
                 $params['formModel']->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
             }
