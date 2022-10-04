@@ -2068,15 +2068,29 @@ class EmundusModelFiles extends JModelLegacy
                         }
                         else{
                             $element_attribs = json_decode($elt->element_attribs);
+                            if($elt->element_plugin == 'checkbox'){
+                                $if = '';
+                            }
                             foreach ($element_attribs->sub_options->sub_values as $key => $value) {
                                 if($elt->element_plugin == 'checkbox'){
-                                    $if[] = 'IF(' . $select . '="[\"' . $value . '\"]","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                    if(empty($if)) {
+                                        $if = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' .
+                                            JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                                    } else {
+                                        $if = 'REGEXP_REPLACE(' . $if . ', "\\\b' . $value . '\\\b", "' .
+                                            JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+                                    }
                                 } else {
                                     $if[] = 'IF(' . $select . '="' . $value . '","' . $element_attribs->sub_options->sub_labels[$key] . '"';
+                                    $endif .= ')';
                                 }
-                                $endif .= ')';
+
                             }
-                            $select = implode(',', $if) . ',' . $select . $endif;
+                            if(is_array($if)) {
+                                $select = implode(',', $if) . ',' . $select . $endif;
+                            } else {
+                                $select = $if;
+                            }
                         }
                     } elseif ($elt->element_plugin == 'yesno') {
                         if ($raw == 1){
