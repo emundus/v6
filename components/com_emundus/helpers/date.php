@@ -39,7 +39,7 @@ class EmundusHelperDate {
          } else {
             $date_time = new DateTime($date);
          }
-    
+
         return HtmlHelper::date($date_time->format("Y-m-d H:i:s"), Text::_($format));
     }
 }
