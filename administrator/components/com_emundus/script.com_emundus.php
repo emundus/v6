@@ -208,6 +208,20 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addYamlVariable('name','Material Icons',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
 
                 EmundusHelperUpdate::updateFont('family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext');
+
+                $datas = [
+                    'menutype' => 'usermenu',
+                    'title' => 'Informations de compte',
+                    'alias' => 'informations-de-compte',
+                    'path' => 'informations-de-compte',
+                    'link' => 'index.php?option=com_users&view=profile&layout=edit',
+                    'type' => 'component',
+                    'component_id' => 25,
+                    'params' => [
+                        'menu_show' => 0
+                    ]
+                ];
+                EmundusHelperUpdate::addJoomlaMenu($datas);
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
