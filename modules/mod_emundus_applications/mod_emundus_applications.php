@@ -64,6 +64,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $description = JText::_($params->get('description', ''));
     $show_add_application = $params->get('show_add_application', 1);
+    $show_show_campaigns = $params->get('show_show_campaigns', 0);
+    $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');
     $position_add_application = (int)$params->get('position_add_application', 0);
     $show_progress = $params->get('show_progress', 1);
     $show_progress_forms = $params->get('show_progress_forms', 0);

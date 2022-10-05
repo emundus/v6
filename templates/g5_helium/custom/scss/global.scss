@@ -505,7 +505,7 @@ p,
 
   #header-c {
     max-width: 30rem;
-    min-height: 67px;
+    //min-height: 67px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -533,7 +533,7 @@ p,
   width: 100vw;
   position: sticky;
   max-height: 100px;
-  height: 87px;
+  height: 65px;
   background: transparent;
 
   .g-container {
@@ -630,7 +630,7 @@ footer#g-footer {
   position: relative;
   z-index: 1;
   padding: 20px !important;
-  margin-top: 75px !important;
+  //margin-top: 75px !important;
   transition: all 0.3s ease-in-out;
 }
 
@@ -4192,7 +4192,7 @@ button.swal2-cancel.goback-btn {
   @media screen and (max-width: 1366px),
   screen and (max-height: 769px) {
     .gantry #g-navigation .g-main-nav#em_user_menu .g-toplevel.tchooz-vertical-toplevel > li.g-menu-item.g-standard.tchooz-vertical-item:nth-child(3) {
-      margin-top: -40px !important;
+      //margin-top: -40px !important;
     }
 
     .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
