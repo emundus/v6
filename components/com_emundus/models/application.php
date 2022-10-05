@@ -3030,20 +3030,45 @@ class EmundusModelApplication extends JModelList
         return $results;
     }
 
-    public function getApplicationMenu() {
+    public function getApplicationMenu($fnum = null) {
         $juser = JFactory::getUser();
 
         try {
             $db = $this->getDbo();
             $grUser = $juser->getAuthorisedViewLevels();
 
+
             $query = 'SELECT m.id, m.title, m.link, m.lft, m.rgt, m.note
                         FROM #__menu as m
                         WHERE m.published=1 AND m.menutype = "application" and m.access in ('.implode(',', $grUser).')
                         ORDER BY m.lft';
-
             $db->setQuery($query);
-            return $db->loadAssocList();
+            $menus = $db->loadAssocList();
+
+            $workflow_menus = [];
+            if(!empty($fnum)) {
+                require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+                $m_files = new EmundusModelFiles();
+                $fnumInfos = $m_files->getFnumInfos($fnum);
+
+                $query = $db->getQuery(true);
+                $query->select('ecw.id,ecw.label as title,ecw.form_id')
+                    ->from($db->quoteName('#__emundus_campaign_workflow','ecw'))
+                    ->leftJoin($db->quoteName('#__emundus_campaign_workflow_repeat_entry_status','ecwres').' ON '.$db->quoteName('ecw.id').' = '.$db->quoteName('ecwres.parent_id'))
+                    ->where($db->quoteName('ecw.type') . ' = 1')
+                    ->andWhere($db->quoteName('ecwres.entry_status') . ' = ' . $fnumInfos['status']);
+                $db->setQuery($query);
+                $workflow_menus = $db->loadAssocList();
+
+                foreach ($workflow_menus as $key => $menu){
+                    $workflow_menus[$key]['link'] = 'index.php?option=com_emundus&view=application&format=raw&layout=review&form_id='.$menu['form_id'];
+                    $workflow_menus[$key]['rgt'] = '1';
+                    $workflow_menus[$key]['lft'] = '0';
+                    $workflow_menus[$key]['note'] = '5|c';
+                }
+            }
+
+            return array_merge($menus,$workflow_menus);
 
         } catch (Exception $e) {
             return false;

@@ -401,7 +401,7 @@ class EmundusControllerApplication extends JControllerLegacy
         $fnum = $jinput->get('fnum', null, 'STRING');
 
         $m_application = $this->getModel('Application');
-        $menus = $m_application->getApplicationMenu();
+        $menus = $m_application->getApplicationMenu($fnum);
         $res = false;
 
         if(EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum)) {
