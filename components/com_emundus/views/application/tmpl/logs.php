@@ -9,16 +9,14 @@ JFactory::getSession()->set('application_layout', 'logs');
 
 ?>
 
-<style type="text/css">
-	.widget .panel-body { padding:0px; }
+<style>
+	.widget .panel-body { padding:0; }
 	.widget .list-group { margin-bottom: 0; }
 	.widget .panel-title { display:inline }
     .widget .log-info { margin: 1.5rem;}
 </style>
 
 <div class="logs">
-
-    <!-- set fnum into hidden input -->
     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
 
     <div class="row">
@@ -103,36 +101,36 @@ JFactory::getSession()->set('application_layout', 'logs');
                 <?php } else { ?>
                 <div class="log-info"><?= JText::_('NO_LOGS'); ?></div>
                 <?php } ?>
-			</br>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-    var offset = 100;
+    let offset = 100;
 
     $('#crud-logs').chosen({width:'100%'});
     $('#type-logs').chosen({width:'100%'});
     $('#actors-logs').chosen({width:'100%'});
 
     /* get all logs when loading page */
-    jQuery(document).ready(function() {
+   $(document).ready(function() {
         /* get all logs type */
-        jQuery.ajax({
+       $.ajax({
             method: "post",
             url: "index.php?option=com_emundus&controller=files&task=getalllogactions",
             dataType: 'json',
             success: function(results) {
                 if(results.status) {
-                    var logs = results.data;
-                    logs.forEach(log => {
-                        $('#type-logs').append('<option value="' + log.id + '">' + Joomla.JText._(log.label) + '</option>');           /// append data
-                        $('#type-logs').trigger("chosen:updated");
+                    const typeLogs = $('#type-logs');
+
+                    results.data.forEach(log => {
+                        typeLogs.append('<option value="' + log.id + '">' + Joomla.JText._(log.label) + '</option>');           /// append data
+                        typeLogs.trigger("chosen:updated");
                     })
                 } else {
-                    jQuery('#filters-logs').remove();
-                    jQuery('#log-filter-btn').remove();
-                    jQuery('.em-container-comment-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
+                   $('#filters-logs').remove();
+                   $('#log-filter-btn').remove();
+                   $('.em-container-comment-heading').after('<b style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_ACTION_FOUND") + '</b>');
                 }
             }, error: function(jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.responseText, textStatus, errorThrown);
@@ -140,34 +138,33 @@ JFactory::getSession()->set('application_layout', 'logs');
         });
 
         /* show hint */
-        $('#crud-logs-hint').on('hover', function(e){
+        $('#crud-logs-hint').on('hover', function(){
             $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_CRUD_LOG_FILTER_HINT"));
         });
 
-        $('#actions-logs-hint').on('hover', function(e){
+        $('#actions-logs-hint').on('hover', function(){
             $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_TYPES_LOG_FILTER_HINT"));
         });
 
-        $('#actors-logs-hint').on('hover', function(e){
+        $('#actors-logs-hint').on('hover', function(){
             $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_ACTOR_LOG_FILTER_HINT"));
         });
-
-        /* get fnum from input hidden ==> jQuery('#fnum_hidden').attr('value') */
-        /* get all affected user(s) by current fnum */
-        jQuery.ajax({
+        
+       $.ajax({
             type: 'post',
             url: 'index.php?option=com_emundus&controller=files&task=getuserslogbyfnum',
             data: ({
-                fnum: jQuery('#fnum_hidden').attr('value'),
+                fnum:$('#fnum_hidden').attr('value'),
             }),
             dataType: 'json',
             success: function(results) {
                 if(results.status) {
-                    var users = results.data;
-                    users.forEach(user => {
-                        $('#actors-logs').append('<option value="' + user.uid + '">' + user.name + '</option>');           /// append data
-                        $('#actors-logs').trigger("chosen:updated");
-                    })
+                    const actorsLog = $('#actors-logs');
+
+                    results.data.forEach((user) => {
+                        actorsLog.append('<option value="' + user.uid + '">' + user.name + '</option>');           /// append data
+                        actorsLog.trigger("chosen:updated");
+                    });
                 } else {
                     $('#actors').remove();
                     $('#types').after('<br><p style="color:red">' + Joomla.JText._("COM_EMUNDUS_NO_LOG_USERS_FOUND") + '</p></br>');
@@ -178,21 +175,16 @@ JFactory::getSession()->set('application_layout', 'logs');
             }
         });
 
-        jQuery('#log-filter-btn').on('click', function(e) {
-            // get actions (CRUD)
-            var crud = jQuery('#crud-logs').val();
+       $('#log-filter-btn').on('click', function() {
+            const crud = $('#crud-logs').val();
+            const types = $('#type-logs').val();
+            const persons = $('#actors-logs').val();
 
-            // get type(s)
-            var types = jQuery('#type-logs').val();
-
-            // get person(s)
-            var persons = jQuery('#actors-logs').val();
-
-            jQuery.ajax({
+           $.ajax({
                 type: 'post',
                 url: 'index.php?option=com_emundus&controller=files&task=getactionsonfnum',
                 data: ({
-                    fnum: jQuery('#fnum_hidden').attr('value'),
+                    fnum:$('#fnum_hidden').attr('value'),
                     crud: crud,
                     types: types,
                     persons: persons,
@@ -202,8 +194,9 @@ JFactory::getSession()->set('application_layout', 'logs');
                     $('#log-count-results').remove();
 
                     // add loading icon
-                    $('#logs_list').empty();
-                    $('#logs_list').before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
+                    const logList = $('#logs_list');
+                    logList.empty();
+                    logList.before('<div id="loading"><img src="'+loading+'" alt="loading"/></div>');
 
                     // remove the error-message (if any)
                     if($('#error-message').length > 0) {
@@ -214,11 +207,9 @@ JFactory::getSession()->set('application_layout', 'logs');
                         $('.logs_table').show();
                         $('#log-export-btn').show();
                         $('#export-logs').after('<p id="log-count-results" style="font-weight: bold" class="em-main-500-color em-p-8-12 em-float-right">' + results.res.length + Joomla.JText._("COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
-
-                        // re-render the view (clear the logs-list)
                         $('#loading').remove();
 
-                        var tr = ''
+                        let tr = '';
                         if (results.res.length < 100) {
                             $('.show-more').hide();
                         }
@@ -231,13 +222,13 @@ JFactory::getSession()->set('application_layout', 'logs');
                                 '<td>'+ results.details[i].action_name + '</td>' +
                                 '<td>'+ results.details[i].action_details + '</td>' +
                                 '</tr>'
-                            $('#logs_list').append(tr);
+                            logList.append(tr);
                         }
                     } else {
-                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold;" class="em-red-500-color">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
+                        $('#export-logs').after('<p id="log-count-results" style="font-weight: bold;" class="em-red-500-color em-p-8-12">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS") + '</p>');
                         $('.show-more').hide();
                         $('#loading').remove();
-                        $('#logs_list').append('<div id="error-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
+                        logList.append('<div id="error-message">' + Joomla.JText._("COM_EMUNDUS_NO_LOGS_FILTER_FOUND") + '</div>');
                         $('#log-export-btn').hide();
                         $('.logs_table').hide();
                     }
@@ -251,16 +242,10 @@ JFactory::getSession()->set('application_layout', 'logs');
     $(document).on('click', '#show-more', function(e) {
         if(e.handle === true) {
             e.handle = false;
-            var fnum = "<?php echo $this->fnum; ?>";
-
-            // get actions (CRUD)
-            var crud = jQuery('#crud-logs').val();
-
-            // get type(s)
-            var types = jQuery('#type-logs').val();
-
-            // get person(s)
-            var persons = jQuery('#actors-logs').val();
+            const fnum = "<?php echo $this->fnum; ?>";
+            const crud =$('#crud-logs').val();
+            const types =$('#type-logs').val();
+            const persons =$('#actors-logs').val();
 
             url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum';
             $.ajax({
@@ -333,15 +318,9 @@ JFactory::getSession()->set('application_layout', 'logs');
 
         let body = new FormData();
 
-        // get actions (CRUD)
-        var crud = jQuery('#crud-logs').val();
-
-        // get type(s)
-        var types = jQuery('#type-logs').val();
-
-        // get person(s)
-        var persons = jQuery('#actors-logs').val();
-
+        const crud = $('#crud-logs').val();
+        const types = $('#type-logs').val();
+        const persons = $('#actors-logs').val();
 
         body.append('fnum', String(fnum));
         body.append('crud', JSON.stringify(crud));
