@@ -38,34 +38,26 @@ JFactory::getSession()->set('application_layout', 'logs');
             </div>
 
             <br class="panel-body em-container-comment-body">
-            <?php if (count($this->fileLogs) > 0) { ?>
-                <div id="filters-logs">
+            <?php if (!empty($this->fileLogs)) { ?>
+                <div id="filters-logs" class="em-flex-row">
                     <!-- add CRUD filters (multi-chosen) -->
-                    <div id="actions">
+                    <div id="actions" class="em-w-33 em-mr-16">
                         <label for="crud-logs-label" id="crud-logs-hint"><?= JText::_('COM_EMUNDUS_CRUD_FILTER_LABEL'); ?></label>
-                        <select name="crud-logs-select" id="crud-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
+                        <select name="crud-logs-select" id="crud-logs" class="chzn-select em-w-100" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER'); ?>">
                             <option value="r"><?= JText::_('COM_EMUNDUS_LOG_READ_TYPE'); ?></option>
                             <option value="c"><?= JText::_('COM_EMUNDUS_LOG_CREATE_TYPE'); ?></option>
                             <option value="u"><?= JText::_('COM_EMUNDUS_LOG_UPDATE_TYPE'); ?></option>
                             <option value="d"><?= JText::_('COM_EMUNDUS_LOG_DELETE_TYPE'); ?></option>
                         </select>
                     </div>
-                    <!-- -->
-                    <div id="types">
-                        <br>
-                            <label for="actions-logs-label" id="actions-logs-hint"><?= JText::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
-                            <select name="type-logs-select" id="type-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER'); ?>"></select>
-                        </br>
+                    <div id="types" class="em-w-33 em-mr-16">
+                        <label for="actions-logs-label" id="actions-logs-hint"><?= JText::_('COM_EMUNDUS_TYPE_FILTER_LABEL'); ?></label>
+                        <select name="type-logs-select" id="type-logs" class="chzn-select em-w-100" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER'); ?>"></select>
                     </div>
-
-                    <!-- -->
-                    <div id="actors">
-                        <br>
-                            <label for="actors-logs-label" id="actors-logs-hint"><?= JText::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
-                            <select name="actor-logs-select" id="actors-logs" class="chzn-select" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>"></select>
-                        </br>
+                    <div id="actors" class="em-w-33 em-mr-16">
+                        <label for="actors-logs-label" id="actors-logs-hint"><?= JText::_('COM_EMUNDUS_ACTORS_FILTER_LABEL'); ?></label>
+                        <select name="actor-logs-select" id="actors-logs" class="chzn-select em-w-100" multiple data-placeholder="<?= JText::_('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER'); ?>"></select>
                     </div>
-
                 </div>
 
                 <div id="export-logs" class="em-flex-row">
@@ -119,9 +111,9 @@ JFactory::getSession()->set('application_layout', 'logs');
 <script type="text/javascript">
     var offset = 100;
 
-    $('#crud-logs').chosen({width:'45%'});
-    $('#type-logs').chosen({width:'45%'});
-    $('#actors-logs').chosen({width:'45%'});
+    $('#crud-logs').chosen({width:'100%'});
+    $('#type-logs').chosen({width:'100%'});
+    $('#actors-logs').chosen({width:'100%'});
 
     /* get all logs when loading page */
     jQuery(document).ready(function() {
