@@ -13,6 +13,11 @@
 
 /* GENERAL */
 
+.platform-content, .moduletable{
+  padding: 0;
+  margin: 0;
+}
+
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons{
   font-family: 'Material Icons' !important;
   font-size: 24px !important;
@@ -423,6 +428,9 @@ p,
   margin: 0 auto auto;
   width: 100%;
   transition: all ease-in-out 0.3s;
+}
+.homepage #g-container-main{
+  margin-top: 24px;
 }
 
 #g-container-main .g-container {
