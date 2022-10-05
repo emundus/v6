@@ -190,7 +190,8 @@ class EmundusModelLogs extends JModelList {
 	 * @return Mixed Returns false on error and an array of objects on success.
 	 */
 	public function getActionsOnFnum($fnum, $user_from = null, $action = null, $crud = null, $offset = null, $limit = 100) {
-		$db = JFactory::getDbo();
+		$results = [];
+        $db = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
         $user_from = implode(',', $user_from);
@@ -216,20 +217,18 @@ class EmundusModelLogs extends JModelList {
             $query->setLimit($limit, $offset);
         }
 
-		$db->setQuery($query);
-		$results = $db->loadObjectList();
+        try {
+            $db->setQuery($query);
+            $results = $db->loadObjectList();
 
-		// Create a new element to store the correct date display
-		foreach ($results as $result) {
-			$result->date = EmundusHelperDate::displayDate($result->timestamp);
-		}
-
-		try {
-			return $results;
+            foreach ($results as $result) {
+                $result->date = EmundusHelperDate::displayDate($result->timestamp);
+            }
 		} catch (Exception $e) {
 			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-			return false;
 		}
+
+        return $results;
 	}
 
 
