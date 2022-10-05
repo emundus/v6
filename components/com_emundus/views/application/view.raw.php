@@ -626,6 +626,8 @@ class EmundusViewApplication extends JViewLegacy {
                             $this->url_form = '';
                         }
 
+                        //TODO:Récupérer le label de la phase à la place de Évaluations du dossier + créer un lien de téléchargement en pdf du formulaire + gérer suppression
+
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
 
