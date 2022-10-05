@@ -1071,6 +1071,7 @@ class EmundusHelperUpdate
                 }
             }
         } else {
+            $update_campaign_workflow['status'] = true;
             echo "\n output_status column already exists in table, no need to run update_campaign_workflow script";
         }
 
