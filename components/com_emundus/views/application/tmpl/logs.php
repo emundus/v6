@@ -58,12 +58,18 @@ JFactory::getSession()->set('application_layout', 'logs');
                     </div>
                 </div>
 
-                <div id="export-logs" class="em-flex-row">
-                    <button id="log-filter-btn" class="em-w-auto em-primary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
+                <div id="apply-filters" class="em-flex-row-justify-end">
+                    <button id="log-reset-filter-btn" class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8">
+                        <?= JText::_('COM_EMUNDUS_LOGS_RESET_FILTER') ?>
+                    </button>
+                    <button id="log-filter-btn" class="em-w-auto em-primary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16">
                         <?= JText::_('COM_EMUNDUS_LOGS_FILTER') ?>
                     </button>
+                </div>
 
-                    <button id="log-export-btn" class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-8" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
+                <div id="export-logs" class="em-flex-row-justify-end">
+                    <button id="log-export-btn" class="em-w-auto em-secondary-button em-mt-8 em-mb-8 em-ml-8 em-mr-16" onclick="exportLogs(<?=  "'" . $this->fnum . "'" ?>)">
+                        <span class="material-icons-outlined em-mr-8">file_upload</span>
                         <?= JText::_('COM_EMUNDUS_LOGS_EXPORT') ?>
                     </button>
                 </div>
@@ -237,20 +243,19 @@ JFactory::getSession()->set('application_layout', 'logs');
                 }
             })
         })
-    })
+   });
 
-    $(document).on('click', '#show-more', function(e) {
-        if(e.handle === true) {
-            e.handle = false;
-            const fnum = "<?php echo $this->fnum; ?>";
-            const crud =$('#crud-logs').val();
-            const types =$('#type-logs').val();
-            const persons =$('#actors-logs').val();
+   $(document).on('click', '#show-more', function(e) {
+       if(e.handle === true) {
+           e.handle = false;
+           const fnum = "<?php echo $this->fnum; ?>";
+           const crud =$('#crud-logs').val();
+           const types =$('#type-logs').val();
+           const persons =$('#actors-logs').val();
 
-            url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum';
-            $.ajax({
-                type:'POST',
-                url:url,
+           $.ajax({
+               type:'POST',
+               url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getactionsonfnum',
                 dataType:'json',
                 data:({fnum: fnum,
                     offset: offset,
@@ -260,7 +265,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                 }),
                 success: function(result) {
                     if (result.status) {
-                        var tr = ''
+                        let tr = ''
                         if (result.res.length < 100) {
                             $('.show-more').hide();
                         }
@@ -281,9 +286,9 @@ JFactory::getSession()->set('application_layout', 'logs');
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(jqXHR.responseText);
                 }
-            });
-        }
-    });
+           });
+       }
+   });
 
     function exportLogs(fnum)
     {
@@ -329,15 +334,30 @@ JFactory::getSession()->set('application_layout', 'logs');
 
         xhr.send(body);
     }
+
+    document.querySelector('#log-reset-filter-btn').addEventListener('click', function() {
+        resetFilters();
+    });
+
+    function resetFilters() {
+        const log_link = document.querySelector('#em-appli-menu a[href*="layout=logs"]');
+        if (log_link) {
+            log_link.click();
+        }
+    }
 </script>
 
 <style>
-    .search-choice {
-        font-size: small;
-    }
-
     .search-field input{
         font-size: small !important;
         font-style: italic;
+    }
+
+    #filters-logs, #export-logs {
+        padding-bottom: 8px;
+    }
+
+    #apply-filters {
+        padding-bottom: 0;
     }
 </style>

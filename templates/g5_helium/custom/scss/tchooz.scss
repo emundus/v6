@@ -402,6 +402,13 @@ input:focus + .em-slider {
   align-items: end;
 }
 
+.em-flex-row-justify-end {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  justify-content: flex-end;
+}
+
 .em-flex-row-start{
   display: flex;
   flex-direction: row;
