@@ -9,14 +9,24 @@
 defined('_JEXEC') or die;
 ?>
 <div class="add-application-actions">
-    <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
+    <?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
         <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
-            <span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+        </a>
+    <?php endif; ?>
+    <?php if ($show_show_campaigns) : ?>
+        <a id="add-application" class="btn btn-success" href="<?= $campaigns_list_url; ?>">
+            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
         </a>
     <?php endif; ?>
     <?php
     echo $description;
     ?>
+    <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
+        <a id="add-application" class="btn btn-success" href="<?= $cc_list_url; ?>">
+            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+        </a>
+    <?php endif; ?>
 </div>
 <?php if (!empty($applications)) : ?>
     <div class="<?= $moduleclass_sfx ?>">
@@ -204,7 +214,7 @@ defined('_JEXEC') or die;
     echo '<hr>';
 endif; ?>
 <div class="add-application-actions">
-<?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
+<?php if ($show_add_application && ($position_add_application == 1 || $position_add_application == 2 || $position_add_application == 4) && $applicant_can_renew) : ?>
     <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
 </div>
