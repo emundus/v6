@@ -232,21 +232,6 @@ if($user != null) {
         displayUserOptions();
     });
 
-    /*document.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var dropdown = document.getElementById('userDropdown');
-        var icon = document.getElementById('userDropdownIcon');
-
-        if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
-            setTimeout(() => {
-                dropdown.classList.remove('open');
-                jQuery("#userDropdownMenu").css("transform","unset")
-                icon.classList.remove('active');
-            },300);
-        }
-    });*/
-
     function postCProfile() {
         var current_fnum = document.getElementById("profile").value;
         var redirect_url = document.getElementById("switch_profile_redirect").value;
@@ -291,6 +276,30 @@ if($user != null) {
             }
         });
     }
+
+    document.addEventListener('click', function (e) {
+        let clickInsideModule = false;
+
+        e.path.forEach((pathElement) => {
+            if (pathElement.id == "userDropdownMenu") {
+                clickInsideModule = true;
+            }
+        });
+
+        if (!clickInsideModule) {
+            const dropdown = document.getElementById('userDropdown');
+            const icon = document.getElementById('userDropdownIcon');
+
+            jQuery("#userDropdownMenu").css("transform","translate(250px)")
+            setTimeout(() => {
+                dropdown.classList.remove('open');
+                jQuery("#userDropdownMenu").css("transform","unset")
+                if(icon !== null) {
+                    icon.classList.remove('active');
+                }
+            }, 300);
+        }
+    });
 </script>
 <?php } else { ?>
 <div class="header-right" style="text-align: right;">
