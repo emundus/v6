@@ -619,19 +619,23 @@ class EmundusViewApplication extends JViewLegacy {
 
                         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
                         $mCampaign = new EmundusModelCampaign();
+                        $mEvaluation = new EmundusModelEvaluation();
                         $workflow = $mCampaign->getWorkflowById($workflow_id);
 
-
+                        $this->url_form = '';
                         if (!empty($formid)) {
-                            if (EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
-                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid='.$formid.'&rowid=&'.$table_name.'___student_id[value]='.$this->student->id.'&'.$table_name.'___fnum[value]='.$fnum.'&student_id='.$this->student->id.'&tmpl=component&iframe=1';
-                            }
-                        } else {
-                            $this->url_evaluation = '';
-                            $this->url_form = '';
-                        }
+                            $row = $mEvaluation->getRowByFnum($fnum,$table_name);
 
-                        //TODO:Récupérer le label de la phase à la place de Évaluations du dossier + créer un lien de téléchargement en pdf du formulaire + gérer suppression
+                            if(!empty($row)) {
+                                if (EmundusHelperAccess::asAccessAction(5, 'u', $this->_user->id, $fnum)) {
+                                    $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid . '&rowid='.$row.'&' . $table_name . '___student_id[value]=' . $this->student->id . '&' . $table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
+                                }
+                            } elseif (EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
+                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=form&formid=' . $formid . '&rowid=&' . $table_name . '___student_id[value]=' . $this->student->id . '&' . $table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
+                            } elseif (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum)) {
+                                $this->url_form = 'index.php?option=com_fabrik&c=form&view=details&formid=' . $formid . '&rowid=&' . $table_name . '___student_id[value]=' . $this->student->id . '&' . $table_name . '___fnum[value]=' . $fnum . '&student_id=' . $this->student->id . '&tmpl=component&iframe=1';
+                            }
+                        }
 
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
