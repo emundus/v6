@@ -613,8 +613,13 @@ class EmundusViewApplication extends JViewLegacy {
                         require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
                         $this->student = JFactory::getUser(intval($fnumInfos['applicant_id']));
 
-                        $formid 	= $jinput->getInt('form_id', null);
-                        $table_name = EmundusHelperFabrik::getTableFromFabrik($formid,'form');
+                        $workflow_id = $jinput->getInt('workflow_id', null);
+                        $formid 	 = $jinput->getInt('form_id', null);
+                        $table_name  = EmundusHelperFabrik::getTableFromFabrik($formid,'form');
+
+                        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+                        $mCampaign = new EmundusModelCampaign();
+                        $workflow = $mCampaign->getWorkflowById($workflow_id);
 
 
                         if (!empty($formid)) {
@@ -630,6 +635,8 @@ class EmundusViewApplication extends JViewLegacy {
 
                         $this->campaign_id = $fnumInfos['campaign_id'];
                         $this->assignRef('fnum', $fnum);
+                        $this->assignRef('workflow', $workflow);
+                        $this->assignRef('form_id', $formid);
 
                         # ADD 5R HERE
                         # get FNUM INFO

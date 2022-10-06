@@ -2148,7 +2148,7 @@ class EmundusModelCampaign extends JModelList {
 
         if (!empty($emundusUser->fnum) && !empty($emundusUser->fnums[$emundusUser->fnum])) {
             $query = $this->_db->getQuery(true);
-            $query->select('DISTINCT ecw.id, ecw.start_date, ecw.end_date, ecw.profile, ecw.output_status, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
+            $query->select('DISTINCT ecw.id, ecw.label, ecw.start_date, ecw.end_date, ecw.profile, ecw.output_status, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
                 ->from('#__emundus_campaign_workflow as ecw')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
                 ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
@@ -2167,5 +2167,23 @@ class EmundusModelCampaign extends JModelList {
         }
 
         return $current_phase;
+    }
+
+    public function getWorkflowById($id): stdClass {
+        $query = $this->_db->getQuery(true);
+
+        $query->select('DISTINCT ecw.id, ecw.label, ecw.start_date, ecw.end_date, ecw.profile, ecw.output_status, GROUP_CONCAT(ecw_status.entry_status separator ",") as entry_status')
+            ->from('#__emundus_campaign_workflow as ecw')
+            ->leftJoin('#__emundus_campaign_workflow_repeat_campaign AS ecw_camp ON ecw_camp.parent_id = ecw.id')
+            ->leftJoin('#__emundus_campaign_workflow_repeat_entry_status AS ecw_status ON ecw_status.parent_id = ecw.id')
+            ->where('ecw.id = ' . $this->_db->quote($id));
+        $this->_db->setQuery($query);
+
+        try {
+            return $this->_db->loadObject();
+        } catch (Exception $e) {
+            JLog::add('[getCurrentCampaignWorkflow] Error getting campaign workflow by id in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return new stdClass();
+        }
     }
 }

@@ -3055,13 +3055,15 @@ class EmundusModelApplication extends JModelList
                 $query->select('ecw.id,ecw.label as title,ecw.form_id')
                     ->from($db->quoteName('#__emundus_campaign_workflow','ecw'))
                     ->leftJoin($db->quoteName('#__emundus_campaign_workflow_repeat_entry_status','ecwres').' ON '.$db->quoteName('ecw.id').' = '.$db->quoteName('ecwres.parent_id'))
-                    ->where($db->quoteName('ecw.type') . ' = 1')
-                    ->andWhere($db->quoteName('ecwres.entry_status') . ' = ' . $fnumInfos['status']);
+                    ->leftJoin($db->quoteName('#__emundus_campaign_workflow_repeat_campaign','ecwrc').' ON '.$db->quoteName('ecw.id').' = '.$db->quoteName('ecwrc.parent_id'))
+                    ->where($db->quoteName('ecw.type') . ' = 2')
+                    ->andWhere($db->quoteName('ecwres.entry_status') . ' = ' . $fnumInfos['status'])
+                    ->andWhere($db->quoteName('ecwrc.campaign') . ' = ' . $fnumInfos['id']);
                 $db->setQuery($query);
                 $workflow_menus = $db->loadAssocList();
 
                 foreach ($workflow_menus as $key => $menu){
-                    $workflow_menus[$key]['link'] = 'index.php?option=com_emundus&view=application&format=raw&layout=review&form_id='.$menu['form_id'];
+                    $workflow_menus[$key]['link'] = 'index.php?option=com_emundus&view=application&format=raw&layout=review&form_id='.$menu['form_id'].'&workflow_id='.$menu['id'];
                     $workflow_menus[$key]['rgt'] = '1';
                     $workflow_menus[$key]['lft'] = '0';
                     $workflow_menus[$key]['note'] = '5|c';
