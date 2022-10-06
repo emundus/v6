@@ -2813,6 +2813,12 @@ tr.fabrikFilterContainer{
 
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
+.view-form:not(.applicant-form) main#g-main-mainbody {
+  padding-right: 5%;
+  padding-left: 11%;
+  width: 100%;
+}
+
 .referents-sollicitation-page .calendarbutton {
   background: #fff;
   border-radius: 0 4px 4px 0 !important;
@@ -4219,7 +4225,7 @@ button.swal2-cancel.goback-btn {
       padding: 8px;
     }
 
-    .view-form,.em-form .fabrikGroup {
+    .view-form, .em-form .fabrikGroup {
       .fabrikElement {
         #mceu_57-body {
           display: flex;
