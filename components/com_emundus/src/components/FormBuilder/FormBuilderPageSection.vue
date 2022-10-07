@@ -57,7 +57,7 @@
                 </form-builder-page-section-element>
               </transition-group>
             </draggable>
-            <div v-if="elements.length < 1" class="empty-section-element">
+            <div v-if="publishedElements.length < 1" class="empty-section-element">
               <draggable
                   :list="emptySection"
                   group="form-builder-section-elements"
@@ -131,8 +131,7 @@ export  default {
   },
   methods: {
     getElements() {
-      const elements = Object.values(this.section.elements);
-      this.elements = elements.length > 0 ? elements : [];
+      this.elements = Object.values(this.section.elements).length > 0 ? Object.values(this.section.elements) : [];
     },
     updateTitle() {
       this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
@@ -186,10 +185,12 @@ export  default {
     },
     deleteElement(elementId) {
       this.section.elements['element'+elementId].publish = -2;
-      this.updateLastSave();
+	    this.getElements();
+	    this.updateLastSave();
     },
     cancelDeleteElement(elementId) {
       this.section.elements['element'+elementId].publish = true;
+	    this.getElements();
     },
     deleteSection() {
       this.swalConfirm(
@@ -215,7 +216,14 @@ export  default {
       },
       deep: true
     }
-  }
+  },
+	computed: {
+		publishedElements() {
+			return this.elements && this.elements.length > 0 ? this.elements.filter((element) => {
+				return element.publish === true;
+			}) : [];
+		}
+	}
 }
 </script>
 
