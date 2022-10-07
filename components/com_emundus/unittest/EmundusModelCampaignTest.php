@@ -41,4 +41,22 @@ class EmundusModelCampaignTest extends TestCase
         parent::__construct($name, $data, $dataName);
         $this->m_campaign = new EmundusModelCampaign;
     }
+
+
+    public function testCreateDocument()
+    {
+        $document = [
+            'name' => [
+                'fr' => ''
+            ],
+        ];
+        $types = '';
+
+        $created = $this->m_campaign->createDocument($document, $types, null, 9);
+        $this->assertFalse($created['status'], 'Assert impossible to create document with empty name');
+
+        $document['name']['fr'] = 'Test';
+        $created = $this->m_campaign->createDocument($document, $types, null, 9);
+        $this->assertFalse($created['status'], 'Assert impossible to create document with empty types');
+    }
 }
