@@ -726,13 +726,13 @@ $font:'Inter', sans-serif;
       margin-top: 12px;
 
       /* YES/NO */
-      fieldset.btn-radio {
+      &.plg-yesno fieldset.btn-radio,
+      &.plg-radiobutton fieldset.btn-radio {
 
         label.btn-default.btn.btn-success.active {
           @include yes-no;
           border: 1px solid $main-500;
           background: $main-500;
-          border-radius: 0 4px 4px 0 !important;
           width: 55px !important;
 
           &:hover {
@@ -751,7 +751,7 @@ $font:'Inter', sans-serif;
           @include yes-no;
           border: 1px solid $red-500;
           background: $red-500;
-          border-radius: 4px 0 0 4px !important;
+
           width: 55px !important;
 
           &:hover {
@@ -770,7 +770,6 @@ $font:'Inter', sans-serif;
           @include yes-no;
           border: 1px solid $neutral-200;
           background: $neutral-200;
-          border-radius: 4px !important;
           margin-left: -2px;
           z-index: 0;
           width: 55px !important;
@@ -790,7 +789,17 @@ $font:'Inter', sans-serif;
             color: $neutral-900;
           }
         }
+
+         label.btn-default.btn:nth-child(1) {
+           border-radius: 4px 0 0 4px !important;
+         }
+
+         label.btn-default.btn:nth-child(2) {
+           border-radius: 0 4px 4px 0 !important;
+         }
       }
+
+
 
       /* BIRTHDAY */
       select.inputbox {
