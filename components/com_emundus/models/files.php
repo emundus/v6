@@ -2837,15 +2837,26 @@ class EmundusModelFiles extends JModelLegacy
      * @throws Exception
      */
     public function getAttachmentsById($ids) {
-        $dbo = $this->getDbo();
-        $query = 'select * from jos_emundus_uploads where id in ("'.implode('","', $ids).'")';
-        try {
-            $dbo->setQuery($query);
-            return $dbo->loadAssocList();
-        } catch(Exception $e) {
-            throw $e;
+        $attachments = [];
+
+        if (!empty($ids)) {
+            $dbo = $this->getDbo();
+            $query = $dbo->getQuery(true);
+            $query->select('jeu.fnum, jeu.filename, jeu.id, jecc.applicant_id, jeu.attachment_id')
+                ->from('#__emundus_uploads AS jeu')
+                ->leftJoin('#__emundus_campaign_candidature AS jecc ON jecc.fnum = jeu.fnum')
+                ->where('jeu.id IN (' . implode(',', $ids) . ')');
+            try {
+                $dbo->setQuery($query);
+                $attachments = $dbo->loadAssocList();
+            } catch(Exception $e) {
+                JLog::add('Failed to get attachment by ids ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $attachments;
     }
+
     public function getSetupAttachmentsById($ids) {
         $dbo = $this->getDbo();
         $query = 'select * from jos_emundus_setup_attachments where id in ("'.implode('","', $ids).'")';
