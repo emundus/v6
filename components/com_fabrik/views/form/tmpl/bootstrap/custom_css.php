@@ -98,11 +98,6 @@ echo <<<EOT
     box-shadow: none !important;
 }
 
-.view-form main#g-main-mainbody {
-    width: 90%;
-    margin-left: 8%;
-}
-
 .view-registration main#g-main-mainbody {
     padding-right: 0;
 }

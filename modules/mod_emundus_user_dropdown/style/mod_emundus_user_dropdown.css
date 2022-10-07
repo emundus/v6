@@ -185,10 +185,15 @@ li>a:hover {
         width: 100% !important;
     }
 
-    div#userDropdownLabel {
+    #header-c .platform-content:nth-child(2) div#userDropdownLabel {
         position: absolute;
-        right: -167px;
+        right: -154px;
         top: -104px;
+    }
+
+    #header-c .platform-content:nth-child(1) div#userDropdownLabel {
+        right: -154px;
+        top: -54px;
     }
 }
 
