@@ -38,6 +38,11 @@
         </incremental-select>
       </div>
 
+	    <div class="em-mb-16">
+		    <label class="em-font-weight-400">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION') }}</label>
+		    <textarea id="" name="" rows="5" v-model="document.description[shortDefaultLang]">{{ document.description[shortDefaultLang] }}</textarea>
+	    </div>
+
       <div class="em-mb-16">
         <label class="em-font-weight-400">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
         <div v-for="(filetype, index) in fileTypes" :key="filetype.value" class="em-flex-row em-mb-4">
@@ -105,6 +110,7 @@ import globalMixin from "../../mixins/mixin";
 import editor from '../editor.vue';
 import IncrementalSelect from "../IncrementalSelect";
 import formBuilderMixin from "../../mixins/formbuilder";
+import Swal from 'sweetalert2';
 
 export default {
   name: 'FormBuilderCreateDocument',
@@ -368,9 +374,7 @@ export default {
     {
       if (document.id) {
         this.document.name[this.shortDefaultLang] = document.label;
-        this.selectModel({target: {value: document.id}},
-		        this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : null
-        );
+        this.selectModel({target: {value: document.id}}, this.current_document && this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : null);
       } else {
         this.document.id = null;
         this.document.name[this.shortDefaultLang] = document.label;
