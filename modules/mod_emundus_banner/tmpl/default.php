@@ -8,3 +8,7 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
+
+<div class="mod_emundus_banner__banner">
+
+</div>

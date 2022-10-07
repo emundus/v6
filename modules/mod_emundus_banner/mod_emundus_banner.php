@@ -9,6 +9,26 @@
 // no direct access
 defined('_JEXEC') or die;
 
-require JModuleHelper::getLayoutPath('mod_emundus_banner', 'default');
+include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
+$m_profiles = new EmundusModelProfile();
+$app_prof = $m_profiles->getApplicantsProfilesArray();
+
+$user = JFactory::getSession()->get('emundusUser');
+
+$display = false;
+if(!empty($user)){
+    if(in_array($user->profile,$app_prof)){
+        $display = true;
+    }
+} else {
+    $display = true;
+}
+
+if($display) {
+    $document = JFactory::getDocument();
+    $document->addStyleSheet('modules/mod_emundus_banner/style/mod_emundus_banner.css');
+
+    require JModuleHelper::getLayoutPath('mod_emundus_banner', 'default');
+}
 
 
