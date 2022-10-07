@@ -50,7 +50,7 @@ class EmundusModelCampaignTest extends TestCase
                 'fr' => ''
             ],
         ];
-        $types = '';
+        $types = [''];
 
         $created = $this->m_campaign->createDocument($document, $types, null, 9);
         $this->assertFalse($created['status'], 'Assert impossible to create document with empty name');
