@@ -28,7 +28,7 @@ class modEmundusCampaignHelper {
         $db = JFactory::getDbo();
         $query  = $db->getQuery(true);
         if ($teachingUnityDates) {
-            $query->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes,ca.is_limited')
+            $query->select('ca.*, pr.apply_online, pr.code,pr.label as programme, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.programmes as prog_type, pr.id as p_id, pr.notes,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
@@ -61,7 +61,7 @@ class modEmundusCampaignHelper {
         $query  = $db->getQuery(true);
         if ($teachingUnityDates) {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end,ca.is_limited')
+                ->select('ca.*, pr.apply_online, pr.code,pr.label as programme, pr.link, tu.date_start as formation_start, tu.date_end as formation_end,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
@@ -88,7 +88,7 @@ class modEmundusCampaignHelper {
 
         if ($teachingUnityDates) {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end,ca.is_limited')
+                ->select('ca.*, pr.apply_online, pr.code,pr.label as programme, pr.link, tu.date_start as formation_start, tu.date_end as formation_end,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))
@@ -115,7 +115,7 @@ class modEmundusCampaignHelper {
 
         if ($teachingUnityDates) {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.notes as desc,ca.is_limited')
+                ->select('ca.*, pr.apply_online, pr.code,pr.label as programme, pr.link, tu.date_start as formation_start, tu.date_end as formation_end, pr.notes as desc,ca.is_limited')
                 ->from($db->qn('#__emundus_setup_campaigns', 'ca'))
                 ->leftJoin($db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $db->qn('pr.code') . ' = ' . $db->qn('ca.training'))
                 ->leftJoin($db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $db->qn('tu.code') . ' = ' . $db->qn('ca.training').' AND '.$db->quoteName('ca.year').' = '.$db->quoteName('tu.schoolyear'))

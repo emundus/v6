@@ -17,12 +17,14 @@ $session = JFactory::getSession();
 $db = JFactory::getDbo();
 
 $document 	= JFactory::getDocument();
+JHtml::script('media/com_emundus/js/jquery.cookie.js');
+JHtml::script('media/jui/js/bootstrap.min.js');
 if($params->get('mod_em_campaign_layout') != 'default_tchooz') {
     JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
-    JHtml::script('media/com_emundus/js/jquery.cookie.js');
-    JHtml::script('media/jui/js/bootstrap.min.js');
 
     $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css" );
+} else {
+    $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css" );
 }
 
 // PARAMS
@@ -75,6 +77,7 @@ $modules_tabs = $params->get('mod_em_campaign_modules_tab');
 $condition ='';
 $order_date = $app->input->getString('order_date', null);
 $order_time = $app->input->getString('order_time', null);
+$group_by = $app->input->getString('group_by', null);
 $searchword = $app->input->getString('searchword', null);
 
 if (isset($order_date) && !empty($order_date)) {
@@ -87,9 +90,15 @@ if (isset($order_time) && !empty($order_time)) {
 } elseif (empty($order)) {
 	$session->set('order_time', $mod_em_campaign_order_type);
 }
+if (isset($group_by) && !empty($group_by)) {
+    $session->set('group_by', $group_by);
+} elseif (empty($group_by)) {
+    $session->set('group_by', $mod_em_campaign_groupby);
+}
 
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
+$group_by = $session->get('group_by');
 
 if ($params->get('mod_em_campaign_layout') == 'institut_fr') {
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
@@ -122,7 +131,7 @@ if (!empty($cid)) {
     $condition = ' AND ca.id = ' . $cid;
 }
 
-switch ($mod_em_campaign_groupby) {
+switch ($group_by) {
     case 'month':
         $condition .= ' ORDER BY '.$order;
         break;
