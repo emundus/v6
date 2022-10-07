@@ -281,7 +281,7 @@ class UpdateCli extends JApplicationCli
                 $this->manifest_xml = simplexml_load_file($xml_path);
                 $this->out("\n*--------------------*\n");
 
-                $regex = '/^6\.[0-9]*/m';
+                $regex = '/^[6|2]\.[0-9]*/m';
                 preg_match_all($regex, $manifest_cache['version'], $matches, PREG_SET_ORDER, 0);
 
                 # Check if this is the first run for emundus component
