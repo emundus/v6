@@ -131,7 +131,7 @@ if($user != null) {
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
     <?php if(!empty($profile_picture)): ?>
     <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
-         style="background-image:url('<?php echo $profile_picture ?>');right: 15px">
+         style="background-image:url('<?php echo $profile_picture ?>');">
     </div>
     <?php else : ?>
     <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">

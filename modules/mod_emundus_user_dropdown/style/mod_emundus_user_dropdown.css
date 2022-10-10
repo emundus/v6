@@ -187,12 +187,12 @@ li>a:hover {
 
     #header-c .platform-content:nth-child(2) div#userDropdownLabel {
         position: absolute;
-        right: -154px;
+        right: -163px;
         top: -104px;
     }
 
     #header-c .platform-content:nth-child(1) div#userDropdownLabel {
-        right: -154px;
+        right: -163px;
         top: -54px;
     }
 }
