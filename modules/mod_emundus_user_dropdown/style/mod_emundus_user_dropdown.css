@@ -68,6 +68,17 @@
     color: #29d4ff;
 }
 
+#userDropdownMenu li.dropdown-header {
+    width: 190px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: break-spaces;
+}
+
+
 #userDropdownMenu li>a:hover,
 #userDropdownMenu .active>a {
     background: #29d4ff;

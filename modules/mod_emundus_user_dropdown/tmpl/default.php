@@ -21,7 +21,6 @@ if($user != null) {
         font-size: 12px;
         line-height: 1.42857143;
         color: #777;
-        white-space: nowrap;
     }
 
     .dropdown-menu-right {
