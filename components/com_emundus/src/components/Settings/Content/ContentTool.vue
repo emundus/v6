@@ -1,16 +1,12 @@
 <template>
   <span :id="'contentTool'">
-    <modal
+    <vue-final-modal
         :name="'contentTool'"
-        height="auto"
-        transition="fade"
-        :delay="100"
-        :adaptive="true"
-        :clickToClose="false"
         @closed="beforeClose"
+        v-model="show"
     >
       <div class="em-modal-header">
-        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('contentTool')">
+        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$vfm.hide('contentTool')">
           <div class="em-w-max-content em-flex-row">
             <span class="material-icons-outlined">arrow_back</span>
             <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
@@ -25,9 +21,9 @@
 
       <div class="em-modal-content">
         <div class="em-modal-menu__sidebar">
-          <div v-for="menu in menus" :key="'menu_' + menu.index" 
+          <div v-for="menu in menus" :key="'menu_' + menu.index"
             @click="currentMenu = menu.index"
-            class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer" 
+            class="translation-menu-item em-p-16 em-flex-row em-flex-space-between pointer"
             :class="currentMenu === menu.index ? 'em-modal-menu__current' : ''"
           >
             <p class="em-font-size-16">{{translate(menu.title)}}</p>
@@ -42,7 +38,7 @@
 
       <div v-if="loading">
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -100,6 +96,7 @@ export default {
       loading: false,
       saving: false,
       last_save: null,
+      show: false
     }
   },
   methods:{

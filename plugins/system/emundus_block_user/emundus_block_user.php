@@ -59,7 +59,8 @@ class plgSystemEmundus_block_user extends JPlugin
                 $table->activation = 1;
             }
             if ($table->activation == -1) {
-                header('location: index.php?option=com_emundus&view=user');
+                $link = 'index.php?option=com_emundus&view=user';
+                $app->redirect(\JRoute::_($link, false));
             }
 
         }

@@ -9,7 +9,7 @@
         @UpdateDocuments="updateList"
     />
 
-    <a @click="$modal.show('modalAddDocuments')" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
+    <a @click="$vfm.show('modalAddDocuments')" class="bouton-ajouter bouton-ajouter-green pointer" style="width: max-content">
       <div class="add-button-div">
         <em class="fas fa-plus em-mr-4"></em>
         {{ createDocument }}
@@ -358,7 +358,7 @@ export default {
     openUpdateDoc(document) {
       this.currentDoc = document;
       setTimeout(() => {
-        this.$modal.show('modalAddDocuments');
+        this.$vfm.show('modalAddDocuments');
       },100);
     }
   },

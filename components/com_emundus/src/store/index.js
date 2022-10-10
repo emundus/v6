@@ -5,12 +5,9 @@ import lists from './list/list';
 import file from './file/file';
 import formBuilder from './formBuilder';
 import campaign from './campaign';
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from "vuex";
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default new createStore({
   modules: {
     global,
     user,

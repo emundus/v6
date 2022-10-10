@@ -146,7 +146,7 @@
       </p>
     </div>
 
-    <modal
+    <vue-final-modal
         id="edit-modal"
         name="edit"
         :resizable="true"
@@ -192,7 +192,7 @@
           ></AttachmentEdit>
         </div>
       </transition>
-    </modal>
+    </vue-final-modal>
     <div class="vue-em-loader em-loader" v-if="loading"></div>
   </div>
 </template>
@@ -379,7 +379,7 @@ export default {
     updateAttachment() {
       this.resetOrder();
       this.getAttachments();
-      this.$modal.hide("edit");
+      this.$vfm.hide("edit");
       this.selectedAttachment = {};
       this.checkedAttachments = [];
     },
@@ -691,13 +691,13 @@ export default {
 
     openModal(attachment) {
       if (this.displayedUser.user_id && this.displayedFnum) {
-        this.$modal.show("edit");
+        this.$vfm.show("edit");
         this.selectedAttachment = attachment;
         this.$store.dispatch("attachment/setSelectedAttachment", attachment);
       }
     },
     closeModal() {
-      this.$modal.hide("edit");
+      this.$vfm.hide("edit");
       this.selectedAttachment = {};
       this.$store.dispatch("attachment/setSelectedAttachment", {});
     },

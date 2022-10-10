@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalTestingForm'">
-    <modal
+    <vue-final-modal
       :name="'modalTestingForm'"
       height="auto"
       transition="little-move-left"
@@ -15,7 +15,7 @@
     >
       <div class="fixed-header-modal">
         <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalTestingForm')">
+            <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalTestingForm')">
               <em class="fas fa-times"></em>
             </button>
           </div>
@@ -46,7 +46,7 @@
           class="bouton-sauvergarder-et-continuer ml-10px"
         >{{ CreateFile }}</button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -86,7 +86,7 @@ export default {
     },
     goExistingFile(){
       window.open('/index.php?option=com_fabrik&view=form&formid=' + this.currentForm + '&Itemid=' + this.currentMenu +'&usekey=fnum&rowid=' + this.filesExist + '&r=1#em-panel');
-      this.$modal.hide('modalTestingForm');
+      this.$vfm.hide('modalTestingForm');
     },
     createNewFile(){
       axios({
@@ -111,7 +111,7 @@ export default {
               })
             }).then((rep) => {
               window.open('/index.php?option=com_emundus&task=openfile&fnum=' + rep.data.fnum + '&redirect=1==&Itemid=1079#em-panel');
-              this.$modal.hide('modalTestingForm');
+              this.$vfm.hide('modalTestingForm');
             });
           }
       });

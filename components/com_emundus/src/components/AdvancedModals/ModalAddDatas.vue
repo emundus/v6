@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAddDatas'">
-    <modal
+    <vue-final-modal
       :name="'modalAddDatas'"
       height="auto"
       transition="nice-modal-fade"
@@ -13,7 +13,7 @@
     >
       <div class="fixed-header-modal">
           <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddDatas')">
+            <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalAddDatas')">
               <em class="fas fa-times"></em>
             </button>
           </div>
@@ -51,7 +51,7 @@
         <button
           type="button"
           class="bouton-sauvergarder-et-continuer w-retour"
-          @click.prevent="$modal.hide('modalAddDatas')"
+          @click.prevent="$vfm.hide('modalAddDatas')"
         >
           {{Retour}}
         </button>
@@ -60,7 +60,7 @@
           {{ Continuer }}
         </button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -140,7 +140,7 @@
           })
         }).then(() => {
           this.$emit("updateDatabases");
-          this.$modal.hide('modalAddDatas');
+          this.$vfm.hide('modalAddDatas');
         });
       },
       //

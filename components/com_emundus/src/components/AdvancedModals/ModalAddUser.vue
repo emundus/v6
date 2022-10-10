@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAddUser'">
-    <modal
+    <vue-final-modal
       :name="'modalAddUser'"
       height="auto"
       transition="nice-modal-fade"
@@ -15,7 +15,7 @@
     >
       <div class="fixed-header-modal">
           <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddUser')">
+            <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalAddUser')">
               <em class="fas fa-times"></em>
             </button>
           </div>
@@ -79,7 +79,7 @@
       <div class="em-flex-row em-flex-space-between mb-1">
                 <button type="button"
                         class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="$modal.hide('modalAddUser')"
+                        @click.prevent="$vfm.hide('modalAddUser')"
                 >{{Retour}}</button>
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
@@ -87,7 +87,7 @@
         >{{ Continuer }}</button>
       </div>
       <div class="em-page-loader" v-if="loading"></div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -238,7 +238,7 @@ export default {
           } else {
             this.loading = false;
             this.$emit("UpdateUsers",this.form);
-            this.$modal.hide('modalAddUser');
+            this.$vfm.hide('modalAddUser');
           }
 
         } else {
@@ -287,7 +287,7 @@ export default {
             this.$emit("Updateevaluator");
           }
         }
-        this.$modal.hide('modalAddUser')
+        this.$vfm.hide('modalAddUser')
       });
     }
   },

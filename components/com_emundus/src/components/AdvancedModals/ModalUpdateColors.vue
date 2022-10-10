@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalUpdateColors'">
-    <modal
+    <vue-final-modal
             :name="'modalUpdateColors'"
             height="auto"
             :min-width="200"
@@ -15,7 +15,7 @@
         <span class="em-h4">
           {{updateColors}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalUpdateColors')">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalUpdateColors')">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -23,7 +23,7 @@
       <div class="em-grid-3">
         <div v-for="(preset) in presets" class="preset-presentation" :style="'background-color:' + preset.primary + ';border-right: 100px solid' + preset.secondary" @click="changeColors(preset)"></div>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -64,7 +64,7 @@
           })
         }).then((result) => {
             this.$emit("UpdateColors",preset);
-            this.$modal.hide('modalUpdateColors');
+            this.$vfm.hide('modalUpdateColors');
         });
       }
     }

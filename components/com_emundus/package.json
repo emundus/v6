@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --mode production",
+    "build:dev": "vue-cli-service build --mode development",
     "watch": "vue-cli-service build --watch --mode production",
+    "watch:dev": "vue-cli-service build --watch --mode development",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },
@@ -23,5 +25,8 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "dependencies": {
+    "vuedraggable": "^4.1.0"
+  }
 }

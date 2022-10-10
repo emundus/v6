@@ -1,6 +1,6 @@
 <template>
   <div :id="'formBuilder'" class="em-w-100 em-h-100">
-    <modal
+    <vue-final-modal
         :name="'formBuilder'"
         height="auto"
         transition="fade"
@@ -83,7 +83,7 @@
           </transition>
         </section>
         <aside class="right-panel em-flex-column em-h-100">
-          <transition name="fade" mode="out-in">
+          <transition-group name="fade" mode="out-in">
             <div id="form-hierarchy" v-if="showInRightPanel == 'hierarchy'" class="em-w-100">
               <form-builder-pages
                   :pages="pages"
@@ -131,10 +131,10 @@
                 @close="onCloseCreateDocument"
                 @documents-updated="onUpdateDocument"
             ></form-builder-create-document>
-          </transition>
+          </transition-group>
         </aside>
       </div>
-    </modal>
+    </vue-final-modal>
   </div>
 </template>
 
@@ -219,7 +219,7 @@ export default {
     this.getPages();
   },
   mounted() {
-    this.$modal.show('formBuilder');
+    this.$vfm.show('formBuilder');
   },
   methods: {
     getFormTitle() {

@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalDuplicateElement'">
-    <modal
+    <vue-final-modal
       :name="'modalDuplicateElement' + ID"
       height="auto"
       transition="little-move-left"
@@ -15,7 +15,7 @@
     >
       <div class="fixed-header-modal">
         <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalDuplicateElement' + ID)">
+            <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalDuplicateElement' + ID)">
               <em class="fas fa-times"></em>
             </button>
           </div>
@@ -55,7 +55,7 @@
       <div class="em-flex-row em-flex-space-between mb-1">
         <button type="button"
                 class="bouton-sauvergarder-et-continuer w-retour"
-                @click.prevent="$modal.hide('modalDuplicateElement' + ID)">
+                @click.prevent="$vfm.hide('modalDuplicateElement' + ID)">
           {{ translations.Retour }}
         </button>
         <button type="button"
@@ -63,7 +63,7 @@
           @click.prevent="duplicate()"
         >{{ translations.Continuer }}</button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 

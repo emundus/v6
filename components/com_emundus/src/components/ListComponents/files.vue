@@ -193,7 +193,7 @@
       {{ noDossiers }}
     </div>
 
-    <modal name="modalAddCat">
+    <vue-final-modal name="modalAddCat">
       <div class="modalHeader">Select a new category</div>
       <div class="hr"></div>
       <div v-for="(categorie, index) in categoriesName" :key="index" class="modalContent">
@@ -216,7 +216,7 @@
           {{ CloseButton }}
         </button>
       </div>
-    </modal>
+    </vue-final-modal>
   </div>
 </template>
 
@@ -456,11 +456,11 @@ export default {
     },
 
     show() {
-      this.$modal.show("modalAddCat");
+      this.$vfm.show("modalAddCat");
     },
 
     hide() {
-      this.$modal.hide("modalAddCat");
+      this.$vfm.hide("modalAddCat");
     },
 
     toggleActive(elementId) {

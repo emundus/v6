@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalSide'">
-    <modal
+    <vue-final-modal
       :name="'modalSide' + ID"
       height="auto"
       transition="little-move-left"
@@ -17,7 +17,7 @@
         <span class="em-h4">
           {{translations.editMenu}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalSide' + ID)">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalSide' + ID)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -53,7 +53,7 @@
           <div class="em-flex-row">
             <button
                 class="em-secondary-button em-w-auto"
-                @click.prevent="$modal.hide('modalSide' + ID)">
+                @click.prevent="$vfm.hide('modalSide' + ID)">
               {{translations.Retour}}
             </button>
             <button class="em-tertiary-button em-w-auto"
@@ -64,12 +64,12 @@
           </div>
           <button
               class="em-primary-button em-w-auto"
-              @click.prevent="$modal.hide('modalSide' + ID) & UpdateParams()">
+              @click.prevent="$vfm.hide('modalSide' + ID) & UpdateParams()">
               {{translations.Continuer}}
           </button>
         </div>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -265,7 +265,7 @@ export default {
             })
           }).then((response) => {
             this.$emit('removeMenu', this.element.id);
-            this.$modal.hide('modalSide' + this.ID);
+            this.$vfm.hide('modalSide' + this.ID);
           });
         }
       });

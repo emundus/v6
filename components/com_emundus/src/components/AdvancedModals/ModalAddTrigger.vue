@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAddTrigger' + triggerAction">
-    <modal
+    <vue-final-modal
       :name="'modalAddTrigger' + triggerAction"
       height="auto"
       transition="nice-modal-fade"
@@ -22,7 +22,7 @@
         <span class="em-h4">
           {{addTrigger}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalAddTrigger' + triggerAction)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -95,14 +95,14 @@
       </div>
 
       <div class="em-flex-row em-flex-space-between em-mb-8">
-        <button type="button" class="em-secondary-button em-w-auto" @click.prevent="$modal.hide('modalAddTrigger' + triggerAction)">{{Retour}}</button>
+        <button type="button" class="em-secondary-button em-w-auto" @click.prevent="$vfm.hide('modalAddTrigger' + triggerAction)">{{Retour}}</button>
         <button type="button"
           class="em-primary-button em-w-auto"
           @click.prevent="createTrigger()"
         >{{ Continuer }}</button>
       </div>
 
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -232,7 +232,7 @@ export default {
         }).then((rep) => {
           this.selectedUsers = [];
           this.$emit("UpdateTriggers");
-          this.$modal.hide('modalAddTrigger' + this.triggerAction)
+          this.$vfm.hide('modalAddTrigger' + this.triggerAction)
         });
       } else {
         axios({
@@ -248,7 +248,7 @@ export default {
         }).then((rep) => {
           this.selectedUsers = [];
           this.$emit("UpdateTriggers");
-          this.$modal.hide('modalAddTrigger' + this.triggerAction)
+          this.$vfm.hide('modalAddTrigger' + this.triggerAction)
         });
       }
     },

@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalWarningFormBuilder'">
-    <modal
+    <vue-final-modal
       :name="'modalWarningFormBuilder'"
       height="auto"
       transition="nice-modal-fade"
@@ -16,7 +16,7 @@
 
     <div class="fixed-header-modal">
       <div class="topright">
-          <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalWarningFormBuilder')">
+          <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalWarningFormBuilder')">
             <em class="fas fa-times"></em>
           </button>
       </div>
@@ -33,7 +33,7 @@
         <div class="em-flex-row em-flex-space-between mb-1">
           <button class="bouton-sauvergarder-et-continuer w-retour"
                   type="button"
-                  @click.prevent="$modal.hide('modalWarningFormBuilder')">
+                  @click.prevent="$vfm.hide('modalWarningFormBuilder')">
             {{Retour}}
           </button>
             <button class="bouton-sauvergarder-et-continuer em-mr-4"
@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 

@@ -17,7 +17,7 @@
             <hr style="width: 80%;margin: 10px auto;">
             <div>
               <div class="action-links">
-                <a class="d-flex action-link" style="padding-top: 2em" @click="$modal.show('modalMenu')" :title="translations.addMenu">
+                <a class="d-flex action-link" style="padding-top: 2em" @click="$vfm.show('modalMenu')" :title="translations.addMenu">
                   <em class="add-page-icon"></em>
                   <label class="action-label col-md-offset-1 col-sm-offset-1" v-show="actions_menu">{{translations.addMenu}}</label>
                 </a>

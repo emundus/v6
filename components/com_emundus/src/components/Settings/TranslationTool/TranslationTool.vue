@@ -1,17 +1,13 @@
 <template>
   <span :id="'translationTool'">
-    <modal
+    <vue-final-modal
         :name="'translationTool'"
-        height="auto"
-        transition="fade"
-        :delay="100"
-        :adaptive="true"
-        :clickToClose="false"
+        v-model="show"
         @opened="checkSetup"
         @closed="beforeClose"
     >
       <div class="em-modal-header">
-        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('translationTool')">
+        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$vfm.hide('translationTool')">
           <div class="em-w-max-content em-flex-row">
             <span class="material-icons-outlined">arrow_back</span>
             <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
@@ -32,11 +28,11 @@
           </div>
         </div>
 
-        <transition name="fade">
+        <transition-group name="fade">
           <Global v-if="currentMenu === 1" v-show="!setup_success" class="em-modal-component" @updateOrphelinsCount="updateOrphelinsCount"></Global>
           <Translations v-if="currentMenu === 2" v-show="!setup_success" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving"></Translations>
           <Orphelins v-if="currentMenu === 3" v-show="!setup_success" class="em-modal-component"></Orphelins>
-        </transition>
+        </transition-group>
 
         <img v-if="setup_success" alt="checked-animation" class="em-success-animation" :src="'/images/emundus/animations/checked.gif'" />
       </div>
@@ -46,7 +42,7 @@
         <p class="em-page-loader-text" v-if="!setup_success">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SETUP_PROGRESSING') }}</p>
         <p class="em-page-loader-text em-fade-loader" v-if="setup_success">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SETUP_SUCCESS') }}</p>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -84,6 +80,7 @@ export default {
       setup_success: false,
       saving: false,
       last_save: null,
+      show: false,
     }
   },
   methods:{

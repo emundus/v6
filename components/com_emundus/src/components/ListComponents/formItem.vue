@@ -33,7 +33,7 @@
                    :title="translations.Modify">
                   <em class="fas fa-pen"></em> {{translations.Modify}}
                 </a>
-                <v-popover :popoverArrowClass="'custom-popover-arrow'">
+                <VDropdown :popoverArrowClass="'custom-popover-arrow'">
                   <button class="tooltip-target b3 card-button"></button>
 
                   <template slot="popover">
@@ -45,7 +45,7 @@
                         @updateLoading="updateLoading"
                     ></actions>
                   </template>
-                </v-popover>
+                </VDropdown>
               </div>
             </div>
           </div>

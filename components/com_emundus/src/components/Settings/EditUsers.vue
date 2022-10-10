@@ -6,7 +6,7 @@
         :userManage="1"
         @UpdateUsers="getUsers"
     />
-    <button class="create-user-admin__button bouton-sauvergarder-et-continuer-3" @click="$modal.show('modalAddUser')">{{ addUser }}</button>
+    <button class="create-user-admin__button bouton-sauvergarder-et-continuer-3" @click="$vfm.show('modalAddUser')">{{ addUser }}</button>
     <div class="mt-1" id="blocked_filter">
       <div class="em-flex-row mr-2">
         <input type="checkbox" class="em-mr-4" v-model="block" />

@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAffect' + groupProfile">
-    <modal
+    <vue-final-modal
       :name="'modalAffect' + groupProfile"
       height="auto"
       transition="nice-modal-fade"
@@ -15,7 +15,7 @@
     >
              <div class="fixed-header-modal">
           <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAffect' + groupProfile)">
+            <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalAffect' + groupProfile)">
               <em class="fas fa-times"></em>
             </button>
           </div>
@@ -46,14 +46,14 @@
       <div class="em-flex-row em-flex-space-between mb-1">
                 <button type="button"
                         class="bouton-sauvergarder-et-continuer w-retour"
-                        @click.prevent="$modal.hide('modalAffect' + groupProfile)"
+                        @click.prevent="$vfm.hide('modalAffect' + groupProfile)"
                 >{{Retour}}</button>
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
           @click.prevent="affectToGroup"
         >{{ Continuer }}</button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -109,7 +109,7 @@ export default {
       }).then(() => {
         this.affectedUsers = [];
         this.$emit("Update" + this.groupProfile);
-        this.$modal.hide('modalAffect' + this.groupProfile)
+        this.$vfm.hide('modalAffect' + this.groupProfile)
       });
     },
     getUsers() {

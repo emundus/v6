@@ -1,7 +1,7 @@
 <template>
   <div class="messages__vue">
     <span :id="'messages'">
-      <modal
+      <vue-final-modal
           :name="'messages'"
           transition="nice-modal-fade"
           :adaptive="true"
@@ -38,7 +38,7 @@
           <div class="messages__list em-w-100">
             <div class="message__header">
               <label class="text-center" style="width: 100%">{{translations.messages}}</label>
-              <i class="fas fa-times pointer" @click="$modal.hide('messages')"></i>
+              <i class="fas fa-times pointer" @click="$vfm.hide('messages')"></i>
             </div>
             <div class="messages__list-block" id="messages__list">
               <div v-for="date in dates">
@@ -78,7 +78,7 @@
             </div>
           </div>
         </div>
-      </modal>
+      </vue-final-modal>
     </span>
     <div class="loader" v-if="loading"></div>
   </div>
@@ -275,7 +275,7 @@ export default {
     },
 
     pushAttachmentMessage(message){
-      //this.$modal.hide('attach_documents' + this.fileSelected);
+      //this.$vfm.hide('attach_documents' + this.fileSelected);
       this.pushToDatesArray(message);
       this.scrollToBottom();
       this.attachOpen = !this.attachOpen;

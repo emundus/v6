@@ -41,10 +41,11 @@
                 <em class="fas fa-pen"></em>
                 <span>{{Modify}}</span>
               </a>
-              <v-popover :popoverArrowClass="'custom-popover-arraow'">
+
+              <Vmenu>
                 <button class="tooltip-target b3 card-button"></button>
 
-                <template slot="popover">
+                <template #popper>
                   <actions
                       :data="actions"
                       :selected="this.data.id"
@@ -53,7 +54,7 @@
                       @updateLoading="updateLoading"
                   ></actions>
                 </template>
-              </v-popover>
+              </Vmenu>
             </div>
             </div>
           </div>
@@ -64,8 +65,7 @@
 </template>
 
 <script>
-import moment from "moment";
-;
+import moment from "moment";;
 import axios from "axios";
 import actions from "./action_menu";
 

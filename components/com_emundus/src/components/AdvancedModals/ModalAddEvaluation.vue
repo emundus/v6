@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAddEvaluation'">
-    <modal
+    <vue-final-modal
       :name="'modalAddEvaluation'"
       height="auto"
       transition="nice-modal-fade"
@@ -14,7 +14,7 @@
     >
       <div class="fixed-header-modal">
         <div class="topright">
-          <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalAddEvaluation')">
+          <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalAddEvaluation')">
             <em class="fas fa-times"></em>
           </button>
           </div>
@@ -83,7 +83,7 @@
       <div class="em-flex-row em-flex-space-between mb-1">
         <button type="button"
           class="bouton-sauvergarder-et-continuer w-retour"
-          @click.prevent="$modal.hide('modalAddEvaluation')"
+          @click.prevent="$vfm.hide('modalAddEvaluation')"
         >{{ translations.Retour }}</button>
         <button type="button"
           class="bouton-sauvergarder-et-continuer"
@@ -91,7 +91,7 @@
         >{{ translations.Continuer }}</button>
       </div>
       <div class="em-page-loader" v-if="submitted"></div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -175,7 +175,7 @@ export default {
         }).then((result) => {
           this.submitted = false;
           this.$emit("updateGrid");
-          this.$modal.hide('modalAddEvaluation');
+          this.$vfm.hide('modalAddEvaluation');
         }).catch(e => {
           console.log(e);
         });

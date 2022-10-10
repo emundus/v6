@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalUpdateImage'">
-    <modal
+    <vue-final-modal
             :name="'modalUpdateImage'"
             height="auto"
             transition="little-move-left"
@@ -15,7 +15,7 @@
     >
       <div class="fixed-header-modal">
             <div class="topright">
-              <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalUpdateImage')">
+              <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalUpdateImage')">
                 <em class="fas fa-times"></em>
               </button>
             </div>
@@ -45,7 +45,7 @@
       </div>
       <div class="em-flex-row em-flex-space-between mb-1">
         <button type="button" class="bouton-sauvergarder-et-continuer w-retour"
-                @click.prevent="$modal.hide('modalUpdateImage')">
+                @click.prevent="$vfm.hide('modalUpdateImage')">
           {{Retour}}
         </button>
         <button type="button" class="bouton-sauvergarder-et-continuer"
@@ -53,7 +53,7 @@
           {{ Continuer }}
         </button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -123,7 +123,7 @@
       onComplete: function(response){
         if(response.status == 'success'){
           this.$emit("UpdateImage",response.dataURL);
-          this.$modal.hide('modalUpdateImage');
+          this.$vfm.hide('modalUpdateImage');
         }
       },
       catchError: function(file, message, xhr){

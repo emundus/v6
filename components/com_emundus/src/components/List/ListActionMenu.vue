@@ -1,12 +1,12 @@
 <template>
 	<div class="list-actions-menu">
-    <v-popover
+    <VDropdown
         v-if="showTootlip === true"
         class="em-pointer"
         :popoverArrowClass="'custom-popover-arrow'"
     >
       <span class="tooltip-target b3 material-icons-outlined">more_vert</span>
-      <template slot="popover">
+      <template #popper>
         <actions
             :data="{type: type}"
             :selected="itemId"
@@ -16,7 +16,7 @@
             @updateLoading="updateLoading"
         ></actions>
       </template>
-    </v-popover>
+    </VDropdown>
     <button
 			v-if="type == 'email'"
 			type="button"

@@ -1,16 +1,12 @@
 <template>
   <span :id="'filesTool'">
-    <modal
+    <vue-final-modal
         :name="'filesTool'"
-        height="auto"
-        transition="fade"
-        :delay="100"
-        :adaptive="true"
-        :clickToClose="false"
         @closed="beforeClose"
+        v-model="show"
     >
       <div class="em-modal-header">
-        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$modal.hide('filesTool')">
+        <div class="em-flex-space-between em-flex-row em-pointer" @click.prevent="$vfm.hide('filesTool')">
           <div class="em-w-max-content em-flex-row">
             <span class="material-icons-outlined">arrow_back</span>
             <span class="em-ml-8">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
@@ -30,16 +26,16 @@
           </div>
         </div>
 
-        <transition name="fade">
+        <transition-group name="fade">
           <EditStatus v-if="currentMenu === 1" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
           <EditTags v-if="currentMenu === 2" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
           <EditApplicants v-if="currentMenu === 3" :key="currentMenu" class="em-modal-component" @updateSaving="updateSaving" @updateLastSaving="updateLastSaving" />
-        </transition>
+        </transition-group>
       </div>
 
       <div v-if="loading">
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -74,6 +70,7 @@ export default {
       loading: false,
       saving: false,
       last_save: null,
+      show: false
     }
   },
   methods:{

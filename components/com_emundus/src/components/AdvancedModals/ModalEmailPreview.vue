@@ -1,22 +1,17 @@
 <template>
   <span :id="'modalEmailPreview_' + model">
-    <modal
-            :name="'modalEmailPreview_' + model"
-            height="auto"
-            transition="nice-modal-fade"
-            :min-width="200"
-            :min-height="200"
-            :delay="100"
-            :adaptive="true"
-            :clickToClose="false"
-            @before-open="beforeOpen"
+    <vue-final-modal
+        v-model="showModal"
+        :name="'modalEmailPreview_' + model"
+        @before-open="beforeOpen"
     >
+      <template v-slot:title>$vfm.show</template>
 
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <span class="em-h4">
           {{ModelPreview}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalEmailPreview_' + model)">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalEmailPreview_' + model)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -25,7 +20,7 @@
           <p v-if="email != null"><span v-html="email.message"></span></p>
       </div>
 
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -39,6 +34,7 @@
       return {
         email: null,
         ModelPreview: this.translate("COM_EMUNDUS_ONBOARD_EMAIL_PREVIEWMODEL"),
+        showModal: false
       };
     },
     methods: {

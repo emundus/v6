@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container-2 w-container" style="max-width: unset">
+    <div class="em-p-8" style="max-width: unset">
       <transition :name="'slide-down'" type="transition">
         <div>
             <nav aria-label="action" class="em-flex-col-start">

@@ -62,7 +62,7 @@
 						<li v-for="(campaign, index) in campaignsByProgram" :key="'camp_progs_' + index">{{campaign.label}}</li>
 					</ul>
 				</div>
-				<transition name="slide-right">
+				<transition-group name="slide-right">
 					<add-campaign
 							v-if="menuHighlight == 0 && campaignId !== ''"
 							:campaign="campaignId"
@@ -97,7 +97,7 @@
 							v-if="menuHighlightProg == 0 && program.id != 0"
 							:prog="Number(program.id)"
 					></add-email>
-				</transition>
+				</transition-group>
 			</div>
 
 			<div class="em-page-loader" v-if="loading"></div>

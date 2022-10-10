@@ -11,13 +11,13 @@
 
       <input type="text" class="em-ml-8 em-mr-8 em-xs-input em-w-auto" :value="node.type" v-else @focusout="updateNodeType($event)"/>
 
-      <v-popover :popoverArrowClass="'custom-popover-arrow'">
+      <VDropdown :popoverArrowClass="'custom-popover-arrow'">
         <span class="tooltip-target b3 material-icons">more_horiz</span>
         <template slot="popover">
           <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300" v-if="node.level < level_max" @click="$emit('addNode',node)">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}</div>
           <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300 em-red-500-color" @click="$emit('deleteNode', node);">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}</div>
         </template>
-      </v-popover>
+      </VDropdown>
     </div>
 
     <div v-for="children in node.childrens" class="em-flex-row" :class="'em-level-' + children.level">

@@ -13,7 +13,7 @@
   import $ from 'jquery'
 
   // Any plugins you want to use has to be imported
-  import 'tinymce/plugins/paste';
+  //import 'tinymce/plugins/paste';
   import 'tinymce/plugins/link';
   import 'tinymce/plugins/media';
   import 'tinymce/plugins/preview';
@@ -21,7 +21,7 @@
   import 'tinymce/plugins/code';
   import 'tinymce/plugins/anchor';
   import 'tinymce/plugins/advlist';
-  import 'tinymce/plugins/hr';
+  //import 'tinymce/plugins/hr';
   import 'tinymce/plugins/emoticons';
   import 'tinymce/plugins/searchreplace';
   import 'tinymce/plugins/charmap';

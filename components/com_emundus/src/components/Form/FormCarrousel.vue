@@ -18,7 +18,7 @@
                class="em-pointer em-text-neutral-900"
                 :class="indexHighlight == index ? 'MenuFormItem_current' : ''"
                 v-html="value.value"
-            >{{value.value}}</a>
+            ></a>
           </div>
         </div>
 

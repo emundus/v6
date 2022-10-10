@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAffectCampaign'">
-    <modal
+    <vue-final-modal
         :name="'modalAffectCampaign'"
         height="auto"
         transition="nice-modal-fade"
@@ -17,7 +17,7 @@
         <span class="em-h4">
           {{translations.affectCampaigns}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAffectCampaign')">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalAffectCampaign')">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -56,7 +56,7 @@
           {{translations.addCampaign}}
         </button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -111,7 +111,7 @@ export default {
           } else {
             if(campaigns.length > 0){
               this.$emit("testForm");
-              this.$modal.hide('modalAffectCampaign');
+              this.$vfm.hide('modalAffectCampaign');
             }
           }
         });
@@ -119,7 +119,7 @@ export default {
         if(!this.testing) {
           window.location.href = 'index.php?option=com_emundus&view=form';
         } else {
-          this.$modal.hide('modalAffectCampaign');
+          this.$vfm.hide('modalAffectCampaign');
         }
       }
     },

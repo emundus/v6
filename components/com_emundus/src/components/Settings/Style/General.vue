@@ -79,7 +79,7 @@
             <h3 style="margin: 0">{{ translate("COM_EMUNDUS_ONBOARD_COLORS") }}</h3>
         </div>
 
-        <div class="em-logo-box pointer em-mt-16" @click="$modal.show('modalUpdateColors')">
+        <div class="em-logo-box pointer em-mt-16" @click="$vfm.show('modalUpdateColors')">
           <div class="color-preset" :style="'background-color:' + primary + ';border-right: 25px solid' + secondary">
           </div>
         </div>

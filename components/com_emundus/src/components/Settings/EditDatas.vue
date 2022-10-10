@@ -16,13 +16,13 @@
         @updateDatabases="getDatabases"
     />
     <div class="em-flex-row">
-      <a @click="$modal.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer em-mr-4" style="width: max-content">
+      <a @click="$vfm.show('modalAddDatas')" class="bouton-ajouter-green bouton-ajouter pointer em-mr-4" style="width: max-content">
         <div class="add-button-div">
           <em class="fas fa-plus em-mr-4"></em>
           {{ CreateDatas }}
         </div>
       </a>
-      <button type="button" class="bouton-sauvergarder-et-continuer" @click="$modal.show('modalImportDatas')">
+      <button type="button" class="bouton-sauvergarder-et-continuer" @click="$vfm.show('modalImportDatas')">
         {{ImportDatas}}
       </button>
     </div>

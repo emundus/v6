@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalMenu'">
-    <modal
+    <vue-final-modal
         :name="'modalMenu'"
         height="auto"
         transition="little-move-left"
@@ -17,7 +17,7 @@
         <span class="em-h4">
           {{translations.addMenu}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalMenu')">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalMenu')">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -58,7 +58,7 @@
         <button
             type="button"
             class="em-secondary-button em-w-auto"
-            @click.prevent="$modal.hide('modalMenu')">
+            @click.prevent="$vfm.hide('modalMenu')">
           {{translations.Retour}}
         </button>
         <button
@@ -70,7 +70,7 @@
       </div>
 
       <div class="em-page-loader" v-if="loading"></div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -195,7 +195,7 @@ export default {
           })
         }).then((result) => {
           this.submitted = false;
-          this.$modal.hide('modalMenu');
+          this.$vfm.hide('modalMenu');
           this.$emit('AddMenu',result.data);
         }).catch(e => {
           console.log(e);

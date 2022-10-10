@@ -9,7 +9,7 @@
     />
     <div class="em-flex-row em-flex-space-between page-header" v-if="eval == 0 && !updatePage">
       <span v-if="object_json.show_title" class="em-mr-8 em-h3" @click="enableUpdatingPage(object_json)" v-html="object_json.show_title.value" />
-      <span @click="$emit('modalOpen');$modal.show('modalSide' + object.rgt)" :title="translations.Edit" class="material-icons-outlined em-pointer">edit</span>
+      <span @click="$emit('modalOpen');$vfm.show('modalSide' + object.rgt)" :title="translations.Edit" class="material-icons-outlined em-pointer">edit</span>
     </div>
 
     <div v-show="updatePage && indexPage == object_json.id" class="em-flex-row page-header">
@@ -62,7 +62,7 @@
                     <span class="material-icons-outlined">table_rows</span>
                   </span>
 
-                  <v-popover :popoverArrowClass="'custom-popover-arrow'">
+                  <VDropdown :popoverArrowClass="'custom-popover-arrow'">
                     <span class="tooltip-target material-icons-outlined">more_vert</span>
 
                     <template slot="popover">
@@ -84,7 +84,7 @@
                         </transition>
                       </div>
                     </template>
-                  </v-popover>
+                  </VDropdown>
 
                 </div>
               </div>
@@ -524,7 +524,7 @@ export default {
         this.updateLabelElement(element);
       }
       this.$emit('modalOpen')
-      this.$modal.show('modalDuplicateElement' + element.id)
+      this.$vfm.show('modalDuplicateElement' + element.id)
     },
 
     openParameters(element){
@@ -533,7 +533,7 @@ export default {
       }*/
       this.repeat = false;
       //this.$emit('modalOpen')
-      this.$modal.show('modalEditElement' + element.id)
+      this.$vfm.show('modalEditElement' + element.id)
       console.log('here');
     },
     retrieveAssociateElementDoc(docid){

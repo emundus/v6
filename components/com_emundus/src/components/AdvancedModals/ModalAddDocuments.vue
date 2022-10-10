@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalAddDocuments'">
-    <modal
+    <vue-final-modal
         :name="'modalAddDocuments'"
         height="auto"
         transition="little-move-left"
@@ -21,7 +21,7 @@
         <span class="em-h4" v-if="currentDoc != null">
           {{translations.createDocument}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAddDocuments')">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalAddDocuments')">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -122,7 +122,7 @@
         <button
             type="button"
             class="em-secondary-button em-w-auto"
-            @click.prevent="$modal.hide('modalAddDocuments')">
+            @click.prevent="$vfm.hide('modalAddDocuments')">
           {{ translations.Retour }}
         </button>
         <button type="button"
@@ -131,7 +131,7 @@
           {{ translations.Continuer }}
         </button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -452,7 +452,7 @@ export default {
         }).then(() => {
           this.req = false;
           this.$emit("UpdateDocuments");
-          this.$modal.hide('modalAddDocuments')
+          this.$vfm.hide('modalAddDocuments')
         });
       } else {
         return false;
@@ -606,7 +606,7 @@ export default {
                   actions: "em-swal-single-action",
                 },
               }).then(() => {
-                this.$modal.hide('modalAddDocuments')
+                this.$vfm.hide('modalAddDocuments')
               });
             } else {
               Swal.fire({

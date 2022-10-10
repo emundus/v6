@@ -193,7 +193,7 @@ export default {
   },
   created() {
     this.datas = this.$store.getters['global/datas'];
-    this.type = this.datas.type.value;
+    this.type = this.datas.type;
     this.filtersFilter = "&filter=Publish"
 
     axios({

@@ -7,12 +7,12 @@
       <span class="material-icons">folder</span>
       <span class="em-ml-8 em-mr-8">/{{site}}</span>
 
-      <v-popover :popoverArrowClass="'custom-popover-arrow'">
+      <VDropdown :popoverArrowClass="'custom-popover-arrow'">
         <span class="tooltip-target b3 material-icons">more_horiz</span>
         <template slot="popover">
           <div class="em-font-size-14 em-pointer em-p-8-12 em-hover-background-neutral-300" @click="addNode(null)">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}</div>
         </template>
-      </v-popover>
+      </VDropdown>
     </div>
 
     <div v-for="node in nodes">

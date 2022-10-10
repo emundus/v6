@@ -1,7 +1,7 @@
 <template>
   <!-- modalC -->
   <span :id="'modalEditElement' + elementId">
-    <modal
+    <vue-final-modal
         :name="'modalEditElement' + elementId"
         transition="little-move-left"
         :min-width="200"
@@ -17,7 +17,7 @@
         <span class="em-h4">
           {{ElementOptions}}
         </span>
-        <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalEditElement' + elementId)">
+        <button class="em-pointer em-transparent-button" @click.prevent="$vfm.hide('modalEditElement' + elementId)">
           <span class="material-icons-outlined">close</span>
         </button>
       </div>
@@ -69,7 +69,7 @@
       <div class="em-flex-row em-flex-space-between em-mb-16">
         <button type="button"
                 class="em-secondary-button em-w-auto"
-                @click.prevent="$modal.hide('modalEditElement' + elementId)">
+                @click.prevent="$vfm.hide('modalEditElement' + elementId)">
           {{Retour}}
         </button>
         <button type="button"
@@ -79,7 +79,7 @@
       </div>
 
       <div class="em-page-loader" v-if="loading"></div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -204,7 +204,7 @@ export default {
         setTimeout(() => {
           this.$emit("reloadElement")
         },200);
-        this.$modal.hide('modalEditElement' + this.elementId);
+        this.$vfm.hide('modalEditElement' + this.elementId);
       }).catch(e => {
         console.log(e);
       });

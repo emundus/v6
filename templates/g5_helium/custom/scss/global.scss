@@ -5492,7 +5492,7 @@ fieldset[disabled] .multiselect {
   background-position-x: 75%;
   background-position-y: 50%;
   -webkit-appearance: none;
-  background-image: url(/images/emundus/arrow.svg);
+  background-image: url('/images/emundus/arrow.svg');
   background-size: 8px;
   background-repeat: no-repeat;
   height: 48px !important;
@@ -6095,13 +6095,13 @@ fieldset[disabled] .multiselect {
 
 /** Vue Modal - Translation tool **/
 #translationTool,#contentTool,#filesTool,#attachmentStorage {
-  .v--modal-overlay {
+  .vfm--overlay {
     background: #0000002e !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
   }
 
-  .v--modal {
+  .vfm {
     width: 100% !important;
     height: 100% !important;
     right: 0 !important;
@@ -6113,8 +6113,11 @@ fieldset[disabled] .multiselect {
     scrollbar-width: none;
     margin-top: unset !important;
   }
-  .v--modal-box{
+  .vfm__container{
     padding: 0;
+  }
+  .vfm-content{
+    height: 100%;
   }
   .em-modal-header{
     height: 50px;
@@ -6130,6 +6133,8 @@ fieldset[disabled] .multiselect {
   }
   .em-modal-content{
     display: flex;
+    height: 100%;
+    background: white;
   }
   .em-modal-menu__sidebar{
     width: 15%;

@@ -115,7 +115,7 @@ export default {
               mid: mid,
             })
           }).then(() => {
-            this.$modal.hide('modalSide' + this.ID)
+            this.$vfm.hide('modalSide' + this.ID)
             Swal.fire({
               title: this.translate("COM_EMUNDUS_ONBOARD_BUILDER_MENUDELETED"),
               type: "success",

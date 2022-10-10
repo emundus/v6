@@ -128,8 +128,15 @@ body ::-webkit-scrollbar-track {
   border-radius: 4px;
 }
 
-.v-popover .trigger{
+.VDropdown .trigger{
   display: flex !important;
   align-items: center;
+}
+
+.em-hover-s-scale{
+  transition: transform 0.2s ease-in-out;
+}
+.em-hover-s-scale:hover{
+  transform: scale(1.03);
 }
 

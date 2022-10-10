@@ -1,7 +1,7 @@
 <template>
     <!-- modalC -->
     <span :id="'modalImportDatas'">
-    <modal
+    <vue-final-modal
             :name="'modalImportDatas'"
             height="auto"
             transition="nice-modal-fade"
@@ -13,7 +13,7 @@
     >
     <div class="fixed-header-modal">
         <div class="topright">
-            <button type="button" class="btnCloseModal" @click.prevent="$modal.hide('modalImportDatas')">
+            <button type="button" class="btnCloseModal" @click.prevent="$vfm.hide('modalImportDatas')">
               <em class="fas fa-times"></em>
             </button>
         </div>
@@ -88,7 +88,7 @@
           {{ translations.Continuer }}
         </button>
       </div>
-    </modal>
+    </vue-final-modal>
   </span>
 </template>
 
@@ -138,7 +138,7 @@
         methods: {
             goBack() {
                 if(!this.importCSV){
-                    this.$modal.hide('modalImportDatas');
+                    this.$vfm.hide('modalImportDatas');
                 } else {
                     this.importCSV = false;
                 }
@@ -190,7 +190,7 @@
                         })
                     }).then(() => {
                         this.$emit("updateDatabases");
-                        this.$modal.hide('modalImportDatas');
+                        this.$vfm.hide('modalImportDatas');
                     });
                 }
             },

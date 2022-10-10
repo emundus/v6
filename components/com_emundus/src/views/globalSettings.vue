@@ -14,7 +14,7 @@
       </transition>
 
       <!-- COMPONENTS -->
-      <transition name="fade">
+      <transition-group name="fade">
         <StyleTool
             v-if="menuHighlight === 1"
             v-show="modal_ready"
@@ -45,7 +45,7 @@
             v-show="modal_ready"
             @resetMenuIndex="menuHighlight = 0"
         />
-      </transition>
+      </transition-group>
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>
@@ -173,23 +173,23 @@ export default {
       setTimeout(() => {
         switch (value){
           case 1:
-            this.$modal.show('styleTool');
+            this.$vfm.show('styleTool');
             this.modal_ready = true;
             break;
           case 2:
-            this.$modal.show('contentTool');
+            this.$vfm.show('contentTool');
             this.modal_ready = true;
             break;
           case 3:
-            this.$modal.show('filesTool');
+            this.$vfm.show('filesTool');
             this.modal_ready = true;
             break;
           case 9:
-            this.$modal.show('translationTool');
+            this.$vfm.show('translationTool');
             this.modal_ready = true;
             break;
           case 5:
-            this.$modal.show('attachmentStorage');
+            this.$vfm.show('attachmentStorage');
             this.modal_ready = true;
             break;
           default:

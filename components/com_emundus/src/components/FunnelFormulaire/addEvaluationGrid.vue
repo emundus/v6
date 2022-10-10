@@ -7,7 +7,7 @@
     />
     <div class="container-evaluation">
       <div class="text-center" v-if="grid == null">
-        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="$modal.show('modalAddEvaluation')">{{translations.addGrid}}</button>
+        <button class="bouton-sauvergarder-et-continuer" style="float: none" type="button" @click="$vfm.show('modalAddEvaluation')">{{translations.addGrid}}</button>
       </div>
       <div class="em-flex-row" v-if="grid != null">
         <button class="bouton-sauvergarder-et-continuer em-mr-4" style="float: none" type="button" @click="evaluationBuilder">{{translations.editGrid}}</button>

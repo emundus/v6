@@ -28,7 +28,7 @@
       </thead>
     </table>
 
-    <modal
+    <vue-final-modal
         :name="'attachmentParameters'"
         transition="fade"
         :delay="100"
@@ -37,7 +37,7 @@
         class="em-h-100 em-w-25"
     >
       <AttachmentParameters :attachment="selectedDocument"></AttachmentParameters>
-    </modal>
+    </vue-final-modal>
 
     <div class="em-page-loader" v-if="loading"></div>
   </div>
@@ -88,7 +88,7 @@ export default {
     },
     openAttachmentParameters(document){
       this.selectedDocument = document;
-      this.$modal.show('attachmentParameters');
+      this.$vfm.show('attachmentParameters');
     }
   }
 }

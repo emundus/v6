@@ -155,7 +155,7 @@ export default {
       axios.get("index.php?option=com_emundus&controller=form&task=getfilesbyform&pid=" + this.profileId)
           .then(response => {
             if(response.data.data != 0){
-              this.$modal.show('modalWarningFormBuilder');
+              this.$vfm.show('modalWarningFormBuilder');
             } else {
               this.redirectJRoute('index.php?option=com_emundus&view=form&layout=formbuilder&prid=' +
                   this.profileId +

@@ -15,7 +15,7 @@
           <div class="em-flex-row em-flex-space-between" @mouseover="pageOptionsShown = page.id" @mouseleave="pageOptionsShown = 0">
             <p @click="selectPage(page.id)" class="em-w-100 em-p-16">{{ page.label }}</p>
             <div class="em-flex-row em-p-16" :style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'">
-              <v-popover :popoverArrowClass="'custom-popover-arraow'">
+              <VDropdown :popoverArrowClass="'custom-popover-arraow'">
                 <span class="material-icons">more_horiz</span>
 
                 <template slot="popover">
@@ -29,7 +29,7 @@
                     </div>
                   </transition>
                 </template>
-              </v-popover>
+              </VDropdown>
             </div>
           </div>
         </div>

@@ -91,7 +91,7 @@ export default {
 			],
 			email: {
 				emailToPreview: "-1",
-			}
+			},
 		};
 	},
   created() {
@@ -116,7 +116,9 @@ export default {
 		showModalPreview(itemId) {
 			this.email.emailToPreview = itemId;
       setTimeout(() => {
-        this.$modal.show('modalEmailPreview_' + itemId);
+        console.log('here')
+        //this.showModal = true;
+        this.$vfm.show('modalEmailPreview_' + itemId);
       },200)
 		}
 	},
