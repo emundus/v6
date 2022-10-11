@@ -2618,7 +2618,7 @@ class EmundusModelUsers extends JModelList {
                 $db->setQuery($query);
                 $updated = $db->execute();
             } catch (Exception $e) {
-                JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
                 $message = 'Une erreur est survenue au cours de la création d\'une session anonyme.';
             }
 
@@ -2670,7 +2670,7 @@ class EmundusModelUsers extends JModelList {
                         $campaign_id = $result->id;
                     } catch (Exception $e) {
                         $campaign_id = 0;
-                        JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
                         $message = 'Une erreur est survenue au moment de récupérer la campagne.';
                     }
                 }
@@ -2688,7 +2688,7 @@ class EmundusModelUsers extends JModelList {
                         $db->setQuery($query);
                         $inserted = $db->execute();
                     } catch (Exception $e) {
-                        JLog::add('Failed to create file for anonym user' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                        JLog::add('Failed to create file for anonym user' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
                         $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
                     }
 
@@ -2733,7 +2733,6 @@ class EmundusModelUsers extends JModelList {
                         include_once(JPATH_ROOT.'/components/com_emundus/models/profile.php');
                         $m_profile = new EmundusModelProfile;
                         $m_profile->initEmundusSession();
-                        $app->redirect('/component/emundus/?task=openfile&fnum=' . $fnum);
                         return [
                             'status' => true,
                             'data' => [
@@ -2742,11 +2741,11 @@ class EmundusModelUsers extends JModelList {
                             ]
                         ];
                     } else {
-                        JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
+                        JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.users');
                         $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
                     }
                 } else {
-                    JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.error');
+                    JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.users');
                     $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
                 }
             } else {
@@ -2785,7 +2784,7 @@ class EmundusModelUsers extends JModelList {
                     $db->setQuery($query);
                     $result = $db->loadObject();
                 } catch(Exception $e) {
-                    JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage() , JLog::ERROR, 'com_emundus.error');
+                    JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage() , JLog::ERROR, 'com_emundus.users');
                     $message = 'Aucune clé correspondante n\'a été trouvée. '. $e->getMessage();
                 }
 
@@ -2814,7 +2813,7 @@ class EmundusModelUsers extends JModelList {
                             $db->setQuery($query);
                             $updated = $db->execute();
                         } catch(Exception $e) {
-                            JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                            JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
                         }
 
                         if (!$updated) {
@@ -2839,6 +2838,92 @@ class EmundusModelUsers extends JModelList {
     }
 
     public function updateAnonymUserAccount($token) {
+        $updated = false;
 
+        if (!empty($token)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('*')
+                ->from('#__emundus_users')
+                ->where('token = ' . $db->quote($token));
+
+            try {
+                $db->setQuery($query);
+                $result = $db->loadObject();
+            } catch (Exception $e) {
+                JLog::add('Failed to retrieve emundus user from token ' .  $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+            }
+
+            if (!empty($result) && !empty($result->user_id)) {
+                if ($result->is_anonym == 0) {
+                    $query->clear()
+                        ->select('id')
+                        ->from('#__users')
+                        ->where('username = ' . $db->quote($result->email_anonym));
+
+                    try {
+                        $db->setQuery($query);
+                        $existing_user = $db->loadResult();
+                    } catch (Exception $e) {
+                        JLog::add('Failed to check if user with same username already exists ' .  $result->email_anonym . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                    }
+
+                    if (!empty($existing_user)) {
+                        $query->clear()
+                            ->select('fnum')
+                            ->from('#__emundus_campaign_candidature')
+                            ->where('applicant_id = ' . $result->user_id);
+
+                        $db->setQuery($query);
+                        $fnums = $db->loadColumn();
+
+                        if (!empty($fnums)) {
+                            require_once (JPATH_ROOT . '/components/com_emundus/models/files');
+                            $m_files = new EmundusModelFiles();
+                            $updated = $m_files->bindFilesToUser($fnums, $existing_user);
+                        }
+                    } else {
+                        $query->clear()
+                            ->update('#__users')
+                            ->set('name = ' . $result->lastname_anonym . ' ' . $result->firstname_anonym)
+                            ->set('username = '. $result->email_anonym)
+                            ->where('id = ' . $result->user_id);
+
+                        try {
+                            $db->setQuery($query);
+                            $user_updated = $db->execute();
+                        } catch (Exception $e) {
+                            $user_updated = false;
+                            JLog::add('Failed to update user data ' . $e->getMessage() , JLog::ERROR, 'com_emundus.users');
+                        }
+
+                        if ($user_updated) {
+                            $query->clear()
+                                ->update('#__emundus_users')
+                                ->set('lastname = ' . $result->lastname_anonym )
+                                ->set('firstname = ' . $result->firstname_anonym )
+                                ->where('id = ' . $result->id);
+
+                            try {
+                                $db->setQuery($query);
+                                $emundus_user_updated = $db->execute();
+                            } catch (Exception $e) {
+                                $emundus_user_updated = false;
+                                JLog::add('Failed to update emundus user data ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                            }
+
+                            if ($emundus_user_updated) {
+                                $updated = true;
+                            }
+                        }
+                    }
+                } else {
+                    JLog::add('User choose to create file anonymously', JLog::WARNING, 'com_emundus.users');
+                }
+            }
+        }
+
+        return $updated;
     }
 }
