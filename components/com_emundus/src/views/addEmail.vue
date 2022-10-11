@@ -1,12 +1,5 @@
 <template>
   <div class="emails__add-email">
-    <notifications
-        group="foo-velocity"
-        position="bottom left"
-        animation-type="velocity"
-        :speed="500"
-        :classes="'vue-notification-custom'"
-    />
     <div>
       <form @submit.prevent="submit">
         <div>
@@ -379,9 +372,6 @@ export default {
         }).catch(e => {
       console.log(e);
     });
-    setTimeout(() => {
-      this.enableVariablesTip();
-    },2000);
     this.getProgramsList();
     this.getStatus();
     this.getUsers();
@@ -634,38 +624,8 @@ export default {
       this.form.category = value;
     },
 
-    enableVariablesTip() {
-      if(!this.enableTip){
-        this.enableTip = true;
-        this.tip();
-      }
-    },
-
     redirectJRoute(link) {
       window.location.href = link;
-    },
-
-    /**
-     * ** Methods for notify
-     */
-    tip: function () {
-      this.show(
-          "foo-velocity",
-          this.translate("COM_EMUNDUS_ONBOARD_VARIABLESTIP") + ' <strong style="font-size: 16px">/</strong>',
-          this.translate("COM_EMUNDUS_ONBOARD_TIP"),
-      );
-    },
-
-    show(group, text = "", title = "Information") {
-      this.$notify({
-        group,
-        title: `${title}`,
-        text,
-        duration: 10000
-      });
-    },
-    clean(group) {
-      this.$notify({ group, clean: true });
     },
 
     /// get all tags

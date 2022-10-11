@@ -1,34 +1,20 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="editor">
-    <div :id="'tiny_' + selector_id">
-    </div>
+    <editor :id="'tiny_' + selector_id" api-key="auv9u5s193r2jqvljrb4j42v076v2go7ns8r2g7dyhso7h9j" :init="options">
+    </editor>
   </div>
 </template>
 
 <script>
   import axios from "axios";
   // Import TinyMCE
-  import tinymce from 'tinymce/tinymce';
+  import Editor from '@tinymce/tinymce-vue';
   import _ from 'lodash'
   import $ from 'jquery'
 
-  // Any plugins you want to use has to be imported
-  //import 'tinymce/plugins/paste';
-  import 'tinymce/plugins/link';
-  import 'tinymce/plugins/media';
-  import 'tinymce/plugins/preview';
-  import 'tinymce/plugins/image';
-  import 'tinymce/plugins/code';
-  import 'tinymce/plugins/anchor';
-  import 'tinymce/plugins/advlist';
-  //import 'tinymce/plugins/hr';
-  import 'tinymce/plugins/emoticons';
-  import 'tinymce/plugins/searchreplace';
-  import 'tinymce/plugins/charmap';
-
 export default {
   components: {
-    'editor': tinymce
+    'editor': Editor
   },
 
   props: {
@@ -44,14 +30,18 @@ export default {
     return {
       selector_id: this.id + _.random(10000, 99999),
       variables: {},
-      data: null
+      data: null,
+      baseUrl: window.location.protocol + '//' + window.location.host + '/media/com_emundus_vue/',
+      options: {
+        plugins: 'lists link media image table'
+      },
     };
   },
 
   methods: {
     saveText(){
-			if (typeof tinymce.activeEditor !== undefined && tinymce.activeEditor !== null) {
-				this.$emit("input", tinymce.activeEditor.getContent());
+			if (typeof Editor.activeEditor !== undefined && Editor.activeEditor !== null) {
+				this.$emit("input", Editor.activeEditor.getContent());
 			}
     }
   },
@@ -69,15 +59,15 @@ export default {
     }).then(response => {
         this.variables = response.data.data;
     });
-    var baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_vue/';
+    this.baseUrl = window.location.protocol + '//' + window.location.host + '/media/com_emundus_vue/';
 
-    let options = {
+    this.options = {
       selector: '#tiny_' + this.selector_id,
       images_upload_url: 'index.php?option=com_emundus&controller=settings&task=uploadimages',
       plugins: 'paste link media preview image code advlist hr emoticons lists searchreplace charmap quickbars pagebreak autolink print mention',
       toolbar: 'undo redo | forecolor bold italic underline strikethrough | fontsizeselect | image preview | alignleft aligncenter alignright alignjustify hr | bullist numlist | outdent indent | insertfile media anchor| charmap emoticons backcolor | searchreplace print',
       fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-      content_css: baseUrl + 'skins/ui/oxide/content.min.css',
+      content_css: this.baseUrl + 'skins/ui/oxide/content.min.css',
       convert_urls: false,
       height: this.height,
       branding: false,
@@ -103,7 +93,7 @@ export default {
 
           reader.onload = function () {
             var id = 'blobid' + (new Date()).getTime();
-            var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+            var blobCache =  Editor.activeEditor.editorUpload.blobCache;
             var base64 = reader.result.split(',')[1];
             var blobInfo = blobCache.create(id, file, base64);
             blobCache.add(blobInfo);
@@ -127,7 +117,7 @@ export default {
         delay: 200,
         insert: (item) => {
           setTimeout(() => {
-            this.$emit("input", tinymce.activeEditor.getContent());
+            this.$emit("input", Editor.activeEditor.getContent());
           },500);
           return '<span>[' + item.tag + ']</span>';
         },
@@ -143,22 +133,23 @@ export default {
       },
       setup: (editor) => {
         editor.on('keyup', () => {
-          this.$emit("input", tinymce.activeEditor.getContent());
+          this.$emit("input", Editor.activeEditor.getContent());
         });
         editor.on('blur', () => {
-          this.$emit("focusout", tinymce.activeEditor.getContent());
+          this.$emit("focusout", Editor.activeEditor.getContent());
         });
         editor.on('init', () => {
-          tinymce.activeEditor.setContent(this.text);
+          Editor.activeEditor.setContent(this.text);
         });
       }
-    };
+    }
+
     if(this.lang == 'fr'){
-      options.language = 'fr_FR';
-      options.language_url = baseUrl + 'languages/fr_FR.js';
-      tinymce.init(options);
+      this.options.language = 'fr_FR';
+      this.options.language_url = this.baseUrl + 'languages/fr_FR.js';
+      //Editor.init(options);
     } else {
-      tinymce.init(options);
+      //Editor.init(options);
     }
 
     this.$forceUpdate();

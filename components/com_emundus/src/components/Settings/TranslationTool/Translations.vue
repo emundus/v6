@@ -8,7 +8,7 @@
     <div class="em-grid-4" v-else>
       <!-- Languages -->
       <div>
-        <multiselect
+        <VueMultiselect
             v-model="lang"
             label="title_native"
             track-by="lang_code"
@@ -24,12 +24,12 @@
             :searchable="false"
             :allow-empty="true"
             @select="getObjects"
-        ></multiselect>
+        ></VueMultiselect>
       </div>
 
       <!-- Objects availables -->
       <div v-if="lang">
-        <multiselect
+        <VueMultiselect
             v-model="object"
             label="name"
             track-by="name"
@@ -44,12 +44,12 @@
             :clear-on-select="false"
             :searchable="false"
             :allow-empty="true"
-        ></multiselect>
+        ></VueMultiselect>
       </div>
 
       <!-- Datas by reference id -->
       <div v-if="object">
-        <multiselect
+        <VueMultiselect
             v-model="data"
             label="label"
             track-by="id"
@@ -64,12 +64,12 @@
             :clear-on-select="false"
             :searchable="false"
             :allow-empty="true"
-        ></multiselect>
+        ></VueMultiselect>
       </div>
 
       <!-- Childrens -->
       <div v-if="childrens.length > 0">
-        <multiselect
+        <VueMultiselect
             v-model="children"
             label="label"
             track-by="id"
@@ -84,7 +84,7 @@
             :clear-on-select="false"
             :searchable="false"
             :allow-empty="true"
-        ></multiselect>
+        ></VueMultiselect>
       </div>
     </div>
 
@@ -112,14 +112,14 @@
 import client from "com_emundus/src/services/axiosClient";
 import translationsService from "com_emundus/src/services/translations";
 import mixin from "com_emundus/src/mixins/mixin";
-import Multiselect from 'vue-multiselect';
+import VueMultiselect from 'vue-multiselect';
 import TranslationRow from "./TranslationRow";
 
 export default {
   name: "Translations",
   components: {
     TranslationRow,
-    Multiselect
+    VueMultiselect
   },
   mixins: [mixin],
   data() {
