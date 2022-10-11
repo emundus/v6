@@ -57,7 +57,7 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
         <div class="mod_emundus_campaign__header">
             <div>
                 <div class="em-flex-row">
-                    <div class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer" onclick="displayFilters()">
+                    <div id="mod_emundus_campaign__header_filter" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer" onclick="displayFilters()">
                         <span class="material-icons-outlined">filter_list</span>
                         <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?></span>
                     </div>
@@ -285,4 +285,22 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
             filters.style.display = 'none';
         }
     }
+
+    document.addEventListener('click', function (e) {
+        let filters = document.getElementById('filters_block');
+        let clickInsideModule = false;
+
+        e.composedPath().forEach((pathElement) => {
+            if (pathElement.id == "filters_block" || pathElement.id == "mod_emundus_campaign__header_filter") {
+                clickInsideModule = true;
+            }
+        });
+
+        if (!clickInsideModule) {
+            if(filters.style.display === 'flex'){
+                filters.style.display = 'none';
+            }
+        }
+    });
+
 </script>
