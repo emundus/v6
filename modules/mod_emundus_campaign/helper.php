@@ -35,7 +35,7 @@ class modEmundusCampaignHelper {
                 ->where('ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
         } else {
             $query  = $db->getQuery(true);
-            $query->select('ca.*, pr.apply_online, pr.code, pr.link, pr.programmes as prog_type, pr.id as p_id, pr.notes');
+            $query->select('ca.*, pr.apply_online, pr.code,pr.label as programme, pr.link, pr.programmes as prog_type, pr.id as p_id, pr.notes');
             $query->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr');
             $query->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.end_date and "'.$this->now.'">= ca.start_date '.$condition);
         }
@@ -68,7 +68,7 @@ class modEmundusCampaignHelper {
                 ->where('ca.published=1 AND "'.$this->now.'" >= ca.end_date '.$condition);
         } else {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link')
+                ->select('ca.*, pr.apply_online, pr.code,pr.label as programme, pr.link')
                 ->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
                 ->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" >= ca.end_date '.$condition);
         }
@@ -95,7 +95,7 @@ class modEmundusCampaignHelper {
                 ->where('ca.published=1 AND "'.$this->now.'" <= ca.start_date '.$condition);
         } else {
             $query
-                ->select('ca.*, pr.apply_online, pr.link')
+                ->select('ca.*, pr.apply_online, pr.link,pr.label as programme')
                 ->from('#__emundus_setup_campaigns as ca,#__emundus_setup_programmes as pr')
                 ->where('ca.training = pr.code AND ca.published=1 AND "'.$this->now.'" <= ca.start_date '.$condition);
         }
@@ -122,7 +122,7 @@ class modEmundusCampaignHelper {
                 ->where('ca.training = pr.code AND ca.published=1 '.$condition);
         } else {
             $query
-                ->select('ca.*, pr.apply_online, pr.code, pr.link, pr.notes')
+                ->select('ca.*, pr.apply_online, pr.code,pr.label as programme, pr.link, pr.notes')
                 ->from('#__emundus_setup_campaigns as ca, #__emundus_setup_programmes as pr')
                 ->where('ca.training = pr.code AND ca.published=1 '.$condition);
         }

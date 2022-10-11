@@ -153,7 +153,7 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
                         ?>
                     <div class="mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                         <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
-                            <p class="mod_emundus_campaign__programme_tag"><?php  echo $result->code; ?></p>
+                            <p class="mod_emundus_campaign__programme_tag"><?php  echo $result->programme; ?></p>
                             <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                                 <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
                             </a>
