@@ -75,10 +75,12 @@ $modules_tabs = $params->get('mod_em_campaign_modules_tab');
 // END PARAMS
 
 $condition ='';
+
 $order_date = $app->input->getString('order_date', null);
 $order_time = $app->input->getString('order_time', null);
 $group_by = $app->input->getString('group_by', null);
 $searchword = $app->input->getString('searchword', null);
+$codes = $app->input->getString('code', null);
 
 if (isset($order_date) && !empty($order_date)) {
 	$session->set('order_date', $order_date);
@@ -95,10 +97,16 @@ if (isset($group_by) && !empty($group_by)) {
 } elseif (empty($group_by)) {
     $session->set('group_by', $mod_em_campaign_groupby);
 }
+if (isset($codes) && !empty($codes)) {
+    $session->set('code', $codes);
+} elseif (empty($codes)) {
+    $session->clear('code');
+}
 
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
 $group_by = $session->get('group_by');
+$codes = $session->get('code');
 
 if ($params->get('mod_em_campaign_layout') == 'institut_fr') {
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
@@ -113,13 +121,19 @@ if ($params->get('mod_em_campaign_layout') == 'institut_fr') {
     $programs = $m_progs->getProgrammes(1, $program_array);
 }
 
+$condition = '';
 if (isset($searchword) && !empty($searchword)) {
-    $condition = ' AND (pr.code LIKE "%"'.$db->quote($searchword).'"%" OR ca.label LIKE "%"'.$db->quote($searchword).'"%" OR ca.description LIKE "%"'.$db->quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->quote($searchword).'"%") ';
+    $condition .= ' AND (pr.code LIKE "%"'.$db->quote($searchword).'"%" OR ca.label LIKE "%"'.$db->quote($searchword).'"%" OR ca.description LIKE "%"'.$db->quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->quote($searchword).'"%") ';
 }
 
 if (!empty($program_code)) {
     $condition .= ' AND pr.code IN(' . implode ( ',', array_map('trim', explode(',', $db->quote($program_code)))) . ')';
 }
+
+if (!empty($codes)) {
+    $condition .= ' AND pr.code IN(' . implode(',',$db->quote(explode(',',$codes))) . ')';
+}
+
 
 if (!empty($ignored_program_code)) {
     $condition .= ' AND pr.code NOT IN(' . implode ( ',', array_map('trim', explode(',', $db->quote($ignored_program_code)))) . ')';

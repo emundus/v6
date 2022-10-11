@@ -52,7 +52,7 @@
     max-height: 100px;
     line-height: 160%;
 }
-.mod_emundus_campaign__header_filter__values{
+.mod_emundus_campaign__header_sort__values{
     margin-top: 8px;
     flex-direction: column;
     box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
@@ -61,9 +61,20 @@
     position: absolute;
     background: white;
 }
-.mod_emundus_campaign__header_filter__values a:not(:last-child){
+.mod_emundus_campaign__header_sort__values a:not(:last-child){
     margin-bottom: 20px;
 }
+
+.mod_emundus_campaign__header_filter__values{
+    margin-top: 8px;
+    flex-direction: column;
+    box-shadow: 0px 12px 17px rgba(5, 47, 55, 0.07), 0px 5px 22px rgba(5, 47, 55, 0.06), 0px 7px 8px rgba(5, 47, 55, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+    position: absolute;
+    background: white;
+}
+
 
 .mod_emundus_campaign__date{
     display: flex;
