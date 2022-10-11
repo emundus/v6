@@ -176,7 +176,7 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
                                     <?php if(strtotime($now) > strtotime($dteEnd) ) :    //fini  ?>
                                        <div class="mod_emundus_campaign__date">
                                             <span class="material-icons em-text-neutral-600 em-font-size-16">alarm_off</span>
-                                            <p class="em-text-neutral-600 em-font-size-16"> Cloturé </p>
+                                            <p class="em-text-neutral-600 em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_CLOSED'); ?></p>
                                         </div>
                                     <?php endif; ?>
 
