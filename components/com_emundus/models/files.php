@@ -4007,4 +4007,55 @@ class EmundusModelFiles extends JModelLegacy
 
         return $result;
     }
+
+    public function bindFilesToUser($fnums, $user_to)
+    {
+        $bound = true;
+
+        if (!empty($fnums) && !empty($user_to)) {
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
+
+            $query->select('id')
+                ->from('#__emundus_users')
+                ->where('user_id = ' . $user_to);
+
+            try {
+                $db->setQuery($query);
+                $exists = $db->loadResult();
+            } catch (Exception $e) {
+                $exists = false;
+                JLog::add('Failed to check if user exists before binding fnum to him ' . $user_to . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+
+            if ($exists) {
+                foreach($fnums as $fnum) {
+                    $query->clear()
+                        ->update('#__emundus_campaign_candidature')
+                        ->set('applicant_id = ' . $user_to)
+                        ->where('fnum = ' . $fnum);
+
+                    try {
+                        $db->setQuery($query);
+                        $updated = $db->execute();
+                    } catch(Exception $e) {
+                        $updated = false;
+                        JLog::add("Failed to bind fnum $fnum to user $user_to : " . $e->getMessage() , JLog::ERROR, 'com_emundus.error');
+                    }
+
+                    if (!$updated) {
+                        $bound = false;
+                    } else {
+                        JLog::add("Bind $fnum to user $user_to successfully", JLog::INFO, 'com_emundus');
+                    }
+                }
+            } else {
+                JLog::add('User ' . $user_to . ' seems to not exists', JLog::WARNING, 'com_emundus.error');
+            }
+        } else {
+            $bound = false;
+        }
+
+        return $bound;
+    }
 }
