@@ -59,11 +59,11 @@ if (document.getElementById("em-component-vue")) {
         component: data.component,
         datas: data,
         currentLanguage: data.currentLanguage,
-        shortLang: data.shortLang,
-        manyLanguages: data.manyLanguages,
-        defaultLang: data.defaultLang ? data.defaultLang : data.currentLanguage,
-        coordinatorAccess: data.coordinatorAccess,
-        sysadminAccess: data.sysadminAccess,
+        shortLang: data.shortlang,
+        manyLanguages: data.manylanguages,
+        defaultLang: data.defaultlang ? data.defaultlang : data.currentlanguage,
+        coordinatorAccess: data.coordinatoraccess,
+        sysadminAccess: data.sysadminaccess,
     };
     elementId = '#em-component-vue';
 

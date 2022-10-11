@@ -45,8 +45,7 @@
 /* COMPONENTS */
 import draggable from "vuedraggable";
 import axios from "axios";
-import VSwatches from 'vue-swatches'
-import 'vue-swatches/dist/vue-swatches.css'
+import VSwatches from 'vue3-swatches'
 
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";

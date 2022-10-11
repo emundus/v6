@@ -12,6 +12,45 @@
       </div>
 
       <draggable
+          v-model="status"
+          handle=".handle"
+          item-key="step"
+          :class="'draggables-list'"
+          @end="updateStatusOrder">
+        <template #item="{element, index}">
+          <div class="em-flex-row em-flex-row-start em-w-100" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+            <span class="handle em-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
+              <span class="material-icons-outlined">drag_indicator</span>
+            </span>
+            <div class="status-field">
+              <div>
+                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + element.step" @focusout="updateStatus(element)" @keyup.enter="manageKeyup(element)" @keydown="checkMaxlength">{{element.label[actualLanguage]}}</p>
+              </div>
+              <input type="hidden" :class="'label-' + element.class">
+            </div>
+            <div class="em-flex-row">
+              <VSwatches
+                  v-model="element.class"
+                  @input="updateStatus(element)"
+                  :swatches="swatches"
+                  shapes="circles"
+                  row-length="8"
+                  show-border
+                  popover-x="left"
+                  popover-y="top"
+              ></VSwatches>
+              <a type="button" v-if="element.edit == 1 && element.step != 0 && element.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(element,index)" class="em-flex-row em-ml-8 em-pointer">
+                <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+              </a>
+              <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="em-flex-row em-ml-8 em-pointer">
+                <span class="material-icons-outlined em-text-neutral-600">delete_outline</span>
+              </a>
+            </div>
+          </div>
+        </template>
+      </draggable>
+
+<!--      <draggable
           handle=".handle"
           v-model="status"
           item-key="step"
@@ -50,7 +89,7 @@
           </div>
           <hr/>
         </template>
-      </draggable>
+      </draggable>-->
     </div>
 
     <div class="em-page-loader" v-if="loading"></div>
@@ -62,8 +101,7 @@
 import draggable from "vuedraggable";
 import axios from "axios";
 
-import VSwatches from 'vue-swatches'
-import 'vue-swatches/dist/vue-swatches.css'
+import VSwatches from 'vue3-swatches'
 
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
@@ -113,9 +151,9 @@ export default {
           .then(response => {
             this.status = response.data.data;
             setTimeout(() => {
-              this.status.forEach(element => {
+              /*this.status.forEach(element => {
                 this.getHexColors(element);
-              });
+              });*/
             }, 100);
           });
     },
