@@ -520,7 +520,7 @@ p,
 
     .g-content {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       justify-content: flex-end;
       align-items: center;
 
@@ -4766,7 +4766,6 @@ button.swal2-cancel.goback-btn {
       max-width: 100%;
     }
 
-
     #g-navigation #header-c .g-content {
       flex-direction: column !important;
       justify-content: center !important;
@@ -5118,6 +5117,10 @@ button.swal2-cancel.goback-btn {
       #header-a {
         justify-content: center;
         left: 0;
+      }
+
+      #header-c  .g-content {
+        flex-direction: column;
       }
     }
 
