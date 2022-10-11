@@ -280,7 +280,7 @@ if($user != null) {
     document.addEventListener('click', function (e) {
         let clickInsideModule = false;
 
-        e.path.forEach((pathElement) => {
+        e.composedPath().forEach((pathElement) => {
             if (pathElement.id == "userDropdownMenu") {
                 clickInsideModule = true;
             }

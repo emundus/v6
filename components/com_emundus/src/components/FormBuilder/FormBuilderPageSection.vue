@@ -123,6 +123,7 @@ export  default {
           "text": "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION",
         }
       ],
+      elementsDeletedPending: [],
     };
   },
 
@@ -185,6 +186,7 @@ export  default {
     },
     deleteElement(elementId) {
       this.section.elements['element'+elementId].publish = -2;
+      this.elementsDeletedPending.push(elementId);
 	    this.getElements();
 	    this.updateLastSave();
     },
