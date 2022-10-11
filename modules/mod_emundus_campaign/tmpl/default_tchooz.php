@@ -39,8 +39,10 @@ foreach ($campaigns as $campaign){
 }
 $programs = $h_array::removeDuplicateObjectsByProperty($programs,'code');
 
-
-$codes_filters = explode(',',$codes);
+$codes_filters = [];
+if(!empty($codes)) {
+    $codes_filters = explode(',', $codes);
+}
 ?>
 
 <div class="mod_emundus_campaign__intro">
@@ -432,7 +434,7 @@ $codes_filters = explode(',',$codes);
             }
         })
 
-        let program_filter = '&code=';
+        let program_filter = '';
 
         filters.forEach((filter) => {
             let type = filter.value;
@@ -452,6 +454,7 @@ $codes_filters = explode(',',$codes);
         })
 
         if(codes.length > 0){
+            program_filter = '&code=';
             program_filter += codes.join(',');
         }
 
