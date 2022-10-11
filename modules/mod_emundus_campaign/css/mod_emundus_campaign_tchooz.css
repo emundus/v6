@@ -47,10 +47,10 @@
 .mod_emundus_campaign__list_content_resume{
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     max-height: 100px;
-
+    line-height: 160%;
 }
 .mod_emundus_campaign__header_filter__values{
     margin-top: 8px;
@@ -78,11 +78,12 @@
     -webkit-box-orient: vertical;
     max-height: 48px;
     display: -webkit-box;
+    line-height: 140%;
 }
 
 .mod_emundus_campaign__date * {
     margin-right: 8px;
-    margin-bottom: 4px;
+    margin-bottom: 8px !important;
 }
 
 .mod_emundus_campaign__programme_tag {

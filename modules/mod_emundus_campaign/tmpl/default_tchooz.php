@@ -129,6 +129,7 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
                         foreach ($campaigns as $result) {
                             $dteStart = new DateTime($now);
                             $dteEnd = new DateTime($result->end_date);
+                            $dteStartDate = new DateTime($result->start_date);
                             $dteDiff = $dteStart->diff($dteEnd);
                             $j = $dteDiff->format("%a");
                             $h = $dteDiff->format("%H");
@@ -157,24 +158,38 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
                             <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                                 <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
                             </a>
+
                             <div class="<?php echo $mod_em_campaign_class; ?> em-text-neutral-600 em-font-size-16">
                                 <div>
-                                    <?php if ($mod_em_campaign_show_camp_start_date && $result->start_date != '0000-00-00 00:00:00') : ?>
-                                        <div class="mod_emundus_campaign__date">
-                                        <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
-                                        <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
-                                        <span class="em-camp-start em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
-                                       </div>
-                                    <?php endif; ?>
 
-                                    <?php if ($mod_em_campaign_show_camp_end_date && $result->end_date != '0000-00-00 00:00:00') : ?>
+
+                                    <?php if(strtotime($now) < strtotime($dteStartDate)  ) : //pas commencé ?>
+                                    <?php  var_dump('pas commencé'); ?>
+
                                         <div class="mod_emundus_campaign__date">
-                                        <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
-                                        <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
-                                        </p>
-                                        <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                            <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
+                                            <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
+                                            <span class="em-camp-start em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                         </div>
                                     <?php endif; ?>
+
+                                    <?php if(strtotime($now) > strtotime($dteEnd) ) :    //fini  ?>
+                                       <div class="mod_emundus_campaign__date">
+                                            <span class="material-icons em-text-neutral-600 em-font-size-16">alarm_off</span>
+                                            <p class="em-text-neutral-600 em-font-size-16"> Cloturé </p>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <?php if( strtotime($now) < strtotime($dteEnd)  && strtotime($now) > strtotime($dteStartDate) ) : //en cours ?>
+                                    <?php  var_dump('en cours'); ?>
+                                        <div class="mod_emundus_campaign__date">
+                                            <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
+                                            <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
+                                            </p>
+                                            <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+
 
                                     <?php if ($mod_em_campaign_show_formation_start_date && $result->formation_start !== '0000-00-00 00:00:00') : ?>
                                         <div class="mod_emundus_campaign__date">
@@ -201,7 +216,7 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
                                         <span class="em-formation-end em-text-neutral-600"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                         </div>
                                     <?php endif; ?>
-                                    <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset : ''; ?>
+                                    <?= (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($dteEnd)) ) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset : ''; ?>
                                 </div>
                             </div>
 
