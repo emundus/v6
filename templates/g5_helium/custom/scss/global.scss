@@ -520,14 +520,13 @@ p,
 
     .g-content {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: flex-end;
       align-items: center;
 
       .platform-content {
         margin: 0px 10px;
         padding: 0px;
-
       }
 
       .platform-content:nth-child(2) {
@@ -4468,6 +4467,12 @@ button.swal2-cancel.goback-btn {
         .mod-languages.advanced-dropdown {
           margin: 15px 15px 15px 0px;
         }
+
+        .em-messages-modal {
+          left: 23px;
+          top: 26px;
+          position: absolute;
+        }
       }
     }
 
@@ -4769,6 +4774,11 @@ button.swal2-cancel.goback-btn {
 
       .platform-content:nth-child(1) {
         margin: 0px 51px 0px 0px !important;
+      }
+      .em-messages-modal {
+        left: 23px;
+        top: 26px;
+        position: absolute;
       }
     }
 
@@ -5106,10 +5116,18 @@ button.swal2-cancel.goback-btn {
       }
 
       #header-a {
-        justify-content: flex-start;
+        justify-content: center;
         left: 0;
       }
     }
+
+      #header-c .platform-content .em-messages-modal {
+        position: fixed;
+        right: 713px;
+        top: 22px;
+      }
+
+
 
     .g-branding {
       text-align: inherit;

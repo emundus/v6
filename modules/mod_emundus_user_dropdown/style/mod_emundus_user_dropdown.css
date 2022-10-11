@@ -196,19 +196,22 @@ li>a:hover {
         width: 100% !important;
     }
 
-    #header-c .platform-content:nth-child(2) div#userDropdownLabel {
-        position: absolute;
-        right: -163px;
-        top: -104px;
-    }
-
-    #header-c .platform-content:nth-child(1) div#userDropdownLabel {
-        right: -163px;
-        top: -54px;
+    #header-c .platform-content div#userDropdownLabel {
+        position: fixed;
+        right: 12px;
+        top: 12px;
     }
 }
 
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    #header-c .platform-content div#userDropdownLabel {
+        position: fixed;
+        right: 59px;
+        top: 8px;
+    }
+}
+
+
 div#userDropdown {
     float: initial !important;
-    width: 30px;
 }
