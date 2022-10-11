@@ -18,34 +18,40 @@
           :class="'draggables-list'"
           @end="updateStatusOrder">
         <template #item="{element, index}">
-          <div class="em-flex-row em-flex-row-start em-w-100" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
+          <div>
+            <div class="em-flex-row em-flex-row-start em-w-100" @mouseover="enableGrab(index)" @mouseleave="disableGrab()">
             <span class="handle em-grab" :style="grab && indexGrab == index ? 'opacity: 1' : 'opacity: 0'">
               <span class="material-icons-outlined">drag_indicator</span>
             </span>
-            <div class="status-field">
-              <div>
-                <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + element.step" @focusout="updateStatus(element)" @keyup.enter="manageKeyup(element)" @keydown="checkMaxlength">{{element.label[actualLanguage]}}</p>
+              <div class="status-field">
+                <div>
+                  <p class="em-p-8-12 em-editable-content" contenteditable="true" :id="'status_label_' + element.step" @focusout="updateStatus(element)" @keyup.enter="manageKeyup(element)" @keydown="checkMaxlength">{{element.label[actualLanguage]}}</p>
+                </div>
+                <input type="hidden" :class="'label-' + element.class">
               </div>
-              <input type="hidden" :class="'label-' + element.class">
+              <div class="em-flex-row">
+                <div :style="'background-color:' + element.class + ';border-radius: 50px;height: 25px;width:25px'" class="em-pointer" @click="enableColor(index)">
+                </div>
+                <ColorPicker
+                    v-show="showColor == index"
+                    theme="light"
+                    :color="element.class"
+                    :sucker-hide="true"
+                    :sucker-canvas="suckerCanvas"
+                    :sucker-area="suckerArea"
+                    :colors-default="swatches"
+                    @changeColor="changeColor"
+                    @openSucker="openSucker"
+                ></ColorPicker>
+                <a type="button" v-if="element.edit == 1 && element.step != 0 && element.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(element,index)" class="em-flex-row em-ml-8 em-pointer">
+                  <span class="material-icons-outlined em-red-500-color">delete_outline</span>
+                </a>
+                <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="em-flex-row em-ml-8 em-pointer">
+                  <span class="material-icons-outlined em-text-neutral-600">delete_outline</span>
+                </a>
+              </div>
             </div>
-            <div class="em-flex-row">
-              <VSwatches
-                  v-model="element.class"
-                  @input="updateStatus(element)"
-                  :swatches="swatches"
-                  shapes="circles"
-                  row-length="8"
-                  show-border
-                  popover-x="left"
-                  popover-y="top"
-              ></VSwatches>
-              <a type="button" v-if="element.edit == 1 && element.step != 0 && element.step != 1" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_STATUS')" @click="removeStatus(element,index)" class="em-flex-row em-ml-8 em-pointer">
-                <span class="material-icons-outlined em-red-500-color">delete_outline</span>
-              </a>
-              <a type="button" v-else :title="translate('COM_EMUNDUS_ONBOARD_CANNOT_DELETE_STATUS')" class="em-flex-row em-ml-8 em-pointer">
-                <span class="material-icons-outlined em-text-neutral-600">delete_outline</span>
-              </a>
-            </div>
+            <hr/>
           </div>
         </template>
       </draggable>
@@ -101,7 +107,8 @@
 import draggable from "vuedraggable";
 import axios from "axios";
 
-import VSwatches from 'vue3-swatches'
+import { ColorPicker } from 'vue-color-kit'
+import 'vue-color-kit/dist/vue-color-kit.css'
 
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
@@ -113,7 +120,7 @@ export default {
   name: "editStatus",
 
   components: {
-    VSwatches,
+    ColorPicker,
     draggable
   },
 
@@ -131,12 +138,17 @@ export default {
 
       status: [],
       show: false,
+      showColor: -1,
       actualLanguage : '',
       swatches: [
         '#DCC6E0', '#947CB0', '#663399', '#6BB9F0', '#19B5FE', '#013243', '#7BEFB2', '#3FC380', '#1E824C', '#FFFD7E',
         '#FFFD54', '#F7CA18', '#FABE58', '#E87E04', '#D35400', '#EC644B', '#CF000F', '#E5283B', '#E08283', '#D2527F',
         '#DB0A5B', '#999999'
       ],
+
+      suckerCanvas: null,
+      suckerArea: [],
+      isSucking: false,
     };
   },
 
@@ -146,14 +158,30 @@ export default {
   },
 
   methods: {
+    changeColor(color) {
+      this.status[this.showColor].class = color.hex;
+
+      this.updateStatus(this.status[this.showColor]);
+      this.showColor = -1;
+    },
+    openSucker(isOpen) {
+      if (isOpen) {
+        // ... canvas be created
+        // this.suckerCanvas = canvas
+        // this.suckerArea = [x1, y1, x2, y2]
+      } else {
+        // this.suckerCanvas && this.suckerCanvas.remove
+      }
+    },
+
     getStatus() {
       axios.get("index.php?option=com_emundus&controller=settings&task=getstatus")
           .then(response => {
             this.status = response.data.data;
             setTimeout(() => {
-              /*this.status.forEach(element => {
+              this.status.forEach(element => {
                 this.getHexColors(element);
-              });*/
+              });
             }, 100);
           });
     },
@@ -253,10 +281,14 @@ export default {
 
     getHexColors(element) {
       element.translate = false;
-      let status_class = document.querySelector('.label-' + element.class);
-      let style = getComputedStyle(status_class);
-      let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
-      element.class = this.rgbToHex(parseInt(rgbs[0]),parseInt(rgbs[1]),parseInt(rgbs[2]));
+      if(element.class == 'default'){
+        element.class = '#999999';
+      } else {
+        let status_class = document.querySelector('.label-' + element.class);
+        let style = getComputedStyle(status_class);
+        let rgbs = style.backgroundColor.split('(')[1].split(')')[0].split(',');
+        element.class = this.rgbToHex(parseInt(rgbs[0]), parseInt(rgbs[1]), parseInt(rgbs[2]));
+      }
     },
 
     rgbToHex(r, g, b) {
@@ -279,6 +311,14 @@ export default {
       this.indexGrab = 0;
       this.grab = false;
     },
+
+    enableColor(index){
+      if(this.showColor == index){
+        this.showColor = -1;
+      } else {
+        this.showColor = index;
+      }
+    }
   },
 };
 </script>

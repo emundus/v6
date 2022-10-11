@@ -20,16 +20,19 @@
             <input type="hidden" :class="tag.class">
           </div>
           <div class="em-flex-row">
-            <v-swatches
-                v-model="tag.class"
-                @input="updateTag(tag)"
-                :swatches="swatches"
-                shapes="circles"
-                row-length="8"
-                show-border
-                popover-x="left"
-                popover-y="top"
-            ></v-swatches>
+            <div :style="'background-color:' + tag.class + ';border-radius: 50px;height: 25px;width:25px'" class="em-pointer" @click="enableColor(index)">
+            </div>
+            <ColorPicker
+                v-show="showColor == index"
+                theme="light"
+                :color="tag.class"
+                :sucker-hide="true"
+                :sucker-canvas="suckerCanvas"
+                :sucker-area="suckerArea"
+                :colors-default="swatches"
+                @changeColor="changeColor"
+                @openSucker="openSucker"
+            ></ColorPicker>
             <a type="button" :title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')" @click="removeTag(tag,index)" class="em-flex-row em-ml-8 em-pointer">
               <span class="material-icons-outlined em-red-500-color">delete_outline</span>
             </a>
@@ -45,7 +48,9 @@
 /* COMPONENTS */
 import draggable from "vuedraggable";
 import axios from "axios";
-import VSwatches from 'vue3-swatches'
+
+import { ColorPicker } from 'vue-color-kit'
+import 'vue-color-kit/dist/vue-color-kit.css'
 
 /* SERVICES */
 import client from "com_emundus/src/services/axiosClient";
@@ -58,7 +63,7 @@ export default {
   name: "editTags",
 
   components: {
-    VSwatches,
+    ColorPicker,
     draggable
   },
 
@@ -76,12 +81,17 @@ export default {
 
       tags: [],
       show: false,
+      showColor: -1,
       actualLanguage : '',
       swatches: [
         '#DCC6E0', '#947CB0', '#663399', '#6BB9F0', '#19B5FE', '#013243', '#7BEFB2', '#3FC380', '#1E824C', '#FFFD7E',
         '#FFFD54', '#F7CA18', '#FABE58', '#E87E04', '#D35400', '#EC644B', '#CF000F', '#E5283B', '#E08283', '#D2527F',
         '#DB0A5B', '#999999'
       ],
+
+      suckerCanvas: null,
+      suckerArea: [],
+      isSucking: false,
     };
   },
 
@@ -91,6 +101,22 @@ export default {
   },
 
   methods: {
+    changeColor(color) {
+      this.tags[this.showColor].class = color.hex;
+
+      this.updateTag(this.tags[this.showColor]);
+      this.showColor = -1;
+    },
+    openSucker(isOpen) {
+      if (isOpen) {
+        // ... canvas be created
+        // this.suckerCanvas = canvas
+        // this.suckerArea = [x1, y1, x2, y2]
+      } else {
+        // this.suckerCanvas && this.suckerCanvas.remove
+      }
+    },
+
     getTags() {
       axios.get("index.php?option=com_emundus&controller=settings&task=gettags")
           .then(response => {
@@ -196,6 +222,14 @@ export default {
       this.indexGrab = 0;
       this.grab = false;
     },
+
+    enableColor(index){
+      if(this.showColor == index){
+        this.showColor = -1;
+      } else {
+        this.showColor = index;
+      }
+    }
   },
 
 };

@@ -140,3 +140,47 @@ body ::-webkit-scrollbar-track {
   transform: scale(1.03);
 }
 
+.hu-color-picker{
+  position: absolute;
+  margin-left: 15px;
+  width: auto !important;
+  .color-set{
+    display: none;
+  }
+  .color-show{
+    display: none;
+  }
+  .color-type{
+    display: none;
+  }
+  .colors{
+    list-style-type: none;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-gap: 8px;
+    background: #f3f3f3;
+    padding: 10px;
+    border-radius: 8px;
+    .color,.item{
+      height: 25px;
+      width: 25px;
+      border-radius: 50px;
+      cursor: pointer;
+    }
+    .color:hover{
+      transform: scale(1.1);
+      transition: transform 0.1s ease-in-out;
+    }
+    &::after{
+      content: " ";
+      position: absolute;
+      top: 50%;
+      right: 82%;
+      margin-top: -10px;
+      border-width: 10px;
+      border-style: solid;
+      border-color: transparent #f3f3f3 transparent transparent;
+    }
+  }
+}
+
