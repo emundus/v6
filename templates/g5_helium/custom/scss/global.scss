@@ -497,6 +497,9 @@ p,
   max-height: 45px;
   max-width: 180px;
 }
+#g-navigation #header-a .logo[src*="svg"] {
+  width: revert-layer !important;
+}
 
 #g-navigation .g-main-nav{
   margin-top: 10px;
@@ -2812,7 +2815,7 @@ tr.fabrikFilterContainer{
 
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
-.view-form:not(.applicant-form) main#g-main-mainbody {
+.view-form:not(.applicant-form):not(.com_emundus) main#g-main-mainbody {
   padding-right: 5%;
   padding-left: 11%;
   width: 100%;
