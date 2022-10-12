@@ -598,11 +598,11 @@ class EmundusHelperEvents {
 						FROM #__menu
 						WHERE published=1 AND menutype = "'.$user->menutype.'" AND access IN ('.implode(',', $levels).')
 						AND parent_id != 1
-						AND lft = 2+(
+						AND lft > (
 								SELECT menu.lft
 								FROM `#__menu` AS menu
 								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.')';
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.') ORDER BY lft';
                 $db->setQuery($query);
                 $link = $db->loadResult();
             } catch (Exception $e) {
@@ -611,66 +611,47 @@ class EmundusHelperEvents {
             }
 
             if (empty($link)) {
+                $query = 'SELECT CONCAT(link,"&Itemid=",id)
+							FROM #__menu
+							WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+
+                $db->setQuery($query);
                 try {
-                    $query = 'SELECT CONCAT(link,"&Itemid=",id)
-						FROM #__menu
-						WHERE published=1 AND menutype = "'.$user->menutype.'"  AND access IN ('.implode(',', $levels).')
-						AND parent_id != 1
-						AND lft = 4+(
-								SELECT menu.lft
-								FROM `#__menu` AS menu
-								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.')';
-                    $db->setQuery($query);
                     $link = $db->loadResult();
                 } catch (Exception $e) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                     JLog::add($error, JLog::ERROR, 'com_emundus');
                 }
 
-                if (empty($link)) {
-                    $query = 'SELECT CONCAT(link,"&Itemid=",id)
-								FROM #__menu
-								WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+                if (!empty($link)) {
+                    $query = $db->getQuery(true);
+                    $query->select('COUNT(id)')
+                        ->from('#__emundus_setup_attachment_profiles')
+                        ->where('profile_id = ' . $user->profile)
+                        ->orWhere('campaign_id = ' . $user->fnums[$user->fnum]->campaign_id);
 
                     $db->setQuery($query);
                     try {
+                        $profileDocuments = $db->loadResult();
+
+                        if ($profileDocuments < 1) {
+                            $link = "";
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', JLog::ERROR, 'com_emundus.events');
+                    }
+                }
+
+                if (empty($link)) {
+                    try {
+                        $query = 'SELECT CONCAT(link,"&Itemid=",id) 
+						FROM #__menu 
+						WHERE published=1 AND menutype = "'.$user->menutype.'" AND type LIKE "component" AND published=1 AND level = 1 ORDER BY id ASC';
+                        $db->setQuery($query);
                         $link = $db->loadResult();
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
-                    }
-
-                    if (!empty($link)) {
-                        $query = $db->getQuery(true);
-                        $query->select('COUNT(id)')
-                            ->from('#__emundus_setup_attachment_profiles')
-                            ->where('profile_id = ' . $user->profile)
-                            ->orWhere('campaign_id = ' . $user->fnums[$user->fnum]->campaign_id);
-
-                        $db->setQuery($query);
-                        try {
-                            $profileDocuments = $db->loadResult();
-
-                            if ($profileDocuments < 1) {
-                                $link = "";
-                            }
-                        } catch (Exception $e) {
-                            JLog::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', JLog::ERROR, 'com_emundus.events');
-                        }
-                    }
-
-                    if (empty($link)) {
-                        try {
-                            $query = 'SELECT CONCAT(link,"&Itemid=",id) 
-							FROM #__menu 
-							WHERE published=1 AND menutype = "'.$user->menutype.'" AND type LIKE "component" AND published=1 AND level = 1 ORDER BY id ASC';
-                            $db->setQuery($query);
-                            $link = $db->loadResult();
-                        } catch (Exception $e) {
-                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                            JLog::add($error, JLog::ERROR, 'com_emundus');
-                        }
                     }
                 }
             }
