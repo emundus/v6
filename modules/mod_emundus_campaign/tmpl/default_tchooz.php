@@ -196,7 +196,16 @@ if(!empty($codes)) {
                         <?php
                         foreach ($campaigns as $result) {
                         ?>
+
+
+                    <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
+                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+
+                    <?php  else : ?>
+                        
                     <div class="mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                    <?php endif; ?>
+
                         <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
                             <p class="mod_emundus_campaign__programme_tag"><?php  echo $result->programme; ?></p>
                             <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">

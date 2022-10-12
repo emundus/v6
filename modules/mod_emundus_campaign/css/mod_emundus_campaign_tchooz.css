@@ -44,6 +44,11 @@
     padding: 32px;
     height: 300px;
 }
+
+.mod_emundus_campaign__list_content--closed {
+    background: #F3F3F3;
+}
+
 .mod_emundus_campaign__list_content_resume{
     overflow: hidden;
     display: -webkit-box;
