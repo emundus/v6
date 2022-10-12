@@ -2771,10 +2771,9 @@ class EmundusModelUsers extends JModelList {
             }
 
             if (!empty($result) && !empty($result->id)) {
-                $date = strtotime($result->registerDate);
-                $date_p_one_week = strtotime('+7 day', $date);
-                if (time() > $date_p_one_week) {
-                    $message = "La date de validité de votre token est dépassée " . date('d/m/Y H/hs', $date_p_one_week);
+                $date = strtotime($result->token_expiration);
+                if (time() > $date) {
+                    $message = "La date de validité de votre token est dépassée " . date('d/m/Y H/hs', $date);
                 } else {
                     $connected = $this->connectUserFromId($result->id);
 
@@ -2848,7 +2847,8 @@ class EmundusModelUsers extends JModelList {
             $query->select('id')
                 ->from('#__emundus_users')
                 ->where('token = ' . $db->quote($token))
-                ->andWhere('user_id = ' . $user_id);
+                ->andWhere('user_id = ' . $user_id)
+                ->andWhere('token_expiration > NOW()');
 
             try {
                 $db->setQuery($query);
@@ -2885,7 +2885,8 @@ class EmundusModelUsers extends JModelList {
             $query->select('*')
                 ->from('#__emundus_users')
                 ->where('token = ' . $db->quote($token))
-                ->andWhere('user_id = ' . $user_id);
+                ->andWhere('user_id = ' . $user_id)
+                ->andWhere('token_expiration > NOW()');
 
             try {
                 $db->setQuery($query);
@@ -3074,5 +3075,42 @@ class EmundusModelUsers extends JModelList {
                  $app->enqueueMessage('Vous ne pourrez réesaayer que ' . (5 - sizeof($failed_attempts)) . ' fois', 'error');
              }
         }
+    }
+
+    /**
+     * Generate a new token for current user
+     * @return string the new token generated, or empty string if failed
+     */
+    public function generateUserToken()
+    {
+        $new_token = '';
+
+        require_once(JPATH_ROOT . '/components/com_emundus/helpers/users.php');
+        $h_users = new EmundusHelperUsers();
+        $token = $h_users->generateToken();
+        $user_id = JFactory::getUser()->id;
+
+        if (!empty($token)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->update('#__emundus_users')
+                ->set('token = ' . $db->quote($token))
+                ->set('token_expiration = ' . $db->quote(date('Y-m-d H:i:s', strtotime("+1 week"))))
+                ->where('user_id = ' . $user_id);
+
+            $db->setQuery($query);
+            try {
+                $updated = $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to generate new token for user ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            }
+
+            if ($updated) {
+                $new_token = $token;
+            }
+        }
+
+        return $new_token;
     }
 }
