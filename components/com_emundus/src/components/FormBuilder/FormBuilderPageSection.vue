@@ -179,6 +179,11 @@ export  default {
         const movedElement = this.elements[e.newIndex];
         formBuilderService.updateOrder(elements, this.section.group_id, movedElement).then((response) => {
 	        this.updateLastSave();
+          let obj = {};
+          this.elements.forEach((elem, i) => {
+            obj['element'+elem.id] = elem
+          });
+          this.section.elements = obj;
         });
       } else {
         this.$emit('move-element', e, this.section.group_id, toGroup);
