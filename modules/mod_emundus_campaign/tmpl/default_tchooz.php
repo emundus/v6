@@ -142,8 +142,6 @@ if(!empty($codes)) {
                                     <option value="0">Veuillez sélectionner un type</option>
                                     <option value="programme" selected>Programme</option>
                                     <option value="category">Catégorie</option>
-                                    <option value="start_date">Date de début</option>
-                                    <option value="end_date">Date de fin</option>
                                     </select>
                                 <select>
                                     <option value="="> = </option>
@@ -405,7 +403,7 @@ if(!empty($codes)) {
             index = parseInt(index[index.length -1]) + 1;
         }
 
-        let html = '<div class="em-grid-3 em-mt-8" id="filter_'+index+'"> ' +
+        let html = '<div class="em-grid-4 em-mt-8" id="filter_'+index+'"> ' +
             '<select onchange="setupFilter('+index+')" id="select_filter_'+index+'"> ' +
             '<option value="0">Veuillez sélectionner un type</option> ' +
             '<option value="programme">Programme</option> ' +
@@ -418,7 +416,10 @@ if(!empty($codes)) {
             '<option value="<"> < </option> ' +
             '<option value=">"> > </option> ' +
             '</select> ' +
-            '<div id="filters_options_'+index+'"></div>'
+            '<div id="filters_options_'+index+'"></div>' +
+            '<div class="em-flex-row em-mb-8">' +
+                '<span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('+index+')">delete</span>' +
+            '</div>' +
             '</div>';
         document.getElementById('filters_list').insertAdjacentHTML('beforeend',html);
     }
@@ -430,12 +431,13 @@ if(!empty($codes)) {
     function filterCampaigns() {
         let filters = document.querySelectorAll("select[id^='select_filter_']");
         let current_url = window.location.href;
-        let existing_filters = current_url.split('&');
-        let codes = [];
-
         if(current_url.indexOf('?') === -1) {
             current_url += '?';
         }
+
+        let existing_filters = current_url.split('&');
+        let codes = [];
+
 
         existing_filters.forEach((filter,key) => {
             if(filter.indexOf('code') !== -1){
