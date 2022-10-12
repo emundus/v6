@@ -3931,11 +3931,12 @@ class EmundusModelApplication extends JModelList
                         $new_file = $fnumToInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
 
                         // try to copy file with new name
-                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumToInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumToInfos['applicant_id'] . DS . $new_file);
+                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumToInfos['applicant_id'] . DS . $new_file);
                         if (!$copied) {
                             JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
                         }
 
+                        $document['user_id'] = $fnumToInfos['applicant_id'];
                         $document['filename'] = $new_file;
                         $document['fnum'] = $fnum_to;
                         $document['is_validated'] = empty($document['is_validated']) ? '-2' : $document['is_validated'];
