@@ -2,7 +2,7 @@
 button.btn-primary{
     background: #e03c32;
     border: 1px solid #e03c32;
-    border-radius: 4px!important;
+    border-radius: var(--border-radius) !important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
