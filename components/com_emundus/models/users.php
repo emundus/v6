@@ -2807,6 +2807,7 @@ class EmundusModelUsers extends JModelList {
                         }
                     }
                 } else {
+                    $this->assertNotMaliciousAttemptsUsingConnectViaToken();
                     $message = 'Clé inexistante.';
                 }
             }
@@ -2985,6 +2986,12 @@ class EmundusModelUsers extends JModelList {
         return $updated;
     }
 
+    /**
+     * Retrieve token from user_id
+     * Must stay private to make sure it used in correct context
+     * @param $user_id
+     * @return string
+     */
     private function getUserToken($user_id)
     {
         $token = '';
@@ -3007,5 +3014,51 @@ class EmundusModelUsers extends JModelList {
         }
 
         return $token;
+    }
+
+    /**
+     * Make sure no one can brute force via testing token again and again
+     * Is there too much wrong attempts from same IP in last 24h
+     * If so, block adress IP
+     * @return void
+     */
+    private function assertNotMaliciousAttemptsUsingConnectViaToken() {
+        $app = JFactory::getApplication();
+        $current_ip = $_SERVER['REMOTE_ADDR'];
+
+        if (!empty($current_ip)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            // TODO: change table from name to jos_emundus_connect_from_token_attempts or something similar
+            $query->select('*')
+                ->from('me_connecter_depuis_ma_cl_dauthentificati')
+                ->where('ip = ' . $db->quote($current_ip))
+                ->andWhere('succeed = 0')
+                ->andWhere('date_time > NOW() - interval 1 day ');
+
+            $db->setQuery($query);
+             try {
+                 $failed_attempts = $db->loadObjectList();
+             } catch (Exception $e) {
+                 $failed_attempts = [];
+                 JLog::add('Failed to detect if wrong attempts already occured with ip ' . $current_ip . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+             }
+
+             if (sizeof($failed_attempts) > 4) {
+                 $query->clear()
+                     ->insert('#__securitycheckpro_blacklist')
+                     ->columns('ip')
+                     ->values($db->quote($current_ip));
+
+                 $db->setQuery($query);
+                 $db->execute();
+
+                 $app->enqueueMessage('COM_EMUNDUS_USERS_TOO_MANY_WRONG_ATTEMPTS', 'error');
+                 $app->redirect('/');
+             } else {
+                 $app->enqueueMessage('Vous ne pourrez réesaayer que ' . (5 - sizeof($failed_attempts)) . ' fois', 'error');
+             }
+        }
     }
 }
