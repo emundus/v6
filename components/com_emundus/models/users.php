@@ -2598,7 +2598,13 @@ class EmundusModelUsers extends JModelList {
         }
     }
 
-    public function onAfterAnonymUserMapping($data, $campaign_id = 0)
+    /**
+     * @param $data must give user_id, email, is_anonym and token
+     * @param $campaign_id
+     * @return array
+     * @throws Exception
+     */
+    public function onAfterAnonymUserMapping($data, $campaign_id = 0): array
     {
         $app = JFactory::getApplication();
         $user_id = $data['user_id'];
@@ -2747,7 +2753,7 @@ class EmundusModelUsers extends JModelList {
      * @return bool
      * @throws Exception
      */
-    public function connectUserFromToken($token)
+    public function connectUserFromToken($token): bool
     {
         $connected = false;
         $app = JFactory::getApplication();
@@ -2793,7 +2799,7 @@ class EmundusModelUsers extends JModelList {
         return $connected;
     }
 
-    private function connectUserFromId($user_id)
+    private function connectUserFromId($user_id): bool
     {
         $connected = false;
         $app = JFactory::getApplication();
@@ -2837,7 +2843,8 @@ class EmundusModelUsers extends JModelList {
      * @param $user_id
      * @return bool
      */
-    public function checkTokenCorrespondToUser($token, $user_id) {
+    public function checkTokenCorrespondToUser($token, $user_id): bool
+    {
         $correspond = false;
 
         if (!empty($token) && !empty($user_id)) {
@@ -2873,9 +2880,10 @@ class EmundusModelUsers extends JModelList {
      * Else update current user anonym infos
      * @param $token
      * @param $user_id
-     * @return bool
+     * @return bool updated
      */
-    public function updateAnonymUserAccount($token, $user_id) {
+    public function updateAnonymUserAccount($token, $user_id): bool
+    {
         $updated = false;
 
         if (!empty($token) && !empty($user_id)) {
@@ -3007,7 +3015,7 @@ class EmundusModelUsers extends JModelList {
      * @param $user_id
      * @return string
      */
-    private function getUserToken($user_id)
+    private function getUserToken($user_id): string
     {
         $token = '';
 
@@ -3037,7 +3045,8 @@ class EmundusModelUsers extends JModelList {
      * If so, block adress IP
      * @return void
      */
-    private function assertNotMaliciousAttemptsUsingConnectViaToken() {
+    private function assertNotMaliciousAttemptsUsingConnectViaToken(): void
+    {
         $app = JFactory::getApplication();
         $current_ip = $_SERVER['REMOTE_ADDR'];
 
@@ -3081,7 +3090,7 @@ class EmundusModelUsers extends JModelList {
      * Generate a new token for current user
      * @return string the new token generated, or empty string if failed
      */
-    public function generateUserToken()
+    public function generateUserToken(): string
     {
         $new_token = '';
 
