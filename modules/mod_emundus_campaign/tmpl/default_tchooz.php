@@ -129,7 +129,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
                 <!-- FILTERS BLOCK -->
                 <div class="mod_emundus_campaign__header_filter__values em-border-neutral-400 em-neutral-800-color" id="filters_block" style="display: none">
-                    <a class="em-flex-row em-font-size-14 em-blue-400-color em-pointer" onclick="addFilter()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
+                    <a class="em-mb-8 em-flex-row em-font-size-14 em-blue-400-color em-pointer" onclick="addFilter()" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>">
                         <span class="material-icons-outlined em-font-size-14">add</span>
                         <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_ADD_FILTER') ?>
                     </a>
@@ -137,7 +137,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div id="filters_list">
                         <?php $i = 0; ?>
                         <?php foreach ($codes_filters as $key => $code) : ?>
-                            <div class="em-grid-4 em-mt-8" id="filter_<?php echo $i ?>">
+                            <div class="mod_emundus_campaign__header_filter__grid" id="filter_<?php echo $i ?>">
                                 <select onchange="setupFilter('<?php echo $i ?>')" id="select_filter_<?php echo $i ?>">
                                     <option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option>
                                     <option value="programme" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
@@ -400,7 +400,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             index = parseInt(index[index.length -1]) + 1;
         }
 
-        let html = '<div class="em-grid-4 em-mt-8" id="filter_'+index+'"> ' +
+        let html = '<div class="mod_emundus_campaign__header_filter__grid em-mt-8" id="filter_'+index+'"> ' +
             '<select onchange="setupFilter('+index+')" id="select_filter_'+index+'"> ' +
             '<option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option> ' +
             '<option value="programme"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option> ' +
