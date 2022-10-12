@@ -4025,37 +4025,90 @@ class EmundusModelFiles extends JModelLegacy
                 $exists = $db->loadResult();
             } catch (Exception $e) {
                 $exists = false;
-                JLog::add('Failed to check if user exists before binding fnum to him ' . $user_to . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                JLog::add('Failed to check if user exists before binding fnum to him ' . $user_to . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.files');
             }
 
             if ($exists) {
+                require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+                $m_application = new EmundusModelApplication();
+
                 foreach($fnums as $fnum) {
+                    $campaign_id = 0;
                     $query->clear()
-                        ->update('#__emundus_campaign_candidature')
-                        ->set('applicant_id = ' . $user_to)
-                        ->where('fnum = ' . $fnum);
+                        ->select('campaign_id')
+                        ->from('#__emundus_campaign_candidature')
+                        ->where('fnum LIKE ' . $db->q($fnum));
 
                     try {
                         $db->setQuery($query);
-                        $updated = $db->execute();
-                    } catch(Exception $e) {
-                        $updated = false;
-                        JLog::add("Failed to bind fnum $fnum to user $user_to : " . $e->getMessage() , JLog::ERROR, 'com_emundus.error');
+                        $campaign_id = $db->loadResult();
+                    } catch (Exception $e) {
+                        JLog::add('Failed to retrieve campaign from fnum' . $e->getMessage(), JLog::ERROR, 'com_emundus.files');
                     }
 
-                    if (!$updated) {
-                        $bound = false;
-                    } else {
-                        JLog::add("Bind $fnum to user $user_to successfully", JLog::INFO, 'com_emundus');
+                    if (!empty($campaign_id)) {
+                        $fnum_to = $this->createFile($campaign_id, $user_to);
+
+                        if (!empty($fnum_to)) {
+                            $copied = $m_application->copyApplication($fnum, $fnum_to, [], 1, $campaign_id, 1, 1, 0);
+
+                            if (!$copied) {
+                                JLog::add("Failed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::WARNING, 'com_emundus.files');
+                                $bound = false;
+                            } else {
+                                JLog::add("Succeed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::INFO, 'com_emundus.files');
+                            }
+                        }
                     }
                 }
             } else {
-                JLog::add('User ' . $user_to . ' seems to not exists', JLog::WARNING, 'com_emundus.error');
+                JLog::add('User ' . $user_to . ' seems to not exists', JLog::WARNING, 'com_emundus.files');
             }
         } else {
             $bound = false;
         }
 
         return $bound;
+    }
+
+    public function createFile($campaign_id, $user_id = 0)
+    {
+        $fnum = '';
+
+        if (!empty($campaign_id)) {
+            if (empty($user_id)) {
+                $user_id= JFactory::getUser()->id;
+            }
+
+            // create new fnum
+            $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+            $config = JFactory::getConfig();
+            $timezone = new DateTimeZone( $config->get('offset'));
+            $now = JFactory::getDate()->setTimezone($timezone);
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_campaign_candidature'))
+                ->columns($db->quoteName(['date_time','applicant_id', 'user_id', 'campaign_id', 'fnum']))
+                ->values($db->quote($now).', '.$user_id.', '.$user_id.', '.$campaign_id.', '.$db->quote($fnum));
+
+            $db->setQuery($query);
+
+            try {
+                $inserted = $db->execute();
+            } catch (Exception $e) {
+                $fnum = '';
+                $inserted = false;
+                JLog::add("Failed to create file $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.files');
+            }
+
+            if (!$inserted) {
+                $fnum = '';
+            }
+        }
+
+        return $fnum;
     }
 }
