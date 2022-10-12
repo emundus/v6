@@ -159,7 +159,7 @@
 
 .mod_emundus_campaign__header_filter__grid {
     display: grid;
-    grid-template-columns: 41% 8% 41% 4%;
+    grid-template-columns: 43% 4% 43% 4%;
     grid-column-gap: 2%;
     justify-content: center;
     margin-bottom: 12px;
@@ -176,6 +176,11 @@
     justify-content: center;
 }
 
+.mod_emundus_campaign__header_filter__grid div:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 a.em-blue-400-color:hover {
     color: #79B6FB;
