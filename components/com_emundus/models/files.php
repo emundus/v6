@@ -4067,6 +4067,7 @@ class EmundusModelFiles extends JModelLegacy
                             if (!empty($result)) {
                                 $query->clear()
                                     ->update('#__emundus_campaign_candidature')
+                                    ->set('user_id = ' . $result->user_id) // keep track of original user
                                     ->set('submitted = ' . $db->quote($result->submitted))
                                     ->set('date_submitted = ' . $db->quote($result->date_submitted))
                                     ->set('status = ' . $db->quote($result->status))

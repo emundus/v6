@@ -3044,7 +3044,7 @@ class EmundusModelUsers extends JModelList {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            // TODO: change table from name to jos_emundus_connect_from_token_attempts or something similar
+            // TODO: change table from name to jos_emundus_token_auth_attempts or something similar
             $query->select('*')
                 ->from('me_connecter_depuis_ma_cl_dauthentificati')
                 ->where('ip = ' . $db->quote($current_ip))
