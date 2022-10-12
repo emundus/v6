@@ -3803,7 +3803,6 @@ class EmundusModelApplication extends JModelList
                 $divergent_users = true;
             }
 
-
             if(!empty($campaign_id)){
                 $pids = $m_profiles->getProfilesIDByCampaign((array)$campaign_id);
             }
@@ -3929,10 +3928,10 @@ class EmundusModelApplication extends JModelList
                 if (!empty($documents)) {
                     foreach ($documents as $document) {
                         $file_ext = pathinfo($document['filename'], PATHINFO_EXTENSION);
-			            $new_file = $fnumInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
+                        $new_file = $fnumToInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
 
                         // try to copy file with new name
-                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $new_file);
+                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumToInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumToInfos['applicant_id'] . DS . $new_file);
                         if (!$copied) {
                             JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
                         }

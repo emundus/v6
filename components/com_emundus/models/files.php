@@ -4008,6 +4008,12 @@ class EmundusModelFiles extends JModelLegacy
         return $result;
     }
 
+    /**
+     * Copy given fnums and all data with it to another user
+     * @param $fnums
+     * @param $user_to
+     * @return bool
+     */
     public function bindFilesToUser($fnums, $user_to)
     {
         $bound_fnums = [false];
@@ -4094,13 +4100,26 @@ class EmundusModelFiles extends JModelLegacy
         return !in_array(false, $bound_fnums, true);
     }
 
+    /**
+     * Create file for applicant
+     * @param $campaign_id
+     * @param $user_id If not given, default to Current User
+     * @param $time
+     * @return string
+     */
     public function createFile($campaign_id, $user_id = 0, $time = null)
     {
         $fnum = '';
 
         if (!empty($campaign_id)) {
             if (empty($user_id)) {
-                $user_id= JFactory::getUser()->id;
+                $current_user = JFactory::getUser();
+                if ($current_user->guest == 1) {
+                    JLog::add('Error, trying to create file for guest user. Action unauthorized', JLog::WARNING, 'com_emundus.files');
+                    return '';
+                }
+
+                $user_id = $current_user->id;
             }
 
             if ($time == null) {
