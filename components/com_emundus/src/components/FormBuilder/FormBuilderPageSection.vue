@@ -17,7 +17,7 @@
 			        v-model="section.label[shortDefaultLang]"
 			        @focusout="updateTitle"
 			        @keyup.enter="blurElement('#section-title')"
-			        maxlength="50"
+			        maxlength="100"
 	        />
           <div class="section-actions-wrapper">
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')" title="Move section upwards">keyboard_double_arrow_up</span>
