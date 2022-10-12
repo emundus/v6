@@ -2776,45 +2776,59 @@ class EmundusModelUsers extends JModelList {
                 if (time() > $date_p_one_week) {
                     $message = "La date de validité de votre token est dépassée " . date('d/m/Y H/hs', $date_p_one_week);
                 } else {
-                    $jUser = JFactory::getUser($result->id);
-                    $instance = $jUser;
-                    $session =& JFactory::getSession();
-                    $session->set('user',$jUser);
-                    $app->checkSession();
+                    $connected = $this->connectUserFromId($result->id);
 
-                    $query->clear()
-                        ->update('#__session')
-                        ->set('guest = 0')
-                        ->set('username = ' . $db->quote($instance->get('username')))
-                        ->set('userid = ' . $db->quote($instance->get('id')))
-                        ->where('session_id = ' . $db->quote($session->getId()));
-
-                    $updated = false;
-                        try {
-                            $db->setQuery($query);
-                            $updated = $db->execute();
-                        } catch(Exception $e) {
-                            JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
-                        }
-
-                        if (!$updated) {
-                            $message = 'Échec de la connexion à partir de la clé ' . $token;
-                        } else {
-                            include_once(JPATH_ROOT.'/components/com_emundus/models/profile.php');
-                            $m_profile = new EmundusModelProfile;
-                            $m_profile->initEmundusSession();
-                            $connected = true;
-                        }
+                    if (!$connected) {
+                        $message = 'La connexion à l\'utilisateur  ' . $result->id . ' a échoué.';
                     }
-                } else {
-                    $this->assertNotMaliciousAttemptsUsingConnectViaToken();
-                    $message = 'Clé inexistante.';
                 }
+            } else {
+                $this->assertNotMaliciousAttemptsUsingConnectViaToken();
+                $message = 'Clé inexistante.';
             }
+        }
 
         if (!$connected && !empty($message)) {
             $app->enqueueMessage($message, 'error');
         }
+        return $connected;
+    }
+
+    private function connectUserFromId($user_id)
+    {
+        $connected = false;
+        $app = JFactory::getApplication();
+        $db = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        $jUser = JFactory::getUser($user_id);
+        $instance = $jUser;
+        $session =& JFactory::getSession();
+        $session->set('user',$jUser);
+        $app->checkSession();
+
+        $query->clear()
+            ->update('#__session')
+            ->set('guest = 0')
+            ->set('username = ' . $db->quote($instance->get('username')))
+            ->set('userid = ' . $db->quote($instance->get('id')))
+            ->where('session_id = ' . $db->quote($session->getId()));
+
+        $updated = false;
+        try {
+            $db->setQuery($query);
+            $updated = $db->execute();
+        } catch(Exception $e) {
+            JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+        }
+
+        if ($updated) {
+            include_once(JPATH_ROOT.'/components/com_emundus/models/profile.php');
+            $m_profile = new EmundusModelProfile;
+            $m_profile->initEmundusSession();
+            $connected = true;
+        }
+
         return $connected;
     }
 
@@ -2914,7 +2928,7 @@ class EmundusModelUsers extends JModelList {
                                 if ($updated) {
                                     $existing_user_token = $this->getUserToken($existing_user);
                                     if (!empty($existing_user_token)) {
-                                        $connected = $this->connectUserFromToken($existing_user_token);
+                                        $connected = $this->connectUserFromId($existing_user);
 
                                         if ($connected) {
                                             $query->clear()
@@ -2972,7 +2986,7 @@ class EmundusModelUsers extends JModelList {
                                     $m_profile = new EmundusModelProfile;
                                     $m_profile->initEmundusSession();
                                 } else if (JFactory::getUser()->guest == 1) {
-                                    $this->connectUserFromToken($token);
+                                    $connected = $this->connectUserFromId($user_id);
                                 }
                             }
                         }
