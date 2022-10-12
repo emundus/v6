@@ -2898,7 +2898,6 @@ class EmundusModelUsers extends JModelList {
                     } catch (Exception $e) {
                         JLog::add('Failed to check if user with same username already exists ' .  $emundusUser->email_anonym . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
                     }
-
                     if (!empty($existing_user)) {
                         if ($existing_user == $user_id) {
                             JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_NOTHING_TO_UPDATE'));
@@ -2913,7 +2912,7 @@ class EmundusModelUsers extends JModelList {
                             $fnums = $db->loadColumn();
 
                             if (!empty($fnums)) {
-                                require_once (JPATH_ROOT . '/components/com_emundus/models/files');
+                                require_once (JPATH_ROOT . '/components/com_emundus/models/files.php');
                                 $m_files = new EmundusModelFiles();
                                 $updated = $m_files->bindFilesToUser($fnums, $existing_user);
                             } else {

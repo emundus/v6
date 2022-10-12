@@ -3794,8 +3794,15 @@ class EmundusModelApplication extends JModelList
         $pids = [];
 
         try {
+            $divergent_users = false;
             $m_profiles = new EmundusModelProfile();
             $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
+            $fnumToInfos =  $m_profiles->getFnumDetails($fnum_to);
+
+            if ($fnumInfos['applicant_id'] !== $fnumToInfos['applicant_id']) {
+                $divergent_users = true;
+            }
+
 
             if(!empty($campaign_id)){
                 $pids = $m_profiles->getProfilesIDByCampaign((array)$campaign_id);
@@ -3829,6 +3836,14 @@ class EmundusModelApplication extends JModelList
                     unset($stored['id']);
                     $stored['fnum'] = $fnum_to;
                     $q=1;
+
+                    if ($divergent_users) {
+                        foreach($stored as $key => $value) {
+                            if ($key === 'user' && $value == $fnumInfos['applicant_id']) {
+                                $stored[$key] = $fnumToInfos['applicant_id'];
+                            }
+                        }
+                    }
 
                     $query = 'INSERT INTO '.$form->db_table_name.' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
                     $db->setQuery($query);
