@@ -108,18 +108,19 @@ $ordertime = $session->get('order_time');
 $group_by = $session->get('group_by');
 $codes = $session->get('code');
 
+$program_array = [];
 if ($params->get('mod_em_campaign_layout') == 'institut_fr') {
-    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
-    $m_progs = new EmundusModelProgramme();
-    $program_array = [];
     if(!empty($program_code)) {
         $program_array['IN'] = array_map('trim', explode(',', $program_code));
     }
     if(!empty($ignored_program_code)) {
         $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
     }
-    $programs = $m_progs->getProgrammes(1, $program_array);
 }
+
+include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
+$m_progs = new EmundusModelProgramme();
+$programs = $m_progs->getProgrammes(1, $program_array);
 
 $condition = '';
 if (isset($searchword) && !empty($searchword)) {
@@ -164,6 +165,8 @@ switch ($ordertime) {
     case 'desc':
         $condition .=' DESC';
         break;
+    default:
+        $condition .= ' ASC';
 }
 
 $mod_em_campaign_get_admission_date = ($mod_em_campaign_show_admission_start_date||$mod_em_campaign_show_admission_end_date);

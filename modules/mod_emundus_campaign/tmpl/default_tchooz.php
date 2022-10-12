@@ -16,7 +16,6 @@ if ($locallang == "fr-FR") {
 $config = JFactory::getConfig();
 $site_offset = $config->get('offset');
 
-$programs = [];
 $campaigns = [];
 if (in_array('current', $mod_em_campaign_list_tab) && !empty($currentCampaign)){
     $campaigns = array_merge($campaigns,$currentCampaign);
@@ -27,22 +26,22 @@ if (in_array('futur', $mod_em_campaign_list_tab) && !empty($futurCampaign)){
 if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
     $campaigns = array_merge($campaigns,$pastCampaign);
 }
+if ($group_by == 'program') {
+    usort($campaigns, function ($a, $b) {
+        return strcmp($a->programme, $b->programme);
+    });
+}
 
 require_once (JPATH_SITE.'/components/com_emundus/helpers/array.php');
 $h_array  = new EmundusHelperArray();
-
-foreach ($campaigns as $campaign){
-    $program = new stdClass();
-    $program->label = $campaign->programme;
-    $program->code = $campaign->code;
-    $programs[] = $program;
-}
-$programs = $h_array::removeDuplicateObjectsByProperty($programs,'code');
 
 $codes_filters = [];
 if(!empty($codes)) {
     $codes_filters = explode(',', $codes);
 }
+
+$protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 ?>
 
 <div class="mod_emundus_campaign__intro">
@@ -50,7 +49,7 @@ if(!empty($codes)) {
 </div>
 
 
-<form action="index.php" method="post" id="search_program">
+<form action="<?php echo $CurPageURL ?>" method="post" id="search_program">
     <?php if (sizeof($campaigns) == 0) : ?>
         <hr>
         <div class="em-card-white">
@@ -87,7 +86,7 @@ if(!empty($codes)) {
                     <?php if ($mod_em_campaign_order == 'start_date' && $order == 'end_date') : ?>
                         <div class="mod_emundus_campaign__header_filter em-ml-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?></span>
-                            <a class="em-flex-column em-ml-8 em-text-neutral-900" href="index.php?group_by=<?php echo $group_by ?>">
+                            <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
                                 <span class="material-icons-outlined">close</span>
                             </a>
                         </div>
@@ -95,7 +94,7 @@ if(!empty($codes)) {
                     <?php if ($mod_em_campaign_order == 'end_date' && $order == 'start_date') : ?>
                         <div class="mod_emundus_campaign__header_filter em-ml-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?></span>
-                            <a class="em-flex-column em-ml-8 em-text-neutral-900" href="index.php?group_by=<?php echo $group_by ?>">
+                            <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['order_date','order_time'])">
                                 <span class="material-icons-outlined">close</span>
                             </a>
                         </div>
@@ -103,7 +102,7 @@ if(!empty($codes)) {
                     <?php if ($group_by == 'program') : ?>
                         <div class="mod_emundus_campaign__header_filter em-ml-8 em-border-neutral-400 em-neutral-800-color em-white-bg">
                             <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?></span>
-                            <a class="em-flex-column em-ml-8 em-text-neutral-900" href="index.php?order_date=<?php echo $order ?>&order_time=<?php echo $ordertime ?>">
+                            <a class="em-flex-column em-ml-8 em-text-neutral-900 em-pointer" onclick="deleteSort(['group_by'])">
                                 <span class="material-icons-outlined">close</span>
                             </a>
                         </div>
@@ -113,16 +112,16 @@ if(!empty($codes)) {
                 <!-- SORT BLOCK -->
                 <div class="mod_emundus_campaign__header_sort__values em-border-neutral-400 em-neutral-800-color" id="sort_block" style="display: none">
                     <?php if($mod_em_campaign_order == 'start_date') : ?>
-                        <a href="index.php?order_date=end_date&order_time=asc&group_by=<?php echo $group_by ?>" class="em-text-neutral-900">
+                        <a onclick="filterCampaigns(['order_date','order_time'],['end_date','asc'])" class="em-text-neutral-900 em-pointer">
                             <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_END_DATE_NEAR') ?>
                         </a>
                     <?php endif; ?>
                     <?php if($mod_em_campaign_order == 'end_date') : ?>
-                        <a href="index.php?order_date=start_date&order_time=asc&group_by=<?php echo $group_by ?>" class="em-text-neutral-900">
+                        <a onclick="filterCampaigns(['order_date','order_time'],['start_date','asc'])" class="em-text-neutral-900 em-pointer">
                             <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_START_DATE_NEAR') ?>
                         </a>
                     <?php endif; ?>
-                    <a href="index.php?order_date=<?php echo $order ?>&order_time=<?php echo $ordertime ?>&group_by=program" class="em-text-neutral-900">
+                    <a onclick="filterCampaigns('group_by','program')" class="em-text-neutral-900 em-pointer">
                         <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_GROUP_BY_PROGRAM') ?>
                     </a>
                 </div>
@@ -144,13 +143,16 @@ if(!empty($codes)) {
                                     <option value="category">Catégorie</option>
                                     </select>
                                 <select>
-                                    <option value="="> = </option>
+                                    <option value="="> est </option>
+                                    <option value="<>"> n'est pas </option>
                                 </select>
                                 <div id="filters_options_<?php echo $i ?>">
                                     <select id="filter_value_<?php echo $i ?>">
                                         <option value = 0></option>
                                         <?php foreach ($programs as $program) : ?>
-                                            <option value=<?php echo $program->code ?> <?php if ($program->code == $code) : ?>selected<?php endif; ?>><?php echo $program->label ?></option>
+                                            <option value=<?php echo $program['code'] ?> <?php if ($program['code'] == $code) : ?>selected<?php endif; ?>>
+                                                <?php echo $program['label'] ?>
+                                            </option>
                                         <?php endforeach; ?>
                                         </select>
                                 </div>
@@ -200,7 +202,7 @@ if(!empty($codes)) {
                     <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
 
                     <?php  else : ?>
-                        
+
                     <div class="mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                     <?php endif; ?>
 
@@ -383,7 +385,7 @@ if(!empty($codes)) {
                 html = '<select id="filter_value_'+index+'"> ' +
                     '<option value = 0></option>' +
                     <?php foreach ($programs as $program) : ?>
-                    "<option value=\"<?php echo $program->code ?>\"><?php echo $program->label ?></option>" +
+                    "<option value=\"<?php echo $program['code'] ?>\"><?php echo $program['label'] ?></option>" +
                     <?php endforeach; ?>
                     '</select>';
                 break;
@@ -412,9 +414,8 @@ if(!empty($codes)) {
             '<option value="end_date">Date de fin</option> ' +
             '</select> ' +
             '<select> ' +
-            '<option value="="> = </option> ' +
-            '<option value="<"> < </option> ' +
-            '<option value=">"> > </option> ' +
+            '<option value="="> est </option> ' +
+            '<option value="<>"> n\'est pas </option> ' +
             '</select> ' +
             '<div id="filters_options_'+index+'"></div>' +
             '<div class="em-flex-row em-mb-8">' +
@@ -428,7 +429,7 @@ if(!empty($codes)) {
         document.getElementById('filter_' + index).remove();
     }
 
-    function filterCampaigns() {
+    function filterCampaigns(type = '', value = '') {
         let filters = document.querySelectorAll("select[id^='select_filter_']");
         let current_url = window.location.href;
         if(current_url.indexOf('?') === -1) {
@@ -443,10 +444,21 @@ if(!empty($codes)) {
             if(filter.indexOf('code') !== -1){
                 existing_filters.splice(key,1);
             }
+            if(type !== '' && !Array.isArray(type)){
+                if(filter.indexOf(type) !== -1){
+                    existing_filters.splice(key,1);
+                }
+            } else if(Array.isArray(type)){
+                type.forEach((elt) => {
+                    if(filter.indexOf(elt) !== -1){
+                        existing_filters.splice(key,1);
+                    }
+                })
+            }
         })
 
         let program_filter = '';
-
+        let type_filter = '';
         filters.forEach((filter) => {
             let type = filter.value;
             let index = filter.id.split('_');
@@ -464,14 +476,40 @@ if(!empty($codes)) {
             }
         })
 
+        let new_url = existing_filters.join('&');
         if(codes.length > 0){
             program_filter = '&code=';
             program_filter += codes.join(',');
+            new_url += program_filter;
+        }
+        if(type !== ''  && !Array.isArray(type)){
+            type_filter = '&'+type+'=';
+            type_filter += value;
+            new_url += type_filter;
+        } else if(Array.isArray(type)){
+            type.forEach((elt,index) => {
+                type_filter += '&'+elt+'=';
+                type_filter += value[index];
+            })
+            new_url += type_filter;
         }
 
-        let new_url = existing_filters.join('&');
-        new_url += program_filter;
         window.location.href = new_url;
+    }
+
+    function deleteSort(sort){
+        let current_url = window.location.href;
+        let existing_filters = current_url.split('&');
+
+        existing_filters.forEach((filter,key) => {
+            sort.forEach((elt) => {
+                if (filter.indexOf(elt) !== -1) {
+                    existing_filters.splice(key, 1);
+                }
+            });
+        });
+
+        window.location.href = existing_filters.join('&');
     }
 
     document.addEventListener('click', function (e) {
