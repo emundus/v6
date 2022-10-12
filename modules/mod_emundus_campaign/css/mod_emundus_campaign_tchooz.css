@@ -4,9 +4,19 @@
 }
 .mod_emundus_campaign__intro p{
     line-height: 150%;
+    color: #727272;
+    font-size: 18px;
 }
+
+/*
+.mod_emundus_campaign__intro a{
+
+}*/
+
 .mod_emundus_campaign__intro h1{
     margin-bottom: 12px !important;
+    color: #000;
+    font-weight: 600;
 }
 .mod_emundus_campaign__content{
     margin-top: 40px;
@@ -22,6 +32,7 @@
     border-radius: 8px;
     width: 300px;
     padding: 8px 16px;
+    background: #fff;
 }
 .mod_emundus_campaign__header_filter{
     display: flex;
@@ -43,6 +54,7 @@
     border-radius: 16px !important;
     padding: 32px;
     height: 300px;
+    background: #fff;
 }
 
 .mod_emundus_campaign__list_content--closed {
@@ -57,6 +69,11 @@
     max-height: 100px;
     line-height: 160%;
 }
+
+.mod_emundus_campaign__header_filter {
+   background: #fff;
+}
+
 .mod_emundus_campaign__header_sort__values{
     margin-top: 8px;
     flex-direction: column;
@@ -66,6 +83,7 @@
     position: absolute;
     background: white;
 }
+
 .mod_emundus_campaign__header_sort__values a:not(:last-child){
     margin-bottom: 20px;
 }
@@ -113,3 +131,11 @@
     margin-bottom: 12px;
 }
 
+.mod_emundus_campaign__programme_cat_title {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 25px;
+    color: #000000;
+}
