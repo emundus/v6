@@ -173,7 +173,7 @@
 				</fieldset>
 
 				<fieldset name="single" label="Paramètres des détails">
-					<field showon="mod_em_campaign_layout!:default_tchooz" type="checkboxes" name="mod_em_campaign_modules_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
+					<field showon="mod_em_campaign_layout!:tchooz_single_campaign" type="checkboxes" name="mod_em_campaign_modules_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
 						<option checked="false" value="faq">FAQ</option>
 						<option checked="false" value="documents">Documents</option>
 					</field>
@@ -181,22 +181,39 @@
 					<field name="mod_em_campaign_param_showprogramme" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWPROG" description="MOD_EM_CAMPAIGN_PARAM_SHOWPROG_DESC" default="1"/>
 					<field name="mod_em_campaign_param_showcampaign" type="checkbox" label="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP" description="MOD_EM_CAMPAIGN_PARAM_SHOWCAMP_DESC" />
 
-					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_documents" label="MOD_EM_CAMPAIGN_SHOW_DOCUMENTS" description="MOD_EM_CAMPAIGN_SHOW_DOCUMENTS_DESC" default="1">
+					<field showon="mod_em_campaign_layout:tchooz_single_campaign" type="list" name="mod_em_campaign_show_documents" label="MOD_EM_CAMPAIGN_SHOW_DOCUMENTS" description="MOD_EM_CAMPAIGN_SHOW_DOCUMENTS_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_contact" label="MOD_EM_CAMPAIGN_SHOW_CONTACT" description="MOD_EM_CAMPAIGN_SHOW_CONTACT_DESC" default="1">
+					<field showon="mod_em_campaign_layout:tchooz_single_campaign" type="list" name="mod_em_campaign_show_contact" label="MOD_EM_CAMPAIGN_SHOW_CONTACT" description="MOD_EM_CAMPAIGN_SHOW_CONTACT_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_show_registration" label="MOD_EM_CAMPAIGN_SHOW_REGISTRATION" description="MOD_EM_CAMPAIGN_SHOW_REGISTRATION_DESC" default="1">
+					<field showon="mod_em_campaign_layout:tchooz_single_campaign" type="list" name="mod_em_campaign_show_registration" label="MOD_EM_CAMPAIGN_SHOW_REGISTRATION_INFOS" description="MOD_EM_CAMPAIGN_SHOW_REGISTRATION_INFOS_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>
 
-					<field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_allow_alerting" label="MOD_EM_CAMPAIGN_ALLOW_ALERTING" description="MOD_EM_CAMPAIGN_ALLOW_ALERTING_DESC" default="1">
+					<field name="mod_em_campaign_show_registration_steps"
+						   type="subform"
+						   label="MOD_EM_CAMPAIGN_SHOW_REGISTRATION_INFOS_STEP"
+						   description="MOD_EM_CAMPAIGN_SHOW_REGISTRATION_INFOS_STEP_DESC"
+						   multiple="true"
+						   min="1"
+						   max="4"
+						   layout="joomla.form.field.subform.repeatable-table"
+					>
+						<form>
+							<field name="mod_em_campaign_show_registration_steps_text"
+								   type="text"
+								   label="MOD_EM_CAMPAIGN_SHOW_REGISTRATION_INFOS_STEP_TEXT" description="MOD_EM_CAMPAIGN_SHOW_REGISTRATION_INFOS_STEP_TEXT_DESC"
+							/>
+						</form>
+					</field>
+
+					<field showon="mod_em_campaign_layout:tchooz_single_campaign" type="list" name="mod_em_campaign_allow_alerting" label="MOD_EM_CAMPAIGN_ALLOW_ALERTING" description="MOD_EM_CAMPAIGN_ALLOW_ALERTING_DESC" default="1">
 						<option value="0">JNO</option>
 						<option value="1">JYES</option>
 					</field>

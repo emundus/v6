@@ -19,9 +19,8 @@ $db = JFactory::getDbo();
 $document 	= JFactory::getDocument();
 JHtml::script('media/com_emundus/js/jquery.cookie.js');
 JHtml::script('media/jui/js/bootstrap.min.js');
-if($params->get('mod_em_campaign_layout') != 'default_tchooz') {
+if(!in_array($params->get('mod_em_campaign_layout'),['default_tchooz','tchooz_single_campaign'])) {
     JHtml::stylesheet('media/com_emundus/css/mod_emundus_campaign.css');
-
     $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign.css" );
 } else {
     $document->addStyleSheet("modules/mod_emundus_campaign/css/mod_emundus_campaign_tchooz.css" );
@@ -46,10 +45,11 @@ $mod_em_campaign_order_type = $params->get('mod_em_campaign_order_type');
 $ignored_program_code = $params->get('mod_em_ignored_program_code');
 $showprogramme = $params->get('mod_em_campaign_param_showprogramme');
 $showcampaign = $params->get('mod_em_campaign_param_showcampaign');
-$mod_em_campaign_show_documents = $params->get('mod_em_campaign_show_documents');
-$mod_em_campaign_show_contact = $params->get('mod_em_campaign_show_contact');
-$mod_em_campaign_show_registration = $params->get('mod_em_campaign_show_registration');
-$mod_em_campaign_allow_alerting = $params->get('mod_em_campaign_allow_alerting');
+$mod_em_campaign_show_documents = $params->get('mod_em_campaign_show_documents',1);
+$mod_em_campaign_show_contact = $params->get('mod_em_campaign_show_contact',0);
+$mod_em_campaign_show_registration = $params->get('mod_em_campaign_show_registration',1);
+$mod_em_campaign_show_registration_steps = $params->get('mod_em_campaign_show_registration_steps');
+$mod_em_campaign_allow_alerting = $params->get('mod_em_campaign_allow_alerting',0);
 
 // OLD PARAMS
 $mod_em_campaign_url = $params->get('mod_em_campaign_url');

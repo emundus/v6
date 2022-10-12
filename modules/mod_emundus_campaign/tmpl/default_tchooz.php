@@ -143,9 +143,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     <option value="programme" selected><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option>
                                     <option value="category"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option>
                                     </select>
-                                <select>
-                                    <option value="="> <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?> </option>
-                                </select>
+                                <span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span>
                                 <div id="filters_options_<?php echo $i ?>">
                                     <select id="filter_value_<?php echo $i ?>">
                                         <option value = 0></option>

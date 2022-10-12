@@ -232,3 +232,56 @@ a.em-blue-400-color:hover {
     line-height: 25px;
     color: #000000;
 }
+
+.mod_emundus_campaign__tabs{
+    margin-top: 20px;
+    border-bottom: solid 1px #EDEDED;
+    height: 35px;
+}
+.mod_emundus_campaign__tabs a {
+    height: 35px;
+    cursor: pointer;
+}
+
+.mod_emundus_campaign__tabs a.current-tab {
+    border-bottom: solid 1px #1C6EF2;
+}
+
+.em-program-title{
+    display: none;
+}
+
+.mod_emundus_campaign__details_content{
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+    border-radius: 16px !important;
+    padding: 32px;
+    background: #fff;
+}
+.mod_emundus_campaign__details_step_count{
+    margin-right: 12px;
+    border-radius: 50px;
+    background: #F0F6FD;
+    color: #1C6EF2;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.mod_emundus_campaign__details_file_icon{
+    margin-right: 12px;
+    border-radius: 50px;
+    background: #F3F3F3;
+    color: #080C12;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.mod_emundus_campaign__details_file a{
+    color: #080C12;
+    text-decoration: underline;
+    text-underline: #080C12;
+}
+
