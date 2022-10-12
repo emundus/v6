@@ -156,7 +156,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php endforeach; ?>
                                         </select>
                                 </div>
-                                <div class="em-flex-row em-mb-8">
+                                <div class="em-flex-row">
                                     <span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('<?php echo $i ?>')" title="<?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_DELETE') ?>">delete</span>
                                 </div>
                             </div>
@@ -408,7 +408,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             '</select> ' +
             '<span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_'+index+'"></div>' +
-            '<div class="em-flex-row em-mb-8">' +
+            '<div class="em-flex-row">' +
                 '<span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('+index+')">delete</span>' +
             '</div>' +
             '</div>';

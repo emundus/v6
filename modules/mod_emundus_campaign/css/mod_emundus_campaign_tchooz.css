@@ -121,6 +121,7 @@
     position: absolute;
     background: white;
     padding: 32px;
+    min-width: 44rem;
 }
 
 .mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
@@ -154,10 +155,6 @@
     padding: 8px 16px;
     background: #fff;
     height: 40px;
-}
-
-.mod_emundus_campaign__header_filter__values select:nth-child(1) {
-
 }
 
 .mod_emundus_campaign__header_filter__grid {
