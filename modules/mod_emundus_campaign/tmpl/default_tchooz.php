@@ -80,6 +80,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div id="mod_emundus_campaign__header_filter" class="mod_emundus_campaign__header_filter em-border-neutral-400 em-neutral-800-color em-pointer em-ml-8" onclick="displayFilters()">
                         <span class="material-icons-outlined">filter_list</span>
                         <span class="em-ml-8"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER') ?></span>
+                        <span id="mod_emundus_campaign__header_filter_count" class="mod_emundus_campaign__header_filter_count em-ml-8"></span>
                     </div>
 
                     <!-- TAGS ENABLED -->
@@ -349,13 +350,8 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             }
         },1000);
 
-        let current_url = window.location.href;
-        let filters = current_url.split('&');
-        filters.forEach((filter) => {
-            if(filter.indexOf('code') !== -1){
-                let codes = filter.split(('='))[1];
-            }
-        })
+        let filter_existing = document.querySelectorAll("div[id^='filter_']");
+        document.getElementById('mod_emundus_campaign__header_filter_count').innerHTML = filter_existing.length;
     });
 
     function displaySort(){

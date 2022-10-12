@@ -31,6 +31,15 @@
     padding: 6px 16px;
     width: max-content;
 }
+.mod_emundus_campaign__header_filter_count{
+    border-radius: 50px;
+    color: #1C6EF2;
+    background: #F0F6FD;
+    height: 20px;
+    width: 20px;
+    display: flex;
+    justify-content: center;
+}
 .mod_emundus_campaign__list_items{
     display: grid;
     align-items: flex-start;
