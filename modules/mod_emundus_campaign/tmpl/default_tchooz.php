@@ -400,15 +400,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             index = parseInt(index[index.length -1]) + 1;
         }
 
-        let html = '<div class="mod_emundus_campaign__header_filter__grid em-mt-8" id="filter_'+index+'"> ' +
+        let html = '<div class="mod_emundus_campaign__header_filter__grid" id="filter_'+index+'"> ' +
             '<select onchange="setupFilter('+index+')" id="select_filter_'+index+'"> ' +
             '<option value="0"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PLEASE_SELECT') ?></option> ' +
             '<option value="programme"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME') ?></option> ' +
             '<option value="category"><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_PROGRAMME_CATEGORY') ?></option> ' +
             '</select> ' +
-            '<select> ' +
-            '<option value="="> <?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?> </option> ' +
-            '</select> ' +
+            '<span><?php echo JText::_('MOD_EM_CAMPAIGN_LIST_FILTER_IS') ?></span> ' +
             '<div id="filters_options_'+index+'"></div>' +
             '<div class="em-flex-row em-mb-8">' +
                 '<span class="material-icons-outlined em-font-size-16 em-red-500-color em-pointer" onclick="deleteFilter('+index+')">delete</span>' +

@@ -120,6 +120,7 @@
     padding: 12px;
     position: absolute;
     background: white;
+    padding: 32px;
 }
 
 .mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
@@ -155,12 +156,29 @@
     height: 40px;
 }
 
+.mod_emundus_campaign__header_filter__values select:nth-child(1) {
+
+}
+
 .mod_emundus_campaign__header_filter__grid {
     display: grid;
-    grid-template-columns: 30% 30% 30% 4%;
+    grid-template-columns: 41% 8% 41% 4%;
     grid-column-gap: 2%;
     justify-content: center;
+    margin-bottom: 12px;
+    margin-top: 8px;
 }
+.mod_emundus_campaign__header_filter__grid * {
+    margin-bottom: 0;
+}
+
+
+.mod_emundus_campaign__header_filter__grid span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 a.em-blue-400-color:hover {
     color: #79B6FB;
