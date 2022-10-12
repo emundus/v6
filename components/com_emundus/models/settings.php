@@ -81,7 +81,7 @@ class EmundusModelsettings extends JModelList {
 
         $query->select('*')
             ->from ($db->quoteName('#__emundus_setup_status'))
-            ->order('step ASC');
+            ->order('ordering ASC');
 
         try {
             $db->setQuery($query);
