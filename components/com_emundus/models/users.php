@@ -2751,50 +2751,45 @@ class EmundusModelUsers extends JModelList {
     {
         $connected = false;
         $app = JFactory::getApplication();
-        $user = JFactory::getUser();
+        $message = "Clé invalide";
 
-        if (!$user->guest) {
-            $message = 'Vous devez être déconnecté pour accéder à cette fonctionnalité';
-        } else {
-            $message = "Clé invalide";
+        if (!empty($token)) {
+            $db = JFactory::getDBO();
+            $query = $db->getQuery(true);
 
-            if (!empty($token)) {
-                $db = JFactory::getDBO();
-                $query = $db->getQuery(true);
+            $query->select('ju.*')
+                ->from('#__emundus_users AS jeu')
+                ->leftJoin('#__users AS ju ON ju.id = jeu.user_id')
+                ->where('jeu.token = ' . $db->quote($token));
 
-                $query->select('ju.*')
-                    ->from('#__emundus_users AS jeu')
-                    ->leftJoin('#__users AS ju ON ju.id = jeu.user_id')
-                    ->where('jeu.token = ' . $db->quote($token));
+            try {
+                $db->setQuery($query);
+                $result = $db->loadObject();
+            } catch(Exception $e) {
+                JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage() , JLog::ERROR, 'com_emundus.users');
+                $message = 'Aucune clé correspondante n\'a été trouvée. '. $e->getMessage();
+            }
 
-                try {
-                    $db->setQuery($query);
-                    $result = $db->loadObject();
-                } catch(Exception $e) {
-                    JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage() , JLog::ERROR, 'com_emundus.users');
-                    $message = 'Aucune clé correspondante n\'a été trouvée. '. $e->getMessage();
-                }
+            if (!empty($result) && !empty($result->id)) {
+                $date = strtotime($result->registerDate);
+                $date_p_one_week = strtotime('+7 day', $date);
+                if (time() > $date_p_one_week) {
+                    $message = "La date de validité de votre token est dépassée " . date('d/m/Y H/hs', $date_p_one_week);
+                } else {
+                    $jUser = JFactory::getUser($result->id);
+                    $instance = $jUser;
+                    $session =& JFactory::getSession();
+                    $session->set('user',$jUser);
+                    $app->checkSession();
 
-                if (!empty($result) && !empty($result->id)) {
-                    $date = strtotime($result->registerDate);
-                    $date_p_one_week = strtotime('+7 day', $date);
-                    if (time() > $date_p_one_week) {
-                        $message = "La date de validité de votre token est dépassée " . date('d/m/Y H/hs', $date_p_one_week);
-                    } else {
-                        $jUser = JFactory::getUser($result->id);
-                        $instance = $jUser;
-                        $session =& JFactory::getSession();
-                        $session->set('user',$jUser);
-                        $app->checkSession();
+                    $query->clear()
+                        ->update('#__session')
+                        ->set('guest = 0')
+                        ->set('username = ' . $db->quote($instance->get('username')))
+                        ->set('userid = ' . $db->quote($instance->get('id')))
+                        ->where('session_id = ' . $db->quote($session->getId()));
 
-                        $query->clear()
-                            ->update('#__session')
-                            ->set('guest = 0')
-                            ->set('username = ' . $db->quote($instance->get('username')))
-                            ->set('userid = ' . $db->quote($instance->get('id')))
-                            ->where('session_id = ' . $db->quote($session->getId()));
-
-                        $updated = false;
+                    $updated = false;
                         try {
                             $db->setQuery($query);
                             $updated = $db->execute();
@@ -2815,9 +2810,8 @@ class EmundusModelUsers extends JModelList {
                     $message = 'Clé inexistante.';
                 }
             }
-        }
 
-        if (!$connected) {
+        if (!$connected && !empty($message)) {
             $app->enqueueMessage($message, 'error');
         }
         return $connected;
@@ -2915,8 +2909,25 @@ class EmundusModelUsers extends JModelList {
                                 require_once (JPATH_ROOT . '/components/com_emundus/models/files.php');
                                 $m_files = new EmundusModelFiles();
                                 $updated = $m_files->bindFilesToUser($fnums, $existing_user);
+
+                                if ($updated) {
+                                    $existing_user_token = $this->getUserToken($existing_user);
+                                    if (!empty($existing_user_token)) {
+                                        $connected = $this->connectUserFromToken($existing_user_token);
+
+                                        if ($connected) {
+                                            $query->clear()
+                                                ->update('#__users')
+                                                ->set('block = 1')
+                                                ->set('activation = -1')
+                                                ->where('id = ' . $user_id);
+
+                                            $db->setQuery($query);
+                                            $db->execute();
+                                        }
+                                    }
+                                }
                             } else {
-                                // nothing to bind
                                 JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_NOTHING_TO_BIND'));
                             }
                         }
@@ -2972,5 +2983,29 @@ class EmundusModelUsers extends JModelList {
         }
 
         return $updated;
+    }
+
+    private function getUserToken($user_id)
+    {
+        $token = '';
+
+        if (!empty($user_id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('token')
+                ->from('#__emundus_users')
+                ->where('user_id = ' . $user_id);
+
+            try {
+                $db->setQuery($query);
+                $token = $db->loadResult();
+            } catch(Exception $e) {
+                $token = '';
+                JLog::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+            }
+        }
+
+        return $token;
     }
 }

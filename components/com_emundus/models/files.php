@@ -4010,7 +4010,7 @@ class EmundusModelFiles extends JModelLegacy
 
     public function bindFilesToUser($fnums, $user_to)
     {
-        $bound = true;
+        $bound_fnums = [false];
 
         if (!empty($fnums) && !empty($user_to)) {
             $db = JFactory::getDBO();
@@ -4032,7 +4032,8 @@ class EmundusModelFiles extends JModelLegacy
                 require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
                 $m_application = new EmundusModelApplication();
 
-                foreach($fnums as $fnum) {
+                foreach($fnums as $i => $fnum) {
+                    $bound_fnums[$i] = false;
                     $campaign_id = 0;
                     $query->clear()
                         ->select('campaign_id')
@@ -4047,16 +4048,40 @@ class EmundusModelFiles extends JModelLegacy
                     }
 
                     if (!empty($campaign_id)) {
-                        $fnum_to = $this->createFile($campaign_id, $user_to);
+                        $fnum_to = $this->createFile($campaign_id, $user_to, time() + $i);
 
                         if (!empty($fnum_to)) {
-                            $copied = $m_application->copyApplication($fnum, $fnum_to, [], 1, $campaign_id, 1, 1, 0);
+                            $query->clear()
+                                ->select('*')
+                                ->from('#__emundus_campaign_candidature')
+                                ->where('fnum LIKE ' . $db->quote($fnum));
+                            $db->setQuery($query);
+                            $result = $db->loadObject();
 
-                            if (!$copied) {
-                                JLog::add("Failed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::WARNING, 'com_emundus.files');
-                                $bound = false;
-                            } else {
-                                JLog::add("Succeed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::INFO, 'com_emundus.files');
+                            if (!empty($result)) {
+                                $query->clear()
+                                    ->update('#__emundus_campaign_candidature')
+                                    ->set('submitted = ' . $db->quote($result->submitted))
+                                    ->set('date_submitted = ' . $db->quote($result->date_submitted))
+                                    ->set('status = ' . $db->quote($result->status))
+                                    ->set('copied = 1')
+                                    ->set('form_progress = ' . $db->quote($result->form_progress))
+                                    ->set('attachment_progress = ' . $db->quote($result->attachment_progress))
+                                    ->where('fnum LIKE ' . $db->quote($fnum_to));
+
+                                $db->setQuery($query);
+                                $updated = $db->execute();
+
+                                if ($updated) {
+                                    $copied = $m_application->copyApplication($fnum, $fnum_to, [], 1, $campaign_id, 1, 1, 0);
+
+                                    if (!$copied) {
+                                        JLog::add("Failed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::WARNING, 'com_emundus.files');
+                                    } else {
+                                        $bound_fnums[$i] = true;
+                                        JLog::add("Succeed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::INFO, 'com_emundus.files');
+                                    }
+                                }
                             }
                         }
                     }
@@ -4064,14 +4089,12 @@ class EmundusModelFiles extends JModelLegacy
             } else {
                 JLog::add('User ' . $user_to . ' seems to not exists', JLog::WARNING, 'com_emundus.files');
             }
-        } else {
-            $bound = false;
         }
 
-        return $bound;
+        return !in_array(false, $bound_fnums, true);
     }
 
-    public function createFile($campaign_id, $user_id = 0)
+    public function createFile($campaign_id, $user_id = 0, $time = null)
     {
         $fnum = '';
 
@@ -4080,8 +4103,11 @@ class EmundusModelFiles extends JModelLegacy
                 $user_id= JFactory::getUser()->id;
             }
 
+            if ($time == null) {
+                $time = time();
+            }
             // create new fnum
-            $fnum = date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
+            $fnum = date('YmdHis', $time).str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user_id, 7, '0', STR_PAD_LEFT);
             $config = JFactory::getConfig();
             $timezone = new DateTimeZone( $config->get('offset'));
             $now = JFactory::getDate()->setTimezone($timezone);
@@ -4101,7 +4127,7 @@ class EmundusModelFiles extends JModelLegacy
             } catch (Exception $e) {
                 $fnum = '';
                 $inserted = false;
-                JLog::add("Failed to create file $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.files');
+                JLog::add("Failed to create file $fnum - $user_id" . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
 
             if (!$inserted) {
