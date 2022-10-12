@@ -2,16 +2,26 @@
     width: 66%;
     max-width: 750px;
 }
+
+.mod_emundus_campaign__intro *{
+  font-family: 'Inter';
+}
+
 .mod_emundus_campaign__intro p{
     line-height: 150%;
     color: #727272;
     font-size: 18px;
 }
 
-/*
-.mod_emundus_campaign__intro a{
 
-}*/
+.mod_emundus_campaign__intro a{
+    color: #2B2B2B;
+}
+
+.mod_emundus_campaign__intro a:hover {
+    color: #2B2B2B;
+    text-decoration: underline;
+}
 
 .mod_emundus_campaign__intro h1{
     margin-bottom: 12px !important;
@@ -77,6 +87,7 @@
     -webkit-box-orient: vertical;
     max-height: 100px;
     line-height: 160%;
+    font-family: 'Inter';
 }
 
 .mod_emundus_campaign__header_filter {
@@ -111,45 +122,8 @@
     background: white;
 }
 
-.mod_emundus_campaign__date{
-    display: flex;
-    align-items: center;
-}
-
-.mod_emundus_campaign__campaign_title {
-    margin-bottom: 8px !important;
-    color: #000000 !important;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    max-height: 48px;
-    display: -webkit-box;
-    line-height: 140%;
-}
-
-.mod_emundus_campaign__date * {
-    margin-right: 8px;
-    margin-bottom: 8px !important;
-}
-
-.mod_emundus_campaign__programme_tag {
-    background: #F0F6FD;
-    color: #1C6EF2;
-    border-radius: 8px;
-    padding: 5px 12px;
-    width: fit-content;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.mod_emundus_campaign__programme_cat_title {
-    font-family: 'Inter', sans-serif;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 25px;
-    color: #000000;
+.mod_emundus_campaign__header_filter span:not(.material-icons-outlined){
+    font-family: 'Inter';
 }
 
 .mod_emundus_campaign__header_filter__values .btn.btn-primary {
@@ -190,4 +164,51 @@
 
 a.em-blue-400-color:hover {
     color: #79B6FB;
+}
+
+.mod_emundus_campaign__date{
+    display: flex;
+    align-items: center;
+}
+
+.mod_emundus_campaign__date p,
+.mod_emundus_campaign__date span:not(.material-icons){
+    font-family: 'Inter';
+}
+
+.mod_emundus_campaign__campaign_title {
+    margin-bottom: 8px !important;
+    color: #000000 !important;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    max-height: 48px;
+    display: -webkit-box;
+    line-height: 140%;
+}
+
+.mod_emundus_campaign__date * {
+    margin-right: 8px;
+    margin-bottom: 8px !important;
+}
+
+.mod_emundus_campaign__programme_tag {
+    background: #F0F6FD;
+    color: #1C6EF2;
+    border-radius: 8px;
+    padding: 5px 12px;
+    width: fit-content;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-family: 'Inter';
+}
+
+.mod_emundus_campaign__programme_cat_title {
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 25px;
+    color: #000000;
 }
