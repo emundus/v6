@@ -222,7 +222,7 @@ class EmundusModelLogs extends JModelList {
             $results = $db->loadObjectList();
 
             foreach ($results as $result) {
-                $result->date = EmundusHelperDate::displayDate($result->timestamp);
+                $result->date = EmundusHelperDate::displayDate($result->timestamp,'DATE_FORMAT_LC2',0);
             }
 		} catch (Exception $e) {
 			JLog::add('Could not get logs in model logs at query: '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');

@@ -105,7 +105,7 @@ JFactory::getSession()->set('application_layout', 'logs');
                 <div class="log-info show-more"><button type="button" class="btn btn-info btn-xs" id="show-more">Afficher plus</button></div>
                 <?php } ?>
                 <?php } else { ?>
-                <div class="log-info"><?= JText::_('NO_LOGS'); ?></div>
+                <div class="log-info"><?= JText::_('COM_EMUNDUS_LOGS_NO_LOGS'); ?></div>
                 <?php } ?>
         </div>
     </div>
@@ -155,7 +155,7 @@ JFactory::getSession()->set('application_layout', 'logs');
         $('#actors-logs-hint').on('hover', function(){
             $(this).css('cursor','pointer').attr('title', Joomla.JText._("COM_EMUNDUS_ACTOR_LOG_FILTER_HINT"));
         });
-        
+
        $.ajax({
             type: 'post',
             url: 'index.php?option=com_emundus&controller=files&task=getuserslogbyfnum',
