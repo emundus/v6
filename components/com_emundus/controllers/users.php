@@ -1280,10 +1280,10 @@ class EmundusControllerUsers extends JControllerLegacy {
                 }
                 $app->redirect('/');
             } else {
-                JLog::add("WARNING! Wrong paramters together, token $token and user_id $user_id from" . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.users');
+                JLog::add("WARNING! Wrong paramters together, token $token and user_id $user_id from" . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.error');
             }
         } else {
-            JLog::add('WARNING! Attempt to activate anonym user without necessary parameters from ' . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.users');
+            JLog::add('WARNING! Attempt to activate anonym user without necessary parameters from ' . $_SERVER['REMOTE_ADDR'], JLog::WARNING, 'com_emundus.error');
         }
     }
 }

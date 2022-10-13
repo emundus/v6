@@ -4031,7 +4031,7 @@ class EmundusModelFiles extends JModelLegacy
                 $exists = $db->loadResult();
             } catch (Exception $e) {
                 $exists = false;
-                JLog::add('Failed to check if user exists before binding fnum to him ' . $user_to . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.files');
+                JLog::add('Failed to check if user exists before binding fnum to him ' . $user_to . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
 
             if ($exists) {
@@ -4050,7 +4050,7 @@ class EmundusModelFiles extends JModelLegacy
                         $db->setQuery($query);
                         $campaign_id = $db->loadResult();
                     } catch (Exception $e) {
-                        JLog::add('Failed to retrieve campaign from fnum' . $e->getMessage(), JLog::ERROR, 'com_emundus.files');
+                        JLog::add('Failed to retrieve campaign from fnum' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
 
                     if (!empty($campaign_id)) {
@@ -4083,10 +4083,10 @@ class EmundusModelFiles extends JModelLegacy
                                     $copied = $m_application->copyApplication($fnum, $fnum_to, [], 1, $campaign_id, 1, 1, 0);
 
                                     if (!$copied) {
-                                        JLog::add("Failed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::WARNING, 'com_emundus.files');
+                                        JLog::add("Failed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::WARNING, 'com_emundus.logs');
                                     } else {
                                         $bound_fnums[$i] = true;
-                                        JLog::add("Succeed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::INFO, 'com_emundus.files');
+                                        JLog::add("Succeed to copy fnum $fnum to user $user_to account on fnum $fnum_to", JLog::INFO, 'com_emundus.logs');
                                     }
                                 }
                             }
@@ -4094,7 +4094,7 @@ class EmundusModelFiles extends JModelLegacy
                     }
                 }
             } else {
-                JLog::add('User ' . $user_to . ' seems to not exists', JLog::WARNING, 'com_emundus.files');
+                JLog::add('User ' . $user_to . ' seems to not exists', JLog::WARNING, 'com_emundus.logs');
             }
         }
 
@@ -4116,7 +4116,7 @@ class EmundusModelFiles extends JModelLegacy
             if (empty($user_id)) {
                 $current_user = JFactory::getUser();
                 if ($current_user->guest == 1) {
-                    JLog::add('Error, trying to create file for guest user. Action unauthorized', JLog::WARNING, 'com_emundus.files');
+                    JLog::add('Error, trying to create file for guest user. Action unauthorized', JLog::WARNING, 'com_emundus.logs');
                     return '';
                 }
 

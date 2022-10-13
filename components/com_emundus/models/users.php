@@ -2624,7 +2624,7 @@ class EmundusModelUsers extends JModelList {
                 $db->setQuery($query);
                 $updated = $db->execute();
             } catch (Exception $e) {
-                JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 $message = 'Une erreur est survenue au cours de la création d\'une session anonyme.';
             }
 
@@ -2666,7 +2666,7 @@ class EmundusModelUsers extends JModelList {
                         $campaign_id = $result->id;
                     } catch (Exception $e) {
                         $campaign_id = 0;
-                        JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                        JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                         $message = 'Une erreur est survenue au moment de récupérer la campagne.';
                     }
                 }
@@ -2727,11 +2727,11 @@ class EmundusModelUsers extends JModelList {
                             ]
                         ];
                     } else {
-                        JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.users');
+                        JLog::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, JLog::WARNING, 'com_emundus.error');
                         $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
                     }
                 } else {
-                    JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.users');
+                    JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.error');
                     $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
                 }
             } else {
@@ -2763,7 +2763,7 @@ class EmundusModelUsers extends JModelList {
             $db = JFactory::getDBO();
             $query = $db->getQuery(true);
 
-            $query->select('ju.*')
+            $query->select('ju.*, jeu.token_expiration')
                 ->from('#__emundus_users AS jeu')
                 ->leftJoin('#__users AS ju ON ju.id = jeu.user_id')
                 ->where('jeu.token = ' . $db->quote($token));
@@ -2772,7 +2772,7 @@ class EmundusModelUsers extends JModelList {
                 $db->setQuery($query);
                 $result = $db->loadObject();
             } catch(Exception $e) {
-                JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage() , JLog::ERROR, 'com_emundus.users');
+                JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage() , JLog::ERROR, 'com_emundus.error');
                 $message = 'Aucune clé correspondante n\'a été trouvée. '. $e->getMessage();
             }
 
@@ -2824,7 +2824,7 @@ class EmundusModelUsers extends JModelList {
             $db->setQuery($query);
             $updated = $db->execute();
         } catch(Exception $e) {
-            JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+            JLog::add('Failed to connect from valid key ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
         }
 
         if ($updated) {
@@ -2862,7 +2862,7 @@ class EmundusModelUsers extends JModelList {
                 $result = $db->loadResult();
             } catch (Exception $e) {
                 $result = 0;
-                JLog::add('Failed to retrieve emundus user from token ' .  $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                JLog::add('Failed to retrieve emundus user from token ' .  $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
 
             if (!empty($result)) {
@@ -2900,7 +2900,7 @@ class EmundusModelUsers extends JModelList {
                 $db->setQuery($query);
                 $emundusUser = $db->loadObject();
             } catch (Exception $e) {
-                JLog::add('Failed to retrieve emundus user from token ' .  $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                JLog::add('Failed to retrieve emundus user from token ' .  $token . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
 
             if (!empty($emundusUser) && !empty($emundusUser->user_id)) {
@@ -2914,7 +2914,7 @@ class EmundusModelUsers extends JModelList {
                         $db->setQuery($query);
                         $existing_user = $db->loadResult();
                     } catch (Exception $e) {
-                        JLog::add('Failed to check if user with same username already exists ' .  $emundusUser->email_anonym . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                        JLog::add('Failed to check if user with same username already exists ' .  $emundusUser->email_anonym . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                     if (!empty($existing_user)) {
                         if ($existing_user == $user_id) {
@@ -2968,7 +2968,7 @@ class EmundusModelUsers extends JModelList {
                             $user_updated = $db->execute();
                         } catch (Exception $e) {
                             $user_updated = false;
-                            JLog::add('Failed to update user data ' . $e->getMessage() , JLog::ERROR, 'com_emundus.users');
+                            JLog::add('Failed to update user data ' . $e->getMessage() , JLog::ERROR, 'com_emundus.error');
                         }
 
 
@@ -2984,7 +2984,7 @@ class EmundusModelUsers extends JModelList {
                                 $emundus_user_updated = $db->execute();
                             } catch (Exception $e) {
                                 $emundus_user_updated = false;
-                                JLog::add('Failed to update emundus user data ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                                JLog::add('Failed to update emundus user data ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                             }
 
                             if ($emundus_user_updated) {
@@ -3001,7 +3001,7 @@ class EmundusModelUsers extends JModelList {
                         }
                     }
                 } else {
-                    JLog::add('User choose to create file anonymously, can not update without necessary info (at least email)', JLog::WARNING, 'com_emundus.users');
+                    JLog::add('User choose to create file anonymously, can not update without necessary info (at least email)', JLog::WARNING, 'com_emundus.error');
                 }
             }
         }
@@ -3032,7 +3032,7 @@ class EmundusModelUsers extends JModelList {
                 $token = $db->loadResult();
             } catch(Exception $e) {
                 $token = '';
-                JLog::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.users');
+                JLog::add('Failed to find token from user id ' . $user_id . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
             }
         }
 

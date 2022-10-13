@@ -80,8 +80,6 @@ class EmundusHelperUsers {
     static function generateToken($length = 16)
     {
         $rand_token = openssl_random_pseudo_bytes($length);
-        $token = bin2hex($rand_token);
-
-        return $token;
+        return bin2hex($rand_token);
     }
 }
