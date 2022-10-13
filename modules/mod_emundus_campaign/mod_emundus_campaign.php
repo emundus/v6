@@ -50,6 +50,7 @@ $mod_em_campaign_show_contact = $params->get('mod_em_campaign_show_contact',0);
 $mod_em_campaign_show_registration = $params->get('mod_em_campaign_show_registration',1);
 $mod_em_campaign_show_registration_steps = $params->get('mod_em_campaign_show_registration_steps');
 $mod_em_campaign_allow_alerting = $params->get('mod_em_campaign_allow_alerting',0);
+$mod_em_campaign_google_schema = $params->get('mod_em_campaign_google_schema',0);
 
 // OLD PARAMS
 $mod_em_campaign_url = $params->get('mod_em_campaign_url');

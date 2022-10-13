@@ -16,6 +16,10 @@ if ($locallang == "fr-FR") {
 
 $config = JFactory::getConfig();
 $site_offset = $config->get('offset');
+$site_name = $config->get('sitename');
+
+$protocol = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+$CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 $currentCampaign = is_array($allCampaign) ? $allCampaign[0] : $allCampaign;
 $dteStart = new DateTime($now);
@@ -23,24 +27,6 @@ $dteEnd   = new DateTime($currentCampaign->end_date);
 $dteDiff  = $dteStart->diff($dteEnd);
 $j = $dteDiff->format("%a");
 $h = $dteDiff->format("%H");
-
-switch ($order) {
-    case "start_date":
-        $month = ($currentCampaign->start_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format("F Y") : "";
-        break;
-
-    case "end_date":
-        $month = ($currentCampaign->end_date !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format("F Y") : "";
-        break;
-
-    case "formation_start":
-        $month = ($currentCampaign->formation_start !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format("F Y") : "";
-        break;
-
-    case "formation_end":
-        $month = ( $currentCampaign->formation_end !== '0000-00-00 00:00:00') ? JFactory::getDate(new JDate($currentCampaign->formation_end, $site_offset))->format("F Y") : "";
-        break;
-}
 ?>
 
 <div class="em-grid-2-70-30" style="grid-gap: 64px">
@@ -216,3 +202,32 @@ switch ($order) {
         section.style.display === 'none' ? section.style.display = 'flex' : '';
     }
 </script>
+
+
+<?php if($mod_em_campaign_google_schema) : ?>
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": "<?php echo $currentCampaign->label ?>",
+        "startDate": "<?php echo $currentCampaign->start_date ?>",
+        "endDate": "<?php echo $currentCampaign->end_date ?>",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+        "location": {
+            "@type": "VirtualLocation",
+            "url": "<?php echo $CurPageURL ?>"
+        },
+        "image": [
+            "<?php echo $_SERVER['HTTP_HOST'] . '/images/custom/logo_custom.png'?>",
+        ],
+        "description": "<?php echo $currentCampaign->short_description ?>",
+        "organizer": {
+            "@type": "Organization",
+            "name": "<?php echo $site_name ?>",
+            "url": "<?php echo $_SERVER['HTTP_HOST'] ?>"
+        }
+    }
+</script>
+<?php endif; ?>
+
