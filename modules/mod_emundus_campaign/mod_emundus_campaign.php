@@ -51,6 +51,11 @@ $mod_em_campaign_show_registration = $params->get('mod_em_campaign_show_registra
 $mod_em_campaign_show_registration_steps = $params->get('mod_em_campaign_show_registration_steps');
 $mod_em_campaign_allow_alerting = $params->get('mod_em_campaign_allow_alerting',0);
 $mod_em_campaign_google_schema = $params->get('mod_em_campaign_google_schema',0);
+$mod_em_campaign_show_filters = $params->get('mod_em_campaign_show_filters',0);
+$mod_em_campaign_show_filters_list = $params->get('mod_em_campaign_show_filters_list');
+$mod_em_campaign_sort_list = $params->get('mod_em_campaign_sort_list');
+$mod_em_campaign_show_filters_list = $params->get('mod_em_campaign_show_filters_list');
+$mod_em_campaign_groupby = $params->get('mod_em_campaign_groupby');
 
 // OLD PARAMS
 $mod_em_campaign_url = $params->get('mod_em_campaign_url');
@@ -60,7 +65,6 @@ $mod_em_campaign_end_date = $params->get('mod_em_campaign_end_date');
 $mod_em_campaign_modules_tab = $params->get('mod_em_campaign_modules_tab', 0);
 $mod_em_campaign_param_tab = $params->get('mod_em_campaign_param_tab');
 $mod_em_campaign_display_groupby = $params->get('mod_em_campaign_display_groupby');
-$mod_em_campaign_groupby = $params->get('mod_em_campaign_groupby');
 $mod_em_campaign_itemid = $params->get('mod_em_campaign_itemid');
 $mod_em_campaign_itemid2 = $params->get('mod_em_campaign_itemid2');
 $mod_em_campaign_get_teaching_unity = $params->get('mod_em_campaign_get_teaching_unity', 0);
@@ -82,6 +86,7 @@ $order_time = $app->input->getString('order_time', null);
 $group_by = $app->input->getString('group_by', null);
 $searchword = $app->input->getString('searchword', null);
 $codes = $app->input->getString('code', null);
+$categories_filt = $app->input->getString('category', null);
 
 if (isset($order_date) && !empty($order_date)) {
 	$session->set('order_date', $order_date);
@@ -103,11 +108,17 @@ if (isset($codes) && !empty($codes)) {
 } elseif (empty($codes)) {
     $session->clear('code');
 }
+if (isset($categories_filt) && !empty($categories_filt)) {
+    $session->set('category', $categories_filt);
+} elseif (empty($categories_filt)) {
+    $session->clear('category');
+}
 
 $order = $session->get('order_date');
 $ordertime = $session->get('order_time');
 $group_by = $session->get('group_by');
 $codes = $session->get('code');
+$categories_filt = $session->get('category');
 
 $program_array = [];
 if ($params->get('mod_em_campaign_layout') == 'institut_fr') {
@@ -123,6 +134,15 @@ include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'program
 $m_progs = new EmundusModelProgramme();
 $programs = $m_progs->getProgrammes(1, $program_array);
 
+if (in_array('category', $mod_em_campaign_show_filters_list)) {
+    $categories = [];
+    foreach ($programs as $program) {
+        if (!in_array($program['programmes'], $categories) && !empty($program['programmes'])) {
+            $categories[] = $program['programmes'];
+        }
+    }
+}
+
 $condition = '';
 if (isset($searchword) && !empty($searchword)) {
     $condition .= ' AND (pr.code LIKE "%"'.$db->quote($searchword).'"%" OR ca.label LIKE "%"'.$db->quote($searchword).'"%" OR ca.description LIKE "%"'.$db->quote($searchword).'"%" OR ca.short_description LIKE "%"'.$db->quote($searchword).'"%") ';
@@ -134,6 +154,9 @@ if (!empty($program_code)) {
 
 if (!empty($codes)) {
     $condition .= ' AND pr.code IN(' . implode(',',$db->quote(explode(',',$codes))) . ')';
+}
+if (!empty($categories_filt)) {
+    $condition .= ' AND pr.programmes IN (' . implode(',',$db->quote(explode(',',$categories_filt))) . ')';
 }
 
 
@@ -157,6 +180,8 @@ switch ($group_by) {
     case 'ordering':
         $condition .= ' ORDER BY ordering, '.$order;
         break;
+    default:
+        $condition .= ' ORDER BY '.$order;
 }
 
 switch ($ordertime) {
