@@ -54,7 +54,6 @@ if ($group_by == 'program') {
     $campaigns ['campaigns'] = $tmp_campaigns;
 }
 
-
 /*$group_programs = [];
 if($group_by == 'program'){
     foreach ($campaigns as $campaign){
@@ -289,6 +288,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                     <div id="current" class="mod_emundus_campaign__list_items">
                             <?php
                             foreach ($campaign as $result) {
+                                if(is_object($result)){
                             ?>
 
                         <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
@@ -379,7 +379,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </p>
                             </div>
                         </div>
-                    <?php } ?>
+                    <?php } } ?>
                     </div>
                     <div class="pagination"></div>
                 <?php endif; ?>
