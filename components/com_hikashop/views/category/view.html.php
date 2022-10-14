@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -342,14 +342,8 @@ class CategoryViewCategory extends HikaShopView {
 					}
 				}
 				if($number_of_products) {
-					$filters = array();
-					if(!$config->get('show_out_of_stock', 1)) {
-						$filters[] = 'p.product_quantity != 0';
-					}
-					$additional_condition = '';
-					hikashop_addACLFilters($filters, 'product_access', 'p');
-					if(count($filters))
-						$additional_condition = ' AND ' . implode(' AND ', $filters);
+					$additional_condition = $config->get('show_out_of_stock', 1) ? '' : ' AND p.product_quantity != 0';
+
 					if($content_type == 'manufacturer') {
 						$query = 'SELECT count(p.product_id) AS number_of_products, p.product_manufacturer_id as category_id '.
 							' FROM '.hikashop_table('product').' AS p '.
@@ -418,13 +412,8 @@ class CategoryViewCategory extends HikaShopView {
 				$doc->setMetadata('description', $this->params->get('menu-meta_description'));
 			}
 
-			$robots = $this->params->get('robots');
-			if (!$robots) {
-				$jconfig = JFactory::getConfig();
-				$robots = $jconfig->get('robots', '');
-			}
-			if($robots) {
-				$doc->setMetadata('robots', $robots);
+			if ($this->params->get('robots')) {
+				$doc->setMetadata('robots', $this->params->get('robots'));
 			}
 
 			$pagination = hikashop_get('helper.pagination', $pageInfo->elements->total, $pageInfo->limit->start, $pageInfo->limit->value);
@@ -501,18 +490,11 @@ class CategoryViewCategory extends HikaShopView {
 				if(!empty($menu) && !empty($menu->link) && strpos($menu->link,'option='.HIKASHOP_COMPONENT)!==false && (strpos($menu->link,'view=category')!==false || strpos($menu->link,'view=')===false || strpos($menu->link,'view=product')!==false)) {
 					$parent = 0;
 					if(HIKASHOP_J30) {
-						$category_params = $menu->getParams();
-					} else {
-						jimport('joomla.html.parameter');
-						$category_params = new HikaParameter($menu->params);
-					}
-
-					if(HIKASHOP_J30) {
-						$params = $category_params->get('hk_category',false);
+						$params = $menu->params->get('hk_category',false);
 						if($params && isset($params->category))
 							$parent = $params->category;
 						if(!$parent) {
-							$params = $category_params->get('hk_product',false);
+							$params = $menu->params->get('hk_product',false);
 							if($params && isset($params->category))
 								$parent = $params->category;
 						}

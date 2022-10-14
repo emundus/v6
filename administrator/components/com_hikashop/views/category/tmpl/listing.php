@@ -1,27 +1,17 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
-<?php
-if ($this->type == 'manufacturer') 
-	$cookie_ref = 'manufacturer_exploreWidth_cookie';
-else
-	$cookie_ref = 'category_exploreWidth_cookie';
 
-	if(isset($_COOKIE[$cookie_ref])) 
-		$cookie_value = $_COOKIE[$cookie_ref];
-	else
-		$cookie_value = 'explorer_close';
-?>
 <?php if($this->config->get('category_explorer')){?>
 <div id="page-categories" class="hk-row-fluid">
-	<div id ="hikashop_category_explorer_container" class="hkc-md-2 <?php echo $cookie_value; ?>">
+	<div class="hkc-md-2">
 		<?php echo hikashop_setExplorer('category&task=listing',$this->pageInfo->filter->filter_id,false,$this->type); ?>
 	</div>
 	<div class="hkc-md-10">
@@ -115,17 +105,7 @@ else
 							<th class="title titleorder">
 								<?php if(!$this->pageInfo->selectedType){
 									echo JHTML::_('grid.sort', JText::_( 'HIKA_ORDER' ), 'a.category_ordering',$this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value );
-									if ($this->order->ordering) {
-										$keys = array_keys($this->rows);  
-										$rows_nb = end($keys);
-										$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
-										?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
-											<button class="button-apply btn btn-success" type="button">
-<!--											<span class="icon-apply" aria-hidden="true"></span> -->
-												<i class="fas fa-save"></i>
-											</button>
-										</a><?php
-									}
+									if ($this->order->ordering) echo JHTML::_('grid.order',  $this->rows );
 								}else{ ?>
 									<a href="#" title="<?php echo JText::_('CHANGE_SUB_ELEMENT_FILTER_TO_REORDER_ELEMENTS'); ?>"><?php echo JText::_( 'HIKA_ORDER' ); ?></a>
 								<?php } ?>
@@ -142,6 +122,7 @@ else
 						<tr>
 							<td colspan="<?php echo $count; ?>">
 								<?php echo $this->pagination->getListFooter(); ?>
+								<?php echo $this->pagination->getResultsCounter(); ?>
 							</td>
 						</tr>
 					</tfoot>
@@ -180,11 +161,9 @@ else
 										</a>
 									<?php } ?>
 									</div>
-									<?php if($row->category_type != 'manufacturer') { ?>
 									<a href="<?php echo hikashop_completeLink('category&filter_id='.$row->category_id); ?>">
 										<?php echo JText::_('LISTING_OF_SUBCATEGORIES'); ?> <i class="fa fa-chevron-right"></i>
 									</a>
-									<?php } ?>
 								</td>
 								<?php
 								if(!empty($this->fields)){

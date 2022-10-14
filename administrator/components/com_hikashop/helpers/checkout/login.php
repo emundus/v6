@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -228,12 +228,6 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$data['address'] = $formData['address'];
 		if(!isset($params['same_address']))
 			$params['same_address'] = 1;
-
-		$shippingAddress_override = $checkoutHelper->getShippingAddressOverride();
-		if(!$checkoutHelper->isShipping() || !empty($shippingAddress_override)) {
-			$params['same_address'] = 0;
-		}
-
 		if($params['address_on_registration'] && $params['same_address'] && empty($formData['same_address']) && isset($formData['shipping_address'])) {
 			$data['shipping_address'] = $formData['shipping_address'];
 		}
@@ -288,45 +282,14 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		if(!empty($ret['status']) && $ret['status'] == true && !empty($ret['userActivation']) && $ret['userActivation'] > 0){
-			$redirect = $config->get('redirect_to_activation_page', 1);
-			if($redirect) {
-				$app = JFactory::getApplication();
-				if(!empty($ret['messages'])) {
-					foreach($ret['messages'] as $msg) {
-						if(is_string($msg))
-							$app->enqueueMessage($msg);
-						else if(is_array($msg) && count($msg) == 2)
-							$app->enqueueMessage($msg[0], $msg[1]);
-					}
+			if(!empty($ret['messages'])) {
+				foreach($ret['messages'] as $k => $msg) {
+					$checkoutHelper->addMessage('login.'.$k, $msg);
 				}
-				$app->enqueueMessage(JText::_('WHEN_CLICKING_ACTIVATION'));
-
-				$lang = JFactory::getLanguage();
-				$locale = strtolower(substr($lang->get('tag'), 0, 2));
-				global $Itemid;
-				$url_itemid = '';
-				if(!empty($menu_id))
-					$url_itemid = '&Itemid=' . $menu_id;
-				$url = 'checkout&task=activate_page&lang='.$locale.$url_itemid;
-				$tmpl = hikaInput::get()->getString('tmpl');
-				if(in_array($tmpl, array('raw', 'component'))) {
-					$messageQueue = $app->getMessageQueue();
-					$app->getSession()->set('application.queue', $messageQueue);
-					echo '<script>window.location = \''.hikashop_completeLink($url,false,false, true).'\';</script>';
-					exit;
-				} else {
-					$app->redirect(hikashop_completeLink($url,false,true));
-				}
-			} else {
-				if(!empty($ret['messages'])) {
-					foreach($ret['messages'] as $k => $msg) {
-						$checkoutHelper->addMessage('login.'.$k, $msg);
-					}
-				}
-				$content['params']['registration'] = false;
-				$content['params']['show_login'] = false;
-				$content['params']['waiting_validation'] = true;
 			}
+			$content['params']['registration'] = false;
+			$content['params']['show_login'] = false;
+			$content['params']['waiting_validation'] = true;
 			return false;
 		}
 
@@ -477,9 +440,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$privacy = $userClass->getPrivacyConsentSettings();
 			if($privacy) {
 				$params['privacy'] = true;
-				$params['privacy_type'] = $privacy['type'];
 				$params['privacy_id'] = $privacy['id'];
-				$params['privacy_url'] = $privacy['url'];
 				$params['privacy_text'] = $privacy['text'];
 			}
 		}
@@ -490,9 +451,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 
 			if($privacy) {
 				$params['privacy_guest'] = true;
-				$params['privacy_guest_type'] = $privacy['type'];
 				$params['privacy_guest_id'] = $privacy['id'];
-				$params['privacy_guest_url'] = $privacy['url'];
 				$params['privacy_guest_text'] = $privacy['text'];
 			}
 		}
@@ -544,14 +503,6 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$view->extraFields['address'] = $view->fieldsClass->getFields('frontcomp', $view->address, 'billing_address');
 			$params['js'] .= $view->fieldsClass->jsToggle($view->extraFields['address'], $view->address, 0, 'hikashop_', array('return_data' => true, 'suffix_type' => '_'.$view->step.'_'.$view->block_position, 'type' => ''));
 			$check_values['address'] = $view->address;
-
-			if($params['same_address']) {
-				$checkoutHelper = hikashopCheckoutHelper::get();
-				$shippingAddress_override = $checkoutHelper->getShippingAddressOverride();
-				if(!$checkoutHelper->isShipping() ||  !empty($shippingAddress_override)) {
-					$params['same_address'] = false;
-				}
-			}
 
 			if($params['same_address']) {
 

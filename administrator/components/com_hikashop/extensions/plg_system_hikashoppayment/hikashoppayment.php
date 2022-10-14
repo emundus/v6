@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -85,14 +85,6 @@ class plgSystemHikashoppayment extends JPlugin {
 		ob_start();
 		$payment = hikaInput::get()->getCmd('notif_payment', @$_REQUEST['notif_payment']);
 		$data = hikashop_import('hikashoppayment', $payment);
-
-		global $Itemid;
-		if(empty($Itemid)) {
-			$urlItemid = hikaInput::get()->getInt('Itemid');
-			if($urlItemid) {
-				$Itemid = $urlItemid;
-			}
-		}
 
 		if(!empty($data)) {
 			$trans = hikashop_get('helper.translation');

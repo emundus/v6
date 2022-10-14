@@ -60,28 +60,7 @@
 							value="1">MOD_EMUNDUS_APPLICATIONS_BOTTOM</option>
 					<option
 							value="2">MOD_EMUNDUS_APPLICATIONS_BOTH</option>
-					<option
-							value="3">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO</option>
-					<option
-							value="4">MOD_EMUNDUS_APPLICATIONS_TOP_INTRO_BOTTOM</option>
 				</field>
-				<field
-						name="show_show_campaigns"
-						type="radio"
-						default="0"
-						label="MOD_EMUNDUS_SHOW_CAMPAIGNS_LABEL"
-						description="MOD_EMUNDUS_SHOW_CAMPAIGNS_DESC">
-					<option
-							value="0">JNo</option>
-					<option
-							value="1">JYes</option>
-				</field>
-				<field
-						name="show_campaigns_url"
-						type="URL"
-						label="MOD_EMUNDUS_SHOW_CAMPAIGNS_URL"
-						description=""
-						default="liste-des-campagnes" />
 				<field
 						name="show_progress"
 						type="radio"
@@ -233,7 +212,7 @@
 					name="for_specific_profiles"
 					type="text"
 					label="MOD_EMUNDUS_SPECIFIC_PROFILES"
-					description="MOD_EMUNDUS_SPECIFIC_PROFILES_DESC"
+					description="MOD_EMUNDUS_SPECIFIC_PROFILES"
 					default=""
 				/>
 			</fieldset>

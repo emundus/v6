@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,43 +25,43 @@ if(!empty($this->element->translations)) {
 		$this->element->category_name = @$translation->category_name->value;
 		$this->editor->name = 'translation_category_description_'.$language_id;
 		$this->element->category_description = @$translation->category_description->value;
-		if(!empty($this->transHelper->falang) && isset($translation->category_name->published)){
+		if(isset($translation->category_name->published)){
 			$this->category_name_published = $translation->category_name->published;
 			$this->category_name_id = $translation->category_name->id;
 		}
-		if(!empty($this->transHelper->falang) && isset($translation->category_description->published)){
+		if(isset($translation->category_description->published)){
 			$this->category_description_published = $translation->category_description->published;
 			$this->category_description_id = $translation->category_description->id;
 		}
 		$this->category_meta_description_input = "translation[category_meta_description][".$language_id."]";
 		$this->element->category_meta_description = @$translation->category_meta_description->value;
-		if(!empty($this->transHelper->falang) && isset($translation->category_meta_description->published)){
+		if(isset($translation->category_meta_description->published)){
 			$this->category_meta_description_published = $translation->category_meta_description->published;
 			$this->category_meta_description_id = $translation->category_meta_description->id;
 		}
 
 		$this->category_keywords_input = "translation[category_keywords][".$language_id."]";
 		$this->element->category_keywords = @$translation->category_keywords->value;
-		if(!empty($this->transHelper->falang) && isset($translation->category_keywords->published)){
+		if(isset($translation->category_keywords->published)){
 			$this->category_keywords_published = $translation->category_keywords->published;
 			$this->category_keywords_id = $translation->category_keywords->id;
 		}
 
 		$this->category_page_title_input = "translation[category_page_title][".$language_id."]";
 		$this->element->category_page_title = @$translation->category_page_title->value;
-		if(!empty($this->transHelper->falang) && isset($translation->category_page_title->published)){
+		if(isset($translation->category_page_title->published)){
 			$this->category_page_title_published = $translation->category_page_title->published;
 			$this->category_page_title_id = $translation->category_page_title->id;
 		}
 		$this->category_alias_input = "translation[category_alias][".$language_id."]";
 		$this->element->category_alias = @$translation->category_alias->value;
-		if(!empty($this->transHelper->falang) && isset($translation->category_alias->published)){
+		if(isset($translation->category_alias->published)){
 			$this->category_alias_published = $translation->category_alias->published;
 			$this->category_alias_id = $translation->category_alias->id;
 		}
 		$this->category_canonical_input = "translation[category_canonical][".$language_id."]";
 		$this->element->category_canonical = @$translation->category_canonical->value;
-		if(!empty($this->transHelper->falang) && isset($translation->category_canonical->published)){
+		if(isset($translation->category_canonical->published)){
 			$this->category_canonical_published = $translation->category_canonical->published;
 			$this->category_canonical_id = $translation->category_canonical->id;
 		}

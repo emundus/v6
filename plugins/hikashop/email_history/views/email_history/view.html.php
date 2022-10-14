@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -116,18 +116,13 @@ class Email_historyViewEmail_history extends hikashopView {
 			'order_cancel'
 		);
 		$email_product_id = array(
+			'contact_request',
 			'new_comment',
 		);
 		$email_user_id = array(
 			'user_account',
 			'user_account_admin_notification',
 		);
-
-		if(!empty($data->email_log_params['contact_type']) && $data->email_log_params['contact_type'] ==  'order') {
-			$email_order_id[] = 'contact_request';
-		} else {
-			$email_product_id[] = 'contact_request';
-		}
 
 		if(in_array($element->email_log_name,$email_product_id)){
 			$productClass = hikashop_get('class.product');

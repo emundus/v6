@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -67,72 +67,11 @@ class plgHikashoppaymentPaypalAdaptive extends hikashopPaymentPlugin
 		return $init;
 	}
 
-	private function getOrderVendor(&$order) {
-		$vendor_id = 0;
-		if(empty($order->products))
-			return $vendor_id;
-
-		$config = hikamarket::config();
-		$cart_restriction = (int)$config->get('vendors_in_cart', 0);
-		foreach($order->products as $product) {
-			if(isset($product->product_vendor_id) && (int)$product->product_vendor_id >= 1) {
-				if($cart_restriction > 0)
-					$vendor_id = (int)$product->product_vendor_id;
-				elseif($vendor_id == 0)
-					$vendor_id = (int)$product->product_vendor_id;
-				else
-					$vendor_id = -1;
-			}
-		}
-		return $vendor_id;
-	}
-
-	private function CheckAllVendorsHaveEmail(&$order) {
-		if(empty($order->products))
-			return true;
-		$vendor_ids = array();
-		foreach($order->products as $product) {
-			if(isset($product->product_vendor_id) && (int)$product->product_vendor_id > 1) {
-				$vendor_ids[(int)$product->product_vendor_id] = (int)$product->product_vendor_id;
-			}
-		}
-		if(empty($vendor_ids))
-			return true;
-		$db = JFactory::getDBO();
-		$db->setQuery('SELECT vendor_id, vendor_params FROM '.hikamarket::table('vendor').' WHERE vendor_id IN ('.implode(',', $vendor_ids).')');
-		$vendors = $db->loadObjectList();
-		foreach($vendors as $vendor) {
-			if(empty($vendor->vendor_params))
-				return false;
-			$vendor_params = unserialize($vendor->vendor_params);
-			if(empty($vendor_params->paypal_email))
-				return false;
-		}
-		return true;
-	}
-
 	public function checkPaymentDisplay(&$method, &$order) {
 		if(!function_exists('curl_init')) {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::_('CURL_NOT_FOUND'), 'error');
 			return false;
-		}
-		if(empty($method->payment_params->require_paypal_email_for_all))
-			return true;
-		if(!$this->initMarket())
-			return false;
-		$config = hikamarket::config();
-		$limit_vendors_in_cart = $config->get('vendors_in_cart', 0);
-		if(!empty($method->payment_params->classical)) {
-			$vendor_id = $this->getOrderVendor($order);
-			if($vendor_id > 1) {
-				$vendorClass = hikamarket::get('class.vendor');
-				$vendor = $vendorClass->get($vendor_id);
-				if(empty($vendor->vendor_params->paypal_email))
-					return false;
-			}
-		} else {
-			return $this->CheckAllVendorsHaveEmail($order);
 		}
 		return true;
 	}

@@ -275,7 +275,7 @@ class EmundusHelperFilters {
 				INNER JOIN #__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id
 				INNER JOIN #__fabrik_lists AS tab ON tab.form_id = formgroup.form_id
 				INNER JOIN #__fabrik_forms AS form ON tab.form_id = form.id
-				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)
+				INNER JOIN #__menu AS menu ON form.id = SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)
 				WHERE tab.published = 1
 					AND (tab.id IN ( '.implode(',', $fl).' ) OR tab.id IN ( '.$export_pdf.' ) )
 					AND element.published=1

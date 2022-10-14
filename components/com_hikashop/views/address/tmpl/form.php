@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -36,45 +36,31 @@ window.localPage.saveAddr = function(el) {
 <form action="<?php echo hikashop_completeLink('address&task=save'); ?>" method="post" name="hikashop_address_form" id="hikashop_address_form" enctype="multipart/form-data">
 <table class="table">
 <?php
-$after = array();
 foreach($this->extraFields['address'] as $fieldName => $oneExtraField) {
-	$onWhat='onchange';
-	if($oneExtraField->field_type=='radio')
-		$onWhat='onclick';
-	$html = $this->fieldsClass->display(
-		$oneExtraField,
-		@$this->address->$fieldName,
-		'data[address]['.$fieldName.']',
-		false,
-		' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'address\',0);"',
-		false,
-		$this->extraFields['address'],
-		@$this->address,
-		false
-	);
-	if($oneExtraField->field_type=='hidden') {
-		$after[] = $html;
-		continue;
-	}
 ?>
 	<tr class="hikashop_address_<?php echo $fieldName;?>_line" id="hikashop_address_<?php echo $oneExtraField->field_namekey; ?>">
 		<td class="key"><?php
 			echo $this->fieldsClass->getFieldName($oneExtraField, true, 'hkcontrol-label');
 		?></td>
 		<td><?php
-
-			echo $html;
+			$onWhat='onchange'; if($oneExtraField->field_type=='radio') $onWhat='onclick';
+			echo $this->fieldsClass->display(
+				$oneExtraField,
+				@$this->address->$fieldName,
+				'data[address]['.$fieldName.']',
+				false,
+				' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'address\',0);"',
+				false,
+				$this->extraFields['address'],
+				@$this->address,
+				false
+			);
 		?></td>
 	</tr>
 <?php
 }
 ?>
 </table>
-<?php
-if(count($after)) {
-	echo implode("\r\n", $after);
-}
-?>
 	<input type="hidden" name="Itemid" value="<?php global $Itemid; echo $Itemid; ?>"/>
 	<input type="hidden" name="ctrl" value="address"/>
 	<input type="hidden" name="task" value="save"/>

@@ -472,6 +472,8 @@ class EmundusControllerApplication extends JControllerLegacy
             $mFile = new EmundusModelFiles();
             $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
+            EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
+
             $res->status = true;
         }
         else
@@ -734,6 +736,10 @@ class EmundusControllerApplication extends JControllerLegacy
                 require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
                 $mFile = new EmundusModelFiles();
                 $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
+
+                # TRACK THE LOGS
+                require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE');
 
             } else {
                 $msg = JText::_('INVALID_PARAMETERS');

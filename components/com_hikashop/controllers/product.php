@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ class productController extends hikashopController {
 	public function __construct($config = array(), $skip = false) {
 		parent::__construct($config, $skip);
 		$this->display = array_merge($this->display, array(
-			'updatecart', 'cart', 'cleancart', 'contact', 'compare', 'waitlist', 'send_email', 'add_waitlist', 'price', 'download', 'filter', 'cartinfo'
+			'updatecart', 'cart', 'cleancart', 'contact', 'compare', 'waitlist', 'send_email', 'add_waitlist', 'price', 'download', 'filter'
 		));
 	}
 
@@ -33,7 +33,7 @@ class productController extends hikashopController {
 		hikaInput::get()->set('layout', 'listing');
 
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
-		if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+		if(in_array($tmpl, array('ajax', 'raw'))) {
 			if(!headers_sent())
 				header('X-Robots-Tag: noindex');
 			$result = $this->display();
@@ -67,41 +67,36 @@ class productController extends hikashopController {
 			$fieldsClass = hikashop_get('class.field');
 			$element = $fieldsClass->getInput('contact', $element);
 		}
-		$config =& hikashop_config();
 
 		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('hikashop');
-		$send = empty($element->product_id) || (int)$config->get('product_contact', 0);
-
-
 		if(empty($element->email)) {
 			$app->enqueueMessage(JText::_('VALID_EMAIL'), 'error');
 			$send = false;
 		}
 
+		$config =& hikashop_config();
+
+		$app = JFactory::getApplication();
+		JPluginHelper::importPlugin('hikashop');
+		$send = empty($element->product_id) || (int)$config->get('product_contact', 0);
 		$app->triggerEvent('onBeforeSendContactRequest', array(&$element, &$send));
 
 		jimport('joomla.mail.helper');
 		$mailer = JFactory::getMailer();
-
-		if($config->get('product_contact_email_required', 1) && empty($element->email)) {
-			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
-			$send = false;
-		}
 		if(!empty($element->email) && ((method_exists('JMailHelper', 'isEmailAddress') && !JMailHelper::isEmailAddress($element->email)) || !$mailer->validateAddress($element->email))){
 			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
 			$send = false;
 		}
 
-		if($config->get('product_contact_name_required', 1) && empty($element->name)) {
+		if(empty($element->name)) {
 			$app->enqueueMessage(JText::_('SPECIFY_A_NAME'), 'error');
 			$send = false;
 		}
 
-		if($config->get('product_contact_altbody_required', 1) && empty($element->altbody)) {
+		if(empty($element->altbody)) {
 			$app->enqueueMessage(JText::_('PLEASE_FILL_ADDITIONAL_INFO'), 'error');
 			$send = false;
-		} elseif(!empty($element->altbody)) {
+		} else {
 			$element->altbody = strip_tags($element->altbody);
 		}
 
@@ -137,45 +132,23 @@ class productController extends hikashopController {
 			}
 		}
 
-		$send = $config->get('product_contact_send_email', 1);
-
-		$app->triggerEvent('onBeforeSendContactRequestEmail', array(&$element, &$send));
-
-		if($send) {
-			$mailClass = hikashop_get('class.mail');
-			$infos = new stdClass();
-			$infos->element =& $element;
-			$infos->product =& $product;
-			$mail = $mailClass->get('contact_request', $infos);
-			$mail->subject = $subject;
-			$mail->from_email = $config->get('from_email');
-			$mail->from_name = $config->get('from_name');
-			if(!empty($element->email))
-				$mail->reply_email = $element->email;
-			if(empty($mail->dst_email)) {
-				$dst = $config->get('contact_request_email');
-				if(empty($dst))
-					$mail->dst_email = array($config->get('from_email'));
-				else
-					$mail->dst_email = explode(',', $dst);
-			}
-			if($config->get('contact_form_copy_checkbox', 0) && !empty($element->copycheck) && empty($element->copy) && !empty($element->email)) {
-				$mail->cc_email = $element->email;
-			}
-			if(!empty($element->email)) {
-				$user_name = '';
-				if(!empty($element->name))
-					$user_name = $element->name;
-				if(HIKASHOP_J30) {
-					$mailClass->mailer->addReplyTo($element->email, $user_name);
-				} else {
-					$mailClass->mailer->addReplyTo(array($element->email, $user_name));
-				}
-			}
-			$status = $mailClass->sendMail($mail);
-		} else {
-			$status = true;
+		$mailClass = hikashop_get('class.mail');
+		$infos = new stdClass();
+		$infos->element =& $element;
+		$infos->product =& $product;
+		$mail = $mailClass->get('contact_request', $infos);
+		$mail->subject = $subject;
+		$mail->from_email = $config->get('from_email');
+		$mail->from_name = $config->get('from_name');
+		$mail->reply_email = $element->email;
+		if(empty($mail->dst_email)) {
+			$dst = $config->get('contact_request_email');
+			if(empty($dst))
+				$mail->dst_email = array($config->get('from_email'));
+			else
+				$mail->dst_email = explode(',', $dst);
 		}
+		$status = $mailClass->sendMail($mail);
 
 		if($status) {
 			$app->enqueueMessage(JText::_('CONTACT_REQUEST_SENT'));
@@ -214,31 +187,17 @@ class productController extends hikashopController {
 			hikashop_secureField($column);
 			$element->$column = strip_tags($value);
 		}
-
-		$hkUser = hikashop_loadUser(true);
+		$user = JFactory::getUser();
 		$app = JFactory::getApplication();
-		if(empty($element->email)) {
-			if(empty($hkUser->user_email)) {
-				$app->enqueueMessage(JText::_('VALID_EMAIL'));
-				return $this->waitlist();
-			} else {
-				$element->email = $hkUser->user_email;
-			}
-		}
-		if(empty($element->name) && !empty($hkUser->name)) {
-			$element->name = $hkUser->name;
+		if(empty($element->email) && $user->guest) {
+			$app->enqueueMessage(JText::_('VALID_EMAIL'));
+			return $this->waitlist();
 		}
 
 		jimport('joomla.mail.helper');
 		$mailer = JFactory::getMailer();
 		if($element->email && (!JMailHelper::isEmailAddress($element->email) || !$mailer->validateAddress($element->email))) {
 			$app->enqueueMessage(JText::_('EMAIL_INVALID'), 'error');
-			return $this->waitlist();
-		}
-
-
-		if(!empty($element->consentcheck) && empty($element->consent)) {
-			$app->enqueueMessage(JText::_('PLEASE_AGREE_TO_PRIVACY_POLICY'), 'error');
 			return $this->waitlist();
 		}
 
@@ -319,8 +278,7 @@ class productController extends hikashopController {
 		} else {
 			$app->enqueueMessage(JText::_('ALREADY_REGISTER_WAITLIST'));
 		}
-		$tmpl = hikaInput::get()->getString('tmpl');
-		$app->enqueueMessage(JText::sprintf('CLICK_HERE_TO_GO_BACK_TO_PRODUCT',hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$alias.$url_itemid,$product, $tmpl == 'component')));
+		$app->enqueueMessage(JText::sprintf('CLICK_HERE_TO_GO_BACK_TO_PRODUCT',hikashop_contentLink('product&task=show&cid='.$product->product_id.'&name='.$alias.$url_itemid,$product)));
 		$url = hikaInput::get()->getVar('redirect_url');
 		if(!empty($url)){
 			$app->redirect($url);
@@ -399,7 +357,7 @@ class productController extends hikashopController {
 		$tmpl = hikaInput::get()->getCmd('tmpl', '');
 
 		if(empty($_COOKIE)) {
-			if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
 				$ret = array(
 					'ret' => 0,
 					'message' => JText::_('COOKIES_REQUIRED_FOR_OPERATION')
@@ -444,7 +402,7 @@ class productController extends hikashopController {
 		}
 
 		if($cart_id === false && $cart_type == 'wishlist' && hikashop_loadUser() == false) {
-			if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
 				$ret = array(
 					'ret' => 0,
 					'message' => JText::_('LOGIN_REQUIRED_FOR_WISHLISTS'),
@@ -459,7 +417,7 @@ class productController extends hikashopController {
 		}
 
 		if($cart_id === false) {
-			if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
 				echo '{ret:0}';
 				exit;
 			}
@@ -468,7 +426,7 @@ class productController extends hikashopController {
 
 
 		if($cart_type != 'wishlist' && $config->get('catalogue')) {
-			if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+			if(in_array($tmpl, array('ajax', 'raw'))) {
 				echo '{ret:0}';
 				exit;
 			}
@@ -480,7 +438,7 @@ class productController extends hikashopController {
 			$cart->cart_type = $cart_type;
 			$status = $cartClass->save($cart);
 
-			if(empty($status) && in_array($tmpl, array('ajax', 'raw', 'component'))) {
+			if(empty($status) && in_array($tmpl, array('ajax', 'raw'))) {
 				echo '{ret:0}';
 				exit;
 			}
@@ -515,16 +473,17 @@ class productController extends hikashopController {
 		$status = null;
 		$used_data = null;
 
-
-		if (!empty($cart_product_id)) {
-			$used_data = array('cart_product' => $cart_product_id, 'quantity' => $quantity);
-			$status = $cartClass->update($cart_product_id, $quantity, $add, 'item', true, false, $cart_id);
-		} elseif (!empty($product_id)) {
+		if (!empty($product_id)) {
 			$type = hikaInput::get()->getWord('type', 'product');
 			if($type == 'product')
 				$product_id = (int)$product_id;
 			$used_data = array('product' => $product_id, 'quantity' => $quantity);
 			$status = $cartClass->update($product_id, $quantity, $add, $type, true, false, $cart_id);
+
+		} elseif (!empty($cart_product_id)) {
+			$used_data = array('cart_product' => $cart_product_id, 'quantity' => $quantity);
+			$status = $cartClass->update($cart_product_id, $quantity, $add, 'item', true, false, $cart_id);
+
 		} else {
 			$formData = hikaInput::get()->get('item', array(), 'array');
 			$type = 'item';
@@ -532,10 +491,8 @@ class productController extends hikashopController {
 				$formData = hikaInput::get()->get('data', array(), 'array');
 				$type = 'product';
 			}
-			if(count($formData)) {
-				$used_data = array('form' => $formData, 'type' => $type);
-				$status = $cartClass->update($formData, 0, $add, $type, true, false, $cart_id);
-			}
+			$used_data = array('form' => $formData, 'type' => $type);
+			$status = $cartClass->update($formData, 0, $add, $type, true, false, $cart_id);
 		}
 
 		if($status || is_null($status)){
@@ -545,7 +502,7 @@ class productController extends hikashopController {
 		}
 
 		$cart = $cartClass->getFullCart($cart_id);
-		if(in_array($tmpl, array('ajax', 'raw', 'component'))) {
+		if(in_array($tmpl, array('ajax', 'raw'))) {
 			$ret = $this->getAjaxCartData($used_data, $cart, $status);
 			hikashop_cleanBuffers();
 			echo json_encode($ret);
@@ -584,20 +541,15 @@ class productController extends hikashopController {
 		return $this->legacyCartRedirection();
 	}
 
-	public function cartinfo() {
-		$ret = array();
-		$cartClass = hikashop_get('class.cart');
-		$cart = $cartClass->getFullCart();
-		$ret = $cartClass->getCartProductsInfo($cart);
-		hikashop_cleanBuffers();
-		echo json_encode($ret);
-		exit;
-	}
-
 	protected function getAjaxCartData($data, $cart, $status) {
-		$cartClass = hikashop_get('class.cart');
-		$ret = $cartClass->getCartProductsInfo($cart);
-		$ret['ret'] = (int)$status;
+		$ret = array(
+			'ret' => (int)$status
+		);
+		if(!empty($cart->messages))
+			$ret['messages'] = $cart->messages;
+
+		if(empty($cart->cart_products))
+			$ret['empty'] = true;
 
 		if(!empty($data['type']) && $data['type'] == 'product' && !empty($data['form']) && count($data['form'])) {
 			$added = array();
@@ -611,8 +563,6 @@ class productController extends hikashopController {
 			}
 		}
 
-
-
 		if(!isset($data['product']))
 			return $ret;
 
@@ -623,8 +573,7 @@ class productController extends hikashopController {
 			foreach($cart->products as $product) {
 				if($product->product_id != $data['product'])
 					continue;
-				$ret['product_id'] = (int)$product->product_id;
-				$ret['cart_product_id'] = (int)$product->cart_product_id;
+
 				$ret['product_name'] = $product->product_name;
 				$ret['quantity'] = (int)$product->cart_product_quantity;
 
@@ -644,7 +593,6 @@ class productController extends hikashopController {
 				$product->product_name = $product->parent->product_name;
 			$ret['product_name'] = hikashop_translate($product->product_name);
 			$ret['quantity'] = 0;
-			$ret['cart_product_id'] = 0;
 
 			$image_path = ((isset($product->parent) && isset($product->parent->images[0]->file_path)) ? $product->parent->images[0]->file_path : '');
 			$image_path = (isset($product->images[0]->file_path) ? $product->images[0]->file_path : $image_path);

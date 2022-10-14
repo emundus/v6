@@ -2,12 +2,12 @@
 <!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
 <extension type="component" version="2.5" method="upgrade">
 	<name>HikaMarket</name>
-	<creationDate>22 juin 2022</creationDate>
-	<version>4.1.0</version>
+	<creationDate>04 octobre 2021</creationDate>
+	<version>4.0.0</version>
 	<author>Obsidev</author>
 	<authorEmail>contact@obsidev.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2011-2022 OBSIDEV. All rights reserved.</copyright>
+	<copyright>(C) 2011-2021 OBSIDEV. All rights reserved.</copyright>
 	<description>Front-end edition and multivendors for HikaShop</description>
 	<license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
 	<languages folder="language">

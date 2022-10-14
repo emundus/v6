@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,6 @@ class emailController extends hikashopController {
 		parent::__construct($config);
 		$this->modify_views[]='emailtemplate';
 		$this->display[]='preview';
-		$this->display[]='diff';
 		$this->modify[]='saveemailtemplate';
 		$this->modify_views[]='orderstatus';
 		$this->modify[]='saveorderstatus';
@@ -144,12 +143,6 @@ class emailController extends hikashopController {
 		return parent::display();
 	}
 
-
-	function diff() {
-		hikaInput::get()->set('layout', 'diff');
-		return parent::display();
-	}
-
 	function orderstatus() {
 		hikaInput::get()->set('layout', 'orderstatus');
 		return parent::display();
@@ -194,7 +187,7 @@ class emailController extends hikashopController {
 
 		$type = hikaInput::get()->getCmd('type');
 		$email_name = hikaInput::get()->getCmd('email_name');
-		$order_status =  hikaInput::get()->getString('order_status');
+		$order_status =  hikaInput::get()->getCmd('order_status');
 
 		jimport('joomla.filesystem.file');
 		$fileName = JFile::makeSafe($email_name.'.'.$order_status.'.'.$type);

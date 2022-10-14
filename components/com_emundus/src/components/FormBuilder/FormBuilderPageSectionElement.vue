@@ -1,6 +1,5 @@
 <template>
   <div class="form-builder-page-section-element"
-       :id="'element_'+element.id"
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
        :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
     <div class="em-flex-row em-flex-space-between em-w-100">
@@ -14,6 +13,7 @@
 			      :name="'element-label-' + element.id"
 			      type="text"
 			      v-model="element.label[shortDefaultLang]"
+			      :value="element.label[shortDefaultLang]"
 			      @focusout="updateLabel"
 			      @keyup.enter="updateLabelKeyup"
 	      />
@@ -113,7 +113,7 @@ export default {
             this.updateLastSave();
 
             this.tip("foo-velocity", this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"), this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TITLE"));
-            window.addEventListener('keydown', this.cancelDelete);
+            document.addEventListener('keydown', this.cancelDelete);
           }
       );
     },
@@ -134,21 +134,14 @@ export default {
       this.$emit('open-element-properties');
     },
     cancelDelete(event) {
-      let elementsPending = this.$parent.$parent.$parent.elementsDeletedPending;
-      let index = elementsPending.indexOf(this.element.id)
+      this.keysPressed[event.key] = true;
 
-      if(elementsPending.indexOf(this.element.id) === (elementsPending.length - 1)) {
-        event.stopImmediatePropagation();
-        this.keysPressed[event.key] = true;
+      if ((this.keysPressed['Control'] || this.keysPressed['Meta']) && event.key === 'z') {
+        formBuilderService.toggleElementPublishValue(this.element.id);
+        this.$emit('cancel-delete-element', this.element.id);
+        this.keysPressed = [];
 
-        if ((this.keysPressed['Control'] || this.keysPressed['Meta']) && event.key === 'z') {
-          formBuilderService.toggleElementPublishValue(this.element.id);
-          this.$emit('cancel-delete-element', this.element.id);
-          this.keysPressed = [];
-
-          document.removeEventListener('keydown', this.cancelDelete);
-          this.$parent.$parent.$parent.elementsDeletedPending.splice(index,1)
-        }
+        document.removeEventListener('keydown',this.cancelDelete);
       }
     }
   },

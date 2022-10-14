@@ -22,10 +22,10 @@
         </div>
 
         <label for="page-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_LABEL') }}</label>
-        <input id="page-label" class="em-w-100" maxlength="50" minlength="3" name="page-label" type="text" v-model="page.label[shortDefaultLang]"/>
+        <input id="page-label" class="em-w-100" maxlength="50" minlength="3" name="page-label" type="text" v-model="page.label[shortDefaultLang]" :value="page.label[shortDefaultLang]"/>
 
         <label for="page-intro" class="em-mt-8">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_INTRO') }}</label>
-        <textarea id="page-intro" class="em-w-100" name="page-intro" v-model="page.intro[shortDefaultLang]"></textarea>
+        <textarea id="page-intro" class="em-w-100" name="page-intro" v-model="page.intro[shortDefaultLang]" :value="page.intro[shortDefaultLang]"></textarea>
       </div>
     </div>
     <div class="em-flex-row em-flex-space-between actions em-m-16">

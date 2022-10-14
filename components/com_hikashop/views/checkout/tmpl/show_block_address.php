@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,16 +72,23 @@ if(!empty($this->options['display'])) {
 		if(!empty($this->extraData[$this->module_position]) && !empty($this->extraData[$this->module_position]->address_top)) { echo implode("\r\n", $this->extraData[$this->module_position]->address_top); }
 		if(!empty($fields_type))
 			$fields_type .= '_';
-		$after = array();
 		foreach($this->cart_addresses[$fields_type.'fields'] as $field) {
 			if(empty($field->field_frontcomp))
 				continue;
 
 			$fieldname = $field->field_namekey;
+?>
+
+	<div class="hkform-group control-group hikashop_checkout_address_<?php echo $fieldname;?>" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_'.$fieldname; ?>">
+<?php
+		$classname = $labelcolumnclass.' hkcontrol-label';
+		echo $this->fieldClass->getFieldName($field, true, $classname);
+?>
+		<div class="<?php echo $inputcolumnclass;?>">
+<?php
 			$onWhat = ($field->field_type == 'radio') ? 'onclick' : 'onchange';
 			$field->table_name = 'order';
-
-			$html = $this->fieldClass->display(
+			echo $this->fieldClass->display(
 				$field,
 				@$this->edit_address->$fieldname,
 				'data[address_'.$this->step . '_' . $this->module_position.']['.$fieldname.']',
@@ -92,55 +99,18 @@ if(!empty($this->options['display'])) {
 				$this->edit_address,
 				false
 			);
-			if($field->field_type == 'hidden') {
-				$after[] = $html;
-				continue;
-			}
 ?>
-
-	<div class="hkform-group control-group hikashop_checkout_address_<?php echo $fieldname;?>" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_'.$fieldname; ?>">
-<?php
-		$classname = $labelcolumnclass.' hkcontrol-label';
-		echo $this->fieldClass->getFieldName($field, true, $classname);
-?>
-		<div class="<?php echo $inputcolumnclass;?>">
-			<?php echo $html; ?>
 		</div>
 	</div>
-<?php
-		}
-		if(count($after)) {
-			echo implode("\r\n", $after);
-		}
-?>
 	<input type="hidden" name="data[address_selecttype_<?php echo $this->step . '_' . $this->module_position; ?>]" value="1" />
-	<?php
-		$user = JFactory::getUser();
-		if(!empty($this->options['multi_address']) && (empty($this->edit_address->address_id) || empty($this->edit_address->address_default)) && empty($user->guest)) {
-			$type = (!empty($this->edit_address->address_type) ? $this->edit_address->address_type : $this->options['new_address_type']);
-?>
-	<div class="hkform-group control-group hikashop_checkout_address_default" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_default'; ?>">
-		<div class="<?php echo $labelcolumnclass; ?>"></div>
-		<div class="<?php echo $inputcolumnclass;?>">
-			<label><input type="checkbox" name="data[address_<?php echo $this->step; ?>_<?php echo $this->module_position; ?>][address_default]" value="1"> <?php
-				echo JText::_('MAKE_THIS_ADDRESS_THE_DEFAULT_'.strtoupper($type).'_ADDRESS');
-			?></label>
-		</div>
-	</div>
 <?php
 		}
-?>
-<?php
 		if(!empty($this->options['same_address']) && !empty($this->options['new_address_type']) && ($this->options['new_address_type'] == 'shipping' || $this->options['show_shipping'])) {
-			$checked = '';
-			if(!empty($this->options['same_address_pre_checked'])) {
-				$checked = ' checked';
-			}
 ?>
 	<div class="hkform-group control-group hikashop_checkout_address_same" id="hikashop_checkout_address_<?php echo $this->step . '_' . $this->module_position .'_same'; ?>">
 		<div class="<?php echo $labelcolumnclass; ?>"></div>
 		<div class="<?php echo $inputcolumnclass;?>">
-			<label><input type="checkbox"<?php echo $checked; ?> name="data[address_bothtypes_<?php echo $this->step . '_' . $this->module_position; ?>]" value="1"> <?php
+			<label><input type="checkbox" checked="checked" name="data[address_bothtypes_<?php echo $this->step . '_' . $this->module_position; ?>]" value="1"> <?php
 				$other = ($this->options['new_address_type'] == 'billing') ? 'shipping' : 'billing';
 				echo JText::_('HIKASHOP_ALSO_'.strtoupper($other).'_ADDRESS');
 			?></label>
@@ -184,15 +154,10 @@ if(!empty($this->options['display'])) {
 				<legend><?php echo JText::_('HIKASHOP_BILLING_ADDRESS'); ?></legend>
 <?php
 		if(!empty($this->options['read_only'])) {
-			if(!empty($cart->cart_billing_address_id))
-				echo $this->addressClass->displayAddress($this->cart_addresses['billing_fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
+			echo $this->addressClass->displayAddress($this->cart_addresses['billing_fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
 		} elseif($this->options['address_selector'] == 2) {
 			if(!empty($this->options['multi_address'])) {
 				$values = array();
-				if(empty($cart->cart_billing_address_id) && empty($this->options['auto_select_addresses'])) {
-					$values[] = JHTML::_('select.option', -1, JText::_('PLEASE_SELECT'));
-					$cart->cart_billing_address_id = -1;
-				}
 				foreach($this->cart_addresses['data'] as $k => $address) {
 					if(empty($address))
 						continue;
@@ -208,29 +173,27 @@ if(!empty($this->options['display'])) {
 				<input type="hidden" name="checkout[address][billing]" value="<?php echo $cart->cart_billing_address_id; ?>" />
 <?php
 			}
-			if(!empty($cart->cart_billing_address_id)) {
-				$update_url = 'address&task=edit&cid='.(int)$cart->cart_billing_address_id;
-				$delete_url = 'address&task=delete&cid='.(int)$cart->cart_billing_address_id;
+			$update_url = 'address&task=edit&cid='.(int)$cart->cart_billing_address_id;
+			$delete_url = 'address&task=delete&cid='.(int)$cart->cart_billing_address_id;
 ?>
 				<div class="hika_address_element">
 					<div class="hika_edit">
 						<a href="<?php echo hikashop_completeLink($update_url);?>" onclick="return window.checkout.editAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$cart->cart_billing_address_id; ?>);" title="<?php echo JText::_('HIKA_EDIT'); ?>"><i class="fas fa-pen"></i><span><?php echo JText::_('HIKA_EDIT'); ?></span></a>
 <?php
-				if(!empty($this->options['multi_address'])) {
+			if(!empty($this->options['multi_address'])) {
 ?>
 						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$cart->cart_billing_address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>" ><i class="fas fa-trash"></i><span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
 <?php
-				}
+			}
 ?>
 					</div>
 					<div class="hika_address_display">
 <?php
-				echo $this->addressClass->displayAddress($this->cart_addresses['billing_fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
+			echo $this->addressClass->displayAddress($this->cart_addresses['billing_fields'], $this->cart_addresses['data'][ $cart->cart_billing_address_id ], 'address');
 ?>
 					</div>
 				</div>
 <?php
-			}
 		} else { // address_selector : 0 or 1
 			foreach($this->cart_addresses['data'] as $k => $address) {
 				if(!empty($address->address_type) && !in_array($address->address_type, array('both', 'billing')))
@@ -301,15 +264,10 @@ if(!empty($this->options['display'])) {
 				?></span>
 <?php
 			} elseif(!empty($this->options['read_only'])) {
-				if(!empty($shipping_address_id))
-					echo $this->addressClass->displayAddress($this->cart_addresses['shipping_fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
+				echo $this->addressClass->displayAddress($this->cart_addresses['shipping_fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
 			} elseif($this->options['address_selector'] == 2) {
 				if(!empty($this->options['multi_address'])) {
 					$values = array();
-					if(empty($shipping_address_id) && empty($this->options['auto_select_addresses'])) {
-						$values[] = JHTML::_('select.option', -1, JText::_('PLEASE_SELECT'));
-						$shipping_address_id = -1;
-					}
 					foreach($this->cart_addresses['data'] as $k => $address) {
 						if(empty($address))
 							continue;
@@ -325,29 +283,27 @@ if(!empty($this->options['display'])) {
 				<input type="hidden" name="checkout[address][shipping]" value="<?php echo $shipping_address_id; ?>" />
 <?php
 				}
-				if(!empty($shipping_address_id)) {
-					$update_url = 'address&task=edit&cid='.(int)$shipping_address_id;
-					$delete_url = 'address&task=delete&cid='.(int)$shipping_address_id;
+				$update_url = 'address&task=edit&cid='.(int)$shipping_address_id;
+				$delete_url = 'address&task=delete&cid='.(int)$shipping_address_id;
 ?>
 				<div class="hika_address_element">
 					<div class="hika_edit">
 						<a href="<?php echo hikashop_completeLink($update_url);?>" onclick="return window.checkout.editAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$shipping_address_id; ?>);" title="<?php echo JText::_('HIKA_EDIT'); ?>"><i class="fas fa-pen"></i> <span><?php echo JText::_('HIKA_EDIT'); ?></span></a>
 <?php
-					if(!empty($this->options['multi_address'])) {
+				if(!empty($this->options['multi_address'])) {
 ?>
 						<a href="<?php echo hikashop_completeLink($delete_url);?>" onclick="return window.checkout.deleteAddress(<?php echo $this->step; ?>,<?php echo $this->module_position; ?>,<?php echo (int)$shipping_address_id; ?>);" title="<?php echo JText::_('HIKA_DELETE'); ?>"><i class="fas fa-trash"></i> <span><?php echo JText::_('HIKA_DELETE'); ?></span></a>
-<?php	
-					}
+<?php
+				}
 ?>
 					</div>
 					<div class="hika_address_display">
 <?php
-					echo $this->addressClass->displayAddress($this->cart_addresses['shipping_fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
+				echo $this->addressClass->displayAddress($this->cart_addresses['shipping_fields'], $this->cart_addresses['data'][ $shipping_address_id ], 'address');
 ?>
 					</div>
 				</div>
 <?php
-				}
 			} else {
 				foreach($this->cart_addresses['data'] as $k => $address) {
 					if(!empty($address->address_type) && !in_array($address->address_type, array('both', 'shipping')))

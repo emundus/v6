@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -54,10 +54,6 @@ class hikashopOrder_productClass extends hikashopClass {
 			'order_product_length',
 			'order_product_height',
 			'order_product_dimension_unit',
-			'order_product_price_before_discount',
-			'order_product_tax_before_discount',
-			'order_product_discount_code',
-			'order_product_discount_info',
 		);
 
 		if(hikashop_level(2)) {
@@ -96,8 +92,6 @@ class hikashopOrder_productClass extends hikashopClass {
 				$product->order_product_tax_info = serialize($product->order_product_tax_info);
 			if(!empty($product->order_product_options) && (!is_string($product->order_product_options) || is_numeric($product->order_product_options)))
 				$product->order_product_options = serialize($product->order_product_options);
-			if(isset($product->order_product_discount_info) && !is_string($product->order_product_discount_info))
-				$product->order_product_discount_info = serialize($product->order_product_discount_info);
 
 			$line = array(
 				$order_id,
@@ -123,10 +117,6 @@ class hikashopOrder_productClass extends hikashopClass {
 				(float)@$product->order_product_length,
 				(float)@$product->order_product_height,
 				$this->database->Quote(@$product->order_product_dimension_unit),
-				(float)@$product->order_product_price_before_discount,
-				(float)@$product->order_product_tax_before_discount,
-				(float)@$product->order_product_discount_code,
-				$this->database->Quote(@$product->order_product_discount_info),
 			);
 			if(!empty($itemFields)) {
 				foreach($itemFields as $field) {
@@ -269,39 +259,31 @@ class hikashopOrder_productClass extends hikashopClass {
 		$config = hikashop_config();
 		$authorize_restock = (int)$config->get('authorize_restock', 1);
 
-		JPluginHelper::importPlugin('hikashop');
-		$app = JFactory::getApplication();
-		$app->triggerEvent('onBeforeProductStockUpdate', array(&$updates, $cancel));
-
-		if(!empty($updates)) {
-			foreach($updates as $k => $update) {
-				$localCancel = $cancel;
-				if($k < 0) {
-					$k = -$k;
-					$localCancel = !$cancel;
-				}
-
-				if($localCancel) {
-					$query = 'UPDATE '.hikashop_table('product').' SET product_sales = (GREATEST('.(int)$k.', product_sales) - '.(int)$k.') WHERE product_id IN ('.implode(',',$update).')';
-				} else {
-					$query = 'UPDATE '.hikashop_table('product').' SET product_sales = product_sales + '.(int)$k.' WHERE product_id IN ('.implode(',',$update).')';
-				}
-				$this->database->setQuery($query);
-				$this->database->execute();
-
-				if(!$authorize_restock && (($localCancel && $k > 0) || (!$localCancel && $k < 0)))
-					continue;
-
-				if($localCancel) {
-					$query = 'UPDATE '.hikashop_table('product').' SET product_quantity = product_quantity + '.(int)$k.' WHERE product_id IN ('.implode(',',$update).') AND product_quantity > -1';
-				} else {
-					$query = 'UPDATE '.hikashop_table('product').' SET product_quantity = GREATEST(0, product_quantity - '.(int)$k.') WHERE product_id IN ('.implode(',',$update).') AND product_quantity >= 0';
-				}
-				$this->database->setQuery($query);
-				$this->database->execute();
+		foreach($updates as $k => $update) {
+			$localCancel = $cancel;
+			if($k < 0) {
+				$k = -$k;
+				$localCancel = !$cancel;
 			}
 
-			$app->triggerEvent('onAfterProductStockUpdate', array(&$updates, $cancel));
+			if($localCancel) {
+				$query = 'UPDATE '.hikashop_table('product').' SET product_sales = (GREATEST('.(int)$k.', product_sales) - '.(int)$k.') WHERE product_id IN ('.implode(',',$update).')';
+			} else {
+				$query = 'UPDATE '.hikashop_table('product').' SET product_sales = product_sales + '.(int)$k.' WHERE product_id IN ('.implode(',',$update).')';
+			}
+			$this->database->setQuery($query);
+			$this->database->execute();
+
+			if(!$authorize_restock && (($localCancel && $k > 0) || (!$localCancel && $k < 0)))
+				continue;
+
+			if($localCancel) {
+				$query = 'UPDATE '.hikashop_table('product').' SET product_quantity = product_quantity + '.(int)$k.' WHERE product_id IN ('.implode(',',$update).') AND product_quantity > -1';
+			} else {
+				$query = 'UPDATE '.hikashop_table('product').' SET product_quantity = GREATEST(0, product_quantity - '.(int)$k.') WHERE product_id IN ('.implode(',',$update).') AND product_quantity >= 0';
+			}
+			$this->database->setQuery($query);
+			$this->database->execute();
 		}
 	}
 
@@ -362,15 +344,6 @@ class hikashopOrder_productClass extends hikashopClass {
 				if(empty($bundle_data->product_related_quantity))
 					$bundle_data->product_related_quantity = 1;
 
-				$tax = '';
-				$taxInfo = '';
-				if(!empty($bundle_data->prices[0]->price_value_with_tax) && !empty($bundle_data->prices[0]->price_value)) {
-					$tax = $bundle_data->prices[0]->price_value_with_tax - $bundle_data->prices[0]->price_value;
-				}
-				if(!empty($bundle_data->taxes)) {
-					$taxInfo = serialize($bundle_data->taxes);
-				}
-
 				$b = new stdClass();
 				$b->product_id = $bundle_data->product_id;
 				$b->order_id = $product->order_id;
@@ -380,14 +353,14 @@ class hikashopOrder_productClass extends hikashopClass {
 				$b->order_product_name = $bundle_data->product_name;
 				$b->order_product_code = $bundle_data->product_code;
 				$b->order_product_price = @$bundle_data->prices[0]->price_value;
-				$b->order_product_tax = $tax;
+				$b->order_product_tax = '';
 				$b->order_product_options = array(
 					'type' => 'bundle',
 					'related_quantity' => (int)$bundle_data->product_related_quantity
 				);
 				$b->cart_product_id = $max_cart_product_id++;
 				$b->cart_product_option_parent_id = $product->cart_product_id;
-				$b->order_product_tax_info = $taxInfo;
+				$b->order_product_tax_info = '';
 				$b->order_product_wishlist_id = 0;
 				$b->order_product_wishlist_product_id = 0;
 				$b->order_product_shipping_id = 0;
@@ -489,11 +462,7 @@ class hikashopOrder_productClass extends hikashopClass {
 			if(!empty($product->product_id) && !empty($old)) {
 				if(is_string($old->order_product_tax_info))
 					$old->order_product_tax_info = hikashop_unserialize($old->order_product_tax_info);
-				if(!empty($old->order_product_tax_info) && is_array($old->order_product_tax_info)) {
-					$tax = reset($old->order_product_tax_info);
-					if(!is_object($tax))
-						$tax = new stdClass();
-				}
+				$tax = reset($old->order_product_tax_info);
 			}
 			$tax->tax_namekey = $product->tax_namekey;
 			$tax->tax_amount = $product->order_product_tax;

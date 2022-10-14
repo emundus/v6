@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		}
 		if(empty($values))
-			$values = array(JHTML::_('select.option', '', JText::_('HIKA_NO_ADDRESS')));
+			$values = array(JHTML::_('select.option', '', JText::_('HIKAM_NO_ADDRESS')));
 		echo JHTML::_('select.genericlist', $values, 'data[user][default_billing]', 'class="hikashop_default_address_dropdown"', 'value', 'text', $current, 'hikashop_default_billing_address_selector');
 	?></dd>
 </dl>
@@ -51,7 +51,7 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		}
 		if(empty($values))
-			$values = array(JHTML::_('select.option', '', JText::_('HIKA_NO_ADDRESS')));
+			$values = array(JHTML::_('select.option', '', JText::_('HIKAM_NO_ADDRESS')));
 		echo JHTML::_('select.genericlist', $values, 'data[user][default_shipping]', 'class="hikashop_default_address_dropdown"', 'value', 'text', $current, 'hikashop_default_shipping_address_selector');
 	?></dd>
 </dl>
@@ -134,7 +134,7 @@ window.addressMgr.new = function() {
 		return false;
 	el_edit.innerHTML = '';
 	var url = '<?php echo hikashop_completeLink('address&task=edit&cid=0&user_id='.$this->user_id, 'ajax', true); ?>';
-	w.hikashop.xRequest(url, {update:el_edit}, function(xhr) {
+	o.xRequest(url, {update:el_edit}, function(xhr) {
 		el_show.style.display = 'none';
 		el_edit.style.display = '';
 	});
@@ -160,7 +160,7 @@ window.addressMgr.delete = function(el, cid) {
 			if(jQuery) jQuery(el_sel).trigger("liszt:updated");
 			o.fireAjax('hikashop_address_deleted',{'cid':cid,'uid':target,'el':el});
 		} else if(xhr.responseText != '0') {
-			if(target) window.hikashop.updateElem(target, xhr.responseText);
+			if(target) o.updateElem(target, xhr.responseText);
 		}
 	}});
 	return false;

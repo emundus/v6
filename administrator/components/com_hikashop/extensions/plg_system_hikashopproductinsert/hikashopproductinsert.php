@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -115,153 +115,16 @@ class plgSystemHikashopproductInsert extends JPlugin {
 		}
 
 		$search_space = substr($body,strpos($body,'<body'));
-		if(preg_match_all('#{hk(show|hide)([^\}]*)}(.*){\/hk(show|hide)}#Uis', $search_space, $matches)) {
-			$this->_processShowHide($matches);
-		}
+		if( ! (preg_match_all('#\{product\}(.*)\{\/product\}#Uis', $search_space, $matches) || preg_match_all('#\{product (.*)\}#Uis', $search_space, $matches)) )
+			return;
 
-		if((preg_match_all('#\{product\}(.*)\{\/product\}#Uis', $search_space, $matches) || preg_match_all('#\{product (.*)\}#Uis', $search_space, $matches))) {
-			$this->_processProduct($matches);
-		}
-
-	}
-	function _processShowHide(&$matches) {
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);
 		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
 			return true;
-
-		$app = JFactory::getApplication();
-
-		$productsBought = null;
-		$cart = null;
-
-		if(class_exists('JResponse'))
-			$body = JResponse::getBody();
-		$alternate_body = false;
-		if(empty($body)) {
-			$body = $app->getBody();
-			$alternate_body = true;
-		}
-		$search_space = $new_search_space = substr($body,strpos($body,'<body'));
-
-		if(!empty($matches) && count($matches[0])) {
-			foreach($matches[0] as $k => $match) {
-
-				$show = ($matches[1][$k] == 'show');
-				$content = $matches[3][$k];
-				$attributes = trim($matches[2][$k]);
-				if(!empty($attributes)) {
-					$attributes = explode(' ', $attributes);
-					foreach($attributes as $attribute) {
-						$elements = explode('=', $attribute, 2);
-						$key = trim(reset($elements));
-						switch($key) {
-							case 'bought':
-							case 'notbought':
-								if(is_null($productsBought))
-									$productsBought = $this->_getBoughtProducts();
-								$hasProduct = (count($elements) > 1);
-								$bought = ($key == 'bought');
-
-								$productHasBeenBought = false;
-								if($hasProduct) {
-									$product = trim($elements[1],'" ');
-									if(!empty($productsBought)) {
-										foreach($productsBought as $p) {
-											if(@$p->product_id == $product || $p->order_product_name == $product || $p->order_product_code == $product)
-												$productHasBeenBought = true;
-										}
-									}
-								} elseif(!empty($productsBought) && is_array($productsBought)) {
-									$productHasBeenBought = count($productsBought) > 0;
-								}
-
-								if(($productHasBeenBought && $bought) || (!$productHasBeenBought && !$bought)) {
-								} else {
-									$show = !$show;
-									break 2;
-								}
-								break;
-							case 'mincart':
-							case 'maxcart':
-								if(count($elements) <= 1)
-									break;
-								$amount = trim($elements[1], '" ');
-								if(!is_numeric($amount))
-									break;
-								if(is_null($cart)) {
-									$cartClass = hikashop_get('class.cart');
-									$cart = $cartClass->getFullCart();
-								}
-								$total = 0;
-								if(!empty($cart->total->full_total->prices[0]->price_value_with_tax))
-									$total = $cart->total->full_total->prices[0]->price_value_with_tax;
-
-								if(
-									($key == 'maxcart' && $total > $amount) ||
-									($key == 'mincart' && $total < $amount)
-								) {
-									$show = !$show;
-									break 2;
-								}
-
-								break;
-							default:
-								break;
-						}
-					}
-				}
-
-				if(!$show)
-					$content = '';
-				$new_search_space = str_replace($match, $content, $new_search_space);
-			}
-		}
-
-		$body = str_replace($search_space,$new_search_space,$body);
-
-		if($alternate_body) {
-			$app->setBody($body);
-		} else {
-			JResponse::setBody($body);
-		}
-	}
-
-	function _getBoughtProducts() {
-		$user_id = hikashop_loadUser(false);
-		if(!$user_id)
-			return null;
-
-		$db = JFactory::getDBO();
-
-		$statuses = $this->params->get('statuses', 'confirmed,shipped');
-		$statuses = explode(',', $statuses);
-		foreach($statuses as $k => $v) {
-			$statuses[$k] = $db->Quote($v);
-		}
-
-		$product_query = 'SELECT op.order_product_id, op.order_product_name, op.order_product_code FROM #__hikashop_order AS o LEFT JOIN #__hikashop_order_product AS op ON o.order_id=op.order_id WHERE o.order_status IN ('.implode(',', $statuses).') AND op.order_product_quantity > 1 AND o.order_user_id = ' . $user_id;
-		$db->setQuery($product_query);
-		$productsBought = $db->loadObjectList();
-		return $productsBought;
-	}
-
-	function _processProduct(&$matches) {
-		if(!defined('DS'))
-			define('DS', DIRECTORY_SEPARATOR);
-		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
-			return true;
-
-		global $Itemid;
-		if(empty($Itemid)) {
-			$urlItemid = hikaInput::get()->getInt('Itemid');
-			if($urlItemid) {
-				$Itemid = $urlItemid;
-			}
-		}
 
 		JPluginHelper::importPlugin('hikashop');
-		$app = JFactory::getApplication();
+
 		$db = JFactory::getDBO();
 		$currencyClass = hikashop_get('class.currency');
 		$this->image = hikashop_get('helper.image');
@@ -284,7 +147,7 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			}
 		}
 
-		$product_query = 'SELECT * FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $ids) . ') AND product_access='.$db->quote('all').' AND product_published=1 ORDER BY FIELD(product_id, ' . implode(',', $ids) . ')';
+		$product_query = 'SELECT * FROM ' . hikashop_table('product') . ' WHERE product_id IN (' . implode(',', $ids) . ') AND product_access='.$db->quote('all').' AND product_published=1';
 		$db->setQuery($product_query);
 		$products = $db->loadObjectList();
 
@@ -377,26 +240,6 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			}
 		}
 
-		$q = 'SELECT c.*, pc.* '.
-			' FROM '.hikashop_table('category').' AS c '.
-			' LEFT JOIN '.hikashop_table('product_category').' AS pc ON c.category_id = pc.category_id '.
-			' WHERE pc.product_id IN ('.implode(',', $ids).');';
-		$db->setQuery($q);
-		$categories = $db->loadObjectList();
-		if(!empty($categories)) {
-			foreach($products as &$row) {
-				$row->categories = array();
-				foreach($categories as $category) {
-					if($row->product_id > 0 && ($row->product_id == $category->product_id || $row->product_parent_id == $category->product_id)) {
-						$row->categories[(int)$category->category_id] = $category;
-					}
-				}
-			}
-			unset($row);
-		}
-		$productClass->loadCustomItemFieldsForProductsListing($products);
-
-
 		$zone_id = hikashop_getZone();
 		$currencyClass = hikashop_get('class.currency');
 		$config = hikashop_config();
@@ -419,14 +262,6 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			'border' => 'border',
 			'badge' => 'badge',
 		);
-
-		if(class_exists('JResponse'))
-			$body = JResponse::getBody();
-		$alternate_body = false;
-		if(empty($body)) {
-			$body = $app->getBody();
-			$alternate_body = true;
-		}
 
 		for($i = 0; $i < $nbtag; $i++) {
 			$nbprodtag = count($para[$i]);
@@ -477,7 +312,13 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			$pattern = '#\{product\}(.*)\{\/product\}#Uis';
 			$replacement = '';
 
-
+			if(class_exists('JResponse'))
+				$body = JResponse::getBody();
+			$alternate_body = false;
+			if(empty($body)) {
+				$body = $app->getBody();
+				$alternate_body = true;
+			}
 			$search_space = substr($body,strpos($body,'<body'));
 			$new_search_space = preg_replace($pattern, str_replace('$','\$',$product_view), $search_space, 1);
 
@@ -486,11 +327,12 @@ class plgSystemHikashopproductInsert extends JPlugin {
 			$new_search_space = preg_replace($pattern, str_replace('$','\$',$product_view), $new_search_space, 1);
 
 			$body = str_replace($search_space,$new_search_space,$body);
-		}
-		if($alternate_body) {
-			$app->setBody($body);
-		} else {
-			JResponse::setBody($body);
+
+			if($alternate_body) {
+				$app->setBody($body);
+			} else {
+				JResponse::setBody($body);
+			}
 		}
 	}
 }

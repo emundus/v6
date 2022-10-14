@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,10 +18,10 @@ if(!in_array($tmpl, array('component', 'ajax', 'raw'))) {
 window.Oby.registerAjax(<?php echo $events; ?>, function(params) {
 	var o = window.Oby, el = document.getElementById('hikashop_cart_<?php echo $module_id; ?>');
 	if(!el) return;
-	if(params && params.resp && params.resp.module == <?php echo (int)$module_id; ?>) return;
+	if(params && params.resp && (params.resp.ret === 0 || params.resp.module == <?php echo (int)$module_id; ?>)) return;
 	if(params && params.type && params.type != '<?php echo $this->cart_type; ?>') return;
 	o.addClass(el, "hikashop_checkout_loading");
-	window.hikashop.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type, true, false, true); ?>", {update: el, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
+	o.xRequest("<?php echo hikashop_completeLink('product&task=cart&module_id='.$module_id . '&module_type='.$this->cart_type, true, false, true); ?>", {update: el, mode:'POST', data:'return_url=<?php echo urlencode(base64_encode(hikashop_currentURL('return_url'))); ?>'}, function(xhr){
 		o.removeClass(el, "hikashop_checkout_loading");
 	});
 });
@@ -39,9 +39,7 @@ if (!empty($small_cart)) $spinner_css="small_spinner small_cart";
 
 if(empty($this->rows)) {
 	$hidecart = (int)$this->params->get('hide_cart', 0);
-	$desc = $this->params->get('msg');
-	if(!empty($desc))
-		$desc = trim($desc);
+	$desc = trim($this->params->get('msg'));
 	if((empty($desc) && $desc != '0') || $hidecart == 0)
 		$desc = ($this->cart_type == 'cart') ? JText::_('CART_EMPTY') : JText::_('WISHLIST_EMPTY');
 	if($hidecart == 2)
@@ -177,12 +175,9 @@ if(!empty($small_cart)) {
 		$extra_data .= ' ontouchend="window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\', \'hover\'); return false;" onmouseover="window.hikashop.toggleOverlayBlock(\'hikashop_cart_dropdown_'.$module_id.'\', \'hover\'); return false;"';
 	}
 ?>
-<!-- MINI CART MAIN LINK -->
 	<a class="hikashop_small_cart_checkout_link" href="<?php echo $link; ?>"<?php echo $extra_data; ?>>
 		<span class="hikashop_small_cart_total_title"><?php echo $text; ?></span>
 	</a>
-<!-- EO MINI CART MAIN LINK -->
-<!-- MINI CART PRINT CART BUTTON -->
 <?php
 	if($this->element->cart_type == 'cart' && $small_cart == 1 && $this->params->get('print_cart', 0)) {
 ?>		<span class="hikashop_checkout_cart_print_link">
@@ -190,10 +185,7 @@ if(!empty($small_cart)) {
 ?>		</span>
 <?php
 	}
-?>
-<!-- EO MINI CART PRINT CART BUTTON -->
-<!-- MINI CART CLEAN CART BUTTON -->
-<?php
+
 	if($this->element->cart_type == 'cart' && $small_cart == 1 && $this->params->get('show_cart_delete', 1)) {
 		$delete = hikashop_completeLink('product&task=cleancart');
 ?>
@@ -202,10 +194,7 @@ if(!empty($small_cart)) {
 	</a>
 <?php
 	}
-?>
-<!-- EO MINI CART CLEAN CART BUTTON -->
-<!-- MINI CART PROCEED TO CHECKOUT BUTTON -->
-<?php
+
 	if($this->element->cart_type == 'cart' && $small_cart == 1 && $this->params->get('show_cart_proceed', 1)) {
 ?>
 	<a class="<?php echo $css_button . ' ' . $css_button_checkout; ?>" href="<?php echo $this->url_checkout; ?>" onclick="if(this.disable) return false; this.disable = true;"><span><?php
@@ -213,9 +202,7 @@ if(!empty($small_cart)) {
 	?></span></a>
 <?php
 	}
-?>
-<!-- EO MINI CART PROCEED TO CHECKOUT BUTTON -->
-<?php
+
 	if($small_cart == 1) {
 ?>
 </div>
@@ -258,51 +245,37 @@ foreach($columns as $c) {
 	<form action="<?php echo hikashop_completeLink('product&task=updatecart'.$this->url_itemid, false, true); ?>" method="post" name="hikashop_<?php echo $this->element->cart_type; ?>_form" onsubmit="if(window.hikashop) return window.hikashop.submitCartModule(this, 'hikashop_cart_<?php echo $module_id; ?>', '<?php echo $this->element->cart_type; ?>');">
 		<table class="hikashop_cart" width="100%">
 		<thead>
-<!-- IMAGE HEADER -->
 			<tr>
 <?php if(!empty($columns['image'])) { ?>
 				<th class="hikashop_cart_module_product_image_title hikashop_cart_title"><?php
 					echo JText::_('CART_PRODUCT_IMAGE');
 				?></th>
 <?php } ?>
-<!-- EO IMAGE HEADER -->
-<!-- NAME HEADER -->
 <?php if(!empty($columns['name'])) { ?>
 				<th class="hikashop_cart_module_product_name_title hikashop_cart_title"><?php
 					echo JText::_('CART_PRODUCT_NAME');
 				?></th>
 <?php } ?>
-<!-- EO NAME HEADER -->
-<!-- QUANTITY HEADER -->
 <?php if(!empty($columns['quantity'])) { ?>
 				<th class="hikashop_cart_module_product_quantity_title hikashop_cart_title"><?php
 					echo JText::_('CART_PRODUCT_QUANTITY');
 				?></th>
 <?php } ?>
-<!-- EO QUANTITY HEADER -->
-<!-- PRICE HEADER -->
 <?php if(!empty($columns['price'])) { ?>
 				<th class="hikashop_cart_module_product_price_title hikashop_cart_title"><?php
 					echo JText::_('CART_PRODUCT_PRICE');
 				?></th>
 <?php } ?>
-<!-- EO PRICE HEADER -->
-<!-- EMPTY COLUMN HEADER -->
 <?php if($nb_columns == 0) { ?>
 				<th></th>
 <?php }
-?>
-<!-- EO EMPTY COLUMN HEADER -->
-<!-- PRINT BUTTON -->
-<?php
 if($this->params->get('print_cart', 0)) {
 ?>				<th class="hikashop_cart_module_product_image_title hikashop_cart_title">
 					<span class="hikashop_checkout_cart_print_link" style="width: 16px; display: inline-block;">
 <?php					echo $print_button;
 ?>					</span>
 				</th>
-<?php } ?>
-<!-- EO PRINT BUTTON -->
+<?php }  ?>
 			</tr>
 		</thead>
 <?php
@@ -310,7 +283,6 @@ if(!empty($shows['price']) && $this->element->cart_type == 'cart') {
 	$colspan = $nb_columns - (empty($columns['delete']) ? 1 : 2);
 ?>
 		<tfoot>
-<!-- COUPON -->
 <?php if(!empty($shows['coupon']) && !empty($this->element->coupon)) { ?>
 			<tr>
 <?php if($colspan > 0) { ?>
@@ -329,8 +301,6 @@ if(!empty($shows['price']) && $this->element->cart_type == 'cart') {
 <?php } ?>
 			</tr>
 <?php } ?>
-<!-- EO COUPON -->
-<!-- PAYMENT FEE -->
 <?php
 if(!empty($shows['payment']) && !empty($this->element->payment) && $this->element->payment->payment_price !== null) { ?>
 			<tr>
@@ -347,8 +317,6 @@ if(!empty($shows['payment']) && !empty($this->element->payment) && $this->elemen
 <?php } ?>
 			</tr>
 <?php } ?>
-<!-- EO PAYMENT FEE -->
-<!-- SHIPPING FEE -->
 <?php if(!empty($shows['shipping']) && !empty($this->element->shipping) && $this->shipping_price !== null) { ?>
 			<tr>
 <?php if($colspan > 0) { ?>
@@ -364,8 +332,6 @@ if(!empty($shows['payment']) && !empty($this->element->payment) && $this->elemen
 <?php } ?>
 			</tr>
 <?php } ?>
-<!-- EO SHIPPING FEE -->
-<!-- TAXES -->
 <?php
 if(!empty($shows['taxes']) && isset($this->total->prices[0])) {
 	if ($this->config->get('detailed_tax_display') && !empty($this->total->prices[0]->taxes)) {
@@ -407,8 +373,6 @@ if(!empty($shows['taxes']) && isset($this->total->prices[0])) {
 	}
 }
 ?>
-<!-- EO TAXES -->
-<!-- TOTAL -->
 			<tr>
 <?php if($colspan > 0) { ?>
 				<td class="hikashop_cart_module_product_total_title" colspan="<?php echo $colspan; ?>"><?php
@@ -439,11 +403,11 @@ if(!empty($shows['taxes']) && isset($this->total->prices[0])) {
 						</span>
 					</span>
 				</td>
+<?php //exit; ?>
 <?php if(!empty($columns['delete'])) { ?>
 				<td></td>
 <?php } ?>
 			</tr>
-<!-- EO TOTAL -->
 		</tfoot>
 <?php } ?>
 		<tbody>
@@ -467,7 +431,6 @@ foreach($this->element->products as $k => $product) {
 	$cart_product = $this->element->cart_products[$k];
 ?>
 			<tr class="row<?php echo $k; ?>">
-<!-- IMAGE -->
 <?php
 	if(!empty($columns['image'])) {
 ?>
@@ -483,8 +446,6 @@ foreach($this->element->products as $k => $product) {
 <?php
 	}
 ?>
-<!-- EO IMAGE -->
-<!-- NAME -->
 <?php
 	if(!empty($columns['name'])) {
 ?>
@@ -546,26 +507,22 @@ foreach($this->element->products as $k => $product) {
 <?php
 	}
 ?>
-<!-- EO NAME -->
-<!-- QUANTITY INPUT -->
 <?php
 	if(!empty($columns['quantity'])) {
 ?>
 				<td class="hikashop_cart_module_product_quantity_value hikashop_cart_value"><?php
 		$this->row =& $product;
 		$this->quantityLayout = $this->cartHelper->getProductQuantityLayout($this->row);
+		if(!in_array($this->quantityLayout, array('show_simple','show_select','show_select_price','show_none')))
+			$this->quantityLayout = 'show_simple';
 		echo $this->loadHkLayout('quantity', array(
-			'id_prefix' => 'hikashop_cart_'.$module_id.'_quantity_field',
 			'quantity_fieldname' => 'item['.$product->cart_product_id.'][cart_product_quantity]',
-			'onchange_script' => ' window.hikashop.checkQuantity(this); if(this.value == '.(int)$product->cart_product_quantity.'){ return; } if(this.form.onsubmit && !this.form.onsubmit()) return; this.form.submit();',
-			'onincrement_script' => ' window.hikashop.updateQuantity(this,\'{id}\'); var input = document.getElementById(\'{id}\'); if(input.value == '.(int)$product->cart_product_quantity.'){ return false; } if(input.form.onsubmit && !input.form.onsubmit()) return false; input.form.submit(); return false;',
+			'onchange_script' => 'window.hikashop.checkQuantity(this); if(this.value == '.(int)$product->cart_product_quantity.'){ return; } if(this.form.onsubmit && !this.form.onsubmit()) return; this.form.submit();',
 		));
 				?></td>
 <?php
 	}
 ?>
-<!-- EO QUANTITY INPUT -->
-<!-- PRICE -->
 <?php
 	if(!empty($columns['price'])) {
 		if($group) {
@@ -613,8 +570,6 @@ foreach($this->element->products as $k => $product) {
 			$this->params->set('price_with_tax',$price_with_tax_option);
 				?></td>
 <?php } ?>
-<!-- EO PRICE -->
-<!-- DELETE BUTTON -->
 <?php
 	if(!empty($columns['delete'])) {
 		$delete_url = hikashop_completeLink('product&task=updatecart&cart_id='.(int)$this->element->cart_id.'&cart_product_id='.(int)$product->cart_product_id.'&quantity=0');
@@ -628,8 +583,6 @@ foreach($this->element->products as $k => $product) {
 <?php
 	}
 ?>
-<!-- EO DELETE BUTTON -->
-<!-- EMPTY COLUMN -->
 <?php
 	if($nb_columns == 0) {
 ?>
@@ -637,7 +590,6 @@ foreach($this->element->products as $k => $product) {
 <?php
 	}
 ?>
-<!-- EO EMPTY COLUMN -->
 			</tr>
 <?php
 	$k = 1 - $k;
@@ -660,7 +612,6 @@ if($this->params->get('show_cart_quantity', 1)) {
 }
 ?>
 	</form>
-<!-- PROCEED TO CHECKOUT BUTTON -->
 <?php
 if($this->element->cart_type == 'cart' && $this->params->get('show_cart_proceed', 1)) {
 ?>
@@ -669,14 +620,9 @@ if($this->element->cart_type == 'cart' && $this->params->get('show_cart_proceed'
 	?></span></a>
 <?php
 }
-?>
-<!-- EO PROCEED TO CHECKOUT BUTTON -->
-<!-- BOTTOM EXTRA DATA -->
-<?php
+
 if(!empty($this->extraData->bottom)) { echo implode("\r\n", $this->extraData->bottom); }
-?>
-<!-- EO BOTTOM EXTRA DATA -->
-<?php
+
 if(in_array($small_cart, array(2, 3))) {
 ?>
 	</div>

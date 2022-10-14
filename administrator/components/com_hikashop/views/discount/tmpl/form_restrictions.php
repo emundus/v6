@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,29 +11,18 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_tile_title"><?php echo JText::_('HIKA_ADVANCED_RESTRICTIONS'); ?></div>
 	<dl class="hika_options large">
 
-		<dt data-discount-display="coupon">
-			<label for="discount_minimum_order"><?php
-				echo JText::_('HIKA_MIN_COUPON');
-			?></label>
-		</dt>
-		<dd class="hikashop_discount_value_order" data-discount-display="coupon">
-			<input type="text" id="discount_minimum_order" name="data[discount][discount_minimum_order]" value="<?php echo (int)@$this->element->discount_minimum_order; ?>" />
-			<label for="discount_maximum_order" style="font-weight:bold"><?php echo JText::_('HIKA_QTY_RANGE_TO'); ?></label>
-			<div class="input-append">
-				<input type="text" id="discount_maximum_order" name="data[discount][discount_maximum_order]"  value="<?php echo (int)@$this->element->discount_maximum_order; ?>" />
-			</div>
+		<dt data-discount-display="coupon"><label for="discount_minimum_order"><?php
+			echo JText::_('MINIMUM_ORDER_VALUE');
+		?></label></dt>
+		<dd data-discount-display="coupon">
+			<input type="text" name="data[discount][discount_minimum_order]" id="discount_minimum_order" class="inputbox" value="<?php echo $this->escape(@$this->element->discount_minimum_order); ?>" />
 		</dd>
-		<dt data-discount-display="coupon">
-			<label for="discount_minimum_products"><?php
-				echo JText::_('HIKA_MAX_COUPON');
-			?></label>
-		</dt>
-		<dd class="hikashop_discount_quantity_products" data-discount-display="coupon">
-			<input type="text" id="discount_minimum_products" name="data[discount][discount_minimum_products]" value="<?php echo (int)@$this->element->discount_minimum_products; ?>" />
-			<label for="discount_maximum_products" style="font-weight:bold"><?php echo JText::_('HIKA_QTY_RANGE_TO'); ?></label>
-			<div class="input-append">
-				<input type="text" id="discount_maximum_products" name="data[discount][discount_maximum_products]" value="<?php echo (int)@$this->element->discount_maximum_products; ?>" />
-			</div>
+
+		<dt data-discount-display="coupon"><label for="discount_minimum_products"><?php
+			echo JText::_('MINIMUM_NUMBER_OF_PRODUCTS');
+		?></label></dt>
+		<dd data-discount-display="coupon">
+			<input type="text" name="data[discount][discount_minimum_products]" id="discount_minimum_products" class="inputbox" value="<?php echo (int)@$this->element->discount_minimum_products; ?>" />
 		</dd>
 
 		<dt><label><?php

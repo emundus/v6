@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.4.0
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 /**
@@ -133,12 +133,12 @@ function hikashopCheckOneTypeCreditCard(cardnumber, cardType) {
 	// There is a specific algorithm to check on Isracard credit cards
 	if(cards[cardType].name == "Isracard") {
 		var sum = 0, iNum;
-		for( var i in cardNo+='' ){
+	    for( var i in cardNo+='' ){
 			iNum = parseInt(cardNo[i]);
 			sum += i%2?iNum:iNum>4?iNum*2%10+1:iNum*2;
-		}
-		if(sum%10)
-			return 3;
+	    }
+	    if(sum%10)
+	    	return 3;
 	}
 
 	// The following are the card-specific checks we undertake.

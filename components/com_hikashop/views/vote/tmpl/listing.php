@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,11 +31,10 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 	}
 
 	$i = 0;
-	$comments_count = 0;
 	foreach($this->elts as $elt) {
 		if(empty($elt->vote_comment))
 			continue;
-		$comments_count++;
+
 	$table_elements = '';
 	$td_elements = '';
 	$span_elements = '';
@@ -152,15 +151,13 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 		}
 ?>
 	</tr>
-<?php if($row->show_comment_date) {
-		$voteClass = hikashop_get('class.vote');
-		$vote = $voteClass->get($elt->vote_id);
-	?>
+<?php if($row->show_comment_date) { ?>
 	<tr>
-		<td colspan="8">
-			<meta itemprop="datePublished" content="<?php echo hikashop_getDate($vote->vote_date, 'Y-m-d'); ?>">
-			<?php echo hikashop_getDate($vote->vote_date); ?>
-		</td>
+		<td colspan="8"><?php
+			$voteClass = hikashop_get('class.vote');
+			$vote = $voteClass->get($elt->vote_id);
+			echo hikashop_getDate($vote->vote_date);
+		?></td>
 	</tr>
 <?php } ?>
 	<tr>
@@ -195,7 +192,7 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 ?>
 <div class="pagination"><?php
 	echo $this->pagination->getListFooter();
-	echo '<span class="hikashop_results_counter">'.$this->pagination->getResultsCounter().'</span>';
+	echo $this->pagination->getResultsCounter();
 ?></div>
 <?php
 	}
@@ -203,7 +200,6 @@ if(($row->hikashop_vote_con_req_list == 1 && hikashop_loadUser() != "") || $row-
 </div>
 <?php
 }
-$this->params->set('comments_count', $comments_count);
 if($row->vote_comment_sort_frontend) {
 	$jconfig = JFactory::getConfig();
 	$sef = (HIKASHOP_J30 ? $jconfig->get('sef') : $jconfig->getValue('config.sef'));

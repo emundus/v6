@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 jimport('joomla.application.component.view');
 
-$hikashopHelperFile = rtrim(JPATH_ADMINISTRATOR,'/').'/components/com_hikashop/helpers/helper.php';
+$hikashopHelperFile = rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php';
 if(!file_exists($hikashopHelperFile)) {
 	throw new RuntimeException('HikaShop not installed ( www.hikashop.com )', 500);
 	exit;
@@ -97,11 +97,10 @@ class hikamarket {
 			$const = constant(strtoupper($namespace . '_' . $group));
 			$app = JFactory::getApplication();
 			$path = JPATH_THEMES.DS.$app->getTemplate().DS.'html'.DS.'com_'.$namespace.DS.'administrator'.DS;
-			$constOverride = str_replace(constant(strtoupper($namespace.'_BACK')), $path, $const);
+			$constOverride = str_replace(HIKASHOP_BACK, $path, $const);
 
 			jimport('joomla.filesystem.file');
 			if(JFile::exists($constOverride . $class . '.override.php')) {
-				$originalFile = $const.$class.'.php';
 				include_once($constOverride . $class . '.override.php');
 				$className .= 'Override';
 			} elseif(JFile::exists($const . $class . '.php')) {
@@ -384,7 +383,7 @@ class hikamarket {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!-- HikaMarket Component powered by '.$link.' -->'."\r\n".'<!-- version '.$config->get('level').' : '.$config->get('version').' -->';
-		if(hikaInput::get()->getInt('marketbuild',0)) $text .= '<!-- 2206222240 -->';
+		if(hikaInput::get()->getInt('marketbuild',0)) $text .= '<!-- 2110042204 -->';
 		if(!$shopConfig->get('show_footer',true))
 			return $text;
 
@@ -2159,11 +2158,7 @@ class hikamarketView extends hikashopBridgeView {
 	protected function loadHkLayout($layout, $params = array()) {
 		$backup_paths = $this->_path['template'];
 
-		if(hikamarket::isAdmin()) {
-			$layout_path = rtrim(JPath::clean(HIKAMARKET_BACK), '\/') . '/views/layouts/tmpl';
-		} else {
-			$layout_path = rtrim(JPath::clean(HIKAMARKET_FRONT), '\/') . '/views/layouts/tmpl';
-		}
+		$layout_path = rtrim(JPath::clean(HIKAMARKET_FRONT), '\/') . '/views/layouts/tmpl';
 
 		$app = JFactory::getApplication();
 		$component = JApplicationHelper::getComponentName();
@@ -2261,7 +2256,5 @@ if(!empty($cssMarket) || !empty($styleCssMarket)) {
 	if($lang->isRTL())
 		$doc->addStyleSheet(HIKAMARKET_CSS.'rtl.css?v='.HIKAMARKET_RESSOURCE_VERSION);
 }
-if(defined('HIKASHOP_COMPONENT') && defined('HIKASHOP_BACK_RESPONSIVE') && defined('HIKASHOP_RESPONSIVE')) {
-	if((hikamarket::isAdmin() && HIKASHOP_BACK_RESPONSIVE) || (!hikamarket::isAdmin() && HIKASHOP_RESPONSIVE))
-		$doc->addScriptDeclaration("\r\n".'window.Oby.ready(function(){setTimeout(function(){window.hikamarket.noChzn();},100);});');
-}
+if((hikamarket::isAdmin() && HIKASHOP_BACK_RESPONSIVE) || (!hikamarket::isAdmin() && HIKASHOP_RESPONSIVE))
+	$doc->addScriptDeclaration("\r\n".'window.Oby.ready(function(){setTimeout(function(){window.hikamarket.noChzn();},100);});');

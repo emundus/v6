@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -41,23 +41,6 @@ defined('_JEXEC') or die('Restricted access');
 		<input type="hidden" name="data[address][address_id]" value="<?php echo (int)@$this->address->address_id;?>"/>
 		<input type="hidden" name="data[address][address_type]" value="<?php echo @$this->address->address_type;?>"/>
 <?php
-	if(empty($this->address->address_id) && !empty($this->address->address_type)) {
-		$label = 'HIKASHOP_ALSO_SHIPPING_ADDRESS';
-		if($this->address->address_type == 'shipping') {
-			$label = 'HIKASHOP_ALSO_BILLING_ADDRESS';
-		}
-		$config = hikashop_config();
-		$checked = '';
-		if($config->get('same_address_default_checked', 0))
-			$checked = ' checked="checked"';
-?>
-		<div class="hikashop_new_address_same">
-			<input class="hikashop_same_address_checkbox" id="hikashop_address_same_address_input" type="checkbox" name="same_address"<?php echo $checked; ?> value="1"/>
-			<label for="hikashop_address_same_address_input"><?php echo JText::_($label); ?></label>
-		</div>
-		<br/>
-<?php
-	}
 	echo JHTML::_( 'form.token' );
 ?>
 		<a href="#" onclick="if(hikashopCheckChangeForm('address','hikashop_address_form')) document.forms['hikashop_address_form'].submit(); return false;" class="btn btn-success">

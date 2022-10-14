@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -39,11 +39,11 @@ class hikamarketPlg_mangopayClass extends JObject {
 		return self::$mangopayAPI;
 	}
 
-	public function debug($ctx, $e, $r = false) {
+	public function debug($e, $r = false) {
 		$mangopayPlugin = $this->getMangoPlugin();
-		$mangopayPlugin->mangoDebug($ctx, $e, $r);
+		$mangopayPlugin->mangoDebug($e, $r);
 	}
-	public function mangoDebug($ctx, $e, $r = false) { return $this->debug($ctx, $e, $r); }
+	public function mangoDebug($e, $r = false) { return $this->debug($e, $r); }
 
 	public function saveForm() {
 		$formData = hikaInput::get()->get('mango', array(), 'array');
@@ -97,8 +97,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 			$result = $api->Users->Update($user);
 
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('User Update', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('User Update', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		if(empty($result) || empty($result->Id))
@@ -159,8 +159,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 			$result = $api->Users->CreateBankAccount($mango_vendor->Id, $bank);
 
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('Create User Bank Account', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('Create User Bank Account', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		if(empty($result) || empty($result->Id))
@@ -192,8 +192,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 		try {
 			$createdDocument = $api->Users->CreateKycDocument($mango_vendor->Id, $kyc_document);
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('Create KYC Document', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('Create KYC Document', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		if(empty($createdDocument) || empty($createdDocument->Id))
@@ -204,8 +204,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 			$api->Users->CreateKycPageFromFile($mango_vendor->Id, $createdDocument->Id, $file);
 			$createdPage = true;
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('Create KYC Page', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('Create KYC Page', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		if(empty($createdPage))
@@ -219,8 +219,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 		try {
 			$updatedDocument = $api->Users->UpdateKycDocument($mango_vendor->Id, $kyc_document);
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('Update KYC Document', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('Update KYC Document', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		if(empty($updatedDocument))
@@ -289,8 +289,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 			$mango_bank_account = $api->Users->GetBankAccount($mango_vendor->Id, $bank_account);
 
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('Get Bank Account', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('Get Bank Account', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		if(empty($mango_bank_account))
@@ -318,8 +318,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 			$payoutResult = $api->PayOuts->Create($payout);
 
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('Payout Create', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('Payout Create', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		if(empty($payoutResult) || empty($payoutResult->Id))
@@ -354,8 +354,8 @@ class hikamarketPlg_mangopayClass extends JObject {
 
 			$transactions = $api->Wallets->GetTransactions($wallet_id, $pagination, $filter);
 		}
-		catch (MangoPay\ResponseException $e) { $this->debug('Get Wallet Transactions', $e, true); }
-		catch (MangoPay\Exception $e) { $this->debug('Get Wallet Transactions', $e, false); }
+		catch (MangoPay\ResponseException $e) { $this->debug($e, true); }
+		catch (MangoPay\Exception $e) { $this->debug($e, false); }
 		catch (Exception $e) {}
 
 		return $transactions;

@@ -1,15 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?>				<?php
 					$displayCursors='style="display:none"';
-					$displayFormat='style="display:none"';
 					$displayPrice='style="display:none"';
 					$displayValues='style="display:none"';
 					$fieldsetDisplay='style="display:none"';
@@ -30,8 +29,6 @@ defined('_JEXEC') or die('Restricted access');
 						$searchProcessing='';
 					}else if(@$this->element->filter_type=='cursor'){
 						$dipslayApplyCursor='';
-						if(empty($this->element->filter_options['input']) || $this->element->filter_options['input']  == '0')
-							$displayFormat='';
 					}else{
 						$dipslayApply='';
 					}
@@ -313,20 +310,12 @@ defined('_JEXEC') or die('Restricted access');
 							<?php echo JHTML::_('hikaselect.booleanlist', "data[filter][input]" , '',@$this->element->filter_options['input']); ?>
 						</td>
 					</tr>
-					<tr id="cursorFormat" <?php echo $displayFormat; ?>>
-						<td class="key">
-								<?php echo JText::_( 'CURSOR_FORMAT' ); ?>
-						</td>
-						<td>
-						<textarea rows="3" cols="50" name="data[filter][label_format]" id="format" class="inputbox" ><?php echo $this->escape(@$this->element->filter_options['label_format']); ?></textarea>
-						</td>
-					</tr>
 					<tr id="cursorMax" <?php echo $displayCursors; ?>>
 						<td class="key">
 								<?php echo JText::_( 'CURSOR_MAX' ); ?>
 						</td>
 						<td>
-							<input size="10" type="text" name="data[filter][cursor_max]" id="max" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_max']); ?>" />
+							<input size="10" type="text" name="data[filter][cursor_max]" id="name" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_max']); ?>" />
 						</td>
 					</tr>
 					<tr id="cursorMin" <?php echo $displayCursors; ?>>
@@ -334,7 +323,7 @@ defined('_JEXEC') or die('Restricted access');
 								<?php echo JText::_( 'CURSOR_MIN' ); ?>
 						</td>
 						<td>
-							<input size="10" type="text" name="data[filter][cursor_min]" id="min" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_min']); ?>" />
+							<input size="10" type="text" name="data[filter][cursor_min]" id="name" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_min']); ?>" />
 						</td>
 					</tr>
 					<tr id="cursorStep" <?php echo $displayCursors; ?>>
@@ -342,7 +331,7 @@ defined('_JEXEC') or die('Restricted access');
 								<?php echo JText::_( 'CURSOR_STEP' ); ?>
 						</td>
 						<td>
-							<input size="10" type="text" name="data[filter][cursor_step]" id="step" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_step']); ?>" />
+							<input size="10" type="text" name="data[filter][cursor_step]" id="name" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_step']); ?>" />
 						</td>
 					</tr>
 					<tr id="cursorEffet" <?php echo $displayCursors; ?>>
@@ -358,7 +347,7 @@ defined('_JEXEC') or die('Restricted access');
 								<?php echo JText::_( 'CURSOR_WIDTH' ); ?>
 						</td>
 						<td>
-							<input size="8" type="text" name="data[filter][cursor_width]" id="width" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_width']); ?>" /> px
+							<input size="8" type="text" name="data[filter][cursor_width]" id="name" class="inputbox" size="40" value="<?php echo $this->escape(@$this->element->filter_options['cursor_width']); ?>" /> px
 						</td>
 					</tr>
 					<tr id="filter_categories" <?php echo $fieldsetDisplay; ?>>

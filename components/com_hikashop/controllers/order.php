@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ class orderController extends hikashopController {
 
 		$this->display = array_merge($this->display, array(
 			'invoice', 'cancel', 'download', 'order_products',
-			'pay', 'cancel_order', 'reorder', 'contact', 'send_email'
+			'pay', 'cancel_order', 'reorder'
 		));
 	}
 
@@ -88,153 +88,6 @@ class orderController extends hikashopController {
 			return false;
 
 		return parent::listing();
-	}
-
-	public function contact() {
-		if(!hikashop_level(1))
-			return;
-		if(!headers_sent())
-			header('X-Robots-Tag: noindex');
-
-		if(!$this->_check())
-			return false;
-
-			hikaInput::get()->set('layout', 'contact');
-			return parent::display();
-	}
-
-	public function send_email() {
-		if(!hikashop_level(1))
-			return;
-		JSession::checkToken('request') || die('Invalid Token');
-
-		$element = new stdClass();
-		$formData = hikaInput::get()->get('data', array(), 'array');
-		if(empty($formData['contact'])) {
-			$formData['contact'] = @$formData['register'];
-			foreach($formData['contact'] as $column => $value) {
-				hikashop_secureField($column);
-				$element->$column = strip_tags($value);
-			}
-		} else {
-			$fieldsClass = hikashop_get('class.field');
-			$element = $fieldsClass->getInput('contact', $element);
-		}
-
-		$config =& hikashop_config();
-
-		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('hikashop');
-		$send = !empty($element->order_id);
-
-		$orderClass = hikashop_get('class.order');
-		$order = $orderClass->loadFullOrder((int)$element->order_id);
-		if(empty($order)) {
-			$app->enqueueMessage(JText::_('PLEASE_LOGIN_FIRST'));
-			$send = false;
-		}
-
-		$contact_statuses = explode(',', trim($config->get('contact_button_orders', 'created,confirmed,shipped,refunded,pending,cancelled'), ','));
-		if($send && !in_array($order->order_status, $contact_statuses)) {
-			$app->enqueueMessage(JText::_('STATUS_OF_ORDER_NOT_VALID_FOR_THIS_ACTION'));
-			$send = false;
-		}
-
-		if(!empty($order->customer)) {
-			$element->email = $order->customer->user_email;
-			$element->name = '';
-			if(!empty($order->customer->name))
-				$element->name = $order->customer->name;
-		}
-
-		$app->triggerEvent('onBeforeSendOrderContactRequest', array(&$element, &$send));
-
-		jimport('joomla.mail.helper');
-		$mailer = JFactory::getMailer();
-
-
-		if($config->get('order_contact_altbody_required', 1) && empty($element->altbody)) {
-			$app->enqueueMessage(JText::_('PLEASE_FILL_ADDITIONAL_INFO'), 'error');
-			$send = false;
-		} elseif(!empty($element->altbody)) {
-			$element->altbody = strip_tags($element->altbody);
-		}
-
-		if(!empty($element->consentcheck) && empty($element->consent)) {
-			$app->enqueueMessage(JText::_('PLEASE_AGREE_TO_PRIVACY_POLICY'), 'error');
-			$send = false;
-		}
-
-		if(!$send) {
-			hikaInput::get()->set('formData', $element);
-			$this->contact();
-			return;
-		}
-
-		$subject = JText::sprintf('CONTACT_REQUEST_FOR_ORDER',strip_tags($order->order_number));
-
-
-		$app->triggerEvent('onBeforeSendOrderContactRequestEmail', array(&$element, &$send));
-
-		if($send) {
-			$mailClass = hikashop_get('class.mail');
-			$infos = new stdClass();
-			$infos->element =& $element;
-			$infos->order =& $order;
-			$mail = $mailClass->get('contact_request', $infos);
-			$mail->subject = $subject;
-			$mail->from_email = $config->get('from_email');
-			$mail->from_name = $config->get('from_name');
-			if(!empty($element->email))
-				$mail->reply_email = $element->email;
-			if(empty($mail->dst_email)) {
-				$dst = $config->get('contact_request_email');
-				if(empty($dst))
-					$mail->dst_email = array($config->get('from_email'));
-				else
-					$mail->dst_email = explode(',', $dst);
-			}
-			if($config->get('contact_form_copy_checkbox', 0) && !empty($element->copycheck) && empty($element->copy) && !empty($element->email)) {
-				$mail->cc_email = $element->email;
-			}
-			if(!empty($element->email)) {
-				$user_name = '';
-				if(!empty($element->name))
-					$user_name = $element->name;
-				if(HIKASHOP_J30) {
-					$mailClass->mailer->addReplyTo($element->email, $user_name);
-				} else {
-					$mailClass->mailer->addReplyTo(array($element->email, $user_name));
-				}
-			}
-			$status = $mailClass->sendMail($mail);
-		} else {
-			$status = true;
-		}
-		if($status) {
-			$app->enqueueMessage(JText::_('CONTACT_REQUEST_SENT'));
-			if(hikaInput::get()->getString('tmpl', '') == 'component') {
-				$doc = JFactory::getDocument();
-				$doc->addScriptDeclaration('setTimeout(function(){ window.parent.hikashop.closeBox(); }, 4000);');
-				return true;
-			}			
-		}
-
-		$redirect_url = hikaInput::get()->getString('redirect_url', '');
-		if(empty($redirect_url)) {
-			$url_itemid = '';
-			if(!empty($Itemid)) {
-				$url_itemid = '&Itemid='.(int)$Itemid;
-			}
-			$url_token = '';
-			$token = hikaInput::get()->getVar('order_token');
-			if(!empty($token))
-				$url_token = '&order_token='.$token;
-
-			$redirect_url = hikashop_contentLink('order&task=show&cid='.$order->order_id.$url_itemid.$url_token);
-		}
-
-		$app->enqueueMessage(JText::sprintf('CLICK_HERE_TO_GO_BACK', $redirect_url));
 	}
 
 	public function show() {
@@ -358,7 +211,7 @@ class orderController extends hikashopController {
 
 		$paymentOptions = reset($paymentData);
 		if(!empty($paymentOptions->payment_params->cancel_url)) {
-			$cancel_url = hikashop_translate($paymentOptions->payment_params->cancel_url);
+			$cancel_url = $paymentOptions->payment_params->cancel_url;
 		}
 
 		$redirect_url = hikaInput::get()->getVar('redirect_url');
@@ -396,7 +249,7 @@ class orderController extends hikashopController {
 		$cartClass = hikashop_get('class.cart');
 		$products = $cartClass->cartProductsToArray( $order->products );
 
-		$ret = $cartClass->addProduct(0, $products, array('ignore_errors' => true));
+		$ret = $cartClass->addProduct(0, $products);
 
 		if($ret === false) {
 			$cartClass->enqueueCartMessages(0);
@@ -405,10 +258,7 @@ class orderController extends hikashopController {
 		}
 
 		if(is_array($ret) && @$ret['status'] === false && !empty($ret['errors'])) {
-			$app->enqueueMessage(JText::_('HIKASHOP_SOME_PRODUCT_NOT_ADDED_TO_CART'), 'error');
-			foreach($ret['errors'] as $error) {
-				$app->enqueueMessage($error['msg'], $error['type']);
-			}
+			$app->enqueueMessage(JText::_('HIKASHOP_SOME_PRODUCT_NOT_ADDED_TO_CART'));
 		}
 
 		if(!empty($order->order_discount_code)) {
@@ -544,7 +394,7 @@ class orderController extends hikashopController {
 		$currencyClass = hikashop_get('class.currency');
 		$currencyClass->calculateTotal($order->cart->products, $order->cart->total, $order->order_currency_id);
 
-		if(bccomp(sprintf('%F',$order->order_discount_price), 0, 5) !== 0) {
+		if(bccomp($order->order_discount_price, 0, 5) !== 0) {
 			$order->cart->coupon = new stdClass();
 			$order->cart->coupon->discount_value =& $order->order_discount_price;
 		}
@@ -657,49 +507,20 @@ class orderController extends hikashopController {
 		$updateOrder->order_payment_id = $payment_id;
 		$updateOrder->order_payment_method = $payment_method;
 
+		$paymentClass = hikashop_get('class.payment');
+		$payment = $paymentClass->get($payment_id);
+		if(!empty($payment->payment_params) && is_string($payment->payment_params)) {
+			$payment->payment_params = hikashop_unserialize($payment->payment_params);
+		}
+
 		$full_price_without_payment = $order->order_full_price - $order->order_payment_price;
-		$updateOrder->order_payment_price = @$found->payment_price_with_tax;
-		$updateOrder->order_payment_tax = @$found->payment_price_with_tax-$found->payment_price;
-		$updateOrder->order_full_price = $full_price_without_payment + $updateOrder->order_payment_price;
 
-		if(!empty($order->order_tax_info)) {
-			$updateOrder->order_tax_info = $order->order_tax_info;
-			foreach($order->order_tax_info as $namekey => $tax) {
-				if(!empty($tax->tax_amount_for_payment)) {
-					$old_tax_amount = $updateOrder->order_tax_info[$namekey]->tax_amount;
-					$new_tax_amount = $old_tax_amount - $updateOrder->order_tax_info[$namekey]->tax_amount_for_payment;
-					$updateOrder->order_tax_info[$namekey]->tax_amount = $new_tax_amount;
-					if(!empty($updateOrder->order_tax_info[$namekey]->amount)) {
-						$old_amount = $updateOrder->order_tax_info[$namekey]->amount;
-						$new_amount = $new_tax_amount * $old_amount / $old_tax_amount;
-						$updateOrder->order_tax_info[$namekey]->amount = $new_amount;
-					}
-					unset($updateOrder->order_tax_info[$namekey]->tax_amount_for_payment);
-				}
-			}
-		}
+		$new_payment = $payment;
+		$paymentClass->computePrice( $order, $new_payment, $full_price_without_payment, @$payment->payment_price, $order->order_currency_id);
+		$updateOrder->order_payment_price = @$new_payment->payment_price;
+		$updateOrder->order_payment_tax = @$new_payment->payment_tax;
+		$updateOrder->order_full_price = $full_price_without_payment + @$new_payment->payment_price + @$new_payment->payment_tax;
 
-		if(!empty($found->taxes) && count($found->taxes) == 1) {
-			if(empty($order->order_tax_info)) {
-				$updateOrder->order_tax_info = array();
-			}
-			foreach($found->taxes as $tax) {
-				if(isset($updateOrder->order_tax_info[$tax->tax_namekey]) && $updateOrder->order_tax_info[$tax->tax_namekey]->tax_amount > 0) {
-					$old_tax_amount  = $updateOrder->order_tax_info[$tax->tax_namekey]->tax_amount;
-					$updateOrder->order_tax_info[$tax->tax_namekey]->tax_amount_for_payment = $tax->tax_amount;
-					$updateOrder->order_tax_info[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
-					if(empty($updateOrder->order_tax_info[$tax->tax_namekey]->amount)) {
-						$updateOrder->order_tax_info[$tax->tax_namekey]->amount = 0;
-					}
-					$updateOrder->order_tax_info[$tax->tax_namekey]->amount = $updateOrder->order_tax_info[$tax->tax_namekey]->amount * $updateOrder->order_tax_info[$tax->tax_namekey]->tax_amount / $old_tax_amount;
-				} else {
-					$updateOrder->order_tax_info[$tax->tax_namekey] = $tax;
-					$updateOrder->order_tax_info[$tax->tax_namekey]->tax_amount_for_payment = $tax->tax_amount;
-				}
-			}
-		}else {
-
-		}
 		$updateOrder->history = new stdClass();
 		$updateOrder->history->history_payment_id = $payment_id;
 		$updateOrder->history->history_payment_method = $payment_method;
@@ -736,19 +557,13 @@ class orderController extends hikashopController {
 				$app->enqueueMessage(JText::_('FILE_NOT_FOUND'));
 				return false;
 			}else{
-				$options = array();
-				if(isset($_REQUEST['thumbnail_x']) || isset($_REQUEST['thumbnail_y'])) {
-					$options = array(
-						'thumbnail_x' => hikaInput::get()->getInt('thumbnail_x', 0),
-						'thumbnail_y' => hikaInput::get()->getInt('thumbnail_y', 0)
-					);
-				}
+				$options = array(
+					'thumbnail_x' => hikaInput::get()->getInt('thumbnail_x', 0),
+					'thumbnail_y' => hikaInput::get()->getInt('thumbnail_y', 0)
+				);
 				$fileClass = hikashop_get('class.file');
-				$result = $fileClass->downloadFieldFile($name, $field_table, $field_namekey, $options);
-				if($result)
-					exit;
-				else
-					return;
+				$fileClass->downloadFieldFile($name, $field_table, $field_namekey, $options);
+				exit;
 			}
 		}
 
@@ -846,8 +661,7 @@ class orderController extends hikashopController {
 		$options = array(
 			'upload_dir' => $config->get('uploadsecurefolder')
 		);
-		if(!empty($field->field_options['upload_dir']))
-			$options['upload_dir'] = $field->field_options['upload_dir'];
+
 		if(!empty($field->field_options['allowed_extensions']))
 			$options['allowed_extensions'] = trim($field->field_options['allowed_extensions'], ', ');
 
@@ -886,8 +700,8 @@ class orderController extends hikashopController {
 		if(empty($map))
 			return;
 
-		$app = JFactory::getApplication();
 		if($field_table == 'item') {
+			$app = JFactory::getApplication();
 			$itemsData = $app->getUserState(HIKASHOP_COMPONENT.'.items_fields');
 			if(empty($itemsData)) $itemsData = array();
 			$newItem = new stdClass();
@@ -897,22 +711,17 @@ class orderController extends hikashopController {
 		}
 
 		if($field_table == 'order') {
+			$app = JFactory::getApplication();
 			$orderData = $app->getUserState(HIKASHOP_COMPONENT.'.checkout_fields');
 			if(empty($orderData)) $orderData = new stdClass();
 			$orderData->$field_namekey = $ret->name;
 			$app->setUserState(HIKASHOP_COMPONENT.'.checkout_fields', $orderData);
 		}
 
-		if($field_table == 'user') {
-			$userData = $app->getUserState(HIKASHOP_COMPONENT.'.user_fields');
-			if(empty($userData)) $userData = new stdClass();
-			$userData->$field_namekey = $ret->name;
-			$app->setUserState(HIKASHOP_COMPONENT.'.user_fields', $userData);
-		}
-
 		if(substr($field_table, 0, 4) == 'plg.') {
 			$externalValues = array();
 			JPluginHelper::importPlugin('hikashop');
+			$app = JFactory::getApplication();
 			$app->triggerEvent('onTableFieldsLoad', array( &$externalValues ) );
 			$found = false;
 			foreach($externalValues as $external) {

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -38,8 +38,7 @@ class plgHikashopDatafeed extends JPlugin {
 		if(!empty($plugin->params['column_name']))
 			$column = $plugin->params['column_name'];
 
-		$url = preg_match('#^(https?|s?ftp)://#', $path, $matches);
-		$context = null;
+		$url = preg_match('#^(https?|ftp)://#', $path);
 		if(!$url) {
 
 			$check = strtolower(substr($path, -3));
@@ -93,19 +92,12 @@ class plgHikashopDatafeed extends JPlugin {
 		$importHelper->createCategories = true;
 		$importHelper->overwrite = true;
 		$importHelper->header_errors = false;
-		$importHelper->store_files_locally = true;
-		$importHelper->store_images_locally = true;
 		if(isset($plugin->params['force_published']) && empty($plugin->params['force_published']))
 			$importHelper->force_published = false;
 		if(empty($plugin->params['delete']))
 			$importHelper->keep_other_variants = true;
 
-		if(isset($plugin->params['store_files_locally']))
-			$importHelper->store_files_locally = $plugin->params['store_files_locally'];
-		if(isset($plugin->params['store_images_locally']))
-			$importHelper->store_images_locally = $plugin->params['store_images_locally'];
-
-		$contentFile = file_get_contents($path, false, $context);
+		$contentFile = file_get_contents($path);
 		if(empty($contentFile)) {
 			$messages[] = 'Could not retrieve the CSV file '. $path;
 			return true;
@@ -114,8 +106,6 @@ class plgHikashopDatafeed extends JPlugin {
 		if(!$importHelper->handleContent($contentFile)) {
 			return false;
 		}
-
-		$messages[] = 'Import of CSV file '. $path.' successful';
 
 		if(!empty($plugin->params['delete']) && !empty($importHelper->codes)) {
 			$ids = array();
@@ -129,20 +119,13 @@ class plgHikashopDatafeed extends JPlugin {
 
 			$todelete = $db->loadColumn();
 
-			$messages[] = 'Deleting products no in the CSV file';
-
 			$productClass = hikashop_get('class.product');
 			$productClass->delete($todelete);
 		}
 
-
 		if(!$url && !empty($plugin->params['deletefile'])){
-			$messages[] = 'Deleting file '. $path.' after import';
 			unlink($path);
 		}
-
-		$plugin->params['last_cron_update']=time();
-		$pluginsClass->save($plugin);
 
 		return true;
 	}

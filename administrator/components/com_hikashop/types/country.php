@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -49,12 +49,12 @@ class hikashopCountryType{
 		}
 		foreach($zones as $oneZone){
 			if(is_numeric($oneZone->zone_name_english)){
-				$this->values[] = JHTML::_('select.option', $oneZone->zone_id, hikashop_translate($oneZone->zone_name) );
+				$this->values[] = JHTML::_('select.option', $oneZone->zone_id, $oneZone->zone_name );
 			}else{
 				if($oneZone->zone_name_english!=$oneZone->zone_name && !empty($oneZone->zone_name)){
 					$this->values[] = JHTML::_('select.option', $oneZone->zone_id, $oneZone->zone_name_english.' ( '.$oneZone->zone_name.' )' );
 				}else{
-					$this->values[] = JHTML::_('select.option', $oneZone->zone_id, hikashop_translate($oneZone->zone_name_english) );
+					$this->values[] = JHTML::_('select.option', $oneZone->zone_id, $oneZone->zone_name_english );
 				}
 			}
 		}
@@ -93,11 +93,11 @@ class hikashopCountryType{
 			}
 			foreach($states as $state) {
 				if(is_numeric($state->zone_name_english)){
-					$title = hikashop_translate($state->zone_name);
+					$title = $state->zone_name;
 				}else{
-					$title = hikashop_translate($state->zone_name_english);
+					$title = $state->zone_name_english;
 					if($state->zone_name_english != $state->zone_name){
-						$title .= ' ('.hikashop_translate($state->zone_name).')';
+						$title .= ' ('.$state->zone_name.')';
 					}
 				}
 				$obj = new stdClass();

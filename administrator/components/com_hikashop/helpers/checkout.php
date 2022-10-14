@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,8 +32,7 @@ class hikashopCheckoutHelper {
 
 	public static function &get($cart_id = null) {
 		if(self::$instance === null) {
-			$classname = class_exists('hikashopCheckoutHelperOverride') ? 'hikashopCheckoutHelperOverride' : 'hikashopCheckoutHelper';
-			self::$instance = new $classname($cart_id);
+			self::$instance = new hikashopCheckoutHelper($cart_id);
 			self::$instance->config = hikashop_config();
 			self::$instance->loadWorkflow();
 		}
@@ -348,22 +347,11 @@ class hikashopCheckoutHelper {
 				if($params->get('Enabled'))
 					$setCtrl = true;
 			}
-			if(class_exists('\Forsef') && \Forsef::isEnabled()) {
-				$setCtrl = true;
-			}
 		}
 
 		$cart_id = $this->getCartId();
 		$url .= ($cart_id > 0) ? '&cart_id=' . $cart_id : '';
-		$tmpl = '';
-		if($ajax) {
-			if(HIKASHOP_J30) {
-				$tmpl = '&tmpl=raw';
-			} else {
-				$tmpl = '&tmpl=component';
-			}
-		}
-		$link = 'index.php?option=' . HIKASHOP_COMPONENT . ($setCtrl ? '&ctrl=checkout' : '') . (!empty($url) ? '&'.$url : '') . '&Itemid=' . $checkout_itemid . $tmpl;
+		$link = 'index.php?option=' . HIKASHOP_COMPONENT . ($setCtrl ? '&ctrl=checkout' : '') . (!empty($url) ? '&'.$url : '') . '&Itemid=' . $checkout_itemid . ($ajax ? '&tmpl=raw' : '');
 		$ret = JRoute::_($link, !$redirect);
 		if($js) return str_replace('&amp;', '&', $ret);
 		return $ret;
@@ -415,20 +403,16 @@ class hikashopCheckoutHelper {
 		$total = hikashop_copy($cart->full_total);
 		if(!empty($total->prices)) {
 			foreach($total->prices as &$price ) {
-				if(!empty($price->taxes)) {
-					foreach($price->taxes as $i => $tax) {
-						foreach(get_object_vars($tax) as $k => $v) {
-							if($k != 'tax_namekey')
-								unset($price->taxes[$i]->$k);
-						}
+				if($price->taxes) {
+					foreach(get_object_vars($price->taxes) as $k => $v) {
+						if($k != 'tax_namekey')
+							unset($price->taxes->$k);
 					}
 				}
-				if(!empty($price->taxes_without_discount)) {
-					foreach($price->taxes_without_discount as $i => $tax) {
-						foreach(get_object_vars($tax) as $k => $v) {
-							if($k != 'tax_namekey')
-								unset($price->taxes_without_discount[$i]->$k);
-						}
+				if($price->taxes_without_discount) {
+					foreach(get_object_vars($price->taxes_without_discount) as $k => $v) {
+						if($k != 'tax_namekey')
+							unset($price->taxes_without_discount->$k);
 					}
 				}
 			}
@@ -439,8 +423,7 @@ class hikashopCheckoutHelper {
 		if(!empty($paymentMethods)) {
 			foreach($paymentMethods as &$paymentMethod ) {
 				unset($paymentMethod->total);
-				if(!empty($paymentMethod->custom_html_ignore_cache))
-					unset($paymentMethod->custom_html);
+				unset($paymentMethod->custom_html);
 			}
 		}
 		$payments = md5(serialize(@$paymentMethods));
@@ -448,15 +431,14 @@ class hikashopCheckoutHelper {
 		if(!empty($shippingMethods)) {
 			foreach($shippingMethods as &$shippingMethod ) {
 				unset($shippingMethod->taxes);
-				if(!empty($shippingMethod->custom_html_ignore_cache))
-					unset($shippingMethod->custom_html);
+				unset($shippingMethod->custom_html);
 			}
 		}
 		$shippings = md5(serialize(@$shippingMethods));
 		$address_override = md5(serialize($this->getShippingAddressOverride()));
 		$fields = null;
 		if(!empty($cart->order_fields))
-			$fields = array_keys($cart->order_fields);
+		    $fields = array_keys($cart->order_fields);
 		$order_fields = md5(serialize($fields));
 		$billing_addreses = md5(serialize(@$cart->usable_addresses->billing));
 		$shipping_addreses = md5(serialize(@$cart->usable_addresses->shipping));
@@ -569,10 +551,10 @@ class hikashopCheckoutHelper {
 		if(!empty($markers['plugins'])) {
 			$app = JFactory::getApplication();
 			foreach($markers['plugins'] as $k => $v) {
-				if($v === $newMarkers['plugins'][$k])
+				if($v === $newMarkers['plugin'][$k])
 					continue;
 				$evts = array();
-				$app->triggerEvent('onCheckoutProcessCartMarker', array($k, &$evts, $v, $newMarkers['plugins'][$k]));
+				$app->triggerEvent('onCheckoutProcessCartMarker', array($k, &$evts, $v, $newMarkers['plugin'][$k]));
 				foreach($evts as $e) {
 					$this->addEvent($e, $params);
 				}

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,6 +15,7 @@ if(version_compare(JVERSION,'2.5','<')){
 	$params = new JRegistry('');
 }
 
+$doc = JFactory::getDocument();
 $app = JFactory::getApplication();
 $js = '';
 global $Itemid;
@@ -63,7 +64,7 @@ foreach($products as $product) {
 						}
 						if($this->badge == 1){
 							if(!empty($product->badges))
-								$this->classbadge->placeBadges($this->image, $product->badges, array('vertical' => 0, 'horizontal' => 0, 'thumbnail' => $img));
+								$this->classbadge->placeBadges($this->image, $product->badges, '0', '0');
 						}
 					}
 				if($this->link == 1){ ?>
@@ -143,17 +144,37 @@ foreach($products as $product) {
 			<?php
 				$params->set('price_with_tax',$config->get('price_with_tax',1));
 				$params->set('add_to_cart',1);
-				$params->set('display_custom_item_fields', -1);
 				$params->set('main_div_name', 'hikashop_inserted_product_' . $product->product_id);
+				$scripts_already = count($doc->_scripts);
+				$script_already = count($doc->_script);
+				$css_already = count($doc->_styleSheets);
+				$add_to_cart = hikashop_getLayout('product','add_to_cart_listing',$params,$js);
+				echo $add_to_cart;
 
-				echo hikashop_getHTML(function() use ($params, $js){
-					$add_to_cart = hikashop_getLayout('product','add_to_cart_listing',$params,$js);
-					echo $add_to_cart;
-				});
+				foreach($doc->_scripts as $script => $v) {
+					if($scripts_already){
+						$scripts_already--;
+						continue;
+					}
+					echo '<script src="'.$script.'" type="text/javascript"></script>';
+				}
+				foreach($doc->_styleSheets as $css => $v) {
+					if($css_already){
+						$css_already--;
+						continue;
+					}
+					echo '<style type="text/css">'."\r\n@import url(".$css.");\r\n".'</style>';
+				}
+				foreach($doc->_script as $script) {
+					if($script_already){
+						$script_already--;
+						continue;
+					}
+					echo '<script type="text/javascript">'."\r\n".$script."\r\n".'</script>';
+				}
 			?>
 			</span>
-			<!-- EO ADD TO CART BUTTON AREA -->
-<?php
+			<!-- EO ADD TO CART BUTTON AREA --><?php
 		}
 
 		if($this->border == 1 ) echo '</div>';

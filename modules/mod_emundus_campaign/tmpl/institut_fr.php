@@ -4,7 +4,6 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $app = JFactory::getApplication();
-$user = JFactory::getUser();
 $searchword = $app->input->getString('searchword', null);
 
 $lang = JFactory::getLanguage();
@@ -123,12 +122,9 @@ $site_offset = $config->get('offset');
                                         if (!isset($redirect_url) || empty($redirect_url)) {
                                             $redirect_url = "index.php?option=com_users&view=registration";
                                         }
-                                        $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
+                                        $register_url = $redirect_url . "&course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
                                     } else {
-                                        $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid;
-                                    }
-                                    if(!$user->guest) {
-                                        $register_url .= "&redirect=" . $formUrl;
+                                        $register_url = $redirect_url . "?course=" . $result->code . "&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid . "&redirect=" . $formUrl;
                                     }
                                     ?>
                                     <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url; ?>'

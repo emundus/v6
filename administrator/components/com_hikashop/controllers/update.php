@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -216,12 +216,9 @@ class updateController extends HikashopBridgeController {
 			$jconfig = JFactory::getConfig();
 			$tmp_dest = $jconfig->get('tmp_path');
 
-			$url = HIKASHOP_URL.'index.php?option=com_updateme&ctrl=download&plugin=tax_europe';
+			$url = str_replace('https://','http://',HIKASHOP_URL.'index.php?option=com_updateme&ctrl=download&plugin=tax_europe');
 			$file = JPath::clean($tmp_dest . DS .'european_taxes.zip');
-			if(!file_exists($file))
-				$ret = $this->retrieveFile($url, $file, true);
-			else
-				$ret = 1;
+			$ret = $this->retrieveFile($url, $file, true);
 
 			if($ret === 1) {
 				if(HIKASHOP_J30)
@@ -371,7 +368,6 @@ class updateController extends HikashopBridgeController {
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 			$data = curl_exec($ch);
 			curl_close($ch);
 		} else {

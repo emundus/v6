@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -129,14 +129,6 @@ class OrderstatusViewOrderstatus extends hikashopView
 				'description' => JText::_('PRINT_DESC'),
 				'key' => 'print_invoice_statuses',
 				'default' => 'confirmed,shipped,refunded',
-				'type' => 'toggle'
-			);
-			$orderstatus_columns['contact'] = array(
-				'text' => JText::_('CONTACT_BUTTON'),
-				'title' => JText::_('CONTACT_BUTTON_ON_ORDERS'),
-				'description' => JText::_('CONTACT_BUTTON_DESC'),
-				'key' => 'contact_button_orders',
-				'default' => 'created,confirmed,shipped,refunded,pending,cancelled',
 				'type' => 'toggle'
 			);
 		}

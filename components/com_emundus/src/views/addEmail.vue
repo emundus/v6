@@ -1,5 +1,5 @@
 <template>
-  <div class="emails__add-email em-mt-24">
+  <div class="emails__add-email">
     <notifications
         group="foo-velocity"
         position="bottom left"
@@ -57,7 +57,7 @@
 
         <div>
           <div class="em-flex-row em-mb-16">
-            <p class="em-h4 em-pointer" @click="displayAdvanced">{{ translations.Advanced }}</p>
+            <p class="em-h4">{{ translations.Advanced }}</p>
             <button :title="translations.Advanced" type="button" class="em-transparent-button em-flex-column" @click="displayAdvanced" v-show="!displayAdvancedParameters">
               <span class="material-icons-outlined em-main-500-color">add_circle_outline</span>
             </button>

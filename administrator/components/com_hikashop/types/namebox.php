@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -40,7 +40,7 @@ class hikashopNameboxType {
 		'brand' => array(
 			'class' => 'class.category',
 			'name' => 'category_name',
-			'mode' => 'tree',
+			'mode' => 'list',
 			'params' => array(
 				'category_type' => 'manufacturer',
 				'filters' => array(
@@ -48,7 +48,7 @@ class hikashopNameboxType {
 				),
 				'key' => 'category_id',
 			),
-			'url' => 'category&task=getTree&category_type=manufacturer',
+			'url' => 'category&task=findList&category_type=manufacturer',
 			'options' => array(
 				'tree_url' => 'category&task=getTree&category_type=manufacturer&category_id={ID}',
 				'tree_key' => '{ID}',
@@ -114,14 +114,6 @@ class hikashopNameboxType {
 			'url_params' => array('TABLE'),
 			'url' => 'cart&task=findList&table={TABLE}'
 		),
-		'currency' => array(
-			'class' => 'class.currency',
-			'name' => 'name',
-			'mode' => 'list',
-			'params' => array(
-			),
-			'url' => 'currency&task=findList'
-		),
 		'discount' => array(
 			'class' => 'class.discount',
 			'name' => 'discount_code',
@@ -163,7 +155,7 @@ class hikashopNameboxType {
 					'displayFormat' => '{filter_name} - {filter_namekey} - {filter_type}',
 				)
 			),
-			'url' => 'filter&task=findList'
+			'url' => 'cart&task=findList'
 		),
 		'modules' => array(
 			'class' => 'class.modules',
@@ -223,15 +215,6 @@ class hikashopNameboxType {
 			'name' => 'shipping_namekey',
 			'mode' => 'list',
 			'displayFormat' => '{shipping_name}',
-			'params' => array(
-
-			)
-		),
-		'payment_methods' => array(
-			'class' => 'class.payment',
-			'name' => 'payment_namekey',
-			'mode' => 'list',
-			'displayFormat' => '{payment_name}',
 			'params' => array(
 
 			)
@@ -563,7 +546,7 @@ class hikashopNameboxType {
 				}
 			}
 			if(strpos($url, '{displayFormat}') !== false)
-				$url = str_replace('{displayFormat}', $this->getDisplayFormatId($displayFormat, $type), $url);
+				$url = str_replace('{displayFormat}', $this->getDisplayFormatId($type, $displayFormat), $url);
 			$url .= '&search=HIKASEARCH';
 
 			if(empty($typeConfig['mode']) || $typeConfig['mode'] == 'list') {
@@ -583,7 +566,7 @@ class hikashopNameboxType {
 
 		if(isset($namebox_options['tree_url'])) {
 			if(strpos($namebox_options['tree_url'], '{displayFormat}') !== false)
-				$namebox_options['tree_url'] = str_replace('{displayFormat}', $this->getDisplayFormatId($displayFormat, $type), $namebox_options['tree_url']);
+				$namebox_options['tree_url'] = str_replace('{displayFormat}', $this->getDisplayFormatId($type, $displayFormat), $namebox_options['tree_url']);
 
 			if(substr($namebox_options['tree_url'], 0, 10) == 'index.php?')
 				$namebox_options['tree_url'] = str_replace('&amp;', '&', JRoute::_($namebox_options['tree_url']));

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -86,16 +86,11 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 
 		$checkoutHelper = hikashopCheckoutHelper::get();
 		$cart = $checkoutHelper->getCart();
-		$cartClass = hikashop_get('class.cart');
-		$cart = $cartClass->getFullCart($cart->cart_id);
 		if(!empty($cart->cart_fields) && is_string($cart->cart_fields))
 			$cart->cart_fields = json_decode($cart->cart_fields);
 
 		$old = new stdClass();
 		$old->products = $cart->products;
-		$old->cart_payment_id = @$cart->cart_payment_id;
-		$old->cart_shipping_ids = @$cart->cart_shipping_ids;
-
 
 		if(!empty($params['fields']) && is_string($params['fields']))
 			$params['fields'] = explode(',',$params['fields']);
@@ -108,7 +103,7 @@ class hikashopCheckoutFieldsHelper extends hikashopCheckoutHelperInterface {
 
 			$cpt = 0;
 			foreach($messages as $msg) {
-				$checkoutHelper->addMessage('fields.'.($cpt++), array( $msg, 'error'));
+				$checkoutHelper->addMessage('fields.'.($cpt++), $msg);
 			}
 			return false;
 		}

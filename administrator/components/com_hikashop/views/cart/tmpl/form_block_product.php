@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,30 +23,21 @@ if(hikashop_level(2) && !empty($this->fields['item'])) {
 ?>
 				<dl class="hika_options hikashop_cart_product_custom_item_fields">
 <?php
-	$after = array();
 	foreach($this->fields['item'] as $fieldName => $field) {
 		$namekey = $field->field_namekey;
 
 		if(!$this->checkFieldForProduct($field, $this->product))
 			continue;
-		$html = $this->fieldClass->display($field, @$this->cart_product->$fieldName, 'data[products]['.$this->cart_product->cart_product_id.'][field]['.$fieldName.']',false,'',true);
-		if($field->field_type == 'hidden') {
-			$after[] = $html;
-			continue;
-		}
 ?>
 		<dt class="hikashop_cart_product_customfield hikashop_cart_product_customfield_<?php echo $fieldName; ?>"><?php echo $this->fieldClass->getFieldName($field);?></dt>
 		<dd class="hikashop_cart_product_customfield hikashop_cart_product_customfield_<?php echo $fieldName; ?>"><span><?php
-			echo $html;
+			echo $this->fieldClass->display($field, @$this->cart_product->$fieldName, 'data[products]['.$this->cart_product->cart_product_id.'][field]['.$fieldName.']',false,'',true);
 		?></span></dd>
 <?php
 	}
 ?>
 				</dl>
 <?php
-	if(count($after)) {
-		echo implode("\r\n", $after);
-	}
 }
 ?>
 			</td>

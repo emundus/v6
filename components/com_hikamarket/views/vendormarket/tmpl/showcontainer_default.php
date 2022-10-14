@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -67,8 +67,6 @@ defined('_JEXEC') or die('Restricted access');
 			<dl class="hikam_options">
 <?php
 		foreach($this->extraFields['vendor'] as $fieldName => $oneExtraField) {
-			if(empty($this->vendor->$fieldName))
-				continue;
 ?>
 				<dt><span id="hikamarket_vendor_custom_name_<?php echo $oneExtraField->field_id;?>" class="hikamarket_vendor_custom_name"><?php
 					echo $this->fieldsClass->trans($oneExtraField->field_realname);
@@ -102,11 +100,9 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hkc-md-12">
 		<div id="vendor_map" class="hikamarket_vendor_map" style="height:200px;"></div>
 <script type="text/javascript">
-window.hikashop.ready(function(){
-	var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', osmAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
-	var map = L.map('vendor_map').setView([<?php echo hikamarket::toFloat($this->vendor->vendor_location_lat); ?>, <?php echo hikamarket::toFloat($this->vendor->vendor_location_long); ?>], 15).addLayer(osm);
-	var marker = L.marker([<?php echo hikamarket::toFloat($this->vendor->vendor_location_lat); ?>, <?php echo hikamarket::toFloat($this->vendor->vendor_location_long); ?>]).addTo(map);
-});
+var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', osmAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', osm = L.tileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+var map = L.map('vendor_map').setView([<?php echo hikamarket::toFloat($this->vendor->vendor_location_lat); ?>, <?php echo hikamarket::toFloat($this->vendor->vendor_location_long); ?>], 15).addLayer(osm);
+var marker = L.marker([<?php echo hikamarket::toFloat($this->vendor->vendor_location_lat); ?>, <?php echo hikamarket::toFloat($this->vendor->vendor_location_long); ?>]).addTo(map);
 </script>
 	</div>
 <?php

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -79,7 +79,6 @@ class TaxViewTax extends hikashopView{
 		}
 		switch($pageInfo->filter->filter_status){
 			case '':
-			case 'all':
 				break;
 			default:
 				if(!is_array($pageInfo->filter->filter_status)) {
@@ -157,7 +156,6 @@ class TaxViewTax extends hikashopView{
 				$orders_taxes[$k]->order_tax_info = hikashop_unserialize($v->order_tax_info);
 				$info =& $orders_taxes[$k]->order_tax_info;
 				if(!$info) continue;
-
 				foreach($info as $k2 => $taxes_info){
 					$tax_amount = $taxes_info->tax_amount;
 					if(!isset($taxes_info->tax_rate)) {
@@ -173,8 +171,6 @@ class TaxViewTax extends hikashopView{
 					} else {
 						if($taxes_info->tax_rate != 0)
 							$info[$k2]->amount = $currencyClass->round($tax_amount/$taxes_info->tax_rate,$currencyClass->getRounding($v->order_currency_id));
-						elseif(count($info) == 1)
-							$info[$k2]->amount = $v->order_full_price;
 						else
 							$info[$k2]->amount = 0;
 					}
@@ -282,6 +278,7 @@ class TaxViewTax extends hikashopView{
 			'country_Slovenia_190' => 'SI',
 			'country_Spain_195' => 'ES',
 			'country_Sweden_203' => 'SE',
+			'country_United_Kingdom_222' => 'GB',
 		);
 		$data_title = new stdClass();
 		$data_title->tr_type = 'title';

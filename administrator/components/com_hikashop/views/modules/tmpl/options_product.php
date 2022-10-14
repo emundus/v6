@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,9 +11,9 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_module_subblock_content">
 		<div class="hikashop_module_subblock_title hikashop_module_edit_display_settings_div_title"><?php echo JText::_('HIKA_PRODUCT_DATA_DISPLAY'); ?></div>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('HIKA_OUT_OF_STOCK'); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('HIKA_OUT_OF_STOCK');
+			?></dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['show_out_of_stock']))
 					$this->element['show_out_of_stock'] = -1;
@@ -21,9 +21,9 @@ defined('_JEXEC') or die('Restricted access');
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo hikashop_hktooltip(JText::_('HIKA_PRODUCT_RELATION'), '', JText::_('HIKA_RELATION'), ''); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo hikashop_hktooltip(JText::_('HIKA_PRODUCT_RELATION'), '', JText::_('HIKA_RELATION'), '');
+			?></dt>
 			<dd><?php
 				if(!isset($this->element['product_synchronize']))
 					$this->element['product_synchronize'] = 4;
@@ -31,9 +31,9 @@ defined('_JEXEC') or die('Restricted access');
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('RECENTLY_VIEWED'); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('RECENTLY_VIEWED');
+			?></dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['recently_viewed']) || (int)$this->element['recently_viewed'] == -1)
 					$this->element['recently_viewed'] = 0;
@@ -41,9 +41,9 @@ defined('_JEXEC') or die('Restricted access');
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo hikashop_hktooltip(JText::_('HIKA_LINK_TO_DETAIL_PAGE_TOOLTIP'), '', JText::_('HIKA_LINK_TO_DETAIL_PAGE'), ''); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('HIKA_LINK_TO_DETAIL_PAGE');
+			?></dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['link_to_product_page']))
 					$this->element['link_to_product_page'] = -1;
@@ -51,22 +51,9 @@ defined('_JEXEC') or die('Restricted access');
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label for="data_menu__product_popup_mode">
-					<?php echo JText::_('HIKA_POPUP_MODE');?>
-				</label>
-			</dt>
-			<dd class="hikashop_option_value">
-				<?php
-				if(!isset($this->element['product_popup_mode'])) $this->element['product_popup_mode'] = 3;
-				echo $this->showpopupoptionType->display($this->name.'[product_popup_mode]', $this->element['product_popup_mode'], true, true, true);
-				?>
-			</dd>
-		</dl>
-		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('DISPLAY_PRICE'); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('DISPLAY_PRICE');
+			?></dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['show_price']))
 					$this->element['show_price'] = -1;
@@ -75,7 +62,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options" id="price_display_type_line">
 			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('HIKA_PRICE_TYPE');?></label>
+				<?php echo JText::_('HIKA_PRICE_TYPE');?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -85,7 +72,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options" id="show_taxed_price_line">
 			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('SHOW_TAXED_PRICES');?></label>
+				<?php echo JText::_('SHOW_TAXED_PRICES');?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -95,7 +82,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options" id="show_original_price_line">
 			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('HIKA_ORIGINAL_CURRENCY');?></label>
+				<?php echo JText::_('HIKA_ORIGINAL_CURRENCY');?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -105,7 +92,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options" id="show_discount_line">
 			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('HIKA_DISCOUNT_DISPLAY');?></label>
+				<?php echo JText::_('HIKA_DISCOUNT_DISPLAY');?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -131,7 +118,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('ADD_TO_WISHLIST');?></label>
+				<?php echo JText::_('ADD_TO_WISHLIST');?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php if(hikashop_level(1)){
@@ -155,17 +142,17 @@ defined('_JEXEC') or die('Restricted access');
 			</dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('DISPLAY_WAITLIST_BUTTON'); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('DISPLAY_WAITLIST_BUTTON');
+			?></dt>
 			<dd class="hikashop_option_value"><?php
 				echo JHTML::_('hikaselect.booleanlist', $this->name.'[product_waitlist]', '', @$this->element['product_waitlist']);
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('CONTACT_US_BUTTON'); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('CONTACT_US_BUTTON');
+			?></dt>
 			<dd class="hikashop_option_value"><?php
 				if(hikashop_level(1)) {
 					if(!isset($this->element['product_contact_button'])) $this->element['product_contact_button'] = '-1';
@@ -176,9 +163,9 @@ defined('_JEXEC') or die('Restricted access');
 			?></dd>
 		</dl>
 		<dl class="hika_options">
-			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('PRODUCT_DETAILS_BUTTON'); ?></label>
-			</dt>
+			<dt class="hikashop_option_name"><?php
+				echo JText::_('PRODUCT_DETAILS_BUTTON');
+			?></dt>
 			<dd class="hikashop_option_value"><?php
 				if(!isset($this->element['details_button'])) $this->element['details_button'] = '-1';
 				echo JHTML::_('hikaselect.inheritRadiolist', $this->name.'[details_button]', @$this->element['details_button']);
@@ -186,7 +173,7 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('VOTE');?></label>
+				<?php echo JText::_('VOTE');?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -202,7 +189,7 @@ defined('_JEXEC') or die('Restricted access');
 		if(hikashop_level(2)){ ?>
 			<dl class="hika_options">
 				<dt class="hikashop_option_name">
-					<label><?php echo JText::_('CUSTOM_ITEM_FIELDS');?></label>
+					<?php echo JText::_('CUSTOM_ITEM_FIELDS');?>
 				</dt>
 				<dd class="hikashop_option_value">
 					<?php
@@ -214,7 +201,7 @@ defined('_JEXEC') or die('Restricted access');
 		<?php } ?>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
-				<label><?php echo JText::_('HIKA_BADGE');?></label>
+				<?php echo JText::_('HIKA_BADGE');?>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php
@@ -234,7 +221,7 @@ if(!empty($this->extra_blocks['products'])) {
 				$r['value'] = $r[1];
 ?>
 			<dl class="hika_options">
-				<dt class="hikashop_option_name"><label><?php echo JText::_(@$r['name']); ?></label></dt>
+				<dt class="hikashop_option_name"><?php echo JText::_(@$r['name']); ?></dt>
 				<dd class="hikashop_option_value"><?php echo @$r['value']; ?></dd>
 			</dl>
 <?php

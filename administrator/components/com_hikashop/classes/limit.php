@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -30,16 +30,12 @@ class hikashopLimitClass extends hikashopClass {
 
 		foreach($formData['limit'] as $column => $value) {
 			hikashop_secureField($column);
-			if($column == 'limit_category_id') {
-				hikashop_toInteger($value);
-				$limit->$column = $value;
-				continue;
-			}
 			if(is_array($value)) {
 				$value = implode(',', $value);
 			}
 			$limit->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
 		}
+
 		if(!empty($limit->limit_start)) {
 			$limit->limit_start = hikashop_getTime($limit->limit_start);
 		}
@@ -56,57 +52,16 @@ class hikashopLimitClass extends hikashopClass {
 		return $status;
 	}
 
-	public function save(&$element) {
-		if(empty($element->limit_type) || $element->limit_type != 'weight' ) {
-			$element->limit_unit = '';
+	public function save(&$limit) {
+		if(empty($limit->limit_type) || $limit->limit_type != 'weight' ) {
+			$limit->limit_unit = '';
 		}
-		if(!empty($element->limit_status) && is_array($element->limit_status)){
-			$element->limit_status = implode(',',$element->limit_status);
+		if(!empty($limit->limit_status) && is_array($limit->limit_status)){
+			$limit->limit_status = implode(',',$limit->limit_status);
 		}
-
-		if(!empty($element->limit_category_id) && is_array($element->limit_category_id)){
-			$element->limit_category_id = ','.implode(',',$element->limit_category_id).',';
-		}
-		$new = empty($element->currency_id);
-		$do = true;
-		JPluginHelper::importPlugin('hikashop');
-		$app = JFactory::getApplication();
-		if($new) {
-			$app->triggerEvent('onBeforeLimitCreate', array( &$element, &$do ));
-		} else {
-			$app->triggerEvent('onBeforeLimitUpdate', array( &$element, &$do ));
-		}
-
-		if(!$do)
-			return false;
-
-		$status = parent::save($element);
-		if(!$status)
-			return $status;
-
-		if($new) {
-			$app->triggerEvent('onAfterLimitCreate', array( &$element ));
-		} else {
-			$app->triggerEvent('onAfterLimitUpdate', array( &$element ));
-		}
+		$status = parent::save($limit);
 		return $status;
 	}
-	public function delete(&$elements) {
-		$do = true;
-		JPluginHelper::importPlugin('hikashop');
-		$app = JFactory::getApplication();
-		$app->triggerEvent('onBeforeLimitDelete', array(&$elements, &$do));
-
-		if(!$do)
-			return false;
-
-		$status = parent::delete($elements);
-		if($status) {
-			$app->triggerEvent('onAfterLimitDelete', array(&$elements));
-		}
-		return $status;
-	}
-
 
 	public function getProducts($products, $all = true) {
 		$ret = false;
@@ -137,34 +92,19 @@ class hikashopLimitClass extends hikashopClass {
 			}
 		}
 
-		$query = 'SELECT category_id, product_id '.
-			' FROM '.hikashop_table('product_category').
-			' WHERE product_id IN (' . implode(',', $product_ids) . ')';
-		$this->db->setQuery($query);
-		$categories = $this->db->loadObjectList('product_id');
-
 		$now = time();
 		$filters = array(
 			'hk_limit.limit_published = 1',
 			'hk_limit.limit_start = 0 OR hk_limit.limit_start <= ' . $now,
 			'hk_limit.limit_end = 0 OR hk_limit.limit_end >= ' . $now,
 			'hk_limit.limit_product_id IN (' . implode(',', $product_ids) . ')',
-			'hk_limit.limit_category_id = 0',
+			'hk_limit.limit_category_id = 0 OR hk_pc.product_id IN (' . implode(',', $product_ids) . ')',
 		);
-
-		if(!empty($categories)) {
-			$conditions = array('hk_limit.limit_category_id = 0');
-			foreach($categories as $id => $c) {
-				$conditions[] = 'hk_limit.limit_category_id LIKE \'%,'.$id.',%\'';
-			}
-			$filters[] = '('.implode(' OR ', $conditions).')';
-		} else {
-			$filters[] = 'hk_limit.limit_category_id = 0';
-		}
 		hikashop_addACLFilters($filters, 'limit_access', 'hk_limit');
 
 		$query = 'SELECT DISTINCT hk_limit.* '.
 			' FROM '.hikashop_table('limit').' AS hk_limit '.
+			' LEFT JOIN '.hikashop_table('product_category').' AS hk_pc ON (hk_limit.limit_category_id = hk_pc.category_id) '.
 			' WHERE (' . implode(') AND (', $filters) . ')';
 		$this->db->setQuery($query);
 		$limiters = $this->db->loadObjectList('limit_id');
@@ -233,10 +173,8 @@ class hikashopLimitClass extends hikashopClass {
 		foreach($limiters as $limiter) {
 			$limiterTypes[ $limiter->limit_type ] = true;
 
-			if(!empty($limiter->limit_category_id)) {
-				$limiter->limit_category_id = explode(',', $limiter->limit_category_id);
+			if(!empty($limiter->limit_category_id))
 				$limiterTypes['filter_category'] = true;
-			}
 
 			if($limiter->limit_type == 'quantity') {
 				$limiter->limit_value = (int)$limiter->limit_value;
@@ -272,14 +210,10 @@ class hikashopLimitClass extends hikashopClass {
 			if($limiter->limit_product_id > 0 && $limit_rules[$dl]['product'] !== false) {
 				$limit_rules[$dl]['product'][(int)$limiter->limit_product_id] = (int)$limiter->limit_product_id;
 			}
-			if(!empty($limiter->limit_category_id)) {
-				foreach($limiter->limit_category_id as $id) {
-					if($id > 0 && $limit_rules[$dl]['category'] !== false) {
-						$limit_rules[$dl]['category'][(int)$id] = (int)$id;
-					}
-				}
+			if($limiter->limit_category_id > 0 && $limit_rules[$dl]['category'] !== false) {
+				$limit_rules[$dl]['category'][(int)$limiter->limit_category_id] = (int)$limiter->limit_category_id;
 			}
-			if(empty($limiter->limit_category_id) && $limiter->limit_product_id == 0) {
+			if($limiter->limit_category_id == 0 && $limiter->limit_product_id == 0) {
 				$limit_rules[$dl]['product'] = false;
 				$limit_rules[$dl]['category'] = false;
 			}
@@ -312,23 +246,6 @@ class hikashopLimitClass extends hikashopClass {
 			}
 		}
 
-		$ids = array();
-		foreach($cart->cart_products as $k => &$cart_product) {
-			if(!empty($cart_product->product_parent_id))
-				$ids[] = $cart_product->product_parent_id;
-			if(!empty($cart_product->product_id))
-				$ids[] = $cart_product->product_id;
-		}
-		if(!empty($ids)) {
-			$query = 'SELECT category_id, product_id '.
-				' FROM '.hikashop_table('product_category').
-				' WHERE product_id IN (' . implode(',', $ids) . ')';
-			$this->db->setQuery($query);
-			$categories = $this->db->loadObjectList('product_id');
-		} else {
-			$categories = array();
-		}
-
 		foreach($limiters as $limiter) {
 			$baseDate = $baseDates[ $periodicity[ $limiter->limit_periodicity ] ];
 			$parsedIds = array();
@@ -344,7 +261,7 @@ class hikashopLimitClass extends hikashopClass {
 
 				if($limiter->limit_product_id > 0 && $limiter->limit_product_id != $entry->product_id && $limiter->limit_product_id != $entry->product_main_id)
 					continue;
-				if(!empty($limiter->limit_category_id) && !in_array($entry->category_id, $limiter->limit_category_id))
+				if($limiter->limit_category_id > 0 && $limiter->limit_category_id != $entry->category_id)
 					continue;
 
 				$value += $this->getValue($limiter, $entry);
@@ -359,17 +276,6 @@ class hikashopLimitClass extends hikashopClass {
 
 				if((int)$limiter->limit_product_id > 0 && (int)$limiter->limit_product_id != $cart_product->product_id && (int)$limiter->limit_product_id != $cart_product->product_parent_id)
 					continue;
-
-				if(!empty($limiter->limit_category_id)){
-					$product_categories = array();
-					foreach($categories as $c) {
-						if($c->product_id == $cart_product->product_id || $c->product_id == $cart_product->product_parent_id)
-							$product_categories[] = $c->category_id;
-					}
-					$intersect = array_intersect($product_categories, $limiter->limit_category_id);
-					if(count($intersect)<1)
-						continue;
-				}
 
 				if(empty($cart_product->cart_product_quantity))
 					continue;
@@ -408,17 +314,6 @@ class hikashopLimitClass extends hikashopClass {
 
 					if((int)$limiter->limit_product_id > 0 && (int)$limiter->limit_product_id != $i && (int)$limiter->limit_product_id != $parent_id)
 						continue;
-
-					if(!empty($limiter->limit_category_id)){
-						$product_categories = array();
-						foreach($categories as $c) {
-							if($c->product_id == $i || $c->product_id == $parent_id)
-								$product_categories[] = $c->category_id;
-						}
-						$intersect = array_intersect($product_categories, $limiter->limit_category_id);
-						if(count($intersect)<1)
-							continue;
-					}
 
 					$qty = $this->checkLimiterForProduct($limiter, $value, $p['data'], $data, $p['qty']);
 					if($p['qty'] == (int)$qty)
@@ -716,8 +611,7 @@ class hikashopLimitClass extends hikashopClass {
 		}
 		if(!empty($products)) {
 			foreach($products as $product) {
-				$i = (isset($product['id']) ? $product['id'] : (int)$product['data']->product_id);
-				$pids[ (int)$i ] = (int)$i;
+				$pids[ (int)$product['id'] ] = (int)$product['id'];
 				if(!empty($product['data']) && !empty($product['data']->product_parent_id))
 					$pids[ (int)$product['data']->product_parent_id ] = (int)$product['data']->product_parent_id;
 			}
@@ -821,4 +715,6 @@ class hikashopLimitClass extends hikashopClass {
 		);
 	}
 
+	protected function checkLimitations(&$product, &$quantity, &$cartObject, $cart_product_id) {
+	}
 }

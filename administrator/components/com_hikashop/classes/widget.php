@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -165,11 +165,6 @@ class hikashopWidgetClass extends hikashopClass {
 				if($formData['widget']['widget_params']['periodType'] && isset($formData['widget']['widget_params']['proposedPeriod']) && $formData['widget']['widget_params']['proposedPeriod']=='all'){
 					$formData['widget']['widget_params']['period_compare']='none';
 				}
-				if(isset($formData['widget']['widget_params']['filters']['a.order_status'])) {
-					if(in_array('all',$formData['widget']['widget_params']['filters']['a.order_status'])) {
-						unset($formData['widget']['widget_params']['filters']['a.order_status']);
-					}
-				}
 				foreach($formData['widget'] as $column => $value){
 					hikashop_secureField($column);
 					if(is_array($value)){
@@ -247,12 +242,12 @@ class hikashopWidgetClass extends hikashopClass {
 	}
 
 	function displayResult($results){
-?>
+		?>
 		<script language="JavaScript" type="text/javascript">
 			function drawChart(){
 				var dataTable = new google.visualization.DataTable();
 				dataTable.addColumn('string');
-<?php
+				<?php
 				$dates = array();
 				$types = array();
 				$i= 0;
@@ -271,7 +266,7 @@ class hikashopWidgetClass extends hikashopClass {
 					}
 					echo "dataTable.setValue(".$dates[$oneResult->groupingdate].", ".$types[$oneResult->type].", ".$oneResult->total.");";
 				}
-?>
+				?>
 
 				var vis = new google.visualization.<?php echo $this->charttype; ?>(document.getElementById('chart'));
 				var options = {
@@ -284,10 +279,10 @@ class hikashopWidgetClass extends hikashopClass {
 				vis.draw(dataTable, options);
 			}
 
-			google.load("visualization", "49", {packages:["corechart"]});
+			google.load("visualization", "1", {packages:["corechart"]});
 			google.setOnLoadCallback(drawChart);
 		</script>
-<?php
+		<?php
 	}
 
 	function csv(){
@@ -670,20 +665,17 @@ class hikashopWidgetClass extends hikashopClass {
 			$widget->widget_params->date_type = 'created';
 		}
 
-		$order_table = 'a';
 		switch($widget->widget_params->content) {
 			case 'orders':
 			case 'sales':
 			case 'taxes':
-				$order_table = 'a';
+				$date_field = 'a.order_'.@$widget->widget_params->date_type;
 				break;
 			case 'partners':
 			case 'customers':
-				$date_field = 'o.order_'.@$widget->widget_params->date_type;
-				$order_table = 'o';
+				$date_field = 'a.user_created';
 				break;
 		}
-		$date_field = $order_table.'.order_'.@$widget->widget_params->date_type;
 
 		$compare = true;
 		$setFilters = true;
@@ -755,8 +747,6 @@ class hikashopWidgetClass extends hikashopClass {
 					$selectAdd='prod.order_product_quantity';
 				}else if($widget->widget_params->content=='sales'){
 					$selectAdd='(prod.order_product_price+prod.order_product_tax)*prod.order_product_quantity';
-				}elseif($widget->widget_params->content=='customers') {
-					$selectAdd='(prod.order_product_price+prod.order_product_tax)*prod.order_product_quantity';
 				}
 				if(!isset($leftjoin['order_product'])){
 					$leftjoin['order_product'] = ' LEFT JOIN '.hikashop_table('order_product').' AS prod ON prod.order_id = a.order_id ';
@@ -781,8 +771,6 @@ class hikashopWidgetClass extends hikashopClass {
 					$selectAdd='prod.order_product_quantity';
 				}else if($widget->widget_params->content=='sales'){
 					$selectAdd='(prod.order_product_price+prod.order_product_tax)*prod.order_product_quantity';
-				}elseif($widget->widget_params->content=='customers') {
-					$selectAdd='(prod.order_product_price+prod.order_product_tax)*prod.order_product_quantity';
 				}
 
 				$ids = $this->_getBestCategories($compareFilters, $widget->widget_params->content, $limit);
@@ -795,16 +783,16 @@ class hikashopWidgetClass extends hikashopClass {
 					}
 				}
 			}
-			if(isset($widget->widget_params->compares[$order_table.'.order_currency_id'])){
+			if(isset($widget->widget_params->compares['a.order_currency_id'])){
 				$currencies=$this->_getBestCurrencies($compareFilters, $limit);
 				if(!empty($currencies)){
 					foreach($currencies as $currency){
 						$currenciesIds[]=$currency->currency_id;
 					}
-					$widget->widget_params->filters[$order_table.'.order_currency_id']=$currenciesIds;
+					$widget->widget_params->filters['a.order_currency_id']=$currenciesIds;
 				}
 			}
-			if(isset($widget->widget_params->compares[$order_table.'.order_discount_code'])){
+			if(isset($widget->widget_params->compares['a.order_discount_code'])){
 				$compareFilters=array();
 				$compareFilters=$this->_dateLimit($widget, $compareFilters, $date_field);
 				$compareFilters[]='order_discount_code IS NOT NULL AND order_discount_code <> \'\'';
@@ -814,25 +802,25 @@ class hikashopWidgetClass extends hikashopClass {
 					foreach($discountCodes as $discountCode){
 						$discountIds[]=$discountCode->order_discount_code;
 					}
-					$widget->widget_params->filters[$order_table.'.order_discount_code']=$discountIds;
+					$widget->widget_params->filters['a.order_discount_code']=$discountIds;
 				}
 			}
-			if(isset($widget->widget_params->compares[$order_table.'.order_shipping_method'])){
+			if(isset($widget->widget_params->compares['a.order_shipping_method'])){
 				$shippingMethods=$this->_getBestShipping($compareFilters, $limit);
 				if(!empty($shippingMethods)){
 					foreach($shippingMethods as $shippingMethod){
 						$shippingNames[]=$shippingMethod->order_shipping_method;
 					}
-					$widget->widget_params->filters[$order_table.'.order_shipping_method']=$shippingNames;
+					$widget->widget_params->filters['a.order_shipping_method']=$shippingNames;
 				}
 			}
-			if(isset($widget->widget_params->compares[$order_table.'.order_payment_method'])){
+			if(isset($widget->widget_params->compares['a.order_payment_method'])){
 				$shippingMethods=$this->_getBestPayment($compareFilters, $limit);
 				if(!empty($shippingMethods)){
 					foreach($shippingMethods as $shippingMethod){
 						$shippingNames[]=$shippingMethod->order_payment_method;
 					}
-					$widget->widget_params->filters[$order_table.'.order_payment_method']=$shippingNames;
+					$widget->widget_params->filters['a.order_payment_method']=$shippingNames;
 				}
 			}
 		}
@@ -946,10 +934,6 @@ class hikashopWidgetClass extends hikashopClass {
 					$select.='b.*,';
 				}
 
-				if(!empty($widget->widget_params->status)){
-					$filters['status']='o.order_status IN (\''.implode('\',\'',$widget->widget_params->status).'\')';
-				}
-
 				if(isset($widget->widget_params->filters['a.order_status']) && empty($widget->widget_params->filters['a.order_status'][0])){
 					unset($widget->widget_params->filters['a.order_status']);
 				}
@@ -959,10 +943,6 @@ class hikashopWidgetClass extends hikashopClass {
 				if(isset($widget->widget_params->filters['a.order_shipping_method']) && empty($widget->widget_params->filters['a.order_shipping_method'][0])){
 					unset($widget->widget_params->filters['a.order_shipping_method']);
 				}
-				if($widget->widget_params->content == 'customers')
-					$leftjoin['order'] = ' LEFT JOIN '.hikashop_table('order').' AS o ON a.user_id=o.order_user_id ';
-				else
-					$leftjoin['order'] = ' LEFT JOIN '.hikashop_table('order').' AS o ON a.user_id=o.order_partner_id ';
 
 				if(isset($widget->widget_params->filters) && !empty($widget->widget_params->filters)){
 					foreach($widget->widget_params->filters as $columnName => $values){
@@ -977,22 +957,15 @@ class hikashopWidgetClass extends hikashopClass {
 							$filters[] = $columnName.' = '.$db->Quote($values);
 						}
 					}
-					if($widget->widget_params->content == 'customers')
-						$groupby[] = 'o.order_user_id';
-					else
-						$groupby[] = 'o.order_partner_id';
+					$groupby[] = 'o.order_user_id';
 				}
 
 				$table = 'user';
 
-				$date_field = 'o.order_'.@$widget->widget_params->date_type;
-				$sum = 'SUM(o.order_full_price) AS total';
+				$date_field = 'a.user_created';
+				$sum = 'COUNT(a.user_id) AS total';
 				$widget->widget_params->content_view = 'user';
 				$id = 'user_id';
-				break;
-
-			default:
-				$table = 'order';
 				break;
 		}
 
@@ -1237,14 +1210,7 @@ class hikashopWidgetClass extends hikashopClass {
 						$filters=array();
 						$filters=$this->_dateLimit($widget, $filters, $date_field);
 						$elements=$this->_getBestCustomers($filters, $widget, 'LIMIT 1');
-						if(count($elements)) {
-							if(!empty($elements[0]->name))
-								$widget->elements = $elements[0]->name;
-							elseif(!empty($elements[0]->user_email))
-								$widget->elements = $elements[0]->user_email;
-							else
-								$widget->elements = JText::_('NO_VALUES_FOUND');
-						}
+						$widget->elements =& $elements[0]->name;
 						return true;
 					}
 				}else{
@@ -1365,10 +1331,6 @@ class hikashopWidgetClass extends hikashopClass {
 		$select = rtrim($select, ', ');
 		if(!empty($fieldtype) && strpos($fieldtype,',') !== 0) {
 			$fieldtype = ', ' . $fieldtype;
-		}
-
-		if(empty($fieldtype) && $select == 'SELECT') {
-			$select.=' *';
 		}
 
 		$query = $select . $fieldtype . ' FROM '.hikashop_table($table).' AS a'.$leftjoin.$filters.$limit;
@@ -1883,14 +1845,14 @@ class hikashopWidgetClass extends hikashopClass {
 		foreach($currencies as $currency){
 			$calculatedVal=$unitType;
 			if($main_currency!=$currency->currency_id){
-				if(bccomp(sprintf('%F',$currency->currency_percent_fee),0,2)){
+				if(bccomp($currency->currency_percent_fee,0,2)){
 					$calculatedVal.='*'.floatval($currency->currency_percent_fee)/100.0;
 				}
 				$calculatedVal.='/'.floatval($currency->currency_rate);
 			}
 			if($main_currency!=$currentCurrency){
 				$calculatedVal.='*'.floatval($dstCurrency->currency_rate);
-				if(bccomp(sprintf('%F',$dstCurrency->currency_percent_fee),0,2)){
+				if(bccomp($dstCurrency->currency_percent_fee,0,2)){
 					$calculatedVal.='*'.floatval($dstCurrency->currency_percent_fee)/100.0;
 				}
 			}
@@ -1948,22 +1910,22 @@ class hikashopWidgetClass extends hikashopClass {
 			switch($group){
 				case '%H %j %Y'://day
 					$parts = explode(' ',$element->calculated_date);
-					$element->timestamp = gmmktime($parts[2], 0, 0, 1, $parts[1], $parts[0]);
+					$element->timestamp = gmmktime($parts[2], 0, 0, 1, $parts[1], $parts[0]) - $this->timeoffset;
 					break;
 				case '%j %Y'://day
 					$parts = explode(' ',$element->calculated_date);
-					$element->timestamp = gmmktime(0, 0, 0, 1, $parts[1], $parts[0]);
+					$element->timestamp = gmmktime(0, 0, 0, 1, $parts[1], $parts[0])- $this->timeoffset;
 					break;
 				case '%u %Y'://week
 					$parts = explode(' ',$element->calculated_date);
-					$element->timestamp = gmmktime(0, 0, 0, 1, $parts[1]*7, $parts[0]);
+					$element->timestamp = gmmktime(0, 0, 0, 1, $parts[1]*7, $parts[0])- $this->timeoffset;
 					break;
 				case '%m %Y'://month
 					$parts = explode(' ',$element->calculated_date);
-					$element->timestamp = gmmktime(0, 0, 0, $parts[1], 1, $parts[0]);
+					$element->timestamp = gmmktime(0, 0, 0, $parts[1], 1, $parts[0])- $this->timeoffset;
 					break;
 				case '%Y'://year
-					$element->timestamp = gmmktime(0, 0, 0, 1, 1, $element->calculated_date);
+					$element->timestamp = gmmktime(0, 0, 0, 1, 1, $element->calculated_date)- $this->timeoffset;
 					break;
 			}
 		}
@@ -1973,14 +1935,6 @@ class hikashopWidgetClass extends hikashopClass {
 					$element->timestamp=$element->timestamp+$diff;
 			}
 		}
-
-		$joomlaConfig = JFactory::getConfig();
-		if(!HIKASHOP_J30)
-			$offset = $joomlaConfig->getValue('config.offset');
-		else
-			$offset = $joomlaConfig->get('offset');
-
-		date_default_timezone_set(JFactory::getUser()->getParam('timezone', $offset));
 
 		$element->year = date('Y',$element->timestamp);
 		$element->month = date('m',$element->timestamp)-1;

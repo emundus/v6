@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,7 +33,7 @@ if(!empty($this->editing_variant))
 		if(empty($price->price_value))
 			continue;
 ?>
-		<tr class="row<?php echo $k ?>" id="price_<?php echo $price->price_id; ?>" data-id="<?php echo $i; ?>">
+		<tr class="row<?php echo $k ?>" id="price_<?php echo $price->price_id; ?>">
 			<td style="white-space: nowrap;"><?php
 				if(!$this->config->get('floating_tax_prices',0)){
 					echo $this->currencyClass->format($price->price_value,$price->price_currency_id). ' / ';
@@ -109,7 +109,7 @@ if(!empty($this->editing_variant))
 		$k = 1 - $k;
 	}
 ?>
-		<tr id="hikashop_<?php echo $form_key; ?>_row_template" id="price_{ID}" class="row<?php echo $k; ?>" style="display:none;" data-id="{DATA_ID}">
+		<tr id="hikashop_<?php echo $form_key; ?>_row_template" id="price_{ID}" class="row<?php echo $k; ?>" style="display:none;">
 			<td style="white-space: nowrap;">
 				{PRICE}
 			</td>
@@ -166,7 +166,7 @@ window.productMgr.editPrice = function(formkey, pid) {
 		if(x.responseText == '') return;
 		td = el;
 		if(typeof(hkjQuery) != "undefined") {
-			window.hikashop.updateElem(td, x.responseText);
+			o.updateElem(td, x.responseText);
 			if(hkjQuery().chosen)
 				hkjQuery('.hika_options select').chosen();
 
@@ -178,7 +178,7 @@ window.productMgr.editPrice = function(formkey, pid) {
 			}
 
 		} else {
-			window.hikashop.updateElem(td, x.responseText);
+			o.updateElem(td, x.responseText);
 		}
 		window.productMgr.priceEdition[formkey+'_edit'] = false;
 	});
@@ -304,33 +304,23 @@ window.productMgr.addPrice = function(formkey) {
 	if(site != '')
 		restrictions.push('<strong><?php echo JText::_('SITE_ID', true); ?></strong>: ' + site);
 
-	var max_id = 0;
-	var rows = d.getElementById('hikashop_product_' + formkey + '_table').tBodies[0].rows;
-	for(i = 0; i < rows.length; i++) {
-		var row = rows[i];
-		var data_id = parseInt(row.getAttribute('data-id'));
-		if(!isNaN(data_id)) {
-			max_id = Math.max(data_id, max_id);
-		}
-	}
-	max_id++;
+	i = d.getElementById('hikashop_product_' + formkey + '_table').tBodies[0].rows.length;
 
 	var htmlblocks = {
-		PRICE: price, RESTRICTIONS: restrictions.join('<br/>'), DATA_ID: max_id,
-		PRICE_USERS_INPUT_NAME: formkey + '[' + max_id + '][price_users]', PRICE_USERS_VALUE: userid.join(','),
-		PRICE_ACCESS_INPUT_NAME: formkey + '[' + max_id + '][price_access]', PRICE_ACCESS_VALUE: access,
-		PRICE_START_DATE_INPUT_NAME: formkey + '[' + max_id + '][price_start_date]', PRICE_START_DATE_VALUE: start_date,
-		PRICE_END_DATE_INPUT_NAME: formkey + '[' + max_id + '][price_end_date]', PRICE_END_DATE_VALUE: end_date,
-		PRICE_QTY_INPUT_NAME: formkey + '[' + max_id + '][price_min_quantity]', PRICE_QTY_VALUE: qty,
-		PRICE_SITE_INPUT_NAME: formkey + '[' + max_id + '][price_site_id]', PRICE_SITE_VALUE: site,
-		PRICE_CURRENCY_INPUT_NAME: formkey + '[' + max_id + '][price_currency_id]', PRICE_CURRENCY_VALUE: currid,
-		PRICE_ID_INPUT_NAME: formkey + '[' + max_id + '][price_id]', PRICE_ID: id,
-		PRICE_VALUE_INPUT_NAME: formkey + '[' + max_id + '][price_value]', PRICE_VALUE: value,
+		PRICE: price, RESTRICTIONS: restrictions.join('<br/>'),
+		PRICE_USERS_INPUT_NAME: formkey + '[' + i + '][price_users]', PRICE_USERS_VALUE: userid.join(','),
+		PRICE_ACCESS_INPUT_NAME: formkey + '[' + i + '][price_access]', PRICE_ACCESS_VALUE: access,
+		PRICE_START_DATE_INPUT_NAME: formkey + '[' + i + '][price_start_date]', PRICE_START_DATE_VALUE: start_date,
+		PRICE_END_DATE_INPUT_NAME: formkey + '[' + i + '][price_end_date]', PRICE_END_DATE_VALUE: end_date,
+		PRICE_QTY_INPUT_NAME: formkey + '[' + i + '][price_min_quantity]', PRICE_QTY_VALUE: qty,
+		PRICE_SITE_INPUT_NAME: formkey + '[' + i + '][price_site_id]', PRICE_SITE_VALUE: site,
+		PRICE_CURRENCY_INPUT_NAME: formkey + '[' + i + '][price_currency_id]', PRICE_CURRENCY_VALUE: currid,
+		PRICE_ID_INPUT_NAME: formkey + '[' + i + '][price_id]', PRICE_ID: id,
+		PRICE_VALUE_INPUT_NAME: formkey + '[' + i + '][price_value]', PRICE_VALUE: value,
 		EDIT_BUTTON: edit
 	};
 
-	var newRow = w.hikashop.dupRow('hikashop_' + formkey + '_row_template', htmlblocks, row_id);
-	newRow.setAttribute('data-id', max_id);
+	w.hikashop.dupRow('hikashop_' + formkey + '_row_template', htmlblocks, row_id);
 	w.productMgr.cancelNewPrice(formkey);
 	return false;
 };
