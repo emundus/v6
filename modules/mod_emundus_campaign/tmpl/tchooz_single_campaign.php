@@ -123,7 +123,7 @@ $h = $dteDiff->format("%H");
         <?php if ($mod_em_campaign_show_registration == 1) : ?>
         <!-- INFO BLOCK -->
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
-            <p class="em-h6">Candidater</p>
+            <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></p>
             <div class="em-mt-24">
                 <?php $index = 1; ?>
                 <?php foreach ($mod_em_campaign_show_registration_steps as $key => $step): ?>
@@ -135,8 +135,9 @@ $h = $dteDiff->format("%H");
         <?php endif; ?>
 
         <!-- ATTACHMENTS BLOCK -->
+        <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
-            <p class="em-h6">Téléchargements</p>
+            <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_DOWNLOADS') ?></p>
             <div class="em-mt-24">
                 <?php foreach($files as $file) : ?>
                     <div class="em-flex-row em-mb-16 mod_emundus_campaign__details_file">
@@ -148,10 +149,13 @@ $h = $dteDiff->format("%H");
                 <?php endforeach; ?>
             </div>
         </div>
+        <?php endif ;?>
 
+        <?php if (!empty($contact) && $mod_em_campaign_show_contact == 1) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300">
-            <p class="em-h6">Contact</p>
+            <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_CONTACT') ?></p>
         </div>
+        <?php endif; ?>
     </div>
 </div>
 
