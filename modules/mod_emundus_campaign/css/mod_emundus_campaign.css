@@ -239,6 +239,10 @@
     margin-left: 8px;
 }
 
+.em-campaign-dropfiles ul a:focus {
+    color: green;
+}
+
 .em-campaign-dropfiles .g-title {
     border:none !important;
     position:relative;
