@@ -292,7 +292,7 @@ export default {
 			if (empty_names === true) {
 				Swal.fire({
 					type: 'warning',
-					title: 'Veuillez remplir le champ "Type de document"',
+					title: this.translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_TYPE"),
 					reverseButtons: true,
 					customClass: {
 						title: 'em-swal-title',
@@ -317,7 +317,7 @@ export default {
 			if (types.length < 1) {
 				Swal.fire({
 					type: 'warning',
-					title: 'Veuillez sélectionner au moins un format de document',
+					title: this.translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_FORMAT"),
 					reverseButtons: true,
 					customClass: {
 						title: 'em-swal-title',
