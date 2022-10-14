@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -110,7 +110,7 @@ $config = hikashop_config();
 					<div style="text-align:center;" class="pagination">
 						<form action="<?php echo hikashop_completeLink('cart&task=showcarts&cart_type='.$cart_type.$Itemid_str); ?>" method="post" name="adminForm_bottom">
 							<?php $this->pagination->form = '_bottom'; echo $this->pagination->getListFooter(); ?>
-							<?php echo '<span class="hikashop_results_counter">'.$this->pagination->getResultsCounter(). '</span>'; ?>
+							<?php echo $this->pagination->getResultsCounter(); ?>
 							<input type="hidden" name="Itemid" value="<?php echo $Itemid; ?>"/>
 							<input type="hidden" name="option" value="<?php echo HIKASHOP_COMPONENT; ?>" />
 							<input type="hidden" name="task" value="showcarts" />

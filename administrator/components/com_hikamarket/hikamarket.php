@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -66,4 +66,4 @@ $classGroup->redirect();
 if(hikaInput::get()->getString('tmpl') !== 'component') {
 	echo hikamarket::footer();
 }
-echo '<div id="hikamarket_main_content" class="hikamarket_main_content hika_j'.(int)HIKASHOP_JVERSION.'">'.ob_get_clean().'</div>';
+echo '<div id="hikamarket_main_content" class="hikamarket_main_content hika_j'.(int)HIKASHOP_JVERSION.'"">'.ob_get_clean().'</div>';

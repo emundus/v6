@@ -23,7 +23,9 @@
 			    	error: attachmentIsValidated == 0,
 			    }"
         >
-          <label for="status">{{translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</label>
+          <label for="status">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CHECK")
+            }}</label>
           <select
               name="status"
               v-model="attachmentIsValidated"
@@ -32,12 +34,18 @@
           >
             <option value=1>{{ translate("VALID") }}</option>
             <option value=0>{{ translate("INVALID") }}</option>
-            <option value=2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
-            <option value=-2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
+            <option value=2>
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
+            </option>
+            <option value=-2>
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
+            </option>
           </select>
         </div>
         <div class="input-group" v-if="canUpdate">
-          <label for="replace">{{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label>
+          <label for="replace">
+            {{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label
+          >
           <input
               type="file"
               name="replace"
@@ -46,7 +54,9 @@
           />
         </div>
         <div class="input-group">
-          <label for="can_be_viewed">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
+          <label for="can_be_viewed">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")
+            }}</label>
           <input
               type="checkbox"
               name="can_be_viewed"
@@ -55,7 +65,9 @@
           />
         </div>
         <div class="input-group">
-          <label for="can_be_deleted">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
+          <label for="can_be_deleted">{{
+              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")
+            }}</label>
           <input
               type="checkbox"
               name="can_be_deleted"
@@ -82,7 +94,9 @@
           <span>{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
-					<span>{{translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
+					<span>{{
+              translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
+            }}</span>
           <span>{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
@@ -238,7 +252,7 @@ export default {
   },
   watch: {
     "$store.state.attachment.selectedAttachment": function () {
-      // check if selected attachment is not an empty object
+      // check if selected attchment is not an empty object
       const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
 
       if (keys.length > 0) {

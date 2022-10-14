@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -92,7 +92,7 @@ if(invalid_field)
 		if(!empty($this->options['show_login']))
 			$title = !empty($this->options['registration_guest']) ? 'LOGIN_OR_GUEST' : 'LOGIN_OR_REGISTER_ACCOUNT';
 	} else {
-		if(!empty($this->options['show_login']) && ($this->options['registration_registration'] || $this->options['registration_simplified'] || $this->options['registration_password']) && !empty($this->options['registration_guest']))
+		if(!empty($this->options['show_login']) && ($this->options['registration_registration'] || $this->options['registration_simplified'] || $this->options['registration_password']) && $this->options['registration_guest'])
 			$title = 'LOGIN_OR_REGISTER_ACCOUNT_OR_GUEST';
 		else if(!empty($this->options['show_login']) && ($this->options['registration_registration'] || $this->options['registration_simplified'] || $this->options['registration_password']))
 			$title = 'LOGIN_OR_REGISTER_ACCOUNT';
@@ -177,27 +177,27 @@ if(invalid_field)
 <?php
 			$values = array();
 			$v = null;
-			if(!empty($this->options['show_login'])) {
+			if($this->options['show_login']) {
 				$v = JHTML::_('select.option', 'login', JText::_('HIKA_LOGIN').'<br/>');
 				$v->class = 'hikabtn-checkout-login';
 				$values[] = $v;
 			}
-			if(!empty($this->options['registration_registration'])) {
+			if($this->options['registration_registration']) {
 				$v = JHTML::_('select.option', 0, JText::_('HIKA_REGISTRATION').'<br/>');
 				$v->class = 'hikabtn-checkout-registration';
 				$values[] = $v;
 			}
-			if(!empty($this->options['registration_simplified'])) {
+			if($this->options['registration_simplified']) {
 				$v = JHTML::_('select.option', 1, JText::_('HIKA_REGISTRATION').'<br/>');
 				$v->class = 'hikabtn-checkout-simplified';
 				$values[] = $v;
 			}
-			if(!empty($this->options['registration_password'])) {
+			if($this->options['registration_password']) {
 				$v = JHTML::_('select.option', 3, JText::_('HIKA_REGISTRATION').'<br/>');
 				$v->class = 'hikabtn-checkout-simplified-pwd';
 				$values[] = $v;
 			}
-			if(!empty($this->options['registration_guest'])) {
+			if($this->options['registration_guest']) {
 				$v = JHTML::_('select.option', 2, JText::_('GUEST').'<br/>');
 				$v->class = 'hikabtn-checkout-guest';
 				$values[] = $v;

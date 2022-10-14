@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,8 +13,6 @@ class plgSystemHikashopuser extends JPlugin {
 
 	public function __construct(&$subject, $config) {
 		parent::__construct($subject, $config);
-
-		if (version_compare(JVERSION,'4.0','>=') && !(Joomla\CMS\Factory::getApplication() instanceof Joomla\CMS\Application\WebApplication)) return;
 
 		if(!isset($this->params)) {
 			$plugin = JPluginHelper::getPlugin('system', 'hikashopuser');
@@ -35,54 +33,6 @@ class plgSystemHikashopuser extends JPlugin {
 
 	}
 
-	public function onAfterProductCreate(&$product) {
-		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('finder');
-
-		$isNew = true;
-		$context = 'com_hikashop.product';
-		$app->triggerEvent('onFinderAfterSave', array($context, $product, $isNew));
-	}
-	public function onBeforeProductCreate(&$product, &$do) {
-		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('finder');
-
-		$isNew = true;
-		$context = 'com_hikashop.product';
-		$app->triggerEvent('onFinderBeforeSave', array($context, $product, $isNew));
-	}
-	public function onAfterProductUpdate(&$product) {
-		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('finder');
-
-		$isNew = false;
-		$context = 'com_hikashop.product';
-		$app->triggerEvent('onFinderAfterSave', array($context, $product, $isNew));
-	}
-	public function onBeforeProductUpdate(&$product) {
-		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('finder');
-
-		$isNew = false;
-		$context = 'com_hikashop.product';
-		$app->triggerEvent('onFinderBeforeSave', array($context, $product, $isNew));
-	}
-	public function onAfterProductDelete($elements) {
-		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('finder');
-		$context = 'com_hikashop.product';
-
-		foreach($elements as $element) {
-			$app->triggerEvent('onFinderAfterDelete', array($context, $element));
-		}
-	}
-	public function onAfterCategoryUpdate(&$category) {
-		$app = JFactory::getApplication();
-		JPluginHelper::importPlugin('finder');
-		if(!empty($category->old) && isset($category->category_published) && $category->category_published != $category->old->category_published)
-			$app->triggerEvent('onFinderCategoryChangeState', array('com_hikashop', array($category->category_id), $category->category_published));
-	}
-
 	public function onContentPrepareForm($form, $data) {
 		$app = JFactory::getApplication();
 
@@ -101,12 +51,6 @@ class plgSystemHikashopuser extends JPlugin {
 
 		if(version_compare(JVERSION,'3.7','<'))
 			return;
-
-		$app = JFactory::getApplication();
-		if($app->isClient('administrator')) {
-			if(empty($_REQUEST['option']) || $_REQUEST['option'] != 'com_hikashop')
-				return;
-		}
 
 		$doc = JFactory::getDocument();
 		$head = $doc->getHeadData();
@@ -191,20 +135,6 @@ class plgSystemHikashopuser extends JPlugin {
 		return true;
 	}
 
-	public function onAfterUserProfileSaved(&$user, $env) {
-		if(empty($user->id) || empty($user->email))
-			return;
-		if(!defined('DS'))
-			define('DS', DIRECTORY_SEPARATOR);
-		if(!include_once(rtrim(JPATH_ADMINISTRATOR,DS).DS.'components'.DS.'com_hikashop'.DS.'helpers'.DS.'helper.php'))
-			return true;
-		$userClass = hikashop_get('class.user');
-		$hikaUser = new stdClass();
-		$hikaUser->user_email = $user->email;
-		$hikaUser->user_cms_id = $user->id;
-		$userClass->save($hikaUser, true);
-	}
-
 	public function onAfterStoreUser($user, $isnew, $success, $msg) {
 		if($success === false || !is_array($user))
 			return false;
@@ -266,7 +196,7 @@ class plgSystemHikashopuser extends JPlugin {
 				$query .= ' WHERE '.$db->quoteName('user_id').' = 0 ';
 				$query .= ' AND '.$db->quoteName('session_id').' = '.$db->quote($session_id).';';
 				$db->setQuery($query);
-				$db->execute();
+				$db->Query();
 			}
 		}
 		return true;
@@ -541,10 +471,7 @@ class plgSystemHikashopuser extends JPlugin {
 		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
 			return true;
 
-		if(
-			($option != 'com_user' || $view != 'user' || $task != 'edit') && 
-			($option != 'com_users' || $view != 'profile' || !in_array($layout, array('edit', 'profile.edit')))
-		)
+		if(($option != 'com_user' || $view != 'user' || $task != 'edit') && ($option != 'com_users' || $view != 'profile' || $layout != 'edit'))
 			return;
 
 		$display = $this->params->get('fields_on_user_profile');
@@ -563,7 +490,7 @@ class plgSystemHikashopuser extends JPlugin {
 			$body = $app->getBody();
 			$alternate_body = true;
 		}
-		if(preg_match('#<form[^>]*class=".*form-validate#Uis', $body) === false)
+		if(strpos($body, 'class="form-validate') === false)
 			return;
 
 		if(!defined('DS'))
@@ -603,11 +530,8 @@ class plgSystemHikashopuser extends JPlugin {
 			$onWhat='onchange';
 			if($oneExtraField->field_type=='radio')
 				$onWhat='onclick';
-			$html = $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
-			if(HIKASHOP_J40) {
-				$html = str_replace('class="inputbox', 'class="form-control', $html);
-			}
-			$data .= $html;
+			$data .= $fieldsClass->display($oneExtraField,@$user->$fieldName,'data[user]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'user\',0);"',false,$extraFields['user'],$user);
+
 			if(HIKASHOP_J30)
 				$data .= '</div></div>';
 			else
@@ -618,7 +542,7 @@ class plgSystemHikashopuser extends JPlugin {
 		else
 			$data .= '</fieldset>';
 
-		$body = preg_replace('#(<form[^>]*class=".*form-validate.*"[^>]*>.*</(fieldset|table)>)#Uis','$1'.$data, $body,1);
+		$body = preg_replace('#(<form[^>]*class="form-validate.*"[^>]*>.*</(fieldset|table)>)#Uis','$1'.$data, $body,1);
 		if($alternate_body)
 			$app->setBody($body);
 		else

@@ -30,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Business';
-	var $version = '4.6.2';
+	var $version = '4.4.0';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -840,56 +840,6 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 				"`order_product_dimension_unit` varchar(255) NULL",
 			));
 		}
-		if(version_compare($this->fromVersion, '4.4.1', '<')) {
-			$this->databaseHelper->addColumns("field", array(
-				"`field_shipping_id` varchar(255) NOT NULL DEFAULT ''",
-				"`field_payment_id` varchar(255) NOT NULL DEFAULT ''",
-			));
-
-			$this->db->setQuery("ALTER TABLE `#__hikashop_limit` CHANGE `limit_category_id` `limit_category_id` VARCHAR(255) NOT NULL DEFAULT '';");
-			try{$this->db->execute();}catch(Exception $e){}
-		}
-
-		if(version_compare($this->fromVersion, '4.4.2', '<')) {
-			$this->databaseHelper->addColumns("file", array(
-				"`file_access` varchar(255) NOT NULL DEFAULT 'all'",
-				"`file_time_limit`int(11) NOT NULL DEFAULT '0'",
-			));
-		}
-
-		if(version_compare($this->fromVersion, '4.4.4', '<')) {
-			$this->databaseHelper->addColumns("discount", array(
-				"`discount_maximum_order` decimal(17,5) NOT NULL DEFAULT '0.00000'",
-				"`discount_maximum_products` int(10) unsigned DEFAULT '0'",
-			));
-		}
-		if(version_compare($this->fromVersion, '4.4.5', '<')) {
-			$config = hikashop_config();
-			$query = 'INSERT IGNORE INTO `#__hikashop_config` (`config_namekey`,`config_value`,`config_default`) VALUES
-				(\'action_button_type\',\'a\',\'button\')';
-			$this->db->setQuery($query);
-			$this->db->execute();
-		}
-
-		if(version_compare($this->fromVersion, '4.5.1', '<')) {
-			$this->databaseHelper->addColumns("order_product", array(
-				"`order_product_price_before_discount` decimal(17,5) NOT NULL DEFAULT '0.00000'",
-				"`order_product_tax_before_discount` decimal(17,5) NOT NULL DEFAULT '0.00000'",
-				"`order_product_discount_code` varchar(255) NULL",
-				"`order_product_discount_info` text NULL",
-			));
-		}
-
-		if(version_compare($this->fromVersion, '4.5.2', '<')) {
-			$this->databaseHelper->addColumns("massaction", array(
-				"`massaction_button` tinyint(4) signed DEFAULT '0'",
-			));
-			$this->databaseHelper->addColumns("characteristic", array(
-				"`characteristic_values_on_listing` tinyint(4) signed DEFAULT '0'",
-			));
-
-		}
-
 	}
 
 	public function addPref() {
@@ -909,7 +859,7 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			'embed_files' => 1,
 			'multiple_part' => 1,
 			'allowedfiles' => 'zip,doc,docx,pdf,xls,txt,gz,gzip,rar,jpg,gif,tar.gz,xlsx,pps,csv,bmp,epg,ico,odg,odp,ods,odt,png,ppt,swf,xcf,wmv,avi,mkv,mp3,ogg,flac,wma,fla,flv,mp4,wav,aac,mov,epub',
-			'allowedimages' => 'gif,jpg,jpeg,png,svg,webp',
+			'allowedimages' => 'gif,jpg,jpeg,png,svg',
 			'uploadfolder' => 'images/com_hikashop/upload/',
 			'uploadsecurefolder' => 'media/com_hikashop/upload/safe/',
 			'editor' => 0,

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -78,17 +78,11 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 		if($this->payment_params->ask_ccv) {
 			$vars['vpc_CardSecurityCode'] = $this->cc_CCV;
 		}
-		$vars['vpc_SecureHash'] = $this->getHash($vars, $this->payment_params->secure_secret);
 
 		$postdata = array();
 		foreach($vars as $k => $v) {
 			$postdata[] = urlencode($k).'='.urlencode($v);
 		}
-
-		if( $this->payment_params->debug ) {
-			echo print_r($postdata, true) . "\n\n\n";
-		}
-
 		$postdata = implode('&', $postdata);
 
 		$httpsHikashop = str_replace('http://','https://', HIKASHOP_LIVE);
@@ -142,14 +136,16 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 				$responseMsg = $ret['vpc_Message'];
 			}
 
-			$dbg .= ob_get_clean();
-			if( !empty($dbg) ) $dbg .= "\r\n";
-
 			if( $result > 0 ) {
 
 				if( $result == 2 ) {
 
 					$do = true;
+
+					$dbg .= ob_get_clean();
+					if( !empty($dbg) ) $dbg .= "\r\n";
+					ob_start();
+
 					$history = new stdClass();
 					$email = new stdClass();
 					$history->notified = 0;
@@ -182,7 +178,6 @@ class plgHikashoppaymentMigsvpc extends hikashopPaymentPlugin
 				$do = false;
 			}
 		} else {
-			$dbg .= ob_get_clean();
 			$do = false;
 		}
 

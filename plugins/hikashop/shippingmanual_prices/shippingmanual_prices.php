@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -311,7 +311,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 		}
 	}
 
-	function onHikashopBeforeDisplayView (&$view) {
+	function onHikaShopBeforeDisplayView (&$view) {
 		if (!isset($view->element->product_id) )
 			return;
 
@@ -348,7 +348,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 				if ( (isset($v->shipping_blocked)) && ($v->shipping_blocked == 1) )
 					$v->shipping_published = 0;
 
-				if ($v->shipping_published == 0 || !isset($v->shipping_price_id) || !isset($v->shipping_price_ref_id))
+				if ($v->shipping_published == 0)
 					continue;
 
 				$arrayKey = $v->shipping_price_id . '_' . $v->shipping_price_ref_id;
@@ -359,7 +359,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 				if(!empty($v->several))
 					$shipData[$arrayKey]['several'] = true;
 
-				if ( (isset($v->shipping_price_min_quantity)) && ($v->shipping_price_min_quantity > 1 ) ) {
+				if ( ($v->shipping_price_min_quantity > 1 ) && (isset($v->shipping_price_min_quantity) ) ) {
 					$total = ($v->shipping_price_min_quantity * $v->shipping_price_value) + $v->shipping_fee_value + $v->shipping_price;
 				} else {
 					$total = $v->shipping_price_value + $v->shipping_fee_value + $v->shipping_price;
@@ -403,9 +403,7 @@ class plgHikashopShippingmanual_prices extends JPlugin {
 			}else{
 				$file = dirname(__FILE__).DS.'shippingprices_views'.DS.'frontend_product.php';
 			}
-
-			if(!empty($shipData) )
-				include $file;
+			include $file;
 		}
 
 		$data = ob_get_clean();

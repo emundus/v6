@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class ImportController extends hikashopController
 {
+
 	var $type='import';
 	var $helperImport;
 	var $db;
@@ -134,22 +135,6 @@ class ImportController extends hikashopController
 
 	function _file(){
 		$importFile =  hikaInput::get()->files->getVar('importfile', array(), 'array');
-		if(@$importFile['error'] !== 0) {
-			$app = JFactory::getApplication();
-			$phpFileUploadErrors = array(
-				0 => 'There is no error, the file uploaded with success',
-				1 => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
-				2 => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form',
-				3 => 'The uploaded file was only partially uploaded',
-				4 => 'No file was uploaded',
-				6 => 'Missing a temporary folder',
-				7 => 'Failed to write file to disk.',
-				8 => 'A PHP extension stopped the file upload.',
-			);
-			if(isset($phpFileUploadErrors[$importFile['error']]))
-				$app->enqueueMessage($phpFileUploadErrors[$importFile['error']], 'error');
-			return false;
-		}
 		$this->importHelper->overwrite = hikaInput::get()->getInt('file_update_products');
 		$this->importHelper->createCategories = hikaInput::get()->getInt('file_create_categories');
 		$this->importHelper->force_published = hikaInput::get()->getInt('file_force_publish');

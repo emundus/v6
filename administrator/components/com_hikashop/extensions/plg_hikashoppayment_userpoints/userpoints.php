@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -713,7 +713,7 @@ class plgHikashoppaymentUserpoints extends hikashopPaymentPlugin {
 	public function finalPriceToPoints(&$order, &$userPoints, $additional = true) {
 		if(empty($this->plugin_params))
 			return 0;
-		if(empty($this->plugin_params->value) || bccomp(sprintf('%F',$this->plugin_params->value), 0, 5) < 1)
+		if(empty($this->plugin_params->value) || bccomp($this->plugin_params->value, 0, 5) < 1)
 			return 0;
 		if(isset($order->order_subtotal) && isset($order->order_shipping_price)) {
 			if($this->plugin_params->allowshipping == 1) {
@@ -849,10 +849,10 @@ class plgHikashoppaymentUserpoints extends hikashopPaymentPlugin {
 
 		$this->modes = array();
 		if($this->getAUP(false, true))
-			$this->modes[] = JHTML::_('select.option', 'aup', JText::_('ALPHA_USER_POINTS'));
+			$this->modes[] = JHTML::_('select.option', 'aup', 'ALPHA_USER_POINTS');
 		if($this->getEasysocial(false))
-			$this->modes[] = JHTML::_('select.option', 'esp', JText::_('EASYSOCIAL_POINTS'));
-		$this->modes[] = JHTML::_('select.option', 'hk', JText::_('HIKASHOP_USER_POINTS'));
+			$this->modes[] = JHTML::_('select.option', 'esp', 'EASYSOCIAL_POINTS');
+		$this->modes[] = JHTML::_('select.option', 'hk', 'HIKASHOP_USER_POINTS');
 
 		$this->pointsTaxType = hikashop_get('type.categorysub');
 		$this->pointsTaxType->type = 'tax';
@@ -946,22 +946,6 @@ function setVisible(value){
 		}
 		if($element->payment_params->points_mode == 'esp' && !$this->getEasysocial(true)) {
 			$element->payment_params->points_mode = 'hk';
-		}
-
-		if($element->payment_params->points_mode == 'hk') {
-			$user = hikashop_loadUser(true);
-			if(!isset($user->user_points)) {
-				$field = new stdClass();
-				$field->field_table = 'user';
-				$field->field_realname = Jtext::_('HIKASHOP_USER_POINTS');
-				$field->field_namekey = 'user_points';
-				$field->field_type = 'text';
-				$field->field_published = 1;
-				$field->field_default = 0;
-
-				$fieldClass = hikashop_get('class.field');
-				$fieldClass->save($field);
-			}
 		}
 	}
 

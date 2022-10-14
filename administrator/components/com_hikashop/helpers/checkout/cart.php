@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -113,24 +113,6 @@ class hikashopCheckoutCartHelper extends hikashopCheckoutHelperInterface {
 		$msg_cpt = !empty($cart->messages) ? count($cart->messages) : 0;
 
 		$cartClass = hikashop_get('class.cart');
-
-		$removeAdditional = hikaInput::get()->getString('removeAdditional', '');
-		if(!empty($removeAdditional)) {
-			if(!empty($cart->cart_params->additional->$removeAdditional) && !empty($cart->cart_params->additional->$removeAdditional->deletable)) {
-				unset($cart->cart_params->additional->$removeAdditional);
-				if(!empty($cart->additional[$removeAdditional]))
-					unset($cart->additional[$removeAdditional]);
-				$cartClass->save($cart);
-
-				if(!empty($cart->cart_params->additional->$removeAdditional->deletable->removeMessage)) {
-					$checkoutHelper->addMessage('cart.additional.removed', array(
-						$cart->cart_params->additional->$removeAdditional->deletable->removeMessage,
-						'success'
-					));
-				}
-			}
-		}
-
 		$ret = $cartClass->updateProduct($cart->cart_id, $items);
 
 		$cart = $checkoutHelper->getCart(true);

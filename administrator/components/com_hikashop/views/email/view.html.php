@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,7 +15,6 @@ class EmailViewEmail extends hikashopView
 	var $nameListing = 'EMAILS';
 	var $nameForm = 'EMAILS';
 	var $icon = 'envelope';
-	var $triggerView = true;
 
 	public function display($tpl = null) {
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -50,11 +49,6 @@ class EmailViewEmail extends hikashopView
 				'HIKA_DISPLAY_ORDER_PARTNER_PAID'=>'order_partner_paid',
 				'HIKA_DISPLAY_ORDER_LANG'=>'order_lang'
 			),
-			'order_field' =>  array(
-				'<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_PRE_TEXT').'</p>
-				<p>{VAR:<span class="hikashop_mail_tag_key_table">order.</span><span class="hikashop_mail_tag_key_column">XXX</span>}</p>
-				<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_POST_TEXT').'</p>'
-			),
 			'customer' => array(
 				'HIKA_DISPLAY_USER_MAIL'=>'user_email',
 				'HIKA_DISPLAY_USER_POINTS'=>'user_points',
@@ -64,11 +58,6 @@ class EmailViewEmail extends hikashopView
 				'HIKA_DISPLAY_USER_PASSWORD'=>'password',
 				'HIKA_DISPLAY_USER_REGISTERDATE'=>'registerDate',
 				'HIKA_DISPLAY_USER_LASTVISIT'=>'lastvisitDate'
-			),
-			'customer_field' =>  array(
-				'<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_PRE_TEXT').'</p>
-				<p>{VAR:<span class="hikashop_mail_tag_key_table">customer.</span><span class="hikashop_mail_tag_key_column">XXX</span>}</p>
-				<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_POST_TEXT').'</p>'
 			),
 			'billing_address' => array(
 				'<p>'.JText::_('HIKA_EMAIL_TAG_BILLING_ADDRESS_PRE_TEXT').'</p>
@@ -80,6 +69,11 @@ class EmailViewEmail extends hikashopView
 				<p>{VAR:<span class="hikashop_mail_tag_key_table">shipping_address.</span><span class="hikashop_mail_tag_key_column">address_street</span>}</p>
 				<p>'.JText::sprintf('HIKA_EMAIL_TAG_SHIPPING_ADDRESS_POST_TEXT', 'address_street').'</p>'
 			),
+			JText::_('fields') =>  array(
+				'<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_PRE_TEXT').'</p>
+				<p>{VAR:<span class="hikashop_mail_tag_key_table">order.</span><span class="hikashop_mail_tag_key_column">XXX</span>}</p>
+				<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_POST_TEXT').'</p>'
+			)
 		);
 		$linevar_array = array(
 			'item' => array(
@@ -93,11 +87,6 @@ class EmailViewEmail extends hikashopView
 				'HIKA_DISPLAY_ITEM_SHIPPING_PRICE'=>'order_product_shipping_price',
 				'HIKA_DISPLAY_ITEM_SHIPPING_TAX'=>'order_product_shipping_tax',
 				'HIKA_DISPLAY_ITEM_STATUS'=>'order_product_status'
-			),
-			'item_field' =>  array(
-				'<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_PRE_TEXT').'</p>
-				<p>{LINEVAR:<span class="hikashop_mail_tag_key_table">item.</span><span class="hikashop_mail_tag_key_column">XXX</span>}</p>
-				<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_POST_TEXT').'</p>'
 			),
 			'product' => array(
 				'HIKA_DISPLAY_PRODUCT_NAME'=>'product_name',
@@ -126,10 +115,10 @@ class EmailViewEmail extends hikashopView
 				'HIKA_DISPLAY_PRODUCT_CANON'=>'product_canonical',
 				'HIKA_DISPLAY_PRODUCT_SORT_PRICE'=>'product_sort_price',
 			),
-			'product_field' =>  array(
-				'<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_PRE_TEXT').'</p>
-				<p>{LINEVAR:<span class="hikashop_mail_tag_key_table">product.</span><span class="hikashop_mail_tag_key_column">XXX</span>}</p>
-				<p>'.JText::_('HIKA_EMAIL_TAG_ORDER_POST_TEXT').'</p>'
+			JText::_('fields') =>  array(
+				'<p>'.JText::_('HIKA_EMAIL_TAG_PRODUCT_PRE_TEXT').'</p>
+				<p>{LINEVAR:<span class="hikashop_mail_tag_key_table">TABLE.</span><span class="hikashop_mail_tag_key_column">XXX</span>}</p>
+				<p>'.JText::_('HIKA_EMAIL_TAG_PRODUCT_POST_TEXT').'</p>'
 			)
 		);
 		$tag_documentation = array(
@@ -143,14 +132,12 @@ class EmailViewEmail extends hikashopView
 		$mail_name = hikaInput::get()->getString('mail_name');
 		$this->assignRef('mail_name', $mail_name);
 		$this->assignRef('tag_documentation', $tag_documentation);
-		$this->popupHelper = hikashop_get('helper.popup');
 
 		$emailtemplateType = hikashop_get('type.emailtemplate');
 		$this->assignRef('emailtemplateType', $emailtemplateType);
 		$data = true;
 		$mailClass = hikashop_get('class.mail');
 		$mail = $mailClass->get($mail_name, $data);
-
 		if(empty($mail)) {
 			$mail->from_name = ''; // $config->get('from_name');
 			$mail->from_email = ''; // $config->get('from_email');
@@ -183,7 +170,6 @@ class EmailViewEmail extends hikashopView
 
 		$email_history_plugin = JPluginHelper::getPlugin('hikashop', 'email_history');
 		$this->assignRef('email_history_plugin', $email_history_plugin);
-		$this->config = hikashop_config();
 
 		$this->loadRef(array(
 			'toggleClass' => 'helper.toggle',
@@ -257,28 +243,6 @@ function submitbutton(pressbutton) {
 
 			hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task=edit&mail_name='.$mail_name);
 		}
-	}
-
-
-	public function diff() {
-		$mail_name = hikaInput::get()->getString('mail_name');
-		$type = hikaInput::get()->getString('type');
-		$data = true;
-		$mailClass = hikashop_get('class.mail');
-		$this->element = $mailClass->get($mail_name, $data);
-
-		$this->override_path_name = $type.'_override_path';
-		$this->path_name = $type.'_path';
-		$this->override_name = $type.'_override';
-
-		$this->diffInc = hikashop_get('inc.diff');
-
-		$this->toolbar = array(
-			'cancel',
-		);
-
-		hikashop_setTitle(JText::_('HIKASHOP_MODIFICATIONS'),$this->icon,$this->ctrl.'&task=diff&mail_name='.$mail_name.'&type='.$type);
-
 	}
 
 	function preview() {
@@ -429,7 +393,7 @@ function submitbutton(pressbutton) {
 
 		$this->email_name = hikaInput::get()->getCmd('email_name');
 		$this->type = hikaInput::get()->getCmd('type', '');
-		$this->order_status = hikaInput::get()->getString('order_status', '');
+		$this->order_status = hikaInput::get()->getCmd('order_status', '');
 		$this->content = hikaInput::get()->getRaw('emailcontent', '');
 
 		if(empty($this->email_name) || $this->email_name != 'order_status_notification')
@@ -438,10 +402,7 @@ function submitbutton(pressbutton) {
 		if(empty($this->content)) {
 			$path = $mailClass->getMailPath($this->email_name, $this->type);
 			if(!empty($this->order_status)) {
-				$name = $this->email_name.'.'.$this->order_status;
-				jimport('joomla.filesystem.file');
-				$name = JFile::makeSafe($name);
-				$pathWithOrderStatus = $mailClass->getMailPath($name, $this->type);
+				$pathWithOrderStatus = $mailClass->getMailPath($this->email_name.'.'.$this->order_status, $this->type);
 				if(!empty($pathWithOrderStatus))
 					$path = $pathWithOrderStatus;
 			}

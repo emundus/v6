@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -32,35 +32,7 @@ defined('_JEXEC') or die('Restricted access');
 	}
 		?></td>
 	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('translated_aliases');?>><?php echo JText::_('SUPPORT_TRANSLATED_ALIASES_IN_URLS'); ?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', "config[translated_aliases]" , '',$this->config->get('translated_aliases',0));
-		?></td>
-	</tr>
-<?php
-	if($this->config->get('multi_language_edit')) {
-?>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('multi_language_edit_xy');?>><?php echo JText::_('MULTI_LANGUAGE_EDIT_XY'); ?></td>
-		<td>
-			<input class="inputbox" type="text" name="config[multi_language_edit_x]" value="<?php echo $this->config->get('multi_language_edit_x', 760); ?>" />
-			px <i class="fas fa-times fa-2x"></i>
-			<input class="inputbox" type="text" name="config[multi_language_edit_y]" value="<?php echo $this->config->get('multi_language_edit_y',  480); ?>" />
-			px
-		</td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('non_latin_translation_keys');?>><?php echo JText::_('NON_LATIN_TRANSLATION_KEYS'); ?></td>
-		<td>
-		<?php
-			echo JHTML::_('hikaselect.booleanlist', "config[non_latin_translation_keys]" , '',$this->config->get('non_latin_translation_keys',0));
-		?>
-		</td>
-	</tr>
-<?php 
-	}
-	if(!$this->config->get('default_translation_publish', 1) && hikashop_level(1)) { ?>
+<?php if(!$this->config->get('default_translation_publish', 1) && hikashop_level(1)) { ?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('default_translation_publish');?>><?php echo JText::_('DEFAULT_TRANSLATION_PUBLISH'); ?></td>
 		<td><?php

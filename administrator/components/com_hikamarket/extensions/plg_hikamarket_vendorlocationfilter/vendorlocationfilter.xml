@@ -2,12 +2,12 @@
 <extension version="2.5" type="plugin" group="hikamarket" method="upgrade">
 	<name>HikaMarket Vendor User Location Filter</name>
 	<hikainstall ordering="0" enable="0" report="0" />
-	<creationDate>22 juin 2022</creationDate>
-	<version>4.1.0</version>
+	<creationDate>04 octobre 2021</creationDate>
+	<version>4.0.0</version>
 	<author>Obsidev</author>
 	<authorEmail>contact@obsidev.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2011-2022 OBSIDEV. All rights reserved.</copyright>
+	<copyright>(C) 2011-2021 OBSIDEV. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>HikaMarket Vendor User Location Filter</description>
 	<files>

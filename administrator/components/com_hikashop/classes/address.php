@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,16 +17,7 @@ class hikashopAddressClass extends hikashopClass {
 			' WHERE a.address_user_id = '.(int)$user_id.' and a.address_published = 1 '.
 			' ORDER BY a.address_default DESC, a.address_id DESC';
 		$this->database->setQuery($query);
-		$addresses = $this->database->loadObjectList('address_id');
-		$type = 'both';
-
-		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
-		JPluginHelper::importPlugin('hikashopshipping');
-		$app = JFactory::getApplication();
-		$app->triggerEvent('onUserAddressesLoad', array( &$addresses, $user_id, $type) );
-
-		return $addresses;
+		return $this->database->loadObjectList('address_id');
 	}
 
 	function get($element, $default = null) {
@@ -39,8 +30,8 @@ class hikashopAddressClass extends hikashopClass {
 		if((int)$element == 0)
 			return true;
 
-		$app = JFactory::getApplication();
 		if((int)$element < 0) {
+			$app = JFactory::getApplication();
 			$addresses = $app->getUserState(HIKASHOP_COMPONENT.'.addresses', array());
 			$i = -(int)$element;
 			if(isset($addresses[$i]))
@@ -50,11 +41,6 @@ class hikashopAddressClass extends hikashopClass {
 
 		if(!isset($cachedElements[$element]))
 			$cachedElements[$element] = parent::get($element, $default);
-
-		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
-		JPluginHelper::importPlugin('hikashopshipping');
-		$app->triggerEvent('onUserAddressLoad', array( &$cachedElements[$element], $element) );
 
 		if(!is_object($cachedElements[$element]))
 			return $cachedElements[$element];
@@ -126,7 +112,6 @@ class hikashopAddressClass extends hikashopClass {
 
 				$addresses[$k]->{$namekey.'_orig'} = $addresses[$k]->$namekey;
 				if($type == 'name') {
-					$addresses[$k]->{$namekey.'_id'} = $zones[$address->$namekey]->zone_id;
 					$addresses[$k]->{$namekey.'_code_2'} = $zones[$address->$namekey]->zone_code_2;
 					$addresses[$k]->{$namekey.'_code_3'} = $zones[$address->$namekey]->zone_code_3;
 					$addresses[$k]->{$namekey.'_name'} = $zones[$address->$namekey]->zone_name;
@@ -180,9 +165,9 @@ class hikashopAddressClass extends hikashopClass {
 			$addresses = array();
 			return true;
 		}
-		$app = JFactory::getApplication();
 
 		if((int)$user_id == 0) {
+			$app = JFactory::getApplication();
 			$session_addresses = $app->getUserState(HIKASHOP_COMPONENT.'.addresses', array());
 			return hikashop_copy($session_addresses);
 		}
@@ -198,12 +183,6 @@ class hikashopAddressClass extends hikashopClass {
 		$query = 'SELECT a.* FROM '.hikashop_table('address').' AS a WHERE '.implode(' AND ', $filters).' ORDER BY a.address_default DESC, a.address_id DESC';
 		$this->database->setQuery($query);
 		$addresses[$user_id][$type] = $this->database->loadObjectList('address_id');
-
-
-		JPluginHelper::importPlugin('hikashop');
-		JPluginHelper::importPlugin('hikashoppayment');
-		JPluginHelper::importPlugin('hikashopshipping');
-		$app->triggerEvent('onUserAddressesLoad', array( &$addresses[$user_id][$type], $user_id, $type) );
 
 		return $addresses[$user_id][$type];
 	}
@@ -570,11 +549,6 @@ class hikashopAddressClass extends hikashopClass {
 		if(!$do){
 			return false;
 		}
-
-		$fieldClass = hikashop_get('class.field');
-		$array = array(&$elements);
-		$fieldClass->handleBeforeDelete($array, 'address');
-
 		$data = $this->get($elements);
 		$orderClass = hikashop_get('class.order');
 		$status = true;
@@ -609,8 +583,6 @@ class hikashopAddressClass extends hikashopClass {
 				}
 			}
 
-			$fieldClass->handleAfterDelete($elements, 'address');
-
 			$app->triggerEvent( 'onAfterAddressDelete', array( & $elements ) );
 		}
 		return $status;
@@ -626,19 +598,20 @@ class hikashopAddressClass extends hikashopClass {
 	}
 
 	public function maxiFormat($address, $fields = null, $nlbr = false) {
+		static $templateAddress = null;
 		static $templateClassicalMode = true;
-
-		$config = hikashop_config();
-		$tpl = $config->get('address_template', '');
-		if(!empty($tpl)) {
-			$templateAddress = $tpl;
-		} else {
-			$params = new HikaParameter('');
-			$params->set('address', $address);
-			$js = null;
-			$app = JFactory::getApplication();
-			$view = hikashop_isClient('administrator') ? 'order' : 'address';
-			$templateAddress = hikashop_getLayout($view, 'address_template', $params, $js);
+		if($templateAddress === null) {
+			$config = hikashop_config();
+			$tpl = $config->get('address_template', '');
+			if(!empty($tpl)) {
+				$templateAddress = $tpl;
+			} else {
+				$params = null;
+				$js = null;
+				$app = JFactory::getApplication();
+				$view = hikashop_isClient('administrator') ? 'order' : 'address';
+				$templateAddress = hikashop_getLayout($view, 'address_template', $params, $js);
+			}
 		}
 
 		$ret = ''.$templateAddress;

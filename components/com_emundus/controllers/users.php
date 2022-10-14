@@ -1258,28 +1258,4 @@ class EmundusControllerUsers extends JControllerLegacy {
         echo json_encode(array('status' => true));
         exit;
     }
-
-    public function affectjoomlagroups(){
-        if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-            $jinput = JFactory::getApplication()->input;
-
-            $params = $jinput->getArray();
-            $users = json_decode($params['users'], true);
-            $groups = explode(',', $params['groups']);
-
-            if (!empty($users) && !empty($groups)) {
-                $m_users = new EmundusModelUsers();
-                $affected = $m_users->affectToJoomlaGroups($users, $groups);
-            } else {
-                $affected = false;
-            }
-
-            $tab = array('status' => $affected, 'msg' => JText::_("GROUPS_AFFECTED"));
-        } else {
-            $tab = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
-        }
-
-        echo json_encode($tab);
-        exit;
-    }
 }

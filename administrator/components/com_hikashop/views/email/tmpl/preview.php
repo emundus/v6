@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,7 +13,7 @@ if(empty($this->mailClass)) {
 	return;
 }
 ?>
-<form class="hikashop_email_preview" action="<?php echo hikashop_completeLink('email&task=preview'); ?>" method="post" name="adminForm" id="adminForm" enctype="multipart/form-data">
+<form action="<?php echo hikashop_completeLink('email&task=preview'); ?>" method="post" name="adminForm" id="adminForm" enctype="multipart/form-data">
 <?php
 if(method_exists($this->previewMaker, 'getSelector'))
 	echo $this->previewMaker->getSelector($this->formData);

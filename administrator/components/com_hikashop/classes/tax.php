@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,6 +16,14 @@ class hikashopTaxClass extends hikashopClass{
 		$query='SELECT * FROM '.hikashop_table('tax').' WHERE tax_namekey='.$this->database->Quote($id).' LIMIT 1';
 		$this->database->setQuery($query);
 		return $this->database->loadObject();
+	}
+	function delete(&$ids){
+		foreach($ids as $k => $id){
+			$ids[$k] = $this->database->Quote($id);
+		}
+		$query='DELETE FROM '.hikashop_table('tax').' WHERE tax_namekey IN ('.implode(',',$ids).')';
+		$this->database->setQuery($query);
+		return $this->database->execute();
 	}
 
 	function saveForm(){
@@ -62,28 +70,5 @@ class hikashopTaxClass extends hikashopClass{
 			$app->triggerEvent('onAfterTaxCreate', array( &$element) );
 		}
 		return $result;
-	}
-
-	function delete(&$elements) {
-
-		JPluginHelper::importPlugin( 'hikashop' );
-		$app = JFactory::getApplication();
-		$do=true;
-		$app->triggerEvent( 'onBeforeTaxDelete', array( & $elements, & $do) );
-		if(!$do){
-			return false;
-		}
-
-		foreach($elements as $k => $id){
-			$elements[$k] = $this->database->Quote($id);
-		}
-		$query='DELETE FROM '.hikashop_table('tax').' WHERE tax_namekey IN ('.implode(',', $elements).')';
-		$this->database->setQuery($query);
-		$status =  $this->database->execute();
-
-		if($status){
-			$app->triggerEvent( 'onAfterTaxDelete', array( & $elements ) );
-		}
-		return $status;
 	}
 }

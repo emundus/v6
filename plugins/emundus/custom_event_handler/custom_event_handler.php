@@ -10,45 +10,25 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Worker;
 class plgEmundusCustom_event_handler extends JPlugin {
 
-    private $hEvents = null;
-
     function __construct(&$subject, $config) {
         parent::__construct($subject, $config);
         jimport('joomla.log.log');
         JLog::addLogger(array('text_file' => 'com_emundus.custom_event_handler.php'), JLog::ALL, array('com_emundus.custom_event_handler'));
-
-        require_once (JPATH_SITE.'/components/com_emundus/helpers/events.php');
-        $this->hEvents = new EmundusHelperEvents();
     }
 
 
     function callEventHandler(String $event, array $args = null): array
     {
-        $events = [];
-        $codes = [];
         $params = json_decode($this->params);
-        $event_handlers = $params->event_handlers;
-
-        if (!empty($event_handlers)) {
-            foreach ($event_handlers as $event_handler){
-                if($event_handler->event == $event){
-                    $events[] = $event_handler->event;
-                    $codes[] = $event_handler->code;
-                }
-            }
-        }
-
+        $event_handlers = json_decode($params->event_handlers);
+        $events = array_keys($event_handlers->event, $event);
         $returned_values = [];
-
-        if (method_exists($this->hEvents, $event)) {
-            $this->hEvents->{$event}($args);
-        }
-
-        foreach ($events as $index => $caller_index) {
+        
+        foreach ($events as $caller_index) {
             try {
-                $returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
+                $returned_values[$caller_index] = $this->_runPHP($event_handlers->code[$caller_index], $args);
             } catch (ParseError $p) {
-                JLog::add('Error while running event ' . $caller_index . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
+                JLog::add('Error while running event ' . $event_handlers->event[$caller_index] . ' : "' . $p->getMessage() .'"', JLog::ERROR,'com_emundus');
                 continue;
             }
         }

@@ -385,14 +385,10 @@ export default {
     getAllPrograms() {
       axios.get("index.php?option=com_emundus&controller=programme&task=getallprogram")
           .then(response => {
-	          if (response.data.status > 0) {
-		          this.programs = response.data.data;
-		          if(Object.keys(this.programs).length !== 0) {
-			          this.programs.sort((a, b) => a.id - b.id);
-		          }
-	          } else {
-		          this.programs = [];
-	          }
+            this.programs = response.data.data;
+            if(Object.keys(this.programs).length !== 0) {
+              this.programs.sort((a, b) => a.id - b.id);
+            }
           }).catch(e => {
               console.log(e);
           });

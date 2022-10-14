@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,7 +29,7 @@ foreach($shippings as &$shipping) {
 	$shipping->shipping_params = hikashop_unserialize($shipping->shipping_params);
 
 	$shipping_data = $shipping->shipping_name . ' - ' . $currencyHelper->displayPrices(array($shipping), 'shipping_price', 'shipping_currency_id');
-	if(isset($shipping->shipping_params->shipping_percentage) && bccomp(sprintf('%F',$shipping->shipping_params->shipping_percentage),0,3)) {
+	if(isset($shipping->shipping_params->shipping_percentage) && bccomp($shipping->shipping_params->shipping_percentage,0,3)) {
 		$shipping_data .= ' +'.$shipping->shipping_params->shipping_percentage.'%';
 	}
 
@@ -39,11 +39,11 @@ foreach($shippings as &$shipping) {
 	if(!empty($shipping->shipping_params->shipping_min_weight)){ $rest[] = JText::_('SHIPPING_MIN_WEIGHT').':'.$shipping->shipping_params->shipping_min_weight.$shipping->shipping_params->shipping_weight_unit; }
 	if(!empty($shipping->shipping_params->shipping_max_weight)){ $rest[] = JText::_('SHIPPING_MAX_WEIGHT').':'.$shipping->shipping_params->shipping_max_weight.$shipping->shipping_params->shipping_weight_unit; }
 
-	if(isset($shipping->shipping_params->shipping_min_price) && bccomp(sprintf('%F',$shipping->shipping_params->shipping_min_price),0,5)){
+	if(isset($shipping->shipping_params->shipping_min_price) && bccomp($shipping->shipping_params->shipping_min_price,0,5)){
 		$shipping->shipping_min_price=$shipping->shipping_params->shipping_min_price;
 		$rest[] = JText::_('SHIPPING_MIN_PRICE').':'.$currencyHelper->displayPrices(array($shipping),'shipping_min_price','shipping_currency_id');
 	}
-	if(isset($shipping->shipping_params->shipping_max_price) && bccomp(sprintf('%F',$shipping->shipping_params->shipping_max_price),0,5)){
+	if(isset($shipping->shipping_params->shipping_max_price) && bccomp($shipping->shipping_params->shipping_max_price,0,5)){
 		$shipping->shipping_max_price=$shipping->shipping_params->shipping_max_price;
 		$rest[] = JText::_('SHIPPING_MAX_PRICE').':'.$currencyHelper->displayPrices(array($shipping),'shipping_max_price','shipping_currency_id');
 	}

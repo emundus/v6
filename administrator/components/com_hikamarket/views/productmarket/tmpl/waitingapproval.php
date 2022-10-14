@@ -1,17 +1,28 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <div id="hikamarket_product_listing">
 <form action="<?php echo hikamarket::completeLink('product&task=waitingapproval'); ?>" method="post" name="adminForm" id="adminForm">
-	<div class="hk-row-fluid">
-		<div class="hkc-7">
+<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
+	<table class="hikam_filter">
+		<tr>
+			<td width="100%">
+				<?php echo JText::_('FILTER'); ?>:
+				<input type="text" name="search" id="hikamarket_products_listing_search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="inputbox"/>
+				<button class="btn" onclick="this.form.submit();"><?php echo JText::_('GO'); ?></button>
+				<button class="btn" onclick="document.getElementById('hikamarket_products_listing_search').value='';this.form.submit();"><?php echo JText::_('RESET'); ?></button>
+			</td>
+			<td nowrap="nowrap">
+<?php } else { ?>
+	<div class="row-fluid">
+		<div class="span7">
 			<div class="input-prepend input-append">
 				<span class="add-on"><i class="icon-filter"></i></span>
 				<input type="text" name="search" id="hikamarket_products_listing_search" value="<?php echo $this->escape($this->pageInfo->search);?>" class="inputbox"/>
@@ -19,9 +30,10 @@ defined('_JEXEC') or die('Restricted access');
 				<button class="btn" onclick="document.getElementById('hikamarket_products_listing_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
 			</div>
 		</div>
-		<div class="hkc-5">
+		<div class="span5">
 			<div class="expand-filters" style="width:auto;float:right">
-<?php
+<?php }
+
 	if(!empty($this->vendorType))
 		echo $this->vendorType->display('filter_vendors', @$this->pageInfo->filter->vendors);
 
@@ -33,11 +45,17 @@ defined('_JEXEC') or die('Restricted access');
 		0 => JText::_('HIKA_UNPUBLISHED'),
 	);
 	echo JHTML::_('select.genericlist', $values, 'filter_published', 'onchange="this.form.submit();"', 'value', 'text', $this->pageInfo->filter->published);
-?>
+
+if(!HIKASHOP_BACK_RESPONSIVE) { ?>
+			</td>
+		</tr>
+	</table>
+<?php } else {?>
 			</div>
 			<div style="clear:both"></div>
 		</div>
 	</div>
+<?php } ?>
 <?php
 	$cols = 9;
 ?>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -364,27 +364,11 @@ class hikamarketMailClass extends hikamarketClass {
 		if(empty($templates['PRODUCT_LINE']) || !$config->get('mail_display_vendor', 0))
 			return;
 
-		$product_parents = array();
-		$parent_vendors = array();
 
 		$vendor_ids = array();
 		foreach($templates['PRODUCT_LINE'] as $p) {
-			if(!empty($p['product']->product_vendor_id)) {
+			if(!empty($p['product']->product_vendor_id))
 				$vendor_ids[ (int)$p['product']->product_vendor_id ] = (int)$p['product']->product_vendor_id;
-			} else if(!empty($p['product']->product_parent_id)) {
-				$product_parents[(int)$p['product']->product_parent_id] = (int)$p['product']->product_parent_id;
-			}
-		}
-		if(!empty($product_parents)) {
-			$query = 'SELECT product_id, product_vendor_id FROM ' . hikamarket::table('shop.product').
-				' WHERE product_id IN ('.implode(',', $product_parents).') AND product_vendor_id > 0';
-			$this->db->setQuery($query);
-			$parents = $this->db->loadObjectList('product_id');
-			foreach($parents as $p) {
-				$vendor_ids[(int)$p->product_vendor_id] = (int)$p->product_vendor_id;
-				$parent_vendors[(int)$p->product_id] = (int)$p->product_vendor_id;
-			}
-			unset($product_parents);
 		}
 		if(empty($vendor_ids))
 			return;
@@ -394,14 +378,11 @@ class hikamarketMailClass extends hikamarketClass {
 		$vendors = $this->db->loadObjectList('vendor_id');
 
 		foreach($templates['PRODUCT_LINE'] as &$p) {
-			if(empty($p['product']->product_vendor_id) && empty($p['product']->product_parent_id))
+			if(empty($p['product']->product_vendor_id))
 				continue;
-			$v = (int)@$p['product']->product_vendor_id;
 
-			if(empty($v) && !empty($p['product']->product_parent_id) && !empty($parent_vendors[(int)$p['product']->product_parent_id]))
-				$v = $parent_vendors[(int)$p['product']->product_parent_id];
-
-			if(empty($v) || !isset($vendors[$v]))
+			$v = (int)$p['product']->product_vendor_id;
+			if(!isset($vendors[$v]))
 				continue;
 
 			$p['vendor'] = $vendors[$v];

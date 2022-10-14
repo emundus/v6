@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -55,6 +55,7 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="9">
 					<?php echo $this->pagination->getListFooter(); ?>
+					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -94,7 +95,7 @@ defined('_JEXEC') or die('Restricted access');
 					</td>
 					<td class="hk_center">
 						<?php
-						if(bccomp(sprintf('%F',$row->order_partner_price),0,5)){
+						if(bccomp($row->order_partner_price,0,5)){
 							echo $this->currencyHelper->format($row->order_partner_price,$row->order_partner_currency_id);
 						}
 						?>

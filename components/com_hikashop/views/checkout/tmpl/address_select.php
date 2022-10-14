@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -111,7 +111,7 @@ window.localPage.switchAddr = function(el, type, old) {
 			target.innerHTML = '';
 		var dest = d.getElementById('hikashop_checkout_' + type + '_address_zone'),
 			url = '<?php echo hikashop_completeLink('address&task=edit&cid=0&address_type={TYPE}&fid=hikashop_checkout_{TYPE}_address_zone', true, true); ?>'.replace(/\{TYPE\}/g, type);
-		window.hikashop.xRequest(url, {update:dest});
+		o.xRequest(url, {update:dest});
 		if(el === 0)
 			return false;
 		return;
@@ -125,7 +125,7 @@ window.localPage.switchAddr = function(el, type, old) {
 	if(!target)
 		return;
 	var url = '<?php echo hikashop_completeLink('address&task=show&cid={CID}&address_type={TYPE}&fid=hikashop_checkout_{TYPE}_address_zone', true, true); ?>'.replace(/\{CID\}/g, el.value).replace(/\{TYPE\}/g, type);
-	window.hikashop.xRequest(url, {update:target});
+	o.xRequest(url, {update:target});
 }
 window.Oby.registerAjax('hikashop_address_changed', function(params) {
 	if(!params || !params.type)

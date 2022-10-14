@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,7 +22,6 @@ class MassactionController extends hikashopController{
 		$this->modify_views[]='editcell';
 		$this->modify[]='savecell';
 		$this->modify[]='copy';
-		$this->modify[]='batch_process';
 		$this->modify_views[]='cancel_edit';
 		$this->display[]='export';
 	}
@@ -122,11 +121,6 @@ class MassactionController extends hikashopController{
 		return $this->edit();
 	}
 
-	public function batch_process(){
-		$class = hikashop_get('class.massaction');
-		$class->batch();
-	}
-
 	function copy(){
 		$actions = hikaInput::get()->get('cid', array(), 'array');
 		$result = true;
@@ -153,7 +147,7 @@ class MassactionController extends hikashopController{
 		$massActionClass = hikashop_get('class.massaction'); //load the hikaQuery class
 		$num = hikaInput::get()->getInt('num');
 		$table = hikaInput::get()->getWord('table');
-		$filters = hikaInput::get()->getRaw('filter');
+		$filters = hikaInput::get()->getVar('filter');
 
 		if(empty($filters[$table]['type'][$num]))
 			exit;
@@ -168,14 +162,10 @@ class MassactionController extends hikashopController{
 
 		$currentFilterData = $filters[$table][$num][$currentType];
 
-		try {
-			JPluginHelper::importPlugin('hikashop');
-			$app = JFactory::getApplication();
-			$messages = $app->triggerEvent('onCount'.ucfirst($table).'MassFilter'.$currentType, array(&$query, $currentFilterData, $num));
-		}catch(Exception $e) {
-			hikashop_display($e->getMessage(), 'error');
-			exit;
-		}
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$messages = $app->triggerEvent('onCount'.ucfirst($table).'MassFilter'.$currentType, array(&$query, $currentFilterData, $num));
+
 		echo implode(' | ', $messages);
 		exit;
 	}

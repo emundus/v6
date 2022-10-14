@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $app = JFactory::getApplication();
-$user = JFactory::getUser();
+
 $lang = JFactory::getLanguage();
 $locallang = $lang->getTag();
 
@@ -63,7 +63,7 @@ switch ($order) {
 </div>
 <div class="g-block size-100 tchooz-single-campaign">
     <div class="single-campaign" id="campaign">
-        <div class="right-side-tchooz col-md-6">
+        <div class="right-side-tchooz col-md-4">
             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                 <div class="campaingapplycontent">
                     <legend><?php echo JText::_('CAMPAIGN_PERIOD'); ?></legend>
@@ -118,12 +118,9 @@ switch ($order) {
                         if(!isset($redirect_url) || empty($redirect_url)) {
                             $redirect_url = "index.php?option=com_users&view=registration";
                         }
-                        $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+                        $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                     } else {
-                        $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-                    }
-                    if(!$user->guest) {
-                        $register_url .= "&redirect=" . $formUrl;
+                        $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
                     }
                     ?>
                     <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>

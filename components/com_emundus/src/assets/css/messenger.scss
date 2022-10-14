@@ -54,7 +54,6 @@ hr{
     padding: 10px;
     display: flex;
     align-items: center;
-    width: 35%;
 }
 
 .messages__active-campaign{
@@ -69,7 +68,7 @@ hr{
 
 .messages__list-block{
     min-height: 50vh;
-    max-height: 85%;
+    max-height: 60vh;
     overflow-y: auto;
     overflow-x: hidden;
     -ms-overflow-style: none;
@@ -98,12 +97,12 @@ hr{
     margin: 10px auto 0 auto;
     display: flex;
     align-items: center;
-    width: 100%;
+    width: 90%;
     justify-content: space-between;
 }
 
 .messages__input_text{
-    width: 100% !important;
+    width: 90% !important;
     resize: none;
     height: 45px;
 }
@@ -162,17 +161,17 @@ hr{
 
 .messages__campaigns-list{
     background: #FCFCFC;
-    width: 35%;
 }
 
 .messages__campaigns_title{
+    margin-left: 10px;
     max-width: 100%;
     white-space: break-spaces;
     text-align: left;
 }
 
 .messages__campaigns_fnum{
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .messages__campaigns_folder-icon{

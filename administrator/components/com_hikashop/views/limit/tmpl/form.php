@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -142,7 +142,7 @@ if(empty($this->element->limit_type) || $this->element->limit_type == 'price') {
 		echo $this->nameboxType->display(
 			'data[limit][limit_category_id]',
 			@$this->element->limit_category_id,
-			hikashopNameboxType::NAMEBOX_MULTIPLE,
+			hikashopNameboxType::NAMEBOX_SINGLE,
 			'category',
 			array(
 				'delete' => true,

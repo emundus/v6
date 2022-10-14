@@ -1,27 +1,31 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $mainDivName = $this->params->get('main_div_name', '');
+
 $link = hikashop_contentLink('product&task=show&cid=' . (int)$this->row->product_id . '&name=' . $this->row->alias . $this->itemid . $this->category_pathway, $this->row);
-$this->haveLink = (int)$this->params->get('link_to_product_page', 1);
+$haveLink = (int)$this->params->get('link_to_product_page', 1);
 
 if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraData->top); }
 
 ?>
 <div class="hikashop_listing_img_title" id="div_<?php echo $mainDivName.'_'.$this->row->product_id;  ?>">
-<!-- IMAGE -->
 <?php
 if($this->config->get('thumbnail', 1)) {
 ?>
+	<!-- PRODUCT IMG -->
 	<div class="hikashop_product_image">
 		<div class="hikashop_product_image_subdiv">
+<?php if($haveLink) { ?>
+			<a href="<?php echo $link;?>" title="<?php echo $this->escape($this->row->product_name); ?>">
+<?php } ?>
 <?php
 	$img = $this->image->getThumbnail(
 		@$this->row->file_path,
@@ -39,22 +43,23 @@ if($this->config->get('thumbnail', 1)) {
 			</picture>
 			';
 		}
-		$this->link_content = $html;
-		$this->setLayout('show_popup');
-		echo $this->loadTemplate();
-?>		<meta itemprop="image" content="<?php echo $img->url; ?>"/>
+		echo $html;
+?>		<meta itemprop="image" content=<?php echo $img->url; ?>/>
 <?php
 	}
 	if($this->params->get('display_badges', 1)) {
-		$this->classbadge->placeBadges($this->image, $this->row->badges, array('vertical' => -10, 'horizontal' => 0, 'thumbnail' => $img));
+		$this->classbadge->placeBadges($this->image, $this->row->badges, -10, 0);
 	}
 ?>
+<?php if($haveLink) { ?>
+			</a>
+<?php } ?>
 		</div>
 	</div>
+	<!-- EO PRODUCT IMG -->
 <?php } ?>
-<!-- EO IMAGE -->
 
-<!-- PRICE -->
+	<!-- PRODUCT PRICE -->
 <?php
 	if($this->params->get('show_price','-1')=='-1'){
 		$config =& hikashop_config();
@@ -65,55 +70,36 @@ if($this->config->get('thumbnail', 1)) {
 		echo $this->loadTemplate();
 	}
 ?>
-<!-- EO PRICE -->
+	<!-- EO PRODUCT PRICE -->
 
-<!-- NAME -->
+	<!-- PRODUCT NAME -->
 	<span class="hikashop_product_name">
-<?php
-		$this->link_content = $this->row->product_name;
-		$this->setLayout('show_popup');
-		echo $this->loadTemplate();
-?>
+<?php if($haveLink) { ?>
+		<a href="<?php echo $link;?>">
+<?php } ?>
+			<?php echo $this->row->product_name; ?>
+<?php if($haveLink) { ?>
+		</a>
+<?php } ?>
 	</span>
 	<meta itemprop="name" content="<?php echo $this->escape(strip_tags($this->row->product_name)); ?>">
-<!-- EO NAME -->
+	<!-- EO PRODUCT NAME -->
 
-<!-- CODE -->
-	<span class='hikashop_product_code_list'>
-<?php if ($this->config->get('show_code')) {
-	$this->link_content = $this->row->product_code;
-	$this->setLayout('show_popup');
-	echo $this->loadTemplate();
-} ?>
-	</span>
-<!-- EO CODE -->
-<!-- CHARACTERISTIC AVAILABLE VALUES -->
-<?php
-if(!empty($this->row->characteristics)) {
-	foreach($this->row->characteristics as $characteristic) {
-		if(!empty($characteristic->availableValues)) {
-?>
-	<div class="hikashop_product_characteristic_on_listing hikashop_product_characteristic_on_listing_<?php echo $characteristic->characteristic_id; ?>">
-		<div class="hikashop_product_characteristic_name_on_listing"><?php echo $characteristic->characteristic_value; ?></div>
-		<div class="hikashop_product_characteristic_values_on_listing">
-<?php
-			foreach($characteristic->availableValues as $value) {
-?>
-			<span class="hikashop_product_characteristic_value_on_listing hikashop_product_characteristic_value_on_listing_<?php echo $value->characteristic_id; ?>">
-				<?php echo $value->characteristic_value; ?>
-			</span>
-<?php
-			}
-?>
-		</div>
-	</div>
-<?php		
-		}
-	}
-}
-?>
-<!-- EO CHARACTERISTIC AVAILABLE VALUES -->
-<!-- CUSTOM PRODUCT FIELDS -->
+	<!-- PRODUCT CODE -->
+		<span class='hikashop_product_code_list'>
+<?php if ($this->config->get('show_code')) { ?>
+<?php if($haveLink) { ?>
+			<a href="<?php echo $link;?>">
+<?php } ?>
+				<?php echo $this->row->product_code; ?>
+<?php if($haveLink) { ?>
+			</a>
+<?php } ?>
+<?php } ?>
+		</span>
+	<!-- EO PRODUCT CODE -->
+
+	<!-- PRODUCT CUSTOM FIELDS -->
 <?php
 if(!empty($this->productFields)) {
 	foreach($this->productFields as $fieldName => $oneExtraField) {
@@ -138,13 +124,11 @@ if(!empty($this->productFields)) {
 	}
 }
 ?>
-<!-- EO CUSTOM PRODUCT FIELDS -->
+	<!-- EO PRODUCT CUSTOM FIELDS -->
 
-<!-- AFTER PRODUCT NAME AREA -->
 <?php if(!empty($this->row->extraData->afterProductName)) { echo implode("\r\n",$this->row->extraData->afterProductName); } ?>
-<!-- EO AFTER PRODUCT NAME AREA -->
 
-<!-- VOTE -->
+	<!-- PRODUCT VOTE -->
 <?php
 
 if($this->params->get('show_vote')) {
@@ -152,18 +136,18 @@ if($this->params->get('show_vote')) {
 	echo $this->loadTemplate();
 }
 ?>
-<!-- EO VOTE -->
+	<!-- EO PRODUCT VOTE -->
 
-<!-- ADD TO CART BUTTON -->
+	<!-- ADD TO CART BUTTON AREA -->
 <?php
 if($this->params->get('add_to_cart') || $this->params->get('add_to_wishlist')) {
 	$this->setLayout('add_to_cart_listing');
 	echo $this->loadTemplate();
 }
 ?>
-<!-- EO ADD TO CART BUTTON -->
+	<!-- EO ADD TO CART BUTTON AREA -->
 
-<!-- COMPARISON -->
+	<!-- COMPARISON AREA -->
 <?php
 if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->getVar('task') == 'listing' && $this->params->get('show_compare')) {
 	$css_button = $this->config->get('css_button', 'hikabtn');
@@ -172,16 +156,11 @@ if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->g
 	<br/>
 <?php
 	if((int)$this->params->get('show_compare') == 1) {
-		$onclick = ' onclick="if(window.hikashop.addToCompare) { return window.hikashop.addToCompare(this); }" '.
-			'data-addToCompare="'.$this->row->product_id.'" '. 
-			'data-product-name="'.$this->escape($this->row->product_name).'" '.
-			'data-addTo-class="hika-compare"';
-		$attributes = 'class="'.$css_button . ' ' . $css_button_compare.'" '.$onclick;
-		$fallback_url = $link;
-		$content = JText::_('ADD_TO_COMPARE_LIST');
-
-		echo $this->loadHkLayout('button', array( 'attributes' => $attributes, 'content' => $content, 'fallback_url' => $fallback_url));
-
+?>
+	<a class="<?php echo $css_button . ' ' . $css_button_compare; ?>" href="<?php echo $link; ?>" onclick="if(window.hikashop.addToCompare) { return window.hikashop.addToCompare(this); }" data-addToCompare="<?php echo $this->row->product_id; ?>" data-product-name="<?php echo $this->escape($this->row->product_name); ?>" data-addTo-class="hika-compare"><span><?php
+		echo JText::_('ADD_TO_COMPARE_LIST');
+	?></span></a>
+<?php
 	} else {
 ?>
 	<label><input type="checkbox" class="hikashop_compare_checkbox" onchange="if(window.hikashop.addToCompare) { return window.hikashop.addToCompare(this); }" data-addToCompare="<?php echo $this->row->product_id; ?>" data-product-name="<?php echo $this->escape($this->row->product_name); ?>" data-addTo-class="hika-compare"><?php echo JText::_('ADD_TO_COMPARE_LIST'); ?></label>
@@ -189,36 +168,37 @@ if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->g
 	}
 }
 ?>
-<!-- EO COMPARISON -->
+	<!-- EO COMPARISON AREA -->
 
-<!-- CONTACT US BUTTON -->
+	<!-- CONTACT US AREA -->
 <?php
 	$contact = (int)$this->config->get('product_contact', 0);
 	if(hikashop_level(1) && $this->params->get('product_contact_button', 0) && ($contact == 2 || ($contact == 1 && !empty($this->row->product_contact)))) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
-		$attributes = 'class="'.$css_button.'"';
-		$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid);
-		$content = JText::_('CONTACT_US_FOR_INFO');
-
-		echo $this->loadHkLayout('button', array( 'attributes' => $attributes, 'content' => $content, 'fallback_url' => $fallback_url));
+?>
+	<a href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid); ?>" class="<?php echo $css_button; ?>"><?php
+		echo JText::_('CONTACT_US_FOR_INFO');
+	?></a>
+<?php
 	}
 ?>
 
-<!-- EO CONTACT US BUTTON -->
+	<!-- EO CONTACT US AREA -->
 
-<!-- PRODUCT DETAILS BUTTON -->
+	<!-- PRODUCT DETAILS BUTTON AREA -->
 <?php
 	$details_button = (int)$this->params->get('details_button', 0);
 	if($details_button) {
-		$this->link_content = JText::_('PRODUCT_DETAILS');
-		$this->type = 'detail';
-		$this->css_button = $this->config->get('css_button', 'hikabtn');
-		$this->setLayout('show_popup');
-		echo $this->loadTemplate();
+		$css_button = $this->config->get('css_button', 'hikabtn');
+?>
+	<a href="<?php echo $link; ?>" class="<?php echo $css_button; ?>"><?php
+		echo JText::_('PRODUCT_DETAILS');
+	?></a>
+<?php
 	}
 ?>
 
-<!-- EO PRODUCT DETAILS BUTTON -->
+	<!-- EO PRODUCT DETAILS BUTTON AREA -->
 
 	<meta itemprop="url" content="<?php echo $link; ?>">
 </div>

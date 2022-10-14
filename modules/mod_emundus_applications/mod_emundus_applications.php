@@ -64,8 +64,6 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $description = JText::_($params->get('description', ''));
     $show_add_application = $params->get('show_add_application', 1);
-    $show_show_campaigns = $params->get('show_show_campaigns', 0);
-    $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');
     $position_add_application = (int)$params->get('position_add_application', 0);
     $show_progress = $params->get('show_progress', 1);
     $show_progress_forms = $params->get('show_progress_forms', 0);
@@ -73,7 +71,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_progress_color = $params->get('show_progress_color', '#EA5012');
     $show_progress_color_forms = $params->get('show_progress_color_forms', '#EA5012');
     $show_progress_documents = $params->get('show_progress_documents', '#EA5012');
-    $admission_status = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : null;
+    $admission_status = explode(',', $params->get('admission_status'));
     $add_admission_prefix = $params->get('add_admission_prefix', 1);
     $absolute_urls = $params->get('absolute_urls', 1);
 

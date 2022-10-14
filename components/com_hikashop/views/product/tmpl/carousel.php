@@ -1,20 +1,20 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
-if(!HIKASHOP_J40 && $this->config->get('carousel_legacy', true)) {
+if($this->config->get('carousel_legacy', true)) {
 	$this->setLayout('carousel_legacy');
 	echo $this->loadTemplate();
 	return;
 }
 hikashop_loadJslib('owl-carousel');
-$options = array('loop' => true);
+$options = array();
 $nb_products = count($this->rows);
 if($nb_products < $this->params->get('columns')) {
 	$options['loop'] = false;
@@ -179,6 +179,7 @@ if($bottom)
 <script type="text/javascript">
 window.hikashop.ready(function(){
 	hkjQuery('#hikashop_carousel_<?php echo $mainDivName; ?>').owlCarousel({
+    	loop:true,
 <?php
 foreach($options as $key => $val){
 	if(is_bool($val))

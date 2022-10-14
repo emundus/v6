@@ -160,7 +160,7 @@
 				<?php foreach($this->access['users'] as $gid => $groups):?>
 					<tr>
 						<td>
-							<?= ucfirst($groups['uname']) ?>
+							<?= $groups['uname']?>
 							<?php if(EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $this->fnum)):?>
 								<a class = "btn btn-danger btn-xs pull-right em-del-access" href = "/index.php?option=com_emundus&controller=application&task=deleteaccess&fnum=<?= $this->fnum ?>&id=<?= $gid ?>&type=users">
 									<span class = "glyphicon glyphicon-remove"></span>

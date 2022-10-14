@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,26 +31,22 @@ class hikamarketMenusType {
 		$this->values = array(
 			JHTML::_('select.option', '0', JText::_('HIKA_NONE'))
 		);
-		$config_data = array();
+
+		$lastGroup = '';
 		foreach($menus as $menu) {
+			if($menu->title != $lastGroup) {
+				if(!empty($lastGroup))
+					$this->values[] = JHTML::_('select.option', '</OPTGROUP>');
+				$this->values[] = JHTML::_('select.option', '<OPTGROUP>', $menu->title);
+				$lastGroup = $menu->title;
+			}
 			if(strpos($menu->link, 'index.php?option='.HIKAMARKET_COMPONENT)===false && $menu->itemid != $value)
 				continue;
-			$config_data[$menu->title][] = JHTML::_('select.option', $menu->itemid, $menu->name);
+			$this->values[] = JHTML::_('select.option', $menu->itemid, $menu->name);
 		}
-		if(!HIKASHOP_J40) {
-			foreach($config_data as $optGroup => $values) {
-				$this->values[] = JHTML::_('select.optgroup', $optGroup);
-				$this->values = array_merge($this->values, $values);
-				$this->values[] = JHTML::_('select.optgroup', '');
-			}
-		} else {
-			foreach($config_data as $optGroup => $values) {
-				$this->values[] = array(
-					'text' => $optGroup,
-					'items' => $values
-				);
-			}
-		}
+
+		if(!empty($lastGroup))
+			$this->values[] = JHTML::_('select.option', '</OPTGROUP>');
 	}
 
 	public function display($map, $value) {

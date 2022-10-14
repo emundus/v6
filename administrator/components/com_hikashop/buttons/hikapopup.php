@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ if(!HIKASHOP_J30) {
 	$toolbarInstance = JToolbar::getInstance();
 	$toolbarInstance->loadButtonType('Popup');
 	class JButtonHikaPopup extends JButtonPopup {
-		public function fetchButton($type = 'Popup', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '', $footer = '', $check = false) {
+		public function fetchButton($type = 'Popup', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '', $footer = '') {
 			if(empty($title) && empty($footer))
 				return parent::fetchButton($type, $name, $text, $url, $width, $height, $top, $left, $onClose);
 
@@ -40,7 +40,7 @@ if(!HIKASHOP_J30) {
 	class JToolbarButtonHikaPopup extends JToolbarButton {
 		protected $_name = 'HikaPopup';
 
-		public function fetchButton($type = 'Modal', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '', $footer = '', $check = false) {
+		public function fetchButton($type = 'Modal', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '') {
 			hikashop_loadJSLib('vex');
 
 			list($name, $icon) = explode('#', $name, 2);
@@ -53,11 +53,7 @@ if(!HIKASHOP_J30) {
 			else
 				$btnClass = 'btn btn-small';
 
-			$onclick = 'return window.hikashop.openBox(this);';
-			if($check)
-				$onclick = 'if (document.adminForm.boxchecked.value == 0) { alert(Joomla.JText._(\'JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST\')); } else {'.$onclick.'}';
-
-			return '<button onclick="'.$onclick.'" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
+			return '<button onclick="return window.hikashop.openBox(this);" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
 				'<span class="icon-'.trim($icon).'"></span> ' . JText::_($text) .
 			'</button>';
 		}
@@ -77,7 +73,7 @@ if(!HIKASHOP_J30) {
 	class JToolbarButtonHikaPopup extends JToolbarButton {
 		protected $_name = 'HikaPopup';
 
-		public function fetchButton($type = 'Modal', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '', $footer='', $check = false) {
+		public function fetchButton($type = 'Modal', $name = '', $text = '', $url = '', $width = 640, $height = 480, $top = 0, $left = 0, $onClose = '', $title = '') {
 			hikashop_loadJSLib('vex');
 
 			list($name, $icon) = explode('#', $name, 2);
@@ -90,16 +86,9 @@ if(!HIKASHOP_J30) {
 			else
 				$btnClass = 'btn btn-small';
 
-			$attribs = '';
-			if($check)
-				$attribs.=' list-selection';
-
-			return '
-			<joomla-toolbar-button'.$attribs.'>'.
-				'<button onclick="return window.hikashop.openBox(this);" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
-					'<span class="icon-'.trim($icon).'"></span> ' . JText::_($text) .
-				'</button>' .
-			'</joomla-toolbar-button>';
+			return '<button onclick="return window.hikashop.openBox(this);" href="'.$url.'" data-hk-popup="vex" data-vex="{x:'.(int)$width.', y:'.(int)$height.'}" class="'.$btnClass.'">'.
+				'<span class="icon-'.trim($icon).'"></span> ' . JText::_($text) .
+			'</button>';
 		}
 
 		public function fetchId() {

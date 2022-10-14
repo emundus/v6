@@ -7,9 +7,6 @@
  */
 // no direct access
 defined('_JEXEC') or die;
-
-if($just_logged && !$only_applicant) {
-    $user = JFactory::getSession()->get('emundusUser');
 ?>
 <style>
     .em-switch-profile-img{
@@ -80,11 +77,11 @@ if($just_logged && !$only_applicant) {
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
-
-    const current_profile = "<?= $user->profile . '.'; ?>";
-    jQuery(document).ready(function () {
-        showModal();
-    });
+    <?php if($just_logged && !$only_applicant) : ?>
+        jQuery(document).ready(function () {
+            showModal();
+        });
+    <?php endif; ?>
 
     function showModal(){
         Swal.fire({
@@ -105,18 +102,7 @@ if($just_logged && !$only_applicant) {
         })
     }
 
-    function hideModal() {
-        const modal = document.querySelector('.em-switch-profile-swal-container');
-
-        modal.remove();
-    }
-
     function postCProfileAtLogin(current_fnum) {
-        if (current_fnum == current_profile) {
-            hideModal();
-            return;
-        }
-
         const url = window.location.origin.toString() + '/index.php';
 
         jQuery.ajax({
@@ -135,4 +121,3 @@ if($just_logged && !$only_applicant) {
         });
     }
 </script>
-<?php } ?>

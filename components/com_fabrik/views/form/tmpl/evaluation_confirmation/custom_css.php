@@ -84,6 +84,10 @@ echo <<<EOT
     height: 41px;
 }
 
+.view-form main#g-main-mainbody {
+    padding-right: 5%;
+}
+
 .view-form .fabrikForm .fabrikActions.form-actions, .view-checklist .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions {
     padding: 0;
 }

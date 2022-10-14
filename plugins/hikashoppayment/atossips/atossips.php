@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,7 +26,6 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		'13'=>"Invalid amount",
 		'14'=>"Invalid cardholder number",
 		'15'=>"Card issuer unknown",
-		'17'=>"Transaction cancelled by customer",
 		'30'=>"Format error",
 		'31'=>"Identifier of acquirer entity unknown",
 		'33'=>"Card is past expiry date",
@@ -51,9 +50,9 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		'99'=>"Incident field initiator"
 	);
 	var $bank_request = array(
-		'default_test' => 'https://payment-webinit.simu.sips-services.com/paymentInit',
-		'default_prod' => 'https://payment-webinit.sips-services.com/paymentInit',
-		'bnp_test' => 'https://payment-webinit.simu.mercanet.bnpparibas.net/paymentInit',
+		'default_test' => 'https://payment-webinit.simu.sips-atos.com/paymentInit',
+		'default_prod' => 'https://payment-webinit.sips-atos.com/paymentInit',
+		'bnp_test' => 'https://payment-webinit-mercanet.test.sips-atos.com/paymentInit', 
 		'bnp_prod' => 'https://payment-webinit.mercanet.bnpparibas.net/paymentInit'
 	);
 
@@ -72,184 +71,81 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 
 	var $pluginConfig = array(
 		'merchantID' => array("MERCHANT_ID",'input'),
-		'secretKey'=> array("Secret Key",'input'),
-		'keyVersion'=> array('Key Version','input'),
-		'url' => array('URL','input'),
-		'notification'=> array("ALLOW_NOTIFICATIONS_FROM_X",'boolean','0'),
-		'mode' => array('Mode', 'list', array(
-			'simplified' =>'V2 simplifié',
-			'default' => 'V2 normal',
-			'no_transaction_reference' => 'V2 avec option de génération automatique du transaction référence dans le contrat',
+		'secretKey'=>array("Secret Key",'input'),
+		'keyVersion'=>array('Key Version','input'),
+		'notification'=>array("ALLOW_NOTIFICATIONS_FROM_X",'boolean','0'),
+		'bank' =>array('Bank', 'list', array(
+			'default' => 'Default',
+			'bnp' => 'Bnp Paribas (Mercanet)',
+			'socg' => 'Société Générale'
 		)),
-		'instalments'=> array('Paiement multiple (maximum 3)', 'input'),
-		'period'=> array('délai entre les échéances en jours (maximum 30)', 'input','30'),
-		'force_instalments'=> array('FORCE_MULTIPLE_PAYMENTS', 'boolean','0'),
+		'testmode'=>array('TEST_MODE', 'boolean','0'),
 		'debug' => array('DEBUG', 'boolean','0'),
 		'return_url' => array('RETURN_URL', 'input'),
 		'invalid_status' => array('INVALID_STATUS', 'orderstatus'),
 		'pending_status' => array('PENDING_STATUS', 'orderstatus'),
 		'verified_status' => array('VERIFIED_STATUS', 'orderstatus'),
 	);
-	function __construct(&$subject, $config)
-	{
-		$this->pluginConfig['notification'][0] =  JText::sprintf('ALLOW_NOTIFICATIONS_FROM_X','WordLine SIPS');
-		return parent::__construct($subject, $config);
-	}
 
-	function needCC(&$method){
-		if(@$method->payment_params->period<100 && @$method->payment_params->period>0 && @$method->payment_params->instalments<=50 && @$method->payment_params->instalments>=2 && @$method->payment_params->force_instalments==0){
-			$onclick = '';
-			$config = hikashop_config();
-			if($config->get('auto_submit_methods',1)){
-				$onclick = ' onclick="this.form.action=this.form.action+\'#hikashop_payment_methods\';this.form.submit(); return false;"';
-			}
-			$method->custom_html='<span style="margin-left:10%">'.JHTML::_('hikaselect.booleanlist', "hikashop_multiple_instalments", '',  $onclick, JText::sprintf( 'PAYMENT_IN_X_TIME' , $method->payment_params->instalments ), JText::sprintf( 'PAY_FULL_ORDER' , '1') ).'</span>';
-		}
-	}
-
-	function onPaymentSave(&$cart, &$rates, &$payment_id) {
-		$_SESSION['hikashop_multiple_instalments'] = @$_REQUEST['hikashop_multiple_instalments'];
-		return parent::onPaymentSave($cart, $rates, $payment_id);
-	}
-
-	function onPaymentConfiguration(&$element) {
-		parent::onPaymentConfiguration($element);
-		$this->_checkURL($element);
-	}
-	function _checkURL(&$element) {
-		if(empty($element->payment_params->url)) {
-			if(!empty($element->payment_params->bank) && isset($element->payment_params->testmode)) {
-				$bank = $element->payment_params->bank;
-				$environnement = ($element->payment_params->testmode == 0)? 'prod': 'test';
-
-				$url = @$this->bank_request[$bank.'_'.$environnement];
-				$element->payment_params->url = $url;
-			}
-		}
-	}
 	function onAfterOrderConfirm(&$order,&$methods,$method_id){
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
 		if (empty ($this->payment_params->merchantID) )
 		{
-			$this->app->enqueueMessage('You have to configure a merchant ID for the Worldline SIPS plugin payment first : check your payment method parameters, on your website backend','error');
+			$this->app->enqueueMessage('You have to configure a merchant ID for the Atos sips plugin payment first : check your plugin\'s parameters, on your website backend','error');
 			return false;
 		}
 
 		if (empty($this->payment_params->keyVersion))
 		{
-			$this->app->enqueueMessage('You have to configure the Key Version for the Worldline SIPS plugin payment first : check your payment method parameters, on your website backend','error');
+			$this->app->enqueueMessage('You have to configure the Key Version for the Atos sips plugin payment first : check your plugin\'s parameters, on your website backend','error');
 			return false;
 		}
 		if (empty($this->payment_params->secretKey))
 		{
-			$this->app->enqueueMessage('You have to configure the Secret Key for the WorldLine SIPS plugin payment first : check your payment method parameters, on your website backend','error');
-			return false;
-		}
-
-		$this->_checkURL($this);
-		if (empty($this->payment_params->url))
-		{
-			$this->app->enqueueMessage('You have to configure the URL for the WorldLine SIPS plugin payment first : check your payment method parameters, on your website backend','error');
+			$this->app->enqueueMessage('You have to configure the Secret Key for the Atos sips plugin payment first : check your plugin\'s parameters, on your website backend','error');
 			return false;
 		}
 
 		$PostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&lang='.$this->locale . $this->url_itemid;
-		$userPostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&user_return=1&lang='.$this->locale .$this->url_itemid;
+		$userPostUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment='.$this->name.'&tmpl=component&user_return=1&lang='.$this->url_itemid;
 
-		$refName = 'transactionReference';
-		$ref = $order->order_id;
-		switch(@$this->payment_params->mode) {
-			case 'simplified':
-				$ref = $this->compute_transactionId();
-				$transactionRef = array("s10TransactionId" => $ref);
-				$refName = 's10TransactionReference';
-				break;
-			case 'no_transaction_reference':
-				$transactionRef = '';
-				break;
-			case 'default':
-			default:
-				$transactionRef = $order->order_id;
-				break;
-		}
+		if ($this->payment_params->bank == 'socg') $transactionRef = '';
+		else $transactionRef = $order->order_id;
 
 		if (empty($this->payment_params->bank) || ($this->payment_params->bank == 'socg')) {
 			$this->payment_params->bank = 'default';
 		}
+
+		$bank = $this->payment_params->bank;
+		$environnement = ($this->payment_params->testmode == 0)? 'prod': 'test';
+
+		$url = @$this->bank_request[$bank.'_'.$environnement];
 
 		$vars0 = array(
 			"currencyCode" => @$this->sync_currencies[$this->currency->currency_code],
 			"merchantId" => trim($this->payment_params->merchantID),
 			"normalReturnUrl" => $userPostUrl,
 			"amount" => str_replace(array('.',','),'',round($order->cart->full_total->prices[0]->price_value_with_tax,2)*100),
-			$refName => $transactionRef,
+			"transactionReference" => $transactionRef,
 			"keyVersion" => trim ($this->payment_params->keyVersion),
 			"automaticResponseUrl" => $PostUrl,
 			"orderId" => $order->order_id,
 			"statementReference" => $order->order_number //add the order number in the merchant bank account:
 		);
 
-		if(@$this->payment_params->period<100 && @$this->payment_params->period>0 && $this->payment_params->instalments>=2 && $this->payment_params->instalments<=50 && ($this->payment_params->force_instalments==1 || @$_SESSION['hikashop_multiple_instalments']==1)){
-			$vars0["paymentPattern"] = "INSTALMENT";
-			$dates = array();
-			$amounts = array();
-			$tref = array();
-			$instalment_amount = str_replace(array('.',','),'', round($order->cart->full_total->prices[0]->price_value_with_tax / $this->payment_params->instalments, 2) * 100);
+		$this->payment_params->url = $url;
 
-			$unixTime = time();
-			$config = JFactory::getConfig();
-			if(!HIKASHOP_J30){
-				$timeZone = $config->getValue('config.offset');
-			} else {
-				$timeZone = $config->get('offset');
-			}
-			$timeZone = new DateTimeZone($timeZone);
-			$time = new DateTime();
-			$time->setTimestamp($unixTime)->setTimezone($timeZone);
-
-			if(@$this->payment_params->mode == 'no_transaction_reference') {
-				$vars0[$refName] = $ref;
-			}
-
-			$rest = round($order->cart->full_total->prices[0]->price_value_with_tax, 2);
-			$instalment_amount = round($order->cart->full_total->prices[0]->price_value_with_tax / $this->payment_params->instalments, 2);
-
-			for($i = 1; $i <= $this->payment_params->instalments; $i++) {
-				if($i == $this->payment_params->instalments) {
-					$instalment_amount = $rest;
-				} else {
-					$rest = $rest - $instalment_amount;
-				}
-				$amounts[] = str_replace(array('.',','),'', $instalment_amount * 100);
-				if($i != 1)
-					$transactionRef = $this->compute_transactionId();
-				else
-					$transactionRef = $ref;
-				$tref[] = $transactionRef;
-				$dates[] = $time->format('Ymd');
-				$time->add(new DateInterval('P'.$this->payment_params->period.'D'));
-			}
-			$tref_name = 'transactionReferencesList';
-			if(@$this->payment_params->mode == 'simplified') {
-				$tref_name = 's10TransactionIdsList';
-			}
-			$vars0["instalmentData"] = array(
-				'number' => $this->payment_params->instalments,
-				'datesList' => $dates,
-				$tref_name => $tref,
-				'amountsList' => $amounts,
-			);
-		}
-
-		if($this->payment_params->debug)
+		$data ='';
+		foreach( $vars0 as $key => $val )
 		{
-			$this->writeToLog("Data vars for Atos Sips: \n\n\n");
-			$this->writeToLog(print_r($vars0,true));
+			if(!empty($val))
+			{
+				$data .= $key .'='. ( trim( $val ) ) .'|';
+			}
 		}
 
-
-		$data = $this->flatten_to_sips_payload($vars0);
+		$data = substr( $data, 0, -1 );
 
 		$secretKey = utf8_encode($this->payment_params->secretKey);
 
@@ -285,7 +181,7 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 
 		if($this->payment_params->debug) {
 
-			$this->writeToLog("Data recieved from Worldline SIPS :\n\n ");
+			$this->writeToLog("Data recieved from Atos Sips :\n\n ");
 			$this->writeToLog($_POST["Data"]);
 		}
 
@@ -293,7 +189,7 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 
 			if($this->payment_params->debug)
 			{
-				$this->writeToLog("Unable to read Worldline SIPS Response or Unknow Order! \n\n");
+				$this->writeToLog("Unable to read Atos Sips Response or Unknow Order! \n\n");
 			}
 			return false;
 		}
@@ -336,20 +232,15 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 		}
 
 
-		if(!isset($response["acquirerResponseCode"]) && !empty($response["responseCode"]))
-			$response["acquirerResponseCode"] = $response["responseCode"];
-
 		$repCode = trim ($response["acquirerResponseCode"]);
 		$notified = 0;
-
-		$EndUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=order&task=cancel_order&order_id='.$dbOrder->order_id . $this->url_itemid;
 
 		switch( $repCode ) {
 
 			case '00':
 
 				$details =  @$this->reponse_codes[$repCode];
-				$details = "Response from Worldline SIPS " . $details . "\n\r /Worldline SIPS authorisation Id :".$response["authorisationId"];
+				$details = "Response from Atos Sips " . $details . "\n\r /Atos Sips authorisation Id :".$response["authorisationId"];
 
 				$status = "Accepted";
 
@@ -366,7 +257,7 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 			case '08':
 
 				$details =  @$this->reponse_codes[$repCode];
-				$details = "Response from Worldline SIPS " . $details . " : Pending status.\n\r /Worldline SIPS authorisation Id :".$response["authorisationId"];
+				$details = "Response from Atos Sips " . $details . " : Pending status.\n\r /Atos Sips authorisation Id :".$response["authorisationId"];
 
 				$status = "Pending";
 
@@ -411,7 +302,7 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 			case '99':
 
 				$details =  @$this->reponse_codes[$repCode];
-				$details = "Response from Worldline SIPS " . $details . " : Invalid status.\n\r /Worldline SIPS authorisation Id :".$response["authorisationId"];
+				$details = "Response from Atos Sips " . $details . " : Invalid status.\n\r /Atos Sips authorisation Id :".$response["authorisationId"];
 
 				$status = "Declined";
 
@@ -419,27 +310,13 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 
 				$order_status = $this->payment_params->invalid_status;
 
-				break;
+				$EndUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=order&task=cancel_order&order_id='.$dbOrder->order_id . $this->url_itemid;
 
-			case '17':
-				$session_order_id = $this->app->getUserState(HIKASHOP_COMPONENT.'.order_id');
-				if($order_status != $dbOrder->order_status && empty($session_order_id)) {
-					$details =  @$this->reponse_codes[$repCode];
-					$details = "Response from Worldline SIPS " . $details;
-
-					$status = "Cancelled by customer";
-
-					$message =JText::_("ORDER_STATUS_CANCELLED");
-
-					$order_status = $this->payment_params->invalid_status;
-				} else {
-					$this->app->redirect($EndUrl);
-				}
 				break;
 
 			default:
 
-				$details = "Unknown response from Worldline SIPS " . $repCode."\n\r /Worldline SIPS authorisation Id :".$response["authorisationId"];
+				$details = "Unknow response from Atos Sips " . $repCode."\n\r /Atos Sips authorisation Id :".$response["authorisationId"];
 
 				$status = "Declined";
 
@@ -447,16 +324,9 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 
 				$order_status = $this->payment_params->invalid_status;
 
-				break;
-		}
+				$EndUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=order&task=cancel_order&order_id='.$dbOrder->order_id . $this->url_itemid;
 
-		if($order_status == $dbOrder->order_status) {
-			$this->writeToLog('status already there !');
-			if($user_return) {
-				$this->app->enqueueMessage($message);
-				$this->app->redirect($EndUrl);
-			}
-			return;
+				break;
 		}
 
 		$url = HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=edit&order_id='.$order_id;
@@ -495,94 +365,14 @@ class plgHikashoppaymentAtossips extends hikashopPaymentPlugin {
 	}
 
 	function getPaymentDefaultValues(&$element) {
-		$element->payment_name='WorldLine SIPS';
+		$element->payment_name='ATOS SIPS';
 		$element->payment_description='You can pay by credit card using this payment method';
 		$element->payment_images='MasterCard,VISA,Credit_card,American_Express';
 		$element->payment_params->notification= 1;
-		$element->payment_params->mode= 'default';
 		$element->payment_params->testmode= 0;
 		$element->payment_params->debug = 0;
 		$element->payment_params->invalid_status='cancelled';
 		$element->payment_params->pending_status='created';
 		$element->payment_params->verified_status='confirmed';
-	}
-
-	function compute_transactionId() {
-		$currentDateHour = date('H');
-		$currentDateMin = date('i');
-		$currentDateSec = date('s');
-		$currentDateMillArr = explode(' ', microtime());
-		$currentDateMill = (int)round($currentDateMillArr[0] * 1000);
-		$intPeriodeMs = 0;
-		$intPeriodeMs += $currentDateHour * 60 * 60 * 1000;
-		$intPeriodeMs += $currentDateMin * 60 * 1000;
-		$intPeriodeMs += $currentDateSec * 1000;
-		$intPeriodeMs += $currentDateMill;
-
-		$dblProjectionTid = 0;
-		$dblProjectionTid += (-5.636E-26 * pow($intPeriodeMs, 4));
-		$dblProjectionTid += (7.061E-18 * pow($intPeriodeMs, 3));
-		$dblProjectionTid += (-6.692E-11 * pow($intPeriodeMs, 2));
-		$dblProjectionTid += (8.566E-4 * pow($intPeriodeMs, 1));
-		$dblProjectionTid = floor($dblProjectionTid);
-		$intProjectionTid = (int) $dblProjectionTid;
-
-		if ($intProjectionTid > 999999)
-			$intProjectionTid = 999999;
-		if ($intProjectionTid < 0)
-			$intProjectionTid = 0;
-
-		static $inc = 0;
-		$intProjectionTid = $intProjectionTid + $inc;
-		$inc++;
-		$strProjectionTid = $intProjectionTid;
-		$strProjectionTid=str_pad($strProjectionTid, 6, "0", STR_PAD_LEFT);
-
-		return $strProjectionTid;
-	}
-
-	function flatten_to_sips_payload($input) {
-		$keyStack = array();
-		return implode("|", $this->flatten_undefined($input, $keyStack));
-	}
-
-	function flatten_undefined($object, $keyStack) {
-		$result = array();
-		if(is_array($object)){
-			$result = array_merge($result, $this->flatten_array($object, $keyStack));
-		}else if(!empty($keyStack)){
-			$result[] = implode('.', $keyStack) . '=' . $object;
-		}else{
-			$result[] = $object;
-		}
-		return $result;
-	}
-
-	function flatten_array($array, $keyStack) {
-		$simpleValues = array();$result = array();
-
-		foreach($array as $key => $value){
-			if(is_int($key)){
-				if(is_array($value)){
-					$noKeyStack = array();
-					$simpleValues = array_merge($simpleValues, $this->flatten_array($value, $noKeyStack));
-				}else{
-					$simpleValues[] = $value;
-				}
-			}else{
-				$keyStack[] = $key;
-				$result = array_merge($result, $this->flatten_undefined($value, $keyStack));
-				array_pop($keyStack);
-			}
-		}
-
-		if(!empty($simpleValues)){
-			if(empty($keyStack)){
-				$result = array_merge($result, $simpleValues);
-			}else{
-				$result[] = implode(".", $keyStack) . '=' . implode(",", $simpleValues);
-			}
-		}
-		return $result;
 	}
 }

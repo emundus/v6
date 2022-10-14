@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,11 +25,11 @@ defined('_JEXEC') or die('Restricted access');
 							$popupHelper = hikashop_get('helper.popup');
 							foreach($this->element->translations as $language_id => $translation){
 								echo $popupHelper->display(
-									'<div class="hikashop_multilang_button hikashop_language_'.$language_id.'">'.$this->transHelper->getFlag($language_id).'</div>',
+									'<div class="hikashop_multilang_button">'.$this->transHelper->getFlag($language_id).'</div>',
 									$this->transHelper->getFlag($language_id),
 									'\''."index.php?option=com_hikashop&ctrl=category&task=edit_translation&category_id=".@$this->element->category_id."&language_id=".$language_id.'&tmpl=component\'',
 									'hikashop_edit_'.$language_id.'_translations',
-									(int)$this->config->get('multi_language_edit_x', 760),(int)$this->config->get('multi_language_edit_y', 480), '', '', 'link',true
+									760,480, '', '', 'link',true
 								);
 							}
 							echo '</div>';
@@ -145,30 +145,23 @@ defined('_JEXEC') or die('Restricted access');
 			}
 		}
 	}
-	$after = array();
+
 	if(!empty($this->fields)) {
 		foreach($this->fields as $fieldName => $oneExtraField) {
-			if($oneExtraField->field_backend) {
-				$onWhat='onchange';
-				if($oneExtraField->field_type=='radio')
-					$onWhat='onclick';
-				$html = $this->fieldsClass->display($oneExtraField,$this->element->$fieldName,'data[category]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'category\',0);"');
-				if($oneExtraField->field_type=='hidden') {
-					$after[] = $html;
-					continue;
+			if(!$oneExtraField->field_backend) {
 ?>
 								<tr><td><input type="hidden" name="data[category][<?php echo $fieldName; ?>]" value="<?php echo $this->element->$fieldName; ?>" /></td></tr>
-				<?php }else{ ?>
+								<?php }else{ ?>
 								<tr id='hikashop_category_<?php echo $fieldName; ?>'>
 									<td class="key">
 										<?php echo $this->fieldsClass->getFieldName($oneExtraField);?>
 									</td>
 									<td>
-										<?php echo $html; ?>
+										<?php $onWhat='onchange'; if($oneExtraField->field_type=='radio') $onWhat='onclick'; ?>
+										<?php echo $this->fieldsClass->display($oneExtraField,$this->element->$fieldName,'data[category]['.$fieldName.']',false,' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'category\',0);"'); ?>
 									</td>
 								</tr>
 <?php
-				}
 			}
 		}
 	}
@@ -194,11 +187,6 @@ defined('_JEXEC') or die('Restricted access');
 	}
 ?>
 					</table>
-<?php
-	if(count($after)) {
-		echo implode("\r\n", $after);
-	}
-?>
 			</div>
 		</div>
 		<div class="hikashop_tile_block"><div style="min-height:auto;">

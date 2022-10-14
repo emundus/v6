@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -74,15 +74,9 @@ class LimitViewLimit extends hikashopView{
 			$productIds = array();
 			$categoryIds = array();
 			$zoneIds = array();
-			foreach($rows as $k => $row){
+			foreach($rows as $row){
 				if(!empty($row->limit_product_id)) $productIds[] = $row->limit_product_id;
-				if(!empty($row->limit_category_id)) {
-					$rows[$k]->limit_category_id = explode(',', $row->limit_category_id);
-					foreach($rows[$k]->limit_category_id as $id) {
-						if(!empty($id))
-							$categoryIds[] = $id;
-					}
-				}
+				if(!empty($row->limit_category_id)) $categoryIds[] = $row->limit_category_id;
 			}
 			if(!empty($productIds)){
 				$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$productIds).')';
@@ -111,24 +105,17 @@ class LimitViewLimit extends hikashopView{
 				$categories = $database->loadObjectList();
 				foreach($rows as $k => $row){
 					if(!empty($row->limit_category_id)){
-						$rows[$k]->categories = array();
-						foreach($row->limit_category_id as $i => $id) {
-							if(empty($id))
-								continue;
-							$found = false;
-							foreach($categories as $category){
-								if($category->category_id==$id){
-									$rows[$k]->categories[] = $category;
-									$found = true;
-									break;
+						$found = false;
+						foreach($categories as $category){
+							if($category->category_id==$row->limit_category_id){
+								foreach(get_object_vars($category) as $field => $value){
+									$rows[$k]->$field = $category->$field;
 								}
+								$found = true;
 							}
-							if(!$found){
-								$category = new stdClass();
-								$category->category_name = JText::_('CATEGORY_NOT_FOUND');
-								$category->category_id = $id;
-								$rows[$k]->categories[] = $category;
-							}
+						}
+						if(!$found){
+							$rows[$k]->category_name=JText::_('CATEGORY_NOT_FOUND');
 						}
 					}
 				}
@@ -142,8 +129,6 @@ class LimitViewLimit extends hikashopView{
 		$config =& hikashop_config();
 		$manage = hikashop_isAllowed($config->get('acl_limit_manage','all'));
 		$this->assignRef('manage',$manage);
-
-		$this->manage_category = hikashop_isAllowed($config->get('acl_category_manage','all'));
 		$this->toolbar = array(
 			array('name'=>'addNew','display'=>$manage),
 			array('name'=>'editList','display'=>$manage),
@@ -191,11 +176,33 @@ class LimitViewLimit extends hikashopView{
 			}
 			$task='add';
 		}
-
-		if(!empty($element->limit_category_id)){
-			$element->limit_category_id = explode(',', trim($element->limit_category_id, ','));
+		$database = JFactory::getDBO();
+		if(!empty($element->limit_product_id)){
+			$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_id = '.(int)$element->limit_product_id;
+			$database->setQuery($query);
+			$product = $database->loadObject();
+			if(!empty($product)){
+				foreach(get_object_vars($product) as $key => $val){
+					$element->$key = $val;
+				}
+			}
 		}
-
+		if(empty($element->product_name)){
+			$element->product_name = JText::_('PRODUCT_NOT_FOUND');
+		}
+		if(!empty($element->limit_category_id)){
+			$query = 'SELECT * FROM '.hikashop_table('category').' WHERE category_id = '.(int)$element->limit_category_id;
+			$database->setQuery($query);
+			$category = $database->loadObject();
+			if(!empty($category)){
+				foreach(get_object_vars($category) as $key => $val){
+					$element->$key = $val;
+				}
+			}
+		}
+		if(empty($element->category_name)){
+			$element->category_name = JText::_('CATEGORY_NOT_FOUND');
+		}
 		hikashop_setTitle(JText::_($this->nameForm),$this->icon,$this->ctrl.'&task='.$task.'&limit_id='.$limit_id);
 
 		$this->toolbar = array(

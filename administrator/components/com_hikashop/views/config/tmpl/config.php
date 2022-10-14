@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,15 +31,6 @@ defined('_JEXEC') or die('Restricted access');
 	if(hikashop_level(1)) {
 		$configTabs['config_cron'] = array('CRON', 'cron');
 	}
-	$tabsContent = array();
-	foreach($configTabs as $pane => $paneOpt) {
-		if($paneOpt[1] != 'separator') {
-			$this->setLayout($paneOpt[1]);
-			$tabsContent[$pane] = $this->loadTemplate();
-		}
-	}
-	$app = JFactory::getApplication();
-	$app->triggerEvent('onHikashopConfigTabsList', array(&$configTabs, &$tabsContent));
 
 	$active = 'config_main';
 	$default_id = '';
@@ -50,11 +41,7 @@ defined('_JEXEC') or die('Restricted access');
 			$attr = 'class="active"';
 			$default_id = $id;
 		}
-		if($paneOpt[1] == 'separator') { 
-			echo '<li role="separator" class="hikashop-menu n-separator"><a class="hikashop-hide" onclick="return false;" id="'.$id.'"></a></li>';
-		} else {
-			echo '<li '.$attr.'><a href="#'.$pane.'" rel="tab:'.$paneOpt[1].'" onclick="return configWatcher.switchTab(this);" id="'.$id.'">' . JText::_($paneOpt[0]) . '</a></li>';
-		}
+		echo '<li '.$attr.'><a href="#'.$pane.'" rel="tab:'.$paneOpt[1].'" onclick="return configWatcher.switchTab(this);" id="'.$id.'">' . JText::_($paneOpt[0]) . '</a></li>';
 	}
 
 ?>
@@ -63,9 +50,8 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 	foreach($configTabs as $pane => $paneOpt) {
 		echo '<div id="hikashop_config_page_tab_'.$paneOpt[1].'">';
-		if(!empty($tabsContent[$pane])) {
-			echo $tabsContent[$pane];
-		}
+		$this->setLayout($paneOpt[1]);
+		echo $this->loadTemplate();
 		echo '</div>';
 	}
 ?>

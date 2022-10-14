@@ -1,13 +1,11 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
-defined('_JEXEC') or die('Restricted access');
-?><?php
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 
@@ -35,18 +33,12 @@ defined('_JEXEC') or die('Restricted access');
 			return false;
 		}
 	</script>
-<?php 
-	$extra_css = "";
-	if (HIKASHOP_J40) {
-		$extra_css = 'style="padding:0px;"';
-	}
-?>
 	<tr>
-		<td colspan="2" <?php echo $extra_css;?>>
+		<td colspan="2">
 			<fieldset>
 				<legend><?php echo JText::_( 'WAREHOUSE' ); ?></legend>
 				<div style="text-align:right;">
-					<button class="btn" type="button" onclick="return addRow();" style="margin-right:20px;">
+					<button class="btn" type="button" onclick="return addRow();">
 						<img src="<?php echo HIKASHOP_IMAGES; ?>add.png"/><?php echo JText::_('ADD');?>
 					</button>
 				</div>
@@ -75,50 +67,48 @@ defined('_JEXEC') or die('Restricted access');
 					</thead>
 					<tbody id="warehouse_listing">
 						<?php
-						if(!empty($this->element->shipping_params->warehouse) && is_array($this->element->shipping_params->warehouse)) {
-							$a = count($this->element->shipping_params->warehouse);
-							if($a){
-								for($i = 0;$i<$a;$i++){
-									$row =& $this->element->shipping_params->warehouse[$i];
-									?>
-									<tr class="row0" id="warehouse_<?php echo $i;?>">
-										<td>
-											<input size="10" type="text" id="warehouse_<?php echo $i;?>_name" name="warehouse[<?php echo $i;?>][name]" value="<?php echo @$row->name; ?>"/>
-										</td>
-										<td>
-											<div id="warehouse_<?php echo $i;?>_zip">
-											<input size="10" type="text" id="warehouse_<?php echo $i;?>_zip_input" name="warehouse[<?php echo $i;?>][zip]" value="<?php echo @$row->zip; ?>"/>
-											</div>
-										</td>
+						$a = @count($this->element->shipping_params->warehouse);
+						if($a){
+							for($i = 0;$i<$a;$i++){
+								$row =& $this->element->shipping_params->warehouse[$i];
+								?>
+								<tr class="row0" id="warehouse_<?php echo $i;?>">
+									<td>
+										<input size="10" type="text" id="warehouse_<?php echo $i;?>_name" name="warehouse[<?php echo $i;?>][name]" value="<?php echo @$row->name; ?>"/>
+									</td>
+									<td>
+										<div id="warehouse_<?php echo $i;?>_zip">
+										<input size="10" type="text" id="warehouse_<?php echo $i;?>_zip_input" name="warehouse[<?php echo $i;?>][zip]" value="<?php echo @$row->zip; ?>"/>
+										</div>
+									</td>
 
-										<td class="hk_center">
-											<span id="warehouse_<?php echo $i;?>_zone">
-												<?php if(!empty($row->zone_name)){ echo $row->zone_name;} ?>
-												<input type="hidden" name="warehouse[<?php echo $i;?>][zone]" value="<?php echo @$row->zone ?>"/>
-											</span>
-											<a class="modal" rel="{handler: 'iframe', size: {x: 760, y: 480}}" href="<?php echo hikashop_completeLink("zone&task=selectchildlisting&type=shipping&subtype=warehouse_".$i."_zone&map=warehouse[".$i."][zone]&tmpl=component"); ?>" >
-												<img src="<?php echo HIKASHOP_IMAGES; ?>edit.png"/>
-											</a>
-										</td>
-										<td class="hk_center">
-											<a href="#" onclick="return deleteZone('warehouse_<?php echo $i;?>_zone');">
-												<img src="../media/com_hikashop/images/delete.png"/>
-											</a>
-										</td>
-										<td>
-											<select id="warehouse_<?php echo $i;?>_units"  name="warehouse[<?php echo $i;?>][units]">
-												<option <?php if(@$row->units=='lb')  echo "selected=\"selected\""; ?> value="lb">LB/IN</option>
-												<option <?php if(@$row->units=='kg')  echo "selected=\"selected\""; ?> value="kg">KG/CM</option>
-											</select>
-										</td>
-										<td class="hk_center">
-											<a href="#" onclick="return deleteRow('warehouse_<?php echo $i;?>_zip','warehouse_<?php echo $i;?>_zip_input','warehouse_<?php echo $i;?>');">
-												<img src="../media/com_hikashop/images/delete.png"/>
-											</a>
-										</td>
-									</tr>
-								<?php
-								}
+									<td class="hk_center">
+										<span id="warehouse_<?php echo $i;?>_zone">
+											<?php if(!empty($row->zone_name)){ echo $row->zone_name;} ?>
+											<input type="hidden" name="warehouse[<?php echo $i;?>][zone]" value="<?php echo @$row->zone ?>"/>
+										</span>
+										<a class="modal" rel="{handler: 'iframe', size: {x: 760, y: 480}}" href="<?php echo hikashop_completeLink("zone&task=selectchildlisting&type=shipping&subtype=warehouse_".$i."_zone&map=warehouse[".$i."][zone]&tmpl=component"); ?>" >
+											<img src="<?php echo HIKASHOP_IMAGES; ?>edit.png"/>
+										</a>
+									</td>
+									<td class="hk_center">
+										<a href="#" onclick="return deleteZone('warehouse_<?php echo $i;?>_zone');">
+											<img src="../media/com_hikashop/images/delete.png"/>
+										</a>
+									</td>
+									<td>
+										<select id="warehouse_<?php echo $i;?>_units"  name="warehouse[<?php echo $i;?>][units]">
+											<option <?php if(@$row->units=='lb')  echo "selected=\"selected\""; ?> value="lb">LB/IN</option>
+											<option <?php if(@$row->units=='kg')  echo "selected=\"selected\""; ?> value="kg">KG/CM</option>
+										</select>
+									</td>
+									<td class="hk_center">
+										<a href="#" onclick="return deleteRow('warehouse_<?php echo $i;?>_zip','warehouse_<?php echo $i;?>_zip_input','warehouse_<?php echo $i;?>');">
+											<img src="../media/com_hikashop/images/delete.png"/>
+										</a>
+									</td>
+								</tr>
+							<?php
 							}
 						}
 						?>

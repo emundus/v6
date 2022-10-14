@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,6 +23,7 @@ echo $this->leftmenu(
 );
 ?>
 <div id="page-main" class="rightconfig-container <?php if(HIKASHOP_BACK_RESPONSIVE) echo 'rightconfig-container-j30';?>">
+
 <!-- MAIN - GLOBAL -->
 <div id="main_global" class="hikashop_backend_tile_edition">
 	<div class="hikashop_tile_block"><div>
@@ -31,7 +32,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2209251919]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2011091120]
 		</td>
 	</tr>
 	<tr>
@@ -44,18 +45,6 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('store_address');?>><?php echo JText::_('STORE_ADDRESS'); ?></td>
 		<td>
 			<textarea class="inputbox" name="config_store_address" cols="30" rows="5"><?php echo $this->config->get('store_address'); ?></textarea>
-		</td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('image_address_path');?>><?php echo JText::_('LOGO'); ?></td>
-		<td>
-			<input type="text" class="inputbox" name="config[image_address_path]" value="<?php echo $this->escape($this->config->get('image_address_path'));?>" />
-		</td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('img_style_css');?>><?php echo JText::_('HIKA_IMAGE_ADDRESS_CSS'); ?></td>
-		<td>
-			<input type="text" class="inputbox" name="config[img_style_css]" value="<?php echo $this->escape($this->config->get('img_style_css'));?>"/>
 		</td>
 	</tr>
 	<tr>
@@ -209,15 +198,10 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('group_options');?>><?php echo JText::_('GROUP_OPTIONS_WITH_PRODUCT'); ?></td>
 		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[group_options]', 'onchange="displayGroupoptionsChange(this.value)"', $this->config->get('group_options', 0));
+			echo JHTML::_('hikaselect.booleanlist', 'config[group_options]', '', $this->config->get('group_options', 0));
 		?></td>
 	</tr>
-	<tr id="hikashop_groupoptions_change_row"<?php if(!$this->config->get('group_options', 0)) { echo ' style="display:none;"'; } ?>>
-		<td class="hk_tbl_key"<?php echo $this->docTip('shipping_group_product_options');?>><?php echo JText::_('SHIPPING_GROUP_PRODUCT_OPTIONS'); ?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[shipping_group_product_options]', '', $this->config->get('shipping_group_product_options', 0));
-		?></td>
-	</tr>
+
 </table>
 	</div></div>
 </div>
@@ -250,12 +234,6 @@ echo $this->leftmenu(
 			} else {
 				echo hikashop_getUpgradeLink('essential');
 			}
-		?></td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('synchronized_add_to_cart');?>><?php echo JText::_('SYNCHRONIZED_ADD_TO_CART'); ?></td>
-		<td><?php
-			echo JHTML::_('hikaselect.booleanlist', 'config[synchronized_add_to_cart]', '', $this->config->get('synchronized_add_to_cart', 0));
 		?></td>
 	</tr>
 	<tr>
@@ -600,18 +578,7 @@ echo $this->leftmenu(
 			echo JHTML::_('hikaselect.booleanlist', "config[add_webp_images]" , '',$this->config->get('add_webp_images', 1));
 		?></td>
 	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('variant_images_behavior');?>><?php echo JText::_('VARIANT_IMAGES_BEHAVIOR'); ?></td>
-		<td><?php
-			$arr = array(
-				JHTML::_('select.option', 'replace_main_product_images', JText::_('REPLACE_MAIN_PRODUCT_IMAGES')),
-				JHTML::_('select.option', 'display_along_main_product_images', JText::_('DISPLAY_ALONG_MAIN_PRODUCT_IMAGES')),
-				JHTML::_('select.option', 'display_along_before_product_images', JText::_('DISPLAY_BEFORE_MAIN_PRODUCT_IMAGES')),
-			);
-			echo JHTML::_('hikaselect.genericlist', $arr, 'config[variant_images_behavior]', 'class="custom-select"', 'value', 'text',$this->config->get('variant_images_behavior', 'replace_main_product_images'));
-		?></td>
 
-	</tr>
 </table>
 	</div></div>
 </div>
@@ -692,12 +659,6 @@ echo $this->leftmenu(
 		<td class="hk_tbl_key"<?php echo $this->docTip('word_wrapping');?>><?php echo JText::_('WORD_WRAPPING'); ?></td>
 		<td>
 			<input class="inputbox" type="text" name="config[word_wrapping]" size="10" value="<?php echo $this->config->get('word_wrapping',0) ?>">
-		</td>
-	</tr>
-	<tr>
-		<td class="hk_tbl_key"<?php echo $this->docTip('email_favicon');?>><?php echo JText::_('EMAIL_FAVICON'); ?></td>
-		<td>
-			<input class="inputbox" type="text" placeholder="<?php echo HIKASHOP_LIVE.'media/com_hikashop/images/icons/icon-32-show_cart.png'; ?>" name="config[email_favicon]" size="40" value="<?php echo $this->escape($this->config->get('email_favicon')); ?>">
 		</td>
 	</tr>
 	<tr>

@@ -150,8 +150,8 @@ button#back:hover, button#back:active, button#back:focus,
 }
 
 a.btn.btn-success:not(.btn-xs) {
-    width: 100%;
-    text-align: center;
+    width: auto;
+    text-align: initial;
 }
 
 /*** Progression bar percentage ***/

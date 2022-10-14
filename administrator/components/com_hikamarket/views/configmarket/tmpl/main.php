@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,7 +31,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION'); ?></td>
 		<td>
-			HikaMarket <?php echo $this->config->get('level') . ' ' . $this->config->get('version'); ?> [2206222240]
+			HikaMarket <?php echo $this->config->get('level') . ' ' . $this->config->get('version'); ?> [2110042204]
 		</td>
 	</tr>
 	<tr>
