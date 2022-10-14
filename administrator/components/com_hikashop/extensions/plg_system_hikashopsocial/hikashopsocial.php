@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -488,9 +488,13 @@ function twitterPop(str) {
 			$menu = $menus->getItem($Itemid);
 		}
 		if(empty($product_id) && is_object($menu)) {
-			jimport('joomla.html.parameter');
-			$params = new JParameter($menu->params);
-			$product_id = $params->get('product_id');
+			if(!empty($menu)) {
+				if(HIKASHOP_J30)
+					$menuParams = $menu->getParams();
+				else
+					$menuParams = @$menu->params;
+			}
+			$product_id = $menuParams->get('product_id');
 		}
 		$product = false;
 		if(!empty($product_id)) {
@@ -516,10 +520,14 @@ function twitterPop(str) {
 			$menus->setActive($Itemid);
 			$menu = $menus->getItem($Itemid);
 		}
-		if(empty($vendor_id) && is_object($menu) && !empty($menu->params)) {
-			jimport('joomla.html.parameter');
-			$params = new JParameter($menu->params);
-			$vendor_id = $params->get('vendor_id');
+		if(empty($vendor_id) && is_object($menu)) {
+			if(!empty($menu)) {
+				if(HIKASHOP_J30)
+					$menuParams = $menu->getParams();
+				else
+					$menuParams = @$menu->params;
+			}
+			$vendor_id = $menuParams->get('vendor_id');
 		}
 		$vendor = false;
 		if(!empty($vendor_id)) {
@@ -539,7 +547,7 @@ function twitterPop(str) {
 		$imageUrl = '';
 
 		if($element->type == 'vendor') {
-			$imageUrl = JURI::base() . $this->main_uploadFolder_url . $element->image;
+			$imageUrl = JURI::base() . $this->main_uploadFolder_url . ltrim($element->image, '/');
 		} else {
 			$product_id = (int)$element->id;
 
@@ -553,7 +561,7 @@ function twitterPop(str) {
 				$image = $db->loadObject();
 			}
 			if(!empty($image))
-				$imageUrl = JURI::base() . $this->main_uploadFolder_url . $image->file_path;
+				$imageUrl = JURI::base() . $this->main_uploadFolder_url . ltrim($image->file_path, '/');
 		}
 		return $imageUrl;
 	}

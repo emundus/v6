@@ -22,8 +22,8 @@ describe('globalSettings.vue type campaign', () => {
         expect(wrapper.vm.menuHighlight).toEqual(0);
     });
 
-    it('globalSettings, should display a list of menu with a length of ' + wrapper.vm.menus.length, () => {
+    it('globalSettings, should display a list of menu with a length of ' + wrapper.vm.displayedMenus.length, () => {
         const cards = wrapper.findAll('.em-grid-3 .em-shadow-cards');
-        expect(cards.length).toEqual(wrapper.vm.menus.length);
+        expect(cards.length).toEqual(wrapper.vm.displayedMenus.length);
     });
 });

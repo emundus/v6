@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,9 +72,9 @@ if(!empty($this->plugin->pluginView)) {
 	if($this->multiple_plugin) {
 ?>
 				<tr>
-					<td class="key"><?php
+					<td class="key"><label><?php
 						echo JText::_('HIKA_PUBLISHED');
-					?></td>
+					?></label></td>
 					<td><?php
 						echo JHTML::_('hikaselect.booleanlist', 'data['. $type.']['.$type.'_published]', '', @$this->element->$plugin_published);
 					?></td>
@@ -85,9 +85,9 @@ if(!empty($this->plugin->pluginView)) {
 	if($this->plugin_type == 'payment' || $this->plugin_type == 'shipping') {
 ?>
 				<tr>
-					<td class="key"><?php
+					<td class="key"><label for="data_<?php echo $type; ?>_<?php echo $type; ?>_images_text"><?php
 						echo JText::_( 'HIKA_IMAGES' );
-					?></td>
+					?></label></td>
 					<td><?php
 					if(empty($this->nameboxType))
 						$this->nameboxType = hikashop_get('type.namebox');
@@ -100,7 +100,8 @@ if(!empty($this->plugin->pluginView)) {
 						array(
 							'delete' => true,
 							'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
-							'type' => $type
+							'type' => $type,
+							'id' => 'images',
 						)
 					);
 
@@ -112,27 +113,27 @@ if(!empty($this->plugin->pluginView)) {
 	if($this->plugin_type == 'payment') {
 ?>
 				<tr>
-					<td class="key"><?php
+					<td class="key"><label for="payment_price"><?php
 						echo JText::_('PRICE');
-					?></td>
+					?></label></td>
 					<td>
-						<input type="text" name="data[payment][payment_price]" value="<?php echo @$this->element->payment_price; ?>" /><?php echo $this->currencies->display('data[payment][payment_params][payment_currency]',@$this->element->payment_params->payment_currency); ?>
+						<input type="text" id="payment_price" name="data[payment][payment_price]" value="<?php echo @$this->element->payment_price; ?>" /><?php echo $this->currencies->display('data[payment][payment_params][payment_currency]',@$this->element->payment_params->payment_currency); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_percentage]"><?php
+						<label for="payment_percentage"><?php
 							echo JText::_('DISCOUNT_PERCENT_AMOUNT');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_percentage]" value="<?php echo (float)@$this->element->payment_params->payment_percentage; ?>" />%
+						<input type="text" id="payment_percentage" name="data[payment][payment_params][payment_percentage]" value="<?php echo (float)@$this->element->payment_params->payment_percentage; ?>" />%
 					</td>
 				</tr>
 <!--jms2win_begin -->
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_tax_id]"><?php
+						<label for="datapaymentpayment_paramspayment_tax_id"><?php
 							echo JText::_( 'PRODUCT_TAXATION_CATEGORY' );
 						?></label>
 					</td>
@@ -174,35 +175,35 @@ function hika_payment_algorithm(el) {
 ?>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_price]"><?php
+						<label for="shipping_price"><?php
 							echo JText::_('PRICE');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_price]" value="<?php echo @$this->element->shipping_price; ?>" /><?php echo $this->data['currency']->display('data[shipping][shipping_currency_id]',@$this->element->shipping_currency_id); ?>
+						<input type="text" id="shipping_price" name="data[shipping][shipping_price]" value="<?php echo @$this->element->shipping_price; ?>" /><?php echo $this->data['currency']->display('data[shipping][shipping_currency_id]',@$this->element->shipping_currency_id); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_percentage]"><?php
+						<label for="shipping_percentage"><?php
 							echo JText::_('DISCOUNT_PERCENT_AMOUNT');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_percentage]" value="<?php echo (float)@$this->element->shipping_params->shipping_percentage; ?>" />%
+						<input type="text" id="shipping_percentage" name="data[shipping][shipping_params][shipping_percentage]" value="<?php echo (float)@$this->element->shipping_params->shipping_percentage; ?>" />%
 					</td>
 				</tr>
 				<tr>
-					<td class="key"><?php
+					<td class="key"><label for="shipping_formula"><?php
 						echo JText::_('HIKA_FORMULA');
-					?></td>
+					?></label></td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_formula]" value="<?php echo @$this->element->shipping_params->shipping_formula; ?>" />
+						<input type="text" id="shipping_formula" name="data[shipping][shipping_params][shipping_formula]" value="<?php echo @$this->element->shipping_params->shipping_formula; ?>" />
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_tax]"><?php
+						<label for="datashippingshipping_paramsshipping_tax"><?php
 							echo JText::_('AUTOMATIC_TAXES');
 						?></label>
 					</td>
@@ -215,6 +216,7 @@ function hika_payment_algorithm(el) {
 							JHTML::_('select.option', 0, JText::_('HIKASHOP_NO')),
 							JHTML::_('select.option', 1, JText::_('PROPORTION')),
 							JHTML::_('select.option', 2, JText::_('HIGHEST_RATE')),
+							JHTML::_('select.option', 3, JText::_('LOWEST_RATE')),
 						);
 
 						echo JHTML::_('select.genericlist', $values, "data[shipping][shipping_params][shipping_tax]" , 'onchange="hikashopToggleTax(this.value);"', 'value', 'text', @$this->element->shipping_params->shipping_tax); ?>
@@ -222,7 +224,7 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr data-tax-display="1">
 					<td class="key">
-						<label for="shipping_tax_id"><?php
+						<label for="datashippingshipping_tax_id"><?php
 							echo JText::_( 'TAXATION_CATEGORY' );
 						?></label>
 					</td>
@@ -232,7 +234,7 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_per_product]"><?php
+						<label><?php
 							echo JText::_('USE_PRICE_PER_PRODUCT');
 						?></label>
 					</td>
@@ -244,17 +246,17 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr id="hikashop_shipping_per_product_1"<?php if($this->element->shipping_params->shipping_per_product == false) { echo ' style="display:none;"';}?>>
 					<td class="key">
-						<label for="data[shipping][shipping_price_per_product]"><?php
+						<label for="shipping_price_per_product"><?php
 							echo JText::_( 'PRICE_PER_PRODUCT' );
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_price_per_product]" value="<?php echo @$this->element->shipping_params->shipping_price_per_product; ?>" />
+						<input type="text" id="shipping_price_per_product" name="data[shipping][shipping_params][shipping_price_per_product]" value="<?php echo @$this->element->shipping_params->shipping_price_per_product; ?>" />
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_virtual_included]"><?php echo JText::_( 'INCLUDE_VIRTUAL_PRODUCTS_PRICE' ); ?></label>
+						<label><?php echo JText::_( 'INCLUDE_VIRTUAL_PRODUCTS_PRICE' ); ?></label>
 					</td>
 					<td><?php
 						if(!isset($this->element->shipping_params->shipping_virtual_included)){
@@ -266,7 +268,7 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_override_address]"><?php
+						<label for="datashippingshipping_paramsshipping_override_address"><?php
 							echo JText::_( 'OVERRIDE_SHIPPING_ADDRESS' );
 						?></label>
 					</td>
@@ -299,19 +301,19 @@ function hika_payment_algorithm(el) {
 						if( $override != 3 && $override != 4 ) { echo 'display:none;'; }
 					?>">
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_override_address_text]"><?php
+						<label for="shipping_override_address_text_textarea"><?php
 							echo JText::_( 'OVERRIDE_SHIPPING_ADDRESS_TEXT' );
 						?></label>
 					</td>
 					<td>
-						<textarea name="data[shipping][shipping_params][shipping_override_address_text]"><?php
+						<textarea id="shipping_override_address_text_textarea" name="data[shipping][shipping_params][shipping_override_address_text]"><?php
 							echo @$this->element->shipping_params->shipping_override_address_text;
 						?></textarea>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][override_tax_zone]"><?php
+						<label for="data_shipping_shipping_params_override_tax_zone_text"><?php
 							echo JText::_('OVERRIDE_TAX_ZONE');
 						?></label>
 					</td>
@@ -323,6 +325,7 @@ function hika_payment_algorithm(el) {
 							hikashopNameboxType::NAMEBOX_SINGLE,
 							'zone',
 							array(
+								'type' => 'id',
 								'delete' => true,
 								'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
 								'zone_types' => array('country' => 'COUNTRY', 'tax' => 'TAXES'),
@@ -351,7 +354,7 @@ function hika_payment_algorithm(el) {
 			?></div>
 				<table class="admintable table">
 					<tr>
-						<td class="key"><?php echo JText::_('ZONE'); ?></td>
+						<td class="key"><label for="<?php echo 'data_'.$type.'_'.$type.'_zone_namekey_text'; ?>"><?php echo JText::_('ZONE'); ?></label></td>
 						<td>
 						<?php
 						$plugin_zone_namekey = $type.'_zone_namekey';
@@ -379,13 +382,21 @@ function hika_payment_algorithm(el) {
 		if($this->plugin_type == 'payment') {
 ?>
 					<tr>
-						<td class="key"><?php echo JText::_('HIKASHOP_SHIPPING_METHOD'); ?></td>
+						<td class="key"><label for="data_payment_payment_shipping_methods_text"><?php echo JText::_('HIKASHOP_SHIPPING_METHOD'); ?></label></td>
 						<td><?php
-							echo $this->shippingMethods->display('data[payment][payment_shipping_methods][]',@$this->element->payment_shipping_methods_type,@$this->element->payment_shipping_methods_id,true,'multiple="multiple" size="3"');
-			if(!HIKASHOP_BACK_RESPONSIVE) {
-						?><br/><a href="javascript:void(0)" onclick="selectNone('datapaymentpayment_shipping_methods');"><?php echo JText::_('HIKA_NO_RESCTION'); ?></a>
-<?php
-			}
+			if(@$this->element->payment_shipping_methods == 'all') $this->element->payment_shipping_methods = '';
+			echo  $this->nameboxType->display(
+				'data[payment][payment_shipping_methods]',
+				explode("\n",trim(@$this->element->payment_shipping_methods,"\n")),
+				hikashopNameboxType::NAMEBOX_MULTIPLE,
+				'shipping_methods',
+				array(
+					'delete' => true,
+					'main_only' => false,
+					'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+				)
+			);
+
 ?>
 						</td>
 					</tr>
@@ -393,15 +404,22 @@ function hika_payment_algorithm(el) {
 		}
 ?>
 					<tr>
-						<td class="key"><?php
+<?php $name = $this->plugin_type.'_currency'; ?>
+						<td class="key"><label for="<?php echo 'data_'.$this->plugin_type.'_'.$name.'_text'; ?>"><?php
 							echo JText::_('CURRENCY');
-						?></td>
-						<td><?php $name = $this->plugin_type.'_currency';
-							echo $this->currencies->display('data['.$this->plugin_type.']['.$name.'][]', @$this->element->$name, 'multiple="multiple" size="3"');
-			if(!HIKASHOP_BACK_RESPONSIVE) {
-						?><br/><a href="javascript:void(0)" onclick="selectNone('data<?php echo $this->plugin_type.$name; ?>');"><?php echo JText::_('HIKA_NO_RESCTION'); ?></a>
-<?php
-			}
+						?></label></td>
+						<td><?php
+
+			echo  $this->nameboxType->display(
+				'data['.$this->plugin_type.']['.$name.']',
+				$this->element->$name,
+				hikashopNameboxType::NAMEBOX_MULTIPLE,
+				'currency',
+				array(
+					'delete' => true,
+					'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
+				)
+			);
 ?>
 						</td>
 					</tr>
@@ -421,27 +439,27 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_min_price]"><?php
+						<label for="shipping_min_price"><?php
 							echo JText::_('SHIPPING_MIN_PRICE');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_min_price]" value="<?php echo @$this->element->shipping_params->shipping_min_price; ?>" />
+						<input type="text" id="shipping_min_price" name="data[shipping][shipping_params][shipping_min_price]" value="<?php echo @$this->element->shipping_params->shipping_min_price; ?>" />
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_max_price]"><?php
+						<label for="shipping_max_price"><?php
 							echo JText::_( 'SHIPPING_MAX_PRICE' );
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_max_price]" value="<?php echo @$this->element->shipping_params->shipping_max_price; ?>" />
+						<input type="text" id="shipping_max_price" name="data[shipping][shipping_params][shipping_max_price]" value="<?php echo @$this->element->shipping_params->shipping_max_price; ?>" />
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_price_use_tax]"><?php
+						<label><?php
 							echo JText::_('WITH_TAX');
 						?></label>
 					</td>
@@ -453,32 +471,32 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_min_quantity]"><?php
+						<label for="shipping_min_quantity"><?php
 							echo JText::_('SHIPPING_MIN_QUANTITY');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_min_quantity]" value="<?php echo @$this->element->shipping_params->shipping_min_quantity; ?>"/>
+						<input type="text" id="shipping_min_quantity" name="data[shipping][shipping_params][shipping_min_quantity]" value="<?php echo @$this->element->shipping_params->shipping_min_quantity; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_max_quantity]"><?php
+						<label for="shipping_max_quantity"><?php
 							echo JText::_('SHIPPING_MAX_QUANTITY');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_max_quantity]" value="<?php echo @$this->element->shipping_params->shipping_max_quantity; ?>"/>
+						<input type="text" id="shipping_max_quantity" name="data[shipping][shipping_params][shipping_max_quantity]" value="<?php echo @$this->element->shipping_params->shipping_max_quantity; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_min_weight]"><?php
+						<label for="shipping_min_weight"><?php
 							echo JText::_('SHIPPING_MIN_WEIGHT');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_min_weight]" value="<?php echo @$this->element->shipping_params->shipping_min_weight; ?>"/>
+						<input type="text" id="shipping_min_weight" name="data[shipping][shipping_params][shipping_min_weight]" value="<?php echo @$this->element->shipping_params->shipping_min_weight; ?>"/>
 						<?php
 							echo $this->data['weight']->display('data[shipping][shipping_params][shipping_weight_unit]',@$this->element->shipping_params->shipping_weight_unit);
 						?>
@@ -486,22 +504,22 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_max_weight]"><?php
+						<label for="shipping_max_weight"><?php
 							echo JText::_('SHIPPING_MAX_WEIGHT');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_max_weight]" value="<?php echo @$this->element->shipping_params->shipping_max_weight; ?>"/>
+						<input type="text" id="shipping_max_weight" name="data[shipping][shipping_params][shipping_max_weight]" value="<?php echo @$this->element->shipping_params->shipping_max_weight; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_min_volume]"><?php
+						<label for="shipping_min_volume"><?php
 							echo JText::_('SHIPPING_MIN_VOLUME');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_min_volume]" value="<?php echo @$this->element->shipping_params->shipping_min_volume; ?>"/>
+						<input type="text" id="shipping_min_volume" name="data[shipping][shipping_params][shipping_min_volume]" value="<?php echo @$this->element->shipping_params->shipping_min_volume; ?>"/>
 						<?php
 							echo $this->data['volume']->display('data[shipping][shipping_params][shipping_size_unit]',@$this->element->shipping_params->shipping_size_unit);
 						?>
@@ -509,12 +527,12 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_max_volume]"><?php
+						<label for="shipping_max_volume"><?php
 							echo JText::_('SHIPPING_MAX_VOLUME');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_max_volume]" value="<?php echo @$this->element->shipping_params->shipping_max_volume; ?>"/>
+						<input type="text" id="shipping_max_volume" name="data[shipping][shipping_params][shipping_max_volume]" value="<?php echo @$this->element->shipping_params->shipping_max_volume; ?>"/>
 					</td>
 				</tr>
 <?php
@@ -524,27 +542,27 @@ function hika_payment_algorithm(el) {
 ?>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_min_price]"><?php
+						<label for="payment_min_price"><?php
 							echo JText::_('SHIPPING_MIN_PRICE');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_min_price]" value="<?php echo @$this->element->payment_params->payment_min_price; ?>" />
+						<input type="text" id="payment_min_price" name="data[payment][payment_params][payment_min_price]" value="<?php echo @$this->element->payment_params->payment_min_price; ?>" />
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_max_price]"><?php
+						<label for="payment_max_price"><?php
 							echo JText::_( 'SHIPPING_MAX_PRICE' );
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_max_price]" value="<?php echo @$this->element->payment_params->payment_max_price; ?>" />
+						<input type="text" id="payment_max_price" name="data[payment][payment_params][payment_max_price]" value="<?php echo @$this->element->payment_params->payment_max_price; ?>" />
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_price_use_tax]"><?php
+						<label><?php
 							echo JText::_('WITH_TAX');
 						?></label>
 					</td>
@@ -556,32 +574,32 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_min_quantity]"><?php
+						<label for="payment_min_quantity"><?php
 							echo JText::_('SHIPPING_MIN_QUANTITY');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_min_quantity]" value="<?php echo @$this->element->payment_params->payment_min_quantity; ?>"/>
+						<input type="text" id="payment_min_quantity" name="data[payment][payment_params][payment_min_quantity]" value="<?php echo @$this->element->payment_params->payment_min_quantity; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_max_quantity]"><?php
+						<label for="payment_max_quantity"><?php
 							echo JText::_('SHIPPING_MAX_QUANTITY');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_max_quantity]" value="<?php echo @$this->element->payment_params->payment_max_quantity; ?>"/>
+						<input type="text" id="payment_max_quantity" name="data[payment][payment_params][payment_max_quantity]" value="<?php echo @$this->element->payment_params->payment_max_quantity; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_min_weight]"><?php
+						<label for="payment_min_weight"><?php
 							echo JText::_('SHIPPING_MIN_WEIGHT');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_min_weight]" value="<?php echo @$this->element->payment_params->payment_min_weight; ?>"/>
+						<input type="text" id="payment_min_weight" name="data[payment][payment_params][payment_min_weight]" value="<?php echo @$this->element->payment_params->payment_min_weight; ?>"/>
 						<?php
 							echo $this->data['weight']->display('data[payment][payment_params][payment_weight_unit]',@$this->element->payment_params->payment_weight_unit);
 						?>
@@ -589,22 +607,22 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_max_weight]"><?php
+						<label for="payment_max_weight"><?php
 							echo JText::_('SHIPPING_MAX_WEIGHT');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_max_weight]" value="<?php echo @$this->element->payment_params->payment_max_weight; ?>"/>
+						<input type="text" id="payment_max_weight" name="data[payment][payment_params][payment_max_weight]" value="<?php echo @$this->element->payment_params->payment_max_weight; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_min_volume]"><?php
+						<label for="payment_min_volume"><?php
 							echo JText::_('SHIPPING_MIN_VOLUME');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_min_volume]" value="<?php echo @$this->element->payment_params->payment_min_volume; ?>"/>
+						<input type="text" id="payment_min_volume" name="data[payment][payment_params][payment_min_volume]" value="<?php echo @$this->element->payment_params->payment_min_volume; ?>"/>
 						<?php
 							echo $this->data['volume']->display('data[payment][payment_params][payment_size_unit]',@$this->element->payment_params->payment_size_unit);
 						?>
@@ -612,12 +630,12 @@ function hika_payment_algorithm(el) {
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_max_volume]"><?php
+						<label for="payment_max_volume"><?php
 							echo JText::_('SHIPPING_MAX_VOLUME');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_max_volume]" value="<?php echo @$this->element->payment_params->payment_max_volume; ?>"/>
+						<input type="text" id="payment_max_volume" name="data[payment][payment_params][payment_max_volume]" value="<?php echo @$this->element->payment_params->payment_max_volume; ?>"/>
 					</td>
 				</tr>
 <?php
@@ -628,52 +646,52 @@ function hika_payment_algorithm(el) {
 ?>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_zip_regex]"><?php
+						<label for="shipping_zip_regex"><?php
 							echo JText::_('SHIPPING_ZIP_REGEX');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_zip_regex]" value="<?php echo @$this->element->shipping_params->shipping_zip_regex; ?>"/>
+						<input type="text" id="shipping_zip_regex" name="data[shipping][shipping_params][shipping_zip_regex]" value="<?php echo @$this->element->shipping_params->shipping_zip_regex; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_zip_prefix]"><?php
+						<label for="shipping_zip_prefix"><?php
 							echo JText::_('SHIPPING_PREFIX');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_zip_prefix]" value="<?php echo @$this->element->shipping_params->shipping_zip_prefix; ?>"/>
+						<input type="text" id="shipping_zip_prefix" name="data[shipping][shipping_params][shipping_zip_prefix]" value="<?php echo @$this->element->shipping_params->shipping_zip_prefix; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_min_zip]"><?php
+						<label for="shipping_min_zip"><?php
 							echo JText::_('SHIPPING_MIN_ZIP');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_min_zip]" value="<?php echo @$this->element->shipping_params->shipping_min_zip; ?>"/>
+						<input type="text" id="shipping_min_zip" name="data[shipping][shipping_params][shipping_min_zip]" value="<?php echo @$this->element->shipping_params->shipping_min_zip; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_max_zip]"><?php
+						<label for="shipping_max_zip"><?php
 							echo JText::_('SHIPPING_MAX_ZIP');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_max_zip]" value="<?php echo @$this->element->shipping_params->shipping_max_zip; ?>"/>
+						<input type="text" id="shipping_max_zip" name="data[shipping][shipping_params][shipping_max_zip]" value="<?php echo @$this->element->shipping_params->shipping_max_zip; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[shipping][shipping_params][shipping_zip_suffix]"><?php
+						<label for="shipping_zip_suffix"><?php
 							echo JText::_('SHIPPING_SUFFIX');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[shipping][shipping_params][shipping_zip_suffix]" value="<?php echo @$this->element->shipping_params->shipping_zip_suffix; ?>"/>
+						<input type="text" id="shipping_zip_suffix" name="data[shipping][shipping_params][shipping_zip_suffix]" value="<?php echo @$this->element->shipping_params->shipping_zip_suffix; ?>"/>
 					</td>
 				</tr>
 <?php
@@ -682,42 +700,52 @@ function hika_payment_algorithm(el) {
 ?>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_zip_prefix]"><?php
+						<label for="payment_zip_regex"><?php
+							echo JText::_('SHIPPING_ZIP_REGEX');
+						?></label>
+					</td>
+					<td>
+						<input type="text" id="payment_zip_regex" name="data[payment][payment_params][payment_zip_regex]" value="<?php echo @$this->element->payment_params->payment_zip_regex; ?>"/>
+					</td>
+				</tr>
+				<tr>
+					<td class="key">
+						<label for="payment_zip_prefix"><?php
 							echo JText::_('SHIPPING_PREFIX');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_zip_prefix]" value="<?php echo @$this->element->payment_params->payment_zip_prefix; ?>"/>
+						<input type="text" id="payment_zip_prefix" name="data[payment][payment_params][payment_zip_prefix]" value="<?php echo @$this->element->payment_params->payment_zip_prefix; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_min_zip]"><?php
+						<label for="payment_min_zip"><?php
 							echo JText::_('SHIPPING_MIN_ZIP');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_min_zip]" value="<?php echo @$this->element->payment_params->payment_min_zip; ?>"/>
+						<input type="text" id="payment_min_zip" name="data[payment][payment_params][payment_min_zip]" value="<?php echo @$this->element->payment_params->payment_min_zip; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_max_zip]"><?php
+						<label for="payment_max_zip"><?php
 							echo JText::_('SHIPPING_MAX_ZIP');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_max_zip]" value="<?php echo @$this->element->payment_params->payment_max_zip; ?>"/>
+						<input type="text" id="payment_max_zip" name="data[payment][payment_params][payment_max_zip]" value="<?php echo @$this->element->payment_params->payment_max_zip; ?>"/>
 					</td>
 				</tr>
 				<tr>
 					<td class="key">
-						<label for="data[payment][payment_params][payment_zip_suffix]"><?php
+						<label for="payment_zip_suffix"><?php
 							echo JText::_('SHIPPING_SUFFIX');
 						?></label>
 					</td>
 					<td>
-						<input type="text" name="data[payment][payment_params][payment_zip_suffix]" value="<?php echo @$this->element->payment_params->payment_zip_suffix; ?>"/>
+						<input type="text" id="payment_zip_suffix" name="data[payment][payment_params][payment_zip_suffix]" value="<?php echo @$this->element->payment_params->payment_zip_suffix; ?>"/>
 					</td>
 				</tr>
 <?php

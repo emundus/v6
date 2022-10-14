@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -51,6 +51,7 @@ class hikashopImportHelper
 	var $copyCatImgDir;
 	var $copycDownloadDir;
 	var $copyManufDir;
+	var $importedCount;
 
 
 	function __construct()
@@ -227,10 +228,12 @@ class hikashopImportHelper
 		$app->enqueueMessage(JText::sprintf('IMPORT_REPORT',$this->totalTry,$this->totalInserted,$this->totalTry - $this->totalValid,$this->totalValid - $this->totalInserted));
 	}
 
-	function copyProduct($product_id){
+	function copyProduct($product_id, $newCode = ''){
 		$this->addTemplate($product_id);
 		$newProduct = new stdClass();
-		$newProduct->product_code = $this->template->product_code.'_copy'.rand();
+		if(empty($newCode))
+			$newCode = $this->template->product_code.'_copy'.rand();
+		$newProduct->product_code = $newCode;
 		$config = hikashop_config();
 		$unpublishedByDefault = $config->get('unpublish_copy_by_default', 0);
 		if($unpublishedByDefault)
@@ -341,6 +344,16 @@ class hikashopImportHelper
 		$importProducts = array();
 		$encodingHelper = hikashop_get('helper.encoding');
 		$errorcount = 0;
+
+		JPluginHelper::importPlugin( 'hikashop' );
+		$obj =& $this;
+
+		$do = true;
+		$app->triggerEvent( 'onStartProductsImport', array(&$obj, &$contentFile, & $do) );
+		if(!$do){
+			return true;
+		}
+
 		while ($data = $this->_getProduct()) {
 			$this->totalTry++;
 
@@ -375,17 +388,40 @@ class hikashopImportHelper
 				}
 			}
 
-			if( $this->totalValid%$this->perBatch == 0){
+			if( count($importProducts) && $this->totalValid%$this->perBatch == 0){
+
+				$do = true;
+				$app->triggerEvent( 'onBeforeProductsImport', array(&$obj, &$importProducts, & $do) );
+				if(!$do){
+					$importProducts = array();
+					continue;
+				}
+
 				$this->_insertProducts($importProducts);
+
+				$this->importedCount+=$this->perBatch;
+
+				$app->triggerEvent( 'onAfterProductsImport', array(&$obj, &$importProducts) );
+
 				$importProducts = array();
 			}
 
 		}
 		if(!empty($importProducts)){
-			$this->_insertProducts($importProducts);
+			$do = true;
+			$app->triggerEvent( 'onBeforeProductsImport', array(&$obj, &$importProducts, & $do) );
+			if($do){
+				$this->_insertProducts($importProducts);
+
+				$this->importedCount+=$this->perBatch;
+
+				$app->triggerEvent( 'onAfterProductsImport', array(&$obj, &$importProducts) );
+			}
 		}
 
 		$this->_deleteUnecessaryVariants();
+
+		$app->triggerEvent( 'onEndProductsImport', array(&$obj, &$contentFile) );
 
 		$app->enqueueMessage(JText::sprintf('IMPORT_REPORT',$this->totalTry,$this->totalInserted,$this->totalTry - $this->totalValid,$this->totalValid - $this->totalInserted));
 
@@ -525,6 +561,9 @@ class hikashopImportHelper
 		if(!empty($product->product_length)){
 			$product->product_length = hikashop_toFloat($product->product_length);
 		}
+		if(!empty($product->product_msrp)){
+			$product->product_msrp = hikashop_toFloat($product->product_msrp);
+		}
 
 		if(empty($product->product_type)){
 			if(empty($product->product_parent_id)){
@@ -550,7 +589,7 @@ class hikashopImportHelper
 				$app = JFactory::getApplication();
 				$app->enqueueMessage('The product '.@$product->product_code.' should have an empty value instead of the value '.$product->product_parent_id.' in the field product_parent_id as it is a main product (not a variant) and thus doesn\'t have any parent.','error');
 			}
-		}else{
+		}elseif(empty($product->product_tax_id)){
 			$product->product_tax_id = 0;
 		}
 
@@ -618,10 +657,12 @@ class hikashopImportHelper
 
 			if($product->product_tax_id){
 				if(strpos($product->price_value_with_tax,'|')===false){
-					$product->price_value = $currencyHelper->getUntaxedPrice(hikashop_toFloat($product->price_value_with_tax),hikashop_getZone(),$product->product_tax_id);
+					$product->price_value_with_tax = hikashop_toFloat($product->price_value_with_tax);
+					$product->price_value = $currencyHelper->getUntaxedPrice($product->price_value_with_tax,hikashop_getZone(),$product->product_tax_id);
 				}else{
 					$price_value = explode('|',$product->price_value_with_tax);
 					foreach($price_value as $k => $price_value_one){
+						$price_value_one = hikashop_toFloat($price_value_one);
 						$price_value[$k] = $currencyHelper->getUntaxedPrice($price_value_one,hikashop_getZone(),$product->product_tax_id);
 					}
 					$product->price_value = implode('|',$price_value);
@@ -1574,6 +1615,7 @@ class hikashopImportHelper
 				$languages =& $translationHelper->languages;
 				jimport('joomla.filesystem.folder');
 				$path = hikashop_getLanguagePath(JPATH_ROOT);
+				$config = hikashop_config();
 				foreach($languages as $lang) {
 					$override_file_path = $path . '/overrides/'.$lang->code.'.override.ini';
 					$overrides = array();
@@ -1598,6 +1640,9 @@ class hikashopImportHelper
 								continue;
 							$field = $translation->reference_field;
 							$key =  preg_replace('#[^A-Z_0-9]#','',strtoupper($product->$field));
+							if((empty($key) || $config->get('non_latin_translation_keys', 0)) && !empty($product->$field)) {
+								$key = 'T'.strtoupper(sha1($product->$field));
+							}
 
 							$overrides[$key] = $translation->value;
 							if(empty($overrides[$key]))
@@ -1896,12 +1941,14 @@ class hikashopImportHelper
 		}
 
 		foreach($all_fields as $field){
-			$fields[]= '`'.$field.'`';
+			if(is_string($field))
+				$fields[]= '`'.$field.'`';
 		}
 
 		$fields = implode(', ',$fields);
 		$insert = 'REPLACE INTO '.hikashop_table('product').' ('.$fields.') VALUES (';
 		$codes = array();
+		$i = 0;
 		foreach($products as $product){
 			if($product->product_type!=$type) continue;
 			$codes[$product->product_code] = $this->db->Quote($product->product_code);

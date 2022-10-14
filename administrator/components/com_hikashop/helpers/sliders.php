@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,9 @@ class hikashopSlidersHelper {
 	var $options = null;
 
 	function __construct() {
-		if(!HIKASHOP_J30) {
+		if(HIKASHOP_J40) {
+			$this->mode = 'bootstrap';
+		} elseif(!HIKASHOP_J30) {
 			$this->mode = 'sliders';
 		} else {
 			$app = JFactory::getApplication();

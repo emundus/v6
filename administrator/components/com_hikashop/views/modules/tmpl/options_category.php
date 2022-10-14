@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,7 +31,9 @@ defined('_JEXEC') or die('Restricted access');
 		</dl>
 		<dl class="hika_options">
 			<dt class="hikashop_option_name">
+				<label>
 				<?php echo hikashop_hktooltip(JText::_('LINK_ON_MAIN_CATEGORIES'), '', JText::_('HIKA_LINK_MAIN_CATEGORIES'), '', 0);?>
+				</label>
 			</dt>
 			<dd class="hikashop_option_value">
 				<?php

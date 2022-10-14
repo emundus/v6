@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -729,15 +729,26 @@ function checkAllBox(id, type){
 				<CountryCode>'. $data['country'] .'</CountryCode>
 			</Address>
 		</ShipFrom>
-		'. $negotiated_rate . $data['XMLpackage'] .'
-		<ShipmentServiceOptions />
-	</Shipment>
+		'. $negotiated_rate . $data['XMLpackage'];
+		if(!empty($rate->shipping_params->saturday_shipping)){
+			$xml .=
+				'<ShipmentServiceOptions>
+				<SaturdayDeliveryIndicator>True</SaturdayDeliveryIndicator>
+				</ShipmentServiceOptions>';
+		} else {
+			$xml .= '<ShipmentServiceOptions/>';
+		}
+		$xml .= 
+	'</Shipment>
 </RatingServiceSelectionRequest>';
 		$ctrl = hikaInput::get()->getString('ctrl','');
 		if(@$rate->shipping_params->debug && $ctrl == 'checkout')
 			echo '<!-- '. $xml. ' -->'."\r\n"; // THIS LINE IS FOR DEBUG PURPOSES ONLY-IT WILL SHOW IN HTML COMMENTS
 
-		$session = curl_init("https://onlinetools.ups.com/ups.app/xml/Rate");
+		$domain = 'onlinetools.ups.com';
+		if(!empty($rate->shipping_params->environment) && $rate->shipping_params->environment == 'test')
+			$domain = 'wwwcie.ups.com';
+		$session = curl_init("https://".$domain."/ups.app/xml/Rate");
 		curl_setopt($session, CURLOPT_HEADER, 1);
 		curl_setopt($session,CURLOPT_POST,1);
 		curl_setopt($session,CURLOPT_TIMEOUT, 30);

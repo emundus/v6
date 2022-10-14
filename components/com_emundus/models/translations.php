@@ -250,7 +250,7 @@ class EmundusModelTranslations extends JModelList
                                 ->values(implode(',', $row));
 
                             $this->_db->setQuery($query);
-                            return $this->_db->execute();
+                            $this->_db->execute();
                         } catch (Exception $e) {
                             JLog::add('Problem when insert translations at first launch with error : ' . $e->getMessage(),JLog::ERROR, 'com_emundus.translations');
                             return false;
@@ -948,7 +948,8 @@ class EmundusModelTranslations extends JModelList
      *
      * @since version
      */
-    public function updateFalangTranslation($value,$lang_to,$reference_table,$reference_id,$field){
+    public function updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field){
+        $updated = false;
         $query = $this->_db->getQuery(true);
 
         $user = JFactory::getUser()->id;
@@ -970,13 +971,11 @@ class EmundusModelTranslations extends JModelList
             $this->_db->setQuery($query);
             $falang_translation = $this->_db->loadResult();
 
-            if(!empty($falang_translation)) {
+            if (!empty($falang_translation)) {
                 $query->update($this->_db->quoteName('#__falang_content'))
                     ->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
                     ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user))
                     ->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($falang_translation));
-                $this->_db->setQuery($query);
-                return $this->_db->execute();
             } else {
                 $query->insert($this->_db->quoteName('#__falang_content'))
                     ->set($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
@@ -988,14 +987,15 @@ class EmundusModelTranslations extends JModelList
                     ->set($this->_db->quoteName('modified') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
                     ->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user))
                     ->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote(1));
-                $this->_db->setQuery($query);
-                return $this->_db->execute();
             }
 
+            $this->_db->setQuery($query);
+            $updated = $this->_db->execute();
         } catch (Exception $e) {
             JLog::add('component/com_emundus/models/translations | Error at updating the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus.translations');
-            return false;
         }
+
+        return $updated;
     }
 
     /**

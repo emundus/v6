@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,7 +16,7 @@ class plgHikashoppaymentPostfinance extends hikashopPaymentPlugin {
 	var $multiple = true;
 	var $name = 'postfinance';
 	var $pluginConfig = array(
-		'returnurl' => array('RETURN_URL', 'html', ''),
+		'returnurl' => array('For Post Finance Payment Platform URL', 'html', ''),
 		'shop_ID' => array('ATOS_MERCHANT_ID', 'input'),
 		'sha_in_phrase' => array('SHA-IN_Pass_phrase', 'input'),
 		'sha_out_phrase' => array('SHA-OUT_Pass_phrase', 'input'),

@@ -1,16 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 if(!empty($this->filters)){
 	$count=0;
-	$filterActivated=false;
+	$filterActivated = $this->filter_set = false;
 	$widthPercent=(100/$this->maxColumn)-1;
 	$widthPercent=round($widthPercent);
 	static $i = 0;
@@ -63,9 +63,10 @@ if(!empty($this->filters)){
 		}
 		$data = $this->filterTypeClass->display($filter, '', $this);
 		$selected[] = $data;
-		if(!empty($data) && !in_array($data, array(' ', 'none'))) {
+
+		if($this->filterTypeClass->isActive($data)) {
 			$filter->filterActive = true;
-			$filterActivated = true;
+			$filterActivated = $this->filter_set = true;
 		}
 	}
 
@@ -81,7 +82,6 @@ if(!empty($this->filters)){
 	$display_title_class = '';
 	$form_attributes = '';
 
-
 	if($this->collapsable){
 		$content_classes .= ' hikashop_filter_collapsable_content';
 		$title_classes = 'hikashop_filter_collapsable_title';
@@ -89,14 +89,16 @@ if(!empty($this->filters)){
 
 		if($this->collapsable == 'always'){
 			$display_title_class = '_always';
-			$extra_attributes .= ' style="display: none;"';
+			$extra_attributes .= ($filterActivated == true) ? ' style="display: block;"' : ' style="display: none;"';
 		}
 ?>
-<div class="<?php echo $title_classes.$display_title_class; ?>">
+<div class="<?php echo $title_classes.$display_title_class; ?>" title="<?php echo JText::_('HIKA_OPEN_FILTER'); ?>">
 	<div
 		class="<?php echo $title_classes; ?>"
 		onclick="if(window.hikashop.toggleOverlayBlock('hikashop_filter_main_div_<?php echo $this->params->get('main_div_name'); ?>', 'toggle')) return false;">
-		<div class="<?php echo $title_classes.'_icon';?>"></div>
+		<div class="<?php echo $title_classes.'_icon';?>">
+			<i class="fas fa-bars fa-2x"></i>
+		</div>
 		<div class="hikashop_filter_fieldset">
 			<h3><?php echo JText::_('FILTERS'); ?></h3>
 		</div>
@@ -114,7 +116,10 @@ if(!empty($this->filters)){
 	}
 	if($this->params->get('module') == 'mod_hikashop_filter') {
 		$display_title_class .= ' filter_refresh_div';
-		$refreshUrl = 'index.php?option=com_hikashop&ctrl=product&task=filter&tmpl=raw&filter=1&module_id='.$this->ajax.'&cid='.$this->currentId.'&from_option='.$this->option.'&from_ctrl='.$this->ctrl.'&from_task='.$this->task.'&from_itemid='.$this->itemid;
+		$tmpl = 'component';
+		if(HIKASHOP_J30)
+			$tmpl = 'raw';
+		$refreshUrl = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=product&task=filter&tmpl='.$tmpl.'&filter=1&module_id='.$this->ajax.'&cid='.$this->currentId.'&from_option='.$this->option.'&from_ctrl='.$this->ctrl.'&from_task='.$this->task.'&from_itemid='.$this->itemid;
 		$extra_attributes .= ' data-refresh-class="hikashop_checkout_loading" data-refresh-url="' . $refreshUrl . '"';
 	}
 	if($this->scrollToTop) {
@@ -130,6 +135,7 @@ if(!empty($this->filters)){
 <?php
 	}
 	$datas = array();
+	$canBeUsed = array();
 	if(isset($this->listingQuery)){
 		$html=array();
 		$datas=$this->filterClass->getProductList($this, $filters);
@@ -137,6 +143,7 @@ if(!empty($this->filters)){
 
 	foreach($filters as $key => $filter){
 		$html[$key]=$this->filterClass->displayFilter($filter, $this->params->get('main_div_name'), $this, $datas);
+		$canBeUsed[$key] = $this->filterClass->canBeUsed();
 	}
 
 	if($this->displayFieldset){ ?>
@@ -145,8 +152,12 @@ if(!empty($this->filters)){
 	<?php } ?>
 
 		<form action="<?php echo $url; ?>" method="post" name="hikashop_filter_form_<?php echo $this->params->get('main_div_name'); ?>" <?php echo $form_attributes; ?> enctype="multipart/form-data">
-<?php
+<?php 
 	while($count<$this->maxFilter+1){
+		if(empty($canBeUsed[$count])) {
+			$count++;
+			continue;
+		}
 		$height='';
 		$activeClass = '';
 		if(!empty($filters[$count]->filter_height)){
@@ -188,7 +199,13 @@ return false;
 ";
 ?>
 			<div class="hikashop_reset_button_inside" style="float:left;">
-				<a href="#" id="hikashop_reset_button_<?php echo $this->params->get('main_div_name'); ?>" class="<?php echo $this->config->get('css_button', 'hikabtn'); ?>" <?php echo $attributes; ?> onclick="<?php echo $js; ?>"><?php echo JText::_('RESET'); ?></a>
+<?php		$css_button = $this->config->get('css_button', 'hikabtn');
+			$complete_attributes = 'id="hikashop_reset_button_'.$this->params->get('main_div_name').'" class="'.$css_button.'" onclick="'.$js.'" '.$attributes.'"';
+			$fallback_url = '';
+			$content = JText::_('RESET');
+
+			echo $this->loadHkLayout('button', array( 'attributes' => $complete_attributes, 'content' => $content, 'fallback_url' => $fallback_url));
+?>
 			</div>
 <?php
 		}
@@ -227,7 +244,13 @@ return false;
 ";
 ?>
 	<span class="hikashop_reset_button_outside" <?php echo $style; ?>>
-		<a href="#" id="hikashop_reset_button_<?php echo $this->params->get('main_div_name'); ?>" class="<?php echo $this->config->get('css_button', 'hikabtn'); ?>" onclick="<?php echo $js; ?>" <?php echo $attributes; ?> ><?php echo JText::_('RESET'); ?></a>
+<?php	$css_button = $this->config->get('css_button', 'hikabtn');
+		$complete_attributes = 'id="hikashop_reset_button_'.$this->params->get('main_div_name').'" class="'.$css_button.'" onclick="'.$js.'" '.$attributes.'"';
+		$fallback_url = '';
+		$content = JText::_('RESET');
+
+		echo $this->loadHkLayout('button', array( 'attributes' => $complete_attributes, 'content' => $content, 'fallback_url' => $fallback_url));
+?>
 	</span>
 <?php
 		}
