@@ -30,7 +30,7 @@ if ($xmlDoc->load(JPATH_SITE.'/administrator/components/com_emundus/emundus.xml'
         <div class="panel-heading em-container-form-heading">
             <h3 class="panel-title">
                 <span class="material-icons">file_present</span>
-                <?= JText::_('ATTACHMENTS').' - '.$this->attachmentsProgress." % ".JText::_("SENT"); ?>
+                <?= JText::_('COM_EMUNDUS_ONBOARD_DOCUMENTS').' - '.$this->attachmentsProgress.' % '.JText::_('COM_EMUNDUS_APPLICATION_SENT'); ?>
             </h3>
             <div class="btn-group pull-right">
                 <button id="em-prev-file" class="btn btn-info btn-xxl"><i class="small arrow left icon"></i></button>
