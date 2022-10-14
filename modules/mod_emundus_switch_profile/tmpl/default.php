@@ -106,9 +106,7 @@ if($just_logged && !$only_applicant) {
     }
 
     function hideModal() {
-        const modal = document.querySelector('.em-switch-profile-swal-container');
-
-        modal.remove();
+        Swal.close();
     }
 
     function postCProfileAtLogin(current_fnum) {
