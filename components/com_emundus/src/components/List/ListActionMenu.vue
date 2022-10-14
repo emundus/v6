@@ -26,6 +26,8 @@
 		>
       <span class="material-icons-outlined">visibility</span>
     </button>
+
+    <span v-if="type == 'campaign'" class="material-icons-outlined">push_pin</span>
 	</div>
 </template>
 
