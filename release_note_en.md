@@ -1,17 +1,14 @@
 ##✨ New features ✨
-- This version continues the visual harmonization on the applicant form
-- Integration of an interconnection module with the Apogee system
-- Improved interconnection with the CAS system.
-  - It is now possible to retrieve all attributes defined by the CAS
-  - The retrieval of these attributes corrects the problem reported for compound names
-- Improvement of the management of phases
-  - You can now define start and end dates for each phase
+- Phase management :
+  - Adding multiple input statuses
+  - Addition of an exit status
+  - Possibility to define a phase over several campaigns
+- Improvement of the file history
+  - It is now possible to track changes made on forms
+- Update of the payment module
 
 ##🔥 Major corrections 🔥
-- The generation of the program code could cause problems when copying/pasting when creating a campaign
-- When changing status the information that a mail is going to be sent was in some cases wrong
-- Optimization of the global performances
-  - Implementation of a queue when a certain number of connections is exceeded (defined at 5000 connections by default)
-  - The recovery time of dynamic tags was proportional to the number of tags in the platform
-- When copying a folder, some data were not copied to the new one
-- Document preview: compatibility problem with the latest version of Safari
+- CAS connection
+  - A problem occurred when logging in if the user had been previously created by a platform manager
+  - Logging out of the platform did not log out of the CAS service
+- Corrections to some translations
