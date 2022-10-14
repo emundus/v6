@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -929,23 +929,29 @@ class hikamarketOrderClass extends hikamarketClass {
 		if(empty($order->hikamarket->transactions))
 			$this->loadOrderTransactions($order);
 
-		if($vendor_id > 0 && !empty($order->order_status) && empty($order->order_invoice_id) && empty($order->old->order_invoice_id)) {
-			$shopConfig = hikamarket::config(false);
+		$this->handleInvoiceId($order, $vendor_id);
+	}
 
-			$invoice_statuses = explode(',', $shopConfig->get('invoice_order_statuses','confirmed,shipped'));
-			if(empty($invoice_statuses))
-				$invoice_statuses = array('confirmed','shipped');
+	private function handleInvoiceId(&$order, $vendor_id) {
+		if($vendor_id <= 0 || empty($order->order_status) || !empty($order->order_invoice_id) || !empty($order->old->order_invoice_id))
+			return false;
 
-			$excludeFreeOrders = $shopConfig->get('invoice_exclude_free_orders', 0);
+		$shopConfig = hikamarket::config(false);
 
-			$total = 1;
-			if($excludeFreeOrders)
-				$total = hikamarket::toFloat( isset($order->order_full_price) ? $order->order_full_price : $order->old->order_full_price );
+		$invoice_statuses = explode(',', $shopConfig->get('invoice_order_statuses','confirmed,shipped'));
+		if(empty($invoice_statuses))
+			$invoice_statuses = array('confirmed','shipped');
 
-			if(in_array($order->order_status, $invoice_statuses) && (!$excludeFreeOrders || $total > 0)) {
-				$this->generateOrderInvoiceNumber($order, $vendor_id);
-			}
+		$excludeFreeOrders = $shopConfig->get('invoice_exclude_free_orders', 0);
+
+		$total = 1;
+		if($excludeFreeOrders)
+			$total = hikamarket::toFloat( isset($order->order_full_price) ? $order->order_full_price : $order->old->order_full_price );
+
+		if(in_array($order->order_status, $invoice_statuses) && (!$excludeFreeOrders || $total > 0)) {
+			return $this->generateOrderInvoiceNumber($order, $vendor_id);
 		}
+		return false;
 	}
 
 	public function afterCreate(&$order, &$send_email) {
@@ -1060,19 +1066,33 @@ class hikamarketOrderClass extends hikamarketClass {
 		$products = array();
 		$bundles = false;
 
-		foreach($order->cart->products as $k => $product) {
+		$cart_products = isset($order->cart->products) ? $order->cart->products : $order->products;
+
+		foreach($cart_products as $k => $product) {
 			$pid = (int)$product->cart_product_id;
 			if(empty($pid))
 				continue;
+
+			if(isset($product->order_product_price)) {
+				$price = $product->order_product_price;
+				$price_tax = $product->order_product_tax;
+			} else if(!empty($product->prices[0])) {
+				$price = $product->prices[0]->price_value;
+				$price_tax = $product->prices[0]->price_value_with_tax;
+			} else {
+				$price = 0.0;
+				$price_tax = 0.0;
+			}
+
 			$products[$pid] = array(
 				'_id' => $pid,
 				'id' => (int)$product->product_id,
-				'parent' => (int)$product->product_parent_id,
+				'parent' => (int)@$product->product_parent_id,
 				'vendor' => $force_vendor_id,
 				'fee' => array(),
-				'qty' => (int)$product->order_product_quantity,
-				'price' => (float)hikamarket::toFloat($product->order_product_price),
-				'price_tax' => (float)hikamarket::toFloat($product->order_product_tax),
+				'qty' => (int)(isset($product->order_product_quantity) ? $product->order_product_quantity : @$product->cart_product_quantity),
+				'price' => (float)hikamarket::toFloat($price),
+				'price_tax' => (float)hikamarket::toFloat($price_tax),
 			);
 
 			if(empty($product->order_product_options))
@@ -1144,6 +1164,15 @@ class hikamarketOrderClass extends hikamarketClass {
 				$this->db->setQuery($query);
 				$this->db->execute();
 			}
+		}
+
+		if($this->handleInvoiceId($order, $order->order_vendor_id) == true) {
+			$query = 'UPDATE ' . hikamarket::table('shop.order') .
+				' SET order_invoice_id = ' . (int)$order->order_invoice_id . ', order_invoice_number = ' . $this->db->quote($order->order_invoice_number) .
+					', order_invoice_created = ' . (int)$order->order_invoice_created .
+				' WHERE order_id = ' . (int)$order->order_id;
+			$this->db->setQuery($query);
+			$this->db->execute();
 		}
 	}
 
@@ -2218,19 +2247,7 @@ class hikamarketOrderClass extends hikamarketClass {
 	}
 
 	public function getProductVendorAttribution(&$order) {
-		$products = array();
-		$cart_products = isset($order->cart->products) ? $order->cart->products : $order->products;
-		foreach($cart_products as $product) {
-			$id = isset($product->cart_product_id) ? (int)$product->cart_product_id : @$product->order_product_id;
-			if(empty($id))
-				continue;
-
-			$products[$id] = array(
-				'_id' => $id,
-				'id' => (int)$product->product_id,
-				'vendor' => null
-			);
-		}
+		$products = $this->getProductStruct($order);
 		$this->getVendorsByProducts($products, $order);
 		return $products;
 	}

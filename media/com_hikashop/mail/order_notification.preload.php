@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -60,8 +60,8 @@ if(empty($customer_name))
 $vars = array(
 	'LIVE_SITE' => HIKASHOP_LIVE,
 	'URL' => $order_url,
+	'ORDER_PRODUCT_CODE' => (bool)$config->get('show_code', false),
 	'order' => $data->cart,
-	'ORDER_PRODUCT_CODE' => (bool)$config->get('show_product_code', false),
 	'user' => $customer,
 	'customer' => $customer,
 	'billing_address' => @$data->cart->billing_address,
@@ -134,7 +134,7 @@ if(!empty($data->cart->products)){
 		if($group && $item->order_product_option_parent_id)
 			continue;
 
-		$product = $productClass->all_products[$item->product_id];
+		$product = @$productClass->all_products[$item->product_id];
 
 		$cartProduct = array(
 			'PRODUCT_CODE' => $item->order_product_code,
@@ -144,10 +144,13 @@ if(!empty($data->cart->products)){
 			'product' => $product,
 		);
 
-		if(!empty($item->images[0]->file_path)) {
+		if(!empty($item->images[0]->file_path) && $config->get('thumbnail', 1) != 0) {
 			$img = $imageHelper->getThumbnail($item->images[0]->file_path, array(50, 50), array('forcesize' => true, 'scale' => 'outside'));
 			if($img->success) {
-				$image = str_replace('../', HIKASHOP_LIVE, $img->url);
+				if(substr($img->url, 0, 3) == '../')
+					$image = str_replace('../', HIKASHOP_LIVE, $img->url);
+				else
+					$image = substr(HIKASHOP_LIVE, 0, strpos(HIKASHOP_LIVE, '/', 9)) . $img->url;
 				$attributes = '';
 				if($img->external)
 					$attributes = ' width="'.$img->req_width.'" height="'.$img->req_height.'"';
@@ -167,7 +170,7 @@ if(!empty($data->cart->products)){
 			}
 			if($display_item_price){
 				if($config->get('price_with_tax')){
-					$t .= ' '.$currencyHelper->format($item->order_product_price + $item->order_product_tax,$data->cart->order_currency_id);
+					$t .= ' '.$currencyHelper->format($item->order_product_price+$item->order_product_tax,$data->cart->order_currency_id);
 				}else{
 					$t .= ' '.$currencyHelper->format($item->order_product_price,$data->cart->order_currency_id);
 				}
@@ -178,7 +181,7 @@ if(!empty($data->cart->products)){
 		if(!empty($itemFields)){
 			foreach($itemFields as $field){
 				$namekey = $field->field_namekey;
-				if(empty($item->$namekey) && !strlen($item->$namekey)) continue;
+				if(!isset($item->$namekey) || (empty($item->$namekey) && !strlen($item->$namekey))) continue;
 				$t .= '<p>'.$fieldsClass->getFieldName($field).': '.$fieldsClass->show($field,$item->$namekey,'user_email').'</p>';
 			}
 		}
@@ -216,25 +219,31 @@ if(!empty($data->cart->products)){
 
 		$t = '';
 		$statusDownload = explode(',',$config->get('order_status_for_download','confirmed,shipped'));
-		if(!empty($item->files) && in_array($data->order->order_status,$statusDownload)){
+		if(!empty($item->files) && in_array($data->cart->order_status, $statusDownload)){
+			$class = 'class="cart_button"';
 			$t .= '<p>';
 			foreach($item->files as $file){
 				$fileName = empty($file->file_name) ? $file->file_path : $file->file_name;
 				$file_pos = empty($file->file_pos) ? '' : ('&file_pos=' . $file->file_pos);
 				if(empty($customer->user_cms_id))
 					$file_pos .= '&order_token=' . $data->cart->order_token;
-				$t .= '<a href="'.hikashop_frontendLink('index.php?option=com_hikashop&ctrl=order&task=download&file_id='.$file->file_id.'&order_id='.$data->order_id.$file_pos.$url_itemid).'">'.$fileName.'</a><br/>';
+				$t .= '<a '.$class.'href="'.hikashop_frontendLink('index.php?option=com_hikashop&ctrl=order&task=download&file_id='.$file->file_id.'&order_id='.$data->order_id.$file_pos.$url_itemid).'">'.$fileName.'</a><br/>';
 			}
 			$t .= '</p>';
 		}
 		$cartProduct['PRODUCT_DOWNLOAD'] = $t;
 
+		$cartProduct['PRODUCT_PRICE_BEFORE_DISCOUNT'] = '';
 		if($config->get('price_with_tax')){
 			$unit_price = $currencyHelper->format($item->order_product_price+$item->order_product_tax,$data->cart->order_currency_id);
+			if(!empty($item->order_product_price_before_discount) && $item->order_product_price_before_discount > 0.0)
+				$cartProduct['PRODUCT_PRICE_BEFORE_DISCOUNT'] =  $currencyHelper->format($item->order_product_price_before_discount+$item->order_product_tax_before_discount,$data->cart->order_currency_id);
 			$total_price = $currencyHelper->format($item->order_product_total_price,$data->cart->order_currency_id);
 			$subtotal += $item->order_product_total_price;
 		}else{
 			$unit_price = $currencyHelper->format($item->order_product_price,$data->cart->order_currency_id);
+			if(!empty($item->order_product_price_before_discount) && $item->order_product_price_before_discount > 0.0)
+				$cartProduct['PRODUCT_PRICE_BEFORE_DISCOUNT'] =  $currencyHelper->format($item->order_product_price_before_discount,$data->cart->order_currency_id);
 			$total_price = $currencyHelper->format($item->order_product_total_price_no_vat,$data->cart->order_currency_id);
 			$subtotal += $item->order_product_total_price_no_vat;
 		}
@@ -245,14 +254,14 @@ if(!empty($data->cart->products)){
 	}
 	$templates['PRODUCT_LINE'] = $cartProducts;
 
-	if(bccomp($data->cart->order_discount_price,0,5) != 0 || bccomp($data->cart->order_shipping_price,0,5) != 0 || bccomp($data->cart->order_payment_price,0,5) != 0 || ($data->cart->full_total->prices[0]->price_value!=$data->cart->full_total->prices[0]->price_value_with_tax) || !empty($data->cart->additional)){
+	if(bccomp(sprintf('%F',$data->cart->order_discount_price),0,5) != 0 || bccomp(sprintf('%F',$data->cart->order_shipping_price),0,5) != 0 || bccomp(sprintf('%F',$data->cart->order_payment_price),0,5) != 0 || ($data->cart->full_total->prices[0]->price_value!=$data->cart->full_total->prices[0]->price_value_with_tax) || !empty($data->cart->additional)){
 		$cartFooters[] = array(
 			'CLASS' => 'subtotal',
 			'NAME' => JText::_('SUBTOTAL'),
 			'VALUE' => $currencyHelper->format($subtotal,$data->cart->order_currency_id)
 		);
 	}
-	if(bccomp($data->cart->order_discount_price,0,5) != 0) {
+	if(bccomp(sprintf('%F',$data->cart->order_discount_price),0,5) != 0) {
 		if($config->get('price_with_tax')) {
 			$t = $currencyHelper->format($data->cart->order_discount_price * -1, $data->cart->order_currency_id);
 		}else{
@@ -264,7 +273,7 @@ if(!empty($data->cart->products)){
 			'VALUE' => $t
 		);
 	}
-	if(bccomp($data->cart->order_shipping_price,0,5) != 0){
+	if(bccomp(sprintf('%F',$data->cart->order_shipping_price),0,5) != 0){
 		if($config->get('price_with_tax')) {
 			$t = $currencyHelper->format($data->cart->order_shipping_price,$data->cart->order_currency_id);
 		}else{
@@ -276,7 +285,7 @@ if(!empty($data->cart->products)){
 			'VALUE' => $t
 		);
 	}
-	if(bccomp($data->cart->order_payment_price,0,5) != 0){
+	if(bccomp(sprintf('%F',$data->cart->order_payment_price),0,5) != 0){
 		if($config->get('price_with_tax')) {
 			$t = $currencyHelper->format($data->cart->order_payment_price, $data->cart->order_currency_id);
 		} else {
@@ -345,7 +354,7 @@ if(!empty($data->cart->products)){
 }
 
 if(!empty($data->cart->order_payment_method)) {
-	if(!is_numeric($data->cart->order_payment_id)){
+	if(!is_numeric($data->cart->order_payment_id) || empty($data->cart->order_payment_id)){
 		$vars['PAYMENT'] = $data->cart->order_payment_method.' '.$data->cart->order_payment_id;
 	}else{
 		$paymentClass = hikashop_get('class.payment');
@@ -406,6 +415,7 @@ if(!empty($data->cart->order_shipping_id)) {
 			}
 			$shippings_data[] = $shipping_data;
 		}
+
 		if(!empty($shippings_data)) {
 			$vars['SHIPPING'] = '<ul><li>'.implode('</li><li>', $shippings_data).'</li></ul>';
 			$vars['SHIPPING_TXT'] = ' - ' . implode("\r\n - ", $shippings_data);
@@ -422,9 +432,11 @@ ob_start();
 	if(hikashop_level(2)) {
 		$fields = $fieldsClass->getFields('display:mail_order_notif=1',$data->cart,'order','');
 		foreach($fields as $fieldName => $oneExtraField) {
+			if(isset($data->$fieldName) && !isset($data->cart->$fieldName))
+				$data->cart->$fieldName = $data->$fieldName;
 			if($oneExtraField->field_type != 'customtext' && empty($data->cart->$fieldName))
 				continue;
-			echo $sep . $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField, @$data->cart->$fieldName,'user_email');
+			echo $sep . $fieldsClass->trans($oneExtraField->field_realname).' : '.$fieldsClass->show($oneExtraField, @$data->cart->$fieldName, 'user_email');
 			$sep = '<br />';
 		}
 	}
@@ -447,7 +459,7 @@ if(in_array($data->cart->order_status, $unpaid_statuses) && !empty($data->cart->
 	if($config->get('force_ssl',0) && strpos('https://', $pay_url) === false) {
 		$pay_url = str_replace('http://', 'https://', $pay_url);
 	}
-	$content .= '<p><a href="'. $pay_url .'">' . JText::_('PAY_NOW') . '</a></p>';
+	$content .= '<p><a class="cart_button" href="'. $pay_url .'">' . JText::_('PAY_NOW') . '</a></p>';
 	$vars['ORDER_SUMMARY'] .= $content;
 	unset($content);
 }

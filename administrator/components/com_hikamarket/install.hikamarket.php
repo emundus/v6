@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -26,7 +26,7 @@ if($version[0] < 5) {
 
 class hikamarketInstall {
 	private $level = 'Multivendor';
-	private $version = '4.0.0';
+	private $version = '4.1.0';
 	private $freshinstall = true;
 	private $update = false;
 	private $fromLevel = '';
@@ -514,7 +514,7 @@ EOD;
 		$url = 'index.php?option='.HIKAMARKET_COMPONENT.'&ctrl=update&task=install&fromversion='.$this->fromVersion.'&update='.(int)$this->update.'&freshinstall='.(int)$this->freshinstall;
 		echo '
 <div style="background:#f6f6f6;border:2px solid #aabb33;max-width:100%;text-align:left;border-radius:6px;padding:20px 30px;margin:5px 0px 10px;">
-	<h2><img src="'.HIKAMARKET_IMAGES.'icon-48/hikamarket.png" alt=""/> '.HIKAMARKET_NAME.' 4.0.0 <small>'.JText::_('HIKAM_INSTALL_FOR').' HikaShop</small></h2>
+	<h2><img src="'.HIKAMARKET_IMAGES.'icon-48/hikamarket.png" alt=""/> '.HIKAMARKET_NAME.' 4.1.0 <small>'.JText::_('HIKAM_INSTALL_FOR').' HikaShop</small></h2>
 <p style="font-size:14px;">
 	'.JText::_('HIKAM_INSTALL_MSG1').'<br/>
 	'.JText::_('HIKAM_INSTALL_MSG2').'
@@ -611,14 +611,14 @@ class com_hikamarketInstallerScript {
 
 			$app = JFactory::getApplication();
 			if($type == 'update')
-				$app->enqueueMessage('Cannot update HikaMarket 4.0.0 without HikaShop 4.4.0 or newer', 'warning');
+				$app->enqueueMessage('Cannot update HikaMarket 4.1.0 without HikaShop 4.4.0 or newer', 'warning');
 			else
-				$app->enqueueMessage('Cannot install HikaMarket 4.0.0 without HikaShop 4.4.0 or newer', 'warning');
+				$app->enqueueMessage('Cannot install HikaMarket 4.1.0 without HikaShop 4.4.0 or newer', 'warning');
 
 			$joomConf = JFactory::getConfig();
 			$debug = $joomConf->get('debug');
 			if($debug) {
-				$app->enqueueMessage('Cannot install HikaMarket 4.0.0 without HikaShop 4.4.0 or newer', 'error');
+				$app->enqueueMessage('Cannot install HikaMarket 4.1.0 without HikaShop 4.4.0 or newer', 'error');
 			}
 			return false;
 		}

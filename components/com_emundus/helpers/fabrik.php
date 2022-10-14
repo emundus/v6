@@ -226,81 +226,17 @@ class EmundusHelperFabrik {
             'show-referring-table-releated-data' => '0',
             'tiplocation' => 'above',
             'process-jplugins' => '2',
-            'plugin_state' => array("1", "1"),
-            'emundusredirect_field_status' => '-1',
-            'copy_form' => '0',
-            'notify_complete_file' => '0',
-            'applicationsent_status' => '0',
-            'admission' => '0',
-            'plugins' => array("emundusredirect", "emundusisapplicationsent"),
-            'plugin_locations' => array("both", "both"),
-            'plugin_events' => array("both", "both"),
-            'plugin_description' => array("redirect", "issent"),
+            'plugins' => array("emundustriggers"),
+            'plugin_state' => array("1"),
+            'plugin_locations' => array("both"),
+            'plugin_events' => array("both"),
+            'plugin_description' => array("emundus_events"),
         );
     }
 
     function prepareSubmittionPlugin($params) {
         $params['submit_button_label'] = 'SUBMIT';
         $params['submit-success-msg'] = 'APPLICATION_SENT';
-        $params['plugin_state'] = array("1","1","1","1");
-        $params['only_process_curl'] = array(
-            0 => "onBeforeLoad"
-        );
-        $params['form_php_file'] = array(
-            0 => "emundus-isApplicationCompleted.php"
-        );
-        $params['form_php_require_once'] = array(
-            0 => "0"
-        );
-        $params['curl_code'] = array(
-            0 => ""
-        );
-        $params['emundusconfirmpost_status'] = "1";
-        $params['admission'] = "0";
-        $params['applicationsent_status'] = "0";
-        $params['jump_page'] = array(
-            3 => "/"
-        );
-        $params['save_and_next'] = array(
-            3 => "0"
-        );
-        $params['append_jump_url'] = array(
-            3 => "0"
-        );
-        $params['thanks_message'] = array(
-            3 => "Félicitations, votre dossier a bien été envoyé."
-        );
-        $params['save_insession'] = array(
-            3 => "0"
-        );
-        $params['redirect_conditon'] = array(
-            3 => ""
-        );
-        $params['redirect_content_reset_form'] = array(
-            3 => "1"
-        );
-        $params['redirect_content_how'] = array(
-            3 => "popup"
-        );
-        $params['redirect_content_popup_width'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_height'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_x_offset'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_y_offset'] = array(
-            3 => ""
-        );
-        $params['redirect_content_popup_title'] = array(
-            3 => ""
-        );
-        $params['plugins'] = array("php", "emundusconfirmpost", "emundusisapplicationsent", "redirect");
-        $params['plugin_locations'] = array("both", "both", "both", "both");
-        $params['plugin_events'] = array("both", "both", "both", "both");
-        $params['plugin_description'] = array("isComplete", "Confirm", "isSent", "redirect");
 
         return $params;
     }

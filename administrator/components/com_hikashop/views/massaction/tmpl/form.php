@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -73,6 +73,16 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo JHTML::_('hikaselect.booleanlist', "data[massaction][massaction_published]" , '',@$this->element->massaction_published); ?>
 			</td>
 		</tr>
+		<tr>
+			<td class="key">
+				<label for="data[banner][massaction_button]">
+					<?php echo hikashop_hktooltip(JText::_('ACTIONS_AS_A_BUTTON_DESC'), '', JText::_('ACTIONS_AS_A_BUTTON'), '', 0);?>
+				</label>
+			</td>
+			<td>
+				<?php echo JHTML::_('hikaselect.booleanlist', "data[massaction][massaction_button]" , '',@$this->element->massaction_button); ?>
+			</td>
+		</tr>
 	</table>
 	<?php } ?>
 	<fieldset class="adminform">
@@ -91,7 +101,7 @@ defined('_JEXEC') or die('Restricted access');
 		}
 ?>
 	</fieldset>
-	<div>
+	<div class="hikashop_massaction_form">
 	<?php foreach($this->tables as $table){ ?>
 		<div id="<?php echo $table->table; ?>"<?php if($table->table != $this->element->massaction_table) echo ' style="display:none"'; ?>>
 			<fieldset class="adminform">
@@ -152,8 +162,8 @@ defined('_JEXEC') or die('Restricted access');
 						echo '</div><button class="btn" onclick="addHikaMassAction(\''.$table->table.'\',\'filter\'); refreshSelect(\''.$table->table.'\',\'filter\',-1) ;return false;">'.JText::_('ADD_FILTER').'</button></fieldset>';
 
 					}else{
-						echo '<fieldset class="adminform" ><legend>'.JText::_( 'FILTERS' ).'</legend><div id="all'.$table->table.'filters">';
-						?><script type="text/javascript">addHikaMassAction('<?php echo $table->table; ?>','filter')</script><?php
+					    echo '<fieldset class="adminform" ><legend>'.JText::_( 'FILTERS' ).'</legend><div id="all'.$table->table.'filters">';
+						$this->doc->addScriptDeclaration( "window.hikashop.ready( function() { addHikaMassAction('".$table->table."','filter'); });" );
 						if(HIKASHOP_J30 && false){
 							?><script type="text/javascript">jQuery('#<?php echo $table->table; ?>filter1 .not-processed').removeClass('not-processed').removeClass('chzn-done').chosen();</script><?php
 						}
@@ -199,7 +209,8 @@ defined('_JEXEC') or die('Restricted access');
 
 				}else{
 					echo '<fieldset class="adminform" ><legend>'.JText::_( 'FILTERS' ).'</legend><div id="all'.$table->table.'filters">';
-					?><script type="text/javascript">addHikaMassAction('<?php echo $table->table; ?>','filter')</script><?php
+
+					$this->doc->addScriptDeclaration( "window.hikashop.ready( function() { addHikaMassAction('".$table->table."','filter'); });" );
 					if(HIKASHOP_J30 && false){
 						?><script type="text/javascript">jQuery('#<?php echo $table->table; ?>filter1 .not-processed').removeClass('not-processed').removeClass('chzn-done').chosen();</script><?php
 					}
@@ -245,7 +256,7 @@ defined('_JEXEC') or die('Restricted access');
 						}
 					}
 				}else{
-					?><script type="text/javascript">addHikaMassAction('<?php echo $table->table; ?>','action'); </script><?php
+				    $this->doc->addScriptDeclaration( "window.hikashop.ready( function() { addHikaMassAction('".$table->table."','action'); });" );
 				}
 				if(HIKASHOP_J30 && false){
 					for($i=0;$i<=$count;$i++){
