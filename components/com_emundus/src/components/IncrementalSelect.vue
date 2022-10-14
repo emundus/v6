@@ -128,7 +128,7 @@ export default {
         if (newValue.label !== this.newExistingLabel) {
           newValue.label = this.newExistingLabel;
         }
-        this.$emit('update-value', newValue);
+	      this.$emit('update-value', newValue);
       }
     }
   },

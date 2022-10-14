@@ -103,6 +103,7 @@ class EmundusModelList extends JModelList
         return $data;
     }
 
+
     public function getList($listId, $listParticularConditionalColumn, $listParticularConditionalColumnValues)
     {
         $data = [];
@@ -115,7 +116,7 @@ class EmundusModelList extends JModelList
                 ->leftJoin($this->db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfg.id'))
                 ->leftJoin($this->db->quoteName('#__fabrik_elements', 'jfe') . ' ON ' . $this->db->quoteName('jfe.group_id') . ' = ' . $this->db->quoteName('jffg.group_id'))
                 ->where($this->db->quoteName('jfl.id') . ' = ' . $listId)
-                ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = 1 OR jfe.name = ' . $this->db->quote('id'))
+                ->andWhere($this->db->quoteName('jfe.show_in_list_summary') . ' = 1 OR jfe.name IN (' .$this->db->quote('id') . ',' . $this->db->quote("fnum") . ')')
                 ->andWhere($this->db->quoteName('jfe.published') . ' = ' . 1)
                 ->order($this->db->quoteName('jfe.ordering').' ASC');
             $this->db->setQuery($query);
@@ -152,7 +153,7 @@ class EmundusModelList extends JModelList
                 }
 
                 $query->clear()
-                    ->select($listColumns)
+                    ->select("DISTINCT " . implode(',', $listColumns))
                     ->from($this->db->quoteName($dbTableName));
 
                 if (!empty($databaseJoinsKeysAndColumns)) {
@@ -161,19 +162,43 @@ class EmundusModelList extends JModelList
                     }
                 }
 
+                $firstWhere = true;
+                $emundusUser = JFactory::getSession()->get('emundusUser');
+                if (empty(array_intersect([1,2,5], $emundusUser->emGroups))) {
+                    // get only files associated to my group
+                    $query->leftJoin("#__emundus_group_assoc as jega ON jega.fnum = $dbTableName.fnum")
+                        ->leftJoin('#__emundus_groups as jeg ON jeg.group_id = jega.group_id');
+
+                    $user_id = JFactory::getUser()->id;
+                    if (!$firstWhere) {
+                        $query->andWhere('jeg.user_id = ' . $user_id);
+                    } else {
+                        $query->where('jeg.user_id = ' . $user_id);
+                        $firstWhere = false;
+                    }
+                }
+
                 /*** The code below before the try catch is used to get data from table with specific where clause column define in module configuration ******/
-                $firstWhere = false;
                 foreach ($listParticularConditionalColumn as $column) {
                     $values = explode(',', $column);
                     $values = '"' . join('", "', $values) . '"';
 
                     if (!empty($column)) {
-                        if (!$firstWhere) {
+                        if ($firstWhere) {
                             $query->where($this->db->quoteName($column) . ' IN (' .$values. ')');
-                            $firstWhere = true;
+                            $firstWhere = false;
                         } else {
                             $query->andWhere($this->db->quoteName($column) . ' IN (' . $values . ')');
                         }
+                    }
+                }
+
+                if (empty(array_intersect([1,2,5], $emundusUser->emGroups))) {
+                    $user_id = JFactory::getUser()->id;
+                    if (!$firstWhere) {
+                        $query->andWhere('jeg.user_id = ' . $user_id);
+                    } else {
+                        $query->where('jeg.user_id = ' . $user_id);
                     }
                 }
 
@@ -191,6 +216,14 @@ class EmundusModelList extends JModelList
 
                 $listData = $this->removeForeignKeyValueFormDataLoadedIfExistingDatabaseJoinElementInList($databaseJoinsKeysAndColumns, $listDataResult);
                 $data = ["listColumns" => $result, "listData" => $listData];
+            }
+        }
+
+        foreach($data['listColumns'] as $key => $column) {
+            if ($column['column_name'] == 'fnum') {
+                unset($data['listColumns'][$key]);
+                $data['listColumns'] = array_values($data['listColumns']);
+                break;
             }
         }
 

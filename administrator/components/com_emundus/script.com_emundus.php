@@ -73,16 +73,13 @@ class com_emundusInstallerScript
                 # Delete emundus sql files in con_admin
                 #$this->deleteOldSqlFiles();
 
-                EmundusHelperUpdate::updateModulesParams('mod_emundusflow','show_programme' , '0');
-                EmundusHelperUpdate::updateFabrikCronParams('emundusrecall',array('log','log_email','cron_rungate') , array('0','mail@emundus.fr','1'));
-
                 # Update SCP params
                 EmundusHelperUpdate::updateSCPParams('pro_plugin', array('email_active','email_on_admin_login'), array('0','0'));
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_emundusflow', array('show_programme'), array('0'));
                 EmundusHelperUpdate::genericUpdateParams('#__fabrik_cron', 'plugin', 'emundusrecall', array('log', 'log_email', 'cron_rungate') , array('0', 'mail@emundus.fr', '1'));
 
-                EmundusHelperUpdate::updateConfigurationFile('lifetime', '180');
+                EmundusHelperUpdate::updateConfigurationFile('lifetime', '45');
 
                 # Insert translations in override file
                 EmundusHelperUpdate::insertTranslationsTag('CREATE_A_NEW_FILE','Créer un nouveau dossier pour un utilisateur existant','override',null,'fabrik_elements','label');
@@ -203,6 +200,28 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
                 EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
                 EmundusHelperUpdate::addYamlVariable('name','Fabrik',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
+
+                EmundusHelperUpdate::addYamlVariable('location','https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css',true,true);
+                EmundusHelperUpdate::addYamlVariable('inline','',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('extra','{  }',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+                EmundusHelperUpdate::addYamlVariable('name','Material Icons',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','css');
+
+                EmundusHelperUpdate::updateFont('family=Inter:300,400,500,600,700,800,900,400&subset=latin,vietnamese,latin-ext');
+
+                $datas = [
+                    'menutype' => 'usermenu',
+                    'title' => 'Informations de compte',
+                    'alias' => 'informations-de-compte',
+                    'path' => 'informations-de-compte',
+                    'link' => 'index.php?option=com_users&view=profile&layout=edit',
+                    'type' => 'component',
+                    'component_id' => 25,
+                    'params' => [
+                        'menu_show' => 0
+                    ]
+                ];
+                EmundusHelperUpdate::addJoomlaMenu($datas);
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

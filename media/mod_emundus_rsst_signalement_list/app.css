@@ -297,6 +297,14 @@ body ::-webkit-scrollbar-track {
   padding: 16px;
   border-radius: 4px;
 }
+.v-popover .trigger{
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
 
 
 
