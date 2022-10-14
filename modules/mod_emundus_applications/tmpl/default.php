@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
         </a>
     <?php endif; ?>
     <?php if ($show_show_campaigns) : ?>
-        <a id="add-application" class="btn btn-success" href="<?= $campaigns_list_url; ?>">
+        <a id="add-application" class="btn btn-success em-mt-16" href="<?= $campaigns_list_url; ?>">
             <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
         </a>
     <?php endif; ?>
