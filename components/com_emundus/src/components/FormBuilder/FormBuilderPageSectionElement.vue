@@ -1,5 +1,6 @@
 <template>
   <div class="form-builder-page-section-element"
+       :id="'element_'+element.id"
        v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
        :class="{'unpublished': !element.publish || element.hidden, 'properties-active':propertiesOpened == element.id}">
     <div class="em-flex-row em-flex-space-between em-w-100">
@@ -112,7 +113,7 @@ export default {
             this.updateLastSave();
 
             this.tip("foo-velocity", this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TEXT"), this.translate("COM_EMUNDUS_FORM_BUILDER_DELETED_ELEMENT_TITLE"));
-            document.addEventListener('keydown', this.cancelDelete);
+            window.addEventListener('keydown', this.cancelDelete);
           }
       );
     },
@@ -133,14 +134,21 @@ export default {
       this.$emit('open-element-properties');
     },
     cancelDelete(event) {
-      this.keysPressed[event.key] = true;
+      let elementsPending = this.$parent.$parent.$parent.elementsDeletedPending;
+      let index = elementsPending.indexOf(this.element.id)
 
-      if ((this.keysPressed['Control'] || this.keysPressed['Meta']) && event.key === 'z') {
-        formBuilderService.toggleElementPublishValue(this.element.id);
-        this.$emit('cancel-delete-element', this.element.id);
-        this.keysPressed = [];
+      if(elementsPending.indexOf(this.element.id) === (elementsPending.length - 1)) {
+        event.stopImmediatePropagation();
+        this.keysPressed[event.key] = true;
 
-        document.removeEventListener('keydown',this.cancelDelete);
+        if ((this.keysPressed['Control'] || this.keysPressed['Meta']) && event.key === 'z') {
+          formBuilderService.toggleElementPublishValue(this.element.id);
+          this.$emit('cancel-delete-element', this.element.id);
+          this.keysPressed = [];
+
+          document.removeEventListener('keydown', this.cancelDelete);
+          this.$parent.$parent.$parent.elementsDeletedPending.splice(index,1)
+        }
       }
     }
   },

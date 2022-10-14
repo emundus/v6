@@ -38,6 +38,11 @@
         </incremental-select>
       </div>
 
+	    <div class="em-mb-16">
+		    <label class="em-font-weight-400">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DESCRIPTION') }}</label>
+		    <textarea id="" name="" rows="5" v-model="document.description[shortDefaultLang]">{{ document.description[shortDefaultLang] }}</textarea>
+	    </div>
+
       <div class="em-mb-16">
         <label class="em-font-weight-400">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_TYPES') }}</label>
         <div v-for="(filetype, index) in fileTypes" :key="filetype.value" class="em-flex-row em-mb-4">
@@ -105,6 +110,7 @@ import globalMixin from "../../mixins/mixin";
 import editor from '../editor.vue';
 import IncrementalSelect from "../IncrementalSelect";
 import formBuilderMixin from "../../mixins/formbuilder";
+import Swal from 'sweetalert2';
 
 export default {
   name: 'FormBuilderCreateDocument',
@@ -276,6 +282,27 @@ export default {
     },
 	  saveDocument()
     {
+	    let empty_names = true;
+			Object.values(this.document.name).forEach((name) => {
+				if (name != "") {
+					empty_names = false;
+				}
+			});
+
+			if (empty_names === true) {
+				Swal.fire({
+					type: 'warning',
+					title: 'Veuillez remplir le champ "Type de document"',
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: "em-swal-single-action",
+					},
+				});
+				return false;
+			}
+
       const isModel = this.models.find((model) => {
         return model.id == this.document.id;
       });
@@ -286,6 +313,20 @@ export default {
           types.push(entry[0]);
         }
       });
+
+			if (types.length < 1) {
+				Swal.fire({
+					type: 'warning',
+					title: 'Veuillez sélectionner au moins un format de document',
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: "em-swal-single-action",
+					},
+				});
+				return false;
+			}
 
       if (!isModel) {
         this.document.id = null;
@@ -333,9 +374,7 @@ export default {
     {
       if (document.id) {
         this.document.name[this.shortDefaultLang] = document.label;
-        this.selectModel({target: {value: document.id}},
-		        this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : null
-        );
+        this.selectModel({target: {value: document.id}}, this.current_document && this.current_document.id && this.current_document.id == document.id ? this.current_document.mandatory : null);
       } else {
         this.document.id = null;
         this.document.name[this.shortDefaultLang] = document.label;

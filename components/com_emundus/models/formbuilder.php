@@ -2558,31 +2558,7 @@ class EmundusModelFormbuilder extends JModelList {
                 ->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
             $db->setQuery($query);
             $list_model = $db->loadObject();
-
             $db_table_name = $list_model->db_table_name;
-
-            /*if($list_model->db_table_name != 'jos_emundus_declaration') {
-                // Create table
-                $query->clear()
-                    ->select('COUNT(*)')
-                    ->from($db->quoteName('information_schema.tables'))
-                    ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%jos_emundus_' . $prid . '%'));
-                $db->setQuery($query);
-                $result = $db->loadResult();
-
-                if ($result < 10) {
-                    $increment = '0' . strval($result);
-                } elseif ($result > 10) {
-                    $increment = strval($result);
-                }
-                $db_table_name = 'jos_emundus_' . $prid . '_' . $increment;
-                $table_query = "CREATE TABLE " . $db_table_name . " LIKE " . $list_model->db_table_name;
-                $db->setQuery($table_query);
-                $db->execute();
-                //
-            } else {
-                $db_table_name = 'jos_emundus_declaration';
-            }*/
 
             $query->clear();
             $query->insert($db->quoteName('#__fabrik_lists'));
@@ -2591,21 +2567,7 @@ class EmundusModelFormbuilder extends JModelList {
                     $query->set($key . ' = ' . $db->quote($val));
                 } elseif ($key == 'form_id') {
                     $query->set($key . ' = ' . $db->quote($newformid));
-                } /*elseif ($key == 'db_table_name') {
-                    if($val != 'jos_emundus_declaration') {
-                        $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment));
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val));
-                    }
-                }
-                elseif ($key == 'db_primary_key') {
-                    if($list_model->db_table_name != 'jos_emundus_declaration') {
-                        $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment . '.id'));
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val));
-                    }
-                } */
-                elseif ($key == 'access') {
+                } elseif ($key == 'access') {
                     $query->set($key . ' = ' . $db->quote($prid));
                 }
             }
@@ -2677,11 +2639,6 @@ class EmundusModelFormbuilder extends JModelList {
                         ->andWhere($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
                     $db->setQuery($query);
                     $repeat_table_to_copy = $db->loadResult();
-
-                    /*$newtablename = 'jos_emundus_' . $prid . '_' . $increment . '_' . $newgroupid . '_repeat';
-                    $table_query = "CREATE TABLE " . $newtablename . " LIKE " . $repeat_table_to_copy;
-                    $db->setQuery($table_query);
-                    $db->execute();*/
 
                     $joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
 
@@ -2808,25 +2765,9 @@ class EmundusModelFormbuilder extends JModelList {
             }
 
             $query->clear()
-                ->select(['id AS id', 'link AS link'])
-                ->from($db->quoteName('#__menu'));
-
-            $db->setQuery($query);
-            $model_menus = $db->loadObjectList();
-
-            $menu_id = 0;
-
-            foreach ($model_menus as $model_menu) {
-                if ($formid == explode('=', $model_menu->link)[3]) {
-                    $menu_id = $model_menu->id;
-                    break;
-                }
-            }
-
-            $query->clear()
                 ->select('*')
-                ->from('#__menu')
-                ->where($db->quoteName('id') . ' = ' . $menu_id);
+                ->from($db->quoteName('#__menu'))
+                ->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)='.$formid);
 
             $db->setQuery($query);
             $menu_model = $db->loadObject();

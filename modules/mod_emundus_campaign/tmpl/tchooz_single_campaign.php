@@ -63,7 +63,7 @@ switch ($order) {
 </div>
 <div class="g-block size-100 tchooz-single-campaign">
     <div class="single-campaign" id="campaign">
-        <div class="right-side-tchooz col-md-4">
+        <div class="right-side-tchooz col-md-6">
             <div class="right-side campaingapply <?php echo $mod_em_campaign_class; ?>">
                 <div class="campaingapplycontent">
                     <legend><?php echo JText::_('CAMPAIGN_PERIOD'); ?></legend>

@@ -8,8 +8,8 @@
 			</div>
 			<div v-else><span :class="classFromValue(rowData[column.column_name])">{{ texteFromValue(rowData[column.column_name]) }}</span></div>
 		</td>
-		<td><span class="material-icons em-pointer" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span></td>
-		<more-options v-if="moreOptionsOpened" :options="moreOptionsData" @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
+		<td><span v-if="!readOnly" class="material-icons em-pointer" @click="moreOptionsOpened = !moreOptionsOpened">more_horiz</span></td>
+		<more-options v-if="moreOptionsOpened && !readOnly" :options="moreOptionsData" @select-option="onSelectOption" @focusout="moreOptionsOpened = false"></more-options>
 	</tr>
 </template>
 
@@ -43,6 +43,10 @@ export default {
 		listColumnToNotShowingWhenFilteredBy: {
 			type: String,
 			required: false,
+		},
+		readOnly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	components: {
