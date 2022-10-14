@@ -77,6 +77,7 @@
 				:isPublished="actionMenuIsPublished"
 				:showTootlip="hasActionMenu"
 				:nb_files="type === 'campaign' ? parseInt(data.nb_files) : 0"
+				:pinned="type === 'campaign' ? parseInt(data.pinned) : 0"
 				@validateFilters="validateFilters"
 				@updateLoading="updateLoading"
 				@showModalPreview="showModalPreview"

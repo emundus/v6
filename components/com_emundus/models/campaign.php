@@ -2168,4 +2168,36 @@ class EmundusModelCampaign extends JModelList {
 
         return $current_phase;
     }
+
+    public function pinCampaign($cid): bool {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName('#__emundus_setup_campaigns'))
+                ->where($db->quoteName('pinned') . ' = 1');
+            $db->setQuery($query);
+            $campaign_already_pinned = $db->loadResult();
+
+            if(!empty($campaign_already_pinned)){
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_setup_campaigns'))
+                    ->set($db->quoteName('pinned') . ' = 0')
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($campaign_already_pinned));
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $query->clear()
+                ->update($db->quoteName('#__emundus_setup_campaigns'))
+                ->set($db->quoteName('pinned') . ' = 1')
+                ->where($db->quoteName('id') . ' = ' . $db->quote($cid));
+            $db->setQuery($query);
+            return $db->execute();
+        } catch (Exception $e) {
+            JLog::add('Error updating form document in component/com_emundus/models/campaign: '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            return false;
+        }
+    }
 }

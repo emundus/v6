@@ -814,5 +814,25 @@ class EmundusControllerCampaign extends JControllerLegacy {
         echo json_encode((object)$tab);
         exit;
     }
+
+    public function pincampaign(){
+        if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
+            $result = 0;
+            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $cid = $jinput->getInt('cid');
+
+            $result = $this->m_campaign->pinCampaign($cid);
+
+            if ($result) {
+                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGN_PINNED'), 'data' => $result);
+            } else {
+                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_PINNED_CAMPAIGN'), 'data' => $result);
+            }
+        }
+        echo json_encode((object)$tab);
+        exit;
+    }
 }
 ?>

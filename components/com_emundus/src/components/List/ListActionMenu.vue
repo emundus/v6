@@ -1,5 +1,10 @@
 <template>
 	<div class="list-actions-menu">
+        <span v-if="type == 'campaign'"
+              :title="translate('COM_EMUNDUS_CAMPAIGNS_PIN')"
+              @click="pinCampaign"
+              :class="pinned == 1 ? 'material-icons' : 'material-icons-outlined em-text-neutral-500'"
+              class="em-pointer">push_pin</span>
     <v-popover
         v-if="showTootlip === true"
         class="em-pointer"
@@ -26,13 +31,12 @@
 		>
       <span class="material-icons-outlined">visibility</span>
     </button>
-
-    <span v-if="type == 'campaign'" class="material-icons-outlined">push_pin</span>
 	</div>
 </template>
 
 <script>
 import actions from "../ListComponents/action_menu.vue";
+import campaignService from "../../services/campaign";
 
 export default {
 	components: { actions },
@@ -56,6 +60,10 @@ export default {
     nb_files : {
       type: Number,
       default: 0
+    },
+    pinned : {
+      type: Number,
+      default: 0
     }
 	},
 	data() {
@@ -75,6 +83,26 @@ export default {
 		updateLoading(value) {
       this.$emit('updateLoading',value);
     },
+    pinCampaign() {
+      campaignService.pinCampaign(this.itemId).then((result) => {
+        if(result.data.status == 1){
+          Swal.fire({
+            title: this.translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED'),
+            text: this.translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED_TEXT'),
+            type: "success",
+            showCancelButton: false,
+            confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+            reverseButtons: true,
+            customClass: {
+              title: 'em-swal-title',
+              confirmButton: 'em-swal-confirm-button',
+              actions: "em-swal-single-action",
+            },
+            timer: 2000,
+          });
+        }
+      });
+    }
 	}
 }
 </script>
