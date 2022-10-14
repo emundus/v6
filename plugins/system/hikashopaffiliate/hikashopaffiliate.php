@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -109,7 +109,7 @@ class plgSystemHikashopaffiliate extends JPlugin {
 		if(!$config->get('allow_currency_selection',0) || empty($user->user_currency_id))
 			$user->user_currency_id =  $config->get('partner_currency',1);
 
-		if(bccomp($user->user_params->partner_click_fee,0,5) && $user->user_currency_id!=$user->user_params->partner_fee_currency)
+		if(bccomp(sprintf('%F',$user->user_params->partner_click_fee),0,5) && $user->user_currency_id!=$user->user_params->partner_fee_currency)
 			$user->user_params->partner_click_fee = $this->_convert($user->user_params->partner_click_fee,$user->user_params->partner_fee_currency,$user->user_currency_id);
 
 		if(!empty($latest))
@@ -227,11 +227,11 @@ class plgSystemHikashopaffiliate extends JPlugin {
 		if(!$config->get('allow_currency_selection',0) || empty($user->user_currency_id))
 			$user->user_currency_id =  $config->get('partner_currency',1);
 
-		if(bccomp($user->user_params->partner_flat_fee,0,5) && $user->user_currency_id!=$user->user_params->partner_fee_currency)
+		if(bccomp(sprintf('%F',$user->user_params->partner_flat_fee),0,5) && $user->user_currency_id!=$user->user_params->partner_fee_currency)
 			$user->user_params->partner_flat_fee = $this->_convert($user->user_params->partner_flat_fee,$user->user_params->partner_fee_currency,$user->user_currency_id);
 
-		if(bccomp($user->user_params->partner_percent_fee, 0, 5) || bccomp($user->user_params->partner_flat_fee, 0, 5)) {
-			if(bccomp($user->user_params->partner_percent_fee, 0, 5)) {
+		if(bccomp(sprintf('%F',$user->user_params->partner_percent_fee), 0, 5) || bccomp(sprintf('%F',$user->user_params->partner_flat_fee), 0, 5)) {
+			if(bccomp(sprintf('%F',$user->user_params->partner_percent_fee), 0, 5)) {
 				$order_price = $order->order_full_price;
 				if($config->get('affiliate_fee_exclude_shipping', 0)) {
 					$order_price = $order_price - $order->order_shipping_price;
@@ -334,14 +334,14 @@ class plgSystemHikashopaffiliate extends JPlugin {
 		if(!$config->get('allow_currency_selection',0) || empty($partner->user_currency_id))
 			$partner->user_currency_id = $config->get('partner_currency',1);
 
-		if(bccomp($partner->user_params->partner_lead_fee,0,5) && $partner->user_currency_id!=$partner->user_params->partner_fee_currency)
+		if(bccomp(sprintf('%F',$partner->user_params->partner_lead_fee),0,5) && $partner->user_currency_id!=$partner->user_params->partner_fee_currency)
 			$partner->user_params->partner_lead_fee = $this->_convert($partner->user_params->partner_lead_fee,$partner->user_params->partner_fee_currency,$partner->user_currency_id);
 
 		$ip = hikashop_getIP();
 		$clickClass = hikashop_get('class.click');
 		$latest = $clickClass->getLatest($partner_id,$ip,$config->get('lead_min_delay',24));
 
-		if($config->get('add_partner_to_user_account',0) || (empty($latest) && bccomp($partner->user_params->partner_lead_fee,0,5))) {
+		if($config->get('add_partner_to_user_account',0) || (empty($latest) && bccomp(sprintf('%F',$partner->user_params->partner_lead_fee),0,5))) {
 			$userDataInDb = $userClass->get($user_id,'cms');
 			$userData = new stdClass();
 			$userData->user_id = @$userDataInDb->user_id;
@@ -408,7 +408,7 @@ class plgSystemHikashopaffiliate extends JPlugin {
 	}
 
 	public function showField($container, $name, &$row) {
-		if(!bccomp($row->order_partner_price, 0, 5))
+		if(!bccomp(sprintf('%F',$row->order_partner_price), 0, 5))
 			return '';
 		$ret = $container->currencyHelper->format($row->order_partner_price,$row->order_partner_currency_id);
 		if(empty($row->order_partner_paid)) {

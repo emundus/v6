@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -39,6 +39,15 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 			'showon' => array(
 				'key' => 'read_only',
 				'values' => array(0)
+			)
+		),
+		'same_address_pre_checked' =>  array(
+			'name' => 'SAME_ADDRESS_CHECKBOX_PRE_CHECKED',
+			'type' => 'boolean',
+			'default' => 1,
+			'showon' => array(
+				'key' => 'same_address',
+				'values' => array(1)
 			)
 		),
 		'multi_address' =>  array(
@@ -147,7 +156,7 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 
 		$checkout = hikaInput::get()->get('checkout', array(), 'array');
 		if(!empty($checkout) && !empty($checkout['address'])) {
-			if(!empty($checkout['address']['billing']) || !empty($checkout['address']['shipping']))
+			if((!empty($checkout['address']['billing']) && $checkout['address']['billing'] > 0) || (!empty($checkout['address']['shipping']) && $checkout['address']['shipping'] > 0))
 				return $this->setCartAddresses($checkout['address']);
 			if(!empty($checkout['address']['delete']))
 				return $this->deleteAddresses($checkout['address']['delete']);
@@ -201,7 +210,9 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 				$address->address_id = (int)$formdata[$field_type]['address_id'];
 
 			$address->address_published = 1;
-			if(!empty($old_address) && !empty($old_address->address_default))
+			if(isset($formdata[$field_type]) && !empty($formdata[$field_type]['address_default']))
+				$address->address_default = (int)$formdata[$field_type]['address_default'];
+			elseif(!empty($old_address) && !empty($old_address->address_default))
 				$address->address_default = 1;
 			$checkoutHelper = hikashopCheckoutHelper::get();
 			$cart = $checkoutHelper->getCart();
@@ -307,8 +318,8 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 	}
 
 	private function setCartAddresses($data) {
-		$billing = (!empty($data['billing'])) ? (int)$data['billing'] : 0;
-		$shipping = (!empty($data['shipping'])) ? (int)$data['shipping'] : 0;
+		$billing = (!empty($data['billing']) && $data['billing'] > 0) ? (int)$data['billing'] : 0;
+		$shipping = (!empty($data['shipping']) && $data['shipping'] > 0) ? (int)$data['shipping'] : 0;
 
 		if(empty($billing) && empty($shipping))
 			return true;
@@ -331,8 +342,6 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 		}
 
 		if($ret_shipping && $ret_billing) {
-			$cartClass->get('reset_cache',$cart->cart_id);
-			$checkoutHelper->getCart(true);
 			return true;
 		}
 		$new_messages = $app->getMessageQueue(true);
@@ -397,8 +406,14 @@ class hikashopCheckoutAddressHelper extends hikashopCheckoutHelperInterface {
 
 		if(!isset($params['same_address']))
 			$params['same_address'] = 1;
+		if(!isset($params['same_address_pre_checked']))
+			$params['same_address_pre_checked'] = 1;
 		if(!isset($params['multi_address']))
 			$params['multi_address'] = 2;
+
+
+		$config = hikashop_config();
+		$params['auto_select_addresses'] = (bool)$config->get('auto_select_addresses', 1);
 
 		$user = JFactory::getUser();
 		if($params['multi_address'] == 2)

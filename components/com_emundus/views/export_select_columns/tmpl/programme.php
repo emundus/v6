@@ -30,9 +30,9 @@ if (!empty($s_elements)) {
 ?>
 
 	<?php if (count($this->elements) > 0) :?>
-        <div class="em-program-title">
+<!--        <div class="em-program-title em-mb-16">
             <h1><?= $this->program; ?></h1>
-        </div>
+        </div>-->
         <div id="emundus_elements">
         <?php
             $tbl_tmp='';
@@ -69,7 +69,7 @@ if (!empty($s_elements)) {
                         </div>
 
                         <div class="panel-body">
-                            <div class="em-element-title em-element-main-title">
+                            <div class="em-element-title em-element-main-title em-mb-16">
                                 <div class="em-element-title-id em-element-main-title-id">
                                     <b><?= JText::_('ID'); ?></b>
                                 </div>
@@ -152,7 +152,7 @@ if (!empty($s_elements)) {
                 </div>
 		    </div>
      <?php else: ?>
-        <?= JText::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED'); ?>
+        <div class="em-mb-16"><?= JText::_('COM_EMUNDUS_FORM_NO_FORM_DEFINED'); ?></div>
     <?php endif;
 
     $today  = date("MdYHis");
@@ -166,6 +166,9 @@ if (!empty($s_elements)) {
     }
     fprintf($csv, chr(0xEF).chr(0xBB).chr(0xBF));
     $res = fputcsv($csv, $fabrik_elements, ",", '"', "\\");
-    echo '<div class="em-link"><a class="btn btn-info" href="index.php?option=com_emundus&controller=files&task=download&name='.$name.'">'.JText::_('COM_EMUNDUS_EXPORTS_EXPORT').'</a></div>';
+
+    if (count($this->elements) > 0) {
+        echo '<div class="em-link"><a class="em-primary-button em-float-right em-no-hover em-hover-background-neutral-300" href="index.php?option=com_emundus&controller=files&task=download&name=' . $name . '">' . JText::_('COM_EMUNDUS_EXPORTS_EXPORT_AS_CSV_TEMPLATE') . '</a></div>';
+    }
 
     ?>

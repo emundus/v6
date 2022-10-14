@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,40 +17,46 @@ class hikashopRadioType {
 
 		self::$event = true;
 
-		if(!HIKASHOP_J30) {
-			hikashop_loadJslib('jquery');
-		} else {
-			JHtml::_('jquery.framework');
-		}
 
-		$doc = JFactory::getDocument();
-		$doc->addScriptDeclaration('
+		if(HIKASHOP_J40) {
+			$app = JFactory::getApplication();
+			$doc = $app->getDocument();
+			if($doc) {
+				$doc->getWebAssetManager()->useStyle('switcher');
+			}
+		} else {
+			hikashop_loadJslib('jquery');
+			$doc = JFactory::getDocument();
+			$doc->addScriptDeclaration('
+setTimeout(function(){
 (function($){
-if(!window.hikashopLocal) window.hikashopLocal = {};
-window.hikashopLocal.radioEvent = function(el) {
-	var id = $(el).attr("id"), c = $(el).attr("class"), lbl = $("label[for=\"" + id + "\"]"), v = $(el).val(), target = $(el).parent().find("label[data-default=\"1\"]");
-	if(v == "-1")
-		target.addClass("btn-default");
-	else
-		target.removeClass("btn-default");
-	if(c !== undefined && c.length > 0)
-		lbl.addClass(c);
-	lbl.addClass("active");
-	$("input[name=\"" + $(el).attr("name") + "\"]").each(function() {
-		if($(this).attr("id") != id) {
-			c = $(this).attr("class");
-			lbl = $("label[for=\"" + $(this).attr("id") + "\"]");
-			if(c !== undefined && c.length > 0)
-				lbl.removeClass(c);
-			lbl.removeClass("active");
-		}
+	if(!window.hikashopLocal) window.hikashopLocal = {};
+	window.hikashopLocal.radioEvent = function(el) {
+		var id = $(el).attr("id"), c = $(el).attr("class"), lbl = $("label[for=\"" + id + "\"]"), v = $(el).val(), target = $(el).parent().find("label[data-default=\"1\"]");
+		if(v == "-1")
+			target.addClass("btn-default");
+		else
+			target.removeClass("btn-default");
+		if(c !== undefined && c.length > 0)
+			lbl.addClass(c);
+		lbl.addClass("active");
+		$("input[name=\"" + $(el).attr("name") + "\"]").each(function() {
+			if($(this).attr("id") != id) {
+				c = $(this).attr("class");
+				lbl = $("label[for=\"" + $(this).attr("id") + "\"]");
+				if(c !== undefined && c.length > 0)
+					lbl.removeClass(c);
+				lbl.removeClass("active");
+			}
+		});
+	}
+	$(document).ready(function() {
+		$(".hikaradios .btn-group label").off("click");
 	});
-}
-$(document).ready(function() {
-	setTimeout(function(){ $(".hikaradios .btn-group label").off("click"); }, 200);
-});
 })(jQuery);
+}, 200);
 ');
+		}
 	}
 
 	public function booleanlist($name, $attribs = null, $selected = null, $yes = 'JYES', $no = 'JNO', $id = false) {
@@ -58,6 +64,9 @@ $(document).ready(function() {
 			JHtml::_('select.option', '1', JText::_($yes)),
 			JHtml::_('select.option', '0', JText::_($no))
 		);
+		if(HIKASHOP_J40) {
+			$arr = array_reverse($arr);
+		}
 		$arr[0]->booleanlist = true;
 		$arr[0]->class = 'hikabtn-success';
 
@@ -76,14 +85,17 @@ $(document).ready(function() {
 		$yes_text = JText::_('JYES');
 		$no_text = JText::_('JNO');
 		foreach($data as &$obj) {
-			if(!empty($obj->class))
-				continue;
-
-			$obj->class = 'hikabtn-primary';
-			if(($translate && $obj->$optText == 'JYES') || (!$translate && $obj->$optText == $yes_text))
-				$obj->class = 'hikabtn-success';
-			if(($translate && $obj->$optText == 'JNO') || (!$translate && $obj->$optText == $no_text))
-				$obj->class = 'hikabtn-danger';
+			if(HIKASHOP_J40) {
+				$obj->class = '';
+			} else {
+				if(!empty($obj->class))
+					continue;
+				$obj->class = 'hikabtn-primary';
+				if(($translate && $obj->$optText == 'JYES') || (!$translate && $obj->$optText == $yes_text))
+					$obj->class = 'hikabtn-success';
+				if(($translate && $obj->$optText == 'JNO') || (!$translate && $obj->$optText == $no_text))
+					$obj->class = 'hikabtn-danger';
+			}
 		}
 		unset($obj);
 
@@ -96,6 +108,8 @@ $(document).ready(function() {
 		$backend = false && hikashop_isClient('administrator');
 		$htmlLabels = '';
 		$html = '<div class="hikaradios" id="'.$id_text.'">';
+		$mainClass = 'hikabtn-group'. ($vertical?' hikabtn-group-vertical':'');
+		$labelClass = 'hikabtn';
 
 		foreach ($data as $obj) {
 			$k = $obj->$optKey;
@@ -122,19 +136,21 @@ $(document).ready(function() {
 			}
 
 			$extra = ' '.$extra;
-			if(strpos($extra, ' style="') !== false) {
-				$extra = str_replace(' style="', ' style="display:none;', $extra);
-			} elseif(strpos($extra, 'style=\'') !== false) {
-				$extra = str_replace(' style=\'', ' style=\'display:none;', $extra);
-			} else {
-				$extra .= ' style="display:none;"';
-			}
-			if(strpos($extra, ' onchange="') !== false) {
-				$extra = str_replace(' onchange="', ' onchange="hikashopLocal.radioEvent(this);', $extra);
-			} elseif(strpos($extra, 'onchange=\'') !== false) {
-				$extra = str_replace(' onchange=\'', ' onchange=\'hikashopLocal.radioEvent(this);', $extra);
-			} else {
-				$extra .= ' onchange="hikashopLocal.radioEvent(this);"';
+			if(!HIKASHOP_J40) {
+				if(strpos($extra, ' style="') !== false) {
+					$extra = str_replace(' style="', ' style="display:none;', $extra);
+				} elseif(strpos($extra, 'style=\'') !== false) {
+					$extra = str_replace(' style=\'', ' style=\'display:none;', $extra);
+				} else {
+					$extra .= ' style="display:none;"';
+				}
+				if(strpos($extra, ' onchange="') !== false) {
+					$extra = str_replace(' onchange="', ' onchange="hikashopLocal.radioEvent(this);', $extra);
+				} elseif(strpos($extra, 'onchange=\'') !== false) {
+					$extra = str_replace(' onchange=\'', ' onchange=\'hikashopLocal.radioEvent(this);', $extra);
+				} else {
+					$extra .= ' onchange="hikashopLocal.radioEvent(this);"';
+				}
 			}
 			if(!empty($obj->class)) {
 				if(strpos($extra, 'class="') === false)
@@ -142,7 +158,7 @@ $(document).ready(function() {
 				else
 					$extra = str_replace('class="', 'class="'.$obj->class.' ', $extra);
 			}
-			$html .= "\n\t" . '<input type="radio" name="' . $name . '"' . ' id="' . $currId . '" value="' . $k . '"' . ' ' . trim($extra) . '/>';
+			$input = "\n\t" . '<input type="radio" name="' . $name . '"' . ' class="'.($sel ? ' active '.$class : '').'" id="' . $currId . '" value="' . $k . '"' . ' ' . trim($extra) . '/>';
 
 			$dataDefault = '0';
 			$addClass = '';
@@ -152,11 +168,22 @@ $(document).ready(function() {
 				if($selected == '-1')
 					$addClass .= ' hikabtn-default';
 			}
+			if(HIKASHOP_J40) {
+				$htmlLabels .= $input;
+				$labelClass = '';
+				$addClass = '';
+			} else {
+				$html .= $input;
+			}
+			$htmlLabels .= '<label for="' . $currId . '"' . ' data-default="'.$dataDefault.'" class="'.$labelClass.' '.$addClass.($sel ? ' active '.$class : '') .'">' . $t . '</label>';
 
-			$htmlLabels .= '<label for="' . $currId . '"' . ' data-default="'.$dataDefault.'" class="hikabtn '.$addClass.($sel ? ' active '.$class : '') .'">' . $t . '</label>';
+		}
+		if(HIKASHOP_J40) {
+			$mainClass = 'switcher';
+			$htmlLabels .= '<span class="toggle-outside"><span class="toggle-inside"></span></span>';
 		}
 
-		$html .= "\r\n" . '<div class="hikabtn-group'. ($vertical?' hikabtn-group-vertical':'').'" data-toggle="">' . $htmlLabels . "\r\n" . '</div>';
+		$html .= "\r\n" . '<div class="'.$mainClass.'" data-toggle="">' . $htmlLabels . "\r\n" . '</div>';
 		$html .= "\r\n" . '</div>' . "\r\n";
 		return $html;
 	}

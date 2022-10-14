@@ -128,3 +128,8 @@ body ::-webkit-scrollbar-track {
   border-radius: 4px;
 }
 
+.v-popover .trigger{
+  display: flex !important;
+  align-items: center;
+}
+

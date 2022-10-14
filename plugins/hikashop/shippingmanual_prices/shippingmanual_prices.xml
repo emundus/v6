@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>HikaShop Shipping Manual - Price per product plugin</name>
-	<creationDate>09 novembre 2020</creationDate>
-	<version>4.4.0</version>
+	<creationDate>25 septembre 2022</creationDate>
+	<version>4.6.2</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
-	<copyright>Copyright (C) 2012-2020 OBSIDEV SARL - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2012-2022 OBSIDEV SARL - All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin allow to configure price per product for manual shippings</description>
 	<files>
@@ -40,7 +40,7 @@
 				<field name="displayOnFrontend" type="radio" default="0" label="HIKA_DISPLAY_SHIPPING_ON_PRODUCT_PAGE" description="HIKA_DISPLAY_SHIPPING_PRICE_PER_PRODUCT_ON_PRODUCT_PAGE">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
-				</field>	
+				</field>
 				<field name="position" type="list" default="rightMiddle" label="HIKA_FRONTEND_POSITION" description="SHIP_POSITION">
 					<option value="topBegin">TOP_BEGIN</option>
 					<option value="topEnd">TOP_END</option>

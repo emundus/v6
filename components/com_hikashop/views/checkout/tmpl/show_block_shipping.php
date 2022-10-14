@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,7 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hikashop_checkout_loading_spinner"></div>
 <?php
 
-$this->checkoutHelper->displayMessages('shipping');
+if(!empty($this->options['display_errors']) || empty($cart->usable_methods->shipping)) {
+	$this->checkoutHelper->displayMessages('shipping');
+}
 $cart = $this->checkoutHelper->getCart();
 
 $shipping_json = array();

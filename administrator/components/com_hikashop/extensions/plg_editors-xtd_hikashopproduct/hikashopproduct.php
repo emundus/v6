@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -24,7 +24,7 @@ class plgButtonHikashopproduct extends JPlugin
 			$jinput = JFactory::getApplication()->input;
 			$extension = $jinput->getCmd('option');
 		}
-		if(!in_array($extension, array('com_content', 'com_tz_portfolio', 'com_k2', 'com_jevents')))
+		if(!in_array($extension, array('com_content', 'com_tz_portfolio', 'com_k2', 'com_jevents', 'com_modules')))
 			return;
 		if(!defined('DS'))
 			define('DS', DIRECTORY_SEPARATOR);
@@ -102,7 +102,11 @@ class plgButtonHikashopproduct extends JPlugin
 			$app->setUserState('com_content.productbutton.limitstart',0);
 		}
 		$Select = 'SELECT * FROM '. hikashop_table('product');
-		$Where = ' WHERE product_type=\'main\' AND product_access=\'all\' AND product_published=1 ';
+		$filters = array('product_type=\'main\'', 'product_published=1');
+		if(hikashop_isClient('site')) {
+			hikashop_addACLFilters($filters, 'product_access');
+		}
+		$Where = ' WHERE '. implode(' AND ', $filters);
 		$orderBY = ' ORDER BY product_id ASC';
 		$searchMap = array('product_name','product_code','product_id');
 		$filters = array();

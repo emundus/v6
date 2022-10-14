@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>Hikashop Google Products Plugin</name>
-	<creationDate>09 novembre 2020</creationDate>
-	<version>4.4.0</version>
+	<creationDate>25 septembre 2022</creationDate>
+	<version>4.6.2</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to get a Google Product feed</description>
 	<files>
@@ -20,7 +20,7 @@
 		<param name="user_name" type="text" size="50" default="" label="GOOGLE_FTP_USER_NAME" description="GOOGLE_FTP_USER_NAME_DESC" />
 		<param name="google_password" type="password" size="50" default="" label="GOOGLE_FTP_PASSWORD" description="GOOGLE_FTP_PASSWORD_DESC" />
 		<param name="file_name" type="text" size="50" default="" label="FILE_NAME" description="GOOGLE_FILE_NAME" />
-		<param name="local_path" type="text" size="50" default="" label="HIKA_LOCAL_XML_FILE_PATH" description="LOCAL_XML_FILE_PATH" />
+		<param name="local_path" type="text" size="50" default="" label="HIKA_LOCAL_XML_FILE_PATH" description="LOCAL_XML_FILE_PATH_DESC" />
 		<param name="frequency" type="text" size="50" default="86400" label="FREQUENCY" description="GOOGLE_FREQUENCY" />
 		<param name="last_cron_update" type="text" size="50" default="1274903175" label="HIKA_LAST_UPDATE" description="LAST_UPDATE" />
 		<param name="increase_perf" type="list" default="" label="HIKA_INCREASE_PERFORMANCES" description="INCREASE_PERFORMANCES">
@@ -75,6 +75,7 @@
 		<param name="size" type="text" size="50" default="" label="PRODUCT_SIZE" description="GOOGLE_PRODUCTS_SIZE" />
 		<param name="color" type="text" size="50" default="" label="PRODUCT_COLOR" description="GOOGLE_PRODUCTS_COLOR" />
 		<param name="shipping" type="textarea" cols="40" rows="2" default="" label="SHIPPING" description="GOOGLE_PRODUCTS_SHIPPING" />
+		<param name="shipping_label" type="text" size="50" default="" label="SHIPPING_LABEL" description="GOOGLE_PRODUCTS_SHIPPING_LABEL" />
 		<param name="download" type="plugintrigger"  default="downloadXML" label="DOWNLOAD_NOW" description="GOOGLE_PRODUCTS_DOWNLOAD_XML_FILE" />
 	</params>
 	<config>
@@ -164,6 +165,7 @@
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>
+				<field name="user_group" type="usergrouplist" label="USER_GROUP_PRODUCTS" description="GOOGLE_PRODUCTS_USER_GROUP" multiple="true"/>
 				<field
 					name="condition"
 					type="text"
@@ -196,6 +198,7 @@
 				<field name="size" type="text" size="50" default="" label="PRODUCT_SIZE" description="GOOGLE_PRODUCTS_SIZE" />
 				<field name="color" type="text" size="50" default="" label="PRODUCT_COLOR" description="GOOGLE_PRODUCTS_COLOR" />
 				<field name="shipping" type="textarea" cols="40" rows="2" default="" label="SHIPPING" description="GOOGLE_PRODUCTS_SHIPPING" />
+				<field name="shipping_label" type="text" size="50" default="" label="SHIPPING_LABEL" description="GOOGLE_PRODUCTS_SHIPPING_LABEL" />
 				<field
 					name="download"
 					type="plugintrigger"

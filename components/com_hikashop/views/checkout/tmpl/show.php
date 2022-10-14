@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,35 +15,56 @@ defined('_JEXEC') or die('Restricted access');
 <div id="hikashop_checkout" data-checkout-step="<?php echo $this->step; ?>" class="hikashop_checkout_page hikashop_checkout_page_step<?php echo $this->step; ?>">
 	<div class="hikashop_checkout_loading_elem"></div>
 	<div class="hikashop_checkout_loading_spinner"></div>
+<!-- PROGRESS BAR -->
 <?php
-
 if((int)$this->config->get('display_checkout_bar', 2) > 0) {
 	echo $this->displayBlock('bar', 0, array(
 		'display_end' => ((int)$this->config->get('display_checkout_bar', 2) == 1)
 	));
 }
+?>
+<!-- EO PROGRESS BAR -->
+<?php
 if($this->hasSeparator)
 	echo $this->displayBlock('separator', 0, array('type' => 'start'));
 $handleEnter = array();
 $last = 0;
+?>
+<!-- TOP EXTRA DATA -->
+<?php
 if(!empty($this->extraData['checkout']) && !empty($this->extraData['checkout']->checkout_top)) { echo implode("\r\n", $this->extraData['checkout']->checkout_top); }
-
+?>
+<!-- EO TOP EXTRA DATA -->
+<!-- CHECKOUT -->
+<?php
 foreach($this->workflow['steps'][$this->workflow_step]['content'] as $k => $content) {
 	$handleEnter[] = 'window.checkout.handleEnter(\''.$content['task'].'\','.$this->step.','.$k.');';
 	echo $this->displayBlock($content['task'], $k, @$content['params']);
 	$last = $k;
 }
-
+?>
+<!-- EO CHECKOUT -->
+<!-- BOTTOM EXTRA DATA -->
+<?php
 if(!empty($this->extraData['checkout']) && !empty($this->extraData['checkout']->checkout_bottom)) { echo implode("\r\n", $this->extraData['checkout']->checkout_bottom); }
-
+?>
+<!-- EO BOTTOM EXTRA DATA -->
+<?php
 if($this->hasSeparator)
 	echo $this->displayBlock('separator', $last+1, array('type' => 'end'));
-
+?>
+<!-- BUTTONS -->
+<?php
 echo $this->displayBlock('buttons', 0, array());
-
-if(!empty($this->extra_data))
+?>
+<!-- EO BUTTONS -->
+<!-- OTHER EXTRA DATA -->
+<?php
+if(!empty($this->extra_data) && !isset($this->extraData['checkout']))
 	echo implode("\r\n", $this->extra_data);
-
+?>
+<!-- EO OTHER EXTRA DATA -->
+<?php
 $doc = JFactory::getDocument();
 $doc->addScript(HIKASHOP_JS.'checkout.js');
 $js = '

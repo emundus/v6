@@ -21,7 +21,7 @@
     <div id="properties">
       <div v-if="tabs[0].active" id="element-parameters" class="em-p-16">
         <label for="element-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_LABEL') }}</label>
-        <input id="element-label" name="element-label" class="em-w-100" type="text" v-model="element.label[shortDefaultLang]" :value="element.label[shortDefaultLang]"/>
+        <input id="element-label" name="element-label" class="em-w-100" type="text" v-model="element.label[shortDefaultLang]"/>
         <div class="em-flex-row em-flex-space-between em-w-100 em-pt-16 em-pb-16">
           <span>{{ translate("COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH") }}</span>
           <div class="em-toggle">

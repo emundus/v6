@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -130,13 +130,15 @@ class configViewConfig extends hikashopView
 				'seeReport',
 				760, 480, '', '', 'link'
 			);
-			$elements->editReportEmail = $this->popup->display(
-				'<button type="button" class="btn" onclick="return false">'.JText::_('REPORT_EDIT').'</button>',
-				'REPORT_EDIT',
-				hikashop_completeLink('email&task=edit&mail_name=cron_report',true),
-				'editReportEmail',
-				760, 480, '', '', 'link'
-			);
+			if(hikashop_level(2)) {
+				$elements->editReportEmail = $this->popup->display(
+					'<button type="button" class="btn" onclick="return false">'.JText::_('REPORT_EDIT').'</button>',
+					'REPORT_EDIT',
+					hikashop_completeLink('email&task=edit&mail_name=cron_report',true),
+					'editReportEmail',
+					760, 480, '', '', 'link'
+				);
+			}
 
 			$elements->cron_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=cron';
 			$item = $config->get('itemid');
@@ -179,10 +181,7 @@ class configViewConfig extends hikashopView
 		if(hikashop_level(2)) {
 			$plugin = JPluginHelper::getPlugin('system', 'hikashopaffiliate');
 		}
-		if(empty($plugin)) {
-			$plugin = new stdClass();
-			$plugin->params = array();
-		} else {
+		if(!empty($plugin)) {
 			$affiliate_active = true;
 			$plugin = $pluginClass->getByName($plugin->type,$plugin->name);
 
@@ -193,7 +192,14 @@ class configViewConfig extends hikashopView
 				$app->enqueueMessage(JText::sprintf('PLUGIN_ACCESS_WARNING','('.$pluginData->name.')'),'warning');
 			}
 		}
-		if(is_array($plugin->params) && empty($plugin->params['partner_key_name'])) {
+
+		if(empty($plugin)) {
+			$plugin = new stdClass();
+		}
+		if(!isset($plugin->params) || !is_array($plugin->params)) {
+			$plugin->params = array();
+		}
+		if(empty($plugin->params['partner_key_name'])) {
 			$plugin->params['partner_key_name'] = 'partner_id';
 		}
 		$this->assignRef('affiliate_params', $plugin->params);
@@ -362,8 +368,9 @@ class configViewConfig extends hikashopView
 		$aclcats['modules'] = array('view','manage','delete');
 		$aclcats['order'] = array('view','manage','delete');
 		$acltrans['order'] = 'hikashop_order';
+		$aclcats['orderstatus'] = array('view','manage');
 		$aclcats['plugins'] = array('view','manage');
-		$aclcats['product'] = array('view','manage','delete');
+		$aclcats['product'] = array('view','manage','delete', 'customize');
 		$aclcats['report'] = array('view','manage', 'delete');
 		$aclcats['taxation'] = array('view','manage','delete');
 		$aclcats['update_about'] = array('view');
@@ -378,8 +385,34 @@ class configViewConfig extends hikashopView
 		$aclcats['zone'] = array('view','manage','delete');
 		$this->assignRef('aclcats', $aclcats);
 		$this->assignRef('acltrans', $acltrans);
+
+		$this->acl_translations = array();
+		foreach($this->aclcats as $category => $actions){ 
+			$trans='';
+
+			if(!empty($this->acltrans[$category])){
+				$trans = JText::_(strtoupper($this->acltrans[$category]));
+				if($trans == strtoupper($this->acltrans[$category])){
+				$trans = '';
+				}
+			}
+			if(empty($trans)) $trans = JText::_('HIKA_'.strtoupper($category));
+			if($trans == 'HIKA_'.strtoupper($category)) $trans = JText::_(strtoupper($category));
+
+			$this->acl_translations[$category] = $trans;
+		}
+		uasort($this->acl_translations, function ($a, $b) {
+            return strnatcmp($a,$b);
+        });
 		$doc = JFactory::getDocument();
 		$this->assignRef('doc', $doc);
+	}
+
+	function cmp($a, $b) {
+		if ($a == $b) {
+			return 0;
+		}
+		return ($a < $b) ? -1 : 1;
 	}
 
 	protected function checkPlugins() {
@@ -464,6 +497,11 @@ function displaySslField(){
 }
 function displayPaymentChange(value) {
 	var el = document.getElementById("hikashop_payment_change_row");
+	if(!el) return;
+	el.style.display = (value == "1") ? "" : "none";
+}
+function displayGroupoptionsChange(value) {
+	var el = document.getElementById("hikashop_groupoptions_change_row");
 	if(!el) return;
 	el.style.display = (value == "1") ? "" : "none";
 }
