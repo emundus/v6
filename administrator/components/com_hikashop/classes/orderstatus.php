@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -115,26 +115,6 @@ class hikashopOrderstatusClass extends hikashopClass {
 		}
 		return $ret;
 	}
-
-	function delete(&$elements) {
-		if(!is_array($elements))
-			$elements = array($elements);
-
-		JPluginHelper::importPlugin('hikashop');
-		$app = JFactory::getApplication();
-		$do = true;
-		$app->triggerEvent('onBeforeOrderstatusDelete', array(&$elements, &$do));
-		if(!$do)
-			return false;
-
-		$status = parent::delete($elements);
-		if($status) {
-			$app->triggerEvent('onAfterOrderstatusDelete', array(&$elements));
-			return count($elements);
-		}
-		return $status;
-	}
-
 
 	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
 		$ret = array(

@@ -1,27 +1,27 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.4.0
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function (factory) {
 
-	if ( typeof define === 'function' && define.amd ) {
+    if ( typeof define === 'function' && define.amd ) {
 
-		// AMD. Register as an anonymous module.
-		define([], factory);
+        // AMD. Register as an anonymous module.
+        define([], factory);
 
-	} else if ( typeof exports === 'object' ) {
+    } else if ( typeof exports === 'object' ) {
 
-		// Node/CommonJS
-		module.exports = factory();
+        // Node/CommonJS
+        module.exports = factory();
 
-	} else {
+    } else {
 
-		// Browser globals
-		window.wNumb = factory();
-	}
+        // Browser globals
+        window.wNumb = factory();
+    }
 
 }(function(){
 

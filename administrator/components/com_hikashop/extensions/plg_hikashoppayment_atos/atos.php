@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -480,7 +480,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 			$history->data = ob_get_clean().'  Bank_response_code:'.$vars['status'].'  Message:'.$vars['message'];
 			$this->modifyOrder($order_id, $this->payment_params->invalid_status, $history, $email);
 
-			$this->app->enqueueMessage(JText::_('Access Forbidden'), 'error');
+			JError::raiseError(403, JText::_('Access Forbidden'));
 			return false;
 		}
 
@@ -491,18 +491,13 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 		$history->amount = @$vars['amount']. array_search($currency_code, $this->sync_currencies);
 		$history->data = ob_get_clean().'Id de la transaction: '.@$vars['transaction_id'];
 
-		if($vars['capture_mode']!='VALIDATION'){
+		if(empty($vars['capture_day']) && $vars['capture_mode']!='VALIDATION'){
 			 $order_status = $this->payment_params->verified_status;
 			 $vars['payment_status']=$message['accepted'];
 		}else{
 			 $order_status = $this->payment_params->pending_status;
 			 $order_text =$message['payment_pending']."\r\n\r\n".$order_text;
 			 $vars['payment_status']=$message['pending'];
-		}
-
-		if($order_status == $dbOrder->order_status) {
-		    hikashop_writeToLog('status already '. $order_status. ', skipping order save');
-		    return true;
 		}
 
 		$config =& hikashop_config();
@@ -559,7 +554,7 @@ class plgHikashoppaymentAtos extends hikashopPaymentPlugin
 			$link_vars=null;
 			$link_query = parse_url($_SERVER['REQUEST_URI']);
 			parse_str( html_entity_decode($link_query['query']), $link_vars);
-			$str = ArrayHelper::getValue($link_vars,'values','');
+			$str = JArrayHelper::getValue($link_vars,'values','');
 
 			$selectedCards=explode(',2,',$str);
 			$selectedCards[$a=count($selectedCards)-1]=substr($selectedCards[$a=count($selectedCards)-1],0,-2);

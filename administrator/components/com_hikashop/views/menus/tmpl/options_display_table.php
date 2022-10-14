@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -50,27 +50,6 @@ defined('_JEXEC') or die('Restricted access');
 				<dd class="hikashop_option_value">
 					<?php if(!isset($this->element['limit'])) $this->element['limit'] = '20'; ?>
 					<input type="text" id="data_menu__<?php echo $this->type; ?>_limit" name="<?php echo $this->name; ?>[limit]" value="<?php echo $this->element['limit']; ?>">
-				</dd>
-			</dl>
-		</div>
-	</div>
-	<div class="hkc-xl-4 hkc-md-6 hikashop_menu_subblock hikashop_menu_edit_display_settings_subdiv">
-		<div class="hikashop_menu_subblock_content">
-			<div class="hikashop_menu_subblock_title hikashop_menu_edit_display_settings_div_title"><?php echo JText::_('HIKA_ITEM_LAYOUT'); ?></div>
-			<dl class="hika_options">
-				<dt class="hikashop_option_name">
-					<label><?php echo JText::_('IMAGE_X'); ?></label>
-				</dt>
-				<dd class="hikashop_option_value">
-					<input size=12 name="<?php echo $this->name; ?>[image_width]" type="text" value="<?php echo @$this->element['image_width'];?>" /> px
-				</dd>
-			</dl>
-			<dl class="hika_options">
-				<dt class="hikashop_option_name">
-					<label><?php echo JText::_('IMAGE_Y'); ?></label>
-				</dt>
-				<dd class="hikashop_option_value">
-					<input size=12 name="<?php echo $this->name; ?>[image_height]" type="text" value="<?php echo @$this->element['image_height'];?>" /> px
 				</dd>
 			</dl>
 		</div>

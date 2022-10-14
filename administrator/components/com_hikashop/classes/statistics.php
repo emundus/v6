@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -804,7 +804,8 @@ window.localPage.changeChartData = function(type,id,name,value,el) {
 		postdata = "chart="+encodeURIComponent(name)+"&value="+encodeURIComponent(dataValue);
 	window.Oby.xRequest(url, {mode:"POST",data:postdata}, function(x,p) {
 		var d = window.Oby.evalJSON(x.responseText) || false;
-		if(!d || !Array.isArray(d)) return;
+		if(!d) return;
+
 		chart.data = google.visualization.arrayToDataTable(d);
 		chart.max = (d.length - 1);
 		if(type == "graph") {
@@ -856,7 +857,7 @@ window.localPage.refreshGraphs = function() {
 		chart.chart.draw(chart.data, chart.options);
 	}
 };
-google.load("visualization", "49", {packages:["corechart","geochart"]});
+google.load("visualization", "1", {packages:["corechart","geochart"]});
 google.setOnLoadCallback(function(){
 	for(var i = 0; i < window.localPage.chartsInit.length; i++) {
 		var f = window.localPage.chartsInit[i];

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -75,8 +75,8 @@ class plgHikashoppaymentCmcic extends hikashopPaymentPlugin {
 	public function onAfterOrderConfirm(&$order,&$methods,$method_id) {
 		parent::onAfterOrderConfirm($order, $methods, $method_id);
 
-		$notify_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&orderId='.$order->order_id.'&lang='.$this->locale. $this->url_itemid;
-		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&cmcic_return=1&orderId='.$order->order_id.'&lang='.$this->locale. $this->url_itemid;
+		$notify_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&orderId='.$order->order_id.'&lang='.$this->locale;
+		$return_url = HIKASHOP_LIVE.'index.php?option=com_hikashop&ctrl=checkout&task=notify&notif_payment=cmcic&tmpl=component&cmcic_return=1&orderId='.$order->order_id.'&lang='.$this->locale;
 
 		if(empty($this->payment_params->language))
 			$this->payment_params->language = 'FR';

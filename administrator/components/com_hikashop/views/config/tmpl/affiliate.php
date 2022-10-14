@@ -1,19 +1,13 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
-?><?php
-$curr = '';
-$this->main_currency_id = $this->config->get('main_currency');
-$this->currencyClass = hikashop_get('class.currency');
-$mainCurr = $this->currencyClass->getCurrencies($this->main_currency_id, $curr);
-?>
-<div id="features_affiliate" class="hikashop_backend_tile_edition">
+?><div id="features_affiliate" class="hikashop_backend_tile_edition">
 	<div class="hikashop_tile_block"><div>
 		<div class="hikashop_tile_title"><?php echo JText::_('AFFILIATE'); ?></div>
 <table class="hk_config_table table" style="width:100%">
@@ -27,13 +21,13 @@ $mainCurr = $this->currencyClass->getCurrencies($this->main_currency_id, $curr);
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('partner_click_fee');?>><?php echo JText::_('PARTNER_CLICK_FEE'); ?></td>
 		<td>
-			<input class="inputbox" size="5" type="text" name="config[partner_click_fee]" value="<?php echo $this->config->get('partner_click_fee'); ?>" /> <?php echo $mainCurr[$this->main_currency_id]->currency_symbol.' '.$mainCurr[$this->main_currency_id]->currency_code;?>
+			<input class="inputbox" size="5" type="text" name="config[partner_click_fee]" value="<?php echo $this->config->get('partner_click_fee'); ?>" />
 		</td>
 	</tr>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('partner_lead_fee');?>><?php echo JText::_('PARTNER_LEAD_FEE'); ?></td>
 		<td>
-			<input class="inputbox" size="5" type="text" name="config[partner_lead_fee]" value="<?php echo $this->config->get('partner_lead_fee'); ?>" /> <?php echo $mainCurr[$this->main_currency_id]->currency_symbol.' '.$mainCurr[$this->main_currency_id]->currency_code;?>
+			<input class="inputbox" size="5" type="text" name="config[partner_lead_fee]" value="<?php echo $this->config->get('partner_lead_fee'); ?>" />
 		</td>
 	</tr>
 	<tr>
@@ -51,7 +45,7 @@ $mainCurr = $this->currencyClass->getCurrencies($this->main_currency_id, $curr);
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('partner_flat_fee');?>><?php echo JText::_('PARTNER_ORDER_FLAT_FEE'); ?></td>
 		<td>
-			<input class="inputbox" size="5" type="text" name="config[partner_flat_fee]" value="<?php echo $this->config->get('partner_flat_fee'); ?>" /> <?php echo $mainCurr[$this->main_currency_id]->currency_symbol.' '.$mainCurr[$this->main_currency_id]->currency_code;?>
+			<input class="inputbox" size="5" type="text" name="config[partner_flat_fee]" value="<?php echo $this->config->get('partner_flat_fee'); ?>" />
 		</td>
 	</tr>
 	<tr>

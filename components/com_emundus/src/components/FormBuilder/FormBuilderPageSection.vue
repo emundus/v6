@@ -15,9 +15,10 @@
 			        class="editable-data em-w-100"
 			        :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
 			        v-model="section.label[shortDefaultLang]"
+			        :value="section.label[shortDefaultLang]"
 			        @focusout="updateTitle"
 			        @keyup.enter="blurElement('#section-title')"
-			        maxlength="100"
+			        maxlength="50"
 	        />
           <div class="section-actions-wrapper">
             <span class="material-icons-outlined em-pointer hover-opacity" @click="moveSection('up')" title="Move section upwards">keyboard_double_arrow_up</span>
@@ -57,7 +58,7 @@
                 </form-builder-page-section-element>
               </transition-group>
             </draggable>
-            <div v-if="publishedElements.length < 1" class="empty-section-element">
+            <div v-if="elements.length < 1" class="empty-section-element">
               <draggable
                   :list="emptySection"
                   group="form-builder-section-elements"
@@ -123,7 +124,6 @@ export  default {
           "text": "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION",
         }
       ],
-      elementsDeletedPending: [],
     };
   },
 
@@ -132,7 +132,8 @@ export  default {
   },
   methods: {
     getElements() {
-      this.elements = Object.values(this.section.elements).length > 0 ? Object.values(this.section.elements) : [];
+      const elements = Object.values(this.section.elements);
+      this.elements = elements.length > 0 ? elements : [];
     },
     updateTitle() {
       this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
@@ -179,11 +180,6 @@ export  default {
         const movedElement = this.elements[e.newIndex];
         formBuilderService.updateOrder(elements, this.section.group_id, movedElement).then((response) => {
 	        this.updateLastSave();
-          let obj = {};
-          this.elements.forEach((elem, i) => {
-            obj['element'+elem.id] = elem
-          });
-          this.section.elements = obj;
         });
       } else {
         this.$emit('move-element', e, this.section.group_id, toGroup);
@@ -191,13 +187,10 @@ export  default {
     },
     deleteElement(elementId) {
       this.section.elements['element'+elementId].publish = -2;
-      this.elementsDeletedPending.push(elementId);
-	    this.getElements();
-	    this.updateLastSave();
+      this.updateLastSave();
     },
     cancelDeleteElement(elementId) {
       this.section.elements['element'+elementId].publish = true;
-	    this.getElements();
     },
     deleteSection() {
       this.swalConfirm(
@@ -223,14 +216,7 @@ export  default {
       },
       deep: true
     }
-  },
-	computed: {
-		publishedElements() {
-			return this.elements && this.elements.length > 0 ? this.elements.filter((element) => {
-				return element.publish === true;
-			}) : [];
-		}
-	}
+  }
 }
 </script>
 

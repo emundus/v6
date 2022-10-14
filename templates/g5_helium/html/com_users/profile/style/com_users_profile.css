@@ -35,9 +35,6 @@ form#member-profile.well {
     margin-bottom: 50px;
     border-radius: 16px;
     padding: 80px 64px;
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 form#member-profile  fieldset .em-heading-form {

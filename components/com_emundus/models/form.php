@@ -810,6 +810,8 @@ class EmundusModelForm extends JModelList {
                 $label = array(
                     'fr' => 'Ma première page',
                     'en' => 'My first page'
+                    //'fr' => 'Ma première page',
+                    //'en' => 'My first page'
                 );
                 $intro = array(
                     'fr' => 'Décrivez votre page de formulaire avec une introduction',

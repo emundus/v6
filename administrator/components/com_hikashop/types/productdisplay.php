@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -39,7 +39,7 @@ class hikashopProductdisplayType {
 					$closeOpt = '-- ' . JText::sprintf('FROM_TEMPLATE',basename($value)) . ' --';
 					$this->values[] = JHTML::_('select.optgroup', $closeOpt);
 				} else {
-					$this->values[] = JHTML::_('select.option', $value, JText::_(strtoupper($value)));
+					$this->values[] = JHTML::_('select.option', $value, $value);
 				}
 			}
 			if(!empty($closeOpt)){
@@ -67,7 +67,7 @@ class hikashopProductdisplayType {
 						'items' => array()
 					);
 				} else {
-					$this->values[$tmpl_name]['items'][] = JHTML::_('select.option', $value, JText::_(strtoupper($value)));
+					$this->values[$tmpl_name]['items'][] = JHTML::_('select.option', $value, $value);
 				}
 			}
 		}

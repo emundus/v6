@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.4.0
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
@@ -31,8 +31,8 @@ if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
 			if ($this.is('.disabled, :disabled')) return;
 			$parent = getParent($this);
 			isActive = $parent.hasClass('open');
-			isHover = $parent.parent().hasClass('hk-nav-hover');
-			if(!isHover && e.type == 'mouseover') return;
+      		isHover = $parent.parent().hasClass('hk-nav-hover');
+      		if(!isHover && e.type == 'mouseover') return;
 			clearMenus();
 			if ((!isActive && e.type != 'mouseover') || (isHover && e.type == 'mouseover')) {
 				if ('ontouchstart' in document.documentElement) {
@@ -40,7 +40,7 @@ if(window.jQuery && typeof(jQuery.noConflict) == "function" && !window.hkjQuery)
 					$('<div class="hk-dropdown-backdrop"/>').insertBefore($(this)).on('click', clearMenus);
 					$this.on('hover', function () {
 						$('.hk-dropdown-backdrop').remove();
-					});
+          			});
 				}
 				$parent.parent().toggleClass('hk-nav-hover');
 				$parent.toggleClass('open');

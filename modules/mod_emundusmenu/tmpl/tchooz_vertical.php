@@ -105,7 +105,7 @@ defined('_JEXEC') or die;
     }
 
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo > a {
-        margin-bottom: 16px;
+        margin-bottom: 50px;
     }
     .g-menu-item.g-standard.tchooz-vertical-item.tchooz-vertical-logo.tchooz-vertical-item.tchooz-vertical-logo img {
         width: 30px;
@@ -465,7 +465,7 @@ defined('_JEXEC') or die;
         });
     });
 
-
+    
     //Keep original tooltip margin to reposition after mouse out (usefull in case of window resizing)
     const originalMargin = parseInt(jQuery("[id^=tooltip-]:first").css('margin-top'),10);
 
@@ -493,7 +493,7 @@ defined('_JEXEC') or die;
                 tooltipBox = document.querySelector("#tooltip-" + menu);
                 tooltipRect = tooltipBox.getBoundingClientRect();
             }
-
+            
             //reposition out of viewport
             if(tooltipRect.bottom > viewportHeight){
                 jQuery("#tooltip-" + menu).css('margin-top', -(tooltipRect.bottom - viewportHeight - parseInt(jQuery("#tooltip-" + menu).css('margin-top'),10))+'px');

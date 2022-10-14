@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1102,13 +1102,13 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 
 		$sql2 = 'INSERT IGNORE INTO `#__hikashop_vm_prod` (`'.implode('`,`',array_keys($data)).'`) '.
 			'SELECT '.implode(',',$data).' FROM `'.$this->vmprefix.'virtuemart_products` AS vmp '.
-			'INNER JOIN `#__hikashop_product` AS hkp ON CONVERT(vmp.product_sku USING utf8) = CONVERT(hkp.product_code USING utf8) OR MD5(vmp.virtuemart_product_id) = hkp.product_code '.
+			'INNER JOIN `#__hikashop_product` AS hkp ON CONVERT(vmp.product_sku USING utf8) = CONVERT(hkp.product_code USING utf8) '.
 			'LEFT JOIN `#__hikashop_vm_prod` hkvm ON vmp.virtuemart_product_id = hkvm.vm_id '.
 			'WHERE hkvm.hk_id IS NULL AND vmp.virtuemart_product_id > '.$offset.' '.
 			'ORDER BY vmp.virtuemart_product_id ASC LIMIT '.$count.';';
 
 		$sql3 = 'UPDATE `#__hikashop_product` AS hkp '.
-			'INNER JOIN `'.$this->vmprefix.'virtuemart_products` AS vmp ON CONVERT(vmp.product_sku USING utf8) = CONVERT(hkp.product_code USING utf8) OR MD5(vmp.virtuemart_product_id) = hkp.product_code '.
+			'INNER JOIN `'.$this->vmprefix.'virtuemart_products` AS vmp ON CONVERT(vmp.product_sku USING utf8) = CONVERT(hkp.product_code USING utf8) '.
 			'INNER JOIN `#__hikashop_vm_prod` AS hkvm ON vmp.product_parent_id = hkvm.vm_id '.
 			'SET hkp.product_parent_id = hkvm.hk_id;';
 
@@ -1186,7 +1186,7 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 		$cpt = 0;
 
 		$this->db->setQuery('INSERT IGNORE INTO #__hikashop_price (`price_product_id`,`price_value`,`price_currency_id`,`price_min_quantity`,`price_access`) '
-				.'SELECT hkprod.hk_id, product_price, hkcur.currency_id, price_quantity_start, \'all\' '
+				.'SELECT hkprod.hk_Id, product_price, hkcur.currency_id, price_quantity_start, \'all\' '
 				.'FROM '.$this->vmprefix.'virtuemart_product_prices vmpp '
 				.'INNER JOIN #__hikashop_vm_prod hkprod ON vmpp.virtuemart_product_id = hkprod.vm_id '
 				.'INNER JOIN '.$this->vmprefix.'virtuemart_currencies vmc ON vmpp.product_currency = vmc.virtuemart_currency_id '
@@ -1196,19 +1196,6 @@ class hikashopImportvm2Helper extends hikashopImportHelper
 
 		$ret = $this->db->execute();
 		$cpt = $this->db->getAffectedRows();
-
-		$this->db->setQuery('INSERT IGNORE INTO #__hikashop_price (`price_product_id`,`price_value`,`price_currency_id`,`price_min_quantity`,`price_access`) '
-				.'SELECT hkprod.hk_id, product_price, hkcur.currency_id, price_quantity_start, \'all\' '
-				.'FROM '.$this->vmprefix.'virtuemart_product_prices vmpp '
-				.'INNER JOIN '.$this->vmprefix.'virtuemart_products vmp ON vmpp.virtuemart_product_id = vmp.product_parent_id '
-				.'INNER JOIN #__hikashop_vm_prod hkprod ON vmp.virtuemart_product_id = hkprod.vm_id '
-				.'INNER JOIN '.$this->vmprefix.'virtuemart_currencies vmc ON vmpp.product_currency = vmc.virtuemart_currency_id '
-				.'INNER JOIN #__hikashop_currency hkcur ON CONVERT(vmc.currency_code_3 USING utf8) = CONVERT( hkcur.currency_code USING utf8) '
-				.'WHERE vmp.virtuemart_product_id > ' . (int)$this->options->last_vm_prod
-		);
-
-		$ret = $this->db->execute();
-		$cpt += $this->db->getAffectedRows();
 
 		echo '<p '.$this->pmarginstyle.'><span'.$this->bullstyle.'>&#149;</span> Prices imported : ' . $cpt .'</p>';
 		return $ret;

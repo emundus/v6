@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -155,13 +155,16 @@ class hikamarketDiscountClass extends hikamarketClass {
 		);
 
 		$popup = hikamarket::get('shop.helper.popup');
+		$popupLinkData = '<img src="'.HIKASHOP_IMAGES.'edit.png" style="vertical-align:middle;"/>';
+		if(HIKASHOP_BACK_RESPONSIVE)
+			$popupLinkData = '';
 
 		$ret = '
 	<dt><label>'. JText::_('DISCOUNT_TARGET_VENDOR') .'</label></dt>
 	<dd>
 		'.JHTML::_('hikaselect.radiolist', $values, 'data[discount][discount_target_vendor]' , 'onclick="hikamarket_discount_setVendor(this, true);" onchange="hikamarket_discount_setVendor(this, false);"', 'value', 'text', @$discount->discount_target_vendor).
 		$popup->display(
-			'', // $popupLinkData,
+			$popupLinkData,
 			'EDIT',
 			hikamarket::completeLink('vendor&task=selection&single=true', true),
 			'market_discount_set_vendor',

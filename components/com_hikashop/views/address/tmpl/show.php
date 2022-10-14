@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -14,12 +14,9 @@ if(isset($this->params->address_id) || $tmpl == 'component') {
 	return;
 }
 
-$labelcolumnclass = 'hkc-sm-4';
-$inputcolumnclass = 'hkc-sm-8';
-
 $show_url = 'address&task=listing';
 $save_url = 'address&task=save&cid='.(int)@$this->address->address_id;
-$update_url = 'address&task=edit&cid='.(int)@$this->address->address_id.'&address_type='.$this->address->address_type;
+$update_url = 'address&task=edit&cid='.(int)@$this->address->address_id;
 $delete_url = 'address&task=delete&cid='.(int)@$this->address->address_id;
 $dest = 'hikashop_user_addresses_show';
 
@@ -55,57 +52,42 @@ if(isset($this->edit) && $this->edit === true) {
 	$error_messages = hikaRegistry::get('address.error');
 	if(!empty($error_messages)) {
 		foreach($error_messages as $msg) {
-			if(!is_array($msg))
-				$msg = array($msg);
-			if(!isset($msg[1]))
-				$msg[1] = 'error';
 			hikashop_display($msg[0], $msg[1]);
 		}
 	}
-	?>
-	<fieldset class="hkform-horizontal">
-<?php
-	if(!empty($this->extraData->address_top)) { echo implode("\r\n", $this->extraData->address_top); }
-	$after = array();
-	foreach($this->fields as $fieldname => $field) {
-		$onWhat = 'onchange';
-		if($field->field_type == 'radio')
-			$onWhat = 'onclick';
 
-		$html = $this->fieldsClass->display(
-			$field,
-			@$this->address->$fieldname,
-			'data[address]['.$fieldname.']',
-			false,
-			' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'address\',0);"',
-			false,
-			$this->fields,
-			$this->address,
-			false
-		);
-		if($field->field_type == 'hidden') {
-			$after[] = $html;
-			continue;
-		}
+	if(!empty($this->extraData->address_top)) { echo implode("\r\n", $this->extraData->address_top); }
+
+	foreach($this->fields as $fieldname => $field) {
 ?>
-		<div class="hkform-group control-group hikashop_address_<?php echo $fieldname;?>" id="hikashop_address_<?php echo $fieldname; ?>">
+	<dl id="hikashop_address_<?php echo $fieldname; ?>" class="hika_options">
+		<dt class="hikashop_user_address_<?php echo $fieldname;?>"><label><?php
+			echo $this->fieldsClass->trans($field->field_realname);
+			if($field->field_required)
+				echo ' <span class="field_required">*</span>';
+		?></label></dt>
+		<dd class="hikashop_user_address_<?php echo $fieldname;?>"><?php
+			$onWhat = 'onchange';
+			if($field->field_type == 'radio')
+				$onWhat = 'onclick';
+
+			$field->field_required = false;
+			echo $this->fieldsClass->display(
+					$field,
+					@$this->address->$fieldname,
+					'data[address]['.$fieldname.']',
+					false,
+					' ' . $onWhat . '="window.hikashop.toggleField(this.value,\''.$fieldname.'\',\'address\',0);"',
+					false,
+					$this->fields,
+					$this->address
+			);
+		?></dd>
+	</dl>
 <?php
-		$classname = $labelcolumnclass.' hkcontrol-label';
-		echo $this->fieldsClass->getFieldName($field, true, $classname);
-?>
-			<div class="<?php echo $inputcolumnclass;?>">
-				<?php echo $html; ?>
-			</div>
-		</div>
-<?php
-	}
-	if(count($after)) {
-		echo implode("\r\n", $after);
 	}
 	if(!empty($this->extraData) && !empty($this->extraData->address_bottom)) { echo implode("\r\n", $this->extraData->address_bottom); }
-	?>
-	</fieldset>
-<?php
+
 	if(empty($this->address->address_id)) {
 ?>
 	<input type="hidden" name="data[address][address_type]" value="<?php echo @$this->address->address_type; ?>"/>

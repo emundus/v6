@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,11 +15,11 @@ if($this->config->get('multilang_display')=='popups'&&!empty($this->element->$id
 	$popupHelper = hikashop_get('helper.popup');
 	foreach($this->element->translations as $language_id => $translation){
 		echo $popupHelper->display(
-			'<div class="hikashop_multilang_button hikashop_language_'.$language_id.'"">'.$this->transHelper->getFlag($language_id).'</div>',
+			'<div class="hikashop_multilang_button">'.$this->transHelper->getFlag($language_id).'</div>',
 			$this->transHelper->getFlag($language_id),
 			'\''."index.php?option=com_hikashop&ctrl=plugins&task=edit_translation&".$id_field."=".$this->element->$id_field."&type=".$type.'&language_id='.$language_id.'&tmpl=component\'',
 			'hikashop_edit_'.$language_id.'_translations',
-			(int)$this->config->get('multi_language_edit_x', 760),(int)$this->config->get('multi_language_edit_y', 480), '', '', 'link',true
+			760,480, '', '', 'link',true
 		);
 	}
 	echo '</div>';

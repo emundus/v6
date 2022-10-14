@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -128,12 +128,12 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 			}
 			$vars['subtotal'] = $subtotal + $order->order_payment_price - $order->order_discount_price;
 
-			if (!empty ($order->order_shipping_price) && bccomp(sprintf('%F',$order->order_shipping_price), 0, 5)) {
+			if (!empty ($order->order_shipping_price) && bccomp($order->order_shipping_price, 0, 5)) {
 				$vars['shipping'] = round($order->order_shipping_price - @ $order->order_shipping_tax, (int) $this->currency->currency_locale['int_frac_digits']);
 				$tax += round($order->order_shipping_tax, (int) $this->currency->currency_locale['int_frac_digits']);
 			}
 
-			if (bccomp(sprintf('%F',$tax), 0, 5))
+			if (bccomp($tax, 0, 5))
 				$vars['tax'] = $tax;
 		}
 
@@ -210,7 +210,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 				$action = false;
 				$this->modifyOrder($action, null, null, $email);
 
-				$this->app->enqueueMessage(JText::_('Access Forbidden'), 'error');
+				JError::raiseError(403, JText::_('Access Forbidden'));
 				return false;
 			}
 		}
@@ -255,7 +255,7 @@ class plgHikashoppaymentPaypalintegralevolution extends hikashopPaymentPlugin {
 			$action = false;
 			$this->modifyOrder($action, null, null, $email);
 
-			$this->app->enqueueMessage(JText::_('Access Forbidden'), 'error');
+			JError::raiseError(403, JText::_('Access Forbidden'));
 			return false;
 		}
 

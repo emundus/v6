@@ -184,6 +184,21 @@ if($user != null) {
             displayUserOptions();
         });
 
+        /*document.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var dropdown = document.getElementById('userDropdown');
+            var icon = document.getElementById('userDropdownIcon');
+
+            if (dropdown.classList.contains('open')) {
+                jQuery("#userDropdownMenu").css("transform","translate(250px)")
+                setTimeout(() => {
+                    dropdown.classList.remove('open');
+                    jQuery("#userDropdownMenu").css("transform","unset")
+                    icon.classList.remove('active');
+                },300);
+            }
+        });*/
+
         function postCProfile() {
             var current_fnum = document.getElementById("profile").value;
             var redirect_url = document.getElementById("switch_profile_redirect").value;

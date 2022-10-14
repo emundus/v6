@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,12 +18,10 @@ defined('_JEXEC') or die('Restricted access');
 			else
 				echo $this->element->product_name;
 
-		?></span>
-		<meta itemprop="sku" content="<?php echo $this->element->product_code; ?>">
-		<meta itemprop="productID" content="<?php echo $this->element->product_code; ?>">
-
+			?>
+		</span>
 		<?php if ($this->config->get('show_code')) { ?>
-		<span id="hikashop_product_code_main" class="hikashop_product_code_main">
+		<span id="hikashop_product_code_main" class="hikashop_product_code_main" itemprop="sku">
 			<?php
 			echo $this->element->product_code;
 			?>
@@ -49,18 +47,18 @@ defined('_JEXEC') or die('Restricted access');
 		$this->setLayout('listing_price');
 		echo $this->loadTemplate();
 
+		if (!empty($this->element->prices)) {
+?>			<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
+<?php	}
+
 		$CurrId = hikashop_getCurrency();
 		$null = null;
 		$currency = $this->currencyHelper->getCurrencies($CurrId, $null);
 		$CurrCode = $currency[$CurrId]->currency_code;
 
 		if (!empty($this->element->prices)) {
-?>		
-		<meta itemprop="price" content="<?php echo $this->itemprop_price; ?>" />
-		<meta itemprop="availability" content="https://schema.org/<?php echo ($this->row->product_quantity != 0) ? 'InStock' : 'OutOfstock' ;?>" />
-		<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" /> 
-<?php	
-		}
+?>			<meta itemprop="priceCurrency" content="<?php echo $CurrCode; ?>" />
+<?php	}
 	}
 ?>
 	</span>
@@ -142,11 +140,11 @@ defined('_JEXEC') or die('Restricted access');
 	$contact = $this->config->get('product_contact',0);
 	if(hikashop_level(1) && ($contact == 2 || ($contact == 1 && !empty ($this->element->product_contact)))) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
-		$attributes = 'class="'.$css_button.'"';
-		$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id  . $this->url_itemid);
-		$content = JText::_('CONTACT_US_FOR_INFO');
-
-		echo $this->loadHkLayout('button', array( 'attributes' => $attributes, 'content' => $content, 'fallback_url' => $fallback_url));
+?>
+			<a rel="noindex, nofollow" href="<?php echo hikashop_completeLink('product&task=contact&cid=' . (int)$this->element->product_id . $this->url_itemid); ?>" class="<?php echo $css_button; ?>"><?php
+				echo JText::_('CONTACT_US_FOR_INFO');
+			?></a>
+<?php
 	}
 ?>
 	</div>

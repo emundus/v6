@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -49,32 +49,17 @@ class hikamarketItemlayoutType {
 	}
 
 	protected function loadValues($optGroup, $files) {
-		$config_data = array(
-			$optGroup => array()
-		);
-		foreach($files as $file) {
-			if(!preg_match('#^listingcontent_(.*)\.php$#', $file, $match))
-				continue;
-			$val = strtoupper($match[1]);
-			$trans = JText::_($val);
-			if($trans == $val)
-				$trans = $match[1];
-			$config_data[$optGroup][] = JHTML::_('select.option', $match[1], $trans);
-		}
-		if(!HIKASHOP_J40) {
-			foreach($config_data as $optGroup => $values) {
-				$this->values[] = JHTML::_('select.optgroup', $optGroup);
-				$this->values = array_merge($this->values, $values);
-				$this->values[] = JHTML::_('select.optgroup', '');
-			}
-		} else {
-			foreach($config_data as $optGroup => $values) {
-				$this->values[] = array(
-					'text' => $optGroup,
-					'items' => $values
-				);
+		$this->values[] = JHTML::_('select.optgroup', $optGroup);
+		foreach($files as $file){
+			if(preg_match('#^listingcontent_(.*)\.php$#', $file, $match)) {
+				$val = strtoupper($match[1]);
+				$trans = JText::_($val);
+				if($trans == $val)
+					$trans = $match[1];
+				$this->values[] = JHTML::_('select.option', $match[1], $trans);
 			}
 		}
+		$this->values[] = JHTML::_('select.optgroup', $optGroup);
 		if(hikaInput::get()->getBool('inherit',true) == true)
 			$this->values[] = JHTML::_('select.option', 'inherit', JText::_('HIKA_INHERIT'));
 	}

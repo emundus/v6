@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -187,7 +187,7 @@ class plgHikashopMassaction_product extends JPlugin
 
 						$query->where[] = 'hk_product.product_id NOT IN ('.implode(',',$result).') ';
 					}else{
-						$query->where[] = $this->massaction->getRequest($filter,'hk_price');
+						$query->where[] = 'hk_price.'.$filter['type'].' '.$filter['operator'].' '.$db->quote($filter['value']);
 					}
 					if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL')))){
 						$query->where[] = $this->massaction->getRequest($filter,'hk_price');
@@ -352,7 +352,7 @@ class plgHikashopMassaction_product extends JPlugin
 				$nquery .= ' AND hk_product.product_type = '.$db->quote('main');
 
 				$db->setQuery($nquery);
-				$relatedIds = $db->loadColumn();
+				$relatedIds = $db->loadResultArray();
 
 				if(empty($relatedIds)) $relatedIds = array('0');
 				hikashop_toInteger($relatedIds);
@@ -395,7 +395,7 @@ class plgHikashopMassaction_product extends JPlugin
 				$nquery .= ' AND hk_product.product_type = '.$db->quote('main');
 
 				$db->setQuery($nquery);
-				$relatedIds = $db->loadColumn();
+				$relatedIds = $db->loadResultArray();
 
 				if(empty($relatedIds)) $relatedIds = array('0');
 				hikashop_toInteger($relatedIds);
@@ -510,8 +510,7 @@ class plgHikashopMassaction_product extends JPlugin
 
 					if($data->elements[$id]->product_tax_id){
 						if(strpos($data->elements[$id]->price_value_with_tax,'|')===false){
-							$price = hikashop_toFloat($data->elements[$id]->price_value_with_tax);
-							$data->elements[$id]->price_value = $currencyHelper->getUntaxedPrice($price,hikashop_getZone(),$data->elements[$id]->product_tax_id);
+							$data->elements[$id]->price_value = $currencyHelper->getUntaxedPrice(hikashop_toFloat($data->elements[$id]->price_value_with_tax),hikashop_getZone(),$data->elements[$id]->product_tax_id);
 						}else{
 							$price_value = explode('|',$data->elements[$id]->price_value_with_tax);
 							foreach($price_value as $k => $price_value_one){
@@ -716,7 +715,7 @@ class plgHikashopMassaction_product extends JPlugin
 			if($filter['type'] == 'out'){
 				hikashop_toInteger($data->ids);
 				$db->setQuery('SELECT product_id FROM '.hikashop_table('product').' WHERE product_id NOT IN ('.implode(',',$data->ids).')');
-				$ids = $db->loadColumn();
+				$ids = $db->loadResultArray();
 				$productClass = hikashop_get('class.product');
 				$elements = array();
 				foreach($ids as $id){
@@ -724,7 +723,7 @@ class plgHikashopMassaction_product extends JPlugin
 				}
 			}
 		}
-		return 'Products imported.';
+		return 'onProcessProductMassFiltercsvImport called';
 	}
 	function onCountProductMassFiltercsvImport(&$query,$filter,$num){
 		return '';
@@ -926,10 +925,7 @@ class plgHikashopMassaction_product extends JPlugin
 		if($action['type'] == 'remove'){
 
 			foreach($elements as &$element){
-				if(empty($element->categories))
-					continue;
-				$key = array_search($action['value'], $element->categories);
-				if($key !== false) {
+				if(array_search($action['value'], $element->categories) !== false) {
 				    unset($element->categories[$key]);
 				}
 			}unset($element);
@@ -993,11 +989,9 @@ class plgHikashopMassaction_product extends JPlugin
 
 				foreach($elements as &$element){
 					foreach($deleteIds as $deleteId){
-						if(empty($element->categories))
-							continue;
-						$key = array_search($deleteId, $element->categories);
-						if($key !== false) {
-							unset($element->categories[$key]);
+						if(($key = array_search($deleteId, $element->categories)) !== false) {
+						    if(isset($element->categories[$key]))
+								unset($element->categories[$key]);
 						}
 					}
 				}unset($element);
@@ -1071,13 +1065,13 @@ class plgHikashopMassaction_product extends JPlugin
 				for($i = 0; $i < $c; $i++){
 					$offset = $max * $i;
 					$id = array_slice($deleteIds, $offset, $max);
-					$query = $deleteQuery . implode(',', $id) .')';
-					$db->setQuery($query);
-					$db->execute();
+				$deleteQuery = $deleteQuery . implode(',',$id) .')';
+				$db->setQuery($deleteQuery);
+				$db->execute();
 				}
 			}else{
-				$query = $deleteQuery . implode(',', $deleteIds) .')';
-				$db->setQuery($query);
+				$deleteQuery = $deleteQuery . implode(',',$deleteIds) .')';
+				$db->setQuery($deleteQuery);
 				$db->execute();
 			}
 		}
@@ -1087,13 +1081,13 @@ class plgHikashopMassaction_product extends JPlugin
 				for($i = 0; $i < $c; $i++){
 					$offset = $max * $i;
 					$id = array_slice($insertValues, $offset, $max);
-					$query = $insertQuery . implode(',', $id);
-					$db->setQuery($query);
+					$insertQuery = $insertQuery . implode(',',$id);
+					$db->setQuery($insertQuery);
 					$db->execute();
 				}
 			}else{
-				$query = $insertQuery . implode(',', $insertValues);
-				$db->setQuery($query);
+				$insertQuery = $insertQuery . implode(',',$insertValues);
+				$db->setQuery($insertQuery);
 				$db->execute();
 			}
 		}

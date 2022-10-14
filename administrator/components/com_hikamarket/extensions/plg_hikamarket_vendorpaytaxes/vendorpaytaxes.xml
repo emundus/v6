@@ -2,12 +2,12 @@
 <extension type="plugin" version="2.5" method="upgrade" group="hikamarket">
 	<name>HikaMarket - Taxes for vendor payment</name>
 	<hikainstall ordering="1" enable="0" report="0" />
-	<creationDate>22 juin 2022</creationDate>
-	<version>4.1.0</version>
+	<creationDate>04 octobre 2021</creationDate>
+	<version>4.0.0</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@obsidev.com</authorEmail>
 	<authorUrl>http://www.obsidev.com</authorUrl>
-	<copyright>Copyright (C) 2012-2022 OBSIDEV SARL - All rights reserved.</copyright>
+	<copyright>Copyright (C) 2012-2021 OBSIDEV SARL - All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin add a fixed tax when a vendor is paid</description>
 	<files>

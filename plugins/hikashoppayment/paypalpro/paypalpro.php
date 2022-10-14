@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -117,7 +117,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 				$tax += round($product->order_product_tax,(int)$this->currency->currency_locale['int_frac_digits'])*$product->order_product_quantity;
 				$i++;
 			}
-			if(bccomp(sprintf('%F',$tax),0,5)){
+			if(bccomp($tax,0,5)){
 				$vars['TAXAMT'] = round($tax + @$order->order_shipping_tax + @$order->order_payment_tax - $order->order_discount_tax, (int)$this->currency->currency_locale['int_frac_digits']);
 			}
 			if(!empty($order->cart->coupon)){
@@ -130,7 +130,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 				$i++;
 			}
 
-			if(!empty($order->order_payment_price) && bccomp(sprintf('%F',$order->order_payment_price), 0, 5)) {
+			if(!empty($order->order_payment_price) && bccomp($order->order_payment_price, 0, 5)) {
 				$vars["L_NAME".$i] = JText::_('HIKASHOP_PAYMENT');
 				$vars["L_NUMBER".$i] = 'payment';
 				$vars["L_AMT".$i] = round($order->order_payment_price - @$order->order_payment_tax, (int)$this->currency->currency_locale['int_frac_digits']);
@@ -139,7 +139,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 				$i++;
 			}
 
-			if(!empty($order->order_shipping_price) && bccomp(sprintf('%F',$order->order_shipping_price),0,5)){
+			if(!empty($order->order_shipping_price) && bccomp($order->order_shipping_price,0,5)){
 				$vars['SHIPPINGAMT'] = round($order->order_shipping_price, (int)$this->currency->currency_locale['int_frac_digits']);
 			}
 			$vars['ITEMAMT']=$vars['AMT']-(@$vars['TAXAMT']+@$vars['SHIPPINGAMT']);
@@ -153,7 +153,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 		}
 
 		if( $this->payment_params->debug ) {
-			hikashop_writeToLog($vars);
+			echo print_r($vars, true) . "\n\n\n";
 		}
 
 		$session = curl_init();
@@ -173,7 +173,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 		}
 
 		if( $this->payment_params->debug ) {
-			hikashop_writeToLog($url);
+			echo print_r($url, true) . "\n\n\n";
 		}
 
 		$tmp = array();
@@ -199,7 +199,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 			}
 
 			if( $this->payment_params->debug ) {
-				hikashop_writeToLog($ret);
+				echo print_r($ret, true) . "\n\n\n";
 			}
 
 			$responseCode = null;
@@ -310,7 +310,7 @@ class plgHikashoppaymentPaypalpro extends hikashopPaymentPlugin
 	function getPaymentDefaultValues(&$element) {
 		$element->payment_name='PayPal Pro';
 		$element->payment_description='You can pay by credit card using this payment method';
-		$element->payment_images='MasterCard,VISA,Credit_card,Discover';
+		$element->payment_images='MasterCard,VISA,Credit_card';
 
 		$element->payment_params->login='';
 		$element->payment_params->password='';

@@ -123,7 +123,7 @@ export default {
       logo_updating: false,
       favicon_updating: false,
 
-      imageLink: '',
+      imageLink: 'images/custom/logo_custom.png',
       iconLink: 'images/custom/favicon.png',
       primary: '',
       secondary: '',
@@ -174,20 +174,10 @@ export default {
     this.loading = true;
     this.changes = false;
 
-    axios({
-      method: "get",
-      url: 'index.php?option=com_emundus&controller=settings&task=getlogo',
-    }).then((rep) => {
-      if(rep.data.filename == null){
+    this.imageExists(this.imageLink, (exists) => {
+      if(!exists){
         this.imageLink = 'images/custom/logo.png';
-      } else {
-        this.imageLink = 'images/custom/' + rep.data.filename;
       }
-
-      setTimeout(() => {
-        this.changes = true;
-      },1000);
-      this.loading = false;
     });
 
     axios({
@@ -204,8 +194,8 @@ export default {
   },
 
   methods:{
-    updateView(ext = 'png') {
-      this.imageLink = 'images/custom/logo_custom.'+ext+'?' + new Date().getTime();
+    updateView() {
+      this.imageLink = 'images/custom/logo_custom.png?' + new Date().getTime();
       this.$forceUpdate();
     },
     updateIcon() {
@@ -263,11 +253,10 @@ export default {
       }
     },
     onComplete: function(response){
-      const ext = response.name.split('.').pop();
       if(response.status == 'success'){
         if(this.logo_updating) {
           this.logo_updating = false;
-          this.updateView(ext);
+          this.updateView();
         }
         if(this.favicon_updating) {
           this.favicon_updating = false;

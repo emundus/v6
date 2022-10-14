@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,21 +15,12 @@ defined('_JEXEC') or die('Restricted access');
 				<?php echo $this->loadTemplate('item');?>
 				<table width="100%" class="admintable table">
 					<tbody>
-					<?php if(!empty($this->extraData->leftTop)) { echo implode("\r\n",$this->extraData->leftTop); } ?>
 						<tr>
 							<td class="key">
 									<?php echo JText::_( 'HIKA_ALIAS' ); ?>
 							</td>
 							<td>
 								<input type="text" id="characteristic_alias" name="data[characteristic][characteristic_alias]" value="<?php echo $this->escape(@$this->element->characteristic_alias); ?>" />
-							</td>
-						</tr>
-						<tr>
-							<td class="key">
-									<?php echo JText::_( 'DISPLAY_AVAILABLE_VALUES_ON_LISTINGS' ); ?>
-							</td>
-							<td>
-							<?php echo JHTML::_('hikaselect.booleanlist', "data[characteristic][characteristic_values_on_listing]" , '',@$this->element->characteristic_values_on_listing	); ?>
 							</td>
 						</tr>
 						<?php $config = hikashop_config();
@@ -46,19 +37,16 @@ defined('_JEXEC') or die('Restricted access');
 								</td>
 							</tr>
 						<?php } ?>
-						<?php if(!empty($this->extraData->leftBottom)) { echo implode("\r\n",$this->extraData->leftBottom); } ?>
 					</tbody>
 				</table>
 		</div>
 	</div>
 	<div class="hkc-md-8 hikashop_tile_block"><div>
 		<div class="hikashop_tile_title"><?php echo JText::_('VALUES'); ?></div>
-			<?php if(!empty($this->extraData->rightTop)) { echo implode("\r\n",$this->extraData->rightTop); } ?>
-			<?php
-				$this->setLayout('form_value');
-				echo $this->loadTemplate();
-			?>
-			<?php if(!empty($this->extraData->rightBottom)) { echo implode("\r\n",$this->extraData->rightBottom); } ?>
+					<?php
+						$this->setLayout('form_value');
+						echo $this->loadTemplate();
+					?>
 		</div>
 	</div>
 </div>

@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    4.6.2
+ * @version    4.4.0
  * @author     hikashop.com
- * @copyright  (C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -292,24 +292,32 @@ var Oby = {
 		return ret;
 	},
 	updateElem: function(elem, data) {
-		var d = document, scripts = '';
+		var d = document, scripts = '', json = '';
 		if( typeof(elem) == 'string' )
 			elem = d.getElementById(elem);
 		var text = data.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, function(all, code){
-			if(all.indexOf('type="application/json"')>=0 || all.indexOf('type="application/ld+json"')>=0)
-				return all;
-			scripts += code + '\n';
+			if(all.indexOf('type="application/json"') != -1) {
+				json += code + '\n';
+				return '';
+			}
+			if(all.indexOf('type="application/ld+json"') != -1)
+				return '';
+			scripts += code.replace('document.addEventListener(\'DOMContentLoaded\',', 'window.hikashop.ready(') + '\n';
 			return '';
 		});
 		elem.innerHTML = text;
+		if( json != '' && Joomla) {
+			var option = JSON.parse(json);
+			if (option) {
+				Joomla.loadOptions(option);
+			}
+		}
 		if( scripts != '' ) {
 			var script = d.createElement('script');
 			script.setAttribute('type', 'text/javascript');
 			script.text = scripts;
-			try {
-				d.head.appendChild(script);
-				d.head.removeChild(script);
-			} catch(e) {}
+			d.head.appendChild(script);
+			d.head.removeChild(script);
 		}
 	},
 	ease: function(v) {
@@ -330,7 +338,7 @@ var Oby = {
 		}
 		if( t.anim && t.anim.timer )
 			clearInterval( t.anim.timer );
-		t.anim = { timer:null, s:null, dt:0, du:150, t:0, inc:10 };
+		t.anim = { timer:null, s:null, dt:0, du:500, t:0, inc:10 };
 		if( w.scrollY )
 			t.anim.s = w.scrollY;
 		else if( d.documentElement.scrollTop )
@@ -468,7 +476,6 @@ var hikashop = {
 		}
 		if(tplLine.className == "row0") tplLine.className = "row1";
 		else if(tplLine.className == "row1") tplLine.className = "row0";
-		return trLine;
 	},
 	cleanTableRows: function(id) {
 		var d = document, el = id;
@@ -554,12 +561,12 @@ var hikashop = {
 		return false;
 	},
 	get: function(elem, target) {
-		window.hikashop.xRequest(elem.getAttribute('href'), {update: target});
+		window.Oby.xRequest(elem.getAttribute('href'), {update: target});
 		return false;
 	},
 	form: function(elem, target) {
 		var data = window.Oby.getFormData(target);
-		window.hikashop.xRequest(elem.getAttribute('href'), {update: target, mode: 'POST', data: data});
+		window.Oby.xRequest(elem.getAttribute('href'), {update: target, mode: 'POST', data: data});
 		return false;
 	},
 	openBox: function(elem, url, jqmodal) {
@@ -693,19 +700,14 @@ var hikashop = {
 		var d = document;
 		if(!d.getElementById(id + '_container'))
 			return false;
-		var mainDiv = el.closest('.hikashop_checkout_address');
-		if(mainDiv)
-			window.checkout.setLoading(mainDiv, true, true);
 		window.Oby.xRequest(url, null, function(xhr){
 			var w = window;
-			w.hikashop.updateElem(id + '_container', xhr.responseText);
+			w.Oby.updateElem(id + '_container', xhr.responseText);
 			var defaultVal = '', defaultValInput = d.getElementById(id + '_default_value'), stateSelect = d.getElementById(id);
 			if(defaultValInput) { defaultVal = defaultValInput.value; }
 			if(stateSelect && w.hikashop.optionValueIndexOf(stateSelect.options, defaultVal) >= 0)
 				stateSelect.value = defaultVal;
 			if(typeof(jQuery) != "undefined" && jQuery().chosen) { jQuery('#'+id).chosen(); }
-			if(mainDiv)
-				window.checkout.setLoading(mainDiv, false);
 			w.Oby.fireAjax('hikashop.stateupdated', {id: id, elem: stateSelect});
 		});
 	},
@@ -927,7 +929,7 @@ var hikashop = {
 				var resp = o.evalJSON(xhr.responseText);
 
 				if(resp.newURL) {
-					var urlInHistory = resp.newURL.replace('tmpl=raw&', '', 'g').replace('tmpl=component&', '', 'g').replace('filter=1&', '', 'g').replace('&tmpl=raw', '', 'g').replace('&tmpl=component', '', 'g').replace('&filter=1', '', 'g');
+					var urlInHistory = resp.newURL.replace('tmpl=raw&', '', 'g').replace('filter=1&', '', 'g').replace('&tmpl=raw', '', 'g').replace('&filter=1', '', 'g');
 					window.history.pushState(data, d.title, urlInHistory);
 
 					window.addEventListener('popstate', function(e) {
@@ -978,11 +980,11 @@ var hikashop = {
 		var target = document.querySelector('div[id^="hikashop_category_information_menu_"]');
 		if(!target)
 			return;
-		var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
-		if (currentScroll > target.offsetTop) {
-			window.requestAnimationFrame(window.hikashop.smoothScroll);
-			window.scrollTo (target.offsetTop, currentScroll - (currentScroll/5));
-		}
+	    var currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+	    if (currentScroll > target.offsetTop) {
+	         window.requestAnimationFrame(window.hikashop.smoothScroll);
+	         window.scrollTo (target.offsetTop, currentScroll - (currentScroll/5));
+	    }
 	},
 	refreshOneArea: function(refreshUrl, currentArea, el, refreshAreas, resp) {
 		var d = document, t = this, o = window.Oby;
@@ -1003,7 +1005,7 @@ var hikashop = {
 				body = text;
 			else
 				body = body[1];
-			window.hikashop.updateElem(div, body);
+			o.updateElem(div, body);
 			var newElem = div.querySelector('.filter_refresh_div');
 
 			// to avoid scroll in chrome
@@ -1053,10 +1055,9 @@ var hikashop = {
 			}, 0);
 		});
 	},
-	addToCart: function(el, type, container, data) {
-
+	addToCart: function(el, type) {
 		var d = document, t = this, o = window.Oby,
-			product_id = 0,
+			product_id = 0, container = null, data = null,
 			url = el.getAttribute('href'),
 			cart_type = ((type !== 'wishlist') ? 'cart' : 'wishlist'),
 			containerName = el.getAttribute('data-addTo-div'),
@@ -1065,8 +1066,6 @@ var hikashop = {
 
 		product_id = (cart_type == 'cart') ? el.getAttribute('data-addToCart') : el.getAttribute('data-addToWishlist');
 		dest_id = (dest_id ? parseInt(dest_id) : 0);
-		if(!url)
-			url = el.getAttribute('data-href');
 
 		// Avoid bots and crawlers to add products in the cart
 		var r = /bot|googlebot|crawler|spider|robot|crawling/i;
@@ -1082,16 +1081,12 @@ var hikashop = {
 			return true;
 		}
 
-		if(typeof container !== 'undefined') {
-			// container is provided, just use it
-		}else if(containerName && product_id) {
-			// search for the container on the page
+		if(containerName && product_id)
 			container = d.forms['hikashop_product_form_' + product_id + '_' + containerName] || d.forms[containerName];
-		}
 
 		url += (url.indexOf('?') >= 0 ? '&' : '?') + 'tmpl=raw';
-		if(typeof data !== 'undefined') {
-		} else if(container) {
+
+		if(container) {
 			if(window.FormData)
 				data = new FormData(container);
 			else
@@ -1137,10 +1132,6 @@ var hikashop = {
 		var className = el.getAttribute('data-addTo-class');
 		if(className) o.addClass(el, className);
 
-		if(window.self !== window.top && window.top.hikashop) {
-			return window.top.hikashop.addToCart(el, type, container, data);
-		}
-
 		o.xRequest(url, {mode:'POST', data: data}, function(xhr) {
 			var className = el.getAttribute('data-addTo-class');
 			if(className) o.removeClass(el, className);
@@ -1183,24 +1174,12 @@ var hikashop = {
 		if(isNaN(min) || isNaN(max))
 			return false;
 		var triggers = window.Oby.fireAjax("quantity.checked", {el:el, value:value, max:max, min:min});
-		if(
-			(triggers !== false && triggers.length > 0) ||
-			(value == 0 && allowZero) ||
-			((value <= max || max == 0) && value >= min)
-		) {
-			// quantity change is ok
-
-			// trigger add to cart if the quantity input is synchronized with the cart
-			var isSynch = document.getElementById(el.id + '_synch');
-			if(isSynch) {
-				isSynch.value = value;
-				var addToCartButton = document.getElementById(el.id + '_add_to_cart_button');
-				if(addToCartButton) {
-					addToCartButton.onclick();
-				}
-			}
+		if(triggers !== false && triggers.length > 0)
 			return true;
-		}
+		if(value == 0 && allowZero)
+			return true;
+		if((value <= max || max == 0) && value >= min)
+			return true;
 		if(max > 0 && value > max) {
 			el.value = max;
 			if(hkjQuery.notify) {
@@ -1216,7 +1195,6 @@ var hikashop = {
 				});
 			}
 		}
-		// should not happen ?
 		return true;
 	},
 	translate: function(keys, callback) {
@@ -1312,26 +1290,17 @@ var hikashop = {
 			cart_id = (resp && resp.ret) ? resp.ret : ((resp && resp.empty && resp.empty == 'true') ? cart_id : parseInt(xhr.responseText));
 			if(cart_id === NaN)
 				return;
-			resp.cart_product_id = cart_product_id;
-			resp.quantity = 0;
-			var params = {id: cart_id, type: cart_type, resp: resp, notify: false};
-			window.Oby.fireAjax(cart_type+'.updated', params);
+			window.Oby.fireAjax(cart_type+'.updated', {id: cart_id, type: cart_type, resp: resp, notify: false});
 		});
 		return false;
 	},
 	submitCartModule: function(form, container, cart_type) {
-		this.formAjaxSubmit(form, container, function(data, params) {
+		this.formAjaxSubmit(form, container, function(data) {
 			var resp = window.Oby.evalJSON(data);
 			var cart_id = (resp && resp.ret) ? resp.ret : parseInt(data);
 			if(cart_id === NaN)
 				return;
-			var updatedElements = [];
-			for (var key of params.keys()) {
-				if(key.startsWith('item[') && key.endsWith('][cart_product_quantity]')) {
-					updatedElements.push({ cart_product_id: key.replace('item[', '').replace('][cart_product_quantity]', ''), quantity_requested: params.get(key)});
-				}
-			}
-			window.Oby.fireAjax(cart_type+'.updated', {id: cart_id, type: cart_type, resp: resp, updated_elements: updatedElements, notify: false});
+			window.Oby.fireAjax(cart_type+'.updated', {id: cart_id, type: cart_type, resp: resp, notify: false});
 		});
 		return false;
 	},
@@ -1358,271 +1327,9 @@ var hikashop = {
 				o.removeClass(container, "hikashop_checkout_loading");
 			if(!cb)
 				o.updateElem(container, xhr.responseText);
-			cb(xhr.responseText, data);
+			cb(form, container, xhr.responseText);
 		});
 		return false;
-	},
-	syncInit : function() {
-		window.hikashop.noChzn();
-		window.Oby.registerAjax(['cart.updated'], function(params){
-			window.hikashop.refreshSync(params);
-		});
-		window.Oby.registerAjax(['hkContentChanged'], function(params){
-			window.Oby.xRequest(window.hikashop.cartInfoUrl, {}, function(xhr) {
-				var resp = Oby.evalJSON(xhr.responseText);
-				var params = {resp: resp};
-				window.hikashop.refreshSync(params);
-			});
-		});
-
-		window.Oby.registerAjax(['hkCustomFieldChanged'], function(params){
-			if(params.field_type != 'item')
-				return;
-			window.Oby.xRequest(window.hikashop.cartInfoUrl, {}, function(xhr) {
-				var resp = Oby.evalJSON(xhr.responseText);
-				var params = {resp: resp};
-				window.hikashop.refreshSync(params);
-			});
-		});
-
-		if(window.hikashop.cartInfo) {
-			var params = {resp: window.hikashop.cartInfo};
-			window.hikashop.refreshSync(params);
-		}
-	},
-	xRequest: function(url, options, cb, cbError) {
-		var t = this, xhr = window.Oby.getXHR();
-		if(!options) options = {};
-		if(!cb) cb = function(){};
-		options.mode = options.mode || 'GET';
-		options.update = options.update || false;
-		options.replace = options.replace === undefined || options.replace;
-		xhr.onreadystatechange = function() {
-			if(xhr.readyState != 4)
-				return;
-			if( xhr.status == 200 || (xhr.status == 0 && xhr.responseText > 0) || !cbError ) {
-				if(cb)
-					cb(xhr,options.params);
-				if(options.update)
-					t.updateElem(options.update, xhr.responseText, options.replace);
-			} else {
-				cbError(xhr,options.params);
-			}
-		};
-		xhr.open(options.mode, url, true);
-		if(options.mode.toUpperCase() == 'POST' && typeof(options.data) == 'string') {
-			xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		}
-		xhr.send( options.data );
-	},
-	updateElem: function(elem, data, replace = true) {
-		var d = document, scripts = '', json = '';
-		if( typeof(elem) == 'string' )
-			elem = d.getElementById(elem);
-
-		// extract the javascript files and scripts from the HTML
-		var files = [];
-		var scriptsAlreadyLoaded = document.getElementsByTagName("script");
-		var text = data.replace(/<script([^>]*)>([\s\S]*?)<\/script>/gi, function(all, attributes, code){
-			if(all.indexOf('type="application/json"') != -1) {
-				json += code + '\n';
-				return '';
-			}
-			if(all.indexOf('type="application/ld+json"') != -1)
-				return '';
-			regex = RegExp('src="([^"]+)"', 'gi');
-			result = regex.exec(attributes);
-			if(result) {
-				result[1] = result[1].replace(/\.js\?[0-9a-f\.]{1,128}/gi, '.js').replace(/&amp;/g, '&');
-				for(var i = 0; i < scriptsAlreadyLoaded.length; i++) {
-					var src = scriptsAlreadyLoaded[i].getAttribute('src');
-					if(src && src.includes(result[1]))
-						return '';
-				}
-				files.push(result[1]);
-				return '';
-			}
-			scripts += code.replace('document.addEventListener(\'DOMContentLoaded\',', 'window.hikashop.ready(').replace('document.addEventListener("DOMContentLoaded",', 'window.hikashop.ready(').replace('$(document).ready(', 'window.hikashop.ready(').replace( 'find("select").chosen(', 'find("select").filter(":visible").chosen(') + '\n';
-			return '';
-		});
-
-		// add the HTML without the javascript elements to the element on the page
-		if(text.indexOf('id="hikashop_main_content"')) {
-			var wrapper = document.createElement('div');
-			wrapper.innerHTML = text;
-			var mainArea = wrapper.querySelector('#hikashop_main_content');
-			if(mainArea) {
-				if(replace)
-					elem.innerHTML = '';
-				elem.appendChild(mainArea);
-				text = false;
-			}
-		}
-		if(text !== false) {
-			if(!replace)
-				elem.insertAdjacentHTML('beforeend',text);
-			else
-				elem.innerHTML = text;
-		}
-
-		// add the javascript elements and run them
-		if( json != '' && Joomla) {
-			var option = JSON.parse(json);
-			if (option) {
-				Joomla.loadOptions(option);
-			}
-		}
-
-		if(files.length) {
-			this.loadScripts(files, function() {
-				window.hikashop.addScript(scripts);
-			});
-		} else {
-			window.hikashop.addScript(scripts);
-		}
-	},
-	addScript: function (code) {
-		if(code == '')
-			return;
-		var oNew = document.createElement("script");
-		oNew.type = "text/javascript";
-		oNew.textContent = code;
-		document.getElementsByTagName("head")[0].appendChild(oNew);
-	},	
-	loadScripts: function(scripts, complete) {
-		var xhr = window.Oby.getXHR();
-		var loadScript = function( src ) {
-			xhr.open("GET", src , true);
-			xhr.send();
-		};
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState != 4)
-				return;
-			if (xhr.status == 200) {
-				try {
-					window.hikashop.addScript(xhr.responseText);
-				} catch (e) {
-					if (e instanceof SyntaxError) {
-						console.log(e.message + ' for ' + xhr.responseURL);
-						console.log(xhr.responseText);
-					}
-				}
-			}
-			var next = scripts.shift();
-			if ( next ) {
-				loadScript(next);
-			} else if ( typeof complete == 'function' ) {
-				complete();
-			}
-		}
-		loadScript( scripts.shift() );
-	},
-	refreshSync : function(params) {
-		// the cart is empty so reset all the synched elements and refresh them
-		if(params.resp.empty) {
-			synchronizedEls = document.querySelectorAll('.synchronized_add_to_cart');
-			for(var i=0; i < synchronizedEls.length; i++) {
-				var el = synchronizedEls[i];
-				el.value = 0;
-				el.setAttribute('data-cart-product-id', 0);
-				var id = el.getAttribute('data-id');
-				window.hikashop.syncQuantity(id, el.value, el.value);
-			}
-		}
-		// the cart is updated from the cart module
-		else if(params.resp.products) {
-			// loop on all the products on the page
-			var els = document.querySelectorAll('.synchronized_add_to_cart');
-
-			if(!els.length)
-				return;
-			for(var k=0; k < els.length; k++) {
-				var el = els[k];
-				var id = el.getAttribute('data-id');
-				var productId = el.getAttribute('data-product-id');
-				var options = [];
-				if(el.form) {
-					var optionsTable = el.form.querySelector('.hikashop_product_options_table');
-					if(optionsTable) {
-						options = hikaProductOptions.getOptions();
-					}
-				}
-				var found = false;
-				// see if we have the product in the cart
-				for(var i=0; i < params.resp.products.length; i++) {
-					var result = params.resp.products[i];
-					// get the current quantity from the response of the server and update the quantity for the quantity input of the current loop
-					if(productId == result.product_id) {
-						if(options.length || (result.options && result.options.length)) {
-							// no options selected on the product page or no options selected in the product in the cart -> products are different
-							if(!options.length || !result.options || !result.options.length)
-								continue;
-							var match = true;
-							// check that both arrays contain the same elements
-							for(var j=0; j < options.length; j++) {
-								if(!result.options.includes(options[j])) {
-									match = false;
-									break;
-								}
-							}
-							for(var j=0; j < result.options.length; j++) {
-								if(!options.includes(result.options[j])) {
-									match = false;
-									break;
-								}
-							}
-							if(!match)
-								continue;
-						}
-						found = true;
-						el.value = result.quantity;
-					}
-				}
-				// TODO: add custom item fields
-				if(!found) {
-					el.value = 0;
-					el.setAttribute('data-cart-product-id', 0);
-				}
-				window.hikashop.syncQuantity(id, el.value, el.value);
-			}
-		}
-	},
-	syncQuantity : function(id, qtyInCart, qtyInInput) {
-		// refresh the quantity in the input field
-		if(typeof qtyInInput !== 'undefined') {
-
-			var inputField = document.getElementById(id+'_select');
-			if(!inputField)
-				inputField = document.getElementById(id);
-			if(inputField) {
-				if(qtyInInput == 0) {
-					var minQty = inputField.getAttribute('data-hk-qty-min');
-					if(minQty == 0)
-						qtyInInput = 1;
-					else
-						qtyInInput = minQty;
-				}
-				inputField.value = qtyInInput;
-			}
-		}
-
-		// update the display of the quantity input field and the buttons
-		var quantityArea = document.getElementById(id + '_area');
-		var cartButtonArea = document.getElementById(id + '_add_to_cart_button');
-		var wishlistButtonArea = document.getElementById(id + '_add_to_wishlist_button');
-		if(!quantityArea || !cartButtonArea)
-			return;
-		if(qtyInCart > 0) {
-			quantityArea.style.display = '';
-			cartButtonArea.style.display = 'none';
-			if(wishlistButtonArea)
-				wishlistButtonArea.style.display = 'none';
-		} else {
-			quantityArea.style.display = 'none';
-			cartButtonArea.style.display = '';
-			if(wishlistButtonArea)
-				wishlistButtonArea.style.display = '';
-		}
 	},
 	toggleOverlayBlock: function(el, type, state) {
 		var t = this, d = document, w = window, o = w.Oby;
@@ -1825,95 +1532,91 @@ var hikashop = {
 				this.fields_data[n] = window.hikashopFieldsJs[n];
 			}
 		}
-		if(this.fields_data === undefined || this.fields_data[field_type] === undefined) {
+		if(this.fields_data === undefined || this.fields_data[field_type] === undefined)
+			return false;
 
-		} else {
-			size = (arr[0] && arr[0].length !== undefined) ? arr[0].length : arr.length;
+		size = (arr[0] && arr[0].length !== undefined) ? arr[0].length : arr.length;
 
-			if(prefix === undefined || !prefix || prefix.length == 0 || prefix.substr(-1) != '_')
-				prefix = 'hikashop_';
+		if(prefix === undefined || !prefix || prefix.length == 0 || prefix.substr(-1) != '_')
+			prefix = 'hikashop_';
 
-			var elementName = prefix + field_type + '_' + namekey;
-			if(id)
-				elementName = elementName + '_' + id;
-			el = document.getElementById(elementName);
-			var parentHidden = (el && el.style.display && el.style.display == 'none');
+		var elementName = prefix + field_type + '_' + namekey;
+		if(id)
+		    elementName = elementName + '_' + id;
+		el = document.getElementById(elementName);
+		var parentHidden = (el && el.style.display && el.style.display == 'none');
 
-			for(var c = 0; c < size; c++) {
-				if(arr && arr[0] != undefined && arr[0].length != undefined)
-					obj = d.getElementsByName('data['+field_type+']['+namekey+'][]').item(0).item(c);
-				else
-					obj = d.getElementsByName('data['+field_type+']['+namekey+'][]').item(c);
+		for(var c = 0; c < size; c++) {
+			if(arr && arr[0] != undefined && arr[0].length != undefined)
+				obj = d.getElementsByName('data['+field_type+']['+namekey+'][]').item(0).item(c);
+			else
+				obj = d.getElementsByName('data['+field_type+']['+namekey+'][]').item(c);
 
-				if(obj.checked || obj.selected)
-					checked++;
+			if(obj.checked || obj.selected)
+				checked++;
 
-				if((obj.type && obj.type == 'checkbox') || obj.selected)
-					specialField = true;
-			}
-			var data = this.fields_data[field_type][namekey];
-			for(var k in data) {
-				if(typeof data[k] != 'object')
+			if((obj.type && obj.type == 'checkbox') || obj.selected)
+				specialField = true;
+		}
+		var data = this.fields_data[field_type][namekey];
+		for(var k in data) {
+			if(typeof data[k] != 'object')
+				continue;
+
+			for(var l in data[k]) {
+				if(typeof data[k][l] != 'string')
 					continue;
 
-				for(var l in data[k]) {
-					if(typeof data[k][l] != 'string')
-						continue;
-
-					if (typeof count[k] == 'undefined') {
-						count[k] = 0;
-						checkedGood[k] = 0;
-					}
-					count[k]++;
-					newEl = d.getElementById(namekey + '_' + k);
-					if(newEl && (newEl.checked || newEl.selected)) {
-						checkedGood[k]++;
-						break;
-					}
+				if (typeof count[k] == 'undefined') {
+					count[k] = 0;
+					checkedGood[k] = 0;
 				}
-			}
-
-			specialField = specialField || (arr[0] && arr[0].length && count.length > 1);
-
-			for(var j in data) {
-				if(typeof data[j] != 'object')
-					continue;
-				for(var i in data[j]) {
-					if(typeof data[j][i] != 'string')
-						continue;
-
-					var elementName = prefix + field_type + '_' + data[j][i];
-					if(id)
-						elementName = elementName + '_' + id;
-					el = document.getElementById(elementName);
-					if(!el)
-						continue;
-
-					if( !parentHidden &&
-						(
-							(specialField && checkedGood[j] == count[j] && new_value != '')
-							||
-							(!specialField &&
-								(
-									j == new_value
-									||
-									(checkedGood[j] && count[j] && checkedGood[j] == count[j])
-								)
-							)
-						)
-					) {
-						el.style.display = '';
-						this.toggleField(el.value, data[j][i], field_type, id, prefix);
-					} else {
-						el.style.display = 'none';
-						this.toggleField('', data[j][i], field_type, id, prefix);
-					}
+				count[k]++;
+				newEl = d.getElementById(namekey + '_' + k);
+				if(newEl && (newEl.checked || newEl.selected)) {
+					checkedGood[k]++;
+					break;
 				}
 			}
 		}
-		if(window.Oby && window.Oby.fireAjax)
-			window.Oby.fireAjax("hkCustomFieldChanged", {field_type: field_type, namekey: namekey});
-		return false;
+
+		specialField = specialField || (arr[0] && arr[0].length && count.length > 1);
+
+		for(var j in data) {
+			if(typeof data[j] != 'object')
+				continue;
+			for(var i in data[j]) {
+				if(typeof data[j][i] != 'string')
+					continue;
+
+				var elementName = prefix + field_type + '_' + data[j][i];
+				if(id)
+					elementName = elementName + '_' + id;
+				el = document.getElementById(elementName);
+				if(!el)
+					continue;
+
+				if( !parentHidden &&
+					(
+						(specialField && checkedGood[j] == count[j] && new_value != '')
+						||
+						(!specialField &&
+							(
+								j == new_value
+								||
+								(checkedGood[j] && count[j] && checkedGood[j] == count[j])
+							)
+						)
+					)
+				) {
+					el.style.display = '';
+					this.toggleField(el.value, data[j][i], field_type, id, prefix);
+				} else {
+					el.style.display = 'none';
+					this.toggleField('', data[j][i], field_type, id, prefix);
+				}
+			}
+		}
 	}
 };
 window.hikashop = hikashop;

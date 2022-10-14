@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -425,9 +425,9 @@ ga("require", "ecommerce", "ecommerce.js");
 ga("ecommerce:addTransaction", {
 	"id": "' . $order->order_id.'",
 	"affiliation": "' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $siteName) . '",
-	"revenue": "' . round($this->convertPrices($order->order_full_price, $currencyInfo->currency_code, $to_currency), 2) . '",
-	"shipping": "' . round($this->convertPrices($order->order_shipping_price, $currencyInfo->currency_code, $to_currency), 2) . '",
-	"tax": "' . round($this->convertPrices($tax, $currencyInfo->currency_code, $to_currency), 2) . '",
+	"revenue": "' . round($this->convertPrices($order->order_full_price, $main_currency, $to_currency), 2) . '",
+	"shipping": "' . round($this->convertPrices($order->order_shipping_price, $main_currency, $to_currency), 2) . '",
+	"tax": "' . round($this->convertPrices($tax, $main_currency, $to_currency), 2) . '",
 	"currency": "'.$to_currency.'"
 });
 ';
@@ -439,7 +439,7 @@ ga("ecommerce:addItem", {
 	"name": "' . str_replace(array('\\','"'), array('\\\\', '\\\"'), strip_tags($product->order_product_name)) . '",
 	"sku": "' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $product->order_product_code) . '",
 	"category": "",
-	"price": "' . round($this->convertPrices($product->order_product_price + $product->order_product_tax, $currencyInfo->currency_code, $to_currency), 2). '",
+	"price": "' . round($this->convertPrices($product->order_product_price + $product->order_product_tax, $main_currency, $to_currency), 2). '",
 	"quantity": "' . (int)$product->order_product_quantity . '"
 });
 ';
@@ -475,9 +475,9 @@ _gaq.push(["_trackPageview"]);
 _gaq.push(["_addTrans",
 	"' . $order->order_id . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $siteName) . '",
-	"' . round($this->convertPrices($order->order_full_price, $currencyInfo->currency_code, $to_currency), 2) . '",
-	"' . round($this->convertPrices($tax, $currencyInfo->currency_code, $to_currency), 2) . '",
-	"' . round($this->convertPrices($order->order_shipping_price, $currencyInfo->currency_code, $to_currency), 2) . '",
+	"' . round($this->convertPrices($order->order_full_price, $main_currency, $to_currency), 2) . '",
+	"' . round($this->convertPrices($tax, $main_currency, $to_currency), 2) . '",
+	"' . round($this->convertPrices($order->order_shipping_price, $main_currency, $to_currency), 2) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), @$order->billing_address->address_city) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), @$order->billing_address->address_state) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), @$order->billing_address->address_country) . '",
@@ -490,7 +490,7 @@ _gaq.push(["_addItem",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), $product->order_product_code) . '",
 	"' . str_replace(array('\\','"'), array('\\\\', '\\\"'), strip_tags($product->order_product_name)) . '",
 	"",
-	"' . round($this->convertPrices($product->order_product_price + $product->order_product_tax, $currencyInfo->currency_code, $to_currency), 2) . '",
+	"' . round($this->convertPrices($product->order_product_price + $product->order_product_tax, $main_currency, $to_currency), 2) . '",
 	"' . $product->order_product_quantity . '"
 ]);
 ';
@@ -580,32 +580,23 @@ _gaq.push(["_trackTrans"]);
 			'tid' => $account,
 			'uip' => $order->order_ip,
 			'cid' => @$params['uuid'], // clientId
+			'ua' => @$params['ua'], // user-agent from browser : navigator.userAgent
+			'cn' => @$params['cn'], // campaignName
+			'cs' => @$params['cs'], // campaignSource
+			'cm' => @$params['cm'], // campaignMedium
+			'ck' => @$params['ck'], // campaignKeyword
+			'cc' => @$params['cc'], // campaignContent
+			'ci' => @$params['ci'], // campaignId
+			'ul' => @$params['ul'], // language
 
 			't' => 'transaction',
 			'ti' => $order->order_id, // order_id
 			'ta' => $siteName,
-			'tr' => round($this->convertPrices($order->order_full_price, $currencyInfo->currency_code, $to_currency), 2),
-			'tt' => round($this->convertPrices(($order->order_subtotal - $order->order_subtotal_no_vat) + $order->order_shipping_tax + $order->order_discount_tax, $currencyInfo->currency_code, $to_currency), 2),
-			'ts' => round($this->convertPrices($order->order_shipping_price, $currencyInfo->currency_code, $to_currency), 2),
+			'tr' => round($this->convertPrices($order->order_full_price, $main_currency, $to_currency), 2),
+			'tt' => round($this->convertPrices(($order->order_subtotal - $order->order_subtotal_no_vat) + $order->order_shipping_tax + $order->order_discount_tax, $main_currency, $to_currency), 2),
+			'ts' => round($this->convertPrices($order->order_shipping_price, $main_currency, $to_currency), 2),
 			'cu' => $to_currency
 		);
-
-		$variables = array(
-			'ua', // user-agent from browser : navigator.userAgent
-			'cn', // campaignName
-			'cs', // campaignSource
-			'cm', // campaignMedium
-			'ck', // campaignKeyword
-			'cc', // campaignContent
-			'ci', // campaignId
-			'ul', // language
-		);
-		foreach($variables as $variable) {
-			if(!empty($params[$variable])) {
-				$data[$variable] = $params[$variable];
-			}
-		}
-
 		$this->googleDirectCallHit($data);
 
 		foreach($order->products as $product) {
@@ -617,7 +608,7 @@ _gaq.push(["_trackTrans"]);
 				't' => 'item',
 				'ti' => $order->order_id, // order_id
 				'in' => strip_tags($product->order_product_name), // name
-				'ip' => round($this->convertPrices($product->order_product_price + $product->order_product_tax, $currencyInfo->currency_code, $to_currency), 2), // price
+				'ip' => round($this->convertPrices($product->order_product_price + $product->order_product_tax, $main_currency, $to_currency), 2), // price
 				'iq' => $product->order_product_quantity, // qty
 				'ic' => $product->order_product_code, // code
 				'iv' => '',

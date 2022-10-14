@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -252,12 +252,7 @@ class hikamarketVendorClass extends hikamarketClass {
 
 		if(!empty($vendor->vendor_address_vat) && (empty($vendor->old) || $vendor->old->vendor_address_vat != $vendor->vendor_address_vat)) {
 			$vatHelper = hikamarket::get('shop.helper.vat');
-			$vat = new stdClass();
-			$fields = array('address_vat', 'address_state', 'address_country');
-			foreach($fields as $f) {
-				$vat->$f = isset($vendor->{'vendor_'.$f}) ? $vendor->{'vendor_'.$f} : @$vendor->old->{'vendor_'.$f};
-			}
-			if(!$vatHelper->isValid($vat)) {
+			if(!$vatHelper->isValid($vendor->vendor_address_vat)) {
 				$this->message = @$vatHelper->message;
 				return false;
 			}

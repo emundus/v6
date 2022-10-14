@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -166,9 +166,8 @@ var data_'.$id.' = ['.$this->_getTreeChildList(null, '/').'];
 		if(empty($files))
 			return $ret;
 
-		$config = hikashop_config();
-		$size = $config->get('gallery_image_size', 100);
-		$sizeOptions = array($size, $size);
+		$u = array('B','KB','MB','GB','TB','PB');
+		$sizeOptions = array(100, 100);
 		$thumbnailsOptions = array(
 			'forcesize' => true,
 			'grayscale' => false,
@@ -214,7 +213,7 @@ var data_'.$id.' = ['.$this->_getTreeChildList(null, '/').'];
 			$image->baseurl = $externFolder;
 			$image->folder = $folder;
 			$image->rawsize = @filesize($workingFolder . $file);
-			$image->size = hikashop_human_readable_bytes($image->rawsize);
+			$image->size = sprintf('%01.2f', @round($image->rawsize/pow(1024,($i=floor(log($image->rawsize,1024)))),2)).' '.$u[$i];
 			list($image->width, $image->height) = getimagesize($image->fullpath);
 
 			$image->thumbnail = $imageHelper->getThumbnail(ltrim($image->path, '/\\'), $sizeOptions, $thumbnailsOptions, $this->root);

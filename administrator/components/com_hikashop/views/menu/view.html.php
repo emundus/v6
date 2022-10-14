@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -97,7 +97,7 @@ class MenuViewMenu extends hikashopView{
 					array(
 						'name' => JText::_('ORDER_STATUSES'),
 						'check' => array('ctrl'=>'orderstatus'),
-						'acl' => 'orderstatus',
+						'acl' => 'config',
 						'icon' => 'fa fa-tasks',
 						'url' => hikashop_completeLink('orderstatus')
 					),
@@ -240,14 +240,14 @@ class MenuViewMenu extends hikashopView{
 					),
 					array(
 						'name' => JText::_('DISCOUNTS'),
-						'check' => array('ctrl' => 'discount','filter_type'=>'discount'),
+						'check' => array('ctrl=discount','filter_type'=>'discount'),
 						'acl' => 'discount',
 						'icon' => 'fa fa-percent',
 						'url' => hikashop_completeLink('discount&filter_type=discount')
 					),
 					array(
 						'name' => JText::_('COUPONS'),
-						'check' => array('ctrl' => 'discount','filter_type'=>'coupon'),
+						'check' => array('ctrl=discount','filter_type'=>'coupon'),
 						'acl' => 'discount',
 						'icon' => 'fa fa-percent',
 						'url' => hikashop_completeLink('discount&filter_type=coupon')

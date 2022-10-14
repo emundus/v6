@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,7 +34,6 @@ if(!HIKASHOP_J30){
 
 $columnsArray['categories_ordering'] = 'varchar';
 $columnsArray['product_parent_id'] = 'varchar';
-$columnsArray['product_manufacturer_id'] = 'varchar';
 
 $types = array();
 
@@ -105,7 +104,7 @@ if(!empty($this->categories)) {
 
 if(!empty($this->products)) {
 	foreach($this->products as $k => $product) {
-		if($product->product_type == 'variant' && !empty($product->product_parent_id) && !empty($this->products[$product->product_parent_id]))
+		if($product->product_type == 'variant' && !empty($product->product_parent_id))
 			$this->products[$k]->product_parent_id = $this->products[$product->product_parent_id]->product_code;
 	}
 	foreach($this->products as $product) {

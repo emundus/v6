@@ -20,7 +20,6 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 
 	if(params.notify === false)
 		return;
-
 	if(params.resp.ret == 0) {
 		class_name = "warning";
 		title = cart ? p.err_title : p.err_wishlist_title;
@@ -41,25 +40,13 @@ window.Oby.registerAjax(["cart.updated","wishlist.updated"],function(params){
 		title = params.resp.product_name;
 	if(params.resp.message)
 		text = params.resp.message;
-	else if(params.resp.messages && params.resp.messages[0] && params.resp.messages[0].msg) {
-		text = params.resp.messages[0].msg;
-	}
 
-	if(params.resp.messages && params.resp.messages[0] && params.resp.messages[0].type)
-		class_name = params.resp.messages[0].type;
-	if(!hkjQuery.notify) {
-		console.error('jQuery has been reInitialized after the notify plugin was added to it and thus it is missing. This leads to the add to cart notification box not appearing. To fix that, you\'ll probably have to use the extension jQuery Easy.');
-	}
-	try {
-		if(p && p.reference && p.reference == 'button' && params.el) {
-			hkjQuery(params.el).notify({title:title,text:text,image:"<img src=\""+img_url+"\" width=\"50\" height=\"50\" alt=\"\"/>"},{style:"metro",className:class_name,arrowShow:true});
-		}else if(img_url == null) {
-			hkjQuery.notify({title:title,text:text},{style:"metro-lite",className:class_name});
-		} else {
-			hkjQuery.notify({title:title,text:text,image:"<img src=\""+img_url+"\" alt=\"\"/>"},{style:"metro",className:class_name});
-		}
-	} catch (error) {
-		console.error(error);
+	if(p && p.reference && p.reference == 'button' && params.el) {
+		jQuery(params.el).notify({title:title,text:text,image:"<img src=\""+img_url+"\" width=\"50\" height=\"50\" alt=\"\"/>"},{style:"metro",className:class_name,arrowShow:true});
+	}else if(img_url == null) {
+		jQuery.notify({title:title,text:text},{style:"metro-lite",className:class_name});
+	} else {
+		jQuery.notify({title:title,text:text,image:"<img src=\""+img_url+"\" alt=\"\"/>"},{style:"metro",className:class_name});
 	}
 
 	if(success && p.redirect_url) {

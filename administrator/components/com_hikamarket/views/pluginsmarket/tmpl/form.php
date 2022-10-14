@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -22,8 +22,14 @@ defined('_JEXEC') or die('Restricted access');
 		$plugin_images = $type . '_images';
 ?>
 <input type="hidden" name="subtask" value="<?php echo hikaInput::get()->getCmd('subtask','');?>"/>
-<div class="hk-row-fluid">
-	<div class="hkc-6">
+<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
+<table class="admintable table" style="width:100%">
+	<tr>
+		<td style="width:50%;vertical-align:top">
+<?php } else { ?>
+<div class="row-fluid">
+	<div class="span6">
+<?php } ?>
 			<fieldset class="adminform">
 				<legend><?php echo JText::_('MAIN_INFORMATION'); ?></legend>
 				<table class="admintable">
@@ -49,14 +55,25 @@ defined('_JEXEC') or die('Restricted access');
 <?php } ?>
 				</table>
 			</fieldset>
+<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
+		</td>
+		<td style="vertical-align:top">
+<?php } else { ?>
 	</div>
-	<div class="hkc-6">
+	<div class="span6">
+<?php } ?>
 			<fieldset>
 				<legend><?php echo JText::_('PLUGIN_PARAMETERS'); ?></legend>
 <?php echo $this->content; ?>
 			</fieldset>
+<?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
+		</td>
+	</tr>
+</table>
+<?php } else { ?>
 	</div>
 </div>
+<?php } ?>
 		<input type="hidden" name="data[<?php echo $type;?>][<?php echo $type;?>_id]" value="<?php $n = $type.'_id'; echo @$this->element->$n;?>"/>
 		<input type="hidden" name="data[<?php echo $type;?>][<?php echo $type;?>_type]" value="<?php echo $this->name;?>"/>
 		<input type="hidden" name="task" value="save"/>

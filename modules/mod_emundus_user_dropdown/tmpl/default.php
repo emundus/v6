@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" );
 // Note. It is important to remove spaces between elements.
+
 if($user != null) {
 ?>
 
@@ -21,6 +22,7 @@ if($user != null) {
         font-size: 12px;
         line-height: 1.42857143;
         color: #777;
+        white-space: nowrap;
     }
 
     .dropdown-menu-right {
@@ -108,26 +110,13 @@ if($user != null) {
     });
 
     document.addEventListener('click', function (e) {
-        let clickInsideModule = false;
+        e.stopPropagation();
+        var dropdown = document.getElementById('userDropdown');
+        var icon = document.getElementById('userDropdownIcon');
 
-        e.path.forEach((pathElement) => {
-            if (pathElement.id == "userDropdownMenu") {
-                clickInsideModule = true;
-            }
-        });
-
-        if (!clickInsideModule) {
-            const dropdown = document.getElementById('userDropdown');
-            const icon = document.getElementById('userDropdownIcon');
-
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
-            setTimeout(() => {
-                dropdown.classList.remove('open');
-                jQuery("#userDropdownMenu").css("transform","unset")
-                if(icon !== null) {
-                    icon.classList.remove('active');
-                }
-            }, 300);
+        if (dropdown.classList.contains('open')) {
+            dropdown.classList.remove('open');
+            icon.classList.remove('active');
         }
     });
 </script>

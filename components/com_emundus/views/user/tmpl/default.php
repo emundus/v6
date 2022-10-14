@@ -37,10 +37,6 @@ $current_user = JFactory::getUser();
         document.getElementById('g-page-surround').style.background = 'white';
         document.getElementById('g-footer').style.display = 'none';
         document.getElementById('header-c').style.display = 'none';
-
-        setTimeout(() => {
-            window.location.href = 'index.php';
-        },10000)
     });
 
     function activation(user) {

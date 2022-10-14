@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -63,6 +63,7 @@ if($this->config->get('cart_ip', 1)) {
 			<tr>
 				<td colspan="<?php echo $colspan; ?>">
 					<?php echo $this->pagination->getListFooter(); ?>
+					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>
@@ -75,13 +76,13 @@ if($this->config->get('cart_ip', 1)) {
 			continue;
 ?>
 			<tr class="row<?php echo $k; ?>">
-				<td><?php
+				<td class="hk_center"><?php
 					echo $this->pagination->getRowOffset($i);
 				?></td>
-				<td><?php
+				<td class="hk_center"><?php
 					echo JHTML::_('grid.id', $i, $cart->cart_id );
 				?></td>
-				<td>
+				<td class="hk_center">
 <?php
 		if($this->manage) {
 ?>
@@ -98,7 +99,7 @@ if($this->config->get('cart_ip', 1)) {
 						echo $cart->cart_name;
 					}
 				?></td>
-				<td><?php
+				<td class="hk_center"><?php
 		$user = null;
 		if(empty($cart->user) || $cart->user_id == 0) {
 			echo JText::_('NO_REGISTRATION');
@@ -118,31 +119,31 @@ if($this->config->get('cart_ip', 1)) {
 <?php
 if($this->config->get('cart_ip', 1)) {
 ?>
-				<td><?php
+				<td class="hk_center"><?php
 					echo $cart->cart_ip;
 				?></td>
 <?php
 }
 ?>
-				<td><?php
+				<td style="text-align: center;"><?php
 					if(!empty($cart->cart_current)) {
 						echo '<i class="icon-publish"></i>';
 					} else {
 						echo '<i class="icon-unpublish"></i>';
 					}
 				?></td>
-				<td><?php
+				<td class="hk_center"><?php
 					echo (int)@$cart->quantity;
 				?></td>
-				<td>
+				<td class="hk_center">
 					<span class='hikashop_product_price_full hikashop_product_price'><?php
 						echo $this->currencyClass->format($cart->price, $cart->currency);
 					?></span>
 				</td>
-				<td><?php
+				<td class="hk_center"><?php
 					echo hikashop_getDate($cart->cart_modified);
 				?></td>
-				<td width="1%"><?php
+				<td width="1%" class="hk_center"><?php
 					echo $cart->cart_id;
 				?></td>
 			</tr>

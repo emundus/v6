@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -73,12 +73,12 @@ defined('_JEXEC') or die('Restricted access');
 			<dd class="hikashop_product_translations"><?php
 		foreach($this->product->translations as $language_id => $translation){
 			$lngName = $this->translationHelper->getFlag($language_id);
-			echo '<div class="hikashop_multilang_button hikashop_language_'.$language_id.'"">' .
+			echo '<div class="hikashop_multilang_button">' .
 				$this->popup->display(
 					$lngName, $lngName,
 					hikashop_completeLink('product&task=edit_translation&product_id=' . @$this->product->product_id.'&language_id='.$language_id, true),
 					'hikashop_product_translation_'.$language_id,
-					(int)$this->config->get('multi_language_edit_x', 760), (int)$this->config->get('multi_language_edit_y', 480), '', '', 'link'
+					760, 480, '', '', 'link'
 				).
 				'</div>';
 		}
@@ -126,15 +126,6 @@ defined('_JEXEC') or die('Restricted access');
 		?></div>
 		<dl class="hika_options">
 <?php
-
-	if(hikashop_acl('product/edit/tax')) {
-	?>
-			<dt class="hikashop_product_tax"><label for="data_variant__product_tax_id"><?php echo JText::_('PRODUCT_TAXATION_CATEGORY'); ?></label></dt>
-			<dd class="hikashop_product_tax"><?php
-				echo $this->categoryType->display('data[variant][product_tax_id]', @$this->product->product_tax_id_orig, 'tax');
-			?></dd>
-	<?php
-	}
 	$curr = '';
 	$mainCurr = $this->currencyClass->getCurrencies($this->main_currency_id, $curr);
 ?>
@@ -269,33 +260,25 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 		?></div>
 <?php
 		if(!empty($this->fields) && hikashop_acl('product/edit/customfields')) {
-			$after = array();
 			foreach($this->fields as $fieldName => $oneExtraField) {
-				$onWhat = 'onchange';
-				if($oneExtraField->field_type == 'radio')
-					$onWhat = 'onclick';
-				$txt = $this->fieldsClass->display($oneExtraField, $this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
-				if($oneExtraField->field_type == 'hidden') {
-					$after[] = $txt;
-					continue;
-				}
 ?>
 		<dl id="<?php echo $this->fieldsClass->prefix; ?>product_<?php echo $fieldName; ?>" class="hika_options">
 			<dt class="hikashop_product_<?php echo $fieldName; ?>"><label><?php echo $this->fieldsClass->getFieldName($oneExtraField); ?></label></dt>
 			<dd class="hikashop_product_<?php echo $fieldName; ?>"><?php
-				echo $txt;
+				$onWhat = 'onchange';
+				if($oneExtraField->field_type == 'radio')
+					$onWhat = 'onclick';
+				echo $this->fieldsClass->display($oneExtraField, $this->product->$fieldName, 'data[variant]['.$fieldName.']', false, ' '.$onWhat.'="window.hikashop.toggleField(this.value,\''.$fieldName.'\',\'product\',0,\''.$this->fieldsClass->prefix.'\');"');
 			?></dd>
 		</dl>
 <?php		}
-			if(count($after)) {
-				echo implode("\r\n", $after);
-			}
 		}
 
 		if(!empty($html)) {
 			foreach($html as $k => $h) {
 				if(is_string($h) && strtolower(substr(trim($h), 0, 4)) == '<tr>')
 					continue;
+
 				if(is_string($h)) {
 					echo $h;
 				} else {
@@ -348,11 +331,8 @@ window.productMgr.closeVariantEditor = function() { <?php echo $this->editor->js
 ?>
 
 <div style="clear:both"></div>
-
 </div>
 <input type="hidden" name="data[variant][product_id]" value="<?php echo $this->product->product_id; ?>" />
-<input type="hidden" name="variant_areas_order"  id="variant_areas_order" value="<?php echo $this->escape($this->config->get('variant_areas_order', $this->config->get('product_areas_order'))); ?>"/>
-<input type="hidden" name="variant_areas_fields"  id="variant_areas_fields" value="<?php echo $this->escape($this->config->get('variant_areas_fields', $this->config->get('product_areas_fields'))); ?>"/>
 <div style="clear:both"></div>
 <script type="text/javascript">
 if(JoomlaCalendar && JoomlaCalendar.init){
@@ -368,15 +348,6 @@ if(Joomla && Joomla.JoomlaTinyMCE && Joomla.JoomlaTinyMCE.setupEditors) {
 	var section = document.getElementById('hikashop_product_variant_edition');
 	Joomla.JoomlaTinyMCE.setupEditors(section);
 }
-window.hikashop.ready( function() {
-	var options = {
-		mainArea: '#hikashop_product_variant_edition .hk-container-fluid',
-		type: 'variant',
-		skipEmpty: true,
-		customize: <?php echo (int)$this->customize; ?>,
-	};
-	window.variantDragOptionsKey = window.formCustom.initDragAndDrop(options);
-});
 </script>
 <?php
 $doc = JFactory::getDocument();
@@ -400,4 +371,3 @@ foreach($doc->_script as $script) {
 		echo '<script type="text/javascript">'."\r\n".$script."\r\n".'</script>';
 	}
 }
-

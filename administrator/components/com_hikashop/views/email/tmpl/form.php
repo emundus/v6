@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -29,26 +29,18 @@ defined('_JEXEC') or die('Restricted access');
 		<div class="hkc-xl-12 hkc-lg-12 hikashop_tile_block hikashop_mail_edit_html"><div>
 			<div class="hikashop_tile_title">
 <?php			echo JText::_('HTML_VERSION');
-
-				if(!empty($this->mail->html_override)) {
-					echo ' '.$this->popupHelper->display(
-						'<span style="text-transform: none;" class="btn btn-primary"><i class="fa fa-file" aria-hidden="true"></i> '.strtoupper(JText::_('SEE_MODIFICATIONS')) . '</span>',
-						'HIKASHOP_MODIFICATIONS',
-						'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=diff&amp;type=html&amp;mail_name='.$this->mail_name.'\'',
-						'hikashop_html_diff',
-						$this->config->get('email_diff_popup_width',1080),$this->config->get('email_diff_popup_height',640), 'title="'.JText::_('HIKASHOP_MODIFICATIONS').'"', '', 'link',true
-					);
-				}
+				$append = '';
 				if(@$this->mail_name == 'order_status_notification') {
-
-					echo ' '.$this->popupHelper->display(
+					$popupHelper = hikashop_get('helper.popup');
+					$append = ' ' . $popupHelper->display(
 						'<span style="text-transform: none;" class="btn btn-primary"><i class="fa fa-magic" aria-hidden="true"></i> '.JText::_('PER_STATUS_OVERRIDE') . '</span>',
 						'PER_STATUS_OVERRIDE',
 						'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=orderstatus&amp;type=html&amp;email_name='.$this->mail_name.'\'',
 						'hikashop_edit_html_status',
-						$this->config->get('email_status_popup_width',1080),$this->config->get('email_status_popup_height',640), 'title="'.JText::_('PER_STATUS_OVERRIDE').'"', '', 'link',true
+						760,480, 'title="'.JText::_('PER_STATUS_OVERRIDE').'"', '', 'link',true
 					);
 				}
+				echo $append;
 				if (in_array(@$this->mail_name, $this->tag_documentation['main_page_array'] ) ) { ?>
 				<a class="hikashop_filter_collapsable_title btn btn-primary" onclick="return window.emailMgr.toggleTags(this);" href="#">
 					<div class="hikashop_tag_button">
@@ -59,33 +51,6 @@ defined('_JEXEC') or die('Restricted access');
 <?php } ?>
 			</div>
 			<div id="hikashop_html_version_main_div" style="padding-top:8px;">
-<!--
-			<link rel="stylesheet" href="//unpkg.com/grapesjs/dist/css/grapes.min.css">
-			<script src="//unpkg.com/grapesjs"></script>
-			<link rel="stylesheet" href="//unpkg.com/grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css">
-			<script src="//unpkg.com/grapesjs-preset-newsletter"></script>
-			<div id="gjs">
-				<?php //echo @$this->mail->body; ?>
-			</div>
-			<script>
-const editor = grapesjs.init({
-  container: '#gjs',
-  plugins: ['gjs-preset-newsletter'],
-  fromElement: true,
-  height: '300px',
-  width: 'auto',
-  storageManager: false,
-});
-editor.BlockManager.add('fcfield', {
-	label: 'Mon block',
-	category: 'Data',
-  	category: 'HikaShop',
-content: '<div style="display: inline-block" data-gjs-resizable="true" data-gjs-dragMode="absolute">{VAR:BILLING_ADDRESS}</div>',
-select: true,
-activate: true,
-});
-			</script>
-		-->
 <?php
 				echo $this->editor->displayCode(
 					'data[mail][body]',
@@ -108,17 +73,7 @@ activate: true,
 						<div class="hikashop_mail_edit_var_header"><?php echo $key; ?></div>
 <?php
 							foreach ($value as $translation => $ref)	{
-								$custom_fields = 0;
-								switch($key) {
-									case 'order_field':
-										$custom_fields = 1;
-										break;
-									case 'customer_field':
-										$custom_fields = 1;
-										break;
-								}
-
-								if (($key == 'billing_address') || ($key == 'shipping_address') || ($custom_fields)) {
+								if (($key == 'billing_address') || ($key == 'shipping_address') || ($key == JText::_('fields'))) {
 									echo '<p>'.$ref.'</p>';
 								}
 								else { ?>
@@ -135,7 +90,7 @@ activate: true,
 				</div>
 				<div class="hikashop_mail_edit_linevar">
 					<p style="margin-left:10px;height:46px;"><?php echo JText::_('HIKA_EMAIL_LINEVAR_INFO'); ?>
-					<a style="font-size:0.9em;" rel="nofollow" onclick="return window.hikashop.openBox(this);" id="hikashop_linevar_screen" href="https://www.hikashop.com/images/stories/linevar-position.png" data-hk-popup="vex" data-vex="{x:850, y:260}">
+					<a rel="nofollow" onclick="return window.hikashop.openBox(this);" id="hikashop_linevar_screen" href="https://www.hikashop.com/images/stories/linevar-position.png" data-hk-popup="vex" data-vex="{x:850, y:260}">
 						<?php echo JText::_('HIKA_EMAIL_LINEVAR_POS'); ?>
 					</a>
 					</p>
@@ -144,16 +99,7 @@ activate: true,
 						<div class="hikashop_mail_edit_var_header"><?php echo $key; ?></div>
 <?php
 							foreach ($value as $translation => $ref) {
-								$custom_fields = 0;
-								switch($key) {
-									case 'item_field':
-										$custom_fields = 1;
-										break;
-									case 'product_field':
-										$custom_fields = 1;
-										break;
-								}
-								if ($custom_fields) {
+								if ($key == JText::_('fields')) {
 									echo '<p>'.$ref.'</p>';
 								}
 								else { ?>
@@ -176,27 +122,18 @@ activate: true,
 			<div class="hikashop_tile_title">
 <?php
 				echo JText::_('TEXT_VERSION');
-
-				if(!empty($this->mail->text_override)) {
-					echo ' '.$this->popupHelper->display(
-						'<span style="text-transform: none;" class="btn btn-primary"><i class="fa fa-file" aria-hidden="true"></i> '.strtoupper(JText::_('SEE_MODIFICATIONS')) . '</span>',
-						'HIKASHOP_MODIFICATIONS',
-						'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=diff&amp;type=text&amp;mail_name='.$this->mail_name.'\'',
-						'hikashop_text_diff',
-						$this->config->get('email_diff_popup_width',1080),$this->config->get('email_diff_popup_height',640), 'title="'.JText::_('HIKASHOP_MODIFICATIONS').'"', '', 'link',true
-					);
-				}
-
+				$append = '';
 				if(@$this->mail_name == 'order_status_notification') {
 					$popupHelper = hikashop_get('helper.popup');
-					echo ' ' . $popupHelper->display(
+					$append = ' ' . $popupHelper->display(
 						'<span style="text-transform: none;" class="btn btn-primary"><i class="fa fa-magic" aria-hidden="true"></i> '.JText::_('PER_STATUS_OVERRIDE') . '</span>',
 						'PER_STATUS_OVERRIDE',
 						'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=orderstatus&amp;type=text&amp;email_name='.$this->mail_name.'\'',
 						'hikashop_edit_text_status',
-						$this->config->get('email_status_popup_width',1080),$this->config->get('email_status_popup_height',640), 'title="'.JText::_('PER_STATUS_OVERRIDE').'"', '', 'link',true
+						760,480, 'title="'.JText::_('PER_STATUS_OVERRIDE').'"', '', 'link',true
 					);
 				}
+				echo $append;
 ?>
 			</div>
 				<textarea style="width:100%" rows="20" name="data[mail][altbody]" id="altbody" ><?php echo @$this->mail->altbody; ?></textarea>
@@ -206,27 +143,18 @@ activate: true,
 			<div class="hikashop_tile_title">
 <?php
 				echo JText::_('PRELOAD_VERSION');
-
-				if(!empty($this->mail->preload_override)) {
-					echo ' '.$this->popupHelper->display(
-						'<span style="text-transform: none;" class="btn btn-primary"><i class="fa fa-file" aria-hidden="true"></i> '.strtoupper(JText::_('SEE_MODIFICATIONS')) . '</span>',
-						'HIKASHOP_MODIFICATIONS',
-						'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=diff&amp;type=preload&amp;mail_name='.$this->mail_name.'\'',
-						'hikashop_preload_diff',
-						$this->config->get('email_diff_popup_width',1080),$this->config->get('email_diff_popup_height',640), 'title="'.JText::_('HIKASHOP_MODIFICATIONS').'"', '', 'link',true
-					);
-				}
-
+				$append = '';
 				if(@$this->mail_name == 'order_status_notification') {
 					$popupHelper = hikashop_get('helper.popup');
-					echo ' ' . $popupHelper->display(
+					$append = ' ' . $popupHelper->display(
 						'<span style="text-transform: none;" class="btn btn-primary"><i class="fa fa-magic" aria-hidden="true"></i> '.JText::_('PER_STATUS_OVERRIDE') . '</span>',
 						'PER_STATUS_OVERRIDE',
 						'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=orderstatus&amp;type=preload&amp;email_name='.$this->mail_name.'\'',
 						'hikashop_edit_preload_status',
-						$this->config->get('email_status_popup_width',1080),$this->config->get('email_status_popup_height',640), 'title="'.JText::_('PER_STATUS_OVERRIDE').'"', '', 'link',true
+						760,480, 'title="'.JText::_('PER_STATUS_OVERRIDE').'"', '', 'link',true
 					);
 				}
+				echo $append;
 ?>
 			</div>
 <?php

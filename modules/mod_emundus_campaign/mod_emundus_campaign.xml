@@ -134,8 +134,6 @@
 					</field>
 
 					<field type="text" name="mod_em_program_code" label="MOD_EM_PROGRAM_CODE" description="MOD_EM_PROGRAM_CODE_DESC"/>
-
-					<field type="text" name="mod_em_ignored_program_code" label="MOD_EM_PROGRAM_CODE_IGNORE" description="MOD_EM_PROGRAM_CODE_IGNORE_DESC"/>
 				</fieldset>
 				<fieldset name="single" label="Paramètres des détails">
 					<field type="checkboxes" name="mod_em_campaign_modules_tab" label="MOD_EM_CAMPAIGN_LIST_TAB" description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">

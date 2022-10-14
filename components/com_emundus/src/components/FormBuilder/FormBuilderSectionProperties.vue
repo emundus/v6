@@ -18,7 +18,7 @@
     <div id="properties">
       <div v-if="tabs[0].active" id="section-parameters" class="em-p-16">
         <label for="section-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION_LABEL') }}</label>
-        <input id="section-label" name="section-label" class="em-w-100" type="text" v-model="section_tmp.label"/>
+        <input id="section-label" name="section-label" class="em-w-100" type="text" v-model="section_tmp.label" :value="section_tmp.label"/>
       </div>
       <div v-if="tabs[1].active" class="em-p-16">
         <form-builder-section-params :params="params" :section="section_tmp"></form-builder-section-params>

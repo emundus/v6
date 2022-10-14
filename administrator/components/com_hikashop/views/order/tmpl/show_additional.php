@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -124,7 +124,7 @@ window.orderMgr.setAdditionals = function(el) {
 		foreach($this->order->order_tax_info as $tax){
 ?>
 		<tr class="hikashop_order_additional_tax">
-			<td class="key"><label><?php echo hikashop_translate(@$tax->tax_namekey); ?></label></td>
+			<td class="key"><label><?php echo hikashop_translate($tax->tax_namekey); ?></label></td>
 			<td><span><?php
 				echo $this->currencyHelper->format($tax->tax_amount,$this->order->order_currency_id);
 			?></span></td>
@@ -148,14 +148,14 @@ window.orderMgr.setAdditionals = function(el) {
 		}
 	}
 
-	if(isset($this->order->order_weight) && bccomp(sprintf('%F',$this->order->order_weight), 0, 3)) {
+	if(bccomp((float)$this->order->order_weight, 0, 3)) {
 ?>		<tr class="hikashop_order_weight">
 			<td class="key"><label><?php echo JText::_('PRODUCT_WEIGHT'); ?></label></td>
 			<td><?php echo rtrim(rtrim($this->order->order_weight,'0'),',.').' '.JText::_($this->order->order_weight_unit); ?></td>
 		</tr>
 <?php
 	}
-	if(isset($this->order->order_volume) && bccomp(sprintf('%F',$this->order->order_volume), 0, 3)) {
+	if(bccomp((float)$this->order->order_volume, 0, 3)) {
 ?>		<tr class="hikashop_order_volume">
 			<td class="key"><label><?php echo JText::_('PRODUCT_VOLUME'); ?></label></td>
 			<td><?php echo rtrim(rtrim($this->order->order_volume,'0'),',.').' '.JText::_($this->order->order_dimension_unit); ?></td>
@@ -179,6 +179,6 @@ window.orderMgr.setAdditionals = function(el) {
 	</table>
 <script type="text/javascript">
 window.orderMgr.updateAdditional = function() {
-	window.hikashop.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=additional&cid='.$this->order->order_id, true, false, true); ?>', {update: 'hikashop_order_field_additional'});
+	window.Oby.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=additional&cid='.$this->order->order_id, true, false, true); ?>', {update: 'hikashop_order_field_additional'});
 }
 </script>

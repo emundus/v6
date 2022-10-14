@@ -3,7 +3,7 @@
     <p id="form-builder-document-title" class="em-text-align-center em-w-100 em-p-16">
       {{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
     </p>
-	  <input id="search" v-model="search" type="text" class="em-mt-16 em-w-100" placeholder=""/>
+	  <input id="search" v-model="search" type="text" class="em-mt-16 em-w-100" :value="search" placeholder=""/>
     <draggable
         v-model="formats"
         class="draggables-list"

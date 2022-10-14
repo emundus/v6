@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.1.0
+ * @version    4.0.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1025,7 +1025,7 @@ class plgHikashoppaymentMangopay extends hikashopPaymentPlugin
 		);
 	}
 
-	public function mangoDebug($ctx, $e, $r = false) {
+	protected function mangoDebug($ctx, $e, $r = false) {
 		ob_start();
 		if($r) {
 			MangoPay\Logs::Debug('MangoPay\ResponseException Code', $e->GetCode());

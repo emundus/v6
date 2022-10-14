@@ -1,15 +1,14 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.6.2
+ * @version	4.4.0
  * @author	hikashop.com
- * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><legend><?php echo JText::_('PRODUCT_LIST'); ?></legend>
 <?php
-	$css_button = $this->config->get('css_button','hikabtn');
 	$url = hikashop_completeLink('product&task=selection&single=1&confirm=0&after=order|product_create&afterParams=order_id|'.$this->order->order_id, true);
 ?>
 <div class="hika_edit"><?php
@@ -34,7 +33,7 @@ defined('_JEXEC') or die('Restricted access');
 window.orderMgr.addProduct = function(el) {
 	window.hikashop.submitFct = function(data) {
 		var d = document, o = window.Oby;
-		window.hikashop.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=products&cid='.$this->order->order_id, true, false, true); ?>', {update: 'hikashop_order_products'});
+		o.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=products&cid='.$this->order->order_id, true, false, true); ?>', {update: 'hikashop_order_products'});
 		window.orderMgr.updateAdditional();
 		o.fireAjax('hikashop.order_update', {el: 'product', type: 'add', obj: data});
 		window.hikashop.closeBox();
@@ -45,7 +44,7 @@ window.orderMgr.addProduct = function(el) {
 window.orderMgr.selectProduct = function(el) {
 	window.hikashop.submitFct = function(data) {
 		var d = document, o = window.Oby;
-		window.hikashop.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=products&cid='.$this->order->order_id, true, false, true); ?>', {update: 'hikashop_order_products'});
+		o.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=products&cid='.$this->order->order_id, true, false, true); ?>', {update: 'hikashop_order_products'});
 		window.orderMgr.updateAdditional();
 		o.fireAjax('hikashop.order_update', {el: 'product', type: 'select', obj: data});
 		window.hikashop.closeBox();
@@ -103,7 +102,7 @@ window.orderMgr.selectProduct = function(el) {
 <?php
 	$weight_display = false;
 	foreach($this->order->products as $k => $product) {
-		if(isset($product->order_product_weight) && bccomp(sprintf('%F',$product->order_product_weight), 0, 3))
+		if(bccomp((float)$product->order_product_weight, 0, 3))
 			$weight_display = true;
 	}
 	if($weight_display) {
@@ -145,7 +144,7 @@ foreach($this->order->products as $k => $product) {
 		$image_path = (!empty($product->images) ? @$product->images[0]->file_path : '');
 		$img = $imageHelper->getThumbnail($image_path, array('width' => $width, 'height' => $height), $image_options);
 		if($img->success) {
-			echo '<img class="hikashop_order_item_image" width="'.$width.'" height="'.$height.'" title="'.$this->escape(@$product->images[0]->file_description).'" alt="'.$this->escape(@$product->images[0]->file_name).'" src="'.$img->url.'"/>';
+			echo '<img class="hikashop_order_item_image" title="'.$this->escape(@$product->images[0]->file_description).'" alt="'.$this->escape(@$product->images[0]->file_name).'" src="'.$img->url.'"/>';
 		}
 ?>
 			</td>
@@ -204,7 +203,7 @@ foreach($this->order->products as $k => $product) {
 			</p>
 			<td class="hikashop_order_item_price_value"><?php
 				echo $this->currencyHelper->format($product->order_product_price, $this->order->order_currency_id);
-				if(bccomp(sprintf('%F',$product->order_product_tax),0,5)) {
+				if(bccomp($product->order_product_tax,0,5)) {
 					echo '<br/>'.JText::sprintf('PLUS_X_OF_VAT', $this->currencyHelper->format($product->order_product_tax, $this->order->order_currency_id));
 				}
 			?></td>
@@ -212,7 +211,6 @@ foreach($this->order->products as $k => $product) {
 	if(!empty($product->files)){
 		$html = array();
 		foreach($product->files as $file){
-			$tooltip = 'data-toggle="hk-tooltip" data-title="'.JText::_('DOWNLOAD_NOW').' '.$file->file_name.'" data-original-title=""';
 			if(empty($file->file_name)){
 				$file->file_name = $file->file_path;
 			}
@@ -220,14 +218,11 @@ foreach($this->order->products as $k => $product) {
 			if(!empty($this->order_status_for_download) && !in_array($this->order->order_status,explode(',',$this->order_status_for_download))){
 				$fileHtml .= ' / <b>'.JText::_('BECAUSE_STATUS_NO_DOWNLOAD').'</b>';
 			}
-			$download_time_limit = $this->download_time_limit;
-			if(!empty($file->file_time_limit))
-				$download_time_limit = $file->file_time_limit;
-			if(!empty($download_time_limit)){
-					if(($download_time_limit+(!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created))<time()){
+			if(!empty($this->download_time_limit)){
+					if(($this->download_time_limit+(!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created))<time()){
 						$fileHtml .= ' / <b>'.JText::_('TOO_LATE_NO_DOWNLOAD').'</b>';
 					}else{
-						$fileHtml .= ' / '.JText::sprintf('UNTIL_THE_DATE',hikashop_getDate((!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created)+$download_time_limit));
+						$fileHtml .= ' / '.JText::sprintf('UNTIL_THE_DATE',hikashop_getDate((!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created)+$this->download_time_limit));
 					}
 			}
 			if(!empty($file->file_limit) && (int)$file->file_limit != 0) {
@@ -244,7 +239,7 @@ foreach($this->order->products as $k => $product) {
 					$fileHtml .= ' / '.JText::sprintf('X_DOWNLOADS_LEFT',$download_number_limit - $file->download_number);
 				}
 				if($file->download_number){
-					$fileHtml .= '<a class="hikashop_order_product_listing_btn '.$css_button.'" '.$tooltip.' href="'.hikashop_completeLink('file&task=resetdownload&file_id='.$file->file_id.'&order_id='.$this->order->order_id.'&'.hikashop_getFormToken().'=1&return='.urlencode(base64_encode(hikashop_completeLink('order&task=edit&cid='.$this->order->order_id,false,true)))).'"><img src="'.HIKASHOP_IMAGES.'delete.png" alt="'.JText::_('HIKA_DELETE').'" /></a>';
+					$fileHtml .= '<a href="'.hikashop_completeLink('file&task=resetdownload&file_id='.$file->file_id.'&order_id='.$this->order->order_id.'&'.hikashop_getFormToken().'=1&return='.urlencode(base64_encode(hikashop_completeLink('order&task=edit&cid='.$this->order->order_id,false,true)))).'"><img src="'.HIKASHOP_IMAGES.'delete.png" alt="'.JText::_('HIKA_DELETE').'" /></a>';
 				}
 			} else {
 				$fileHtml .= ' / ' . JText::sprintf('X_DOWNLOADS_MADE', $file->download_number);
@@ -253,10 +248,7 @@ foreach($this->order->products as $k => $product) {
 			if($file->file_pos > 0) {
 				$file_pos = '&file_pos='.$file->file_pos;
 			}
-			$fileLink = '<a class="hikashop_order_product_listing_btn '.$css_button.'" '.$tooltip.' href="'.hikashop_completeLink('order&task=download&file_id='.$file->file_id.'&order_id='.$this->order->order_id.$file_pos).'">'.
-				JText::_('DOWNLOAD_NOW').
-				'<i class="fas fa-download"></i>'.
-			'</a>';
+			$fileLink = '<a href="'.hikashop_completeLink('order&task=download&file_id='.$file->file_id.'&order_id='.$this->order->order_id.$file_pos).'">'.$file->file_name.'</a>';
 			$html[]=$fileLink.' '.$fileHtml;
 		}
 		echo implode('<br/>',$html);
@@ -340,7 +332,7 @@ window.orderMgr.setProduct = function(el) {
 	window.hikashop.submitFct = function(data) {
 		var w = window, o = w.Oby;
 		w.hikashop.closeBox();
-		window.hikashop.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=products&cid='.$this->order->order_id, true, false, true); ?>', {mode:'POST', data:'<?php echo hikashop_getFormToken(); ?>=1', update: 'hikashop_order_products'}, function() {
+		o.xRequest('<?php echo hikashop_completeLink('order&task=show&subtask=products&cid='.$this->order->order_id, true, false, true); ?>', {mode:'POST', data:'<?php echo hikashop_getFormToken(); ?>=1', update: 'hikashop_order_products'}, function() {
 			window.orderMgr.updateAdditional();
 			window.orderMgr.updateHistory();
 			o.fireAjax('hikashop.order_update', {el: 'product', type: 'set', obj: data});
@@ -353,7 +345,7 @@ window.orderMgr.delProduct = function(el, id) {
 	if(confirm("<?php echo JText::_('HIKA_CONFIRM_DELETE_ORDER_PRODUCT'); ?>")) {
 		var w = window, o = w.Oby;
 		el.parentNode.innerHTML = '<img src="<?php echo HIKASHOP_IMAGES; ?>spinner.gif" alt="loading..."/>';
-		window.hikashop.xRequest('<?php echo hikashop_completeLink('order&task=product_remove&order_id='.$this->order->order_id.'&order_product_id=HKPRODID', true, false, true); ?>'.replace('HKPRODID',id), {mode:'POST', data:'<?php echo hikashop_getFormToken(); ?>=1', update: 'hikashop_order_products'}, function() {
+		o.xRequest('<?php echo hikashop_completeLink('order&task=product_remove&order_id='.$this->order->order_id.'&order_product_id=HKPRODID', true, false, true); ?>'.replace('HKPRODID',id), {mode:'POST', data:'<?php echo hikashop_getFormToken(); ?>=1', update: 'hikashop_order_products'}, function() {
 			window.orderMgr.updateAdditional();
 			window.orderMgr.updateHistory();
 			o.fireAjax('hikashop.order_update', {el: 'product', type: 'del', obj: id});
