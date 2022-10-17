@@ -435,11 +435,23 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php endif; ?>
 
                                         <?php if( strtotime($now) < strtotime($result->end_date)  && strtotime($now) > strtotime($result->start_date) ) : //en cours ?>
+                                            <?php
+                                                $displayInterval = false;
+                                                $interval = date_create($now)->diff(date_create($result->end_date));
+                                                if($interval->d == 0){
+                                                    $displayInterval = true;
+                                                }
+                                            ?>
                                             <div class="mod_emundus_campaign__date">
-                                                <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
-                                                <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
-                                                </p>
-                                                <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                                <?php if (!$displayInterval) : ?>
+                                                    <span class="material-icons em-text-neutral-600 em-font-size-16">schedule</span>
+                                                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?>
+                                                    </p>
+                                                    <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                                                <?php else : ?>
+                                                    <span class="material-icons em-text-neutral-600 em-font-size-16 em-red-500-color">schedule</span>
+                                                    <p class="em-red-500-color"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LAST_DAY'); ?><?php echo $interval->h?>h<?php echo $interval->i ?></p>
+                                                <?php endif; ?>
                                             </div>
                                         <?php endif; ?>
 
@@ -469,7 +481,9 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                             <span class="em-formation-end em-text-neutral-600"><?php echo JFactory::getDate(new JDate($result->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                             </div>
                                         <?php endif; ?>
-                                        <?= (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($dteEnd)) ) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset : ''; ?>
+                                        <?php
+                                        ?>
+                                        <?= (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($result->end_date)) ) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset : ''; ?>
                                     </div>
                                 </div>
 
