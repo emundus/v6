@@ -394,13 +394,20 @@ export default {
             this.$store.commit("lists/listUpdate", this.limited_datas);
 
             this.countPages = Math.ceil(this.total / this.limit);
-            if (this.type == 'email') {
 
+            if (this.type == 'email') {
               axios.get("index.php?option=com_emundus&controller=email&task=getemailcategories")
                   .then(catrep => {
                     this.email_categories = catrep.data.data;
                   });
-
+            }
+            if (this.type == 'campaign') {
+              this.$store.commit('campaign/setAllowPinnedCampaign',rep.data.allow_pinned_campaigns);
+              this.limited_datas.forEach((campaign) => {
+                if(campaign.pinned == 1){
+                  this.$store.commit('campaign/setPinned',campaign.id);
+                }
+              })
             }
             this.loading = false;
           }).catch(e => {

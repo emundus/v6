@@ -1,6 +1,6 @@
 <template>
 	<div class="list-actions-menu">
-        <span v-if="type == 'campaign'"
+        <span v-if="type == 'campaign' && allowPinnedCampaign == 1"
               :title="translate('COM_EMUNDUS_CAMPAIGNS_PIN')"
               @click="pinCampaign"
               :class="pinned == 1 ? 'material-icons' : 'material-icons-outlined em-text-neutral-500'"
@@ -86,24 +86,31 @@ export default {
     pinCampaign() {
       campaignService.pinCampaign(this.itemId).then((result) => {
         if(result.data.status == 1){
+          this.$store.dispatch('campaign/setPinned', this.itemId);
           Swal.fire({
             title: this.translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED'),
             text: this.translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_CAMPAIGN_PINNED_TEXT'),
             type: "success",
             showCancelButton: false,
-            confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
-            reverseButtons: true,
+            showConfirmButton: false,
             customClass: {
               title: 'em-swal-title',
-              confirmButton: 'em-swal-confirm-button',
-              actions: "em-swal-single-action",
             },
             timer: 2000,
           });
         }
       });
     }
-	}
+	},
+
+  computed: {
+    pinned: function(){
+      return this.$store.getters['campaign/pinned'] === this.itemId;
+    },
+    allowPinnedCampaign: function(){
+      return this.$store.getters['campaign/allowPinnedCampaign'];
+    }
+  }
 }
 </script>
 

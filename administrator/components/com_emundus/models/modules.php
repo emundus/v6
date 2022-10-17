@@ -330,6 +330,9 @@ class EmundusModelModules extends JModelList {
             }
 
             EmundusHelperUpdate::installExtension('MOD_EMUNDUS_BANNER_XML','mod_emundus_banner','{"name":"MOD_EMUNDUS_BANNER_XML","type":"module","creationDate":"October 2022","author":"HUBINET Brice, GRANDIN Laura","copyright":"Copyright (C) 2022 eMundus. All rights reserved.","authorEmail":"contact@emundus.fr","authorUrl":"www.emundus.fr","version":"1.34.0","description":"MOD_EMUNDUS_BANNER_XML_DESCRIPTION","group":"","filename":"mod_emundus_banner"}','module');
+
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $eMConfig->set('allow_pinned_campaign','1');
         } catch (Exception $e) {
             return false;
         }

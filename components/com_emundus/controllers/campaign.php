@@ -162,10 +162,13 @@ class EmundusControllerCampaign extends JControllerLegacy {
 
             $campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page,$program,$session);
 
+            $eMConfig = JComponentHelper::getParams('com_emundus');
+            $allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
+
             if (count($campaigns) > 0) {
-                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns);
+                $tab = array('status' => 1, 'msg' => JText::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns);
+                $tab = array('status' => 0, 'msg' => JText::_('NO_CAMPAIGNS'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
             }
         }
         echo json_encode((object)$tab);
@@ -818,7 +821,7 @@ class EmundusControllerCampaign extends JControllerLegacy {
     public function pincampaign(){
         if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
             $result = 0;
-            $tab = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+            $tab = array('status' => $result, 'msg' => JText::_('ACCESS_DENIED'));
         } else {
             $jinput = JFactory::getApplication()->input;
             $cid = $jinput->getInt('cid');
