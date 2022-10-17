@@ -182,6 +182,20 @@
                 <p v-if="errors.progLabel" class="em-red-500-color em-mb-8">
                   <span class="em-red-500-color">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
                 </p>
+
+                <div class="em-mb-16">
+                  <label for="prog_color">{{ translate('COM_EMUNDUS_ONBOARD_PROGCOLOR') }}</label>
+                  <div class="em-flex-row">
+                    <div v-for="(color,index) in colors">
+                      <div class="em-color-round em-pointer em-flex-row em-flex-center"
+                           :class="index != 0 ? 'em-ml-8' : ''"
+                           :style="selectedColor == color.text ? 'background-color:' + color.text + ';border: 2px solid ' + color.background : 'background-color:' + color.text"
+                           @click="programForm.color = color.text;selectedColor = color.text">
+                        <span v-if="selectedColor == color.text" class="material-icons-outlined" style="font-weight: bold;color: black">done</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </transition>
@@ -288,7 +302,8 @@ export default {
       notes: "",
       programmes: "",
       published: 1,
-      apply_online: 1
+      apply_online: 1,
+      color: ""
     },
 
     year: {
@@ -308,6 +323,26 @@ export default {
       limit_files_number: false,
       limit_status: false
     },
+
+    colors: [
+        {
+          text: '#1C6EF2',
+          background: '#79B6FB',
+        },
+      {
+        text: '#20835F',
+        background: '#87D4B8',
+      },
+      {
+        text: '#DB333E',
+        background: '#FBABAB',
+      },
+      {
+        text: '#FFC633',
+        background: '#FEEBA1',
+      },
+    ],
+    selectedColor: '#1C6EF2',
 
     submitted: false,
     ready: false,
@@ -692,5 +727,11 @@ export default {
 
 #campResume {
   height: 85px !important;
+}
+
+.em-color-round{
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
 }
 </style>

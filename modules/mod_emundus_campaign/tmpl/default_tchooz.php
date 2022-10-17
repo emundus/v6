@@ -30,51 +30,37 @@ if (in_array('past', $mod_em_campaign_list_tab) && !empty($pastCampaign)){
     $tmp_campaigns = array_merge($tmp_campaigns,$pastCampaign);
 }
 
-if ($group_by == 'program') {
-    usort($tmp_campaigns, function ($a, $b) {
-        return strcmp($a->programme, $b->programme);
-    });
+if(sizeof($tmp_campaigns) > 0) {
+    if ($group_by == 'program') {
+        usort($tmp_campaigns, function ($a, $b) {
+            return strcmp($a->programme, $b->programme);
+        });
 
-    foreach($tmp_campaigns as $campaign)
-    {
-        $campaigns[$campaign->code][] = $campaign;
-        $campaigns[$campaign->code]['label'] = $campaign->programme;
+        foreach ($tmp_campaigns as $campaign) {
+            $campaigns[$campaign->code][] = $campaign;
+            $campaigns[$campaign->code]['label'] = $campaign->programme;
+        }
+
+    } elseif ($group_by == 'category') {
+        usort($tmp_campaigns, function ($a, $b) {
+            return strcmp($a->prog_type, $b->prog_type);
+        });
+
+        foreach ($tmp_campaigns as $campaign) {
+            $campaigns[$campaign->prog_type][] = $campaign;
+            $campaigns[$campaign->prog_type]['label'] = $campaign->prog_type;
+        }
+    } else {
+        $campaigns ['campaigns'] = $tmp_campaigns;
     }
 
-} elseif ($group_by == 'category') {
-    usort($tmp_campaigns, function ($a, $b) {
-        return strcmp($a->prog_type, $b->prog_type);
-    });
-
-    foreach($tmp_campaigns as $campaign)
-    {
-        $campaigns[$campaign->prog_type][] = $campaign;
-        $campaigns[$campaign->prog_type]['label'] = $campaign->prog_type;
+    foreach ($tmp_campaigns as $campaign) {
+        if ($campaign->pinned == 1) {
+            $campaign_pinned = $campaign;
+            break;
+        }
     }
-} else {
-    $campaigns ['campaigns'] = $tmp_campaigns;
 }
-
-foreach ($tmp_campaigns as $campaign){
-    if($campaign->pinned == 1){
-        $campaign_pinned = $campaign;
-        break;
-    }
-}
-
-/*$group_programs = [];
-if($group_by == 'program'){
-    foreach ($campaigns as $campaign){
-        $program = new stdClass();
-        $program->code = $campaign->code;
-        $program->label = $campaign->programme;
-        $group_programs[] = $program;
-    }
-
-    require_once JPATH_SITE . DS . 'components' . DS .'com_emundus' . DS . 'helpers' . DS . 'array.php';
-    $group_programs = EmundusHelperArray::removeDuplicateObjectsByProperty($group_programs,'code');
-}
-*/
 
 
 $codes_filters = [];
@@ -115,6 +101,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         </div>
     <?php else : ?>
     <div class="mod_emundus_campaign__content">
+
         <?php if ($campaign_pinned) : ?>
         <span class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></span>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
@@ -208,6 +195,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             </div>
         </div>
         <?php endif; ?>
+
         <div class="mod_emundus_campaign__header">
             <div>
                 <div class="em-flex-row">
@@ -401,7 +389,27 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                         <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
-                                <p class="mod_emundus_campaign__programme_tag"><?php  echo $result->programme; ?></p>
+                                <?php
+                                    $color = '#1C6EF2';
+                                    $background = '#F0F6FD';
+                                    if(!empty($result->tag_color)){
+                                        $color = $result->tag_color;
+                                        switch ($result->tag_color) {
+                                            case '#20835F':
+                                                $background = '#DFF5E9';
+                                                break;
+                                            case '#DB333E':
+                                                $background = '#FFEEEE';
+                                                break;
+                                            case '#FFC633':
+                                                $background = '#FFFBDB';
+                                                break;
+                                        }
+                                    }
+                                ?>
+                                <p class="mod_emundus_campaign__programme_tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                    <?php  echo $result->programme; ?>
+                                </p>
                                 <a href="<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                                     <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></p>
                                 </a>
