@@ -31,8 +31,28 @@ $h = $dteDiff->format("%H");
 
 <div class="em-grid-2-70-30" style="grid-gap: 64px">
     <div>
-        <p class="mod_emundus_campaign__programme_tag"><?php  echo $currentCampaign->programme; ?></p>
-        <p class="em-h3 mod_emundus_campaign__campaign_title em-mt-16"><?php echo $currentCampaign->label; ?></p>
+        <?php
+        $color = '#1C6EF2';
+        $background = '#F0F6FD';
+        if(!empty($result->tag_color)){
+            $color = $result->tag_color;
+            switch ($result->tag_color) {
+                case '#20835F':
+                    $background = '#DFF5E9';
+                    break;
+                case '#DB333E':
+                    $background = '#FFEEEE';
+                    break;
+                case '#FFC633':
+                    $background = '#FFFBDB';
+                    break;
+            }
+        }
+        ?>
+        <p class="mod_emundus_campaign__programme_tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+            <?php  echo $currentCampaign->programme; ?>
+        </p>
+        <p class="em-h3 mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></p>
         <div class="em-flex-row em-mt-16">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row">

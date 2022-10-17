@@ -106,15 +106,35 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
         <span class="em-h4"><?php echo JText::_('MOD_EM_CAMPAIGN_PINNED_CAMPAIGN') ?></span>
         <div class="mod_emundus_campaign__pinned_campaign em-mt-32 em-mb-24">
         <?php if(strtotime($now) > strtotime($campaign_pinned->end_date)) :  ?>
-        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
 
             <?php  else : ?>
 
-            <div class="mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+            <div class="mod_emundus_campaign__list_content em-border-neutral-300">
                 <?php endif; ?>
 
                 <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
-                    <p class="mod_emundus_campaign__programme_tag"><?php  echo $campaign_pinned->programme; ?></p>
+                    <?php
+                    $color = '#1C6EF2';
+                    $background = '#F0F6FD';
+                    if(!empty($campaign_pinned->tag_color)){
+                        $color = $campaign_pinned->tag_color;
+                        switch ($campaign_pinned->tag_color) {
+                            case '#20835F':
+                                $background = '#DFF5E9';
+                                break;
+                            case '#DB333E':
+                                $background = '#FFEEEE';
+                                break;
+                            case '#FFC633':
+                                $background = '#FFFBDB';
+                                break;
+                        }
+                    }
+                    ?>
+                    <p class="mod_emundus_campaign__programme_tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                        <?php  echo $campaign_pinned->programme; ?>
+                    </p>
                     <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
                         <p class="em-h6 mod_emundus_campaign__campaign_title"><?php echo $campaign_pinned->label; ?></p>
                     </a>
@@ -450,7 +470,13 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                                     <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($result->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
                                                 <?php else : ?>
                                                     <span class="material-icons em-text-neutral-600 em-font-size-16 em-red-500-color">schedule</span>
-                                                    <p class="em-red-500-color"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LAST_DAY'); ?><?php echo $interval->h?>h<?php echo $interval->i ?></p>
+                                                    <p class="em-red-500-color"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_LAST_DAY'); ?>
+                                                        <?php if ($interval->h > 0) {
+                                                            echo $interval->h.'h'.$interval->i ;
+                                                        } else {
+                                                            echo $interval->i . 'm';
+                                                        }?>
+                                                    </p>
                                                 <?php endif; ?>
                                             </div>
                                         <?php endif; ?>
@@ -483,13 +509,20 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                         <?php endif; ?>
                                         <?php
                                         ?>
-                                        <?= (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($result->end_date)) ) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset : ''; ?>
+                                        <?php if (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($result->end_date)) ) : ?>
+                                        <div class="mod_emundus_campaign__date">
+                                            <span class="material-icons em-text-neutral-600 em-font-size-16" style="opacity: 0">alarm_off</span>
+                                            <p class="em-text-neutral-600 em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset; ?></p>
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
                                 <hr>
 
-                                <p class="mod_emundus_campaign__list_content_resume em-text-neutral-600 em-font-size-16">
+                                <p class="mod_emundus_campaign__list_content_resume em-text-neutral-600 em-font-size-16"
+                                    <?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date)) ) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
+                                >
                                     <?php
                                     $text = '';
                                     $textprog = '';
@@ -499,7 +532,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                     }
                                     echo $textcamp;
                                     ?>
-                                </p>
+                                </>
                             </div>
                         </div>
                     <?php } } ?>
@@ -561,9 +594,11 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         setTimeout(() => {
             let sort_button = document.getElementById('mod_emundus_campaign__header_sort');
-            if(typeof sort_button !== 'undefined'){
-                document.getElementById('filters_block').style.marginLeft = (sort_button.offsetWidth + 8) +'px';
-            }
+            <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
+                if(typeof sort_button !== 'undefined'){
+                    document.getElementById('filters_block').style.marginLeft = (sort_button.offsetWidth + 8) +'px';
+                }
+            <?php endif; ?>
         },1000);
 
         let filter_existing = document.querySelectorAll("div[id^='filter_']");
