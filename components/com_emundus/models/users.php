@@ -2747,7 +2747,8 @@ class EmundusModelUsers extends JModelList {
 
                 $query->clear()
                     ->update('#__users')
-                    ->set('activation = ' . 1)
+                    ->set('activation = 1')
+                    ->set('block = 0')
                     ->where('id = ' . $user_id);
                 try {
                     $db->setQuery($query);
@@ -3157,9 +3158,8 @@ class EmundusModelUsers extends JModelList {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            // TODO: change table from name to jos_emundus_token_auth_attempts or something similar
             $query->select('*')
-                ->from('me_connecter_depuis_ma_cl_dauthentificati')
+                ->from('#__emundus_token_auth_attempts')
                 ->where('ip = ' . $db->quote($current_ip))
                 ->andWhere('succeed = 0')
                 ->andWhere('date_time > NOW() - interval 1 day ');

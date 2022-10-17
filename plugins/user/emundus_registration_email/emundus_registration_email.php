@@ -94,6 +94,19 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     public function onUserAfterSave($user, $isnew, $result, $error) {
+        if (strpos($user['email'], '@emundus.io') !== false) {
+            $user['params'] = json_encode(['skip_activation' => true]);
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->update('#__users')
+                ->set('params = ' . $db->quote($user['params']))
+                ->where('username = ' . $db->quote($user['username']));
+
+            $db->setQuery($query);
+            $db->execute();
+        }
+
         $this->onAfterStoreUser($user, $isnew, $result, $error);
     }
 
@@ -154,6 +167,9 @@ class plgUserEmundus_registration_email extends JPlugin {
             if (!$table->store()) {
                 throw new RuntimeException($table->getError());
             }
+
+            var_dump($user->getProperties());
+
 
             // Send activation email
             if ($this->sendActivationEmail($user->getProperties(), $activation)) {
@@ -243,6 +259,8 @@ class plgUserEmundus_registration_email extends JPlugin {
         if (json_decode($data['params'])->skip_activation) {
             return false;
         }
+        var_dump($data['params']);exit;
+        return false;
 
         $jinput = JFactory::getApplication()->input;
         $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
