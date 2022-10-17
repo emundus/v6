@@ -59,6 +59,7 @@ JText::script('COM_EMUNDUS_ACCESS_EVALUATION');
 JText::script('COM_EMUNDUS_ACCESS_EXPORT_EXCEL');
 JText::script('COM_EMUNDUS_ACCESS_EXPORT_ZIP');
 JText::script('COM_EMUNDUS_ACCESS_EXPORT_PDF');
+JText::script('COM_EMUNDUS_EXPORTS_EXPORT_AS_CSV_TEMPLATE');
 JText::script('COM_EMUNDUS_ACCESS_MAIL_APPLICANT');
 JText::script('COM_EMUNDUS_ACCESS_MAIL_EVALUATOR');
 JText::script('COM_EMUNDUS_ACCESS_MAIL_GROUP');
@@ -447,8 +448,8 @@ JText::script('COM_EMUNDUS_EMAILS_BCC_PLACEHOLDER');
 
 // VUE ATTACHMENT
 JText::script('SEARCH');
-JText::script('NAME');
-JText::script('DESCRIPTION');
+JText::script('COM_EMUNDUS_ATTACHMENTS_FILE_NAME');
+JText::script('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION');
 JText::script('STATUS');
 JText::script('COM_EMUNDUS_ATTACHMENTS_REPLACE');
 JText::script('EXPORT');
@@ -484,6 +485,11 @@ JText::script('COM_EMUNDUS_ATTACHMENTS_UNAUTHORIZED_ACTION');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_VIEW');
 JText::script('COM_EMUNDUS_ATTACHMENTS_PERMISSION_DELETE');
 JText::script('COM_EMUNDUS_ATTACHMENTS_COMPLETED');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE');
+JText::script('COM_EMUNDUS_ATTACHMENTS_SYNC_READ');
+
 JText::script('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK');
 JText::script('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY');
 JText::script('COM_EMUNDUS_EMAILS_SELECT_CATEGORY');
@@ -495,6 +501,8 @@ JText::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
 JText::script('COM_EMUNDUS_FILES_ARE_EDITED_BY_OTHER_USERS');
 JText::script('COM_EMUNDUS_FILES_IS_EDITED_BY_OTHER_USER');
 JText::script('COM_EMUNDUS_FILE_EDITED_BY_ANOTHER_USER');
+JText::script('COM_EMUNDUS_LIST_RETRIEVED');
+JText::script('COM_EMUNDUS_ERROR_CANNOT_RETRIEVE_LIST');
 
 // GOTENBERG EXPORT FAILED
 JText::script('COM_EMUNDUS_EXPORT_FAILED');
@@ -503,6 +511,67 @@ JText::script('COM_EMUNDUS_EXPORT_FAILED');
 JText::script('COM_EMUNDUS_LOGS_DOWNLOAD');
 JText::script('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR');
 JText::script('COM_EMUNDUS_LOGS_EXPORT');
+
+JText::script('COM_EMUNDUS_CRUD_FILTER_LABEL');
+JText::script('COM_EMUNDUS_LOG_READ_TYPE');
+JText::script('COM_EMUNDUS_LOG_CREATE_TYPE');
+JText::script('COM_EMUNDUS_LOG_UPDATE_TYPE');
+JText::script('COM_EMUNDUS_LOG_DELETE_TYPE');
+JText::script('COM_EMUNDUS_NO_ACTION_FOUND');
+JText::script('COM_EMUNDUS_NO_LOG_USERS_FOUND');
+JText::script('COM_EMUNDUS_NO_LOGS_FILTER_FOUND');
+
+JText::script('COM_EMUNDUS_CRUD_FILTER_PLACEHOLDER');
+JText::script('COM_EMUNDUS_TYPE_FILTER_PLACEHOLDER');
+JText::script('COM_EMUNDUS_ACTOR_FILTER_PLACEHOLDER');
+JText::script('COM_EMUNDUS_ACCESS_FORM_READ');
+JText::script('COM_EMUNDUS_LOGS_FILTERS_FOUND_RESULTS');
+
+JText::script('COM_EMUNDUS_CRUD_LOG_FILTER_HINT');
+JText::script('COM_EMUNDUS_TYPES_LOG_FILTER_HINT');
+JText::script('COM_EMUNDUS_ACTOR_LOG_FILTER_HINT');
+
+JText::script('COM_EMUNDUS_NO_LOGS_FILTERS_FOUND_RESULTS');
+
+// ADD LABEL OF LOGS CATEGORY
+JText::script('COM_EMUNDUS_ACCESS_FILE');                   # 1
+JText::script('COM_EMUNDUS_ACCESS_ATTACHMENT');             # 4
+JText::script('COM_EMUNDUS_ACCESS_EVALUATION');             # 5
+JText::script('COM_EMUNDUS_ACCESS_EXPORT_EXCEL');           # 6
+JText::script('COM_EMUNDUS_ACCESS_EXPORT_ZIP');             # 7
+JText::script('COM_EMUNDUS_ACCESS_EXPORT_PDF');             # 8
+JText::script('COM_EMUNDUS_ACCESS_MAIL_APPLICANT');         # 9
+JText::script('COM_EMUNDUS_ACCESS_COMMENT_FILE');           # 10
+JText::script('COM_EMUNDUS_ACCESS_ACCESS_FILE');            # 11
+JText::script('COM_EMUNDUS_ACCESS_USER');                   # 12
+JText::script('COM_EMUNDUS_ACCESS_STATUS');                 # 13
+JText::script('COM_EMUNDUS_ACCESS_TAGS');                   # 14
+JText::script('COM_EMUNDUS_ACCESS_MAIL_EVALUATOR');         # 15
+JText::script('COM_EMUNDUS_ACCESS_MAIL_GROUP');             # 16
+JText::script('COM_EMUNDUS_ACCESS_MAIL_EXPERT');            # 18
+JText::script('COM_EMUNDUS_ACCESS_GROUPS');                 # 19
+JText::script('COM_EMUNDUS_ADD_USER');                      # 20
+JText::script('COM_EMUNDUS_ACTIVATE');                      # 21
+JText::script('COM_EMUNDUS_DEACTIVATE');                    # 22
+JText::script('COM_EMUNDUS_AFFECT');                        # 23
+JText::script('COM_EMUNDUS_EDIT_USER');                     # 24
+JText::script('COM_EMUNDUS_SHOW_RIGHT');                    # 25
+JText::script('COM_EMUNDUS_DELETE_USER');                   # 26
+JText::script('COM_EMUNDUS_ACCESS_LETTERS');                # 27
+JText::script('COM_EMUNDUS_PUBLISH');                       # 28
+JText::script('COM_EMUNDUS_DECISION');                      # 29
+JText::script('COM_EMUNDUS_COPY_FILE');                     # 30
+JText::script('COM_EMUNDUS_ACCESS_MULTI_LETTERS');          # 31
+JText::script('COM_EMUNDUS_ADMISSION');                     # 32
+JText::script('COM_EMUNDUS_EXTENAL_EXPORT');                # 33
+JText::script('COM_EMUNDUS_INTERVIEW');                     # 34
+JText::script('COM_EMUNDUS_FICHE_DE_SYNTHESE');             # 35
+JText::script('COM_EMUNDUS_MESSENGER');                     # 36
+JText::script('COM_EMUNDUS_ACCESS_LOGS');                   # 37
+
+JText::script('COM_EMUNDUS_EDIT_COMMENT_BODY');
+JText::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');
+
 // ONBOARD
 
 $app = JFactory::getApplication();

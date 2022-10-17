@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -125,6 +125,10 @@ function switchDisplay(value,name,activevalue){
 		$this->assignRef('itemType',$itemType);
 		$childdisplayType = hikashop_get('type.childdisplay');
 		$this->assignRef('childdisplayType',$childdisplayType);
+		$showpopupoptionType = hikashop_get('type.showpopupoption');
+		$this->assignRef('showpopupoptionType',$showpopupoptionType);
+		$zoomonhoverType = hikashop_get('type.zoomonhover');
+		$this->assignRef('zoomonhoverType',$zoomonhoverType);
 		$pricetaxType = hikashop_get('type.pricetax');
 		$this->assignRef('pricetaxType',$pricetaxType);
 		$priceDisplayType = hikashop_get('type.pricedisplay');
@@ -151,16 +155,20 @@ function switchDisplay(value,name,activevalue){
 	}
 
 	protected function getMenuData($cid) {
-		if(!empty($cid)) {
-			$menusClass = hikashop_get('class.menus');
-			$element = $menusClass->get($cid);
-			if(!empty($element->content_type) && !in_array($element->content_type, array('product','category'))) {
-				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::_('HIKA_MENU_TYPE_NOT_SUPPORTED'), 'error');
-				$url = JRoute::_('index.php?option=com_menus&task=item.edit&id='.$cid, false);
-				$app->redirect($url);
-			}
+		$element =  new stdClass();
+		$element->hikashop_params = array();
+		if(empty($cid))
+			return $element;
+
+		$menusClass = hikashop_get('class.menus');
+		$elementFromDB = $menusClass->get($cid);
+		if(!empty($elementFromDB->content_type) && !in_array($elementFromDB->content_type, array('product','category'))) {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('HIKA_MENU_TYPE_NOT_SUPPORTED'), 'error');
+			$url = JRoute::_('index.php?option=com_menus&task=item.edit&id='.$cid, false);
+			$app->redirect($url);
 		}
+		$element = $elementFromDB;
 		if(!isset($element->hikashop_params['layout_type']))
 			$element->hikashop_params['layout_type'] = 'div';
 
@@ -168,16 +176,26 @@ function switchDisplay(value,name,activevalue){
 	}
 
 	protected function getModuleData($id) {
-		if(!empty($id)) {
-			$modulesClass = hikashop_get('class.modules');
-			$element = $modulesClass->get($id);
-			if(!empty($element->content_type) && $element->content_type != 'product') {
-				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::_('HIKA_MODULE_TYPE_NOT_SUPPORTED'), 'error');
-				$url = JRoute::_('index.php?option=com_modules&task=item.edit&id='.$id, false);
-				$app->redirect($url);
-			}
+		$element =  new stdClass();
+		$element->hikashop_params = array();
+		if(empty($id))
+			return $element;
+
+		$modulesClass = hikashop_get('class.modules');
+		$elementFromDB = $modulesClass->get($id);
+		if(!empty($elementFromDB->content_type) && $elementFromDB->content_type != 'product') {
+			$app = JFactory::getApplication();
+			$app->enqueueMessage(JText::_('HIKA_MODULE_TYPE_NOT_SUPPORTED'), 'error');
+			$url = JRoute::_('index.php?option=com_modules&task=item.edit&id='.$id, false);
+			$app->redirect($url);
 		}
+
+		$element = $elementFromDB;
+
+		if(empty($element))
+			$element = new stdClass();
+		if(!isset($element->hikashop_params))
+			$element->hikashop_params = array();
 		if(!isset($element->hikashop_params['layout_type']))
 			$element->hikashop_params['layout_type'] = 'div';
 
@@ -194,6 +212,8 @@ function switchDisplay(value,name,activevalue){
 		$data = array(
 			'layoutType' => 'type.layout',
 			'orderdirType' => 'type.orderdir',
+			'showpopupoptionType' => 'type.showpopupoption',
+			'zoomonhoverType' => 'type.zoomonhover',
 			'childdisplayType' => 'type.childdisplay',
 			'orderType' => 'type.order',
 			'listType' => 'type.list',
@@ -257,6 +277,7 @@ function switchDisplay(value,name,activevalue){
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onHkContentParamsDisplay', array('menu', $this->name, &$element, &$extra_blocks));
+		JHtmlHikaselect::$event = false;
 		$this->assignRef('extra_blocks', $extra_blocks);
 	}
 
@@ -285,6 +306,8 @@ function switchDisplay(value,name,activevalue){
 				'show_vote_product' => '-1',
 				'show_price' => '-1',
 				'price_with_tax' => 3,
+				'product_popup_mode' => 'inherit',
+				'zoom_on_hover' => '-1',
 				'show_original_price' => '-1',
 				'show_discount' => 3,
 				'price_display_type' => 'inherit',
@@ -363,6 +386,7 @@ function setVisibleLayoutEffect(value) {
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$app->triggerEvent('onHkContentParamsDisplay', array('menu', $control, &$element, &$extra_blocks));
+		JHtmlHikaselect::$event = false;
 		$this->assignRef('extra_blocks', $extra_blocks);
 	}
 

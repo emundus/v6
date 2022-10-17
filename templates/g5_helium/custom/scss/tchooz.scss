@@ -23,6 +23,7 @@
   height: 40px;
   color: white;
   background-color: $main-500;
+  border: solid 1px transparent;
 
   &:hover {
     background-color: white;
@@ -401,6 +402,13 @@ input:focus + .em-slider {
   align-items: end;
 }
 
+.em-flex-row-justify-end {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  justify-content: flex-end;
+}
+
 .em-flex-row-start{
   display: flex;
   flex-direction: row;
@@ -462,9 +470,19 @@ input:focus + .em-slider {
 }
 
 /** HOVER **/
+.em-no-hover{
+  &:hover{
+    color: unset;
+  }
+}
 .em-hover-blue-500{
   &:hover{
     color: $blue-500;
+  }
+}
+.em-hover-background-neutral-300{
+  &:hover{
+    background: $neutral-300;
   }
 }
 
@@ -492,6 +510,10 @@ input:focus + .em-slider {
 
 .em-h-40{
   height: 40px;
+}
+
+.em-h-50{
+  height: 50px;
 }
 
 .em-min-height-100{
@@ -562,6 +584,10 @@ input:focus + .em-slider {
 
 .em-w-380{
   width: 380px;
+}
+
+.em-h-80 {
+  height: 80%;
 }
 
 .em-h-100 {

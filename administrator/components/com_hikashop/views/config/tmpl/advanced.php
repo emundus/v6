@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -43,7 +43,7 @@ echo $this->leftmenu(
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('cart_retaining_period_check_frequency');?>><?php echo JText::_('CART_RETAINING_PERIOD_CHECK_FREQUENCY'); ?></td>
 		<td><?php
-			echo $this->delayTypeCarts->display('config[cart_retaining_period_check_frequency]', $this->config->get('cart_retaining_period_check_frequency', 86400));
+			echo $this->delayTypeCarts->display('config[cart_retaining_period_check_frequency]', $this->config->get('cart_retaining_period_check_frequency', 1200));
 			?><br/><?php
 			echo JText::sprintf('LAST_CHECK', hikashop_getDate($this->config->get('cart_retaining_period_checked')));
 		?></td>
@@ -133,12 +133,14 @@ echo $this->leftmenu(
 			echo JHTML::_('hikaselect.booleanlist', 'config[legacy_widgets]', '', $this->config->get('legacy_widgets', 1));
 		?></td>
 	</tr>
+<?php if(!HIKASHOP_J40) { ?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('carousel_legacy_mode');?>><?php echo JText::_('CAROUSEL_LEGACY'); ?></td>
 		<td><?php
 			echo JHTML::_('hikaselect.booleanlist', 'config[carousel_legacy]', '', $this->config->get('carousel_legacy', 1));
 		?></td>
 	</tr>
+<?php } ?>
 <?php if($this->config->get('server_current_url_mode', '0') != '0'){ ?>
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('server_current_url_mode');?>><?php echo JText::_('SERVER_CURRENT_URL_MODE'); ?></td>

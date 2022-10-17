@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -90,17 +90,26 @@ defined('_JEXEC') or die('Restricted access');
 
 	if(!empty($this->fields['item'])) {
 		$editCustomFields = true;
+		$after = array();
 		foreach($this->fields['item'] as $fieldName => $oneExtraField) {
 ?>
 		<dt class="hikashop_order_product_customfield hikashop_order_product_customfield_<?php echo $fieldName; ?>"><?php echo $this->fieldsClass->getFieldName($oneExtraField);?></dt>
 		<dd class="hikashop_order_product_customfield hikashop_order_product_customfield_<?php echo $fieldName; ?>"><span><?php
 			if($editCustomFields) {
-				echo $this->fieldsClass->display($oneExtraField, @$this->orderProduct->$fieldName, 'data[order][product]['.$fieldName.']',false,'',true);
+				$html = $this->fieldsClass->display($oneExtraField, @$this->orderProduct->$fieldName, 'data[order][product]['.$fieldName.']',false,'',true);
+				if($oneExtraField->field_type=='hidden') {
+					$after[] = $html;
+					continue;
+				}
+				echo $html;
 			} else {
 				echo $this->fieldsClass->show($oneExtraField, @$this->orderProduct->$fieldName);
 			}
 		?></span></dd>
 <?php
+		}
+		if(count($after)) {
+			echo implode("\r\n", $after);
 		}
 	}
 ?>

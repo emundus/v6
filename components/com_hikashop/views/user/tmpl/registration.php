@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -19,6 +19,7 @@ if($this->display_method == 1) {
 <?php
 	if(!$this->simplified_registration) {
 ?>
+<!-- NAME -->
 <div class="hkform-group control-group hikashop_registration_name_line" id="hikashop_registration_name_line">
 	<label id="namemsg" for="register_name" class="hkc-sm-4 hkcontrol-label">
 		<?php echo JText::_( 'HIKA_USER_NAME' ).'*'; ?>
@@ -27,6 +28,8 @@ if($this->display_method == 1) {
 		<input type="text" name="data[register][name]" id="register_name" value="<?php echo $this->escape($this->mainUser->get( 'name' ));?>" class="inputbox hkform-control validate-username required" maxlength="50" />
 	</div>
 </div>
+<!-- EO NAME -->
+<!-- USERNAME -->
 <div class="hkform-group control-group hikashop_registration_username_line" id="hikashop_registration_username_line">
 	<label id="usernamemsg" for="register_username" class="hkc-sm-4 hkcontrol-label">
 		<?php echo JText::_( 'HIKA_USERNAME' ).'*'; ?>
@@ -35,9 +38,11 @@ if($this->display_method == 1) {
 		<input type="text" id="register_username" name="data[register][username]" value="<?php echo $this->escape($this->mainUser->get( 'username' ));?>" class="inputbox hkform-control required validate-username" maxlength="25" />
 	</div>
 </div>
+<!-- EO USERNAME -->
 <?php
 	}
 ?>
+<!-- EMAIL -->
 <div class="hkform-group control-group hikashop_registration_email_line">
 	<label id="emailmsg" for="register_email" class="hkc-sm-4 hkcontrol-label">
 		<?php echo JText::_( 'HIKA_EMAIL' ).'*'; ?>
@@ -46,6 +51,8 @@ if($this->display_method == 1) {
 		<input<?php if($this->config->get('show_email_confirmation_field',0)){echo ' autocomplete="off"';} ?> type="text" id="register_email" name="data[register][email]" value="<?php echo $this->escape($this->mainUser->get( 'email' ));?>" class="inputbox hkform-control required validate-email" maxlength="100" />
 	</div>
 </div>
+<!-- EO EMAIL -->
+<!-- CONFIRM EMAIL -->
 <?php
 	if($this->config->get('show_email_confirmation_field',0)) {
 ?>
@@ -59,8 +66,15 @@ if($this->display_method == 1) {
 </div>
 <?php
 	}
+?>
+<!-- EO CONFIRM EMAIL -->
+<!-- TOP EXTRA DATA -->
+<?php
 	if(!empty($this->extraData) && !empty($this->extraData->top)) { echo implode("\r\n", $this->extraData->top); }
-
+?>
+<!-- EO TOP EXTRA DATA -->
+<!-- PASSWORD -->
+<?php
 	if(!$this->simplified_registration || $this->simplified_registration == 3) {
 ?>
 <div class="hkform-group control-group hikashop_registration_password_line" id="hikashop_registration_password_line">
@@ -81,13 +95,22 @@ if($this->display_method == 1) {
 </div>
 <?php
 	}
+?>
+<!-- EO PASSWORD -->
+<!-- MIDDLE EXTRA DATA -->
+<?php
 	if(!empty($this->extraData) && !empty($this->extraData->middle)) { echo implode("\r\n", $this->extraData->middle); }
 ?>
+<!-- EO MIDDLE EXTRA DATA -->
+<!-- CUSTOM USER FIELDS -->
 <?php
 	$this->setLayout('custom_fields');
 	$this->type = 'user';
 	echo $this->loadTemplate();
-
+?>
+<!-- EO CUSTOM USER FIELDS -->
+<!-- AFFILIATE -->
+<?php
 	if($this->config->get('affiliate_registration',0)){
 		$plugin = JPluginHelper::getPlugin('system', 'hikashopaffiliate');
 		if(!empty($plugin)){
@@ -120,7 +143,10 @@ if($this->display_method == 1) {
 <?php
 		}
 	}
-
+?>
+<!-- EO AFFILIATE -->
+<!-- CUSTOM ADDRESS FIELDS -->
+<?php
 	if($this->config->get('address_on_registration',1)) {
 ?>
 <div class="hikashop_registration_address_info_line">
@@ -134,6 +160,10 @@ if($this->display_method == 1) {
 		echo $this->loadTemplate();
 		if(!empty($this->extraData) && !empty($this->extraData->address_bottom)) { echo implode("\r\n", $this->extraData->address_bottom); }
 	}
+?>
+<!-- EO CUSTOM ADDRESS FIELDS -->
+<!-- PRIVACY CONSENT -->
+<?php
 	if(!empty($this->options['privacy'])) {
 ?>
 <fieldset>
@@ -150,7 +180,7 @@ if($this->display_method == 1) {
 		<div class="hkc-sm-4 hkcontrol-label">
 <?php
 		$text = JText::_('PLG_SYSTEM_PRIVACYCONSENT_FIELD_LABEL').'<span class="hikashop_field_required_label">*</span>';
-		if(!empty($this->options['privacy_id'])) {
+		if(!empty($this->options['privacy_id']) || !empty($this->options['privacy_url'])) {
 			$popupHelper = hikashop_get('helper.popup');
 			$text = $popupHelper->display(
 				$text,
@@ -172,16 +202,22 @@ if($this->display_method == 1) {
 </fieldset>
 <?php
 }
+?>
+<!-- EO PRIVACY CONSENT -->
+<!-- BOTTOM EXTRA DATA -->
+<?php
 	if(!empty($this->extraData) && !empty($this->extraData->bottom)) { echo implode("\r\n", $this->extraData->bottom); }
 ?>
+<!-- EO BOTTOM EXTRA DATA -->
+<!-- REQUIRED FIELDS TEXT -->
 <div class="hkform-group control-group hikashop_registration_required_info_line">
 	<label class='hkc-sm-4 hkcontrol-label'></label>
 	<span>
 		<?php echo JText::_( 'HIKA_REGISTER_REQUIRED' ); ?>
 	</span>
 </div>
-<input type="hidden" name="data[register][id]" value="<?php echo (int)$this->mainUser->get( 'id' );?>" />
-<input type="hidden" name="data[register][gid]" value="<?php echo (int)$this->mainUser->get( 'gid' );?>" />
+<!-- EO REQUIRED FIELDS TEXT -->
+<!-- REGISTER BUTTON -->
 <?php
 if(empty($this->form_name)) {
 	$this->form_name = 'hikashop_checkout_form';
@@ -201,4 +237,7 @@ if($this->simplified_registration == 2) {
 	id="hikashop_register_form_button"><?php
 		echo $registerButtonName;
 ?></button>
+<!-- EO REGISTER BUTTON -->
+<input type="hidden" name="data[register][id]" value="<?php echo (int)$this->mainUser->get( 'id' );?>" />
+<input type="hidden" name="data[register][gid]" value="<?php echo (int)$this->mainUser->get( 'gid' );?>" />
 </div>

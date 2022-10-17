@@ -302,13 +302,30 @@ class EmundusModelApplication extends JModelList
 
                 // Log the comment in the eMundus logging system.
                 $logsParams = array('updated' => []);
+
+                if(empty(trim($old_comment->reason))) {
+                    $old_comment->reason = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+                }
+
+                if(empty(trim($title))) {
+                    $title = JText::_('COM_EMUNDUS_COMMENT_NO_TITLE');
+                }
+
                 if ($old_comment->reason !== $title) {
-                    array_push($logsParams['updated'], ['old' => $old_comment->reason, 'new' => $title]);
+                    array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . JText::_('COM_EMUNDUS_EDIT_COMMENT_TITLE') . '</span>',
+                        'old' => $old_comment->reason,
+                        'new' => $title]);
                 }
+
+                /////////////
                 if ($old_comment->comment_body !== $text) {
-                    array_push($logsParams['updated'], ['old' => $old_comment->comment_body, 'new' => $text]);
+                    array_push($logsParams['updated'], ['description' => '<b>' . '[' . $old_comment->reason . ']' . '</b>', 'element' => '<span>' . JText::_('COM_EMUNDUS_EDIT_COMMENT_BODY') . '</span>',
+                        'old' => $old_comment->comment_body,
+                        'new' => $text]);
                 }
+
                 if (!empty($logsParams['updated'])) {
+                    $logsParams['updated'] = array_values($logsParams['updated']);
                     EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'u', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_UPDATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
                 }
             }
@@ -351,6 +368,10 @@ class EmundusModelApplication extends JModelList
         $query->clear()->delete($this->_db->quoteName('#__emundus_comments'))
             ->where($this->_db->quoteName('id') . ' = ' . $id);
         $this->_db->setQuery($query);
+
+        // Log the comments in the eMundus logging system.
+        $logsStd = new stdClass();
+
         try {
             $res = $this->_db->execute();
         } catch (Exception $e) {
@@ -360,13 +381,16 @@ class EmundusModelApplication extends JModelList
 
         if ($res && !empty($fnum)) {
             // Log the comment in the eMundus logging system
-            $logsParams = array('deleted' => []);
             // Log only the body if the comment had no title
             if (empty($deleted_comment->reason)) {
-                $logsParams['deleted'] = [$deleted_comment->comment_body];
+                $logsStd->element = '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']';
+                $logsStd->details = $deleted_comment->comment_body;
             } else {
-                $logsParams['deleted'] = [$deleted_comment->reason, $deleted_comment->comment_body];
+                $logsStd->element = "[" . $deleted_comment->reason . "]";
+                $logsStd->details = $deleted_comment->comment_body;
             }
+
+            $logsParams = array('deleted' => [$logsStd]);
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 10, 'd', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
@@ -384,13 +408,17 @@ class EmundusModelApplication extends JModelList
         $this->_db->setQuery($query);
         $deleted_tag = $this->_db->loadResult();
 
+        // Log the tag in the eMundus logging system.
+        $logsStd = new stdClass();
+
         $query = 'DELETE FROM #__emundus_tag_assoc WHERE id_tag = ' . $id_tag . ' AND fnum like ' . $this->_db->Quote($fnum);
         $this->_db->setQuery($query);
         $res = $this->_db->execute();
 
         // Log the action in the eMundus logging system.
         if ($res) {
-            $logsParams = array('deleted' => [$deleted_tag]);
+            $logsStd->details = $deleted_tag;
+            $logsParams = array('deleted' => [$logsStd]);
             EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($fnum, -7), $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
         }
 
@@ -400,13 +428,19 @@ class EmundusModelApplication extends JModelList
     public function addComment($row)
     {
         // Log the comment in the eMundus logging system.
-        $logsParams = array('created' => []);
+        $logsStd = new stdClass();
         // Log only the body if there is no title
         if (empty($row['reason'])) {
-            $logsParams['created'] = [$row['comment_body']];
+            $logsStd->element = '[' . JText::_('COM_EMUNDUS_COMMENT_NO_TITLE') . ']';
+            $logsStd->details = $row['comment_body'];
         } else {
-            $logsParams['created'] = [$row['reason'], $row['comment_body']];
+            $logsStd->element = '[' . $row['reason'] . ']';
+            $logsStd->details = $row['comment_body'];
         }
+
+        //$logsStd->details =  $row['comment_body'];
+
+        $logsParams = array('created' => [$logsStd]);
         EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($row['fnum'], -7), $row['fnum'], 10, 'c', 'COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 
         $query = 'INSERT INTO `#__emundus_comments` (applicant_id, user_id, reason, date, comment_body, fnum)
@@ -455,8 +489,23 @@ class EmundusModelApplication extends JModelList
 
             $query = 'DELETE FROM #__emundus_uploads WHERE id=' . $id;
             $this->_db->setQuery($query);
-            return $this->_db->Query();
+            $deleted = $this->_db->execute();
 
+            if ($deleted) {
+                // Log the tag in the eMundus logging system.
+                $logsStd = new stdClass();
+
+                // get attachment data
+                $attachmentTpe = $this->getAttachmentByID($file['attachment_id']);
+
+                $logsStd->element = "[" . $attachmentTpe['value'] . "]";
+                $logsStd->details = $file['filename'];
+                $logsParams = array('deleted' => [$logsStd]);
+
+                EmundusModelLogs::log(JFactory::getUser()->id, (int)substr($file['fnum'], -7), $file['fnum'], 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+            }
+
+            return $deleted;
         } catch (Exception $e) {
             JLog::add('Error in model/application at query: ' . $query, JLog::ERROR, 'com_emundus');
         }
@@ -4510,6 +4559,9 @@ class EmundusModelApplication extends JModelList
             $return['file_update'] = $updated ? true : false;
         }
 
+        // get old data
+        $oldData = $this->getUploadByID($data['id']);
+
         // update attachments fields in database
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -4535,11 +4587,70 @@ class EmundusModelApplication extends JModelList
         ->set($db->quoteName('modified_by') . ' = ' . $db->quote($data['user']))
         ->where($db->quoteName('id') . ' = ' . $db->quote($data['id']));
 
-        //execute query
         try {
             $db->setQuery($query);
             $db->execute();
             $return['update'] = true;
+
+            // get new data
+            $newData = $this->getUploadByID($data['id']);
+
+            $logger = array();
+
+            // included keys
+            $includedKeys = ['description','can_be_deleted','can_be_viewed','is_validated'];
+
+            $is_validated = array(1=>'VALID',0=>'INVALID',2=> 'COM_EMUNDUS_ATTACHMENTS_WARNING',-2=>'COM_EMUNDUS_ATTACHMENTS_WAITING');
+            $can_be_viewed = array(1=>'JYES',0=>'JNO');
+            $can_be_deleted = array(1=>'JYES',0=>'JNO');
+
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($data['fnum']))['applicant_id'];
+
+            $attachmentParams = $this->getAttachmentByID($newData['attachment_id']);
+
+            if(empty($_FILES)) {
+                // find the difference(s)
+                foreach ($oldData as $key => $value) {
+                    // by default : null = "invalid" or -2
+                    if($key === 'is_validated' and is_null($value)) {
+                        $value = -2;            # recheck !!!
+                    }
+
+                    $logsStd = new stdClass();
+                    if ($oldData[$key] !== $newData[$key] and in_array($key, $includedKeys)) {
+                        $logsStd->description = '<b>' . '[' . $attachmentParams['value'] . ']' . '</b>';
+
+                        $logsStd->element = '<u>' . JText::_($key) . '</u>';
+
+                        // set old data
+                        if(in_array($oldData[$key],array_keys($$key))) { $logsStd->old = JText::_($$key[$oldData[$key]]); }
+                        else { $logsStd->old = $oldData[$key]; }
+
+                        // set new data
+                        if(in_array($oldData[$key],array_keys($$key))) { $logsStd->new = JText::_($$key[$newData[$key]]); }
+                        else { $logsStd->new = $newData[$key]; }
+
+                        $logger[] = $logsStd;
+                    } else {
+                        continue;
+                    }
+                    $logsParams = array('updated' => $logger);
+                }
+                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'u', 'COM_EMUNDUS_ACCESS_ATTACHMENT_UPDATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
+            } else {
+                // add new document LOGS
+                $logsStd = new stdClass();
+
+                /* get attachment type by $data['id'] */
+                $logsStd->element = '[' . $attachmentParams['value'] . ']';
+                $logsStd->details = $_FILES['file']['name'];
+                $logsParams = array('created' => [$logsStd]);
+                EmundusModelLogs::log(JFactory::getUser()->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
+            }
         } catch (Exception $e) {
             // log error
             $return['update'] = false;

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -190,9 +190,11 @@ class plgHikashopMassaction_order extends JPlugin
 		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
 		if(count($elements)){
 			foreach($elements as $k => $element){
+
 				$orderClass = hikashop_get('class.order');
 				$orderClass->loadProducts($element);
-				if(empty($element->products)){unset($elements[$k]); continue;}
+				if(empty($element->products)){unset($elements[$k]); continue;}				
+
 				$del = true;
 				foreach($element->products as $product){
 					$in = $this->massaction->checkInElement($product, $filter);
@@ -391,6 +393,7 @@ class plgHikashopMassaction_order extends JPlugin
 		$formatExport = $action['formatExport']['format'];
 		$email = $action['formatExport']['email'];
 		$path = $action['formatExport']['path'];
+		$oneProductPerRow = @$action['formatExport']['oneProductPerRow'];
 		if(!empty($path)){
 			$url = $this->massaction->setExportPaths($path);
 		}else{
@@ -406,6 +409,7 @@ class plgHikashopMassaction_order extends JPlugin
 			$params = $this->massaction->_displayResults('order',$elements,$action,$k);
 			$params->formatExport = $formatExport;
 			$params->path = $url['server'];
+			$params->oneProductPerRow = $oneProductPerRow;
 			$params = $this->massaction->sortResult($params->table,$params);
 			$this->massaction->_exportCSV($params);
 		}
@@ -433,8 +437,9 @@ class plgHikashopMassaction_order extends JPlugin
 
 		foreach($elements as $element){
 			$ids[] = $element->$current_id;
-			if(isset($element->$action['type']))
-				$element->$action['type'] = $action['value'];
+			$type = $action['type'];
+			if(isset($element->$type))
+				$element->$type = $action['value'];
 		}
 
 		$action['type'] = strip_tags($action['type']);
@@ -448,7 +453,7 @@ class plgHikashopMassaction_order extends JPlugin
 
 		if(!isset($this->massaction))$this->massaction = hikashop_get('class.massaction');
 		$value = $this->massaction->updateValuesSecure($action,$possibleTables,$queryTables);
-		JArrayHelper::toInteger($ids);
+		hikashop_toInteger($ids);
 		$db = JFactory::getDBO();
 
 		$max = 500;
@@ -514,6 +519,11 @@ class plgHikashopMassaction_order extends JPlugin
 			$order_productClass = hikashop_get('class.order_product');
 			$unsetValues = array();
 			foreach($elements as $order){
+				if(empty($order->order_id)) {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage('A mass action is trying to add a product to an order that isn\'t created yet. This is not possible.');
+					continue;
+				}
 				$orderClass->loadProducts($order);
 				foreach($order->products as $product){
 					if(in_array($product->product_id,$action['value'])){
@@ -565,14 +575,14 @@ class plgHikashopMassaction_order extends JPlugin
 						$data['products'] = true;
 						$data['order']['product']['many'] = true;
 						$productClass->getProducts($product_ids);
-						foreach($productClass->products as $k => $product){
-							$data['order']['product'][$k]['order_id'] = $order->order_id;
-							$data['order']['product'][$k]['product_id'] = $product->product_id;
-							$data['order']['product'][$k]['order_product_quantity'] = (!empty($action['quantity']))?$action['quantity']:1;
-							$data['order']['product'][$k]['order_product_id'] = '';
-							$data['order']['product'][$k]['order_product_name'] = $product->product_name;
-							$data['order']['product'][$k]['order_product_code'] = $product->product_code;
-							$data['order']['product'][$k]['order_product_price'] = $product->prices[0]->price_value;
+						foreach($productClass->products as $i => $product){
+							$data['order']['product'][$i]['order_id'] = $order->order_id;
+							$data['order']['product'][$i]['product_id'] = $product->product_id;
+							$data['order']['product'][$i]['order_product_quantity'] = (!empty($action['quantity']))?$action['quantity']:1;
+							$data['order']['product'][$i]['order_product_id'] = '';
+							$data['order']['product'][$i]['order_product_name'] = $product->product_name;
+							$data['order']['product'][$i]['order_product_code'] = $product->product_code;
+							$data['order']['product'][$i]['order_product_price'] = $product->prices[0]->price_value;
 						}
 						hikaInput::get()->set('data', $data);
 						$orderClass->saveForm('products');
@@ -662,7 +672,8 @@ class plgHikashopMassaction_order extends JPlugin
 			$content = array('elements' => $elements, 'action' => $action, 'type' => 'order_notification');
 			$mail = $mailClass->get('massaction_notification',$content);
 			$mail->subject = !empty($action['emailSubject'])?JText::_($action['emailSubject']):JText::_('MASS_NOTIFICATION_EMAIL_SUBJECT');
-			$mail->body = $action['bodyData'];
+			if(!empty($action['bodyData']))
+				$mail->body = $action['bodyData'];
 			$mail->html = '1';
 			$mail->dst_name = '';
 			if(!empty($action['emailAddress']))
@@ -705,6 +716,7 @@ class plgHikashopMassaction_order extends JPlugin
 
 	function onAfterOrderCreate(&$order,&$send_email){
 		$getOrder = $this->order->get($order->order_id);
+
 		$getOrder->old = '';
 		$orders = array($getOrder);
 		$this->massaction->trigger('onAfterOrderCreate',$orders);
