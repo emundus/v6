@@ -168,8 +168,6 @@ class plgUserEmundus_registration_email extends JPlugin {
                 throw new RuntimeException($table->getError());
             }
 
-            var_dump($user->getProperties());
-
 
             // Send activation email
             if ($this->sendActivationEmail($user->getProperties(), $activation)) {
@@ -259,8 +257,6 @@ class plgUserEmundus_registration_email extends JPlugin {
         if (json_decode($data['params'])->skip_activation) {
             return false;
         }
-        var_dump($data['params']);exit;
-        return false;
 
         $jinput = JFactory::getApplication()->input;
         $civility = is_array($jinput->post->get('jos_emundus_users___civility')) ? $jinput->post->get('jos_emundus_users___civility')[0] : $jinput->post->get('jos_emundus_users___civility');
