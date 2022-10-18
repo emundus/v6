@@ -519,7 +519,7 @@ class EmundusModelUsers extends JModelList {
 
     public function getAllCampaigns() {
         $db = JFactory::getDBO();
-        $query = 'SELECT * FROM #__emundus_setup_campaigns AS sc ORDER BY sc.start_date DESC, sc.label ASC';
+        $query = 'SELECT *,esp.label as programme FROM #__emundus_setup_campaigns AS sc LEFT JOIN #__emundus_setup_programmes AS esp on sc.training = esp.code ORDER BY sc.start_date DESC, sc.label ASC';
         $db->setQuery($query);
         return $db->loadObjectList();
     }
