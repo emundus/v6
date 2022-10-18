@@ -486,7 +486,7 @@ p,
 
 #g-navigation #header-a .logo {
   width: auto;
-  max-height: 65px;
+  max-height: 40px;
   max-width: 180px;
 }
 
@@ -505,7 +505,7 @@ p,
 
   #header-c {
     max-width: 30rem;
-    min-height: 67px;
+    max-height: 40px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -537,7 +537,7 @@ p,
   background: transparent;
 
   .g-container {
-    padding: 10px;
+    padding: 16px 12px;
     width: 100%;
     margin: auto !important;
     position: fixed;
@@ -549,6 +549,7 @@ p,
     display: flex;
     align-items: center;
     transition: all 0.3s ease-in-out;
+    max-height: 40px;
   }
 }
 
@@ -619,7 +620,7 @@ p,
 
 
 .g-back-office-emundus-tableau #g-navigation.g-flushed .g-container {
-  padding: 10px !important;
+  padding: 16px 12px !important;
 }
 
 footer#g-footer {

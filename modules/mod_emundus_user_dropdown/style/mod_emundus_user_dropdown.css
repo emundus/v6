@@ -1,7 +1,7 @@
 /* USER MENU */
 @keyframes increase-width {
     from {width: 0;}
-    to {width: 250px;}
+    to {width: 300px;}
 }
 
 @keyframes increase-opacity {
@@ -16,7 +16,7 @@
     top: 0;
     position: fixed;
     right: 0 !important;
-    width: 250px;
+    width: 300px;
     min-width: 0;
     margin-top: 0;
     height: 100%;
@@ -102,7 +102,7 @@ li>a:hover {
 #g-navigation #header-c .header-right a.btn.btn-danger {
     font-weight: 500 !important;
     font-size: 14px !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 0 !important;
     text-shadow: none;
     padding: 10px 24px;
 }
@@ -118,7 +118,7 @@ li>a:hover {
 #g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
      color: #fff;
      border-radius: 8px;
-     margin-bottom: 5px !important;
+     margin-bottom: 0 !important;
     line-height: normal;
     letter-spacing: normal;
 }

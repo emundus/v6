@@ -12,6 +12,8 @@ $document = JFactory::getDocument();
 $document->addStyleSheet("modules/mod_emundus_user_dropdown/style/mod_emundus_user_dropdown.css" );
 // Note. It is important to remove spaces between elements.
 
+$guest = JFactory::getUser()->guest;
+
 if($user != null) {
 ?>
 
@@ -204,7 +206,7 @@ if($user != null) {
         var messageIcon = document.getElementById('messageDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
+            jQuery("#userDropdownMenu").css("transform","translate(300px)")
             setTimeout(() => {
                 dropdown.classList.remove('open');
                 jQuery("#userDropdownMenu").css("transform","unset")
@@ -238,7 +240,7 @@ if($user != null) {
         var icon = document.getElementById('userDropdownIcon');
 
         if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
+            jQuery("#userDropdownMenu").css("transform","translate(300px)")
             setTimeout(() => {
                 dropdown.classList.remove('open');
                 jQuery("#userDropdownMenu").css("transform","unset")
@@ -302,8 +304,13 @@ if($user != null) {
     <!--<a class="forgotten_password_header" href="<?/*= $link_forgotten_password; */?>"><?/*= JText::_('FORGOTTEN_PASSWORD_LABEL'); */?></a>-->
 
     <script>
+        <?php if ($guest): ?>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+            document.querySelector('#g-navigation .g-container').style.padding = '16px 72px';
         });
+        <?php endif; ?>
+        /*document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('#header-c .g-content').style.alignItems = 'start';
+        });*/
     </script>
 <?php } ?>

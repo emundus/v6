@@ -401,11 +401,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             ?>
 
                         <?php if(strtotime($now) > strtotime($result->end_date)) :  ?>
-                        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+                        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
 
                         <?php  else : ?>
 
-                        <div class="mod_emundus_campaign__list_content em-border-neutral-300" onclick="window.location.href=<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>">
+
+                        <div class="mod_emundus_campaign__list_content em-border-neutral-300 em-pointer" onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JURI::base() . "index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2; ?>'">
                         <?php endif; ?>
 
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
@@ -592,17 +593,17 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             });
         }
 
+        <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
         setTimeout(() => {
             let sort_button = document.getElementById('mod_emundus_campaign__header_sort');
-            <?php if ($mod_em_campaign_show_filters == 1 && !empty($mod_em_campaign_show_filters_list)) : ?>
                 if(typeof sort_button !== 'undefined'){
                     document.getElementById('filters_block').style.marginLeft = (sort_button.offsetWidth + 8) +'px';
                 }
-            <?php endif; ?>
         },1000);
 
         let filter_existing = document.querySelectorAll("div[id^='filter_']");
         document.getElementById('mod_emundus_campaign__header_filter_count').innerHTML = filter_existing.length;
+        <?php endif; ?>
     });
 
     function displaySort(){
@@ -807,16 +808,18 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
             }
         }
 
-        clickInsideModule = false;
-        if(filters.style.display === 'flex') {
-            e.composedPath().forEach((pathElement) => {
-                if (pathElement.id == "filters_block" || pathElement.id == "mod_emundus_campaign__header_filter") {
-                    clickInsideModule = true;
-                }
-            });
+        if(typeof filter !== 'undefined') {
+            clickInsideModule = false;
+            if (filters.style.display === 'flex') {
+                e.composedPath().forEach((pathElement) => {
+                    if (pathElement.id == "filters_block" || pathElement.id == "mod_emundus_campaign__header_filter") {
+                        clickInsideModule = true;
+                    }
+                });
 
-            if (!clickInsideModule) {
-                filters.style.display = 'none';
+                if (!clickInsideModule) {
+                    filters.style.display = 'none';
+                }
             }
         }
     });

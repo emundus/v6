@@ -207,6 +207,8 @@ class com_emundusInstallerScript
             if (version_compare($cache_version, '1.34.0', '<')) {
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','pinned','TINYINT',1);
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
+
+                EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();
