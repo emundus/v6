@@ -266,3 +266,50 @@ a.btn.btn-success:not(.btn-xs) {
 }
 
 
+.mod_emundus_applications___header{
+    max-width: 720px;
+    width: 100%;
+}
+.mod_emundus_applications___header_desc p{
+    color: #727272;
+}
+.mod_emundus_applications___content{
+    display: grid;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 32px;
+    grid-template-columns: repeat(2,1fr);
+}
+.mod_emundus_applications___content_app{
+    box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+    border-radius: 16px !important;
+    padding: 32px;
+    height: 330px;
+    background: #fff;
+}
+.mod_emundus_applications___date{
+    display: flex;
+    align-items: center;
+}
+.mod_emundus_applications___informations{
+    display: grid;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 16px;
+    grid-template-columns: repeat(2,1fr);
+}
+
+.mod_emundus_applications___circle{
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+}
+.mod_emundus_applications___programme_tag{
+    border-radius: 8px;
+    padding: 5px 12px;
+    width: fit-content;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
