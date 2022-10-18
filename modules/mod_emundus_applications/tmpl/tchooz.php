@@ -29,9 +29,9 @@ $now = $dateTime->format('Y-m-d H:i:s');
     <?php endif; ?>
 </div>
 
-<div class="mod_emundus_applications___content em-mt-32">
+<div class="em-mt-32">
     <?php if (!empty($applications)) : ?>
-        <div class="<?= $moduleclass_sfx ?>">
+        <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content">
             <?php foreach ($applications as $application) : ?>
 
 
@@ -163,7 +163,6 @@ $now = $dateTime->format('Y-m-d H:i:s');
                             </span>
                         </div>
                     </div>
-                    <hr>
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
