@@ -294,12 +294,12 @@ if($user != null) {
 </script>
 <?php } else { ?>
 <div class="header-right" style="text-align: right;">
+    <?php if ($show_registration) { ?>
+        <a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
+    <?php } ?>
 	<a class="btn btn-danger" href="<?= $link_login; ?>" data-toggle="sc-modal"><?= JText::_('CONNEXION_LABEL'); ?></a>
-	<?php if ($show_registration) { ?>
-		<a class="btn btn-danger btn-creer-compte" href="<?= $link_register; ?>" data-toggle="sc-modal"><?= JText::_('CREATE_ACCOUNT_LABEL'); ?></a>
-	<?php } ?>
 </div>
-    <a class="forgotten_password_header" href="<?= $link_forgotten_password; ?>"><?= JText::_('FORGOTTEN_PASSWORD_LABEL'); ?></a>
+    <!--<a class="forgotten_password_header" href="<?/*= $link_forgotten_password; */?>"><?/*= JText::_('FORGOTTEN_PASSWORD_LABEL'); */?></a>-->
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

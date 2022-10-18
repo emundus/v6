@@ -140,7 +140,7 @@ $h = $dteDiff->format("%H");
     </div>
 
     <div>
-        <?php if ($mod_em_campaign_show_registration == 1) : ?>
+        <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <!-- INFO BLOCK -->
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
             <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></p>

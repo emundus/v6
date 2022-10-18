@@ -204,7 +204,7 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addYamlVariable('priority','0',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
                 EmundusHelperUpdate::addYamlVariable('name','Fabrik',JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml','javascript');
             }
-            if (version_compare($cache_version, '1.33.1', '<')) {
+            if (version_compare($cache_version, '1.34.0', '<')) {
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns','pinned','TINYINT',1);
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
             }
