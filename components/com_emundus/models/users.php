@@ -2711,7 +2711,7 @@ class EmundusModelUsers extends JModelList {
     {
         $app = JFactory::getApplication();
         $user_id = $data['user_id'];
-        $profile_id = 9;
+        $profile_id = 1000;
         $message = '';
 
         if (!empty($user_id)) {
