@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = '/';
+const SystemPath = Joomla.getOptions('system.paths');
+axios.defaults.baseURL = SystemPath.base !== undefined && SystemPath.base !== '' ? SystemPath.base : '/';
 
 export default (headers = {
     'Content-Type': 'application/json',
