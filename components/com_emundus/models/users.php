@@ -2861,7 +2861,7 @@ class EmundusModelUsers extends JModelList {
     {
         $connected = false;
         $app = JFactory::getApplication();
-        $message = "Clé invalide";
+        $message = 'COM_EMUNDUS_USERS_ANONYM_INVALID_KEY';
 
         if (!empty($token)) {
             $db = JFactory::getDBO();
@@ -2877,28 +2877,28 @@ class EmundusModelUsers extends JModelList {
                 $result = $db->loadObject();
             } catch(Exception $e) {
                 JLog::add('Failed to get key from token ' . $token . ' ' . $e->getMessage() , JLog::ERROR, 'com_emundus.error');
-                $message = 'Aucune clé correspondante n\'a été trouvée. '. $e->getMessage();
+                $message = 'COM_EMUNDUS_USERS_ANONYM_FAILED_TO_FOUND_KEY';
             }
 
             if (!empty($result) && !empty($result->id)) {
                 $date = strtotime($result->token_expiration);
                 if (time() > $date) {
-                    $message = "La date de validité de votre token est dépassée " . date('d/m/Y H/hs', $date);
+                    $message = 'COM_EMUNDUS_USERS_ANONYM_OUTDATED_KEY ' . date('d/m/Y H/hs', $date);
                 } else {
                     $connected = $this->connectUserFromId($result->id);
 
                     if (!$connected) {
-                        $message = 'La connexion à l\'utilisateur  ' . $result->id . ' a échoué.';
+                        $message = 'COM_EMUNDUS_USERS_ANONYM_USER_CONNECTION_FAILED';
                     }
                 }
             } else {
                 $this->assertNotMaliciousAttemptsUsingConnectViaToken();
-                $message = 'Clé inexistante.';
+                $message = 'COM_EMUNDUS_USERS_ANONYM_UNEXISTING_KEY';
             }
         }
 
         if (!$connected && !empty($message)) {
-            $app->enqueueMessage($message, 'error');
+            $app->enqueueMessage(JText::_($message), 'error');
         }
         return $connected;
     }
@@ -3022,7 +3022,7 @@ class EmundusModelUsers extends JModelList {
                     }
                     if (!empty($existing_user)) {
                         if ($existing_user == $user_id) {
-                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_NOTHING_TO_UPDATE'));
+                            JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ANONYM_NOTHING_TO_UPDATE'));
                         } else {
                             // Copy files to existing user, log to this user and block current anonym user
                             $query->clear()
@@ -3056,7 +3056,7 @@ class EmundusModelUsers extends JModelList {
                                     }
                                 }
                             } else {
-                                JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_NOTHING_TO_BIND'));
+                                JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ANONYM_NOTHING_TO_BIND'));
                             }
                         }
                     } else {
@@ -3181,10 +3181,11 @@ class EmundusModelUsers extends JModelList {
                  $db->setQuery($query);
                  $db->execute();
 
-                 $app->enqueueMessage('COM_EMUNDUS_USERS_TOO_MANY_WRONG_ATTEMPTS', 'error');
+                 $app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_TOO_MANY_WRONG_ATTEMPTS'), 'error');
                  $app->redirect('/');
              } else {
-                 $app->enqueueMessage('Vous ne pourrez réesaayer que ' . (5 - sizeof($failed_attempts)) . ' fois', 'error');
+
+                 $app->enqueueMessage(JText::_('COM_EMUNDUS_ANONYM_USERS_ATTEMPTS_BEGIN') . (5 - sizeof($failed_attempts)) . JText::_('COM_EMUNDUS_ANONYM_USERS_ATTEMPTS_END'), 'error');
              }
         }
     }
