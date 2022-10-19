@@ -91,7 +91,17 @@ ksort($applications);
                                         <span>N°<?php echo $application->fnum ?></span>
                                     </div>
                                     <div>
-                                        <span class="material-icons em-text-neutral-600" style="font-size: 16px">more_vert</span>
+                                        <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
+
+                                        <!-- ACTIONS BLOCK -->
+                                        <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
+                                            <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>">
+                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
+                                            </a>
+                                            <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');">
+                                                <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
+                                            </a>
+                                        </div>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -189,7 +199,10 @@ ksort($applications);
                                     </div>
                                 <?php elseif (in_array($application->status,$visible_status)) :?>
                                     <label class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_STATUS'); ?> :</label>
-                                    <span class="label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                    <div class="mod_emundus_applications___status_<?= $application->class; ?> em-flex-row">
+                                        <span class="mod_emundus_applications___circle em-mr-8 label-<?= $application->class; ?>"></span>
+                                        <span><?= $application->value; ?></span>
+                                    </div>
                                 <?php endif; ?>
                                 <?php if(!empty($application->order_status)): ?>
                                     <br>
