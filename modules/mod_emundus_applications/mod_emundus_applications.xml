@@ -38,6 +38,17 @@
 						description="MOD_EMUNDUS_APPLICATIONS_DESCRIPTION_DESC">
 				</field>
 				<field
+						name="show_fnum"
+						type="radio"
+						default="1"
+						label="MOD_EMUNDUS_APPLICATIONS_SHOW_FNUM"
+						description="">
+					<option
+							value="0">JNo</option>
+					<option
+							value="1">JYes</option>
+				</field>
+				<field
 						name="show_add_application"
 						type="radio"
 						default="0"

@@ -61,11 +61,18 @@ class EmundusModelSamples extends JModelList {
         $user->save();
 
         $query->clear()
+            ->select('id')
+            ->from($db->quoteName('#__users'))
+            ->where($db->quoteName('username') . ' = ' . $user->username);
+        $db->setQuery($query);
+        $user->id = $db->loadResult();
+
+        /*$query->clear()
             ->update($db->quoteName('#__users'))
             ->set($db->quoteName('username') . ' = ' . $db->quote('user'.$user->id.'.test@emundus.fr'))
             ->where($db->quoteName('id') . ' = ' . $user->id);
         $db->setQuery($query);
-        $db->execute();
+        $db->execute();*/
 
         $m_users->addEmundusUser($user->id, $other_param);
 
@@ -141,12 +148,56 @@ class EmundusModelSamples extends JModelList {
         $query->select('code')
             ->from($db->quoteName('#__emundus_setup_programmes'));
         $db->setQuery($query);
-        $training = $db->loadResult();
+        $programmes = $db->loadColumn();
 
-        if(empty($training)){
+        $campaigns = [];
+        foreach ($programmes as $programme) {
+            $start_date = new DateTime();
+            $start_date->modify('-1 day');
+
+            $end_date = new DateTime();
+            $end_date->modify('+1 year');
+
             $inserting_datas = [
-                'code' => 'prog',
-                'label' => 'Programme de test',
+                'user' => 62,
+                'label' => $label,
+                'description' => 'Lorem ipsum',
+                'short_description' => 'Lorem ipsum',
+                'start_date' => $start_date->format('Y-m-d H:i:s'),
+                'end_date' => $end_date->format('Y-m-d H:i:s'),
+                'profile_id' => $profile,
+                'training' => $programme,
+                'year' => '2022-2023',
+                'published' => 1,
+            ];
+
+            $query->clear()
+                ->insert($db->quoteName('#__emundus_setup_campaigns'))
+                ->columns($db->quoteName(array_keys($inserting_datas)))
+                ->values(implode(',', $db->quote(array_values($inserting_datas))));
+            $db->setQuery($query);
+            $db->execute();
+
+            $campaigns[] = $db->insertid();
+        }
+
+        return $campaigns;
+    }
+
+    public function createSampleProgram($label,$code){
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('code')
+            ->from($db->quoteName('#__emundus_setup_programmes'))
+            ->where($db->quoteName('code') . ' = ' . $db->quote($code));
+        $db->setQuery($query);
+        $existing = $db->loadResult();
+
+        if(empty($existing)) {
+            $inserting_datas = [
+                'code' => $code,
+                'label' => $label,
                 'ordering' => 1,
                 'published' => 1,
                 'apply_online' => 1,
@@ -155,18 +206,18 @@ class EmundusModelSamples extends JModelList {
             $query->clear()
                 ->insert($db->quoteName('#__emundus_setup_programmes'))
                 ->columns($db->quoteName(array_keys($inserting_datas)))
-                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+                ->values(implode(',', $db->quote(array_values($inserting_datas))));
             $db->setQuery($query);
             $db->execute();
 
             $inserting_datas = [
                 'parent_id' => 1,
-                'course' => 'prog',
+                'course' => $code,
             ];
             $query->clear()
                 ->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
                 ->columns($db->quoteName(array_keys($inserting_datas)))
-                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+                ->values(implode(',', $db->quote(array_values($inserting_datas))));
             $db->setQuery($query);
             $db->execute();
 
@@ -175,7 +226,7 @@ class EmundusModelSamples extends JModelList {
             $inserting_datas = [
                 'label' => '2022-2023',
                 'schoolyear' => '2022-2023',
-                'code' => 'prog',
+                'code' => $code,
                 'published' => 1,
                 'date_start' => date('Y-m-d H:i:s'),
                 'date_end' => $end_date->format('Y-m-d H:i:s'),
@@ -184,39 +235,11 @@ class EmundusModelSamples extends JModelList {
             $query->clear()
                 ->insert($db->quoteName('#__emundus_setup_teaching_unity'))
                 ->columns($db->quoteName(array_keys($inserting_datas)))
-                ->values(implode(',',$db->quote(array_values($inserting_datas))));
+                ->values(implode(',', $db->quote(array_values($inserting_datas))));
             $db->setQuery($query);
             $db->execute();
-
-            $training = 'prog';
         }
 
-        $start_date = new DateTime();
-        $start_date->modify('-1 day');
-
-        $end_date = new DateTime();
-        $end_date->modify('+1 year');
-
-        $inserting_datas = [
-            'user' => 62,
-            'label' => $label,
-            'description' => 'Lorem ipsum',
-            'short_description' => 'Lorem ipsum',
-            'start_date' => $start_date->format('Y-m-d H:i:s'),
-            'end_date' => $end_date->format('Y-m-d H:i:s'),
-            'profile_id' => $profile,
-            'training' => $training,
-            'year' => '2022-2023',
-            'published' => 1,
-        ];
-
-        $query->clear()
-            ->insert($db->quoteName('#__emundus_setup_campaigns'))
-            ->columns($db->quoteName(array_keys($inserting_datas)))
-            ->values(implode(',',$db->quote(array_values($inserting_datas))));
-        $db->setQuery($query);
-        $db->execute();
-
-        return $db->insertid();
+        return $code;
     }
 }

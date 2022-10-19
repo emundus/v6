@@ -16,13 +16,25 @@ $dateTime = $dateTime->setTimezone(new DateTimeZone($site_offset));
 $now = $dateTime->format('Y-m-d H:i:s');
 
 
+$tmp_applications = $applications;
+$applications = [];
+foreach ($tmp_applications as $application) {
+    if(in_array($application->status, $status_for_send)){
+        $applications['in_progress'][] = $application;
+    } else {
+        $applications['sent'][] = $application;
+    }
+}
+
+ksort($applications);
+
 ?>
 <div class="mod_emundus_applications___header">
     <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
     <span class="mod_emundus_applications___header_desc"><?php echo $description; ?></span>
 
     <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-        <a id="add-application" class="btn btn-success em-w-auto em-mt-32" href="<?= $cc_list_url; ?>">
+        <a id="add-application" class="btn btn-success em-mt-32" style="width: auto" href="<?= $cc_list_url; ?>">
             <span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
         </a>
         <hr>
@@ -31,9 +43,19 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
 <div class="em-mt-32">
     <?php if (!empty($applications)) : ?>
-        <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content">
-            <?php foreach ($applications as $application) : ?>
+        <?php foreach ($applications as $key => $group) : ?>
 
+        <div class="em-mb-44">
+            <?php if($key == 'in_progress') : ?>
+                <p class="em-h5 em-mb-24">Candidature non finalisées</p>
+            <?php endif; ?>
+
+            <?php if($key == 'sent') : ?>
+                <p class="em-h5 em-mb-24">Candidature déposées</p>
+            <?php endif; ?>
+
+            <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content">
+                <?php foreach ($group as $application) : ?>
 
                 <?php
                 $is_admission = in_array($application->status, $admission_status);
@@ -61,30 +83,60 @@ $now = $dateTime->format('Y-m-d H:i:s');
                     }
 
                     ?>
-                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app" id="row<?= $application->fnum; ?>">
+                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer">
                         <div>
-                            <?php
-                            $color = '#1C6EF2';
-                            $background = '#F0F6FD';
-                            if(!empty($application->tag_color)){
-                                $color = $application->tag_color;
-                                switch ($application->tag_color) {
-                                    case '#20835F':
-                                        $background = '#DFF5E9';
-                                        break;
-                                    case '#DB333E':
-                                        $background = '#FFEEEE';
-                                        break;
-                                    case '#FFC633':
-                                        $background = '#FFFBDB';
-                                        break;
+                            <div class="em-flex-row em-flex-space-between">
+                                <?php if ($show_fnum) : ?>
+                                    <div class="em-mb-8 em-font-size-14">
+                                        <span>N°<?php echo $application->fnum ?></span>
+                                    </div>
+                                    <div>
+                                        <span class="material-icons em-text-neutral-600" style="font-size: 16px">more_vert</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="em-flex-row em-flex-space-between em-mb-12">
+                                <?php
+                                $color = '#1C6EF2';
+                                $background = '#F0F6FD';
+                                if(!empty($application->tag_color)){
+                                    $color = $application->tag_color;
+                                    switch ($application->tag_color) {
+                                        case '#20835F':
+                                            $background = '#DFF5E9';
+                                            break;
+                                        case '#DB333E':
+                                            $background = '#FFEEEE';
+                                            break;
+                                        case '#FFC633':
+                                            $background = '#FFFBDB';
+                                            break;
+                                    }
                                 }
-                            }
-                            ?>
-                            <p class="mod_emundus_applications___programme_tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
-                                <?php  echo $application->programme; ?>
-                            </p>
-                            <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6">
+                                ?>
+                                <p class="mod_emundus_applications___programme_tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                                    <?php  echo $application->programme; ?>
+                                </p>
+                                <?php if (!$show_fnum) : ?>
+                                <div>
+                                    <span class="material-icons em-text-neutral-600" id="actions_button_<?php echo $application->fnum ?>" style="font-size: 16px">more_vert</span>
+
+                                    <!-- ACTIONS BLOCK -->
+                                    <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
+                                        <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>">
+                                            <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
+                                        </a>
+                                        <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');">
+                                            <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
+                                        </a>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+
+
+                            </div>
+                            <a href="<?= JRoute::_($first_page_url); ?>" class="em-h6 mod_emundus_applications___title">
                                 <?= ($is_admission &&  $add_admission_prefix)?JText::_('COM_EMUNDUS_INSCRIPTION').' - '.$application->label:$application->label; ?>
                             </a>
                         </div>
@@ -100,10 +152,9 @@ $now = $dateTime->format('Y-m-d H:i:s');
                             <div class="mod_emundus_applications___date em-mt-8">
                                 <?php if (!$displayInterval) : ?>
                                     <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
-                                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> </p>
-                                    <span class="em-camp-end em-text-neutral-600"> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format('d/m/Y H:i'); ?></span>
+                                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format('d/m/Y H:i'); ?></p>
                                 <?php else : ?>
-                                    <span class="material-icons em-text-neutral-600 em-font-size-16 em-red-500-color">schedule</span>
+                                    <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color">schedule</span>
                                     <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
                                         <?php if ($interval->h > 0) {
                                             echo $interval->h.'h'.$interval->i ;
@@ -113,6 +164,12 @@ $now = $dateTime->format('Y-m-d H:i:s');
                                     </p>
                                 <?php endif; ?>
                             </div>
+                            <?php if($key == 'sent') : ?>
+                                <div class="mod_emundus_applications___date em-mt-8">
+                                    <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-mr-8">insert_drive_file</span>
+                                    <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_SUBMITTED_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->submitted_date, $site_offset))->format('d/m/Y H:i'); ?></p>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <hr/>
@@ -164,8 +221,10 @@ $now = $dateTime->format('Y-m-d H:i:s');
                         </div>
                     </div>
                 <?php endif; ?>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
         </div>
+        </div>
+        <?php endforeach; ?>
     <?php else :
         echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
         echo '<hr>';
@@ -227,4 +286,29 @@ $now = $dateTime->format('Y-m-d H:i:s');
     jQuery(function () {
         jQuery('[data-toggle="tooltip"]').tooltip()
     })
+
+    document.addEventListener('click', function (e) {
+        let target = e.target.id;
+        let actions = document.querySelectorAll("[id^='actions_block_']");
+
+        if(typeof actions !== 'undefined') {
+            actions.forEach((action) => {
+                if (action.style.display === 'flex') {
+                    action.style.display = 'none';
+                }
+            });
+
+            if(target.indexOf('actions_button_') !== -1){
+                let fnum = target.split('_');
+                fnum = fnum[fnum.length -1];
+
+                let actions = document.getElementById('actions_block_' + fnum);
+                if(actions.style.display === 'none'){
+                    actions.style.display = 'flex';
+                } else {
+                    actions.style.display = 'none';
+                }
+            }
+        }
+    });
 </script>
