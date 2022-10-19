@@ -68,6 +68,17 @@
     color: #29d4ff;
 }
 
+#userDropdownMenu li.dropdown-header {
+    width: 190px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: break-spaces;
+}
+
+
 #userDropdownMenu li>a:hover,
 #userDropdownMenu .active>a {
     background: #29d4ff;
@@ -185,14 +196,22 @@ li>a:hover {
         width: 100% !important;
     }
 
-    div#userDropdownLabel {
-        position: absolute;
-        right: -167px;
-        top: -104px;
+    #header-c .platform-content div#userDropdownLabel {
+        position: fixed;
+        right: 12px;
+        top: 12px;
     }
 }
 
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    #header-c .platform-content div#userDropdownLabel {
+        position: fixed;
+        right: 59px;
+        top: 8px;
+    }
+}
+
+
 div#userDropdown {
     float: initial !important;
-    width: 30px;
 }

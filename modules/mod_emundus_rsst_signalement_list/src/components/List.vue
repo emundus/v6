@@ -40,13 +40,13 @@
 			<tbody>
 				<template v-if="hasBeenGroupBy">
 					<template v-for="group in items">
-						<tr :class="retrieveGroupeClassColor(group)">
+						<tr @click="(e) => {toggle(rowGroupByRowKeyName(group), e); retrieveGroupeClassColor(group)}" :class="retrieveGroupeClassColor(group)">
 							<td :colspan="showingListColumns.length+1">
 								<input type="checkbox" class="em-switch input" style="margin-top: -2px;" @change="(e) => toggleCheckGroupRows(e, group)">
 								<span class="em-ml-32"><b>{{ rowGroupByRowKeyName(group) }}</b></span>
 							</td>
 							<td style="border-left: none;text-align: end">
-								<div @click="toggle(rowGroupByRowKeyName(group)); retrieveGroupeClassColor(group)">
+								<div>
 									<span v-if="opened.includes(rowGroupByRowKeyName(group))" class="material-icons" >arrow_drop_down</span>
 									<span v-else class="material-icons">arrow_drop_up</span>
 								</div>
@@ -62,7 +62,8 @@
 	               :listColumnShowingAsBadge="listColumnShowingAsBadge"
 	               :filterColumnUsedActually="filterColumnUsedActually"
 	               :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
-	               @toggle-check="toggleCheckRow"
+	               :readOnly="readOnly"
+						     @toggle-check="toggleCheckRow"
 						/>
 					</template>
 				</template>
@@ -77,6 +78,7 @@
 				     :listColumnShowingAsBadge="listColumnShowingAsBadge"
 				     :filterColumnUsedActually="filterColumnUsedActually"
 				     :listColumnToNotShowingWhenFilteredBy="listColumnToNotShowingWhenFilteredBy"
+				     :readOnly="readOnly"
 				     @toggle-check="toggleCheckRow"
 				/>
 				<tr v-if="items.length == 0">
@@ -127,6 +129,10 @@ export default {
 		listColumnToNotShowingWhenFilteredBy:{
 			type:String,
 			required: false
+		},
+		readOnly: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data: () => ({
@@ -158,12 +164,14 @@ export default {
 		this.retrieveListData();
 	},
 	methods: {
-		toggle(key) {
-			const index = this.opened.indexOf(key);
-			if (index > -1) {
-				this.opened.splice(index, 1);
-			} else {
-				this.opened.push(key)
+		toggle(key, e) {
+			if (!e.target.classList.contains('em-switch')) {
+				const index = this.opened.indexOf(key);
+				if (index > -1) {
+					this.opened.splice(index, 1);
+				} else {
+					this.opened.push(key)
+				}
 			}
 		},
 		groupByItemArraySubValues(item) {
@@ -183,7 +191,7 @@ export default {
 		},
 		retrieveGroupeClassColor(group) {
 			const data = this.groupByItemArraySubValues(group);
-			let valueToHighlight = "fait";
+			let valueToHighlight = 'fait';
 
 			if (data.find((item) => {return item.etat == 'a_faire' || item.etat == 'sans_objet'})) {
 				valueToHighlight = 'a_faire';

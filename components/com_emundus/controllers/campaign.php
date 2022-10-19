@@ -509,10 +509,10 @@ class EmundusControllerCampaign extends JControllerLegacy {
 
             $result = $this->m_campaign->createDocument($document,$types,$cid,$pid);
 
-            if ($result) {
+            if ($result['status']) {
                 $tab = array('status' => 1, 'msg' => JText::_('DOCUMENT_ADDED'), 'data' => $result);
             } else {
-                $tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_ADD_DOCUMENT'), 'data' => $result);
+                $tab = array('status' => 0, 'msg' => JText::_($result['msg']), 'data' => $result);
             }
         }
         echo json_encode((object)$tab);

@@ -13,6 +13,11 @@
 
 /* GENERAL */
 
+.platform-content, .moduletable{
+  padding: 0;
+  margin: 0;
+}
+
 .com_emundus_vue .fabrikElementContainer.control-group span.material-icons{
   font-family: 'Material Icons' !important;
   font-size: 24px !important;
@@ -424,6 +429,9 @@ p,
   width: 100%;
   transition: all ease-in-out 0.3s;
 }
+.homepage #g-container-main{
+  margin-top: 24px;
+}
 
 #g-container-main .g-container {
   padding: 0px 20px;
@@ -432,6 +440,12 @@ p,
 .g-back-office-emundus-tableau #g-container-main .g-container {
   position: relative;
   left: 75px;
+}
+
+.view-list:not(.g-back-office-emundus-tableau) #g-container-main .g-container {
+  width: auto;
+  left: 38px;
+  position: relative;
 }
 
 .g-container.g-flushed{
@@ -446,12 +460,6 @@ p,
 .view-list #g-container-main {
     padding-left: 5% !important;
     padding-right: 5% !important;
-}
-
-.view-list #g-container-main .g-container {
-  width: auto;
-  left: 50px;
-  position: relative;
 }
 
 .row-fluid .span3 {
@@ -489,9 +497,12 @@ p,
   max-height: 40px;
   max-width: 180px;
 }
+#g-navigation #header-a .logo[src*="svg"] {
+  width: revert-layer !important;
+}
 
 #g-navigation .g-main-nav{
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 /* HEADER */
@@ -519,7 +530,6 @@ p,
       .platform-content {
         margin: 0px 10px;
         padding: 0px;
-
       }
 
       .platform-content:nth-child(2) {
@@ -533,7 +543,7 @@ p,
   width: 100vw;
   position: sticky;
   max-height: 100px;
-  height: 87px;
+  height: 65px;
   background: transparent;
 
   .g-container {
@@ -630,9 +640,8 @@ footer#g-footer {
   width: 100vw;
   position: relative;
   z-index: 1;
-  padding-left: 20px;
-  padding-right: 20px;
-  margin-top: 75px !important;
+  padding: 20px !important;
+  //margin-top: 75px !important;
   transition: all 0.3s ease-in-out;
 }
 
@@ -1051,7 +1060,13 @@ body>.g-container {
   a#add-application {
     width: 100%;
     text-align: center !important;
+    margin-bottom: 12px;
   }
+
+  h2 {
+    margin-top: 24px;
+  }
+
 }
 
 /* PAGE CHECKLIST - COULEURS BTNS AJOUT DOCUMENTS */
@@ -1166,6 +1181,11 @@ body>.g-container {
 }
 
 /** MODULE SINGLE CAMPAIGN **/
+
+.em-campaign-dropfiles ul a:focus {
+  color: $base-primary-color;
+}
+
 .single-campaign-tabs {
   .btn:first-child {
     border-top-left-radius: 4px !important;
@@ -1207,12 +1227,7 @@ body>.g-container {
 .tchooz-single-campaign {
   margin-top: 3%;
 
-  .single-campaign{
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  #faq,#documents {
+   #faq,#documents {
     flex-direction: column;
   }
 
@@ -1231,10 +1246,6 @@ body>.g-container {
 
   .below-content{
     width: 30%;
-  }
-
-  .campaingapply{
-    padding-right: 50px;
   }
 
   .campaign-documents{
@@ -2759,7 +2770,6 @@ tr.fabrikFilterContainer{
     background-color: $base-secondary-color;
     border-color: $base-secondary-color;
     color: #fff;
-    //font-family: "Lato", sans-serif;
     text-transform: initial;
     width: 100%;
     height: 48px;
@@ -2805,6 +2815,12 @@ tr.fabrikFilterContainer{
 
 
   /************************ GESTIONNAIRE - COORDINATOR *********************/
+
+.view-form:not(.applicant-form):not(.com_emundus) main#g-main-mainbody {
+  padding-right: 5%;
+  padding-left: 11%;
+  width: 100%;
+}
 
 .referents-sollicitation-page .calendarbutton {
   background: #fff;
@@ -4193,7 +4209,7 @@ button.swal2-cancel.goback-btn {
   @media screen and (max-width: 1366px),
   screen and (max-height: 769px) {
     .gantry #g-navigation .g-main-nav#em_user_menu .g-toplevel.tchooz-vertical-toplevel > li.g-menu-item.g-standard.tchooz-vertical-item:nth-child(3) {
-      margin-top: -40px !important;
+      //margin-top: -40px !important;
     }
 
     .gantry #g-navigation .g-main-nav .tchooz-vertical-toplevel > li.g-menu-item {
@@ -4212,8 +4228,7 @@ button.swal2-cancel.goback-btn {
       padding: 8px;
     }
 
-    .view-form,.em-form .fabrikGroup {
-      padding: 48px 32px 48px 32px !important;
+    .view-form, .em-form .fabrikGroup {
       .fabrikElement {
         #mceu_57-body {
           display: flex;
@@ -4451,10 +4466,16 @@ button.swal2-cancel.goback-btn {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
+        align-items: center !important;
 
         .mod-languages.advanced-dropdown {
           margin: 15px 15px 15px 0px;
+        }
+
+        .em-messages-modal {
+          left: 23px;
+          top: 26px;
+          position: absolute;
         }
       }
     }
@@ -4718,10 +4739,6 @@ button.swal2-cancel.goback-btn {
 
     footer#g-footer {
 
-      img.logo {
-        max-width: 100%;
-      }
-
       .g-grid {
         height: auto !important;
         flex-direction: column !important;
@@ -4733,6 +4750,10 @@ button.swal2-cancel.goback-btn {
 
       .bas-footer {
         width: 100%;
+      }
+
+      .em-container-footer-cand .em-col-3-footer p {
+        text-align: right;
       }
     }
 
@@ -4749,7 +4770,6 @@ button.swal2-cancel.goback-btn {
       max-width: 100%;
     }
 
-
     #g-navigation #header-c .g-content {
       flex-direction: column !important;
       justify-content: center !important;
@@ -4757,6 +4777,11 @@ button.swal2-cancel.goback-btn {
 
       .platform-content:nth-child(1) {
         margin: 0px 51px 0px 0px !important;
+      }
+      .em-messages-modal {
+        left: 23px;
+        top: 26px;
+        position: absolute;
       }
     }
 
@@ -5011,6 +5036,29 @@ button.swal2-cancel.goback-btn {
     }
   }
 
+@media screen and (min-width: 480px) and (max-width: 959px) {
+
+  /* FOOTER */
+  footer#g-footer .footer-rgpd {
+    flex-direction: row;
+    height: 70px;
+
+    .footer-rgpd-links p {
+      text-align: center;
+    }
+  }
+
+  /* HEADER */
+
+  #g-navigation .g-container #header-c {
+    justify-content: center;
+
+    .g-content .platform-content:nth-child(1) {
+      margin: 0 !important;
+    }
+  }
+}
+
   @media all and (min-width: 768px) and (max-width: 959px) {
     button.save {
       margin-left: 20px !important;
@@ -5019,6 +5067,20 @@ button.swal2-cancel.goback-btn {
 
 
   @media screen and (min-width: 768px) and (max-width: 959px) {
+
+    /* SINGLE CAMPAIGN */
+
+    .view-programme .tchooz-single-campaign .single-campaign {
+      flex-direction: column;
+
+      .right-side {
+        width: 64% !important;
+      }
+      .below-content {
+        overflow: initial;
+        width: 38%;
+      }
+    }
 
     /* FORMULAIRES  - GP REPEAT TABLEAU */
     .view-form .fabrikGroup .repeatGroupTable  {
@@ -5058,10 +5120,21 @@ button.swal2-cancel.goback-btn {
 
       #header-a {
         justify-content: center;
-        //margin-bottom: 18px;
         left: 0;
       }
+
+      #header-c  .g-content {
+        flex-direction: column;
+      }
     }
+
+      #header-c .platform-content .em-messages-modal {
+        position: fixed;
+        right: 713px;
+        top: 22px;
+      }
+
+
 
     .g-branding {
       text-align: inherit;
@@ -5133,6 +5206,10 @@ button.swal2-cancel.goback-btn {
   @media screen and (max-width: 991px) {
     section.container {
       float: none !important;
+    }
+
+    .tchooz-single-campaign .right-side {
+      width: 64%;
     }
   }
 

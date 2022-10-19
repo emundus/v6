@@ -406,7 +406,7 @@ input:focus + .em-slider {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .em-flex-row-start{
@@ -590,6 +590,10 @@ input:focus + .em-slider {
 
 .em-w-380{
   width: 380px;
+}
+
+.em-h-80 {
+  height: 80%;
 }
 
 .em-h-100 {
