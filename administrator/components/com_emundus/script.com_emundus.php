@@ -7,6 +7,7 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 class com_emundusInstallerScript
 {
     protected $manifest_cache;
+    protected $schema_version;
 
     public function __construct() {
         // Get component manifest cache
@@ -18,6 +19,13 @@ class com_emundusInstallerScript
             ->where("element = 'com_emundus'");
         $db->setQuery($query);
         $this->manifest_cache = json_decode($db->loadObject()->manifest_cache);
+
+        $query->clear()
+            ->select('version_id')
+            ->from($db->quoteName('#__schemas'))
+            ->where($db->quoteName('extension_id') . ' = ' . $db->quote(700));
+        $db->setQuery($query);
+        $this->schema_version = $db->loadResult();
 
         require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
     }
@@ -240,8 +248,13 @@ class com_emundusInstallerScript
      */
     public function preflight($type, $parent)
     {
-        if(version_compare(PHP_VERSION, '7.4.0', '<')) {
-            echo 'This extension works with PHP 7.4.0 or newer.Please contact your web hosting provider to update your PHP version.';
+        if(version_compare(PHP_VERSION, '7.2.0', '<')) {
+            echo "\033[31mThis extension works with PHP 7.2.0 or newer.Please contact your web hosting provider to update your PHP version. \033[0m\n";
+            exit;
+        }
+
+        if($this->schema_version != '3.10.9-2022-10-05-em') {
+            echo "\033[31mYou have to run update-db.sh before CLI ! \033[0m\n";
             exit;
         }
     }
