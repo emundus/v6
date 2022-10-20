@@ -483,6 +483,7 @@ p,
 .view-details #g-container-main {
   .page-header {
     background: transparent;
+    margin: 16px 0 0 16px;
   }
 }
 
@@ -4038,6 +4039,12 @@ button.swal2-cancel.goback-btn {
 
     /* INTRO FORMULAIRE */
     .applicant-form {
+      margin-bottom: 64px;
+      border-radius: 16px !important;
+      background: #FFFFFF;
+      border: 1px solid #EDEDED;
+      box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
+
       p:first-of-type:not(.accept_terms),
       p.form-intro {
         @include body-16;
@@ -4048,16 +4055,10 @@ button.swal2-cancel.goback-btn {
 
     /* FORMULAIRE */
      form, .em-form  {
-      margin-top: 32px;
 
       /* GROUPE */
       .fabrikGroup {
-        margin-bottom: 64px;
         padding: 40px 32px;
-        border-radius: 16px !important;
-        background: #FFFFFF;
-        border: 1px solid #EDEDED;
-        box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
 
         /* LEGEND */
         .legend {

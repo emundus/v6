@@ -104,8 +104,10 @@ echo <<<EOT
 
 
 .view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
-    padding: 0;
+    padding: 16px 0 0 0;
     margin-bottom: 0;
+    border-top: solid 1px #EDEDED;
+    padding-top: 16px;
 }
 
 
@@ -740,7 +742,7 @@ button.register {
 }
 /* --------- Créez votre espace -------------- */
 .fabrikActions.form-actions .row-fluid .span4 {
-    width: auto !important;
+    width: 100% !important;
     margin-bottom: 0 !important;
 }
 
@@ -1393,8 +1395,9 @@ form.fabrikForm .row-fluid .control-group.plg-textarea label.fabrikTip {
 .form-actions .row-fluid {
     text-align: center;
     display: flex;
-    justify-content: center;
     flex-direction: row-reverse;
+    justify-content: space-between;
+    padding: 0 32px;
 }
 
 .form-actions .row-fluid .span4 {

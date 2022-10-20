@@ -31,7 +31,9 @@ $now = $dateTime->format('Y-m-d H:i:s');
             <p class="em-h4"><?php echo JText::_($user->campaign_name) ?></p>
         </div>
         <div class="em-flex-row">
-            <button class="btn btn-success em-mr-16">Enregistrer et quitter</button>
+            <a href="index.php" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
+                <button class="btn btn-success em-mr-16"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+            </a>
             <a href="/component/emundus/?task=pdf&amp;fnum=2022101914533400001650000100" target="_blank" title="Imprimer">
                 <button class="btn btn-secondary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 16px">print</span>
@@ -53,5 +55,10 @@ $now = $dateTime->format('Y-m-d H:i:s');
             </div>
         </div>
     </div>
-
 </div>
+
+<script>
+    function saveAndExit(){
+        document.getElementsByClassName('fabrikForm')[0].submit();
+    }
+</script>

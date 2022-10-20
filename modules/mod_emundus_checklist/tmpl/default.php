@@ -53,7 +53,7 @@ foreach ($forms as $index => $form){
             <div class="<?php if($itemid['id'] == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
                 <div class="em-flex-row">
                     <div class="mod_emundus_checklist___step_count"><?php echo $index_doc ?></div>
-                    <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>">Documents à charger</a>
+                    <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>"><?php echo JText::_($mandatory_documents_title) ?></a>
                 </div>
                 <div>
                     <?php foreach ($uploads as $upload) : ?>
