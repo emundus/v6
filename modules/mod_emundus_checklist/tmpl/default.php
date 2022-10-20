@@ -56,6 +56,18 @@ foreach ($mandatory_documents as $attachment) {
                     <div class="mod_emundus_checklist___step_count"><?php echo $index_doc ?></div>
                     <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>">Documents à charger</a>
                 </div>
+                <div>
+                    <?php foreach ($uploads as $upload) : ?>
+                    <div class="em-flex-row mod_emundus_checklist___attachment">
+                        <span class="material-icons-outlined em-main-500-color em-font-size-16">check_circle</span>
+                        <p class="em-font-size-12 em-ml-8"><?php echo $upload->attachment_name ?>
+                            <?php if($upload->filesize > 0) :?>
+                                <span class="em-ml-4 em-text-neutral-600"><?php echo $upload->filesize  ?></span>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
         <?php endif; ?>
     </div>

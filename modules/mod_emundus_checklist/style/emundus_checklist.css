@@ -21,7 +21,7 @@
     padding: unset !important;
 }
 
-.mod_emundus_checklist .material-icons-outlined{
+.mod_emundus_checklist #mod_emundus_checklist___expand_icon{
     font-size: 24px !important;
 }
 
@@ -74,5 +74,10 @@
 }
 #mod_emundus_checklist___expand_icon{
     transition: transform 300ms linear;
+}
+
+.mod_emundus_checklist___attachment{
+    margin-left: 36px;
+    margin-top: 12px;
 }
 

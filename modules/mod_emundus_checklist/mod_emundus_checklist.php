@@ -20,8 +20,19 @@ $document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.
 $user = JFactory::getSession()->get('emundusUser');
 
 if (isset($user->fnum) && !empty($user->fnum)) {
-	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+    $show_forms = $params->get('show_forms', 0);
+    $show_mandatory_documents = $params->get('show_mandatory_documents', 0);
+    $show_optional_documents = $params->get('show_optional_documents', 0);
+    $show_duplicate_documents = $params->get('show_duplicate_documents', 0);
+    $forms_title = $params->get('forms_title', JText::_('FORMS'));
+    $mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
+    $optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
 
+
+    $eMConfig = JComponentHelper::getParams('com_emundus');
+    $applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+
+	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 	$db = JFactory::getDBO();
 
 	$app = JFactory::getApplication();
@@ -36,16 +47,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$itemid = $db->loadAssoc();
 
 
-	$show_forms = $params->get('show_forms', 0);
-	$show_mandatory_documents = $params->get('show_mandatory_documents', 0);
-	$show_optional_documents = $params->get('show_optional_documents', 0);
-	$show_duplicate_documents = $params->get('show_duplicate_documents', 0);
-
-	$forms_title = $params->get('forms_title', JText::_('FORMS'));
-	$mandatory_documents_title = $params->get('mandatory_documents_title', JText::_('MANDATORY_DOCUMENTS'));
-	$optional_documents_title = $params->get('optional_documents_title', JText::_('OPTIONAL_DOCUMENTS'));
-
-
 	$forms = @EmundusHelperMenu::buildMenuQuery($user->profile);
 
 	$and = ($show_duplicate_documents != -1)?' AND esap.duplicate='.$show_duplicate_documents:'';
@@ -54,7 +55,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 		JOIN #__emundus_setup_attachments esa ON esa.id = esap.attachment_id
 		WHERE esap.displayed = 1 '.$and.' AND esap.profile_id ='.$user->profile.'
 		ORDER BY esa.ordering';
-
 	$db->setQuery( $query );
 	$documents = $db->loadObjectList();
 
@@ -69,6 +69,35 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 				$optional_documents[] = $document;
 		}
 	}
+
+    $query = $db->getQuery(true);
+
+    $query->select('eu.*,esa.value as attachment_name')
+        ->from($db->quoteName('#__emundus_uploads','eu'))
+        ->leftJoin($db->quoteName('#__emundus_setup_attachment_profiles','esap').' ON '.$db->quoteName('eu.attachment_id').' = '.$db->quoteName('esap.attachment_id'))
+        ->leftJoin($db->quoteName('#__emundus_setup_attachments','esa').' ON '.$db->quoteName('esap.attachment_id').' = '.$db->quoteName('esa.id'))
+        ->where($db->quoteName('esap.mandatory') . ' = 1')
+        ->andWhere($db->quoteName('esap.displayed') . ' = 1')
+        ->andWhere($db->quoteName('esap.profile_id') . ' = ' . $db->quote($user->profile))
+        ->andWhere($db->quoteName('eu.fnum') . ' like ' . $db->quote($user->fnum))
+        ->andWhere($db->quoteName('eu.user_id') . ' = ' . $db->quote($user->id));
+    $db->setQuery($query);
+    $uploads = $db->loadObjectList();
+
+    foreach ($uploads as $upload){
+        $file = $applicant_files_path . $user->id . '/' . $upload->filename;
+        $bytes = filesize($file);
+
+        if($bytes) {
+            $decimals = 0;
+
+            $factor = floor((strlen($bytes) - 1) / 3);
+            if ($factor > 0) $sz = 'KMGT';
+            $upload->filesize = sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'o';
+        } else {
+            $upload->filesize = 0;
+        }
+    }
 
 	require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
 }
