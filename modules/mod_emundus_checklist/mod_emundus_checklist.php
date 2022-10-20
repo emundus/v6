@@ -13,26 +13,16 @@
 
 // no direct access
 defined('_JEXEC') or die('Restricted access');
+
 $document = JFactory::getDocument();
-$document->addStyleSheet("modules/mod_emundus_checklist/style/emundus_checklist.css" );
+$document->addStyleSheet('modules/mod_emundus_checklist/style/emundus_checklist.css');
+
 $user = JFactory::getSession()->get('emundusUser');
 
 if (isset($user->fnum) && !empty($user->fnum)) {
-
 	require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
-	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'checklist.php');
-	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
-	//require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
 	$db = JFactory::getDBO();
-	$document = JFactory::getDocument();
-	$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/semantic.min.css" );
-	// overide css
-	$header_class = $params->get('header_class', '');
-	if (!empty($header_class)) {
-		$document->addStyleSheet("media/com_emundus/lib/Semantic-UI-CSS-master/components/site.".$header_class.".css" );
-	}
-	$document->addStyleSheet("media/com_emundus/css/emundus.css" );
 
 	$app = JFactory::getApplication();
 	$jinput = $app->input;
@@ -46,7 +36,6 @@ if (isset($user->fnum) && !empty($user->fnum)) {
 	$itemid = $db->loadAssoc();
 
 
-	//$params = JComponentHelper::getParams('com_emundus');
 	$show_forms = $params->get('show_forms', 0);
 	$show_mandatory_documents = $params->get('show_mandatory_documents', 0);
 	$show_optional_documents = $params->get('show_optional_documents', 0);

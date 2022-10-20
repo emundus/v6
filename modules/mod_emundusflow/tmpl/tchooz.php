@@ -15,11 +15,29 @@ $now = $dateTime->format('Y-m-d H:i:s');
         width: 8px;
         border-radius: 50%;
     }
+    .mod_emundus_flow___print{
+        height: 38px;
+        display: flex;
+        align-items: center;
+    }
+    .mod_emundus_flow___print .material-icons-outlined{
+        color: white;
+    }
 </style>
 
 <div class="em-mt-48" style="padding: 0 20px">
-    <div class="em-flex-row">
-        <p class="em-h4"><?php echo JText::_($user->campaign_name) ?></p>
+    <div class="em-flex-row em-flex-space-between">
+        <div>
+            <p class="em-h4"><?php echo JText::_($user->campaign_name) ?></p>
+        </div>
+        <div class="em-flex-row">
+            <button class="btn btn-success em-mr-16">Enregistrer et quitter</button>
+            <a href="/component/emundus/?task=pdf&amp;fnum=2022101914533400001650000100" target="_blank" title="Imprimer">
+                <button class="btn btn-secondary mod_emundus_flow___print">
+                    <span class="material-icons-outlined" style="font-size: 16px">print</span>
+                </button>
+            </a>
+        </div>
     </div>
     <div class="em-flex-row em-mt-8">
         <div class="em-flex-row">

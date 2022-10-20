@@ -1858,6 +1858,21 @@ tr.fabrikFilterContainer{
       outline: none;
     }
   }
+  button.btn-secondary {
+    background: $base-secondary-color;
+    border: 1px solid $base-secondary-color;
+    border-radius: 4px;
+    padding: 8px 12px;
+
+    &:hover {
+      background-color: transparent;
+      color: $base-secondary-color;
+      outline: none;
+      span{
+        color: $base-secondary-color !important;
+      }
+    }
+  }
 
   a.btn,
   span.btn {
