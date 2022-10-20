@@ -11,11 +11,11 @@ JHtml::script('media/jui/js/bootstrap.min.js');
 $user = JFactory::getUser();
 $applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id);
 
-$m_messenger = new EmundusModelMessenger();
-$files_count = $m_messenger->getFilesByUser();
+if ($applicant) {
+    $m_messenger = new EmundusModelMessenger();
+    $files_count = $m_messenger->getFilesByUser();
 
-if(count($files_count) > 0) {
-    if ($applicant) {
+    if(count($files_count) > 0) {
         $document = JFactory::getDocument();
         $document->addStyleSheet("modules/mod_emundus_messenger_notifications/src/assets/mod_emundus_messenger_notifications.css");
         $document->addScript('media/mod_emundus_messenger_notifications/chunk-vendors.js');
