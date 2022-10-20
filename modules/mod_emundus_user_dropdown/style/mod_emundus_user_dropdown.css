@@ -199,7 +199,7 @@ li>a:hover {
     #header-c .platform-content div#userDropdownLabel {
         position: fixed;
         right: 12px;
-        top: 12px;
+        top: 22px;
     }
 }
 
@@ -207,7 +207,7 @@ li>a:hover {
     #header-c .platform-content div#userDropdownLabel {
         position: fixed;
         right: 59px;
-        top: 8px;
+        top: 19px;
     }
 }
 
