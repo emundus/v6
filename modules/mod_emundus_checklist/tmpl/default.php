@@ -2,24 +2,23 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
+$index_form = 1;
 $index_doc = 1;
 
-foreach ($mandatory_documents as $attachment) {
-    $query = 'SELECT count(id) FROM #__emundus_uploads up
-            WHERE up.user_id = ' . $user->id . ' AND up.attachment_id = ' . $attachment->_id . ' AND fnum like ' . $db->Quote($user->fnum);
-    $db->setQuery($query);
-    $cpt = $db->loadResult();
-    $link = '<a id="' . $attachment->_id . '" class="document" href="' . $itemid['link'] . '&Itemid=' . $itemid['id'] . '#a' . $attachment->_id . '">';
-    $active = '';
-    $need = $cpt == 0 ? 'need_missing' : 'need_ok';
-    $class = $need . $active;
-    $endlink = '</a>';
+foreach ($forms as $index => $form){
+    if($form->id == $menuid){
+        $index_form = $index + 1;
+        break;
+    }
 }
 ?>
 
 <div class="mod_emundus_checklist">
     <div class="em-flex-row em-flex-space-between em-pointer" onclick="expandForms()">
-        <p class="em-h6"><?php echo JText::_($forms_title) ?></p>
+        <div class="em-flex-row">
+            <p class="em-h6"><?php echo JText::_($forms_title) ?></p>
+            <span class="em-ml-12 mod_emundus_checklist___count"><?php echo $index_form . '/' . count($forms) ?></span>
+        </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-icons-outlined">expand_more</span>
     </div>
 
@@ -60,11 +59,12 @@ foreach ($mandatory_documents as $attachment) {
                     <?php foreach ($uploads as $upload) : ?>
                     <div class="em-flex-row mod_emundus_checklist___attachment">
                         <span class="material-icons-outlined em-main-500-color em-font-size-16">check_circle</span>
-                        <p class="em-font-size-12 em-ml-8"><?php echo $upload->attachment_name ?>
+                        <a class="em-font-size-12 em-ml-8"  href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'].'#a'.$upload->attachment_id ?>">
+                            <?php echo $upload->attachment_name ?>
                             <?php if($upload->filesize > 0) :?>
                                 <span class="em-ml-4 em-text-neutral-600"><?php echo $upload->filesize  ?></span>
                             <?php endif; ?>
-                        </p>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>

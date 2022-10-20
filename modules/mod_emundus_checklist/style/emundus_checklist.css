@@ -81,3 +81,12 @@
     margin-top: 12px;
 }
 
+.mod_emundus_checklist___count{
+    border-radius: 4px;
+    background: #F3F3F3;
+    padding: 3px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
