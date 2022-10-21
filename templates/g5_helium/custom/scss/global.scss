@@ -1994,7 +1994,7 @@ tr.fabrikFilterContainer{
     .span4.offset1 button.btn[name="Goback"] {
       background: transparent;
       border: 1px solid $base-secondary-color;
-      border-radius: var(--border-radius);
+      border-radius: var(--border-radius) !important;
       color: $base-secondary-color;
       margin-right: 10px;
       font-weight: normal;
@@ -2251,8 +2251,7 @@ tr.fabrikFilterContainer{
     background: $base-primary-color;
     background-color: $base-primary-color;
     border: 1px solid $base-primary-color;
-    border-radius: var(--border-radius);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius) !important;
 
     &:hover,
     &:focus,
@@ -5498,7 +5497,7 @@ fieldset[disabled] .multiselect {
   display: flex;
   align-items: center;
   padding: 0 16px;
-  border-radius: var(--border-radius);
+  border-radius: 4px;
   border: 1px solid var(--neutral-400);
   background: var(--neutral-50);
   font-size: 14px;
