@@ -94,6 +94,24 @@ class plgUserEmundus_registration_email extends JPlugin {
      * @throws Exception
      */
     public function onUserAfterSave($user, $isnew, $result, $error) {
+        if (strpos($user['email'], '@emundus.io') !== false && strpos($user['email'], 'fake') !== false) {
+            $user['params'] = json_encode(['skip_activation' => true, 'send_mail' => false]);
+
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $query->update('#__users')
+                ->set('params = ' . $db->quote($user['params']))
+                ->where('username = ' . $db->quote($user['username']));
+
+            $db->setQuery($query);
+
+            try {
+                $db->execute();
+            } catch (Exception $e) {
+                JLog::add('Failed to update user params', JLog::ERROR, 'com_emundus.error');
+            }
+        }
+
         $this->onAfterStoreUser($user, $isnew, $result, $error);
     }
 

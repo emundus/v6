@@ -3843,8 +3843,14 @@ class EmundusModelApplication extends JModelList
         $pids = [];
 
         try {
+            $divergent_users = false;
             $m_profiles = new EmundusModelProfile();
             $fnumInfos = $m_profiles->getFnumDetails($fnum_from);
+            $fnumToInfos =  $m_profiles->getFnumDetails($fnum_to);
+
+            if ($fnumInfos['applicant_id'] !== $fnumToInfos['applicant_id']) {
+                $divergent_users = true;
+            }
 
             if(!empty($campaign_id)){
                 $pids = $m_profiles->getProfilesIDByCampaign((array)$campaign_id);
@@ -3878,6 +3884,14 @@ class EmundusModelApplication extends JModelList
                     unset($stored['id']);
                     $stored['fnum'] = $fnum_to;
                     $q=1;
+
+                    if ($divergent_users) {
+                        foreach($stored as $key => $value) {
+                            if ($key === 'user' && $value == $fnumInfos['applicant_id']) {
+                                $stored[$key] = $fnumToInfos['applicant_id'];
+                            }
+                        }
+                    }
 
                     $query = 'INSERT INTO '.$form->db_table_name.' (`'.implode('`,`', array_keys($stored)).'`) VALUES('.implode(',', $db->Quote($stored)).')';
                     $db->setQuery($query);
@@ -3947,9 +3961,9 @@ class EmundusModelApplication extends JModelList
                 $query = $db->getQuery(true);
 
                 $query->select('jeu.*, jsa.lbl')
-                ->from('jos_emundus_uploads AS jeu')
-                ->leftJoin('jos_emundus_setup_attachments AS jsa ON jsa.id=jeu.attachment_id')
-                ->where('jeu.fnum LIKE '. $db->quote($fnum_from));
+                    ->from('#__emundus_uploads AS jeu')
+                    ->leftJoin('#__emundus_setup_attachments AS jsa ON jsa.id=jeu.attachment_id')
+                    ->where('jeu.fnum LIKE '. $db->quote($fnum_from));
 
                 $db->setQuery($query);
 
@@ -3963,14 +3977,15 @@ class EmundusModelApplication extends JModelList
                 if (!empty($documents)) {
                     foreach ($documents as $document) {
                         $file_ext = pathinfo($document['filename'], PATHINFO_EXTENSION);
-			            $new_file = $fnumInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
+                        $new_file = $fnumToInfos['applicant_id'] . '-' . $campaign_id . '-' . trim($document['lbl'], ' _') . '-' . rand() . '.' . $file_ext;
 
                         // try to copy file with new name
-                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $new_file);
+                        $copied = copy(JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumInfos['applicant_id'] . DS . $document['filename'], JPATH_SITE . DS . "images/emundus/files" . DS .  $fnumToInfos['applicant_id'] . DS . $new_file);
                         if (!$copied) {
                             JLog::add("La copie " . $document['file'] . " du fichier a échoué...\n", JLog::ERROR, 'com_emundus');
                         }
 
+                        $document['user_id'] = $fnumToInfos['applicant_id'];
                         $document['filename'] = $new_file;
                         $document['fnum'] = $fnum_to;
                         $document['is_validated'] = empty($document['is_validated']) ? '-2' : $document['is_validated'];
@@ -4041,7 +4056,7 @@ class EmundusModelApplication extends JModelList
 
         JPluginHelper::importPlugin('emundus');
         $dispatcher = JDispatcher::getInstance();
-		$dispatcher->trigger('callEventHandler', array(
+        $dispatcher->trigger('callEventHandler', array(
             'onAfterCopyApplication',
             array(
                 'fnum_from' => $fnum_from,
