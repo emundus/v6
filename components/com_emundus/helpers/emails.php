@@ -773,6 +773,12 @@ class EmundusHelperEmails {
         $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('COM_EMUNDUS_EMAILS_REPORTS_MAILS_SENT').$info, 'message');
     }
 
+    /**
+     * Assert that emails can be sent to user, by checking user params and email validity
+     * @param $user_id
+     * @param $fnum
+     * @return bool
+     */
     function assertCanSendMailToUser($user_id = null, $fnum = null): bool
     {
         $can_send_mail = true;
@@ -821,6 +827,11 @@ class EmundusHelperEmails {
         return $can_send_mail;
     }
 
+    /**
+     * Check given email is not empty, has a valid format, and email dns exists
+     * @param $email
+     * @return bool
+     */
     function correctEmail($email): bool
     {
         $is_correct = true;
