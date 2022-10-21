@@ -802,15 +802,45 @@ class EmundusHelperEmails {
             }
 
             if (!empty($user)) {
-                $params = json_decode($user->params, true);
-                if (isset($params['send_mail']) && !$params['send_mail']) {
+                if (!$this->correctEmail($user->email)) {
                     $can_send_mail = false;
-                    JLog::add("[User $user_id fnum $fnum] does not receive emails due to user parameter", JLog::INFO, 'com_emundus.email');
+                } else {
+                    if ($user->block == 1) {
+                        $can_send_mail = false;
+                    } else {
+                        $params = json_decode($user->params, true);
+                        if (isset($params['send_mail']) && !$params['send_mail']) {
+                            $can_send_mail = false;
+                            JLog::add("[User $user_id fnum $fnum] does not receive emails due to user parameter", JLog::INFO, 'com_emundus.email');
+                        }
+                    }
                 }
             }
         }
 
         return $can_send_mail;
+    }
+
+    function correctEmail($email): bool
+    {
+        $is_correct = true;
+
+        if (empty($email)) {
+            $is_correct = false;
+        } else {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $is_correct = false;
+                JLog::add('Invalid email ' . $email, JLog::INFO, 'com_emundus.email');
+            } else {
+                $domain = substr($email, strpos($email, '@') + 1);
+                if (!checkdnsrr($domain)) {
+                    JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
+                    $is_correct = false;
+                }
+            }
+        }
+
+        return $is_correct;
     }
 }
 ?>
