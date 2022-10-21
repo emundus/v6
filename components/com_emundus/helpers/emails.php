@@ -782,7 +782,7 @@ class EmundusHelperEmails {
             $query = $db->getQuery(true);
 
             if (!empty($user_id)) {
-                $query->select('params')
+                $query->select('block, email, params')
                     ->from('#__users')
                     ->where('id = ' . $user_id);
                 $db->setQuery($query);
@@ -795,17 +795,17 @@ class EmundusHelperEmails {
             }
 
             try {
-                $params = $db->loadResult();
+                $user = $db->loadObject();
             } catch (Exception $e) {
-                $params = [];
+                $user = null;
                 JLog::add('Failed to retrieve user params for user_id ' . $user_id . ' fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
             }
 
-            if (!empty($params)) {
-                $params = json_decode($params, true);
-
+            if (!empty($user)) {
+                $params = json_decode($user->params, true);
                 if (isset($params['send_mail']) && !$params['send_mail']) {
                     $can_send_mail = false;
+                    JLog::add("[User $user_id fnum $fnum] does not receive emails due to user parameter", JLog::INFO, 'com_emundus.email');
                 }
             }
         }
