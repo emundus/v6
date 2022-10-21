@@ -398,10 +398,11 @@ $font:'Inter', sans-serif;
   width: 14px !important;
   background: var(--neutral-50);
   border-radius: 9px !important;
-  margin-right: 16px;
+  appearance: auto;
   margin-top: 0 !important;
   border: 1px solid var(--neutral-600);
   padding: 0!important;
+  margin-right: 16px;
 }
 
 @mixin yes-no {
@@ -759,7 +760,7 @@ $font:'Inter', sans-serif;
     .fabrikSubElementContainer {
       margin-top: 12px;
 
-      /* YES/NO */
+      /* YES/NO & RADIO GROUPES */
       fieldset.btn-radio {
 
         label.btn-default.btn.btn-success.active {
@@ -824,7 +825,17 @@ $font:'Inter', sans-serif;
             color: var(--neutral-900);
           }
         }
+
+         label.btn-default.btn:nth-child(1) {
+           border-radius: 4px 0 0 4px !important;
+         }
+
+         label.btn-default.btn:nth-child(2) {
+           border-radius: 0 4px 4px 0 !important;
+         }
       }
+
+
 
       /* BIRTHDAY */
       select.inputbox {
@@ -912,12 +923,12 @@ $font:'Inter', sans-serif;
     /* CHECKBOX - RADIO */
     .row-fluid .fabrikgrid_radio,
     .row-fluid .fabrikgrid_checkbox,
-    .row-fluid .plg-databasejoin.mode-checkbox, {
+    .row-fluid .plg-databasejoin.mode-checkbox {
       margin-top: 12px;
       min-height: auto;
 
       &.span2 {
-        margin-right: 80px;
+        margin-right: auto;
       }
 
       label.checkbox {
@@ -941,10 +952,10 @@ $font:'Inter', sans-serif;
           margin-left: 0 !important;
 
           &:checked {
-            background-color: initial;
             appearance: auto;
-            height: 12px !important;
-            width: 12px !important;
+            outline: none;
+            height: 14px !important;
+            width: 14px !important;
           }
         }
       }

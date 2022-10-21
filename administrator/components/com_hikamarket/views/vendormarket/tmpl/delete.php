@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -60,3 +60,6 @@ foreach($this->vendors as $vendor) {
 	<input type="hidden" name="ctrl" value="<?php echo hikaInput::get()->getCmd('ctrl'); ?>" />
 	<?php echo JHTML::_( 'form.token' ); ?>
 </form>
+<?php
+$doc = JFactory::getDocument();
+$doc->addScriptDeclaration('window.hikashop.ready(function(){Joomla.isChecked(true);});');

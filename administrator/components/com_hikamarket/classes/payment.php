@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,11 +27,23 @@ class hikamarketPaymentClass extends hikamarketClass {
 			return;
 
 		if(!empty($plugin->market_support)) {
+			$aclType = hikamarket::get('type.joomla_acl');
+
 			$extra_blocks[] = '
-<div class="hikashop_tile_block"><div style="min-height:auto;">
-	<div class="hikashop_tile_title">'.JText::_('VENDOR_OPTIONS').'</div>
-	<p>'.JText::_('PLUGIN_COMPATIBLE_MARKET').'</p>
+<div class="hikashop_backend_tile_edition">
+<div class="hkc-xl-12 hikashop_tile_block"><div style="min-height: 150px;">
+	<div class="hikashop_tile_title">' . JText::_('MAIN_INFORMATION') . '</div>
+	<dl class="hika_options">
+		<dt class="hikamarket_shipping_vendor_filter"><label for="data[payment][payment_params][payment_market_mode]">'.JText::_('HIKAM_MODE_COMMISSION').'</label></dt>
+		<dd class="hikamarket_shipping_vendor_filter">'.JText::_('PLUGIN_COMPATIBLE_MARKET').'</dd>
+		<dt class="hikamarket_vendor_name"><label for="data[payment][payment_params][payment_vendorgroup_filter]">' . JText::_('HIKAM_VENDOR_GROUP') . '</label></dt>
+		<dd class="hikamarket_vendor_name input_large">'.
+			$aclType->displayList('data[payment][payment_params][payment_vendorgroup_filter]', @$element->payment_params->payment_vendorgroup_filter, 'HIKA_NONE').
+		'</dd>
+	</dl>
 </div></div>
+</div>
+<div style="clear:both"></div>
 ';
 			return;
 		}
@@ -189,6 +201,13 @@ class hikamarketPaymentClass extends hikamarketClass {
 		if(empty($vendor_id) && !empty($method->payment_params->payment_vendor_id))
 			$vendor_id = (int)$method->payment_params->payment_vendor_id;
 		if(!empty($method->payment_params->market_support) || $method->payment_type == 'paypaladaptive') {
+			if(!empty($method->payment_params->payment_vendorgroup_filter)) {
+				$vendorClass = hikamarket::get('class.vendor');
+				$vendor = $vendorClass->get( (int)$cart_vendor_id );
+				$vendor_accesses = explode(',', $vendor->vendor_access);
+				unset($vendor);
+				return in_array('@'.$method->payment_params->payment_vendorgroup_filter, $vendor_accesses);
+			}
 			if($cart_vendor_id == $vendor_id || $vendor_id == 0 || $vendor_id == 1)
 				return true;
 			return false;

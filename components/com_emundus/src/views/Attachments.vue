@@ -35,6 +35,20 @@
             <span class="material-icons-outlined export">file_upload</span>
             <span>{{ translate("COM_EMUNDUS_EXPORTS_EXPORT") }}</span>
           </div>
+          <div
+              v-if="sync && canSync"
+              class="btn-icon-text"
+              @click="synchronizeAttachments(checkedAttachments)"
+              :class="{ disabled: checkedAttachments.length < 1 }"
+          >
+            <span
+                class="material-icons cloud_sync"
+                :title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE')"
+            >
+              cloud_sync
+            </span>
+            <span>{{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC_TITLE") }}</span>
+          </div>
           <span
               class="material-icons-outlined refresh em-pointer"
               @click="refreshAttachments(true)"
@@ -64,7 +78,7 @@
           <tr>
             <th id="check-th"><input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments"/></th>
             <th id="name" @click="orderBy('value')">
-              {{ translate("NAME") }}
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_NAME") }}
               <span v-if="sort.orderBy == 'value' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'value' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
@@ -74,7 +88,7 @@
               <span v-if="sort.orderBy == 'timedate' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="desc" class="desc" @click="orderBy('upload_description')">
-              {{ translate("DESCRIPTION") }}
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_DESCRIPTION") }}
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'asc'" class="material-icons-outlined">arrow_upward</span>
               <span v-if="sort.orderBy == 'upload_description' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
@@ -104,6 +118,9 @@
               <span v-if="sort.orderBy == 'modified' && sort.order == 'desc'" class="material-icons-outlined">arrow_downward</span>
             </th>
             <th id="permissions" class="permissions">{{ translate("COM_EMUNDUS_ATTACHMENTS_PERMISSIONS") }}</th>
+            <th v-if="sync" id="sync" class="sync" @click="orderBy('sync')">
+              {{ translate("COM_EMUNDUS_ATTACHMENTS_SYNC") }}
+            </th>
           </tr>
           </thead>
           <tbody>
@@ -113,6 +130,7 @@
               :attachment="attachment"
               :checkedAttachmentsProp="checkedAttachments"
               :canUpdate="canUpdate"
+              :sync="sync"
               :canSee="canSee"
               @open-modal="openModal(attachment)"
               @update-checked-attachments="updateCheckedAttachments"
@@ -186,6 +204,7 @@ import AttachmentRow from "../components/Attachments/AttachmentRow.vue";
 import attachmentService from "../services/attachment.js";
 import userService from "../services/user.js";
 import fileService from "../services/file.js";
+import syncService from "../services/sync.js";
 import mixin from "../mixins/mixin.js";
 import Swal from "sweetalert2";
 
@@ -238,16 +257,24 @@ export default {
       canDelete: false,
       canDownload: true,
       canUpdate: false,
+      canSync: false,
       modalLoading: false,
       slideTransition: "slide-fade",
 	    onlyPreview: false,
       changeFileEvent: null,
+      sync: false,
       exportLink: "",
     };
   },
   created() {
 	  this.canSee = !this.$store.state.global.anonyme;
 	  this.$store.dispatch('user/setCurrentUser', this.user);
+
+		syncService.isSyncModuleActive().then((response) => {
+		  this.sync = response.data;
+	  }).catch((error) => {
+		  this.sync = false;
+	  });
   },
   mounted() {
     this.loading = true;
@@ -293,7 +320,7 @@ export default {
             this.users.push(resp.user[0]);
             this.displayedUser = resp.user[0];
             this.$store.dispatch("user/setDisplayedUser", this.displayedUser.user_id);
-            this.$store.dispatch("user/setUsers", resp.user);
+            this.$store.dispatch('user/setUsers', resp.user);
           } else {
             this.displayErrorMessage(
                 this.translate("COM_EMUNDUS_ATTACHMENTS_USER_NOT_FOUND")
@@ -354,6 +381,7 @@ export default {
       this.getAttachments();
       this.$modal.hide("edit");
       this.selectedAttachment = {};
+      this.checkedAttachments = [];
     },
     updateStatus($event, selectedAttachment) {
       if (this.canUpdate) {
@@ -413,7 +441,18 @@ export default {
         );
       }
     },
-
+    synchronizeAttachments(aids)
+    {
+      if (aids.length > 0) {
+        syncService.synchronizeAttachments(aids).then((response) => {
+          if (response && response.status === false) {
+            this.displayErrorMessage(response.msg);
+          } else {
+            this.refreshAttachments(true);
+          }
+        });
+      }
+    },
     async setAccessRights() {
       if (!this.$store.state.user.rights[this.displayedFnum]) {
         const response = await userService.getAccessRights(
@@ -497,12 +536,22 @@ export default {
             (attachment) => !this.checkedAttachments.includes(attachment.aid)
         );
 
-        // delete all checkedAttachments
-        const response = await attachmentService.deleteAttachments(
-            this.displayedFnum,
-            this.displayedUser.user_id,
-            this.checkedAttachments
-        );
+        let response = null;
+        if (this.sync) {
+          syncService.deleteAttachments(this.checkedAttachments).then(async (response) => {
+            response = await attachmentService.deleteAttachments(
+                this.displayedFnum,
+                this.displayedUser.user_id,
+                this.checkedAttachments
+            );
+          });
+        } else {
+          response = await attachmentService.deleteAttachments(
+              this.displayedFnum,
+              this.displayedUser.user_id,
+              this.checkedAttachments
+          );
+        }
 
         if (response.status === true) {
           // Display tooltip deleted succesfully
@@ -715,6 +764,7 @@ export default {
 <style lang='scss'>
 #em-attachments {
   font-size: 14px;
+  width: 100%;
 
 	.v--modal-box.v--modal {
 		height: 100vh !important;

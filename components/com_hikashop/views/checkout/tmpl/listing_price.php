@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -72,7 +72,7 @@ if(empty($this->row->prices)){
 			}
 			if($this->params->get('show_discount') == 1) {
 				echo '<span class="hikashop_product_discount">'.JText::_('PRICE_DISCOUNT_START');
-				if(bccomp($this->row->discount->discount_flat_amount, 0, 5) !== 0) {
+				if(bccomp(sprintf('%F',$this->row->discount->discount_flat_amount), 0, 5) !== 0) {
 					if(!$this->unit)
 						$this->row->discount->discount_flat_amount = $this->row->discount->discount_flat_amount * $this->row->cart_product_quantity;
 					echo $this->currencyHelper->format(-1 * $this->row->discount->discount_flat_amount, $price->price_currency_id);

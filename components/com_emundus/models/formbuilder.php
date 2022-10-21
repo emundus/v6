@@ -167,7 +167,11 @@ class EmundusModelFormbuilder extends JModelList {
                 $new_key = $this->updateTranslation($labelTofind, $NewSubLabel,'fabrik_groups', $group);
 
                 if (!empty($new_key) && !is_bool($new_key)) {
+                    $translation = JText::_($new_key);
+                    $new_name = !empty($translation) && $translation != "Nouvelle section" ? $translation : $new_key;
+
                     $query->update($db->quoteName('#__fabrik_groups'))
+                        ->set($db->quoteName('name') . ' = ' . $db->quote($new_name))
                         ->set($db->quoteName('label') . ' = ' . $db->quote($new_key))
                         ->where($db->quoteName('id') . ' = ' . $db->quote($group));
                     $db->setQuery($query);
@@ -892,6 +896,7 @@ class EmundusModelFormbuilder extends JModelList {
             $query->clear()
                 ->update($db->quoteName('#__menu'))
                 ->set($db->quoteName('published') . ' = -2')
+                ->set($db->quoteName('modified_by') . ' = ' . $db->quote(JFactory::getUser()->id))
                 ->where($db->quoteName('id') . ' = ' . $db->quote($jos_menu->id));
             $db->setQuery($query);
             return $db->execute();
@@ -1879,8 +1884,8 @@ class EmundusModelFormbuilder extends JModelList {
                         $element['params']['database_join_noselectionlabel'] = 'PLEASE_SELECT';
                     }
                 } else {
-                    $sub_values = [];
-                    $sub_labels = [];
+                    $sub_values = $old_params['sub_options']['sub_values'];
+                    $sub_labels = $old_params['sub_options']['sub_labels'];
                     $sub_initial_selection = [];
 
                     if($element['params']['default_value'] == 1) {
@@ -2553,31 +2558,7 @@ class EmundusModelFormbuilder extends JModelList {
                 ->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
             $db->setQuery($query);
             $list_model = $db->loadObject();
-
             $db_table_name = $list_model->db_table_name;
-
-            /*if($list_model->db_table_name != 'jos_emundus_declaration') {
-                // Create table
-                $query->clear()
-                    ->select('COUNT(*)')
-                    ->from($db->quoteName('information_schema.tables'))
-                    ->where($db->quoteName('table_name') . ' LIKE ' . $db->quote('%jos_emundus_' . $prid . '%'));
-                $db->setQuery($query);
-                $result = $db->loadResult();
-
-                if ($result < 10) {
-                    $increment = '0' . strval($result);
-                } elseif ($result > 10) {
-                    $increment = strval($result);
-                }
-                $db_table_name = 'jos_emundus_' . $prid . '_' . $increment;
-                $table_query = "CREATE TABLE " . $db_table_name . " LIKE " . $list_model->db_table_name;
-                $db->setQuery($table_query);
-                $db->execute();
-                //
-            } else {
-                $db_table_name = 'jos_emundus_declaration';
-            }*/
 
             $query->clear();
             $query->insert($db->quoteName('#__fabrik_lists'));
@@ -2586,21 +2567,7 @@ class EmundusModelFormbuilder extends JModelList {
                     $query->set($key . ' = ' . $db->quote($val));
                 } elseif ($key == 'form_id') {
                     $query->set($key . ' = ' . $db->quote($newformid));
-                } /*elseif ($key == 'db_table_name') {
-                    if($val != 'jos_emundus_declaration') {
-                        $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment));
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val));
-                    }
-                }
-                elseif ($key == 'db_primary_key') {
-                    if($list_model->db_table_name != 'jos_emundus_declaration') {
-                        $query->set($key . ' = ' . $db->quote('jos_emundus_' . $prid . '_' . $increment . '.id'));
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val));
-                    }
-                } */
-                elseif ($key == 'access') {
+                } elseif ($key == 'access') {
                     $query->set($key . ' = ' . $db->quote($prid));
                 }
             }
@@ -2672,11 +2639,6 @@ class EmundusModelFormbuilder extends JModelList {
                         ->andWhere($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
                     $db->setQuery($query);
                     $repeat_table_to_copy = $db->loadResult();
-
-                    /*$newtablename = 'jos_emundus_' . $prid . '_' . $increment . '_' . $newgroupid . '_repeat';
-                    $table_query = "CREATE TABLE " . $newtablename . " LIKE " . $repeat_table_to_copy;
-                    $db->setQuery($table_query);
-                    $db->execute();*/
 
                     $joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
 
@@ -2803,25 +2765,9 @@ class EmundusModelFormbuilder extends JModelList {
             }
 
             $query->clear()
-                ->select(['id AS id', 'link AS link'])
-                ->from($db->quoteName('#__menu'));
-
-            $db->setQuery($query);
-            $model_menus = $db->loadObjectList();
-
-            $menu_id = 0;
-
-            foreach ($model_menus as $model_menu) {
-                if ($formid == explode('=', $model_menu->link)[3]) {
-                    $menu_id = $model_menu->id;
-                    break;
-                }
-            }
-
-            $query->clear()
                 ->select('*')
-                ->from('#__menu')
-                ->where($db->quoteName('id') . ' = ' . $menu_id);
+                ->from($db->quoteName('#__menu'))
+                ->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)='.$formid);
 
             $db->setQuery($query);
             $menu_model = $db->loadObject();

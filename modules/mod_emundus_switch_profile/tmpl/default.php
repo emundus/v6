@@ -7,6 +7,9 @@
  */
 // no direct access
 defined('_JEXEC') or die;
+
+if($just_logged && !$only_applicant) {
+    $user = JFactory::getSession()->get('emundusUser');
 ?>
 <style>
     .em-switch-profile-img{
@@ -77,11 +80,11 @@ defined('_JEXEC') or die;
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script>
-    <?php if($just_logged && !$only_applicant) : ?>
-        jQuery(document).ready(function () {
-            showModal();
-        });
-    <?php endif; ?>
+
+    const current_profile = "<?= $user->profile . '.'; ?>";
+    jQuery(document).ready(function () {
+        showModal();
+    });
 
     function showModal(){
         Swal.fire({
@@ -102,7 +105,16 @@ defined('_JEXEC') or die;
         })
     }
 
+    function hideModal() {
+        Swal.close();
+    }
+
     function postCProfileAtLogin(current_fnum) {
+        if (current_fnum == current_profile) {
+            hideModal();
+            return;
+        }
+
         const url = window.location.origin.toString() + '/index.php';
 
         jQuery.ajax({
@@ -121,3 +133,4 @@ defined('_JEXEC') or die;
         });
     }
 </script>
+<?php } ?>

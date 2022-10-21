@@ -17,18 +17,18 @@ $h_menu = new EmundusHelperMenu();
 $forms = $h_menu->getUserApplicationMenu($user->profile);
 ?>
 <ul>
-<?php 
+<?php
 foreach ($forms as $form) {
 	$query = 'SELECT count(*) FROM '.$form->db_table_name.' WHERE user = '.$user->id. ' AND fnum like '.$_db->Quote($user->fnum);
 	$_db->setQuery( $query );
-	$form->nb = $_db->loadResult();
+    $form->nb = $_db->loadResult();
 	$link 	= '<a href="'.$form->link.'">';
 	$active = $form->id==$itemid?' active':'';
 	$need = $form->nb==0?'need_missing':'need_ok';
 	$class = $need.$active;
 	$endlink= '</a>';
 ?>
-	<li class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.$form->title.$endlink; ?></div></li>
+	<li class="em_module <?php echo $class; ?>"><div class="em_form em-checklist"><?php echo $link.JText::_($form->label).$endlink; ?></div></li>
 <?php } ?>
 </ul>
 <?php
