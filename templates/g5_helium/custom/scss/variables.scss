@@ -42,6 +42,7 @@
 
   --font: 'Inter', sans-serif;
 
+  --white-background-color: #fff;
   --background-color: #f8f8f8;
 
   --border-radius: 4px;
@@ -617,6 +618,7 @@ $font:'Inter', sans-serif;
     /* INPUT */
     .fabrikinput:not(textarea):not([type='checkbox']) {
       @include input-default;
+      background: $neutral-50;
 
       &:hover {
         @include input-hover;

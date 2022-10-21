@@ -76,6 +76,30 @@ h1 {
   display: none !important;
 }
 
+
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input,
+select,
+a.chzn-single,
+textarea{
+  background: $neutral-50 !important;
+}
+
+
+
 .g-back-office-emundus-tableau {
   input[type="text"],
   input[type="password"],
@@ -679,8 +703,9 @@ footer#g-footer img {
 }
 
 
-.com_emundus  #g-page-surround,
-.view-form.com_fabrik  #g-page-surround,
+.com_emundus:not(.view-programme)  #g-page-surround,
+.view-form:not(.view-registration)  #g-page-surround,
+.view-details #g-page-surround,
 .view-checklist #g-page-surround,
 .files-board #g-page-surround,
 .g-back-office-emundus-tableau #g-page-surround,
@@ -897,7 +922,7 @@ body>.g-container {
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 .view-registration,.view-login,.view-reset,.view-form.em-formRegistrationCenter{
   #g-page-surround{
-    background: $base-background;
+    background: var(--white-background-color);
   }
   #g-navigation #header-c{
     .g-content {
@@ -1370,6 +1395,10 @@ body>.g-container {
 }
 
 /* LISTES  */
+
+.view-list .list-footer span.add-on {
+  background: #eeeeee;
+}
 
 .nav .dropdown-toggle .caret {
   border-top-color: var(--night-blue);
@@ -2347,6 +2376,9 @@ tr.fabrikFilterContainer{
 }
 
   .view-profile {
+    #g-page-surround {
+      background: var(--background-color);
+    }
     #g-navigation .header-c .open > .dropdown-menu .chzn-single {
       height: inherit;
 
