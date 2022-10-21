@@ -788,7 +788,7 @@ class EmundusHelperEmails {
             $query = $db->getQuery(true);
 
             if (!empty($user_id)) {
-                $query->select('block, email, params')
+                $query->select('email, params')
                     ->from('#__users')
                     ->where('id = ' . $user_id);
                 $db->setQuery($query);
@@ -811,17 +811,17 @@ class EmundusHelperEmails {
                 if (!$this->correctEmail($user->email)) {
                     $can_send_mail = false;
                 } else {
-                    if ($user->block == 1) {
+                    $params = json_decode($user->params, true);
+                    if (isset($params['send_mail']) && !$params['send_mail']) {
                         $can_send_mail = false;
-                    } else {
-                        $params = json_decode($user->params, true);
-                        if (isset($params['send_mail']) && !$params['send_mail']) {
-                            $can_send_mail = false;
-                            JLog::add("[User $user_id fnum $fnum] does not receive emails due to user parameter", JLog::INFO, 'com_emundus.email');
-                        }
+                        JLog::add("[User $user_id fnum $fnum] does not receive emails due to user parameter", JLog::INFO, 'com_emundus.email');
                     }
                 }
+            } else {
+                $can_send_mail = false;
             }
+        } else {
+            $can_send_mail = false;
         }
 
         return $can_send_mail;
