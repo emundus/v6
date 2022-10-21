@@ -2707,7 +2707,7 @@ class EmundusModelUsers extends JModelList {
      * @return array
      * @throws Exception
      */
-    public function onAfterAnonymUserMapping($data, $campaign_id = 0): array
+    public function onAfterAnonymUserMapping($data, $campaign_id = 0, $program_code = ''): array
     {
         $app = JFactory::getApplication();
         $user_id = $data['user_id'];
@@ -2718,17 +2718,16 @@ class EmundusModelUsers extends JModelList {
             $db = JFactory::getDBO();
             $query = $db->getQuery(true);
 
-            $query->update($db->quoteName('jos_emundus_users'))
+            $query->update($db->quoteName('#__emundus_users'))
                 ->set($db->quoteName('profile') . ' = ' . $profile_id)
                 ->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
 
-            $updated = false;
             try {
                 $db->setQuery($query);
                 $updated = $db->execute();
             } catch (Exception $e) {
+                $updated = false;
                 JLog::add('Failed to update emundus user profile from user_id ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                $message = 'Une erreur est survenue au cours de la création d\'une session anonyme.';
             }
 
             if ($updated) {
@@ -2743,6 +2742,7 @@ class EmundusModelUsers extends JModelList {
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Failed to update user joomla group ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 }
 
                 $query->clear()
@@ -2755,14 +2755,29 @@ class EmundusModelUsers extends JModelList {
                     $db->execute();
                 } catch (Exception $e) {
                     // catch any database errors.
+                    JLog::add('Failed to update user ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                 }
 
                 if (empty($campaign_id)) {
-                    $query->clear()
-                        ->select('id, MAX(year)')
-                        ->from('#__emundus_setup_campaigns')
-                        ->group('id')
-                        ->setLimit(1);
+                    if (!empty($program_code)) {
+                        $query->clear()
+                            ->select('id, MAX(year) AS max_year')
+                            ->from('#__emundus_setup_campaigns')
+                            ->where('training = ' . $db->quote($program_code))
+                            ->andWhere('published = 1')
+                            ->group('id')
+                            ->order('max_year')
+                            ->setLimit(1);
+                    } else {
+                        $query->clear()
+                            ->select('id, MAX(year) AS max_year')
+                            ->from('#__emundus_setup_campaigns')
+                            ->where('published = 1')
+                            ->group('id')
+                            ->order('max_year')
+                            ->setLimit(1);
+                    }
+
                     $db->setQuery($query);
 
                     try {
@@ -2771,7 +2786,20 @@ class EmundusModelUsers extends JModelList {
                     } catch (Exception $e) {
                         $campaign_id = 0;
                         JLog::add('Failed to get campaign ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-                        $message = 'Une erreur est survenue au moment de récupérer la campagne.';
+                        $message = JText::_('COM_EMUNDUS_ANONYM_USERS_ERROR_TRYING_TO_FIND_CAMPAIGN');
+                    }
+                } else {
+                    $query->clear()
+                        ->select('id')
+                        ->from('#__emundus_setup_campaigns')
+                        ->where('id = ' . $campaign_id)
+                        ->andWhere('published = 1');
+
+                    try {
+                        $campaign_id = $db->loadResult();
+                    } catch (Exception $e) {
+                        $campaign_id = 0;
+                        JLog::add('Failed to check campaign existence ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
                     }
                 }
 
@@ -2836,10 +2864,10 @@ class EmundusModelUsers extends JModelList {
                     }
                 } else {
                     JLog::add('Failed to retrieve campaign for anonym user' . $user_id, JLog::WARNING, 'com_emundus.error');
-                    $message = 'Une erreur est survenue au cours de la création d\'un dossier.';
+                    $message = JText::_('COM_EMUNDUS_ANONYM_USERS_NO_CAMPAIGN_FOUND');
                 }
             } else {
-                $message = 'Une erreur est survenue au cours de la création d\'une session anonyme.';
+                $message =  JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
             }
         }
 
@@ -2912,8 +2940,8 @@ class EmundusModelUsers extends JModelList {
 
         $jUser = JFactory::getUser($user_id);
         $instance = $jUser;
-        $session =& JFactory::getSession();
-        $session->set('user',$jUser);
+        $session = JFactory::getSession();
+        $session->set('user', $jUser);
         $app->checkSession();
 
         $query->clear()
