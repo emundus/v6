@@ -339,7 +339,7 @@ ul {
   background: var(--dark-grey) !important;
   background-color: var(--dark-grey) !important;
   border: 1px solid var(--dark-grey) !important;
-  border-radius: var(--border-radius) !important;
+  border-radius: 4px !important;
   color: var(--neutral-50) !important;
 
   &:active, &:focus, &:hover {
@@ -1260,8 +1260,8 @@ body>.g-container {
   .btn:last-child {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
-    border-top-right-radius: 4px !important;
-    border-bottom-right-radius: 4px !important;
+    border-top-right-radius: var(--border-radius) !important;
+    border-bottom-right-radius: var(--border-radius) !important;
   }
 
   .btn {
@@ -1451,7 +1451,7 @@ body>.g-container {
   .fabrikFilterContainer .fabrik_actions .fabrik_filter_submit {
     background: grey;
     border: 1px solid grey;
-    border-radius: var(--border-radius);
+    border-radius: 4px;
     padding: 7px 20px;
   }
 
@@ -1925,7 +1925,7 @@ tr.fabrikFilterContainer{
   span.btn {
     background: $base-primary-color;
     border: 1px solid $base-primary-color;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius) !important;
     padding: 8px 12px !important;
     color: var(--neutral-50);
 
@@ -2068,7 +2068,7 @@ tr.fabrikFilterContainer{
     button.btn.btn-danger {
       background: transparent;
       border: 1px solid var(--dark-grey);
-      border-radius: var(--border-radius) !important;
+      border-radius: 4px !important;
       color: var(--dark-grey);
       margin-right: 10px;
       font-weight: normal;
@@ -2087,7 +2087,7 @@ tr.fabrikFilterContainer{
     a.btn-success {
       background: var(--dark-grey);
       border: 1px solid var(--dark-grey);
-      border-radius: var(--border-radius) !important;
+      border-radius: 4px !important;
       color: var(--neutral-50);
       padding: 7px 30px;
 
@@ -2942,7 +2942,7 @@ h1.em-titre-connectez-vous {
     padding: 5px 30px;
     border: 1px solid var(--dark-grey);
     background: var(--dark-grey);
-    border-radius: var(--border-radius) !important;
+    border-radius: 4px !important;
 
     &:hover, &:active, &:focus {
       border: 1px solid var(--grey);
@@ -2998,7 +2998,7 @@ h1.em-titre-connectez-vous {
       background: var(--neutral-50) !important;
       box-shadow: unset;
       border-color: var(--neutral-300);
-      border-radius: var(--border-radius);
+      border-radius: 4px;
     }
     .chosen-drop{
       border-color: var(--neutral-300);
@@ -3521,6 +3521,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--red-500);
         margin-right: 5px;
         color: var(--neutral-50);
+        border-radius: 4px !important;
 
         &:hover,
         &:active,
@@ -3557,6 +3558,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--red-500);
         margin-right: 5px;
         color: var(--neutral-50);
+        border-radius: 4px !important;
 
         &:hover,
         &:active,
@@ -3572,6 +3574,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--main-500);
         margin-right: 5px;
         color: var(--neutral-50);
+        border-radius: 4px !important;
 
         &:hover,
         &:active,
@@ -3587,6 +3590,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--main-600);
         margin-right: 5px;
         color: var(--neutral-50);
+        border-radius: 4px !important;
 
         &:hover,
         &:active,
@@ -3651,6 +3655,8 @@ h1.em-titre-connectez-vous {
     .fabrik_filter_submit.button {
       background: var(--main-500);
       border-color: var(--main-500);
+      border-radius: 4px;
+
       &:hover, &:active, &:focus {
         background: var(--neutral-50);
         border-color: var(--main-500);
@@ -4106,6 +4112,12 @@ button.swal2-cancel.goback-btn {
 .gantry.contentpane.modal,
 .view-users.layout-edit {
   @include calendar;
+
+  /* BOUTONS */
+  button.btn-primary {
+    border-radius: var(--border-radius) !important;
+  }
+
 
   /* BLOC FORMULAIRE */
   .span12  {
