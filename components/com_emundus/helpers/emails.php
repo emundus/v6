@@ -520,6 +520,11 @@ class EmundusHelperEmails {
         for ($i = 0; $i < $nUsers; $i++) {
             $user = $users[$i];
 
+            $can_send_mail = $this->assertCanSendMailToUser($user->id);
+            if (!$can_send_mail) {
+                continue;
+            }
+
             if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
                 include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
                 $m_campaign = new EmundusModelCampaign;
@@ -687,6 +692,11 @@ class EmundusHelperEmails {
 
             $user = $users[$i];
 
+            $can_send_mail = $this->assertCanSendMailToUser($user->id);
+            if (!$can_send_mail) {
+                continue;
+            }
+
             if (isset($campaigns_id[$i]) && !empty($campaigns_id[$i])) {
                 include_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
                 $m_campaign = new EmundusModelCampaign;
@@ -761,6 +771,46 @@ class EmundusHelperEmails {
             }
         }
         $mainframe->redirect('index.php?option=com_emundus&view=email&tmpl=component&layout=sent', JText::_('COM_EMUNDUS_EMAILS_REPORTS_MAILS_SENT').$info, 'message');
+    }
+
+    function assertCanSendMailToUser($user_id = null, $fnum = null): bool
+    {
+        $can_send_mail = true;
+
+        if (!empty($user_id) || !empty($fnum)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            if (!empty($user_id)) {
+                $query->select('params')
+                    ->from('#__users')
+                    ->where('id = ' . $user_id);
+                $db->setQuery($query);
+            } else {
+                $query->select('params')
+                    ->from('#__users AS ju')
+                    ->leftJoin('#__emundus_campaign_candidature AS jecc ON jecc.applicant_id = ju.id')
+                    ->where('jecc.fnum LIKE ' . $db->quote($fnum));
+                $db->setQuery($query);
+            }
+
+            try {
+                $params = $db->loadResult();
+            } catch (Exception $e) {
+                $params = [];
+                JLog::add('Failed to retrieve user params for user_id ' . $user_id . ' fnum ' . $fnum . ' ' . $e->getMessage(), JLog::ERROR, 'com_emundus.email');
+            }
+
+            if (!empty($params)) {
+                $params = json_decode($params, true);
+
+                if (isset($params['send_mail']) && !$params['send_mail']) {
+                    $can_send_mail = false;
+                }
+            }
+        }
+
+        return $can_send_mail;
     }
 }
 ?>
