@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Restricted access');
 	<div class="hkc-md-6 hikashop_listing_filters">
 	</div>
 </div>
-	<table class="adminlist table table-striped table-hover" cellpadding="1">
+	<table id="hikashop_report_listing" class="adminlist table table-striped table-hover" cellpadding="1">
 		<thead>
 			<tr>
 				<th class="title titlenum">
@@ -33,7 +33,17 @@ defined('_JEXEC') or die('Restricted access');
 				<?php  ?>
 				<th class="title titleorder">
 				<?php echo JHTML::_('grid.sort', JText::_( 'HIKA_ORDER' ), 'a.widget_ordering',$this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value ); ?>
-					<?php if ($this->order->ordering) echo JHTML::_('grid.order',  $this->rows ); ?>
+					<?php if ($this->order->ordering) {
+						$keys = array_keys($this->rows);
+						$rows_nb = end($keys);
+						$href = "javascript:saveorder(".$rows_nb.", 'saveorder')";
+						?><a href="<?php echo $href; ?>" rel="tooltip" class="saveorder btn btn-sm btn-secondary float-end" title="Save Order">
+							<button class="button-apply btn btn-success" type="button">
+<!--							<span class="icon-apply" aria-hidden="true"></span> -->
+								<i class="fas fa-save"></i>
+							</button>
+						</a><?php
+					} ?>
 				</th>
 				<th class="title titletoggle">
 					<?php echo JHTML::_('grid.sort',   JText::_('HIKA_PUBLISHED'), 'a.widget_published', $this->pageInfo->filter->order->dir, $this->pageInfo->filter->order->value ); ?>
@@ -47,7 +57,6 @@ defined('_JEXEC') or die('Restricted access');
 			<tr>
 				<td colspan="8">
 					<?php echo $this->pagination->getListFooter(); ?>
-					<?php echo $this->pagination->getResultsCounter(); ?>
 				</td>
 			</tr>
 		</tfoot>

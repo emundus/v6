@@ -17,7 +17,7 @@
       />
       <header class="em-flex-row em-flex-space-between">
         <div class="right-actions">
-          <span id="go-back" class="material-icons-outlined em-p-12-16 em-pointer" @click="goTo('/formulaires')">
+          <span id="go-back" class="material-icons-outlined em-p-12-16 em-pointer" onclick="history.go(-1)">
             navigate_before
           </span>
         </div>

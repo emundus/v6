@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,8 @@ class OrderController extends hikashopController {
 		'products',
 		'additional',
 		'general',
-		'history'
+		'history',
+		'user'
 	);
 
 	var $popupSubtasks = array(
@@ -30,7 +31,7 @@ class OrderController extends hikashopController {
 		parent::__construct($config);
 		$this->modify_views = array_merge($this->modify_views, array(
 			'changestatus','product','product_select','product_add','product_delete','address','state',
-			'mail','partner','discount','fields','changeplugin','neworder','user','form',
+			'mail','partner','discount','fields','changeplugin','neworder','user','form','batch',
 
 			'product_create','customer_set','customer_save'
 		));
@@ -58,6 +59,13 @@ class OrderController extends hikashopController {
 		}
 	}
 
+	public function batch(){
+		$params = new HikaParameter('');
+		$params->set('table', 'order');
+		$js = '';
+		echo hikashop_getLayout('massaction', 'batch', $params, $js);
+	}
+
 	function download(){
 		$file_id = hikaInput::get()->getInt('file_id');
 		if(empty($file_id)){
@@ -69,10 +77,13 @@ class OrderController extends hikashopController {
 				$app->enqueueMessage(JText::_('FILE_NOT_FOUND'));
 				return false;
 			}else{
-				$options = array(
-					'thumbnail_x' => hikaInput::get()->getInt('thumbnail_x', 0),
-					'thumbnail_y' => hikaInput::get()->getInt('thumbnail_y', 0)
-				);
+				$options = array();
+				if(isset($_REQUEST['thumbnail_x']) || isset($_REQUEST['thumbnail_y'])) {
+					$options = array(
+						'thumbnail_x' => hikaInput::get()->getInt('thumbnail_x', 0),
+						'thumbnail_y' => hikaInput::get()->getInt('thumbnail_y', 0)
+					);
+				}
 				$fileClass = hikashop_get('class.file');
 				$fileClass->downloadFieldFile(urldecode(base64_decode($name)), $field_table, urldecode(base64_decode($field_namekey)), $options);
 			}
@@ -107,6 +118,8 @@ class OrderController extends hikashopController {
 			'upload_dir' => $config->get('uploadsecurefolder')
 		);
 
+		if(!empty($field->field_options['upload_dir']))
+			$options['upload_dir'] = $field->field_options['upload_dir'];
 		if(!empty($field->field_options['allowed_extensions']))
 			$options['allowed_extensions'] = trim($field->field_options['allowed_extensions'], ', ');
 

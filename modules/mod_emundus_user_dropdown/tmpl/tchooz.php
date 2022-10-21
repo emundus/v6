@@ -131,7 +131,7 @@ if($user != null) {
 <div class='dropdown <?php if($first_logged) : ?>userDropdown-tip<?php endif; ?>' id="userDropdown" style="float: right;">
     <?php if(!empty($profile_picture)): ?>
     <div class="em-profile-picture em-pointer em-user-dropdown-button" id="userDropdownLabel"
-         style="background-image:url('<?php echo $profile_picture ?>');right: 15px">
+         style="background-image:url('<?php echo $profile_picture ?>');">
     </div>
     <?php else : ?>
     <div class="em-user-dropdown-button <?php if($first_logged) : ?>userDropdownLabel-tip<?php endif; ?>" id="userDropdownLabel" aria-haspopup="true" aria-expanded="false">
@@ -232,21 +232,6 @@ if($user != null) {
         displayUserOptions();
     });
 
-    /*document.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var dropdown = document.getElementById('userDropdown');
-        var icon = document.getElementById('userDropdownIcon');
-
-        if (dropdown.classList.contains('open')) {
-            jQuery("#userDropdownMenu").css("transform","translate(250px)")
-            setTimeout(() => {
-                dropdown.classList.remove('open');
-                jQuery("#userDropdownMenu").css("transform","unset")
-                icon.classList.remove('active');
-            },300);
-        }
-    });*/
-
     function postCProfile() {
         var current_fnum = document.getElementById("profile").value;
         var redirect_url = document.getElementById("switch_profile_redirect").value;
@@ -291,6 +276,30 @@ if($user != null) {
             }
         });
     }
+
+    document.addEventListener('click', function (e) {
+        let clickInsideModule = false;
+
+        e.composedPath().forEach((pathElement) => {
+            if (pathElement.id == "userDropdownMenu") {
+                clickInsideModule = true;
+            }
+        });
+
+        if (!clickInsideModule) {
+            const dropdown = document.getElementById('userDropdown');
+            const icon = document.getElementById('userDropdownIcon');
+
+            jQuery("#userDropdownMenu").css("transform","translate(250px)")
+            setTimeout(() => {
+                dropdown.classList.remove('open');
+                jQuery("#userDropdownMenu").css("transform","unset")
+                if(icon !== null) {
+                    icon.classList.remove('active');
+                }
+            }, 300);
+        }
+    });
 </script>
 <?php } else { ?>
 <div class="header-right" style="text-align: right;">

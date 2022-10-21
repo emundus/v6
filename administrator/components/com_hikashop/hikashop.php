@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,8 +47,6 @@ if($taskGroup != 'update' && !$config->get('installcomplete')){
 	return;
 }
 
-$className = ucfirst($taskGroup).'Controller';
-
 $currentuser = JFactory::getUser();
 if($taskGroup != 'update' && !$currentuser->authorise('core.manage', 'com_hikashop')) {
 	$app = JFactory::getApplication();
@@ -61,16 +59,16 @@ if($taskGroup == 'config' && !$currentuser->authorise('core.admin', 'com_hikasho
 	return;
 }
 
-if(!class_exists($className) && (!file_exists(HIKASHOP_CONTROLLER.$taskGroup.'.php') || !include_once(HIKASHOP_CONTROLLER.$taskGroup.'.php'))) {
-	if(!hikashop_getPluginController($taskGroup)) {
-		$app = JFactory::getApplication();
-		$app->enqueueMessage('Page not found : '.$taskGroup, 'warning');
-		return;
-	}
-}
 ob_start();
 
-$classGroup = new $className();
+$classGroup = hikashop_get('controller.'.$taskGroup);
+
+if(empty($classGroup)) {
+	$app = JFactory::getApplication();
+	$app->enqueueMessage('Page not found : '.$taskGroup, 'warning');
+	return;
+}
+
 hikaInput::get()->set('view', $classGroup->getName() );
 $classGroup->execute( hikaInput::get()->getCmd('task','listing'));
 $classGroup->redirect();

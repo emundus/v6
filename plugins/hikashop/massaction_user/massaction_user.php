@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -243,15 +243,37 @@ class plgHikashopMassaction_user extends JPlugin
 	function onProcessUserMassFilteraccessLevel(&$elements,&$query,$filter,$num){
 		if(empty($filter['type']) || $filter['type']=='all') return;
 		if(count($elements)){
+			$user_ids = array();
 			foreach($elements as $k => $element){
-				if($element->$filter['type']!=$filter['value']) unset($elements[$k]);
+				$user_ids[$element->user_id] = (int)$element->user_id;
+			}
+			if(count($user_ids)) {
+				$db = JFactory::getDBO();
+				$db->setQuery('SELECT user_id, user_cms_id FROM '.hikashop_table('user').'  WHERE user_id IN ('.implode(',', $user_ids).')');
+				$users = $db->loadObjectList('user_id');
+				$cms_ids = array();
+				foreach($users as $u){
+					$cms_ids[$u->user_cms_id] = (int)$u->user_cms_id;
+				}
+				$groups = array();
+				if(count($cms_ids)) {
+					$db->setQuery('SELECT user_id FROM '.hikashop_table('user_usergroup_map',false).'  WHERE user_id IN ('.implode(',', $cms_ids).') AND group_id = '.(int)$filter['group']);
+					$groups = $db->loadObjectList('user_id');
+				}
+				foreach($elements as $k => $element){
+					if($filter['type'] == 'IN' && (!isset($users[$element->user_id]) || !isset($groups[$users[$element->user_id]->user_cms_id])))
+						unset($elements[$k]);
+					elseif($filter['type'] == 'NOT IN' && isset($users[$element->user_id]) && isset($groups[$users[$element->user_id]->user_cms_id]))
+						unset($elements[$k]);
+				}
 			}
 		}else{
 			$db = JFactory::getDBO();
 			$db->setQuery('SELECT user_id FROM '.hikashop_table('user_usergroup_map',false).'  WHERE group_id = '.(int)$filter['group']);
 			$users = $db->loadColumn();
-			if(!empty($users))
+			if(!empty($users)){
 				$query->where[] = 'hk_user.user_cms_id'.' '.$filter['type'].' ('.implode(',',$users).')';
+			}
 		}
 	}
 	function onCountUserMassFilteraccessLevel(&$query,$filter,$num){
@@ -281,10 +303,10 @@ class plgHikashopMassaction_user extends JPlugin
 		}
 		$app = JFactory::getApplication();
 		if(hikashop_isClient('administrator') || (!hikashop_isClient('administrator') && !empty($path))){
-			$params->action['user']['user_id'] = 'user_id';
 			unset($action['formatExport']);
 			$params = $this->massaction->_displayResults('user',$elements,$action,$k);
 			$params->formatExport = $formatExport;
+			$params->action['user']['user_id'] = 'user_id';
 			$params->path = $url['server'];
 			$params = $this->massaction->sortResult($params->table,$params);
 			$this->massaction->_exportCSV($params);
@@ -310,13 +332,14 @@ class plgHikashopMassaction_user extends JPlugin
 		$current = 'user';
 		$current_id = $current.'_id';
 		$ids = array();
+		$column = $action['type'];
 		foreach($elements as $element){
 			$ids[] = $element->$current_id;
-			if(isset($element->$action['type']))
-				$element->$action['type'] = $action['value'];
+			if(isset($element->$column))
+				$element->$column = $action['value'];
 
 		}
-		$action['type'] = strip_tags($action['type']);
+		$action['type'] = strip_tags($column);
 		$alias = explode('_',$action['type']);
 		$queryTables = array($current);
 		$possibleTables = array($current,'joomla_users');
@@ -340,7 +363,7 @@ class plgHikashopMassaction_user extends JPlugin
 					switch($queryTable){
 						case 'user':
 							if(!in_array('joomla_users',$queryTables)){
-								$query .= 'SET hk_'.$alias[0].'.'.$action['type'].' = '.$value.' ';
+								$query .= 'SET hk_'.$current.'.'.$action['type'].' = '.$value.' ';
 							}
 							break;
 						case 'joomla_users':
@@ -361,7 +384,7 @@ class plgHikashopMassaction_user extends JPlugin
 				switch($queryTable){
 					case 'user':
 						if(!in_array('joomla_users',$queryTables)){
-							$query .= 'SET hk_'.$alias[0].'.'.$action['type'].' = '.$value.' ';
+							$query .= 'SET hk_'.$current.'.'.$action['type'].' = '.$value.' ';
 						}
 						break;
 					case 'joomla_users':
@@ -460,7 +483,7 @@ class plgHikashopMassaction_user extends JPlugin
 	function onBeforeUserUpdate(&$element,&$do){
 		if(!$do) return;
 
-		$getUser = $this->user->get($element->user_id);
+		$getUser = hikashop_copy($this->user->get($element->user_id));
 
 		foreach($getUser as $key => $value){
 			if(isset($element->$key) && $getUser->$key != $element->$key){

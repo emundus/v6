@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -336,7 +336,7 @@ echo JHTML::_('calendar', $end, 'data[widget][widget_params][end]','period_end',
 									<label  for="compare_with_period"><?php echo JText::_( 'PERIOD' ); ?>:</label>
 									<select name="data[widget][widget_params][period_compare]" id="compare_period" class="custom-select">
 												<option <?php if(!isset($this->element->widget_params->period_compare) || $this->element->widget_params->period_compare=='none') echo "selected=\"selected\""; ?> value="none">None</option>
-										<option <?php if(isset($this->element->widget_params->period_compare) && $this->element->widget_params->period_compare == 'last_period') echo "selected=\"selected\""; ?> value="last_period">Last Similare Period</option>
+										<option <?php if(isset($this->element->widget_params->period_compare) && $this->element->widget_params->period_compare == 'last_period') echo "selected=\"selected\""; ?> value="last_period">Last Similar Period</option>
 										<option <?php if(isset($this->element->widget_params->period_compare) && $this->element->widget_params->period_compare == 'last_year') echo "selected=\"selected\""; ?> value="last_year">Same period last year</option>
 									</select>
 								</span>
