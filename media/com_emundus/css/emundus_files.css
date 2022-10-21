@@ -1244,16 +1244,6 @@ div#em-appli-block .panel-body {
     background: #ffffff;
 }
 
-#em-export-elts{
-    padding:0!important;
-    margin:0!important;
-}
-
-#em-export-elts #em-export{
-    padding:0!important;
-    margin:0!important;
-}
-
 #comment-body{
     margin:10px 0!important;
 }
@@ -1429,7 +1419,6 @@ textarea>.input-group-btn>.btn {
 
 label {
     color: #000;
-    margin-bottom: 8px !important;
     font-weight: bold;
     display: inline;
 }

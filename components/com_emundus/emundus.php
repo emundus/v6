@@ -46,7 +46,12 @@ JText::script('IN');
 JText::script('ALL');
 JText::script('USERNAME');
 JText::script('EMAIL');
+JText::script('APPLICATION_CREATION_DATE');
+JText::script('CAMPAIGN_ID');
+JText::script('SEND_ON');
 JText::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
+JText::script('COM_EMUNDUS_ONBOARD_OK');
+JText::script('COM_EMUNDUS_ONBOARD_CANCEL');
 
 JText::script('COM_EMUNDUS_EX');
 JText::script('COM_EMUNDUS_APPLICATION_TAG');

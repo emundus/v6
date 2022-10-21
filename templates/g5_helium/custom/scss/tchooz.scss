@@ -668,6 +668,12 @@ input:focus + .em-slider {
 .em-bg-main-500{
   background: $main-500;
 }
+.em-bg-neutral-200{
+  background: $neutral-200;
+}
+.em-bg-transparent{
+  background: transparent;
+}
 .em-white-bg{
   background: white;
 }
@@ -675,6 +681,10 @@ input:focus + .em-slider {
 /* MARGINS */
 .em-m-center{
   margin: 0 auto;
+}
+
+.em-m-8{
+  margin: 8px;
 }
 
 .em-m-16{
@@ -898,6 +908,9 @@ input:focus + .em-slider {
 */
 .em-border-radius-5{
   border-radius: 5px;
+}
+.em-border-radius-8{
+  border-radius: 8px;
 }
 .em-border-neutral-300{
   border: 1px solid $neutral-300;
