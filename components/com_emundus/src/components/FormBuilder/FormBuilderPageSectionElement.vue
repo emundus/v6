@@ -207,7 +207,7 @@ export default {
   }
 
   &:hover {
-    border: 2px solid #20835F;
+    border: 2px solid var(--main-500);
 
     #element-action-icons {
       opacity: 1;

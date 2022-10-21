@@ -492,7 +492,7 @@ input:focus + .em-slider {
 
 .em-hover-main-600{
   &:hover{
-    color: $main-600;
+    color: var(--main-600);
   }
 }
 

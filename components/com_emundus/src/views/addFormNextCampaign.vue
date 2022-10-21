@@ -401,11 +401,11 @@ export default {
 }
 
 .w--current:hover{
-  color: #20835F;
+  color: var(--main-500);
 }
 
 .em-pointer:hover{
-  color: #20835F;
+  color: var(--main-500);
 }
 
 .em-w-custom {
