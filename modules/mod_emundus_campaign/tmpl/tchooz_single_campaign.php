@@ -30,7 +30,7 @@ $j = $dteDiff->format("%a");
 $h = $dteDiff->format("%H");
 ?>
 
-<div class="em-grid-2-70-30 em-mt-24" style="grid-gap: 64px">
+<div class="em-grid-2-70-30 em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
         <?php
         $color = '#1C6EF2';
@@ -56,14 +56,14 @@ $h = $dteDiff->format("%H");
         <p class="em-h3 mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></p>
         <div class="em-flex-row em-mt-16">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
-            <div class="em-flex-row">
+            <div class="em-flex-row em-mr-24">
                 <p class="em-text-neutral-600 em-flex-row"><span class="material-icons em-mr-4">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
                 <span class="em-text-neutral-600 em-ml-4 em-camp-start"><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_camp_end_date && $currentCampaign->end_date != '0000-00-00 00:00:00') :?>
-            <div class="em-flex-row em-ml-24">
+            <div class="em-flex-row">
                 <p class="em-text-neutral-600 em-flex-row"><span class="material-icons em-mr-4">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
                 <span class="em-text-neutral-600 em-ml-4 em-camp-end"><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
