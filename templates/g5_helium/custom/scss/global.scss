@@ -6253,6 +6253,9 @@ fieldset[disabled] .multiselect {
   position: sticky;
 }
 .em-modal-actions {
+  .em-w-auto{
+    width: auto !important;
+  }
   .em-w-100{
     width: 100% !important;
   }
@@ -6277,6 +6280,9 @@ fieldset[disabled] .multiselect {
     z-index: 999 !important;
     background: white;
     border: solid 1px $neutral-300;
+  }
+  .em-actions-none{
+    display: none;
   }
 }
 .em-modal-actions.em-export{
