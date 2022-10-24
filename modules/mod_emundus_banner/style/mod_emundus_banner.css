@@ -3,6 +3,7 @@
     height: 200px;
     background-size: cover;
     background-repeat: no-repeat;
+    background-position: 50% 50%;
 }
 
 #g-utility .g-container{
