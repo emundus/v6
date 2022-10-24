@@ -21,10 +21,10 @@
     margin-left: -5px !important;
     height: 34px !important;
     margin-bottom: 0;
-    border-radius: 0px 4px 4px 0px !important;
+    border-radius: 0px var(--border-radius) var(--border-radius) 0px !important;
 }
 #navfilter .navsearch .navsearch-content .input-group label input {
-    border-radius: 4px 0px 0px 4px !important;
+    border-radius: var(--border-radius) 0px 0px var(--border-radius) !important;
     height: 34px;
     margin-top: 0px;
 }
@@ -109,10 +109,6 @@
     padding: 0;
 }
 
-.campaingapplycontent b{
-    color:#000000;
-}
-
 .campaingapplycontent strong {
     font-weight: normal;
     width: 179px;
@@ -127,7 +123,7 @@
 }
 
 .campaigns-list .below-content a.btn {
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   width: auto;
   padding: 8px 12px;
   text-transform: inherit;

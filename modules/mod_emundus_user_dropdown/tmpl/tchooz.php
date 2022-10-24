@@ -122,7 +122,7 @@ if($user != null) {
         }
     .em-user-dropdown-tip-link{
         float: right;
-        color: #20835F;
+        color: var(--main-500);
         cursor: pointer;
     }
 </style>

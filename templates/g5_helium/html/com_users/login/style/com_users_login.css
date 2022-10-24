@@ -2,7 +2,7 @@
 button.btn-primary{
     background: #e03c32;
     border: 1px solid #e03c32;
-    border-radius: 4px!important;
+    border-radius: var(--border-radius) !important;
     padding: 8px 12px!important;
 }
 button.btn-primary:hover{
@@ -80,7 +80,7 @@ button.btn-primary:hover{
     font-weight: 600;
 }
 .login .well label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -178,7 +178,7 @@ body.view-reset label#jform_username-lbl::before,
     height: 48px;
     margin-right: 0px !important;
     margin-bottom: 0px;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
     font-weight: 500;
 }
 form.form-validate.form-horizontal.well .control-group .controls input {
@@ -211,14 +211,12 @@ form.form-validate.form-horizontal.well .control-group .controls input:hover {
 h1.em-titre-connectez-vous {
     margin-bottom: 16px !important;
     margin-top: 0px;
-    font-family:'Inter', sans-serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
     text-align: center;
-    color: #000000;
 }
 
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {

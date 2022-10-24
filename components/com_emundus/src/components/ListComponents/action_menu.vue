@@ -490,7 +490,7 @@
     color: black;
     font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
     &:hover {
-     color: #20835F;
+     color: var(--main-500);
    }
   }
 </style>

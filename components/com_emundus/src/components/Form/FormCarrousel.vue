@@ -103,7 +103,7 @@ export default {
 
 <style scoped>
 .MenuFormItem_current{
-  color: #20835F;
+  color: var(--main-500);
 }
 .MenuForm a:hover{
   color: #1C6EF2;
