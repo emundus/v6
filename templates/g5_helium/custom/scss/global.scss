@@ -2930,22 +2930,23 @@ h1.em-titre-connectez-vous {
   color: #333333;
 }
 
-.com_emundus h2,
-.com_emundus p,
-.com_emundus .em-w-custom form.fabrikForm label,
-.com_emundus .em-w-custom form.fabrikForm input,
-.com_emundus .em-w-custom form.fabrikForm input:focus,
-.com_emundus .em-w-custom form.fabrikForm select,
-.com_emundus .em-w-custom form.fabrikForm span:not(.em-red-500-color),
-.com_emundus .em-w-custom form.fabrikForm div,
-.com_emundus .em-w-custom form.fabrikForm textarea,
-.com_emundus .em-w-custom .em-document-dropzone-card,
-.com_emundus .em-w-custom .em-email-card,
-.com_emundus ul li,
-.com_emundus select{
-  color: var(--neutral-800) !important;
+.com_emundus:not(.view-programme){
+   h2,
+   p,
+   .em-w-custom form.fabrikForm label,
+   .em-w-custom form.fabrikForm input,
+   .em-w-custom form.fabrikForm input:focus,
+   .em-w-custom form.fabrikForm select,
+   .em-w-custom form.fabrikForm span:not(.em-red-500-color),
+   .em-w-custom form.fabrikForm div,
+   .em-w-custom form.fabrikForm textarea,
+   .em-w-custom .em-document-dropzone-card,
+   .em-w-custom .em-email-card,
+    ul li,
+   select{
+    color: var(--neutral-800) !important;
+  }
 }
-
 .com_emundus .em-w-custom form.fabrikForm input[placeholder] {
   color: var(--neutral-500);
 }

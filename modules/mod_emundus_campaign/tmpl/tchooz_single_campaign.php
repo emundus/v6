@@ -56,22 +56,22 @@ $h = $dteDiff->format("%H");
         <div class="em-flex-row em-mt-16">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row">
-                <p><i class="icon-clock"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
-                <span class="em-ml-4 em-camp-start"><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600"><i class="icon-clock"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
+                <span class="em-text-neutral-600 em-ml-4 em-camp-start"><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_camp_end_date && $currentCampaign->end_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row em-ml-24">
-                <p><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
-                <span class="em-ml-4 em-camp-end"><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600"><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
+                <span class="em-text-neutral-600 em-ml-4 em-camp-end"><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_formation_start_date && $currentCampaign->formation_start !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row">
-                <p><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
-                <span class="em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
+                <span class="em-text-neutral-600 em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif;?>
 
@@ -84,30 +84,30 @@ $h = $dteDiff->format("%H");
 
             <?php if ($mod_em_campaign_show_admission_start_date && $currentCampaign->admission_start_date !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row">
-                <p><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
-                <span class="em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_START_DATE'); ?>:</p>
+                <span class="em-text-neutral-600 em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif;?>
 
             <?php if ($mod_em_campaign_show_admission_end_date && $currentCampaign->admission_end_date !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row em-ml-24">
-                <p><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
-                <span class="em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
+                <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_ADMISSION_END_DATE'); ?>:</p>
+                <span class="em-text-neutral-600 em-ml-4 em-formation-end"><?php echo JFactory::getDate(new JDate($currentCampaign->admission_end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
         </div>
-        <div class="em-mt-8">
+        <div class="em-mt-8 em-text-neutral-600">
             <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset : ''; ?>
         </div>
 
         <div class="mod_emundus_campaign__tabs em-flex-row">
             <?php if (!empty($faq_articles) || !empty($files)) : ?>
-                <a class="em-text-neutral-900 current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
+                <a class="em-text-neutral-600 current-tab em-mr-24" onclick="displayTab('campaign')" id="campaign_tab">
                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS') ?></span>
                 </a>
             <?php endif; ?>
             <?php if (in_array('faq', $modules_tabs) && !empty($faq_articles)) : ?>
-                <a class="em-text-neutral-900" onclick="displayTab('faq')" id="faq_tab">
+                <a class="em-text-neutral-600" onclick="displayTab('faq')" id="faq_tab">
                     <span><?php echo JText::_('MOD_EM_CAMPAIGN_FAQ') ?></span>
                 </a>
             <?php endif; ?>
