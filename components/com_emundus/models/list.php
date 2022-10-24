@@ -191,7 +191,7 @@ class EmundusModelList extends JModelList
                 require_once (JPATH_ROOT .'/components/com_emundus/helpers/access.php');
                 require_once (JPATH_ROOT .'/components/com_emundus/models/users.php');
                 require_once (JPATH_ROOT .'/components/com_emundus/models/campaign.php');
-                $m_users = new EmundusModelsUsers();
+                $m_users = new EmundusModelUsers();
                 $user_id = JFactory::getUser()->id;
                 $user_programs = $m_users->getUserGroupsProgramme($user_id);
                 foreach($listDataResult as $index => $listResult) {
