@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="em-mb-4">{{ChooseForm}} : </div>
+    <div class="em-mb-4 em-text-color">{{ChooseForm}} : </div>
     <div class="em-mb-8">
       <select id="select_profile" v-model="$props.profileId" @change="updateProfileCampaign">
         <option v-for="(profile, index) in profiles" :key="index" :value="profile.id">
@@ -9,7 +9,7 @@
       </select>
 
       <div class="em-mb-8 em-mt-8">
-        <span>{{ translate('COM_EMUNDUS_OR').toUpperCase() }}</span>
+        <span class="em-text-color">{{ translate('COM_EMUNDUS_OR').toUpperCase() }}</span>
       </div>
 
       <button @click="addNewForm" class="em-primary-button em-w-auto">

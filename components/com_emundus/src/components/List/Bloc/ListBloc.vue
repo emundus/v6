@@ -345,6 +345,7 @@ export default {
 
 		.dates {
 			font-size: 12px;
+      color: var(--neutral-800);
 		}
 	}
 
@@ -362,6 +363,7 @@ export default {
     flex-direction: column;
     justify-content: end;
     height: 100%;
+    color: var(--neutral-800);
 
 		.associated-campaigns {
 			margin: 0 0 24px 0;
@@ -400,7 +402,7 @@ export default {
       }
 
 			&.published {
-				background: #DFF5E9;
+				background: var(--main-100);
 			}
 
 			&.unpublished {
@@ -438,11 +440,11 @@ export default {
 
 		.em-primary-button {
 			width: fit-content;
-			border: 1px solid #20835F;
+			border: 1px solid var(--main-500);
 
 			&:hover {
 				background-color: white;
-				color: #20835F;
+				color: var(--main-500);
 			}
 		}
 	}

@@ -45,21 +45,21 @@ if($just_logged && !$only_applicant) {
     .em-switch-profile-card{
         height: 45px;
         text-align: center;
-        border: solid 1px #20835F;
+        border: solid 1px var(--main-500);
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 5px;
         flex-direction: column;
         cursor: pointer;
-        color: #20835F;
+        color: var(--main-500);
         transition: all 0.3s ease-in-out;
         width: 45%;
         margin: 10px;
     }
     .em-switch-profile-card:hover {
-        background: #20835F;
-        color: white;
+        background: var(--main-500);
+        color: var(--neutral-50);
     }
     .em-switch-profile-card .material-icons-outlined{
         font-size: 64px;

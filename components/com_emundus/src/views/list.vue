@@ -459,6 +459,7 @@ h2 {
     margin-bottom: 0;
     border: unset;
     background: transparent;
+    color: var(--neutral-800);
     &:focus{
       outline: unset;
     }

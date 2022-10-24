@@ -502,7 +502,6 @@ form#member-profile .form-horizontal .control-label {
 .view-registration .login.em-formRegistrationCenter .em-heading-registration h1, 
 .view-form.em-formRegistrationCenter .em-formRegistrationCenter:not(.componentheading) .em-heading-registration h1 {
     margin-top: 0px !important; 
-    font-family:'Inter', sans-serif;
     font-size: 32px;
     font-style: normal;
     font-weight: 600;
