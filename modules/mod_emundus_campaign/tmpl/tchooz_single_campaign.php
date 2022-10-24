@@ -30,7 +30,7 @@ $j = $dteDiff->format("%a");
 $h = $dteDiff->format("%H");
 ?>
 
-<div class="em-grid-2-70-30" style="grid-gap: 64px">
+<div class="em-grid-2-70-30 em-mt-24" style="grid-gap: 64px">
     <div>
         <?php
         $color = '#1C6EF2';

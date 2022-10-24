@@ -53,6 +53,7 @@
     padding: 6px 16px;
     width: max-content;
 }
+
 .mod_emundus_campaign__header_filter_count{
     border-radius: 50px;
     color: var(--blue-500);
@@ -62,6 +63,12 @@
     display: flex;
     justify-content: center;
 }
+
+.mod_emundus_campaign__header_filter a.em-pointer span:hover,
+.mod_emundus_campaign__header_filter a.em-pointer:hover {
+    color: var(--neutral-600);
+}
+
 .mod_emundus_campaign__list_content{
     box-shadow: 0px 1px 1px rgba(5, 47, 55, 0.07), 0px 2px 1px rgba(5, 47, 55, 0.06), 0px 1px 3px rgba(5, 47, 55, 0.1);
     border-radius: 16px !important;
@@ -215,7 +222,6 @@ a.em-blue-400-color:hover {
     font-weight: 600;
     margin-bottom: 12px;
     font-family: 'Inter';
-    margin-top: 24px !important;
 }
 
 .mod_emundus_campaign__programme_cat_title {
@@ -314,6 +320,16 @@ a.em-blue-400-color:hover {
     padding: 0px;
     gap: 32px;
     width: 60%;
+}
+
+.mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
+    height: 250px;
+}
+
+.mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content_resume {
+    -webkit-line-clamp: 1;
+    max-height: 100px;
+    line-height: 160%;
 }
 
 .tchooz-single-campaign #campaign p{
