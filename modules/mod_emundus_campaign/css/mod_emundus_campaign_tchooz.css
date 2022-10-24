@@ -236,10 +236,10 @@ a.em-blue-400-color:hover {
     cursor: pointer;
 }
 
-.mod_emundus_campaign__tabs a:hover {
-    height: 35px;
-    cursor: pointer;
+.mod_emundus_campaign__tabs a:hover span, .mod_emundus_campaign__tabs a:hover {
+     color: var(--neutral-900);
 }
+
 
 .mod_emundus_campaign__tabs a.current-tab {
     border-bottom: solid 1px var(--blue-500);

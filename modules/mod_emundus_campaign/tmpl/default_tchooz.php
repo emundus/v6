@@ -116,7 +116,7 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                 <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
                     <?php
                     $color = '#1C6EF2';
-                    $background = '#F0F6FD';
+                    $background = '#C8E1FE';
                     if(!empty($campaign_pinned->tag_color)){
                         $color = $campaign_pinned->tag_color;
                         switch ($campaign_pinned->tag_color) {
@@ -412,18 +412,18 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                             <div class="mod_emundus_campaign__list_content_head <?php echo $mod_em_campaign_class; ?>">
                                 <?php
                                     $color = '#1C6EF2';
-                                    $background = '#F0F6FD';
+                                    $background = '#C8E1FE';
                                     if(!empty($result->tag_color)){
                                         $color = $result->tag_color;
                                         switch ($result->tag_color) {
                                             case '#20835F':
-                                                $background = '#DFF5E9';
+                                                $background = '#CCEDE1';
                                                 break;
                                             case '#DB333E':
-                                                $background = '#FFEEEE';
+                                                $background = '#FEDCDC';
                                                 break;
                                             case '#FFC633':
-                                                $background = '#FFFBDB';
+                                                $background = '#FFF0B5';
                                                 break;
                                         }
                                     }

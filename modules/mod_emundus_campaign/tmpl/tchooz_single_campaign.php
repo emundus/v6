@@ -6,6 +6,7 @@ header('Content-Type: text/html; charset=utf-8');
 $app = JFactory::getApplication();
 $user = JFactory::getUser();
 $lang = JFactory::getLanguage();
+$document->addStyleSheet("https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined" );
 $locallang = $lang->getTag();
 
 if ($locallang == "fr-FR") {
@@ -33,18 +34,18 @@ $h = $dteDiff->format("%H");
     <div>
         <?php
         $color = '#1C6EF2';
-        $background = '#F0F6FD';
+        $background = '#C8E1FE';
         if(!empty($result->tag_color)){
             $color = $result->tag_color;
             switch ($result->tag_color) {
                 case '#20835F':
-                    $background = '#DFF5E9';
+                    $background = '#CCEDE1';
                     break;
                 case '#DB333E':
-                    $background = '#FFEEEE';
+                    $background = '#FEDCDC';
                     break;
                 case '#FFC633':
-                    $background = '#FFFBDB';
+                    $background = '#FFF0B5';
                     break;
             }
         }
@@ -56,14 +57,14 @@ $h = $dteDiff->format("%H");
         <div class="em-flex-row em-mt-16">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row">
-                <p class="em-text-neutral-600"><i class="icon-clock"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
+                <p class="em-text-neutral-600"><span class="material-symbols-outlined">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
                 <span class="em-text-neutral-600 em-ml-4 em-camp-start"><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_camp_end_date && $currentCampaign->end_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row em-ml-24">
-                <p class="em-text-neutral-600"><i class="icon-clock <?php echo ($j<1 && $h<=1)?'red':'';?>"></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
+                <p class="em-text-neutral-600"><span class="material-symbols-outlined">schedule</span></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
                 <span class="em-text-neutral-600 em-ml-4 em-camp-end"><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
