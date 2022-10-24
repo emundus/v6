@@ -215,6 +215,7 @@ a.em-blue-400-color:hover {
     font-weight: 600;
     margin-bottom: 12px;
     font-family: 'Inter';
+    margin-top: 24px !important;
 }
 
 .mod_emundus_campaign__programme_cat_title {

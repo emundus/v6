@@ -6,8 +6,8 @@ header('Content-Type: text/html; charset=utf-8');
 $app = JFactory::getApplication();
 $user = JFactory::getUser();
 $lang = JFactory::getLanguage();
-$document->addStyleSheet("https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined" );
 $locallang = $lang->getTag();
+$document->addStyleSheet("https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined" );
 
 if ($locallang == "fr-FR") {
     setlocale(LC_TIME, 'fr', 'fr_FR', 'french', 'fra', 'fra_FRA', 'fr_FR.ISO_8859-1', 'fra_FRA.ISO_8859-1', 'fr_FR.utf8', 'fr_FR.utf-8', 'fra_FRA.utf8', 'fra_FRA.utf-8');
@@ -35,17 +35,17 @@ $h = $dteDiff->format("%H");
         <?php
         $color = '#1C6EF2';
         $background = '#C8E1FE';
-        if(!empty($result->tag_color)){
-            $color = $result->tag_color;
-            switch ($result->tag_color) {
+        if(!empty($currentCampaign->tag_color)){
+            $color = $currentCampaign->tag_color;
+            switch ($currentCampaign->tag_color) {
                 case '#20835F':
-                    $background = '#CCEDE1';
+                    $background = '#DFF5E9';
                     break;
                 case '#DB333E':
-                    $background = '#FEDCDC';
+                    $background = '#FFEEEE';
                     break;
                 case '#FFC633':
-                    $background = '#FFF0B5';
+                    $background = '#FFFBDB';
                     break;
             }
         }
@@ -57,21 +57,21 @@ $h = $dteDiff->format("%H");
         <div class="em-flex-row em-mt-16">
             <?php if ($mod_em_campaign_show_camp_start_date && $currentCampaign->start_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row">
-                <p class="em-text-neutral-600"><span class="material-symbols-outlined">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
+                <p class="em-text-neutral-600 em-flex-row"><span class="material-icons em-mr-4">alarm</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_START_DATE'); ?></p>
                 <span class="em-text-neutral-600 em-ml-4 em-camp-start"><?php echo JFactory::getDate(new JDate($currentCampaign->start_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_camp_end_date && $currentCampaign->end_date != '0000-00-00 00:00:00') :?>
             <div class="em-flex-row em-ml-24">
-                <p class="em-text-neutral-600"><span class="material-symbols-outlined">schedule</span></i> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
+                <p class="em-text-neutral-600 em-flex-row"><span class="material-icons em-mr-4">schedule</span> <?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_END_DATE'); ?></p>
                 <span class="em-text-neutral-600 em-ml-4 em-camp-end"><?php echo JFactory::getDate(new JDate($currentCampaign->end_date, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif; ?>
 
             <?php if ($mod_em_campaign_show_formation_start_date && $currentCampaign->formation_start !== '0000-00-00 00:00:00') :?>
             <div class="em-flex-row">
-                <p class="em-text-neutral-600"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
+                <p class="em-text-neutral-600 em-flex-row"><?php echo JText::_('MOD_EM_CAMPAIGN_FORMATION_START_DATE'); ?>:</p>
                 <span class="em-text-neutral-600 em-ml-4 em-formation-start"><?php echo JFactory::getDate(new JDate($currentCampaign->formation_start, $site_offset))->format($mod_em_campaign_date_format); ?></span>
             </div>
             <?php endif;?>
@@ -97,8 +97,9 @@ $h = $dteDiff->format("%H");
             </div>
             <?php endif; ?>
         </div>
-        <div class="em-mt-8 em-text-neutral-600">
-            <?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset : ''; ?>
+        <div class="em-mt-8 em-text-neutral-600 em-flex-row">
+            <p class="em-flex-row"><span class="material-icons-outlined em-mr-4">public</span></p>
+            <span><?= (!empty($mod_em_campaign_show_timezone)) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE').$offset : ''; ?></span>
         </div>
 
         <div class="mod_emundus_campaign__tabs em-flex-row">
