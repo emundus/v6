@@ -185,6 +185,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
 		$db->setQuery($query);
 		$fnums = $db->loadColumn();
+		$no_selected_fnum = array_diff($fnums, $files_picked);
 
 		if ($pick_fnums) {
 			// Only get fnums that are found in BOTH arrays, this both allows filtering (only accept files which were picked by the user) and prevents the user from cheating and entering someone else's fnum.
