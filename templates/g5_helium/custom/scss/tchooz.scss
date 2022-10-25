@@ -1136,7 +1136,7 @@ input:focus + .em-slider {
 }
 
 .em-applicant-border-radius {
-  border-radius: var(--border-radius);
+  border-radius: var(--em-applicant-border-radius);
 }
 
 @supports (background-clip: text) {

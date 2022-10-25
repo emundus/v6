@@ -175,6 +175,7 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     line-height: 39px;
     letter-spacing: 0;
     text-align: center;
+    font-family: var(--applicant-title-font);
 }
 
 

@@ -128,7 +128,7 @@ li>a:hover {
 
 #g-navigation #header-c .header-right a.btn.btn-danger:not(btn-creer-compte) {
     color: #fff;
-    border-radius: var(--border-radius);
+    border-radius: var(--em-applicant-border-radius) !important;
     margin-bottom: 0 !important;
     line-height: normal;
     letter-spacing: normal;

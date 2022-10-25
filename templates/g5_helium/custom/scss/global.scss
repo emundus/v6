@@ -812,6 +812,7 @@ body>.g-container {
         background: $base-secondary-color;
         border: 1px solid $base-secondary-color;
         color: var(--neutral-50);
+        border-radius: var(--em-applicant-border-radius) !important;
 
         &:hover,
         &:active,
@@ -1352,7 +1353,7 @@ body>.g-container {
     height: 50px;
     text-transform: unset;
     margin-right: 0;
-    border-radius: var(--border-radius);
+    border-radius: var(--em-applicant-border-radius);
     padding: 8px 12px;
     font-family: var(--font);
     font-weight: 500;
@@ -2838,6 +2839,7 @@ tr.fabrikFilterContainer{
 
 h1.em-titre-connectez-vous {
   color: $accent-color-1;
+  font-family: var(--applicant-title-font);
 }
 
   ul.nav.nav-tabs.nav-stacked span {
