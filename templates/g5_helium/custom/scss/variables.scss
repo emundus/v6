@@ -50,12 +50,15 @@
   --light-grey-2: #F2F2F2;
   --light-grey-3: #CCCCCC;
 
-  --font: 'Inter', sans-serif;
+  --font: 'Inter', sans-serif; // saas
+  --applicant-default-font: 'Inter', sans-serif; // agence
+  --applicant-title-font: 'Inter', sans-serif; // agence
 
   --white-background-color: #fff;
   --background-color: #f8f8f8;
 
-  --border-radius: 4px;
+  --border-radius: 4px; //agence
+  --em-border-radius: 4px; // saas
 
 }
 
