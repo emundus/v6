@@ -379,11 +379,11 @@ function export_pdf(fnums,ids) {
     var swal_actions_class = '';
 
     var html = '<div id="chargement" style="text-align: center">' +
-        '<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_CREATE_PDF') + '</p></div>' +
+        '<div id="extractstep" class="em-flex-column"><p>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_CREATE_PDF') + '</p><div class="em-loader em-mt-8"></div></div>' +
         '</div>';
 
     Swal.fire({
-        title: Joomla.JText._('COM_EMUNDUS_PDF_GENERATION'),
+        title: Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_GENERATION'),
         html: html,
         showCancelButton: false,
         showCloseButton: false,
@@ -418,7 +418,7 @@ function export_pdf(fnums,ids) {
                     success: function (result) {
                         if (result.status) {
                             $('#extractstep').replaceWith('<div id="extractstep"><div id="addatatext"><p>' +
-                                Joomla.JText._('COM_EMUNDUS_ADD_FILES_TO_PDF') +
+                                Joomla.JText._('COM_EMUNDUS_EXPORTS_ADD_FILES_TO_PDF') +
                                 '</p></div><div id="datasbs"</div>');
 
                             /// if forms = 0 --> so selectedElements is empty --> selectedElements = {} --> using jQuery to check it (jQuery.isEmptyObject(_obj_))
@@ -481,7 +481,8 @@ function generate_pdf(json,pdf_elements= null) {
 
     $.ajaxQ.abortAll();
 
-    $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.JText._('COM_EMUNDUS_PDF_GENERATION') + '</p></div>');
+    $('#extractstep').replaceWith('<div id="extractstep" class="em-flex-column"><p>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_PDF_GENERATION') + '</p><div class="em-loader em-mt-8"></div></div>');
+
 
     if (start+limit < maxfiles) {
         /// call to ajax
@@ -565,4 +566,101 @@ function generate_pdf(json,pdf_elements= null) {
         $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.JText._('COM_EMUNDUS_ERROR_CAPACITY_PDF')+'</div><a class="btn btn-link" title="'+Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF')+'" href="' +result.json.path+ '/tmp/'+file+'" target="_blank"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.JText._('COM_EMUNDUS_EXPORTS_DOWNLOAD_PDF')+'</span></a>');
         $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;'+Joomla.JText._('BACK')+'</button>&nbsp;&nbsp;&nbsp;');
     }
+}
+
+function export_zip(fnums){
+    var forms = 0;
+    var attachment  = 0;
+    var assessment  = 0;
+    var decision    = 0;
+    var admission   = 0;
+    var form_checked = [];
+    var attach_checked = [];
+    var options = [];
+
+    $('#felts input:checked').each(function() {
+        form_checked.push($(this).val());
+        forms = 0;
+    });
+
+    $('#aelts input:checked').each(function() {
+        attach_checked.push($(this).val());
+        attachment = 0;
+    });
+
+    if ($('#em-ex-forms').is(":checked"))
+        forms = 1;
+    if ($('#em-ex-attachment').is(":checked"))
+        attachment = 1;
+    if ($('#em-ex-assessment').is(":checked"))
+        assessment = 1;
+    if ($('#em-ex-decision').is(":checked"))
+        decision = 1;
+    if ($('#em-ex-admission').is(":checked"))
+        admission = 1;
+
+    if ($('#em-add-header').is(":checked")) {
+        $('#em-export-opt option:selected').each(function() {
+            options.push($(this).val());
+        });
+    } else {
+        options.push("0");
+    }
+
+    $('#data').hide();
+
+    $('div').remove('#chargement');
+
+    var swal_container_class = '';
+    var swal_popup_class = '';
+    var swal_actions_class = '';
+
+    var html = '<div id="chargement" style="text-align: center">' +
+        '<div id="extractstep" class="em-flex-column"><p>' + Joomla.JText._('COM_EMUNDUS_EXPORTS_CREATE_ZIP') + '</p><div class="em-loader em-mt-8"></div></div>' +
+        '</div>';
+
+    Swal.fire({
+        title: Joomla.JText._('COM_EMUNDUS_EXPORTS_ZIP_GENERATION'),
+        html: html,
+        showCancelButton: false,
+        showCloseButton: false,
+        reverseButtons: true,
+        confirmButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_OK'),
+        cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
+        customClass: {
+            container: 'em-modal-actions ' + swal_container_class,
+            popup: swal_popup_class,
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button btn btn-success',
+            actions: swal_actions_class
+        },
+    });
+
+    var url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
+    $.ajax({
+        type:'get',
+        url:url,
+        data: {
+            fnums: fnums,
+            forms: forms,
+            attachment: attachment,
+            assessment: assessment,
+            decision: decision,
+            admission: admission,
+            formids: form_checked,
+            attachids:attach_checked,
+            options:options
+        },
+        dataType:'json',
+        success: function(result) {
+            if (result.status && result.name != 0) {
+                $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
+                $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP') + '" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=zip&name='+result.name+'"><span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_ZIP') + '</span></a>');
+            }
+        },
+        error: function (jqXHR) {
+            console.log(jqXHR.responseText);
+        }
+    });
 }

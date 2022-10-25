@@ -92,6 +92,7 @@ JText::script('COM_EMUNDUS_ATTACHMENT');
 JText::script('COM_EMUNDUS_ASSESSMENT');
 JText::script('COM_EMUNDUS_COMMENT');
 JText::script('COM_EMUNDUS_COMMENTS');
+JText::script('COM_EMUNDUS_ACCESS_COMMENT_FILE_CREATE');
 JText::script('COM_EMUNDUS_EXCEL_GENERATION');
 JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE');
 JText::script('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT');
@@ -144,6 +145,7 @@ JText::script('BACK');
 JText::script('COM_EMUNDUS_LOADING');
 JText::script('TITLE');
 JText::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
+JText::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
 JText::script('COM_EMUNDUS_COMMENTS_ENTER_COMMENT');
 JText::script('COM_EMUNDUS_COMMENTS_SENT');
 JText::script('COM_EMUNDUS_ACCESS_SHARE_PROGRESS');
@@ -617,6 +619,7 @@ if(!in_array($name,['settings','campaigns','emails','form'])) {
     JHtml::script('media/com_emundus/lib/chosen/chosen.jquery.min.js' );
     JHTML::script('media/com_emundus/js/em_files.js');
     JHTML::script('media/com_emundus/js/mixins/exports.js');
+    JHTML::script('media/com_emundus/js/mixins/utilities.js');
     JHTML::script('libraries/emundus/selectize/dist/js/standalone/selectize.js' );
     JHTML::script('libraries/emundus/sumoselect/jquery.sumoselect.min.js');
 

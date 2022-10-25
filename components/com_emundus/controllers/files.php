@@ -1942,19 +1942,17 @@ class EmundusControllerFiles extends JControllerLegacy
             $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0]));
 
             if ($i < count($pages)/2)
-                $html1 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
+                $html1 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label class="em-mb-0-important" for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label></div>';
             else
-                $html2 .= '<input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label><br/>';
+                $html2 .= '<div class="em-flex-row"><input class="em-ex-check" type="checkbox" value="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" name="'.$pages[$i]->label.'" id="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'" /><label class="em-mb-0-important" for="'.$pages[$i]->form_id."|".$code[0]."|".$camp[0].'">'.JText::_($title).'</label></div>';
         }
 
-        $html = '<div class="panel panel-default pdform">
-                    <div class="panel-heading">
-                        <button type="button" class="btn btn-info btn-xs" title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" style="float:left;" onclick="showelts(this, '."'felts-".$code[0].$camp[0]."'".')">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        </button>&ensp;&ensp;
-                        <b>'.$campaign['label'].' ('.$campaign['year'].')</b>
+        $html = '<div class="em-mt-12">
+                    <div class="em-flex-row em-pointer em-mb-4" onclick="showelts(this, '."'felts-".$code[0].$camp[0]."'".')">
+                       <span title="'.JText::_('COM_EMUNDUS_SHOW_ELEMENTS').'" class="material-icons em-mr-4" style="transform: rotate(-90deg)">expand_more</span>
+                       <p>'.$campaign['label'].' ('.$campaign['year'].')</p>
                     </div>
-                    <div class="panel-body" id="felts-'.$code[0].$camp[0].'" style="display:none;">
+                    <div id="felts-'.$code[0].$camp[0].'" style="display:none;">
                         <table><tr><td>'.$html1.'</td><td style="padding-left:80px;">'.$html2.'</td></tr></table>
                     </div>
                 </div>';
