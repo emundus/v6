@@ -352,7 +352,11 @@ class EmundusViewApplication extends JViewLegacy {
                         $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
                         foreach ($fileLogs as $key => $log) {
-                            $log->details = EmundusModelLogs::setActionDetails($log->action_id, $log->verb, $log->params);
+                            if($log->verb === 'r') {
+                                unset($fileLogs[$key]);
+                            } else {
+                                $log->details = EmundusModelLogs::setActionDetails($log->action_id, $log->verb, $log->params);
+                            }
                         }
 
                         $this->assignRef('fileLogs', $fileLogs);
