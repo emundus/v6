@@ -160,8 +160,6 @@ class plgUserEmundus extends JPlugin
         $controller = $jinput->get->get('controller', null);
         $task = $jinput->get->get('task', null);
 
-        $profile = 0;
-
         // If the details are empty, we are probably signing in via LDAP for the first time.
         if ($isnew && empty($details) && empty($fabrik)) {
             require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
@@ -218,39 +216,6 @@ class plgUserEmundus extends JPlugin
                 $details['emundus_profile']['lastname'] = $name;
                 $details['firstname'] = $username[0];
             }
-            if (JPluginHelper::getPlugin('authentication', 'miniorangesaml') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
-                $o_user = JFactory::getUser($user['id']);
-
-                $username = explode(' ',$user["name"]);
-                $name = '';
-
-                if(count($username)>2){
-                    for($i=1;$i>count($username);$i++){
-                        $name .= ' '.$username[$i];
-                    }
-                }
-                else{
-                    $name= $username[1];
-                }
-
-                $details['name'] = $name;
-
-                $details['emundus_profile']['lastname'] = $user["name"];
-                $details['firstname'] = $username[0];
-                // Set the user table instance to include the new token.
-                $table = JTable::getInstance('user', 'JTable');
-                $table->load($o_user->id);
-                $table->block = 0;
-
-                // Save user data
-                if (!$table->store()) {
-                    throw new RuntimeException($table->getError());
-                }
-
-                $eMConfig = JComponentHelper::getParams('com_emundus');
-                $profile = $eMConfig->get('saml_default_profile',1000);
-            }
-
         }
 
         if (is_array($details) && count($details) > 0) {
@@ -279,7 +244,7 @@ class plgUserEmundus extends JPlugin
                     $campaign = $db->loadAssocList();
 
                     $profile = $campaign[0]['profile_id'];
-                } elseif(empty($profile)) {
+                } else {
                     $profile = 1000;
                 }
 
@@ -390,8 +355,7 @@ class plgUserEmundus extends JPlugin
         } else {
             $previous_url = base64_decode($redirect);
         }
-        //var_dump($user['type']);
-        //die;
+
         if (!$app->isAdmin()) {
 
             // Users coming from an OAuth system are immediately signed in and thus need to have their data entered in the eMundus table.
@@ -489,16 +453,16 @@ class plgUserEmundus extends JPlugin
                                         $query->clear();
                                         if ($other_property->method == 'update') {
                                             $query->update($db->quoteName($table));
-                                        }
-                                        if ($other_property->method == 'insert') {
-                                            $query->insert($db->quoteName($table));
-                                        }
-                                        $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
+                                            }
+                                            if ($other_property->method == 'insert') {
+                                                $query->insert($db->quoteName($table));
+                                            }
+                                            $query->set($db->quoteName($column) . ' = ' . $db->quote($other_property->values));
 
-                                        if ($other_property->method == 'update') {
+                                            if ($other_property->method == 'update') {
                                             $query->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
-                                        }
-                                        if ($other_property->method == 'insert') {
+                                            }
+                                            if ($other_property->method == 'insert') {
                                             $query->set($db->quoteName('user_id') . ' = ' . $db->quote($user_id));
                                         }
                                         $db->setQuery($query);
@@ -513,8 +477,6 @@ class plgUserEmundus extends JPlugin
                 }
 
             }
-
-
 
             // Init first_login parameter
             $user = JFactory::getUser();
@@ -629,11 +591,9 @@ class plgUserEmundus extends JPlugin
             $dispatcher = JEventDispatcher::getInstance();
             $dispatcher->trigger('callEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
 
-            if (!empty($previous_url)) {
+	        if (!empty($previous_url)) {
                 $app->redirect($previous_url);
-            } else {
-                $app->redirect('index.php');
-            }
+	        }
         }
         return true;
     }

@@ -94,8 +94,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 				$bits['disabled'] = 'disabled';
 			}
 		}
-//		$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
-		$str = '<div>';
+		$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
 		if ($this->isReferentLetterUploaded($this->_attachment_id,$fnum) || $this->isReferentFormUploaded($this->_attachment_id,$fnum) == 1) {
 			$str .= '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_REFERENCE_LETTER_UPLOADED').'<span>';
 		} else {
@@ -105,7 +104,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			}
 			$str .= " />\n";
 			$txt_button = ($value>0)?JText::_('PLG_ELEMENT_EMUNDUSREFERENT_SEND_EMAIL_AGAIN'):JText::_('PLG_ELEMENT_EMUNDUSREFERENT_SEND_EMAIL');
-			$str .= '<div id="'.$id.'_response"><input style="color:white; height:41px; text-transform: inherit; font-weight: 500" type="button" class="fabrikinput button btn-referent" id="'.$id.'_btn" name="'.$name.'" value="'.$txt_button.'" /></div>';
+			$str .= '<div id="'.$id.'_response"><input type="button" class="fabrikinput button btn-referent" id="'.$id.'_btn" name="'.$name.'" value="'.$txt_button.'" /></div>';
 
 			$str .= '<img src="'.COM_FABRIK_LIVESITE.'media/com_fabrik/images/ajax-loader.gif" class="loader" id="'.$id.'_loader" alt="'.JText::_('Loading').'" style="display:none;padding-left:10px;" />';
 			$str .= '<div id="'.$id.'_error"></div>';
@@ -149,17 +148,6 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		$opts->fullName = $this->getFullName(false, true);
 		$opts->formid = $this->getForm()->getForm()->id;
 		$opts->filterid = $filterid;
-
-        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_BLANK');
-        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_AT');
-        JText::script('COM_EMUNDUS_SOLLICITED_AT_DATE');
-        JText::script('COM_EMUNDUS_SOLLICITED_AT_TIME');
-        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_REFEREE');
-        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_AT_DATE');
-        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_AT_TIME');
-        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_SOLLICITATION_LABEL');
-        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_IS_SENT');
-
 		return array('FbEmundusreferent', $id, $opts);
 	}
 
@@ -230,9 +218,6 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 	public function onAjax_getOptions() {
 
 		include_once(JPATH_BASE.'/components/com_emundus/models/profile.php');
-        include_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
-
-        $m_emails = new EmundusModelEmails;
 
 		$baseurl = JURI::root();
 		$db = JFactory::getDBO();
@@ -244,13 +229,8 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 		$recipient = $jinput->post->getRaw('email');
 		$attachment_id = $jinput->post->getInt('attachment_id');
-		$form_recommend = $jinput->post->getInt('form_recommend',68);
-        
+		$form_recommend = $jinput->post->getInt('form_recommend');
 		$fnum = $jinput->post->get('fnum');
-
-        /* get reference firstname and reference lastname */
-        $firstname = ucfirst($jinput->post->getString('firstname'));
-        $lastname = ucfirst($jinput->post->getString('lastname'));
 
 		if (empty($recipient)) {
 			$response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_MISSING_ERROR').'</span>');
@@ -295,7 +275,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 		// Récupèration de la pièce jointe : modele de lettre
 		$query = 'SELECT esp.reference_letter
-						FROM #__emundus_setup_profiles AS esp
+						FROM #__emundus_setup_profiles AS esp 
 						LEFT JOIN #__emundus_setup_campaigns AS esc ON esc.profile_id = esp.id
 						LEFT JOIN #__emundus_campaign_candidature AS cc ON cc.campaign_id = esc.id
 						WHERE cc.id = '.$cc_id;
@@ -307,7 +287,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 		if (!$this->isReferentLetterUploaded($attachment_id, $fnum)) {
 			$key = md5($this->rand_string(20).time());
 			// 2. MAJ de la table emundus_files_request
-			$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email)
+			$query = 'INSERT INTO #__emundus_files_request (time_date, student_id, keyid, attachment_id, fnum, email) 
                           VALUES (NOW(), '.$this->_user->id.', "'.$key.'", "'.$attachment_id.'", '.$fnum.', '.$db->Quote($recipient).')';
 			$db->setQuery($query);
 			$db->execute() or die(json_encode(array("result"=>0, "message"=>'<span class="emundusreferent_error">'.JText::_('ERROR_DB_FILE_REQUEST').'</span>')));
@@ -316,15 +296,13 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 			$fnum_detail = $profile->getFnumDetails($fnum);
 
 			// 3. Envoi du lien vers lequel le professeur va pouvoir uploader la lettre de référence
-//			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$form_recommend.'&keyid='.$key.'&sid='.$this->_user->id;
-			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid=68&keyid='.$key.'&sid='.$this->_user->id;                     // set recommendation form id (default 68)
+			$link_upload = $baseurl.'index.php?option=com_fabrik&view=form&formid='.$form_recommend.'&keyid='.$key.'&sid='.$this->_user->id;
 
-			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/','/\[REFERENCE_FIRSTNAME\]/','/\[REFERENCE_LASTNAME\]/');
-			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label'], $firstname, $lastname);
+			$patterns = array('/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[UPLOAD_URL\]/', '/\[PROGRAMME_NAME\]/');
+			$replacements = array($this->_user->id, $this->_user->name, $this->_user->email, $link_upload, $fnum_detail['label']);
 
 			$subject = preg_replace($patterns, $replacements, $obj->subject);
 			$body = $obj->message;
-            $body = $m_emails->setTagsFabrik($body, array($fnum));
 
 			if ($obj->Template) {
 				$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $obj->Template);
@@ -358,9 +336,7 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 
 			if ($send !== true) {
 				JLog::add($send->__toString(), JLog::ERROR, 'com_emundus');
-				$response = array("result" => 0,
-                    "email" => $recipient,
-                    "message" => '<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_ERROR').'</span>');
+				$response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_ERROR').'</span>');
 			} else {
 				JFactory::getApplication()->enqueueMessage(JText::_('MESSAGE_SENT').' : '.$recipient, 'message');
 				$sql = "INSERT INTO `#__messages` (`user_id_from`, `user_id_to`, `subject`, `message`, `date_time`)
@@ -371,16 +347,10 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
 				} catch (Exception $e) {
 					JLog::add('Error logging email : '.$e->getMessage(), JLog::ERROR, 'com_emundus');
 				}
-
-				$response = array("result" => 1,
-                    "email" => $recipient,
-                    "message" => '<span class="emundusreferent_sent">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT') . JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_BLANK') . '&nbsp<b>' . $recipient . '</b>&nbsp' . JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_AT') . date('d/m/Y H:i:s') .  '</span>');
-                header("Refresh:0");
+				$response = array("result" => 1, "message" => '<span class="emundusreferent_sent">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT').'</span>');
 			}
 		} else {
-			$response = array("result" => 1,
-                "email" => $recipient,
-                "message" => '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_REFERENCE_LETTER_UPLOADED').'</span>');
+			$response = array("result" => 1, "message" => '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_REFERENCE_LETTER_UPLOADED').'</span>');
 		}
 		echo json_encode($response);
 	}
@@ -409,4 +379,3 @@ class plgFabrik_ElementEmundusreferent extends plgFabrik_Element {
     }
 
 }
-
