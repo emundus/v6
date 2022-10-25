@@ -211,7 +211,7 @@ class EmundusModelFormbuilder extends JModelList {
         }
     }
 
-    function insertMenu($menu,$label){
+    function insertMenu($menu,$label) {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -2449,400 +2449,402 @@ class EmundusModelFormbuilder extends JModelList {
      * @return array
      */
     function createMenuFromTemplate($label, $intro, $formid, $prid) {
-        // TODO Use Joomla API to create a menu
-        // Prepare Fabrik API
-        JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
-        $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
-        $form->setId(intval($formid));
-        $groups	= $form->getGroups();
-        //
+        $response = [
+            'status' => false,
+            'msg' => JText::_('COM_EMUNDUS_FORMBUILDER_FAILED_TO_CREATE_MENU_FROM_MODEL')
+        ];
+        $newformid = 0;
 
-        // Prepare languages
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
+        if (empty($formid) || empty($prid)) {
+            $response = ['status' => false, 'msg' => JText::_('COM_EMUNDUS_FORMBUILDER_MISSING_PARAMS')];
+        } else {
+            // TODO Use Joomla API to create a menu
+            // Prepare Fabrik API
+            JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+            $form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+            $form->setId(intval($formid));
+            $groups	= $form->getGroups();
+            //
 
-        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
-        $falang = new EmundusModelFalang;
-
-        $modules = [93,102,103,104,168,170];
-        //
-
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        // Get the profile
-        $query->select('*')
-            ->from($db->quoteName('#__emundus_setup_profiles'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
-        $db->setQuery($query);
-        $profile = $db->loadObject();
-        //
-
-        // Get the header menu
-        $query->clear()
-            ->select('*')
-            ->from('#__menu')
-            ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
-            ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
-        $db->setQuery($query);
-        $menu_parent = $db->loadObject();
-        //
-
-        // Duplicate the form
-        $query->clear()
-            ->select('*')
-            ->from('#__fabrik_forms')
-            ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
-        $db->setQuery($query);
-        $form_model = $db->loadObject();
-
-        $query->clear();
-        $query->insert($db->quoteName('#__fabrik_forms'));
-        foreach ($form_model as $key => $val) {
-            if ($key != 'id') {
-                $query->set($key . ' = ' . $db->quote($val));
+            // Prepare languages
+            $path_to_file = basename(__FILE__) . '/../language/overrides/';
+            $path_to_files = array();
+            $Content_Folder = array();
+            $languages = JLanguageHelper::getLanguages();
+            foreach ($languages as $language) {
+                $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
+                $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
             }
-        }
-        try {
-            $db->setQuery($query);
-            $db->execute();
-            $newformid = $db->insertid();
 
-            // Set emundus plugin in params
-            /*if($formid == 258) {
-                $query->clear();
-                $query->select('params')
-                    ->from($db->quoteName('#__fabrik_forms'))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
-                $db->setQuery($query);
-                $params = json_decode($db->loadResult(), true);
-                $params = $this->prepareSubmittionPlugin($params);
+            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'falang.php');
+            $falang = new EmundusModelFalang;
 
-            } else {
-                $query->clear();
-                $query->select('params')
-                    ->from($db->quoteName('#__fabrik_forms'))
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
-                $db->setQuery($query);
-                $params = json_decode($db->loadResult(), true);
-                $params = $this->prepareFormPlugin($params);
-            }*/
+            $modules = [93,102,103,104,168,170];
             //
 
-            // Update translation files
-            $query->clear();
-            $query->update($db->quoteName('#__fabrik_forms'));
+            $db = $this->getDbo();
+            $query = $db->getQuery(true);
 
-            $this->translate('FORM_' . $prid. '_' . $newformid,$label,'fabrik_forms',$newformid,'label');
-            $this->translate('FORM_' . $prid . '_INTRO_' . $newformid,$intro,'fabrik_forms',$newformid,'intro');
+            // Get the profile
+            $query->select('*')
+                ->from($db->quoteName('#__emundus_setup_profiles'))
+                ->where($db->quoteName('id') . ' = ' . $db->quote($prid));
+            $db->setQuery($query);
+            $profile = $db->loadObject();
             //
 
-            $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
-            $query->set('intro = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
-            //$query->set('params = ' . $db->quote(json_encode($params)));
-            $query->where('id =' . $newformid);
-            $db->setQuery($query);
-            $db->execute();
-            //
-
-            // Duplicate fabrik list
-            $query->clear()
-                ->select('*')
-                ->from('#__fabrik_lists')
-                ->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
-            $db->setQuery($query);
-            $list_model = $db->loadObject();
-            $db_table_name = $list_model->db_table_name;
-
-            $query->clear();
-            $query->insert($db->quoteName('#__fabrik_lists'));
-            foreach ($list_model as $key => $val) {
-                if ($key != 'id' && $key != 'form_id' && $key != 'access') {
-                    $query->set($key . ' = ' . $db->quote($val));
-                } elseif ($key == 'form_id') {
-                    $query->set($key . ' = ' . $db->quote($newformid));
-                } elseif ($key == 'access') {
-                    $query->set($key . ' = ' . $db->quote($prid));
-                }
-            }
-            $db->setQuery($query);
-            $db->execute();
-            $newlistid = $db->insertid();
-
-            $query->clear();
-            $query->update($db->quoteName('#__fabrik_lists'));
-            $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
-            $query->set('introduction = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
-            $query->where('id =' . $db->quote($newlistid));
-            $db->setQuery($query);
-            $db->execute();
-            //
-
-            // JOIN LIST AND PROFILE_ID
-            $columns = array(
-                'form_id',
-                'profile_id',
-                'created'
-            );
-
-            $values = array(
-                $newlistid,
-                $prid,
-                date('Y-m-d H:i:s')
-            );
-
-            $query->clear()
-                ->insert($db->quoteName('#__emundus_setup_formlist'))
-                ->columns($db->quoteName($columns))
-                ->values(implode(',', $db->quote($values)));
-            $db->setQuery($query);
-            $db->execute();
-            //
-            //
-
-            // Duplicate group
-            $ordering = 0;
-            foreach ($groups as $group) {
-                $ordering++;
-                $properties = $group->getGroupProperties($group->getFormModel());
-                $elements = $group->getMyElements();
-
+            if (!empty($profile->id)) {
+                // Get the header menu
                 $query->clear()
                     ->select('*')
-                    ->from('#__fabrik_groups')
-                    ->where($db->quoteName('id') . ' = ' . $db->quote($properties->id));
+                    ->from('#__menu')
+                    ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
+                    ->andWhere($db->quoteName('type') . ' = ' . $db->quote('heading'));
                 $db->setQuery($query);
-                $group_model = $db->loadObject();
+                $menu_parent = $db->loadObject();
+                //
+
+                // Duplicate the form
+                $query->clear()
+                    ->select('*')
+                    ->from('#__fabrik_forms')
+                    ->where($db->quoteName('id') . ' = ' . $db->quote($formid));
+                $db->setQuery($query);
+                $form_model = $db->loadObject();
 
                 $query->clear();
-                $query->insert($db->quoteName('#__fabrik_groups'));
-                foreach ($group_model as $key => $val) {
+                $query->insert($db->quoteName('#__fabrik_forms'));
+                foreach ($form_model as $key => $val) {
                     if ($key != 'id') {
                         $query->set($key . ' = ' . $db->quote($val));
                     }
                 }
-                $db->setQuery($query);
-                $db->execute();
-                $newgroupid = $db->insertid();
 
-                if($group_model->is_join == 1){
-                    $query->clear()
-                        ->select('table_join')
-                        ->from($db->quoteName('#__fabrik_joins'))
-                        ->where($db->quoteName('group_id') . ' = ' . $db->quote($properties->id))
-                        ->andWhere($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
-                    $db->setQuery($query);
-                    $repeat_table_to_copy = $db->loadResult();
-
-                    $joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
-
-                    $query->clear()
-                        ->insert($db->quoteName('#__fabrik_joins'));
-                    $query->set($db->quoteName('list_id') . ' = ' . $db->quote($newlistid))
-                        ->set($db->quoteName('element_id') . ' = ' . $db->quote(0))
-                        ->set($db->quoteName('join_from_table') . ' = ' . $db->quote($db_table_name))
-                        ->set($db->quoteName('table_join') . ' = ' . $db->quote($repeat_table_to_copy))
-                        ->set($db->quoteName('table_key') . ' = ' . $db->quote('id'))
-                        ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'))
-                        ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
-                        ->set($db->quoteName('group_id') . ' = ' . $db->quote($newgroupid))
-                        ->set($db->quoteName('params') . ' = ' . $db->quote($joins_params));
+                try {
                     $db->setQuery($query);
                     $db->execute();
-                }
+                    $newformid = $db->insertid();
 
-                // Update translation files
-                $query->clear();
-                $query->update($db->quoteName('#__fabrik_groups'));
+                    // Update translation files
+                    $query->clear();
+                    $query->update($db->quoteName('#__fabrik_forms'));
+                    $this->translate('FORM_' . $prid. '_' . $newformid, $label,'fabrik_forms', $newformid,'label');
+                    $this->translate('FORM_' . $prid . '_INTRO_' . $newformid, $intro,'fabrik_forms', $newformid,'intro');
+                    //
 
-                if($formid == 258) {
-                    $labels = array(
-                        'fr' => "Confirmation d'envoi de dossier",
-                        'en' => 'Confirmation of file sending',
-                    );
-                    $this->translate('GROUP_' . $newformid . '_' . $newgroupid,$labels,'fabrik_groups',$newgroupid,'label');
-                } else {
-                    $labels_to_duplicate = array();
-                    foreach ($languages as $language) {
-                        $labels_to_duplicate[$language->sef] = $this->getTranslation($group_model->label,$language->lang_code);
-                        if($label[$language->sef] == ''){
-                            $label[$language->sef] = $group_model->label;
+                    $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
+                    $query->set('intro = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
+                    $query->where('id = ' . $newformid);
+                    $db->setQuery($query);
+                    $db->execute();
+
+                    // Duplicate fabrik list
+                    $query->clear()
+                        ->select('*')
+                        ->from('#__fabrik_lists')
+                        ->where($db->quoteName('form_id') . ' = ' . $db->quote($formid));
+                    $db->setQuery($query);
+                    $list_model = $db->loadObject();
+                    $db_table_name = $list_model->db_table_name;
+
+                    $query->clear();
+                    $query->insert($db->quoteName('#__fabrik_lists'));
+                    foreach ($list_model as $key => $val) {
+                        if ($key != 'id' && $key != 'form_id' && $key != 'access') {
+                            $query->set($key . ' = ' . $db->quote($val));
+                        } elseif ($key == 'form_id') {
+                            $query->set($key . ' = ' . $db->quote($newformid));
+                        } elseif ($key == 'access') {
+                            $query->set($key . ' = ' . $db->quote($prid));
                         }
                     }
-                    $this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels_to_duplicate,'fabrik_groups',$newgroupid,'label');
-                }
-                //
+                    $db->setQuery($query);
+                    $db->execute();
+                    $newlistid = $db->insertid();
 
-                $query->set('label = ' . $db->quote('GROUP_' . $newformid . '_' . $newgroupid));
-                $query->set('name = ' . $db->quote('GROUP_' . $newformid . '_' . $newgroupid));
-                $query->where('id =' . $newgroupid);
-                $db->setQuery($query);
-                $db->execute();
+                    $query->clear();
+                    $query->update($db->quoteName('#__fabrik_lists'));
+                    $query->set('label = ' . $db->quote('FORM_' . $prid . '_' . $newformid));
+                    $query->set('introduction = ' . $db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $newformid . '</p>'));
+                    $query->where('id =' . $db->quote($newlistid));
+                    $db->setQuery($query);
+                    $db->execute();
+                    //
 
-                $query->clear()
-                    ->insert($db->quoteName('#__fabrik_formgroup'))
-                    ->set('form_id = ' . $db->quote($newformid))
-                    ->set('group_id = ' . $db->quote($newgroupid))
-                    ->set('ordering = ' . $db->quote($ordering));
-                $db->setQuery($query);
-                $db->execute();
+                    // JOIN LIST AND PROFILE_ID
+                    $columns = array(
+                        'form_id',
+                        'profile_id',
+                        'created'
+                    );
 
-                foreach ($elements as $element) {
-                    try {
-                        $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
-                        $newelementid = $newelement->id;
+                    $values = array(
+                        $newlistid,
+                        $prid,
+                        date('Y-m-d H:i:s')
+                    );
 
-                        $el_params = json_decode($element->element->params);
+                    $query->clear()
+                        ->insert($db->quoteName('#__emundus_setup_formlist'))
+                        ->columns($db->quoteName($columns))
+                        ->values(implode(',', $db->quote($values)));
+                    $db->setQuery($query);
+                    $db->execute();
+                    //
 
-                        // Update translation files
-                        if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
-                            $sub_labels = [];
-                            foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-                                $labels_to_duplicate = array();
-                                foreach ($languages as $language) {
-                                    $labels_to_duplicate[$language->sef] = $this->getTranslation($sub_label,$language->lang_code);
-                                    if($label[$language->sef] == ''){
-                                        $label[$language->sef] = $sub_label;
-                                    }
-                                }
-                                $this->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate,'fabrik_elements',$newelementid,'sub_labels');
-                                $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
-                            }
-                            $el_params->sub_options->sub_labels = $sub_labels;
-                        }
+                    // Duplicate group
+                    $ordering = 0;
+                    foreach ($groups as $group) {
+                        $ordering++;
+                        $properties = $group->getGroupProperties($group->getFormModel());
+                        $elements = $group->getMyElements();
+
+                        $query->clear()
+                            ->select('*')
+                            ->from('#__fabrik_groups')
+                            ->where($db->quoteName('id') . ' = ' . $db->quote($properties->id));
+                        $db->setQuery($query);
+                        $group_model = $db->loadObject();
+
                         $query->clear();
-                        $query->update($db->quoteName('#__fabrik_elements'));
-
-                        $labels_to_duplicate = array();
-                        foreach ($languages as $language) {
-                            $labels_to_duplicate[$language->sef] = $this->getTranslation($element->element->label,$language->lang_code);
-                            if($label[$language->sef] == ''){
-                                $label[$language->sef] = $element->element->label;
+                        $query->insert($db->quoteName('#__fabrik_groups'));
+                        foreach ($group_model as $key => $val) {
+                            if ($key != 'id') {
+                                $query->set($key . ' = ' . $db->quote($val));
                             }
                         }
-                        $this->translate('ELEMENT_' . $newgroupid. '_' . $newelementid,$labels_to_duplicate,'fabrik_elements',$newelementid,'label');
-                        //
-
-                        $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
-                        $query->set('published = 1');
-                        $query->set('params = ' . $db->quote(json_encode($el_params)));
-                        $query->where('id =' . $newelementid);
                         $db->setQuery($query);
                         $db->execute();
-                    } catch (Exception $e) {
-                        JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-                    }
-                }
-            }
-            //
+                        $newgroupid = $db->insertid();
 
-            // Duplicate the form-menu
-            $query
-                ->clear()
-                ->select('*')
-                ->from($db->quoteName('#__menu'))
-                ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
-                ->andWhere($db->quoteName('path') . ' LIKE ' . $db->quote($profile->menutype . '%'))
-                ->andWhere($db->quoteName('published') . ' = 1')
-                ->order('rgt');
-            $db->setQuery($query);
-            $menus = $db->loadObjectList();
-            $rgts = [];
-            $lfts = [];
-            foreach (array_values($menus) as $menu) {
-                if (!in_array($menu->rgt, $rgts)) {
-                    $rgts[] = intval($menu->rgt);
-                }
-                if (!in_array($menu->lft, $lfts)) {
-                    $lfts[] = intval($menu->lft);
-                }
-            }
+                        if ($group_model->is_join == 1) {
+                            $query->clear()
+                                ->select('table_join')
+                                ->from($db->quoteName('#__fabrik_joins'))
+                                ->where($db->quoteName('group_id') . ' = ' . $db->quote($properties->id))
+                                ->andWhere($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'));
+                            $db->setQuery($query);
+                            $repeat_table_to_copy = $db->loadResult();
 
-            $query->clear()
-                ->select('*')
-                ->from($db->quoteName('#__menu'))
-                ->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)='.$formid);
+                            $joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
 
-            $db->setQuery($query);
-            $menu_model = $db->loadObject();
-
-            $query->clear();
-            $query->insert($db->quoteName('#__menu'));
-            foreach ($menu_model as $key => $val) {
-                if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'link' && $key != 'parent_id' && $key != 'lft' && $key != 'rgt'  && $key != 'title') {
-                    $query->set($key . ' = ' . $db->quote($val));
-                } elseif ($key == 'menutype') {
-                    $query->set($key . ' = ' . $db->quote($profile->menutype));
-                } elseif ($key == 'title') {
-                    $query->set($key . ' = ' . $db->quote('FORM_' . $profile->id . '_' . $newformid));
-                } elseif ($key == 'alias') {
-                    $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($label['fr']))));
-                } elseif ($key == 'path') {
-                    if(strpos($val,'/') !== false){
-                        $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $newformid));
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val . '-' . $profile->id));
-                    }
-                } elseif ($key == 'link') {
-                    $query->set($key . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $newformid));
-                } elseif ($key == 'parent_id') {
-                    if($list_model->db_table_name != 'jos_emundus_declaration') {
-                        $query->set($key . ' = ' . $db->quote($menu_parent->id));
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val));
-                    }
-                } elseif ($key == 'lft') {
-                    if($list_model->db_table_name != 'jos_emundus_declaration') {
-                        if (strpos($menu_model->path, '/') !== false) {
-                            $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                            $query->clear()
+                                ->insert($db->quoteName('#__fabrik_joins'));
+                            $query->set($db->quoteName('list_id') . ' = ' . $db->quote($newlistid))
+                                ->set($db->quoteName('element_id') . ' = ' . $db->quote(0))
+                                ->set($db->quoteName('join_from_table') . ' = ' . $db->quote($db_table_name))
+                                ->set($db->quoteName('table_join') . ' = ' . $db->quote($repeat_table_to_copy))
+                                ->set($db->quoteName('table_key') . ' = ' . $db->quote('id'))
+                                ->set($db->quoteName('table_join_key') . ' = ' . $db->quote('parent_id'))
+                                ->set($db->quoteName('join_type') . ' = ' . $db->quote('left'))
+                                ->set($db->quoteName('group_id') . ' = ' . $db->quote($newgroupid))
+                                ->set($db->quoteName('params') . ' = ' . $db->quote($joins_params));
+                            $db->setQuery($query);
+                            $db->execute();
                         }
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val));
-                    }
-                } elseif ($key == 'rgt') {
-                    if($list_model->db_table_name != 'jos_emundus_declaration') {
-                        if (strpos($menu_model->path, '/') !== false) {
-                            $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+
+                        // Update translation files
+                        $query->clear();
+                        $query->update($db->quoteName('#__fabrik_groups'));
+
+                        if ($formid == 258) {
+                            $labels = array(
+                                'fr' => "Confirmation d'envoi de dossier",
+                                'en' => 'Confirmation of file sending',
+                            );
+                            $this->translate('GROUP_' . $newformid . '_' . $newgroupid,$labels,'fabrik_groups',$newgroupid,'label');
+                        } else {
+                            $labels_to_duplicate = array();
+                            foreach ($languages as $language) {
+                                $labels_to_duplicate[$language->sef] = $this->getTranslation($group_model->label,$language->lang_code);
+                                if($label[$language->sef] == ''){
+                                    $label[$language->sef] = $group_model->label;
+                                }
+                            }
+                            $this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels_to_duplicate,'fabrik_groups',$newgroupid,'label');
                         }
-                    } else {
-                        $query->set($key . ' = ' . $db->quote($val));
+                        //
+
+                        $query->set('label = ' . $db->quote('GROUP_' . $newformid . '_' . $newgroupid));
+                        $query->set('name = ' . $db->quote('GROUP_' . $newformid . '_' . $newgroupid));
+                        $query->where('id =' . $newgroupid);
+                        $db->setQuery($query);
+                        $db->execute();
+
+                        $query->clear()
+                            ->insert($db->quoteName('#__fabrik_formgroup'))
+                            ->set('form_id = ' . $db->quote($newformid))
+                            ->set('group_id = ' . $db->quote($newgroupid))
+                            ->set('ordering = ' . $db->quote($ordering));
+                        $db->setQuery($query);
+                        $db->execute();
+
+                        foreach ($elements as $element) {
+                            try {
+                                $newelement = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
+                                $newelementid = $newelement->id;
+
+                                $el_params = json_decode($element->element->params);
+
+                                // Update translation files
+                                if(($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options){
+                                    $sub_labels = [];
+                                    foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
+                                        $labels_to_duplicate = array();
+                                        foreach ($languages as $language) {
+                                            $labels_to_duplicate[$language->sef] = $this->getTranslation($sub_label,$language->lang_code);
+                                            if($label[$language->sef] == ''){
+                                                $label[$language->sef] = $sub_label;
+                                            }
+                                        }
+                                        $this->translate('SUBLABEL_' . $newgroupid. '_' . $newelementid . '_' . $index,$labels_to_duplicate,'fabrik_elements',$newelementid,'sub_labels');
+                                        $sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
+                                    }
+                                    $el_params->sub_options->sub_labels = $sub_labels;
+                                }
+                                $query->clear();
+                                $query->update($db->quoteName('#__fabrik_elements'));
+
+                                $labels_to_duplicate = array();
+                                foreach ($languages as $language) {
+                                    $labels_to_duplicate[$language->sef] = $this->getTranslation($element->element->label,$language->lang_code);
+                                    if($label[$language->sef] == ''){
+                                        $label[$language->sef] = $element->element->label;
+                                    }
+                                }
+                                $this->translate('ELEMENT_' . $newgroupid. '_' . $newelementid,$labels_to_duplicate,'fabrik_elements',$newelementid,'label');
+                                //
+
+                                $query->set('label = ' . $db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
+                                $query->set('published = 1');
+                                $query->set('params = ' . $db->quote(json_encode($el_params)));
+                                $query->where('id =' . $newelementid);
+                                $db->setQuery($query);
+                                $db->execute();
+                            } catch (Exception $e) {
+                                JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+                            }
+                        }
                     }
+                    //
+
+                    // Duplicate the form-menu
+                    $query
+                        ->clear()
+                        ->select('*')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('menutype') . ' = ' . $db->quote($profile->menutype))
+                        ->andWhere($db->quoteName('path') . ' LIKE ' . $db->quote($profile->menutype . '%'))
+                        ->andWhere($db->quoteName('published') . ' = 1')
+                        ->order('rgt');
+                    $db->setQuery($query);
+                    $menus = $db->loadObjectList();
+                    $rgts = [];
+                    $lfts = [];
+                    foreach (array_values($menus) as $menu) {
+                        if (!in_array($menu->rgt, $rgts)) {
+                            $rgts[] = intval($menu->rgt);
+                        }
+                        if (!in_array($menu->lft, $lfts)) {
+                            $lfts[] = intval($menu->lft);
+                        }
+                    }
+
+                    $query->clear()
+                        ->select('*')
+                        ->from($db->quoteName('#__menu'))
+                        ->where('SUBSTRING_INDEX(SUBSTRING(link, LOCATE("formid=",link)+7, 4), "&", 1)='.$formid);
+
+                    $db->setQuery($query);
+                    $menu_model = $db->loadObject();
+
+                    $query->clear();
+                    $query->insert($db->quoteName('#__menu'));
+                    foreach ($menu_model as $key => $val) {
+                        if ($key != 'id' && $key != 'menutype' && $key != 'alias' && $key != 'path' && $key != 'link' && $key != 'parent_id' && $key != 'lft' && $key != 'rgt'  && $key != 'title') {
+                            $query->set($key . ' = ' . $db->quote($val));
+                        } elseif ($key == 'menutype') {
+                            $query->set($key . ' = ' . $db->quote($profile->menutype));
+                        } elseif ($key == 'title') {
+                            $query->set($key . ' = ' . $db->quote('FORM_' . $profile->id . '_' . $newformid));
+                        } elseif ($key == 'alias') {
+                            $query->set($key . ' = ' . $db->quote('form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(),'-',strtolower($label['fr']))));
+                        } elseif ($key == 'path') {
+                            if(strpos($val,'/') !== false){
+                                $query->set($key . ' = ' . $db->quote($menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $newformid));
+                            } else {
+                                $query->set($key . ' = ' . $db->quote($val . '-' . $profile->id));
+                            }
+                        } elseif ($key == 'link') {
+                            $query->set($key . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $newformid));
+                        } elseif ($key == 'parent_id') {
+                            if($list_model->db_table_name != 'jos_emundus_declaration') {
+                                $query->set($key . ' = ' . $db->quote($menu_parent->id));
+                            } else {
+                                $query->set($key . ' = ' . $db->quote($val));
+                            }
+                        } elseif ($key == 'lft') {
+                            if($list_model->db_table_name != 'jos_emundus_declaration') {
+                                if (strpos($menu_model->path, '/') !== false) {
+                                    $query->set($key . ' = ' . $db->quote(array_values($lfts)[strval(sizeof($lfts) - 1)] + 2));
+                                }
+                            } else {
+                                $query->set($key . ' = ' . $db->quote($val));
+                            }
+                        } elseif ($key == 'rgt') {
+                            if($list_model->db_table_name != 'jos_emundus_declaration') {
+                                if (strpos($menu_model->path, '/') !== false) {
+                                    $query->set($key . ' = ' . $db->quote(array_values($rgts)[strval(sizeof($rgts) - 1)] + 2));
+                                }
+                            } else {
+                                $query->set($key . ' = ' . $db->quote($val));
+                            }
+                        }
+                    }
+                    $db->setQuery($query);
+                    $inserted = $db->execute();
+                    if ($inserted) {
+                        $newmenuid = $db->insertid();
+
+                        // Add translation for menu
+                        $falang->insertFalang($label, $newmenuid,'menu','title');
+                        //
+
+                        // Affect modules to this menu
+                        foreach ($modules as $module) {
+                            $query->clear()
+                                ->insert($db->quoteName('#__modules_menu'))
+                                ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
+                                ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+
+
+                        $response = array(
+                            'status' => !empty($newformid),
+                            'id' => $newformid,
+                            'link' => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
+                            'rgt' => array_values($rgts)[strval(sizeof($rgts)-1)] + 2,
+                        );
+                    } else {
+                        $response = [
+                            'status' => false,
+                            'msg' => JText::_('COM_EMUNDUS_FORMBUILDER_FAILED_TO_INSERT_MENU')
+                        ];
+                    }
+                } catch(Exception $e) {
+                    JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
                 }
+            } else {
+                $response = [
+                    'status' => false,
+                    'msg' => JText::_('COM_EMUNDUS_FORMBUILDER_PROFILE_NOT_FOUND')
+                ];
             }
-            $db->setQuery($query);
-            $db->execute();
-            $newmenuid = $db->insertid();
-
-            // Add translation for menu
-            $falang->insertFalang($label,$newmenuid,'menu','title');
-            //
-
-            // Affect modules to this menu
-            foreach ($modules as $module) {
-                $query->clear()
-                    ->insert($db->quoteName('#__modules_menu'))
-                    ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module))
-                    ->set($db->quoteName('menuid') . ' = ' . $db->quote($newmenuid));
-                $db->setQuery($query);
-                $db->execute();
-            }
-            //
-        } catch(Exception $e) {
-            JLog::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
         }
-        //
 
-        return array(
-            'id' => $newformid,
-            'link' => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
-            'rgt' => array_values($rgts)[strval(sizeof($rgts)-1)] + 2,
-        );
+        return $response;
     }
 
     function checkConstraintGroup($cid) {

@@ -375,11 +375,9 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
 
     public function createMenu() {
         $user = JFactory::getUser();
+        $response = array('status' => false, 'msg' => JText::_("ACCESS_DENIED"));
 
-        if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-            $result = 0;
-            $changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-        } else {
+        if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
             $jinput = JFactory::getApplication()->input;
 
             $label = $jinput->getRaw('label');
@@ -389,12 +387,13 @@ class EmundusControllerFormbuilder extends JControllerLegacy {
             $template = $jinput->getString('template');
 
             if ($modelid != -1) {
-                $changeresponse = $this->m_formbuilder->createMenuFromTemplate($label, $intro, $modelid, $prid);
+                $response = $this->m_formbuilder->createMenuFromTemplate($label, $intro, $modelid, $prid);
             } else {
-                $changeresponse = $this->m_formbuilder->createApplicantMenu($label, $intro, $prid, $template);
+                $response = $this->m_formbuilder->createApplicantMenu($label, $intro, $prid, $template);
             }
         }
-        echo json_encode((object)$changeresponse);
+
+        echo json_encode((object)$response);
         exit;
     }
 
