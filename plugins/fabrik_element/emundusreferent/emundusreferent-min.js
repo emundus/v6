@@ -22,11 +22,22 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
 			if (this.observer && $(this.btn) != null) {
 				$(this.btn).addEventListener('click', function () {
-
 					var v = this.observer.get('value');
+
 					var email = document.getElementById(options.email).value;
 					var attachment_id = this.options.attachment_id;
 					var fnum = document.querySelector('[id$="___fnum"]').value;
+
+					// first act : get element id of email
+					var email_selector = options.email;
+
+					// second act : get parent group of email_selector
+					var parent_group = jQuery('#' + email_selector).closest('fieldset').attr('id');
+
+					// third act : from parent_group, we get the firstname, lastname of referent
+
+					var firstname = jQuery('#' + parent_group ).find('[id^=jos_emundus_references___First_Name_]').val();
+					var lastname  = jQuery('#' + parent_group ).find('[id^=jos_emundus_references___Last_Name_]').val();
 
 					if (email == "") {
 						$(this.options.email).setStyle('border', '4px solid #ff0000');
@@ -41,18 +52,17 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 							'email': email,
 							'formid': this.options.formid,
 							'fnum': fnum,
-							'form_recommend': this.options.form_recommend
+							'firstname': firstname,
+							'lastname': lastname
 						},
 						onComplete: response => {
 							self.ajaxComplete(response);
 						}
 					});
 
-					$(this.btn).disabled = true;
-					$(this.btn).value = options.sending + " <" + email + ">";
-					$(this.loader).setStyle('display', '');
-
+					$(this.btn).disabled = false;
 					this.myAjax.send();
+
 				}.bind(this));
 
 			} else {
@@ -73,9 +83,49 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 			json = JSON.decode(json);
 			if (json.result == "1") {
 				$(this.observer).value = parseInt($(this.observer).value) + 1;
-				$(this.response).innerHTML = json.message;
-				$(this.error).innerHTML = "";
-				$(this.options.email).setStyle('border', '2px solid #B0BB1E');
+
+				// remove the error message (if any) //
+				jQuery('.emundusreferent_error').remove();
+
+				// get the parent of this button
+				var parent = $(this.btn).closest('div').id;
+				jQuery('#messageResponse').last().remove();
+				jQuery('#' + parent).append("<div id='messageResponse'>" + json.message + "</div>");
+				//jQuery('#' + parent).find('[id=messageResponse]').last().css("background-color", "#dbcb8f");
+
+				/*setTimeout(function() {
+					jQuery('#' + parent).find('[id=messageResponse]').last().css("background-color", "");
+				}, 1000);*/
+
+				// add bullet to "sollicitation" (if exist) : find "sollicitation_reference_" //
+				var fieldset = $(this.btn).closest('fieldset').id;
+
+				var sollicitation = jQuery('#' + fieldset).find('[id*=sollicitation_reference_]').find('div table');
+
+				console.log(sollicitation);
+
+				// if table is not found, create new table
+				if(sollicitation.length === 0) {
+					// create new label of sollicitation
+					jQuery('#' + fieldset).find('[id*=sollicitation_reference_]').append(
+						'<div><table style="width:100%; border: none !important; display:inline-block">' +
+						'<tr>' +
+						'<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_REFEREE') + '</th>' +
+						'<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_AT_DATE') + '</th>' +
+						'<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_AT_TIME') + '</th>' +
+						'<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_IS_SENT') + '</th>' +
+						'</tr>'
+					);
+
+					sollicitation = jQuery('#' + fieldset).find('[id*=sollicitation_reference_]').find('div table');
+				}
+				// append the new record
+				sollicitation.append('<tr style="border: none !important; font-size: 15px">' +
+					'<td style="border:none !important; width: 300px">' + json.email + '</td>' +
+					'<td style="border:none !important">' + new Date().toLocaleDateString("fr-FR") + '</td>' +
+					'<td style="border:none !important">' + new Date().toLocaleTimeString() + '</td>' +
+					'<td style="border: none !important; text-align:center"><i class="large circle inverted question icon" style="color:darkorange; background-color: none"></i></td>' +
+					'</tr>');
 			} else {
 				$(this.error).innerHTML = json.message;
 				$(this.btn).disabled = false;
