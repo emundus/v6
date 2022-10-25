@@ -260,7 +260,7 @@ $h = $dteDiff->format("%H");
             "url": "<?php echo $CurPageURL ?>"
         },
         "image": [
-            "<?php echo 'https://' . $_SERVER['HTTP_HOST'] . '/images/custom/logo_custom.png'?>",
+            "<?php echo 'https://' . $_SERVER['HTTP_HOST'] . '/images/custom/logo_custom.png'?>"
         ],
         "description": "<?php echo $currentCampaign->short_description ?>",
         "organizer": {
