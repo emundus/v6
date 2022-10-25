@@ -130,6 +130,10 @@ class plgUserEmundus_registration_email extends JPlugin {
             }
         }
 
+        if (JPluginHelper::getPlugin('authentication','miniorangesaml')) {
+            return;
+        }
+
         // if saving user's data was successful
         if ($result && !$error) {
 
@@ -281,6 +285,6 @@ class plgUserEmundus_registration_email extends JPlugin {
         ];
 
         // Send the email.
-		return $c_messages->sendEmailNoFnum($data['email'], $this->params->get('email', 'registration_email'), $post, $userID);
+        return $c_messages->sendEmailNoFnum($data['email'], $this->params->get('email', 'registration_email'), $post, $userID);
     }
 }
