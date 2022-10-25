@@ -50,16 +50,16 @@
   --light-grey-2: #F2F2F2;
   --light-grey-3: #CCCCCC;
 
-  --font: 'Inter', sans-serif; // saas
-  --applicant-default-font: 'Inter', sans-serif; // agence
-  --applicant-title-font: 'Inter', sans-serif; // agence
+  --font: 'Inter', sans-serif; // for coordinators side
+  --applicant-default-font: 'Inter', sans-serif; // for applicants side but with the coordinator style
+  --applicant-title-font: 'Inter', sans-serif; // for applicants side but with the coordinator style
 
   --white-background-color: #fff;
   --background-color: #f8f8f8;
 
-  --border-radius: 4px; //agence
-  --em-border-radius: 4px; // saas
-
+  --border-radius: 4px; // for applicants side
+  --em-border-radius: 4px; // for coordinators side
+  --em-applicant-border-radius: 4px; // for applicants side but with the coordinator style
 }
 
 //Colors
