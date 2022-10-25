@@ -840,6 +840,7 @@ div#em-modal-actions #delPDFfilter, div#em-modal-actions #delfilter{
 
 .g-back-office-emundus-tableau .col-md-3.side-panel {
     padding: 0;
+    position: sticky;
 }
 
 .g-back-office-emundus-tableau .col-md-9.main-panel {
