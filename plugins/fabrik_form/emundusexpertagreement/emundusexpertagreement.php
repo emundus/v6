@@ -185,7 +185,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 			->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id));
 		$db->setQuery($query);
 		$fnums = $db->loadColumn();
-		$no_selected_fnum = array_diff($fnums, $files_picked);
+        $not_selected_fnum = array_diff($fnums, $files_picked);
 
 		if ($pick_fnums) {
 			// Only get fnums that are found in BOTH arrays, this both allows filtering (only accept files which were picked by the user) and prevents the user from cheating and entering someone else's fnum.
@@ -202,6 +202,19 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form {
 		} catch (Exception $e) {
             echo $e->getMessage();
             JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+        }
+        if(!empty($not_selected_fnum)){
+            try {
+                $query->clear()
+                    ->update($db->quoteName('#__emundus_files_request'))
+                    ->set([$db->quoteName('uploaded').'=2', $db->quoteName('firstname').'='.$db->quote($firstname), $db->quoteName('lastname').'='.$db->quote($lastname), $db->quoteName('modified_date').'=NOW()'])
+                    ->where($db->quoteName('keyid').' LIKE '.$db->quote($key_id).' AND '.$db->quoteName('fnum').' IN ("'.implode('","', $not_selected_fnum).'")');
+                $db->setQuery($query);
+                $db->execute();
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                JLog::add(JUri::getInstance().' :: USER ID : '.JFactory::getUser()->id.' -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
+            }
         }
 
 		// 2. Vérification de l'existance d'un compte utilisateur avec email de l'expert
