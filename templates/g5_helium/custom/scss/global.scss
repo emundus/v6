@@ -2930,7 +2930,7 @@ h1.em-titre-connectez-vous {
   color: #333333;
 }
 
-.com_emundus:not(.view-programme){
+.com_emundus:not(.view-programme):not(.view-form) {
    h2,
    p,
    .em-w-custom form.fabrikForm label,
