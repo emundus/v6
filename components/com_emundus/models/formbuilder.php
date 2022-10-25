@@ -3649,4 +3649,27 @@ class EmundusModelFormbuilder extends JModelList {
 
         return $form_id;
     }
+
+    /**
+     * @return array|mixed
+     */
+    public function getPageModels()
+    {
+        $models = [];
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id, label')
+            ->from('#__fabrik_forms');
+
+        $db->setQuery($query);
+
+        try {
+            $models = $db->loadObjectList();
+        } catch(Exception $e) {
+            JLog::add('formBuilder Failed to get fabrik models', JLog::ERROR, 'com_emundus.error');
+        }
+
+        return $models;
+    }
 }

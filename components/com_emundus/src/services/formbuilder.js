@@ -662,5 +662,18 @@ export default {
                 message: e.message
             };
         }
+    },
+    async getModels()
+    {
+        try {
+            const response = await client().get('index.php?option=com_emundus&controller=formbuilder&task=getpagemodels');
+
+            return response;
+        } catch (e) {
+            return {
+                status: false,
+                message: e.message
+            };
+        }
     }
 };

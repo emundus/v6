@@ -24,6 +24,14 @@
         <label for="page-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_LABEL') }}</label>
         <input id="page-label" class="em-w-100" maxlength="50" minlength="3" name="page-label" type="text" v-model="page.label[shortDefaultLang]"/>
 
+	      <label for="page-label">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_MODEL') }}</label>
+	      <select v-model="modelid">
+		      <option value="-1">Choisir un modèle</option>
+		      <option v-for="model in models" :value="model.id">
+			      {{ model.name }}
+		      </option>
+	      </select>
+
         <label for="page-intro" class="em-mt-8">{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_INTRO') }}</label>
         <textarea id="page-intro" class="em-w-100" name="page-intro" v-model="page.intro[shortDefaultLang]"></textarea>
       </div>
@@ -67,8 +75,9 @@ export default {
         },
         prid: this.profile_id,
         modelid: -1,
-        template: 0
+        template: 0,
       },
+	    models: [],
       tabs: [
         {
           id: 0,
@@ -79,7 +88,15 @@ export default {
       errors: [],
     };
   },
+	created() {
+		this.getModels();
+	},
   methods: {
+	  getModels() {
+		  formBuilderService.getModels().then(response => {
+
+		  });
+	  },
     selectTab(tab) {
       this.tabs.forEach(t => {
         t.active = false;
@@ -103,7 +120,7 @@ export default {
       });
 
       if(this.errors.length === 0) {
-        formBuilderService.addPage(this.page).then(response => {
+        formBuilderService.addPage({...this.page, modelid: this.modelid}).then(response => {
 					if (!response.status) {
 						this.errors.push(response.msg);
 						stop = true;
