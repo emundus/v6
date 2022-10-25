@@ -664,3 +664,212 @@ function export_zip(fnums){
         }
     });
 }
+
+function generate_letter() {
+    var fnums = $('input:hidden[name="em-doc-fnums"]').val();
+    var idsTmpl = $('#em-doc-tmpl').val();
+
+    var cansee = 0;
+    if($('#em-doc-cansee').is(':checked')) { cansee = 1; }
+
+    // show by applicants (0) or show by document type (1)
+    var showMode = $('#em-doc-export-mode').val();
+
+    var mergeMode = 0;
+    if($('#em-doc-pdf-merge').is(':checked')) { mergeMode = 1; }
+
+
+
+    if (fnums && fnums.length > 0 ) {
+        // do that to remove the check-all option
+        fnums = fnums.replace(/([a-z-]+,)/g, '');
+    }
+
+    var swal_container_class = '';
+    var swal_popup_class = 'em-w-auto';
+    var swal_actions_class = '';
+
+    var html = '<div id="chargement">' +
+        '<div id="extractstep" class="em-flex-column"><p>' + Joomla.JText._('COM_EMUNDUS_LETTERS_PROGRESSING') + '</p><div class="em-loader em-mt-8"></div></div>' +
+        '</div>';
+
+    Swal.fire({
+        title: Joomla.JText._('COM_EMUNDUS_ACCESS_LETTERS'),
+        html: html,
+        showCancelButton: false,
+        showCloseButton: false,
+        reverseButtons: true,
+        confirmButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_OK'),
+        cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
+        customClass: {
+            container: 'em-modal-actions ' + swal_container_class,
+            popup: swal_popup_class,
+            title: 'em-swal-title',
+            cancelButton: 'em-swal-cancel-button',
+            confirmButton: 'em-swal-confirm-button btn btn-success',
+            actions: swal_actions_class
+        },
+    });
+
+    $.ajax({
+        type:'post',
+        url:'index.php?option=com_emundus&controller=files&task=generateletter',
+        dataType:'json',
+        data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
+        success: function(result) {
+            if (result.status) {
+                removeLoader();
+
+                $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" id="em-download-all" title="' + Joomla.JText._('DOWNLOAD_DOCUMENT') + '" href=""><span>' + Joomla.JText._('DOWNLOAD_DOCUMENT') + '</span></a>');
+
+                /// render recapitulatif
+                var recal = result.data.recapitulatif_count;
+                var table =
+                    "<h4>" +
+                    Joomla.JText._('AFFECTED_CANDIDATS') + result.data.affected_users +
+                    "</h4>" +
+                    "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
+                    "<thead>" +
+                    "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
+                    "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
+                    "</thead>" +
+                    "<tbody>";
+
+                recal.forEach(data => {
+                    table +=
+                        "<tr style='background: #c1c7d0'>" +
+                        "<td>" + data.document + "</td>" +
+                        "<td>" + data.count + "</td>" +
+                        "</tr>"
+                })
+
+                table += "</tbody></table>";
+
+                if (showMode == 0) {
+                    var zip = result.data.zip_data_by_candidat;
+
+                    table += "<h3>" +
+                        Joomla.JText._('CANDIDAT_GENERATED') +
+                        "</h3>" +
+                        "<table class='table table-striped' id='em-generated-docs'>" +
+                        "<thead>" +
+                        "<tr>" +
+                        "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
+                        "</tr>" +
+                        "</thead>" +
+                        "<tbody>";
+
+                    if (mergeMode == 0) {
+                        zip.forEach(file => {
+                            table += "<tr>" +
+                                "<td>" + file.applicant_name +
+                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.zip_url + "'>" +
+                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "</a>" +
+                                "</td>" +
+                                "</tr>";
+                        })
+
+                    } else {
+                        zip.forEach(file => {
+                            table += "<tr>" +
+                                "<td>" + file.applicant_name +
+                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.merge_zip_url + "'>" +
+                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "</a>" +
+                                "</td>" +
+                                "</tr>";
+                        })
+                    }
+
+                    table += "</tbody></table>";
+
+                    $('#em-download-all').attr('href', result.data.zip_all_data_by_candidat);
+                } else if (showMode == 1) {
+                    var letters = result.data.letter_dir;
+
+                    table +=
+                        "<h3>" +
+                        Joomla.JText._('DOCUMENT_GENERATED') +
+                        "</h3>" +
+                        "<table class='table table-striped' id='em-generated-docs'>" +
+                        "<thead>" +
+                        "<tr>" +
+                        "<th>" + Joomla.JText._('DOCUMENT_NAME') + "</th>" +
+                        "</tr>" +
+                        "</thead>" +
+                        "<tbody>";
+
+                    if (mergeMode == 0) {
+                        letters.forEach(letter => {
+                            table +=
+                                "<tr>" +
+                                "<td>" + letter.letter_name +
+                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_dir + "'>" +
+                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "</a>" +
+                                "</td>" +
+                                "</tr>";
+                        })
+                    } else {
+                        letters.forEach(letter => {
+                            table +=
+                                "<tr>" +
+                                "<td>" + letter.letter_name +
+                                "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_merge_dir + "'>" +
+                                "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
+                                "</a>" +
+                                "</td>" +
+                                "</tr>";
+                        })
+                    }
+
+                    table += "</tbody></table>";
+                    $('#em-download-all').attr('href', result.data.zip_all_data_by_document);
+                } else {
+                    /// showMode == 2 (classic way)
+                    var files = result.data.files;
+                    if (files && files.length > 0) {
+                        var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
+                        table += '<p class="em-h5">' + Joomla.JText._('COM_EMUNDUS_LETTERS_FILES_GENERATED') + '</p>' +
+                            '<table class="table table-striped" id="em-generated-docs">' +
+                            '<thead>' +
+                            '<tr>' +
+                            '<th>' + Joomla.JText._('COM_EMUNDUS_ATTACHMENTS_FILE_NAME') + '</th>' +
+                            '</tr>' +
+                            '</thead>' +
+                            '<tbody>';
+
+                        files.forEach(file => {
+                            table += '<tr id="' + file.upload + '">' +
+                                '<td>' + file.filename +
+                                '<a id="em_download_doc_' + file.upload + '" target="_blank" class="em-p-8" href="' + file.url + file.filename + '">' +
+                                '<span class="material-icons">file_download</span>' +
+                                '</a>' +
+                                '</td>' +
+                                '</tr>';
+                        })
+
+                        table += "</tbody></table>";
+
+                        var href_collections = $('[id^=em_download_doc_]');
+                        var href_array = Array.prototype.slice.call(href_collections);
+                        var urls = [];
+                        href_array.forEach(url => {
+                            urls.push(url.id.split('em_download_doc_')[1]);
+                        })
+
+                        $('#em-download-all').attr('href', zipUrl + urls.toString());
+                    }
+                }
+
+                $('#extractstep').replaceWith(table);
+            } else {
+                removeLoader();
+            }
+        },
+        error: function (jqXHR) {
+            console.log(jqXHR.responseText);
+        }
+    });
+}

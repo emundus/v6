@@ -1363,208 +1363,11 @@ function runAction(action,url = '') {
             });
             break;
 
+        // TODO : Generate letter
         case 27:
-            if ($(this).hasClass('em-doc-dl'))
-                return;
-
-            // $('#can-val').append('<button id="em-generate" style="margin-left:5px;" type="button" class="btn btn-success">'+Joomla.JText._('GENERATE_DOCUMENT')+'</button>');
-
-            $('#can-val').empty();
-            $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>');
-            $('#can-val').show();
-
-            var fnums = $('input:hidden[name="em-doc-fnums"]').val();
-            var idsTmpl = $('#em-doc-tmpl').val();
-
-            var cansee = 0;
-            if($('#em-doc-cansee').is(':checked')) { cansee = 1; }
-
-            var showMode = $('#em-doc-export-mode').val();          /// show by candidats (0) or show by document type (1)
-
-            var mergeMode = 0;
-            if($('#em-doc-pdf-merge').is(':checked')) { mergeMode = 1; }
-
-            $('.modal-body').empty();
-            // $('#em-download-btn').remove();
             addLoader();
 
-            if (fnums && fnums.length > 0 ) {
-                // do that to remove the check-all option
-                fnums = fnums.replace(/([a-z-]+,)/g, '');
-            }
-            $.ajax({
-                type:'post',
-                url:'index.php?option=com_emundus&controller=files&task=generateletter',
-                dataType:'json',
-                data:{fnums: fnums, ids_tmpl: idsTmpl, cansee: cansee, showMode: showMode, mergeMode: mergeMode},
-                success: function(result) {
-                    if (result.status) {
-                        $('.modal-body').empty();
-                        removeLoader();
-
-                        $('#can-val').append(
-                            '<button id="em-download-btn" type="button" class="btn btn-success">' +
-                            '<a  style=color:#fff;"" id="em-download-all" href="">'+ Joomla.JText._('DOWNLOAD_DOCUMENT') + '</a>' +
-                            '</button>');
-
-                        /// render recapitulatif
-                        var recal = result.data.recapitulatif_count;
-                        var recal_table =
-                            "<h4>" +
-                            Joomla.JText._('AFFECTED_CANDIDATS') + result.data.affected_users +
-                            "</h4>" +
-                            "<table class='table table-striped' id='em-generated-docs' style='border: 1px solid #c1c7d0'>" +
-                            "<thead>" +
-                            "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_LABEL') + "</th>" +
-                            "<th>" + Joomla.JText._('GENERATED_DOCUMENTS_COUNT') + "</th>" +
-                            "</thead>" +
-                            "<tbody>";
-
-                        recal.forEach(data => {
-                            recal_table +=
-                                "<tr style='background: #c1c7d0'>" +
-                                "<td>" + data.document + "</td>" +
-                                "<td>" + data.count + "</td>" +
-                                "</tr>"
-                        })
-
-                        recal_table += "</tbody></table>";
-                        $('.modal-body').append(recal_table);
-
-                        if (showMode == 0) {
-                            var zip = result.data.zip_data_by_candidat;
-
-                            var table = "<h3>" +
-                                Joomla.JText._('CANDIDAT_GENERATED') +
-                                "</h3>" +
-                                "<table class='table table-striped' id='em-generated-docs'>" +
-                                "<thead>" +
-                                "<tr>" +
-                                "<th>" + Joomla.JText._('CANDIDATE_NAME') + "</th>" +
-                                "</tr>" +
-                                "</thead>" +
-                                "<tbody>";
-
-                            if (mergeMode == 0) {
-                                zip.forEach(file => {
-                                    table += "<tr>" +
-                                        "<td>" + file.applicant_name +
-                                        "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.zip_url + "'>" +
-                                        "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
-                                        "</a>" +
-                                        "</td>" +
-                                        "</tr>";
-                                })
-
-                            } else {
-                                zip.forEach(file => {
-                                    table += "<tr>" +
-                                        "<td>" + file.applicant_name +
-                                        "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.merge_zip_url + "'>" +
-                                        "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
-                                        "</a>" +
-                                        "</td>" +
-                                        "</tr>";
-                                })
-                            }
-
-                            table += "</tbody></table>";
-                            $('.modal-body').append(table);
-                            $('#em-download-all').attr('href', result.data.zip_all_data_by_candidat);
-                        } else if (showMode == 1) {
-                            var letters = result.data.letter_dir;
-
-                            var table =
-                                "<h3>" +
-                                Joomla.JText._('DOCUMENT_GENERATED') +
-                                "</h3>" +
-                                "<table class='table table-striped' id='em-generated-docs'>" +
-                                "<thead>" +
-                                "<tr>" +
-                                "<th>" + Joomla.JText._('DOCUMENT_NAME') + "</th>" +
-                                "</tr>" +
-                                "</thead>" +
-                                "<tbody>";
-
-                            if (mergeMode == 0) {
-                                letters.forEach(letter => {
-                                    table +=
-                                        "<tr>" +
-                                        "<td>" + letter.letter_name +
-                                        "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_dir + "'>" +
-                                        "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
-                                        "</a>" +
-                                        "</td>" +
-                                        "</tr>";
-                                })
-                            } else {
-                                letters.forEach(letter => {
-                                    table +=
-                                        "<tr>" +
-                                        "<td>" + letter.letter_name +
-                                        "<a id='em_zip_download' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + letter.zip_merge_dir + "'>" +
-                                        "<span class='glyphicon glyphicon-save' id='download-icon'></span>" +
-                                        "</a>" +
-                                        "</td>" +
-                                        "</tr>";
-                                })
-                            }
-
-                            table += "</tbody></table>";
-                            $('.modal-body').append(table);
-                            $('#em-download-all').attr('href', result.data.zip_all_data_by_document);
-                        } else {
-                            /// showMode == 2 (classic way)
-                            var files = result.data.files;
-                            if (files && files.length > 0) {
-                                var zipUrl = 'index.php?option=com_emundus&controller=files&task=exportzipdoc&ids=';
-                                var table = "<h3>" +
-                                    Joomla.JText._('FILES_GENERATED') +
-                                    "</h3>" +
-                                    "<table class='table table-striped' id='em-generated-docs'>" +
-                                    "<thead>" +
-                                    "<tr>" +
-                                    "<th>" + Joomla.JText._('FILE_NAME') + "</th>" +
-                                    "</tr>" +
-                                    "</thead>" +
-                                    "<tbody>";
-
-                                files.forEach(file => {
-                                    table +=
-                                        "<tr id='" + file.upload + "'>" +
-                                        "<td>" + file.filename +
-                                        " <a id='" + 'em_download_doc_' + file.upload + "' target='_blank' class='btn btn-success btn-xs pull-right em-doc-dl' href='" + file.url + file.filename + "'>" +
-                                        "<span class='glyphicon glyphicon-save'></span>" +
-                                        "</a>" +
-                                        "</td>" +
-                                        "</tr>";
-                                })
-
-                                table += "</tbody></table>";
-                                $('.modal-body').append(table);
-
-                                var href_collections = $('[id^=em_download_doc_]');
-                                var href_array = Array.prototype.slice.call(href_collections);
-                                var urls = [];
-                                href_array.forEach(url => {
-                                    urls.push(url.id.split('em_download_doc_')[1]);
-                                })
-
-                                $('#em-download-all').attr('href', zipUrl + urls.toString());
-                            }
-                        }
-                    } else {
-                        /* show export error */
-                        $('#em-download-btn').remove();
-                        $('.modal-body').empty();
-                        removeLoader();
-                        $('.modal-body').append('<div id="model-err" style="color: red">' + Joomla.JText._('COM_EMUNDUS_EXPORT_FAILED') + '</div>');
-                    }
-                },
-                error: function (jqXHR) {
-                    console.log(jqXHR.responseText);
-                }
-            });
+            generate_letter();
             break;
 
         // Validating publication change
@@ -4733,7 +4536,7 @@ $(document).ready(function() {
 
                 break;
 
-            // Export to external application
+            // TODO : Export to external application
             case 33 :
                 $('#can-val').empty();
 
@@ -5039,7 +4842,7 @@ $(document).ready(function() {
                 });
                 break;
 
-            // Fast emails
+            // TODO : Fast emails
             case 15:
             case 16:
                 $('#can-val').empty();
@@ -5051,7 +4854,7 @@ $(document).ready(function() {
                 $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
                 break;
 
-            // Custom emails
+            // TODO : Custom emails
             case 17:
             case 18:
                 fnums = getUserCheckArray();
@@ -5079,26 +4882,22 @@ $(document).ready(function() {
                 });
                 break;
 
-            // Generate letters
+            // TODO : Generate letters
             case 27:
-                $('#can-val').empty();
-                $('#can-val').append('<button type="button" class="btn btn-danger" data-dismiss="modal">'+Joomla.JText._('COM_EMUNDUS_ACTIONS_CANCEL')+'</button>');
-                $('#can-val').show();
-
-                $('#em-modal-actions .modal-body').empty();
+                title = 'COM_EMUNDUS_ACCESS_LETTERS';
+                swal_confirm_button = 'GENERATE_DOCUMENT';
+                swal_popup_class = 'em-w-auto';
                 addLoader();
-                $('#em-modal-actions .modal-dialog').addClass('modal-lg');
-                $('#em-modal-actions .modal').show();
-                $('#em-modal-actions').modal({backdrop:false, keyboard:true},'toggle');
+
+                html = '<div id="data"></div>';
 
                 $.ajax({
                     type:'get',
                     url:url,
                     dataType:'html',
                     success: function(result) {
-                        $('.modal-body').empty();
+                        $('#data').append(result);
                         removeLoader();
-                        $('.modal-body').append(result);
                     },
                     error: function (jqXHR) {
                         console.log(jqXHR.responseText);
