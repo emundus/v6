@@ -142,10 +142,10 @@ $h = $dteDiff->format("%H");
     </div>
 
     <div>
-        <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <!-- INFO BLOCK -->
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
             <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></p>
+            <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
             <div class="em-mt-24">
                 <?php $index = 1; ?>
                 <?php foreach ($mod_em_campaign_show_registration_steps as $key => $step): ?>
@@ -153,8 +153,23 @@ $h = $dteDiff->format("%H");
                     <?php $index++; ?>
                 <?php endforeach;?>
             </div>
+            <?php endif; ?>
+            <?php
+            // The register URL does not work  with SEF, this workaround helps counter this.
+            if ($sef == 0) {
+                if(!isset($redirect_url) || empty($redirect_url)) {
+                    $redirect_url = "index.php?option=com_users&view=registration";
+                }
+                $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+            } else {
+                $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+            }
+            if(!$user->guest) {
+                $register_url .= "&redirect=" . $formUrl;
+            }
+            ?>
+            <a class="btn btn-primary em-w-100 em-mt-24" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
         </div>
-        <?php endif; ?>
 
         <!-- ATTACHMENTS BLOCK -->
         <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>
@@ -245,7 +260,7 @@ $h = $dteDiff->format("%H");
             "url": "<?php echo $CurPageURL ?>"
         },
         "image": [
-            "<?php echo $_SERVER['HTTP_HOST'] . '/images/custom/logo_custom.png'?>",
+            "<?php echo 'https://' . $_SERVER['HTTP_HOST'] . '/images/custom/logo_custom.png'?>",
         ],
         "description": "<?php echo $currentCampaign->short_description ?>",
         "organizer": {
