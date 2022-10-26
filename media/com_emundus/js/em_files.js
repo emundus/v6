@@ -734,7 +734,7 @@ function setFiltersSumo(event){
     }
 }
 
-function runAction(action,url = '') {
+function runAction(action, url = '') {
     $.ajaxQ.abortAll();
 
     // act-id represents the action to carry out (ex: export)
@@ -774,212 +774,9 @@ function runAction(action,url = '') {
 
         // Send an email
         case 9:
-            // update the textarea with the WYSIWYG content.
-            tinymce.triggerSave();
+            var fnums = getUserCheckArray();
 
-            // Get all form elements.
-            var data = {
-                recipients      : $('#fnums').val(),
-                template        : $('#message_template :selected').val(),
-                mail_from_name  : $('#mail_from_name').text(),
-                mail_from       : $('#mail_from').text(),
-                mail_subject    : $('#mail_subject').text(),
-                message         : $('#mail_body').val(),
-                bcc             : [],
-                cc              : [],
-                tags            : $('#tags').val(),
-            };
-
-            // cc emails
-            $('#cc-box div[data-value]').each(function () {
-                // var val = $(this).attr('data-value').split('CC: ')[1];
-                var val = $(this).attr('data-value');
-                var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-                if(val.split(':')[0] === 'CC') {
-                    val = $(this).attr('data-value').split('CC: ')[1];
-                }
-
-                if (REGEX_EMAIL.test(val)) { data.cc.push(val); }
-            });
-
-            // bcc emails
-            $('#bcc-box div[data-value]').each(function () {
-                // var val = $(this).attr('data-value').split('BCC: ')[1];
-                var val = $(this).attr('data-value');
-                var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-                if(val.split(':')[0] === 'BCC') {
-                    val = $(this).attr('data-value').split('BCC: ')[1];
-                }
-
-                if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
-            });
-
-            // Attachments object used for sorting the different attachment types.
-            var attachments = {
-                upload : [],
-                candidate_file : [],
-                setup_letters : []
-            };
-
-            // Looping through the list and sorting attachments based on their type.
-            var listItems = $("#em-attachment-list li");
-            listItems.each(function(idx, li) {
-                var attachment = $(li);
-
-                if (attachment.hasClass('upload')) {
-                    attachments.upload.push(attachment.find('.value').text());
-                } else if (attachment.hasClass('candidate_file')) {
-                    attachments.candidate_file.push(attachment.find('.value').text());
-                } else if (attachment.hasClass('setup_letters')) {
-                    attachments.setup_letters.push(attachment.find('.value').text());
-                }
-            });
-
-            data.attachments = attachments;
-
-            $.ajax({
-                type: 'POST',
-                url: 'index.php?option=com_emundus&controller=messages&task=previewemail',
-                data: data,
-                success: function(result) {
-
-                    result = JSON.parse(result);
-
-                    if (result.status) {
-                        Swal.fire({
-                            position: 'center',
-                            type: 'info',
-                            title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAIL_PREVIEW'),
-                            html: '<div id="email-recap">'+result.html+'</div>',
-                            width: 1000,
-                            showCancelButton: true,
-                            cancelButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_CANCEL_EMAIL'),
-                            confirmButtonText: Joomla.JText._('COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL'),
-                            reverseButtons: true,
-                            customClass: {
-                                title: 'em-swal-title',
-                                cancelButton: 'em-swal-cancel-button',
-                                confirmButton: 'em-swal-confirm-button',
-                            },
-                        }).then(function(confirm) {
-                            if (confirm.value) {
-                                Swal.fire({
-                                    position: 'center',
-                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_SENDING_EMAILS'),
-                                    html: '<div id="em-modal-sending-emails">' +
-                                        '<img class="em-sending-email-img" id="em-sending-email-img" src="/media/com_emundus/images/sending-email.gif"/>' +
-                                        '</div>',
-                                    showCancelButton: false,
-                                    showConfirmButton: false,
-                                    customClass: {
-                                        title: 'em-swal-title',
-                                    },
-                                });
-
-                                $.ajax({
-                                    type: "POST",
-                                    url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
-                                    data: data,
-                                    success: function (result) {
-                                        result = JSON.parse(result);
-
-                                        if (result.status) {
-                                            if (result.sent.length > 0) {
-                                                var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
-                                                result.sent.forEach(function (element) {
-                                                    sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
-                                                });
-
-                                                addLoader();
-
-                                                reloadData();
-                                                reloadActions($('#view').val(), undefined, false);
-
-                                                Swal.fire({
-                                                    type: 'success',
-                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
-                                                    html: sent_to + '</ul>',
-                                                    customClass: {
-                                                        title: 'em-swal-title',
-                                                        confirmButton: 'em-swal-confirm-button',
-                                                        actions: "em-swal-single-action",
-                                                    },
-                                                });
-
-                                            } else {
-                                                Swal.fire({
-                                                    type: 'error',
-                                                    title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT')
-                                                })
-                                            }
-
-                                            if (result.failed.length > 0) {
-                                                // Block containing the email adresses of the failed emails.
-                                                $("#em-email-messages").append('<div class="alert alert-danger">' + Joomla.JText._('COM_EMUNDUS_EMAILS_FAILED') + '<span class="badge">' + result.failed.length + '</span>' +
-                                                    '<ul class="list-group" id="em-mails-failed"></ul>');
-
-                                                result.failed.forEach(function (element) {
-                                                    $('#em-mails-sent').append('<li class="list-group-item alert-danger">' + element + '</li>');
-                                                });
-
-                                                $('#em-email-messages').append('</div>');
-                                            }
-
-                                        } else {
-                                            $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
-                                        }
-                                    },
-                                    error: function (jqXHR, textStatus) {
-                                        if(textStatus == 'timeout') {
-
-                                            var sent_to = '<p>' + Joomla.JText._('COM_EMUNDUS_MAILS_EMAIL_SENDING') + '</p>';
-
-                                            $.ajax({
-                                                type: 'post',
-                                                url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
-                                                dataType: 'json',
-
-                                                data: { data: data },
-                                                success: function(tags) {
-                                                    addLoader();
-
-                                                    reloadData();
-                                                    reloadActions($('#view').val(), undefined, false);
-
-                                                    Swal.fire({
-                                                        type: 'success',
-                                                        title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
-                                                        html: sent_to,
-                                                        customClass: {
-                                                            title: 'em-swal-title',
-                                                            confirmButton: 'em-swal-confirm-button',
-                                                            actions: "em-swal-single-action",
-                                                        },
-                                                    });
-                                                }, error: function(jqXHR) {
-                                                    console.log(jqXHR.responseText);
-                                                }
-                                            })
-                                        } else {
-                                            $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
-                                        }
-                                    },
-                                    timeout: 5000
-                                });
-                            }
-                        });
-                    }
-
-                },
-                error: function() {
-                    Swal.fire({
-                        type: 'error',
-                        title: Joomla.JText._('ERROR_GETTING_PREVIEW')
-                    })
-                }
-            });
+            sendMailQueue(fnums);
             break;
 
         // Add comments
@@ -1726,6 +1523,7 @@ $(document).ready(function() {
         var swal_actions_class = '';
         var swal_confirm_button = 'COM_EMUNDUS_ONBOARD_OK';
         var preconfirm = '';
+        var multipleSteps = false;
 
         removeLoader();
 
@@ -4659,32 +4457,7 @@ $(document).ready(function() {
 
             // Send an email
             case 9:
-                swal_confirm_button = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
-                swal_container_class = 'em-export'
-                swal_popup_class = 'em-w-100 em-h-100'
-                swal_actions_class = 'em-actions-fixed'
-
-                fnums = getUserCheckArray();
-
-                addLoader();
-
-                html = '<div id="data" class="em-mt-32"></div>';
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'index.php?option=com_emundus&view=message&format=raw',
-                    data: {
-                        fnums: fnums
-                    },
-                    success: function(result) {
-                        $('#data').append(result);
-
-                        removeLoader();
-                    },
-                    error: function (jqXHR) {
-                        console.log(jqXHR.responseText);
-                    }
-                });
+                multipleSteps = true;
                 break;
 
             // Add comments
@@ -5003,33 +4776,38 @@ $(document).ready(function() {
                 break;
         }
 
-        Swal.fire({
-            title: Joomla.JText._(title),
-            html: html,
-            allowOutsideClick: false,
-            showCancelButton: true,
-            showCloseButton: true,
-            reverseButtons: true,
-            confirmButtonText: Joomla.JText._(swal_confirm_button),
-            cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
-            customClass: {
-                container: 'em-modal-actions ' + swal_container_class,
-                popup: swal_popup_class,
-                title: 'em-swal-title',
-                cancelButton: 'em-swal-cancel-button',
-                confirmButton: 'em-swal-confirm-button btn btn-success',
-                actions: swal_actions_class
-            },
-            preConfirm: () => {
-                if(preconfirm !== '') {
-                    eval(preconfirm);
+        if (!multipleSteps) {
+            Swal.fire({
+                title: Joomla.JText._(title),
+                html: html,
+                allowOutsideClick: false,
+                showCancelButton: true,
+                showCloseButton: true,
+                reverseButtons: true,
+                confirmButtonText: Joomla.JText._(swal_confirm_button),
+                cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
+                customClass: {
+                    container: 'em-modal-actions ' + swal_container_class,
+                    popup: swal_popup_class,
+                    title: 'em-swal-title',
+                    cancelButton: 'em-swal-cancel-button',
+                    confirmButton: 'em-swal-confirm-button btn btn-success',
+                    actions: swal_actions_class
+                },
+                preConfirm: () => {
+                    if(preconfirm !== '') {
+                        eval(preconfirm);
+                    }
+                },
+            }).then((result) => {
+                if (result.value) {
+                    runAction(id, url);
                 }
-            },
-        }).then((result) => {
-            if (result.value) {
-                runAction(id,url);
-            }
-        });
+            });
+
+        } else {
+            runAction(id);
+        }
 
         $('.modal-chzn-select').chosen({width:'100%'});
     });
@@ -6583,4 +6361,289 @@ $(document).ready(function() {
     });
 });
 
+
+async function sendMailQueue(fnums) {
+    const steps = [1, 2];
+    let currentStep;
+
+    for (currentStep = 0; currentStep < 2;) {
+        let title = '';
+        let html = '';
+        let type = '';
+        let swal_confirm_button = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
+        let swal_container_class = 'em-export';
+        let swal_popup_class = 'em-w-100 em-h-100';
+        let swal_actions_class = 'em-actions-fixed';
+
+
+        switch(currentStep) {
+            case 0:
+                title = 'COM_EMUNDUS_EMAILS_SEND_CUSTOM_EMAIL';
+                html = '<div id="data" class="em-mt-32 em-w-100"><div id="email-loader" class="em-loader" style="margin: auto;"></div></div>';
+                swal_confirm_button = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW_BEFORE_SEND';
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'index.php?option=com_emundus&view=message&format=raw',
+                    data: {
+                        fnums: fnums
+                    },
+                    success: function(result) {
+                        $('#data').append(result);
+                        $('#email-loader').remove();
+                        $('#data').removeClass('em-loader');
+                    },
+                    error: function (jqXHR) {
+                        $('#email-loader').remove();
+                        console.log(jqXHR.responseText);
+                    }
+                });
+
+                break;
+            case 1:
+                title = 'COM_EMUNDUS_EMAILS_EMAIL_PREVIEW';
+                html = '<div id="email-recap"></div>';
+                type = 'info';
+
+                // update the textarea with the WYSIWYG content.
+                tinymce.triggerSave();
+
+                // Get all form elements.
+                var data = {
+                    recipients      : $('#fnums').val(),
+                    template        : $('#message_template :selected').val(),
+                    mail_from_name  : $('#mail_from_name').text(),
+                    mail_from       : $('#mail_from').text(),
+                    mail_subject    : $('#mail_subject').text(),
+                    message         : $('#mail_body').val(),
+                    bcc             : [],
+                    cc              : [],
+                    tags            : $('#tags').val(),
+                };
+
+                // cc emails
+                $('#cc-box div[data-value]').each(function () {
+                    var val = $(this).attr('data-value');
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if(val.split(':')[0] === 'CC') {
+                        val = $(this).attr('data-value').split('CC: ')[1];
+                    }
+
+                    if (REGEX_EMAIL.test(val)) { data.cc.push(val); }
+                });
+
+                // bcc emails
+                $('#bcc-box div[data-value]').each(function () {
+                    // var val = $(this).attr('data-value').split('BCC: ')[1];
+                    var val = $(this).attr('data-value');
+                    var REGEX_EMAIL = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+                    if(val.split(':')[0] === 'BCC') {
+                        val = $(this).attr('data-value').split('BCC: ')[1];
+                    }
+
+                    if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
+                });
+
+                // Attachments object used for sorting the different attachment types.
+                var attachments = {
+                    upload : [],
+                    candidate_file : [],
+                    setup_letters : []
+                };
+
+                // Looping through the list and sorting attachments based on their type.
+                var listItems = $("#em-attachment-list li");
+                listItems.each(function(idx, li) {
+                    var attachment = $(li);
+
+                    if (attachment.hasClass('upload')) {
+                        attachments.upload.push(attachment.find('.value').text());
+                    } else if (attachment.hasClass('candidate_file')) {
+                        attachments.candidate_file.push(attachment.find('.value').text());
+                    } else if (attachment.hasClass('setup_letters')) {
+                        attachments.setup_letters.push(attachment.find('.value').text());
+                    }
+                });
+
+                data.attachments = attachments;
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'index.php?option=com_emundus&controller=messages&task=previewemail',
+                    data: data,
+                    success: function(result) {
+                        result = JSON.parse(result);
+
+                        if (result.status) {
+                            $('#email-recap').append(result.html);
+                        } else {
+                            $('#email-recap').append( Joomla.JText._('ERROR_GETTING_PREVIEW'));
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            type: 'error',
+                            title: Joomla.JText._('ERROR_GETTING_PREVIEW')
+                        });
+                    }
+                });
+
+                break;
+            default:
+                break;
+        }
+
+        const swalOptions = {
+            position: 'center',
+            title: Joomla.JText._(title),
+            html: html,
+            showCancelButton: currentStep > 0,
+            currentProgressStep: currentStep,
+            progressSteps: steps,
+            confirmButtonText: Joomla.JText._(swal_confirm_button),
+            cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
+            reverseButtons: true,
+            customClass: {
+                container: 'em-modal-actions ' + swal_container_class,
+                popup: swal_popup_class,
+                title: 'em-swal-title',
+                cancelButton: 'em-swal-cancel-button',
+                confirmButton: 'em-swal-confirm-button btn btn-success',
+                actions: swal_actions_class
+            },
+        };
+
+        if (type != '') {
+            swalOptions.type = type;
+        }
+
+        const result = await Swal.fire(swalOptions);
+
+        if (result.value) {
+            currentStep++;
+            if (currentStep === 2) {
+                sendMail(data);
+
+                break;
+            }
+        } else if (result.dismiss === 'cancel') {
+            if (currentStep == 0) {
+                removeLoader();
+                Swal.close();
+                break;
+            } else {
+                currentStep--;
+            }
+        }
+    }
+}
+
+function sendMail(data)
+{
+    Swal.fire({
+        position: 'center',
+        title: Joomla.JText._('COM_EMUNDUS_EMAILS_SENDING_EMAILS'),
+        html: '<div id="em-modal-sending-emails">' +
+            '<img class="em-sending-email-img" id="em-sending-email-img" src="/media/com_emundus/images/sending-email.gif"/>' +
+            '</div>',
+        showCancelButton: false,
+        showConfirmButton: false,
+        customClass: {
+            title: 'em-swal-title',
+        },
+    });
+
+    $.ajax({
+        type: "POST",
+        url: "index.php?option=com_emundus&controller=messages&task=applicantemail",
+        data: data,
+        success: function (result) {
+            result = JSON.parse(result);
+
+            if (result.status) {
+                if (result.sent.length > 0) {
+                    var sent_to = '<p>' + Joomla.JText._('SEND_TO') + '</p><ul class="list-group" id="em-mails-sent">';
+                    result.sent.forEach(function (element) {
+                        sent_to += '<li class="list-group-item alert-success">' + element + '</li>';
+                    });
+
+                    addLoader();
+
+                    reloadData();
+                    reloadActions($('#view').val(), undefined, false);
+
+                    Swal.fire({
+                        type: 'success',
+                        title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT') + result.sent.length,
+                        html: sent_to + '</ul>',
+                        customClass: {
+                            title: 'em-swal-title',
+                            confirmButton: 'em-swal-confirm-button',
+                            actions: "em-swal-single-action",
+                        },
+                    });
+
+                } else {
+                    Swal.fire({
+                        type: 'error',
+                        title: Joomla.JText._('COM_EMUNDUS_EMAILS_NO_EMAILS_SENT')
+                    })
+                }
+
+                if (result.failed.length > 0) {
+                    // Block containing the email adresses of the failed emails.
+                    $("#em-email-messages").append('<div class="alert alert-danger">' + Joomla.JText._('COM_EMUNDUS_EMAILS_FAILED') + '<span class="badge">' + result.failed.length + '</span>' +
+                        '<ul class="list-group" id="em-mails-failed"></ul>');
+
+                    result.failed.forEach(function (element) {
+                        $('#em-mails-sent').append('<li class="list-group-item alert-danger">' + element + '</li>');
+                    });
+
+                    $('#em-email-messages').append('</div>');
+                }
+
+            } else {
+                $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
+            }
+        },
+        error: function (jqXHR, textStatus) {
+            if(textStatus == 'timeout') {
+
+                var sent_to = '<p>' + Joomla.JText._('COM_EMUNDUS_MAILS_EMAIL_SENDING') + '</p>';
+
+                $.ajax({
+                    type: 'post',
+                    url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
+                    dataType: 'json',
+
+                    data: { data: data },
+                    success: function(tags) {
+                        addLoader();
+
+                        reloadData();
+                        reloadActions($('#view').val(), undefined, false);
+
+                        Swal.fire({
+                            type: 'success',
+                            title: Joomla.JText._('COM_EMUNDUS_EMAILS_EMAILS_SENT'),
+                            html: sent_to,
+                            customClass: {
+                                title: 'em-swal-title',
+                                confirmButton: 'em-swal-confirm-button',
+                                actions: "em-swal-single-action",
+                            },
+                        });
+                    }, error: function(jqXHR) {
+                        console.log(jqXHR.responseText);
+                    }
+                })
+            } else {
+                $("#em-email-messages").append('<span class="alert alert-danger">' + Joomla.JText._('SEND_FAILED') + '</span>')
+            }
+        },
+        timeout: 5000
+    });
+}
 
