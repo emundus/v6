@@ -35,6 +35,10 @@ if(strtotime($now) < strtotime($currentCampaign->end_date)  && strtotime($now) >
 } elseif (strtotime($now) > strtotime($currentCampaign->end_date)){
     $can_apply = -1;
 }
+
+if($currentCampaign->apply_online == 0){
+    $can_apply = 0;
+}
 ?>
 
 <div class="em-grid-2-70-30 em-mt-24 em-mb-64" style="grid-gap: 64px">
@@ -150,6 +154,7 @@ if(strtotime($now) < strtotime($currentCampaign->end_date)  && strtotime($now) >
 
     <div>
         <!-- INFO BLOCK -->
+        <?php if ($can_apply != 0 || $mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
         <div class="mod_emundus_campaign__details_content em-border-neutral-300 em-mb-24">
             <p class="em-h6"><?php echo JText::_('MOD_EM_CAMPAIGN_DETAILS_APPLY') ?></p>
             <?php if ($mod_em_campaign_show_registration == 1 && !empty($mod_em_campaign_show_registration_steps)) : ?>
@@ -181,6 +186,7 @@ if(strtotime($now) < strtotime($currentCampaign->end_date)  && strtotime($now) >
                 <button class="em-disabled-button em-w-100 em-mt-24" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
             <?php endif; ?>
         </div>
+        <?php endif; ?>
 
         <!-- ATTACHMENTS BLOCK -->
         <?php if (!empty($files) && $mod_em_campaign_show_documents == 1) : ?>
