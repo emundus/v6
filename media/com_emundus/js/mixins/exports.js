@@ -1,21 +1,21 @@
 function export_excel(fnums) {
-    var eltJson = "{";
+    var eltJson = {};
     var i = 0;
     var objclass = [];
 
     var code = $("#em-export-prg").val().replace(/\s/g, '');
-    var year = "";
+    var year = '';
 
     let campaign = document.getElementById('em-export-camp');
     let selectedOption = campaign.options[campaign.selectedIndex];
 
-    if (selectedOption.value != "0") {
+    if (selectedOption.value != '0') {
         year = selectedOption.getAttribute('data-year');
     }
     const excel_file_name = code + '_' + year;
 
     $('[class^="emundusitem"]:checkbox:checked').each(function () {
-        if ($(this).attr('class') == "emundusitem_evaluation otherForm") {
+        if ($(this).attr('class') == 'emundusitem_evaluation otherForm') {
             objclass.push($(this).attr('class'));
         }
     });
@@ -26,40 +26,34 @@ function export_excel(fnums) {
     $(".em-export-item").each(function () {
         let id = $(this).attr('id').split('-')[0];
         if (!defaultElts.includes(parseInt(id))) {
-            eltJson += '"' + i + '":"' + $(this).attr('id').split('-')[0] + '",';
+            eltJson[i] = $(this).attr('id').split('-')[0];
             i++;
         }
-    })
+    });
 
-
-    eltJson = eltJson.substr(0, eltJson.length - 1);
-    eltJson += '}';
-    var objJson = '{';
+    eltJson = JSON.stringify(eltJson);
+    var objJson = {};
 
     i = 0;
     $('.em-ex-check:checked').each(function () {
-        objJson += '"' + i + '":"' + $(this).attr('value') + '",';
+        objJson[i] = $(this).attr('value');
         i++;
     });
-
-    objJson = objJson.substr(0, objJson.length - 1);
-    objJson += '}';
-
+    objJson = JSON.stringify(objJson);
 
     var methode = $('#em-export-methode:checked').val();
 
-    var options = "{";
+    var options = {};
     i = 0;
     $('.em-ex-check0:checked').each(function () {
-        options += '"' + i + '":"' + $(this).attr('value') + '",';
+        options[i] = $(this).attr('value');
         i++;
     });
-    options = options.substr(0, options.length - 1);
-    options += '}';
+    options = JSON.stringify(options);
 
-
-    if ($('#view').val() == "evaluation")
+    if ($('#view').val() == 'evaluation') {
         methode = 0;
+    }
 
     $('#data').hide();
 
@@ -202,7 +196,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                                 data: {letter: letter},
                                                 success: function (data) {
                                                     if (data.status) {
-                                                        let letter = data.letter.file;      /// get the destination of letters
+                                                        let letter = data.letter.file; // get the destination of letters
                                                         // call ajax to migrate all csv to letter
                                                         $.ajax({
                                                             type: 'post',
