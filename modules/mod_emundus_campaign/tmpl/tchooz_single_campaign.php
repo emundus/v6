@@ -28,6 +28,13 @@ $dteEnd   = new DateTime($currentCampaign->end_date);
 $dteDiff  = $dteStart->diff($dteEnd);
 $j = $dteDiff->format("%a");
 $h = $dteDiff->format("%H");
+
+$can_apply = 0;
+if(strtotime($now) < strtotime($currentCampaign->end_date)  && strtotime($now) > strtotime($currentCampaign->start_date)){
+    $can_apply = 1;
+} elseif (strtotime($now) > strtotime($currentCampaign->end_date)){
+    $can_apply = -1;
+}
 ?>
 
 <div class="em-grid-2-70-30 em-mt-24 em-mb-64" style="grid-gap: 64px">
@@ -154,21 +161,25 @@ $h = $dteDiff->format("%H");
                 <?php endforeach;?>
             </div>
             <?php endif; ?>
-            <?php
-            // The register URL does not work  with SEF, this workaround helps counter this.
-            if ($sef == 0) {
-                if(!isset($redirect_url) || empty($redirect_url)) {
-                    $redirect_url = "index.php?option=com_users&view=registration";
+            <?php if($can_apply == 1) : ?>
+                <?php
+                // The register URL does not work  with SEF, this workaround helps counter this.
+                if ($sef == 0) {
+                    if(!isset($redirect_url) || empty($redirect_url)) {
+                        $redirect_url = "index.php?option=com_users&view=registration";
+                    }
+                    $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
+                } else {
+                    $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
                 }
-                $register_url = $redirect_url."&course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-            } else {
-                $register_url = $redirect_url."?course=".$currentCampaign->code."&cid=".$currentCampaign->id."&Itemid=".$mod_em_campaign_itemid;
-            }
-            if(!$user->guest) {
-                $register_url .= "&redirect=" . $formUrl;
-            }
-            ?>
-            <a class="btn btn-primary em-w-100 em-mt-24" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+                if(!$user->guest) {
+                    $register_url .= "&redirect=" . $formUrl;
+                }
+                ?>
+                <a class="btn btn-primary em-w-100 em-mt-24" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_APPLY_NOW'); ?></a>
+            <?php elseif ($can_apply == -1) : ?>
+                <button class="em-disabled-button em-w-100 em-mt-24" role="button" data-toggle="sc-modal"><?php echo JText::_('MOD_EM_CAMPAIGN_CAMPAIGN_IS_FINISH'); ?></button>
+            <?php endif; ?>
         </div>
 
         <!-- ATTACHMENTS BLOCK -->

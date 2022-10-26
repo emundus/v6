@@ -121,6 +121,14 @@
   color: $night-blue;
 }
 
+.em-disabled-button {
+  background: $neutral-300;
+  border: 1px solid $neutral-300;
+  border-radius: var(--border-radius);
+  padding: 8px 12px;
+  color: $neutral-600;
+}
+
 .em-radio-button{
   width: 16px;
   height: 16px;
