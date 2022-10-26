@@ -1852,6 +1852,7 @@ $(document).ready(function() {
             // Export Excel
             case 6:
                 addLoader();
+                title = 'COM_EMUNDUS_EXCEL_GENERATION';
                 html = '<div id="data" class="em-mt-32"></div>';
                 swal_container_class = 'em-export'
                 swal_popup_class = 'em-w-100 em-h-100'
