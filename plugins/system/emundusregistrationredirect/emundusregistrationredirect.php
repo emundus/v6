@@ -76,7 +76,7 @@ class plgSystemEmundusregistrationredirect extends JPlugin {
             $e_session = JFactory::getSession()->get('emundusUser');
             if(empty($e_session)){
                 include_once(JPATH_SITE.'/components/com_emundus/models/profile.php');
-                $m_profile = new EmundusModelProfile;
+                $m_profile = new EmundusModelProfile();
                 $m_profile->initEmundusSession();
             }
         }

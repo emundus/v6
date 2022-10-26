@@ -249,7 +249,7 @@ class plgUserEmundus extends JPlugin
                 }
 
                 $eMConfig = JComponentHelper::getParams('com_emundus');
-                $profile = $eMConfig->get('saml_default_profile');
+                $profile = $eMConfig->get('saml_default_profile',1000);
             }
         }
 
