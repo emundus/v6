@@ -909,6 +909,8 @@ $font:'Inter', sans-serif;
         padding: 0;
         margin: 0;
         min-height: auto;
+        display: flex;
+        align-items: center;
 
         input[type="radio"] {
           @include radio;
