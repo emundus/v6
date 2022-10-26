@@ -6251,6 +6251,7 @@ fieldset[disabled] .multiselect {
 
 .em-menuaction{
   position: sticky;
+  z-index: 9;
 }
 .em-modal-actions {
   .em-w-auto{
@@ -6281,8 +6282,12 @@ fieldset[disabled] .multiselect {
     background: white;
     border: solid 1px $neutral-300;
   }
-  .em-actions-none{
+  .em-actions-none {
     display: none;
+  }
+
+  .swal2-progress-steps {
+    display: none !important;
   }
 }
 .em-modal-actions.em-export{
