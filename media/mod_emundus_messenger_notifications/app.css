@@ -6,6 +6,28 @@
     top: 55px !important;
   }
 }
+.messages__campaigns-list-select {
+  display: none;
+  margin: 0;
+}
+
+@media all and (max-width: 820px) {
+  .messages__campaigns-list {
+    display: none;
+  }
+
+  .messages__campaigns-list-select {
+    display: block;
+    margin: 16px;
+  }
+
+  .drag-window {
+    -webkit-box-orient: vertical !important;
+    -webkit-box-direction: normal !important;
+        -ms-flex-direction: column !important;
+            flex-direction: column !important;
+  }
+}
 hr {
   margin: 0;
 }
@@ -157,6 +179,7 @@ hr {
 
 .messages__message-item-span_current-user {
   background: #d1dbfa;
+  color: #353544;
 }
 
 .messages__message-item-span_other-user {
@@ -510,6 +533,25 @@ hr {
         top: 55px !important;
 }
 }
+.messages__campaigns-list-select {
+    display: none;
+    margin: 0;
+}
+@media all and (max-width: 820px) {
+.messages__campaigns-list {
+        display: none;
+}
+.messages__campaigns-list-select {
+        display: block;
+        margin: 16px;
+}
+.drag-window {
+        -webkit-box-orient: vertical !important;
+        -webkit-box-direction: normal !important;
+            -ms-flex-direction: column !important;
+                flex-direction: column !important;
+}
+}
 hr{
     margin: 0;
 }
@@ -541,6 +583,7 @@ hr{
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+    width: 35%;
 }
 .messages__active-campaign{
     background: #F0F4F5;
@@ -552,7 +595,7 @@ hr{
 }
 .messages__list-block{
     min-height: 50vh;
-    max-height: 60vh;
+    max-height: 85%;
     overflow-y: auto;
     overflow-x: hidden;
     -ms-overflow-style: none;
@@ -587,13 +630,13 @@ hr{
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
-    width: 90%;
+    width: 100%;
     -webkit-box-pack: justify;
         -ms-flex-pack: justify;
             justify-content: space-between;
 }
 .messages__input_text{
-    width: 90% !important;
+    width: 100% !important;
     resize: none;
     height: 45px;
 }
@@ -641,6 +684,7 @@ hr{
 }
 .messages__message-item-span_current-user{
     background: #d1dbfa;
+    color: #353544;
 }
 .messages__message-item-span_other-user{
     background: #F0F4F5;
@@ -651,15 +695,15 @@ hr{
 }
 .messages__campaigns-list{
     background: #FCFCFC;
+    width: 35%;
 }
 .messages__campaigns_title{
-    margin-left: 10px;
     max-width: 100%;
     white-space: break-spaces;
     text-align: left;
 }
 .messages__campaigns_fnum{
-    font-size: 14px;
+    font-size: 12px;
 }
 .messages__campaigns_folder-icon{
     width: 20px;

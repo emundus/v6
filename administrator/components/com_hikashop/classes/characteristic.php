@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -41,12 +41,49 @@ class hikashopCharacteristicClass extends hikashopClass{
 		return $status;
 	}
 
+	public function delete(&$elements) {
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeCharacteristicDelete', array(&$elements, &$do));
+
+		if(!$do)
+			return false;
+
+		$status = parent::delete($elements);
+		if($status) {
+			$app->triggerEvent('onAfterCharacteristicDelete', array(&$elements));
+		}
+		return $status;
+	}
+
 	public function save(&$element){
 		$translationHelper = hikashop_get('helper.translation');
 		$translationHelper->getTranslations($element);
-		if(!empty($element->characteristic_id))
+		$new = empty($element->characteristic_id);
+		if(!$new)
 			$element->old = $this->get($element->characteristic_id);
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		if($new) {
+			$app->triggerEvent('onBeforeCharacteristicCreate', array( &$element, &$do ));
+		} else {
+			$app->triggerEvent('onBeforeCharacteristicUpdate', array( &$element, &$do ));
+		}
+
+		if(!$do)
+			return false;
+
 		$status = parent::save($element);
+		if(!$status)
+			return $status;
+
+		if($new) {
+			$app->triggerEvent('onAfterCharacteristicCreate', array( &$element ));
+		} else {
+			$app->triggerEvent('onAfterCharacteristicUpdate', array( &$element ));
+		}
 		if($status){
 			if($translationHelper->isMulti()) {
 				$columns = array('characteristic_value');

@@ -42,7 +42,7 @@ button.btn-primary:hover{
     padding: 0;
 }
 
-#g-container-main div.em-formRegistrationCenter, #g-container-main div.login {
+#g-container-main div.em-formRegistrationCenter {
     display: flex !important;
     flex-direction: column;
     align-items: center;
@@ -53,6 +53,26 @@ button.btn-primary:hover{
     width: 50%;
     margin-left: auto;
     margin-right: auto;
+}
+
+
+#g-container-main div.login {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    margin-top: 50px;
+    border-radius: 16px;
+    padding: 80px 64px 80px 64px;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#g-container-main div.login .control-group .controls button.btn.btn-primary {
+    text-transform: initial;
+    height: 48px;
+    width: 100%;
 }
 
 .invalid {
@@ -89,11 +109,6 @@ ul.nav.nav-tabs.nav-stacked {
     margin-bottom: 50px;
 }
 
-ul.nav.nav-tabs.nav-stacked a::before {
-    content: "\f101";
-    font-family: FontAwesome;
-    margin-right: 3px;
-}
 .login form > fieldset .control-group:nth-child(3) .controls {
     justify-content: center;
     margin-top: 20px;
@@ -105,17 +120,33 @@ ul.nav.nav-tabs.nav-stacked a::before {
     display: inline-flex;
     align-items: center;
 }
-.view-login  .form-horizontal .control-label {
+.view-login .form-horizontal .control-label {
     width: 100%;
     text-align: left;
     padding-top: 0px;
+}
+.login .form-horizontal .control-label {
+    width: 100%;
 }
 .view-login .form-horizontal .control-group {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    margin-bottom: 16px;
+    margin-bottom: 32px;
 }
+
+.login form.form-horizontal .control-group {
+    flex-direction: column;
+}
+
+.login form.form-horizontal .control-label {
+    width: 100%;
+}
+.login form.form-horizontal .controls {
+    width: 100%;
+    margin-left: 0;
+}
+
 footer div{
     line-height:1.5em;
 }
@@ -128,7 +159,7 @@ body.view-login label#username-lbl::before,
 body.view-reset label#jform_email-lbl::before,
 body.view-reset label#jform_username-lbl::before,
 .control-label .required::before {
-    content: "\f005";
+    content: "";
     font-family: FontAwesome;
     font-size: 5px;
     font-style: normal;
@@ -178,7 +209,7 @@ form.form-validate.form-horizontal.well .control-group .controls input:hover {
 }
 
 h1.em-titre-connectez-vous {
-    margin-bottom: 32px !important;
+    margin-bottom: 16px !important;
     margin-top: 0px;
     font-family:'Inter', sans-serif;
     font-size: 32px;
@@ -186,6 +217,8 @@ h1.em-titre-connectez-vous {
     font-weight: 600;
     line-height: 39px;
     letter-spacing: 0;
+    text-align: center;
+    color: #000000;
 }
 
 .header-right a.btn.btn-danger.connexion , a.btn.btn-danger.inscription  {
@@ -206,13 +239,9 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 .logout .form-horizontal {
     margin-top: 20px;
-    width: 60%;
     border: none;
-    background: #fafafa;
-}
-
-#g-main-mainbody div.logout.login {
-    background: #fafafa !important;
+    background: transparent;
+    box-shadow: none;
 }
 
 #g-main-mainbody div.logout.login .page-header h1 {
@@ -274,12 +303,6 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 .moduletable.em-formRegistrationCenter #login-form .unstyled li a .icon-arrow-right {
     display: none;
-}
-
-.moduletable.em-formRegistrationCenter #login-form .unstyled li  a::before {
-    content: "\f101";
-    font-family: FontAwesome;
-    margin-right: 3px;
 }
 
 .moduletable.em-formRegistrationCenter #login-form .control-group .input-prepend {
@@ -405,9 +428,10 @@ ul.nav.nav-tabs.nav-stacked span:hover, ul.nav.nav-tabs.nav-stacked span:focus, 
 
 .view-login .login.em-formRegistrationCenter .page-header {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     width: 100%;
+    margin-bottom: 32px;
 }
 

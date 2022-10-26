@@ -24,6 +24,7 @@ $mod_em_campaign_intro=$params->get('mod_em_campaign_intro', '');
 $mod_em_campaign_start_date=$params->get('mod_em_campaign_start_date');
 $mod_em_campaign_end_date=$params->get('mod_em_campaign_end_date');
 $mod_em_campaign_list_tab=$params->get('mod_em_campaign_list_tab');
+$mod_em_campaign_modules_tab =$params->get('mod_em_campaign_modules_tab', 0);
 $mod_em_campaign_param_tab=$params->get('mod_em_campaign_param_tab');
 $mod_em_campaign_display_groupby=$params->get('mod_em_campaign_display_groupby');
 $mod_em_campaign_groupby=$params->get('mod_em_campaign_groupby');
@@ -55,7 +56,6 @@ $offset = JFactory::getConfig()->get('offset');
 $sef = JFactory::getConfig()->get('sef');
 // END PARAMS
 
-
 $condition ='';
 
 $session = JFactory::getSession();
@@ -83,8 +83,12 @@ $ordertime = $session->get('order_time');
 if ($params->get('mod_em_campaign_layout') == "institut_fr") {
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'programme.php');
     $m_progs = new EmundusModelProgramme;
-    $program_array['IN'] = array_map('trim', explode(',', $program_code));
-    $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
+    if(!empty($program_code)) {
+        $program_array['IN'] = array_map('trim', explode(',', $program_code));
+    }
+    if(!empty($ignored_program_code)) {
+        $program_array['NOT_IN'] = array_map('trim', explode(',', $ignored_program_code));
+    }
     $programs = $m_progs->getProgrammes(1, $program_array);
 }
 

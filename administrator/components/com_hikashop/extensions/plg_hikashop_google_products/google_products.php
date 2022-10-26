@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -68,7 +68,9 @@ class plgHikashopGoogle_products extends JPlugin {
 	}
 
 	function _getRelativePath($path) {
-		$relativePath=str_replace(JPATH_ROOT.DS,'',$path);
+		$lang = JFactory::getLanguage();
+		$dt = new DateTime();
+		$relativePath=str_replace(array(JPATH_ROOT.DS, '{language}','{date}','{time}'), array('', $lang->getTag(), $dt->format('Y-m-d'), $dt->format('H-i-s')),$path);
 		return $relativePath;
 	}
 
@@ -120,10 +122,20 @@ class plgHikashopGoogle_products extends JPlugin {
 			ini_set('max_execution_timeout',$max_execution);
 		}
 
-		$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_access=\'all\' AND product_published=1 AND product_type=\'main\'';
+		$query = 'SELECT * FROM '.hikashop_table('product').' WHERE product_published=1 AND product_type=\'main\'';
 		if(!empty($plugin->params['in_stock_only'])){
 			$query .= ' AND product_quantity!=0';
 		}
+
+		$acl_filters = array('product_access=\'all\'');
+		if(!empty($plugin->params['user_group']) && is_array($plugin->params['user_group']) && count($plugin->params['user_group']) >= 1) {
+			foreach($plugin->params['user_group'] as $userGroup) {
+				$acl_filters[] = 'product_access '."LIKE '%,".(int)$userGroup.",%'";
+			}
+		}
+		$query .= ' AND (' . implode(' OR ', $acl_filters) . ')';
+
+
 		$db->setQuery($query);
 		$products = $db->loadObjectList();
 
@@ -356,7 +368,7 @@ class plgHikashopGoogle_products extends JPlugin {
 				}
 
 				$xml .= "\t".'<g:id>'.$product->product_id.'</g:id>'."\n";
-				$xml .= "\t".'<title><![CDATA[ '.substr($product->product_name, 0 ,150).' ]]></title>'."\n";
+				$xml .= "\t".'<title><![CDATA[ '.mb_substr($product->product_name, 0 ,150).' ]]></title>'."\n";
 				$itemID = '';
 
 				if(!empty($plugin->params['item_id'])){
@@ -369,15 +381,15 @@ class plgHikashopGoogle_products extends JPlugin {
 				}
 				$xml .= "\t".'<g:price>'.$price.' '.$currency->currency_code.'</g:price>'."\n";
 				if(@$plugin->params['preview'] == 'meta') {
-						$xml .= "\t".'<g:description><![CDATA[ '.substr(strip_tags($product->product_meta_description),0,5000).' ]]></g:description>'."\n";
+						$xml .= "\t".'<g:description><![CDATA[ '.mb_substr(strip_tags($product->product_meta_description),0,5000).' ]]></g:description>'."\n";
 				} elseif(!empty($product->product_description)){
 					if(@$plugin->params['preview']) {
-						 $xml .= "\t".'<g:description><![CDATA[ '.substr(strip_tags(preg_replace('#<hr *id="system-readmore" */>.*#is','',$product->product_description)),0,5000).' ]]></g:description>'."\n";
+						 $xml .= "\t".'<g:description><![CDATA[ '.mb_substr(strip_tags(preg_replace('#<hr *id="system-readmore" */>.*#is','',$product->product_description)),0,5000).' ]]></g:description>'."\n";
 					} else {
-						$xml .= "\t".'<g:description><![CDATA[ '.substr(strip_tags($product->product_description),0,5000).' ]]></g:description>'."\n";
+						$xml .= "\t".'<g:description><![CDATA[ '.mb_substr(strip_tags($product->product_description),0,5000).' ]]></g:description>'."\n";
 					}
 				}elseif(!empty($plugin->params['message'])){
-					$xml .= "\t".'<g:description><![CDATA[ '.substr($plugin->params['message'], 0 ,5000).' ]]></g:description>'."\n";
+					$xml .= "\t".'<g:description><![CDATA[ '.mb_substr($plugin->params['message'], 0 ,5000).' ]]></g:description>'."\n";
 				}else{
 					$xml .= "\t".'<g:description>No description</g:description>'."\n";
 				}
@@ -396,6 +408,9 @@ class plgHikashopGoogle_products extends JPlugin {
 				$xml .= $this->_additionalParameter($product,$plugin,'color','color');
 
 				$xml .= $this->_additionalParameter($product,$plugin,'identifier_exists','identifier_exists');
+
+
+				$xml .= $this->_additionalParameter($product,$plugin,'shipping_label','shipping_label');
 
 				$xml .= $this->_addShipping($product,$plugin);
 

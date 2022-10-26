@@ -1879,4 +1879,37 @@ class EmundusControllerEvaluation extends JControllerLegacy
         echo json_encode((object) $result);
         exit;
     }
+
+    public function getmyevaluations() {
+        $current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $campaign = $jinput->getInt('campaign');
+        $module = $jinput->getInt('module');
+
+        $files_to_evaluate = $this->getModel('Evaluation')->getMyEvaluations($current_user->id,$campaign,$module);
+
+        if (!empty($files_to_evaluate)) {
+            $result = array('status' => true, 'files' => $files_to_evaluate);
+        } else {
+            $result = array('status' => false, 'files' => []);
+        }
+        echo json_encode((object) $result);
+        exit;
+    }
+
+    public function getcampaignstoevaluate() {
+        $current_user = JFactory::getUser();
+        $jinput = JFactory::getApplication()->input;
+        $module = $jinput->getInt('module');
+
+        $campaigns = $this->getModel('Evaluation')->getCampaignsToEvaluate($current_user->id,$module);
+
+        if (!empty($campaigns)) {
+            $result = array('status' => true, 'campaigns' => $campaigns);
+        } else {
+            $result = array('status' => false, 'campaigns' => []);
+        }
+        echo json_encode((object) $result);
+        exit;
+    }
 }

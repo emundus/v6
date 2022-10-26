@@ -19,7 +19,7 @@ $comments = $session->get('comments');
 
     <div id="em-select-program">
         <h2><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_PROG_DESC');?></h2>
-        <select id="program" class="form-control" onchange="programSelect();">
+        <select id="program" class="em-w-100" onchange="programSelect();">
             <option value=""><?= JText::_('COM_EMUNDUS_EMTAGS_PROGRAM_SELECT'); ?></option>
             <?php foreach ($this->programs as $program) :?>
                 <option value="<?= $program["code"]; ?>"><?= $program["label"]; ?></option>
@@ -29,40 +29,59 @@ $comments = $session->get('comments');
 
     <div id="program-categories" class="hide">
         <hr>
-        <div id="program-categories_desc">
+        <div id="program-categories_desc" class="em-mb-32">
             <h2><?= JText::_('COM_EMUNDUS_EMTAGS_SELECT_CAT_DESC'); ?></h2>
         </div>
 
         <div id="program-categories-group">
             <div id="em-select-campaign">
-                <select id="campaign" class="form-control" onchange="showAll()">
+                <select id="campaign" class="em-w-100" onchange="showAll()">
                     <option value=""><?= JText::_('COM_EMUNDUS_EMTAGS_CAMPAIGN_SELECT'); ?></option>
                 </select>
             </div>
 
-            <div id="em-select-evaluation">
+            <div class="em-flex-row em-mt-16">
+                <ul class="nav nav-tabs topnav">
+                    <li onclick="showAll();">
+                        <a class="em-neutral-700-color em-pointer em-no-hover" id="em-select-form"><?= JText::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM'); ?></a>
+                    </li>
+                    <li onclick="showEval();">
+                        <a class="em-neutral-700-color em-pointer em-no-hover" id="em-select-evaluation"><?= JText::_('COM_EMUNDUS_EMTAGS_EVALUATION_SELECT'); ?></a>
+                    </li>
+                    <li onclick="showDecision();">
+                        <a class="em-neutral-700-color em-pointer em-no-hover" id="em-select-decision"><?= JText::_('COM_EMUNDUS_EMTAGS_DECISION_SELECT'); ?></a>
+                    </li>
+                    <li onclick="showAdmission();">
+                        <a class="em-neutral-700-color em-pointer em-no-hover" id="em-select-admission"><?= JText::_('COM_EMUNDUS_EMTAGS_ADMISSION_SELECT'); ?></a>
+                    </li>
+                    <li onclick="showOther();">
+                        <a class="em-neutral-700-color em-pointer em-no-hover" id="em-select-other"><?= JText::_('COM_EMUNDUS_EMTAGS_OTHER_TAG_SELECT'); ?></a>
+                    </li>
+                </ul>
+            </div>
+
+<!--            <div id="em-select-evaluation em-h-50">
                 <button class="btn btn-primary" onclick="showEval();"><?= JText::_('COM_EMUNDUS_EMTAGS_EVALUATION_SELECT'); ?></button>
             </div>
 
-            <div id="em-select-decision">
+            <div id="em-select-decision em-h-50">
                 <button class="btn btn-primary" onclick="showDecision();"><?= JText::_('COM_EMUNDUS_EMTAGS_DECISION_SELECT'); ?></button>
             </div>
 
-            <div id="em-select-admission">
+            <div id="em-select-admission em-h-50">
                 <button class="btn btn-primary" onclick="showAdmission();"><?= JText::_('COM_EMUNDUS_EMTAGS_ADMISSION_SELECT'); ?></button>
             </div>
 
-            <div id="em-select-other">
+            <div id="em-select-other em-h-50">
                 <button class="btn btn-primary" onclick="showOther();"><?= JText::_('COM_EMUNDUS_EMTAGS_OTHER_TAG_SELECT'); ?></button>
-            </div>
+            </div>-->
         </div>
 
     </div>
 
-    <div id="result"></div>
+    <div id="result" class="em-mt-32"></div>
 
-    <div id="other-result" class="hide">
-        <hr>
+    <div id="other-result" class="hide em-mt-32">
         <div class="em-program-title">
             <h1><?= JText::_('COM_EMUNDUS_EMTAGS_TAG_TABLE_TITLE'); ?></h1>
             <div class="alert alert-warning em-alert warning">
@@ -103,6 +122,8 @@ $comments = $session->get('comments');
     </div>
 
 <script>
+    let current_tab = 0;
+
     function programSelect() {
         let course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
         if (course !== '') {
@@ -132,53 +153,71 @@ $comments = $session->get('comments');
 
     function showEval() {
         var course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
-        document.getElementById('campaign').value = '';
+        //document.getElementById('campaign').value = '';
         document.getElementById('other-result').classList.add('hide');
 
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function(data) {
             if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
-                document.getElementById('result').innerHTML = "<hr>" + httpRequest.responseText;
+                document.getElementById('result').innerHTML = httpRequest.responseText;
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_EVAL_TITLE');?>";
             }
         };
         httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=evaluation&all=1', true);
         httpRequest.send();
+
+        document.getElementById('em-select-form').classList.remove('w--current');
+        document.getElementById('em-select-evaluation').classList.add('w--current');
+        document.getElementById('em-select-decision').classList.remove('w--current');
+        document.getElementById('em-select-admission').classList.remove('w--current');
+        document.getElementById('em-select-other').classList.remove('w--current');
     }
 
     function showAdmission() {
         var course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
-        document.getElementById('campaign').value = '';
+        //document.getElementById('campaign').value = '';
         document.getElementById('other-result').classList.add('hide');
 
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function(data) {
             if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
-                document.getElementById('result').innerHTML = "<hr>" + httpRequest.responseText;
+                document.getElementById('result').innerHTML = httpRequest.responseText;
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_ADMISSION_TITLE');?>";
             }
         };
         httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=admission&all=1', true);
         httpRequest.send();
+
+        document.getElementById('em-select-form').classList.remove('w--current');
+        document.getElementById('em-select-evaluation').classList.remove('w--current');
+        document.getElementById('em-select-decision').classList.remove('w--current');
+        document.getElementById('em-select-admission').classList.add('w--current');
+        document.getElementById('em-select-other').classList.remove('w--current');
     }
 
     function showDecision() {
         var course = document.getElementById('program').options[document.getElementById('program').selectedIndex].value;
-        document.getElementById('campaign').value = '';
+        //document.getElementById('campaign').value = '';
         document.getElementById('other-result').classList.add('hide');
 
         var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function(data) {
             if(httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
-                document.getElementById('result').innerHTML = "<hr>" + httpRequest.responseText;
+                document.getElementById('result').innerHTML = httpRequest.responseText;
                 document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_DECISION_TITLE');?>";
             }
         };
         httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code='+course+'&layout=programme&form=decision&all=1', true);
         httpRequest.send();
+
+        document.getElementById('em-select-form').classList.remove('w--current');
+        document.getElementById('em-select-evaluation').classList.remove('w--current');
+        document.getElementById('em-select-decision').classList.add('w--current');
+        document.getElementById('em-select-admission').classList.remove('w--current');
+        document.getElementById('em-select-other').classList.remove('w--current');
     }
 
 
@@ -188,14 +227,14 @@ $comments = $session->get('comments');
 
         document.getElementById('other-result').classList.add('hide');
 
-        document.getElementById('campaign').selectedIndex = 0;
+        //document.getElementById('campaign').selectedIndex = 0;
 
         if (camp !== '') {
             var httpRequest = new XMLHttpRequest();
             httpRequest.onreadystatechange = function(data) {
                 if(httpRequest.status == 200 && httpRequest.readyState == 4) {
                     document.getElementById('result').innerHTML = "";
-                    document.getElementById('result').innerHTML = "<hr>" + httpRequest.responseText;
+                    document.getElementById('result').innerHTML = httpRequest.responseText;
                     document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - "+camp.text;
                 }
             };
@@ -203,10 +242,16 @@ $comments = $session->get('comments');
             httpRequest.send();
         }
 
+        document.getElementById('em-select-form').classList.add('w--current');
+        document.getElementById('em-select-evaluation').classList.remove('w--current');
+        document.getElementById('em-select-decision').classList.remove('w--current');
+        document.getElementById('em-select-admission').classList.remove('w--current');
+        document.getElementById('em-select-other').classList.remove('w--current');
+
     }
 
     function showOther() {
-        document.getElementById('campaign').value = '';
+        //document.getElementById('campaign').value = '';
         document.getElementById('result').value = '';
         var httpRequest = new XMLHttpRequest();
         httpRequest.responseType = 'json';
@@ -257,6 +302,12 @@ $comments = $session->get('comments');
         };
         httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&controller=export_select_columns&task=getalltags', true);
         httpRequest.send();
+
+        document.getElementById('em-select-form').classList.remove('w--current');
+        document.getElementById('em-select-evaluation').classList.remove('w--current');
+        document.getElementById('em-select-decision').classList.remove('w--current');
+        document.getElementById('em-select-admission').classList.remove('w--current');
+        document.getElementById('em-select-other').classList.add('w--current');
     }
 
     function copyid(t) {
@@ -279,5 +330,9 @@ $comments = $session->get('comments');
 <style>
     .em-element-id, .em-element-label, .em-element-title-id, .em-element-title-label {
         text-align: left;
+    }
+    .w--current{
+        border: solid 1px #eeeeee;
+        background: #eeeeee;
     }
 </style>

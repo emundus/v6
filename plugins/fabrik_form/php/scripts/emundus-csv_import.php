@@ -97,7 +97,8 @@ JPluginHelper::importPlugin('emundus');
 $dispatcher = JEventDispatcher::getInstance();
 $dispatcher->trigger('callEventHandler', ['onBeforeImportCSV', ['data' => array(
     'csv' => $csv,
-    'create_new_fnum' => $create_new_fnum
+    'create_new_fnum' => $create_new_fnum,
+    'formData' => $formModel->formData,
 )]]);
 
 // Prepare data structure for parsing.
@@ -946,6 +947,7 @@ $data = array(
     'checked_tables' => $checked_tables,
     'repeat_tables' => $repeat_tables,
     'database_elements' => $database_elements,
+    'formData' => $formModel->formData,
 );
 
 JPluginHelper::importPlugin('emundus');

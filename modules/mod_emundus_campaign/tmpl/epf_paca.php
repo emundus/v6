@@ -4,6 +4,7 @@ defined('_JEXEC') or die;
 header('Content-Type: text/html; charset=utf-8');
 
 $app = JFactory::getApplication();
+$user = JFactory::getUser();
 $searchword = $app->input->getString('searchword', null);
 
 $lang = JFactory::getLanguage();
@@ -30,11 +31,11 @@ $site_offset = $config->get('offset');
     <div class = "result-counter">
         <span><?php echo (sizeof($currentCampaign) == 1) ? sizeof($currentCampaign) . " " . JText::_('CURRENT_CAMPAIGN') : sizeof($currentCampaign) . " " . JText::_('CURRENT_CAMPAIGNS'); ?></span>
     </div>
-    <div class = "type"> 
+    <div class = "type">
         <select id= "program_type">
             <option value=""><?php echo JText::_('SELECT_PROG_TYPE');?></option>
-            
-            <?php 
+
+            <?php
             $programs = array_unique(array_column($programs, 'programmes'));
             foreach($programs as $program => $value) :?>
                 <option value = "<?=$value;?>"><?= ucfirst(strtolower($value)); ?></option>
@@ -91,9 +92,13 @@ $site_offset = $config->get('offset');
                                 <?php
                                     // The register URL does not work  with SEF, this workaround helps counter this.
                                     if ($sef == 0) {
-                                        $register_url = "index.php?option=com_users&view=".$redirect_url."&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                                        $register_url = "index.php?option=com_users&view=".$redirect_url."&course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
                                     } else {
-                                        $register_url = $redirect_url."?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid."&redirect=".$formUrl;
+                                        $register_url = $redirect_url."?course=".$result->code."&cid=".$result->id."&Itemid=".$mod_em_campaign_itemid;
+                                    }
+
+                                    if(!$user->guest) {
+                                        $register_url .= "&redirect=" . $formUrl;
                                     }
                                 ?>
                                 <a class="btn btn-primary btn-plein btn-blue" role="button" href='<?php echo $register_url;?>' data-toggle="sc-modal"><?php echo JText::_('APPLY_NOW'); ?></a>
@@ -106,7 +111,7 @@ $site_offset = $config->get('offset');
                             <?php endif; ?>
                         </div>
                         </div>
-                        
+
                     </div>
                 <?php endforeach ;?>
             <?php endif;?>

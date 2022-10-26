@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -487,11 +487,14 @@ defined('_JEXEC') or die('Restricted access');
 											if(!empty($this->order_status_for_download) && !in_array($this->order->order_status,explode(',',$this->order_status_for_download))){
 												$fileHtml .= ' / <b>'.JText::_('BECAUSE_STATUS_NO_DOWNLOAD').'</b>';
 											}
-											if(!empty($this->download_time_limit)){
-													if(($this->download_time_limit+(!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created))<time()){
+											$download_time_limit = $this->download_time_limit;
+											if(!empty($file->file_time_limit))
+												$download_time_limit = $file->file_time_limit;
+											if(!empty($download_time_limit)){
+													if(($download_time_limit+(!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created))<time()){
 														$fileHtml .= ' / <b>'.JText::_('TOO_LATE_NO_DOWNLOAD').'</b>';
 													}else{
-														$fileHtml .= ' / '.JText::sprintf('UNTIL_THE_DATE',hikashop_getDate((!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created)+$this->download_time_limit));
+														$fileHtml .= ' / '.JText::sprintf('UNTIL_THE_DATE',hikashop_getDate((!empty($this->order->order_invoice_created)?$this->order->order_invoice_created:$this->order->order_created)+$download_time_limit));
 													}
 											}
 											if(!empty($file->file_limit) && (int)$file->file_limit != 0) {
@@ -524,7 +527,7 @@ defined('_JEXEC') or die('Restricted access');
 							</td>
 							<td class="hikashop_order_item_price_value"><?php
 								echo $this->currencyHelper->format($product->order_product_price,$this->order->order_currency_id);
-								if(bccomp($product->order_product_tax,0,5)){
+								if(bccomp(sprintf('%F',$product->order_product_tax),0,5)){
 									echo ' '.JText::sprintf('PLUS_X_OF_VAT',$this->currencyHelper->format($product->order_product_tax,$this->order->order_currency_id));
 								}
 							?></td>

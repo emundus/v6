@@ -18,7 +18,7 @@
           {{translations.affectCampaigns}}
         </span>
         <button class="em-pointer em-transparent-button" @click.prevent="$modal.hide('modalAffectCampaign')">
-          <span class="material-icons">close</span>
+          <span class="material-icons-outlined">close</span>
         </button>
       </div>
 

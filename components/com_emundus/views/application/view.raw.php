@@ -352,7 +352,6 @@ class EmundusViewApplication extends JViewLegacy {
                         $fileLogs = EmundusModelLogs::getActionsOnFnum($fnum);
 
                         foreach ($fileLogs as $key => $log) {
-                            $log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
                             $log->details = EmundusModelLogs::setActionDetails($log->action_id, $log->verb, $log->params);
                         }
 
@@ -444,7 +443,7 @@ class EmundusViewApplication extends JViewLegacy {
                         $this->assignRef('pids', $json);
 
                         $this->assignRef('defaultpid', $dpid);
-                        
+
                         $formsProgress = $m_application->getFormsProgress($fnum);
                         $this->assignRef('formsProgress', $formsProgress);
 

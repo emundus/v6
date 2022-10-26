@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -17,7 +17,7 @@ class hikashopVatHelper{
 			$zone_code = $zone->zone_code_2;
 
 			if(empty($zone_code) || !in_array($zone_code,array('AT','BE','BG','CY','CZ','DK','EE','EL','DE','PT','GR','ES','FI','HR','HU','LU','MT','SI',
-		'FR','GB','IE','IT','LV','LT','NL','PL','SK','RO','SE'))){
+		'FR','IE','IT','LV','LT','NL','PL','SK','RO','SE'))){
 				return true;
 			}
 		}

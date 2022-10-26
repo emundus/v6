@@ -49,6 +49,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
+    $status_for_delete = $eMConfig->get('status_for_delete', null);
+    if (!empty($status_for_delete) || $status_for_delete == '0' ) {
+        $status_for_delete = explode(',', $status_for_delete);
+    }
+
     $applicant_can_renew = $eMConfig->get('applicant_can_renew', '0');
     $display_poll = $eMConfig->get('display_poll', 0);
     $display_poll_id = $eMConfig->get('display_poll_id', null);
@@ -59,6 +64,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
     $description = JText::_($params->get('description', ''));
     $show_add_application = $params->get('show_add_application', 1);
+    $show_show_campaigns = $params->get('show_show_campaigns', 0);
+    $campaigns_list_url = $params->get('show_campaigns_url', 'liste-des-campagnes');
     $position_add_application = (int)$params->get('position_add_application', 0);
     $show_progress = $params->get('show_progress', 1);
     $show_progress_forms = $params->get('show_progress_forms', 0);
@@ -66,7 +73,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $show_progress_color = $params->get('show_progress_color', '#EA5012');
     $show_progress_color_forms = $params->get('show_progress_color_forms', '#EA5012');
     $show_progress_documents = $params->get('show_progress_documents', '#EA5012');
-    $admission_status = explode(',', $params->get('admission_status'));
+    $admission_status = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : null;
     $add_admission_prefix = $params->get('add_admission_prefix', 1);
     $absolute_urls = $params->get('absolute_urls', 1);
 

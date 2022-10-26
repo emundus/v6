@@ -24,7 +24,6 @@ class EmundusController extends JControllerLegacy {
     var $_db = null;
 
     function __construct($config = array()){
-
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'files.php');
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'access.php');
         include_once (JPATH_COMPONENT.DS.'models'.DS.'profile.php');
@@ -92,7 +91,7 @@ class EmundusController extends JControllerLegacy {
         if($profile == null) {
             $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
         }
-        
+
         $h_menu = new EmundusHelperMenu;
         $getformids = $h_menu->getUserApplicationMenu($profile);
 
@@ -294,8 +293,7 @@ class EmundusController extends JControllerLegacy {
         if (in_array($fnum, array_keys($current_user->fnums))){
             $user = $current_user;
             $m_files->deleteFile($fnum);
-            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');
-        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
+            EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');        } elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
             $user = $m_profile->getEmundusUser($student_id);
         } else {
             JError::raiseError(500, JText::_('ACCESS_DENIED'));
@@ -306,7 +304,7 @@ class EmundusController extends JControllerLegacy {
         // track the LOGS (ATTACHMENT_DELETE)
         require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
         $user = JFactory::getSession()->get('emundusUser');     # logged user #
-        EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FILE_DELETE', 'COM_EMUNDUS_ACCESS_FILE_DELETED_BY_APPLICANT');
+        EmundusModelLogs::log($current_user->id, (int)substr($fnum, -7), $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FILE_DELETE', '');
 
         unset($current_user->fnums[$fnum]);
 
@@ -456,6 +454,10 @@ class EmundusController extends JControllerLegacy {
             return false;
         }
 
+        $dispatcher = JDispatcher::getInstance();
+        JPluginHelper::importPlugin('emundus', 'sync_file');
+        $dispatcher->trigger('onDeleteFile', array(array('upload_id' => $upload_id)));
+
         if (isset($layout))
             $url = 'index.php?option=com_emundus&view=checklist&layout=attachments&sid='.$user->id.'&tmpl=component&Itemid='.$itemid;
         else
@@ -471,6 +473,13 @@ class EmundusController extends JControllerLegacy {
 
             $db->setQuery($query);
             $files = $db->loadAssocList();
+
+            $fileName = reset($files)['filename'];
+
+            // call to application model
+            require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
+            $mApp = new EmundusModelApplication;
+            $attachmentTpe = $mApp->getAttachmentByID($attachment_id)['value'];
 
             if (count($files) == 0) {
                 $message = JText::_('Error : empty file');
@@ -531,7 +540,15 @@ class EmundusController extends JControllerLegacy {
             $mFile = new EmundusModelFiles();
             $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE');
+            // set logs
+            $logsStd = new stdClass();
+
+            // get attachment data
+            $logsStd->element = "[" . $attachmentTpe . "]";
+            $logsStd->details = $fileName;
+            $logsParams = array('deleted' => [$logsStd]);
+            EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'd', 'COM_EMUNDUS_ACCESS_ATTACHMENT_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
         } catch(Exception $e) {
             $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
             JLog::add($error, JLog::ERROR, 'com_emundus');
@@ -581,7 +598,7 @@ class EmundusController extends JControllerLegacy {
 
 	    $m_profile->initEmundusSession($fnum);
 
-	    if (empty($redirect)) {
+        if (empty($redirect)) {
             $m_application 	= new EmundusModelApplication;
             if (empty($confirm)) {
                 $redirect = $m_application->getFirstPage();
@@ -707,8 +724,10 @@ class EmundusController extends JControllerLegacy {
         $can_submit_encrypted = $eMConfig->get('can_submit_encrypted', 1);
         require_once (JPATH_COMPONENT.DS.'helpers'.DS.'export.php');
         require_once (JPATH_COMPONENT.DS.'models'.DS.'checklist.php');
+        require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
         $m_profile = new EmundusModelProfile;
         $m_checklist = new EmundusModelChecklist;
+        $m_application = new EmundusModelApplication;
 
         $db = JFactory::getDBO();
         $jinput = JFactory::getApplication()->input;
@@ -1205,6 +1224,15 @@ class EmundusController extends JControllerLegacy {
                 $db->execute();
                 $id = $db->insertid();
 
+                // TODO: onAfterAttachmentUpload event appeared after onAfterUploadFile creation on this branch. move treatment to use onAfterAttachmentUpload
+                $dispatcher = JEventDispatcher::getInstance();
+                JPluginHelper::importPlugin('emundus', 'sync_file');
+                $dispatcher->trigger('onAfterUploadFile', [['upload_id' => $id]]);
+
+                $dispatcher = JEventDispatcher::getInstance();
+                $dispatcher->trigger('onAfterAttachmentUpload', [$fnum, (int)$attachments, $paths]);
+                $dispatcher->trigger('callEventHandler', ['onAfterAttachmentUpload', ['fnum' => $fnum, 'attachment_id' => (int)$attachments, 'file' => $paths]]);
+
                 if ($format == "raw") {
                     echo '{"id":"'.$id.'","status":true, "message":"'.JText::_('COM_EMUNDUS_ACTIONS_DELETE').'"}';
                 } else {
@@ -1233,7 +1261,19 @@ class EmundusController extends JControllerLegacy {
         $mFile = new EmundusModelFiles();
         $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE');
+        // stock the attachments name //
+        $logsStd = new stdClass();
+
+        /* get attachment type */
+        $attachmentTpe = $m_application->getAttachmentByID($attachments)['value'];
+
+        $logsStd->element = '[' . $attachmentTpe . ']';
+        $logsStd->details = $_FILES['file']['name'];
+
+        // stock all logs into an array
+        $logsParams = array('created' => [$logsStd]);
+
+        EmundusModelLogs::log($user->id, $applicant_id, $fnum, 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE',json_encode($logsParams,JSON_UNESCAPED_UNICODE));
         return true;
     }
 
@@ -1447,7 +1487,11 @@ class EmundusController extends JControllerLegacy {
 
         // Split the URL into different parts.
         $cpt = count($urltab);
-        $uid = $urltab[$cpt-2];
+        $uid = (int)$urltab[$cpt-2];
+        if(empty($uid)) {
+            // Manage subdirectories
+            $uid = (int)$urltab[$cpt-3];
+        }
         $file = $urltab[$cpt-1];
 
         $current_user = JFactory::getSession()->get('emundusUser');
@@ -1456,19 +1500,26 @@ class EmundusController extends JControllerLegacy {
         if($current_user->id == $uid){
             $fnum = $current_user->fnum;
         }
+        $fnums = array_keys($current_user->fnums);
+
 
         // This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
         if (!empty(JFactory::getUser($uid)->id)) {
-
             $db = JFactory::getDBO();
-            $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
-            if(!empty($fnum)){
-                $query.= " WHERE fnum like ". $db->quote($fnum);
-            } else{
-                $query.= " WHERE user_id = " . $uid;
-            }
-            $query .= " AND filename like " . $db->Quote($file);
 
+            if(EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)){
+                $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
+                $query.= " WHERE fnum IN (". implode(',',$db->quote($fnums)) . ')';
+                $query .= " AND filename like " . $db->Quote($file);
+            } else {
+                $query = 'SELECT can_be_viewed, fnum FROM #__emundus_uploads';
+                if (!empty($fnum)) {
+                    $query .= " WHERE fnum like " . $db->quote($fnum);
+                } else {
+                    $query .= " WHERE user_id = " . $uid;
+                }
+                $query .= " OR filename like " . $db->Quote($file);
+            }
             $db->setQuery($query);
             $fileInfo = $db->loadObject();
 
@@ -1481,7 +1532,7 @@ class EmundusController extends JControllerLegacy {
 
         // Check if the user is an applicant and it is his file.
         if (EmundusHelperAccess::isApplicant($current_user->id) && $current_user->id == $uid && !EmundusHelperAccess::asCoordinatorAccessLevel($current_user->id)) {
-            if ($fileInfo->can_be_viewed != 1) {
+            if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo)) {
                 die (JText::_('ACCESS_DENIED'));
             }
         }

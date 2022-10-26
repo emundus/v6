@@ -98,13 +98,13 @@ function formCheck(id) {
 }
 
 function reloadData() {
-	addDimmer();
+	addLoader();
 	$.ajax({
 		type: "GET",
 		url: 'index.php?option=com_emundus&view=users&format=raw&layout=user&Itemid=' + itemId,
 		dataType: 'html',
 		success: function (data) {
-			$('.em-dimmer').remove();
+			removeLoader();
 			$(".col-md-9 .panel.panel-default").empty();
 			$(".col-md-9 .panel.panel-default").append(data);
 		},
@@ -114,8 +114,11 @@ function reloadData() {
 	})
 }
 
-function addDimmer() {
-	$('.row').before('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+function addLoader() {
+	$('#g-main-mainbody').after('<div class="em-page-loader" id="em-dimmer"></div>');
+}
+function removeLoader() {
+	$('#em-dimmer').remove();
 }
 
 function refreshFilter() {
@@ -924,7 +927,7 @@ $(document).ready(function () {
 			}
 		}
 
-		if ($('.modal-body .em-dimmer').is(':visible')) {
+		if ($('#em-dimmer').is(':visible')) {
 			return false;
 		}
 
@@ -946,7 +949,7 @@ $(document).ready(function () {
 					progs = progs.substr(0, progs.length - 1);
 				}
 
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 
 				$.ajax({
 					type: 'POST',
@@ -958,7 +961,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 						if (result.status) {
 
 							Swal.fire({
@@ -1026,7 +1029,7 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
@@ -1046,7 +1049,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1116,7 +1119,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1195,28 +1198,33 @@ $(document).ready(function () {
 					$('#profiles').after('<span class="help-block">' + Joomla.JText._('SELECT_A_VALUE') + '</span>');
 					return false;
 				}
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
+
+				let addUserData = {
+					login: login,
+					firstname: fn,
+					lastname: ln,
+					campaigns: campaigns.substr(0, campaigns.length - 1),
+					oprofiles: oprofiles.substr(0, oprofiles.length - 1),
+					groups: groups.substr(0, groups.length - 1),
+					profile: profile,
+					jgr: $('#profiles option:selected').attr('id'),
+					email: email,
+					newsletter: $('#news').is(':checked') ? 1 : 0,
+					university_id: $('#univ').val()
+				}
+
+				if($('#em-add-user').attr('action').indexOf('edituser') !== -1) {
+					addUserData.id =  $('.em-check:checked').attr('id').split('_')[0];
+				}
 
 				$.ajax({
 					type: 'POST',
 					url: $('#em-add-user').attr('action'),
-					data: {
-						id: $('.em-check:checked').attr('id').split('_')[0],
-						login: login,
-						firstname: fn,
-						lastname: ln,
-						campaigns: campaigns.substr(0, campaigns.length - 1),
-						oprofiles: oprofiles.substr(0, oprofiles.length - 1),
-						groups: groups.substr(0, groups.length - 1),
-						profile: profile,
-						jgr: $('#profiles option:selected').attr('id'),
-						email: email,
-						newsletter: $('#news').is(':checked') ? 1 : 0,
-						university_id: $('#univ').val()
-					},
+					data: addUserData,
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1260,7 +1268,7 @@ $(document).ready(function () {
 
 			case 26:
 				var checkInput = getUserCheck();
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 				$.ajax({
 					type: 'POST',
 					url: 'index.php?option=com_emundus&controller=users&task=deleteusers&Itemid=' + itemId,
@@ -1269,7 +1277,7 @@ $(document).ready(function () {
 					},
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
@@ -1319,7 +1327,7 @@ $(document).ready(function () {
 				var usersData = getUserCheck();/*get objectJson with id et uid*/
 				var uid = JSON.parse(usersData);/*parsing in json to get only the uid*/
 
-				$('.modal-body').prepend('<div class="em-dimmer"><img src="' + loading + '" alt=""/></div>');
+				addLoader();
 
 				$.ajax({
 					type: 'POST',
@@ -1330,7 +1338,7 @@ $(document).ready(function () {
 
 					dataType: 'json',
 					success: function (result) {
-						$('.modal-body .em-dimmer').remove();
+						removeLoader();
 
 						if (result.status) {
 							Swal.fire({
