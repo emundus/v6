@@ -6504,6 +6504,7 @@ async function sendMailQueue(fnums) {
             progressSteps: steps,
             confirmButtonText: Joomla.JText._(swal_confirm_button),
             cancelButtonText: Joomla.JText._('COM_EMUNDUS_ONBOARD_CANCEL'),
+            showCloseButton: true,
             reverseButtons: true,
             customClass: {
                 container: 'em-modal-actions ' + swal_container_class,
@@ -6536,6 +6537,10 @@ async function sendMailQueue(fnums) {
             } else {
                 currentStep--;
             }
+        } else if (result.dismiss === 'close') {
+            removeLoader();
+            Swal.close();
+            break;
         }
     }
 }
