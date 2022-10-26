@@ -2401,19 +2401,9 @@ class EmundusModelFormbuilder extends JModelList {
      * @return array|mixed|void
      */
     function getPagesModel() {
+        $models = [];
         $db = $this->getDbo();
         $query = $db->getQuery(true);
-
-        //Prepare languages
-        $path_to_file = basename(__FILE__) . '/../language/overrides/';
-        $path_to_files = array();
-        $Content_Folder = array();
-
-        $languages = JLanguageHelper::getLanguages();
-        foreach ($languages as $language) {
-            $path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-            $Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-        }
 
         $query->select('*')
             ->from($db->quoteName('#__emundus_template_form'))
@@ -2433,12 +2423,11 @@ class EmundusModelFormbuilder extends JModelList {
                     'en' => $this->getTranslation($model->intro,'en-GB')
                 );
             }
-
-            return $models;
         } catch(Exception $e) {
             JLog::add('component/com_emundus/models/formbuilder | Error at getting pages models : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return [];
         }
+
+        return $models;
     }
 
     /**
@@ -3648,28 +3637,5 @@ class EmundusModelFormbuilder extends JModelList {
         }
 
         return $form_id;
-    }
-
-    /**
-     * @return array|mixed
-     */
-    public function getPageModels()
-    {
-        $models = [];
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('id, label')
-            ->from('#__fabrik_forms');
-
-        $db->setQuery($query);
-
-        try {
-            $models = $db->loadObjectList();
-        } catch(Exception $e) {
-            JLog::add('formBuilder Failed to get fabrik models', JLog::ERROR, 'com_emundus.error');
-        }
-
-        return $models;
     }
 }
