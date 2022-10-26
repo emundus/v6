@@ -1,1 +1,0 @@
-ALTER TABLE `#__miniorange_saml_config` ADD COLUMN IF NOT EXISTS `uninstall_feedback` int(2)  NOT NULL;
