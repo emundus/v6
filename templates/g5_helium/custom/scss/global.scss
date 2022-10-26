@@ -904,6 +904,9 @@ body>.g-container {
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 .view-registration,.view-login,.view-reset,.view-form.em-formRegistrationCenter{
+  #header-a img{
+    display: none;
+  }
   #g-page-surround{
     background: var(--white-background-color);
   }
@@ -914,9 +917,6 @@ body>.g-container {
   }
   footer#g-footer{
     display: none;
-  }
-  .em-heading-registration h1{
-    color: $accent-color-1;
   }
 }
 .view-registration.login .fabrikActions.form-actions .row-fluid .span4 button.btn.btn-primary.save-btn.sauvegarder.button.register,
@@ -950,6 +950,15 @@ body>.g-container {
 
   .em-register-warning {
     border: 1px solid $base-primary-color;
+  }
+
+  .em-heading-registration h1{
+    font-family: var(--font);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 40px;
+    color: #353544;
   }
 }
 
@@ -2916,8 +2925,6 @@ h1.em-titre-connectez-vous {
   /************************ GESTIONNAIRE - COORDINATOR *********************/
 
 .view-form:not(.applicant-form):not(.com_emundus) main#g-main-mainbody {
-  padding-right: 5%;
-  padding-left: 11%;
   width: 100%;
 }
 

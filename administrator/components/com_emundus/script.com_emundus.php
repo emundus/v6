@@ -236,6 +236,38 @@ class com_emundusInstallerScript
                 EmundusHelperUpdate::addColumn('jos_emundus_setup_programmes','color','VARCHAR',10);
 
                 EmundusHelperUpdate::genericUpdateParams('#__modules', 'module', 'mod_falang', array('advanced_dropdown','full_name'), array('0','0'));
+
+                $moduleid = EmundusHelperUpdate::installModule('eMundus - Back button','<p><a class="em-back-button em-pointer" href="/"><span class="material-icons em-mr-4">navigate_before</span>Retour à la page d\'accueil</a></p>','header-a','mod_custom','{"prepare_content":0,"backgroundimage":"","layout":"_:default","moduleclass_sfx":"","cache":1,"cache_time":900,"cachemode":"static","module_tag":"div","bootstrap_size":"0","header_tag":"h3","header_class":"","style":"0"}',9);
+                if(!empty($moduleid)) {
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
+
+                    $query->select('id')
+                        ->from($db->quoteName('#__menu'))
+                        ->where($db->quoteName('link') . ' IN (' . $db->quote('index.php?option=com_users&view=login').',' . $db->quote('index.php?option=com_fabrik&view=form&formid=307') . ',' . $db->quote('index.php?option=com_users&view=reset') . ')');
+                    $db->setQuery($query);
+                    $menus = $db->loadColumn();
+
+                    foreach ($menus as $menu) {
+                        $query->clear()
+                            ->select('moduleid')
+                            ->from($db->quoteName('#__modules_menu'))
+                            ->where($db->quoteName('menuid') . ' = ' . $db->quote($menu))
+                            ->andWhere($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid));
+                        $db->setQuery($query);
+                        $is_existing = $db->loadResult();
+
+                        if(!$is_existing){
+                            $query->clear()
+                                ->insert($db->quoteName('#__modules_menu'))
+                                ->set($db->quoteName('moduleid') . ' = ' . $db->quote($moduleid))
+                                ->set($db->quoteName('menuid') . ' = ' . $db->quote($menu));
+                            $db->setQuery($query);
+                            $db->execute();
+                        }
+                    }
+                }
+
             }
 
             $succeed['language_base_to_file'] = EmundusHelperUpdate::languageBaseToFile();

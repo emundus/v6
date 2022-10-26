@@ -63,6 +63,55 @@ class EmundusHelperUpdate
         }
     }
 
+    public static function installModule($title,$content,$position,$module,$params,$access = 1,$showtitle = 0,$published = 1) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        try {
+            $query->select('id')
+                ->from($db->quoteName('#__modules'))
+                ->where($db->quoteName('module') . ' LIKE ' . $db->quote($module))
+                ->andWhere($db->quoteName('title') . ' LIKE ' . $db->quote($title))
+                ->andWhere($db->quoteName('position') . ' LIKE ' . $db->quote($position));
+            $db->setQuery($query);
+            $is_existing = $db->loadResult();
+
+            if(empty($is_existing)){
+                $publish_up = new DateTime();
+                $publish_up->modify('-1 day');
+
+                $query->clear()
+                    ->insert($db->quoteName('#__modules'))
+                    ->set($db->quoteName('title') . ' = ' . $db->quote($title))
+                    ->set($db->quoteName('note') . ' = ' . $db->quote(''))
+                    ->set($db->quoteName('content') . ' = ' . $db->quote($content))
+                    ->set($db->quoteName('ordering') . ' = ' . $db->quote(1))
+                    ->set($db->quoteName('position') . ' = ' . $db->quote($position))
+                    ->set($db->quoteName('checked_out') . ' = ' . $db->quote(62))
+                    ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_up') . ' = ' . $db->quote($publish_up->format('Y-m-d H:i:s')))
+                    ->set($db->quoteName('publish_down') . ' = ' . $db->quote('2099-01-01 00:00:00'))
+                    ->set($db->quoteName('published') . ' = ' . $db->quote($published))
+                    ->set($db->quoteName('module') . ' = ' . $db->quote($module))
+                    ->set($db->quoteName('access') . ' = ' . $db->quote($access))
+                    ->set($db->quoteName('showtitle') . ' = ' . $db->quote($showtitle))
+                    ->set($db->quoteName('params') . ' = ' . $db->quote($params))
+                    ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
+                    ->set($db->quoteName('language') . ' = ' . $db->quote('*'));
+                $db->setQuery($query);
+                $db->execute();
+
+                return $db->insertid();
+            } else {
+                return $is_existing;
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+
+        return 0;
+    }
+
     public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);

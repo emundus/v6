@@ -129,6 +129,17 @@
   color: $neutral-600;
 }
 
+.em-back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $neutral-200;
+  border: 1px solid $neutral-200;
+  border-radius: var(--border-radius);
+  padding: 6px 20px;
+  color: $neutral-900;
+}
+
 .em-radio-button{
   width: 16px;
   height: 16px;

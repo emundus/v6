@@ -19,16 +19,16 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 <div class="reset<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 		<div class="page-header">
-            <h1>
+            <p class="em-h3 em-text-align-center">
                 <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
-			</h1>
+			</p>
 		</div>
 	<?php endif; ?>
 	<form id="user-registration" action="<?php echo 'index.php?option=com_emundus&controller=users&task=passrequest'; ?>" method="post" class="form-validate form-horizontal well">
 		<?php foreach ($this->form->getFieldsets() as $fieldset) : ?>
 			<fieldset>
 				<?php if (isset($fieldset->label)) : ?>
-					<p><?php echo JText::_($fieldset->label); ?></p>
+					<p class="em-text-neutral-600"><?php echo JText::_($fieldset->label); ?></p>
 				<?php endif; ?>
 				<?php echo $this->form->renderFieldset($fieldset->name); ?>
 			</fieldset>
