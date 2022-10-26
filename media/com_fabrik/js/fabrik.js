@@ -152,7 +152,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
         url = a.get('href');
         url += url.contains('?') ? '&tmpl=component&ajax=1' : '?tmpl=component&ajax=1';
         url += '&format=partial';
-        
+
         // Only one edit window open at the same time.
         $H(Fabrik.Windows).each(function (win, key) {
             win.close();
@@ -239,7 +239,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
 
         var prefix = document.location.protocol === 'https:' ? 'https:' : 'http:';
         var src = prefix + '//maps.googleapis.com/maps/api/js?libraries=places,visualization&callback=Fabrik.mapCb';
-        
+
         if (k !== false) {
             src += '&key=' + k;
         }
@@ -525,5 +525,14 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
 
     window.fireEvent('fabrik.loaded');
     window.Fabrik = Fabrik;
+
+    requirejs(['fab/fabrik'], function () {
+        Fabrik.addEvent('fabrik.form.loaded', function (form) {
+            if(document.getElementById('em-dimmer') !== null) {
+                jQuery("#em-dimmer").remove();
+            }
+        });
+    });
+
     return Fabrik;
 });

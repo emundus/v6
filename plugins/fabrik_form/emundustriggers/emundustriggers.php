@@ -91,6 +91,7 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
      * @since 1.0.0
      */
     public function onLoad() {
+        echo '<script type="text/javascript">jQuery("#g-page-surround").after("<div class=\"em-page-loader\" id=\"em-dimmer\"></div>");</script>';
         $formModel = $this->getModel();
 
         JPluginHelper::importPlugin('emundus','custom_event_handler');
@@ -127,6 +128,9 @@ class PlgFabrik_FormEmundustriggers extends plgFabrik_Form
         \Joomla\CMS\Factory::getApplication()->triggerEvent('callEventHandler', ['onJSOpts', ['formModel' => $formModel]]);
 
         return true;
+    }
+
+    public function onAfterJSLoad() {
     }
 
     /**
