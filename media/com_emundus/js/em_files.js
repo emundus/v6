@@ -611,8 +611,10 @@ function showelts(elt, idcodeyear) {
 
     if (attachments_block.style.display === 'none') {
         $('#'+idcodeyear).toggle(400);
+        $('#'+idcodeyear+'-icon').css('transform','rotate(0deg)');
     } else {
         $('#'+idcodeyear).toggle(400);
+        $('#'+idcodeyear+'-icon').css('transform','rotate(-90deg)');
     }
 }
 
@@ -1660,6 +1662,7 @@ $(document).ready(function() {
                 swal_container_class = 'em-export'
                 swal_popup_class = 'em-w-100 em-h-100'
                 swal_actions_class = 'em-actions-fixed'
+                swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
                 $.ajax({
                     type:'get',
@@ -2931,10 +2934,12 @@ $(document).ready(function() {
             case 7:
                 addLoader();
 
+                title = 'COM_EMUNDUS_EXPORTS_CREATE_ZIP';
                 html = '<div id="data" class="em-mt-32"></div>';
-                swal_container_class = 'em-export'
-                swal_popup_class = 'em-w-100 em-h-100'
-                swal_actions_class = 'em-actions-fixed'
+                swal_container_class = 'em-export';
+                swal_popup_class = 'em-w-100 em-h-100';
+                swal_actions_class = 'em-actions-fixed';
+                swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
                 html += '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8">' +
                     '<div>' +
@@ -3020,8 +3025,8 @@ $(document).ready(function() {
 
                 checkInput = getUserCheck();
 
-                prghtml = "";
-                atthtml = "";
+                prghtml = '';
+                atthtml = '';
 
                 $.ajax({
                     type:'post',
@@ -3427,10 +3432,12 @@ $(document).ready(function() {
 
             // Export PDF;
             case 8 :
+                title = 'COM_EMUNDUS_EXPORTS_CREATE_PDF';
                 html = '<div id="data" class="em-mt-32"></div>';
                 swal_container_class = 'em-export'
                 swal_popup_class = 'em-w-100 em-h-100'
                 swal_actions_class = 'em-actions-fixed'
+                swal_confirm_button = 'COM_EMUNDUS_EXPORTS_EXPORT';
 
                 html += '<div>' +
                     '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8"> ' +
@@ -6212,9 +6219,8 @@ $(document).ready(function() {
 
     $(document).on('click', '[id^=showelements_]', function() {
         var id = $(this).attr('id').split('_')[1];
-        console.log(id);
 
-        var elements_block = document.getElementById('showelements_' + id);
+        var elements_block = document.getElementById('felts' + id);
         if (elements_block.style.display == 'none') {
             $('#showelements_'+id+'_icon').css('transform', 'rotate(0deg)');
             $('#felts'+ id).toggle(300);
