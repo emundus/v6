@@ -20,6 +20,12 @@ export default {
 </script>
 
 <style lang="scss">
+#more-opt-popover {
+	position: relative;
+	top: 25px;
+	left: -10px;
+}
+
 .custom-em-popover {
 	position: absolute;
 	width: 100px;
@@ -28,6 +34,8 @@ export default {
 
 	.trigger {
 		width: 100%;
+		display: flex;
+		flex-direction: column;
 	}
 	.opt-popover span {
 		padding: 4px 0;
