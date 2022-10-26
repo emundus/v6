@@ -82,7 +82,7 @@ function search() {
         }),
         success: function(result) {
             if (result.status) {
-                refreshFilter($('#view').val())
+                refreshFilter($('#view').val());
             }
         },
         error: function(jqXHR) {
@@ -168,7 +168,9 @@ function addElement() {
                     '<select class="chzn-select em-filt-select" name="elements" id="elements">' +
                     '<option value="">' + result.default +'</option>' +
                     '</select> ' +
-                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start"><span class="material-icons em-red-500-color">delete_outline</span></button>'+
+                    '<button id="suppr-filt" class="em-tertiary-button em-flex-start">' +
+                    '<span class="material-icons em-red-500-color">delete_outline</span>' +
+                    '</button>'+
                     '</fieldset>');
 
                 var options = '';
@@ -193,7 +195,9 @@ function addElement() {
 
                     if (menu != menuTmp) {
                         options += '<optgroup label="________________________________">' +
-                            '<option disabled class="emundus_search_elm" value="-">' + menuTmp.toUpperCase() + '</option>' +
+                            '<option disabled class="emundus_search_elm" value="-">' +
+                            menuTmp.toUpperCase() +
+                            '</option>' +
                             '</optgroup>';
                         menu = menuTmp;
                     }
@@ -314,7 +318,7 @@ async function checkIfSomeoneIsEditing(fnum) {
             customClass: {
                 title: 'em-swal-title',
                 confirmButton: 'em-swal-confirm-button',
-                actions: "em-swal-single-action"
+                actions: 'em-swal-single-action'
             },
         });
     }
@@ -464,10 +468,11 @@ function openFiles(fnum, page = 0, vue = false) {
                             success: function(result) {
                                 removeLoader();
                                 $('#em-files-filters').hide();
-                                $(".main-panel .panel.panel-default").hide();
+                                $('.main-panel .panel.panel-default').hide();
 
-                                $('#em-appli-block').empty();
-                                $('#em-appli-block').append(result);
+                                const appBlock = $('#em-appli-block');
+                                appBlock.empty();
+                                appBlock.append(result);
                                 $('#accordion .panel.panel-default').show();
                                 $('#em-last-open, .em-open-files > div[id="'+fnum.fnum+'"]').show();
                                 menuBar1();
@@ -536,9 +541,9 @@ function getUserCheck() {
 
         if($('.em-check:checked').length == 0) {
             var hash = $(location).attr('hash');
-            var fnum = hash.replace("#", "");
-            fnum = fnum.replace("|open", "");
-            if(fnum != "") {
+            var fnum = hash.replace('#', '');
+            fnum = fnum.replace('|open', '');
+            if(fnum != '') {
                 checkInput = '{"0":'+fnum+'}';
                 return checkInput;
             } else {
@@ -575,10 +580,10 @@ function getUserCheckArray() {
     } else {
         if ($('.em-check:checked').length === 0) {
             var hash = $(location).attr('hash');
-            var fnum = hash.replace("#", "");
-            fnum = fnum.replace("|open", "");
+            var fnum = hash.replace('#', '');
+            fnum = fnum.replace('|open', '');
 
-            if (fnum == "") {
+            if (fnum == '') {
                 return null;
             } else {
                 var cid = parseInt(fnum.substr(14, 7));
@@ -586,8 +591,8 @@ function getUserCheckArray() {
                 fnums.push({fnum: fnum, cid: cid, sid:sid});
             }
         } else {
-            var cid = ''
-            var sid = ''
+            var cid = '';
+            var sid = '';
             $('.em-check:checked').each(function() {
                 fnum = $(this).attr('id').split('_')[0];
                 cid = parseInt(fnum.substr(14, 7));
@@ -612,14 +617,14 @@ function showelts(elt, idcodeyear) {
 }
 
 function showoptions(opt) {
-    if ($(opt).hasClass("btn btn-info")) {
+    if ($(opt).hasClass('btn btn-info')) {
         $('#options').toggle(400);
-        $(opt).removeClass("btn btn-info").addClass("btn btn-elements-success");
+        $(opt).removeClass('btn btn-info').addClass('btn btn-elements-success');
         $(opt).empty();
         $(opt).append('<span class="glyphicon glyphicon-minus"></span>');
     } else {
         $('#options').toggle(400);
-        $(opt).removeClass("btn btn-elements-success").addClass("btn btn-info");
+        $(opt).removeClass('btn btn-elements-success').addClass('btn btn-info');
         $(opt).empty();
         $(opt).append('<span class="glyphicon glyphicon-plus"></span>');
     }
@@ -646,11 +651,11 @@ function getAllLetters() {
             } else {
                 reject(this.statusText);
             }
-        }
+        };
 
         xhr.onerror = function() {
             reject(this.statusText);
-        }
+        };
         xhr.send();
     });
 }
@@ -669,11 +674,11 @@ function getProgramCampaigns(code) {
             } else {
                 reject(this.statusText);
             }
-        }
+        };
 
         xhr.onerror = function() {
             reject(this.statusText);
-        }
+        };
         xhr.send();
     });
 }
@@ -738,8 +743,8 @@ function runAction(action,url = '') {
     // See which files have been selected for action
     var checkInput = getUserCheck();
 
-    var state = $("#em-action-state").val();
-    var tag = $("#em-action-tag").val();
+    var state = $('#em-action-state').val();
+    var tag = $('#em-action-tag').val();
 
     switch (id) {
         // Export Excel
@@ -759,7 +764,7 @@ function runAction(action,url = '') {
             var fnums = getUserCheck();
 
             // If there is one we add it to a JSON, if there is none then they are defined by the em_checked id
-            if (fnum !== '' && typeof(fnum) != "undefined") {
+            if (fnum !== '' && typeof(fnum) != 'undefined') {
                 fnums = '{"1":"' + fnum + '"}';
             }
 
@@ -796,7 +801,7 @@ function runAction(action,url = '') {
                 }
 
                 if (REGEX_EMAIL.test(val)) { data.cc.push(val); }
-            })
+            });
 
             // bcc emails
             $('#bcc-box div[data-value]').each(function () {
@@ -809,7 +814,7 @@ function runAction(action,url = '') {
                 }
 
                 if (REGEX_EMAIL.test(val)) { data.bcc.push(val); }
-            })
+            });
 
             // Attachments object used for sorting the different attachment types.
             var attachments = {

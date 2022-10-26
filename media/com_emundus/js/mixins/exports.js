@@ -3,7 +3,7 @@ function export_excel(fnums) {
     var i = 0;
     var objclass = [];
 
-    var code = $("#em-export-prg").val().replace(/\s/g, '');
+    var code = $('#em-export-prg').val().replace(/\s/g, '');
     var year = '';
 
     let campaign = document.getElementById('em-export-camp');
@@ -23,7 +23,7 @@ function export_excel(fnums) {
 
     let defaultElts = [2540, 2754, 1906, 7056, 7057, 7068];
 
-    $(".em-export-item").each(function () {
+    $('.em-export-item').each(function () {
         let id = $(this).attr('id').split('-')[0];
         if (!defaultElts.includes(parseInt(id))) {
             eltJson[i] = $(this).attr('id').split('-')[0];
@@ -106,10 +106,11 @@ function export_excel(fnums) {
                             var file = result.file;
                             var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit + '","totalfile":"' + totalfile + '","nbcol":"0","methode":"' + methode + '","file":"' + file + '","excelfilename":"' + excel_file_name + '"}');
 
-                            if ((methode == 0) && ($('#view').val() != "evaluation"))
+                            if ((methode == 0) && ($('#view').val() != 'evaluation')) {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
-                            else
+                            } else {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
+                            }
                             generate_csv(json, eltJson, objJson, options, objclass);
                         }
                     },
@@ -221,9 +222,7 @@ function generate_csv(json, eltJson, objJson, options, objclass) {
                                                     console.log(jqXHR.responseText);
                                                 }
                                             });
-                                        }
-
-                                        else {
+                                        } else {
                                             $('#loadingimg').empty();
                                             $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.JText._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
                                             $('.swal2-confirm').replaceWith('<a class="em-primary-button em-w-auto" title="' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span>' + Joomla.JText._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
@@ -296,15 +295,14 @@ function export_pdf(fnums,ids) {
     var elements = null;
 
     /// if at least one is checked --> forms = 1
-    $('[id^=felts] input:checked').length > 0 ? forms = 1 : forms = 0;
+    forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
 
-    let selectedElements = {};
-
-    let pdf_elements = [];
-    pdf_elements['profiles'] = [];
-    pdf_elements['tables'] = [];
-    pdf_elements['groups'] = [];
-    pdf_elements['elements'] = [];
+    let pdf_elements = {
+        profiles: [],
+        tables: [],
+        groups: [],
+        elements: []
+    };
 
     /// save all profiles
     let profiles = [];
@@ -313,7 +311,7 @@ function export_pdf(fnums,ids) {
             let id = $(this).attr('id').split('felts')[1];
             pdf_elements['profiles'].push(id);
         }
-    })
+    });
 
     /// save all tables
     let tables = [];
@@ -322,7 +320,7 @@ function export_pdf(fnums,ids) {
             let id = $(this).attr('id').split('emundus_table_')[1];
             pdf_elements['tables'].push(id);
         }
-    })
+    });
 
     /// save all groups
     let groups = [];
@@ -331,7 +329,7 @@ function export_pdf(fnums,ids) {
             let id = $(this).attr('id').split('emundus_grp_')[1];
             pdf_elements['groups'].push(id);
         }
-    })
+    });
 
     let eltsObject = $('[id^=emundus_elm_]');
     let eltsArray = Array.prototype.slice.call(eltsObject);
@@ -339,7 +337,7 @@ function export_pdf(fnums,ids) {
         if (elt.checked == true) {
             pdf_elements['elements'].push(elt.value);
         }
-    })
+    });
 
     $('#aelts input:checked').each(function() {
         attach_checked.push($(this).val());
@@ -415,23 +413,28 @@ function export_pdf(fnums,ids) {
                                 Joomla.JText._('COM_EMUNDUS_EXPORTS_ADD_FILES_TO_PDF') +
                                 '</p></div><div id="datasbs"</div>');
 
-                            /// if forms = 0 --> so selectedElements is empty --> selectedElements = {} --> using jQuery to check it (jQuery.isEmptyObject(_obj_))
-                            if(forms == 0) {
-                                var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
-                                    '","totalfile":"' + totalfile + '","forms":"' + forms +
-                                    '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
-                                    '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
-                            }
-                            else {
-                                var json = jQuery.parseJSON('{"start":"' + start + '","limit":"' + limit +
-                                    '","totalfile":"' + totalfile + '","forms":"' + forms + '","formids":"' + form_checked +
-                                    '","attachment":"' + attachment + '", "attachids":"' + attach_checked + '", "options":"' + options + '", "assessment":"' + assessment +
-                                    '","decision":"' + decision + '","admission":"' + admission + '","file":"' + result.file + '","ids":"' + ids + '"}');
+                            var json = {
+                                start: start,
+                                limit: limit,
+                                totalfile: totalfile,
+                                forms: forms,
+                                attachment: attachment,
+                                attachids: attach_checked,
+                                options: options,
+                                assessment: assessment,
+                                decision: decision,
+                                admission: admission,
+                                file: result.file,
+                                ids: ids
+                            };
+
+                            if (forms != 0) {
+                                json.formids = form_checked;
                                 elements = pdf_elements;
                             }
                             $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>...</p></div>');
 
-                            generate_pdf(json,elements);
+                            generate_pdf(json, elements);
 
                         } else {
 
