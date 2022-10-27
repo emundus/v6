@@ -254,7 +254,7 @@ ksort($applications);
 
                         <div class="mod_emundus_applications___informations">
                             <div>
-                                <label class="em-text-neutral-600">Candidat</label>
+                                <label class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_APPLICATIONS_APPLICANT'); ?> :</label>
                                 <p><?php echo $user->name ?></p>
                             </div>
 

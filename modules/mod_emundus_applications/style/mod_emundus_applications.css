@@ -271,9 +271,15 @@ a.btn.btn-success:not(.btn-xs) {
     max-width: 720px;
     width: 100%;
 }
+
+.mod_emundus_applications___header_desc {
+    margin-top: 24px;
+}
+
 .mod_emundus_applications___header_desc p{
     color: #727272;
 }
+
 .mod_emundus_applications___content{
     display: grid;
     align-items: flex-start;
