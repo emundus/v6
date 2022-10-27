@@ -272,7 +272,7 @@ a.btn.btn-success:not(.btn-xs) {
     width: 100%;
 }
 
-.mod_emundus_applications___header_desc {
+.mod_emundus_applications___header_desc h2 {
     margin-top: 24px;
 }
 
@@ -353,3 +353,9 @@ a.btn.btn-success:not(.btn-xs) {
     background: #fff;
 }
 
+
+@media screen and (max-width: 767px) {
+    .mod_emundus_applications___header .add-application {
+        width: 100% !important;
+    }
+}
