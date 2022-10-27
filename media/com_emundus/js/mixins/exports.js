@@ -906,7 +906,13 @@ function generate_trombinoscope(fnums, data)
         },
         success: function (data) {
             Swal.fire({
-                html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>'
+                title: Joomla.JText._('COM_EMUNDUS_TROMBI_DOWNLOAD'),
+                html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>',
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    actions: 'em-swal-single-action'
+                },
             })
             removeLoader();
         },
