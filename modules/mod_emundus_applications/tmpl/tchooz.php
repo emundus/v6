@@ -219,7 +219,7 @@ ksort($applications);
                             </a>
                         </div>
 
-                        <div>
+                        <div class="em-flex-row">
                             <?php
                             $displayInterval = false;
                             $interval = date_create($now)->diff(date_create($application->end_date));
@@ -232,7 +232,7 @@ ksort($applications);
                                     <span class="material-icons em-text-neutral-600 em-font-size-16 em-mr-8">schedule</span>
                                     <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?> <?php echo JFactory::getDate(new JDate($application->end_date, $site_offset))->format('d/m/Y H:i'); ?></p>
                                 <?php else : ?>
-                                    <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color">schedule</span>
+                                    <span class="material-icons-outlined em-text-neutral-600 em-font-size-16 em-red-500-color em-mr-8">schedule</span>
                                     <p class="em-red-500-color"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
                                         <?php if ($interval->h > 0) {
                                             echo $interval->h.'h'.$interval->i ;
