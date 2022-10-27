@@ -92,7 +92,7 @@ input[type="search"],
 input[type="tel"],
 input[type="color"],
 .uneditable-input,
-select,
+select:not(.profile-select),
 a.chzn-single,
 textarea{
   background: $neutral-50 !important;
