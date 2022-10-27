@@ -53,7 +53,8 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             'formid': this.options.formid,
                             'fnum': fnum,
                             'firstname': firstname,
-                            'lastname': lastname
+                            'lastname': lastname,
+                            'form_recommend': this.options.form_recommend
                         },
                         onComplete: response => {
                             self.ajaxComplete(response);
@@ -92,32 +93,48 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 jQuery('#messageResponse').last().remove();
                 jQuery('#' + parent).append("<div id='messageResponse'>" + json.message + "</div>");
 
-                // add bullet to "sollicitation" (if exist) : find "sollicitation_reference_" //
+                // get the fieldset id (e.g: group507)
                 var fieldset = $(this.btn).closest('fieldset').id;
 
-                var sollicitation = jQuery('#' + fieldset).find('[id*=sollicitation_reference_]').find('div table');
+                // find sollicitation element if exists
+                var sollicitationDiv = jQuery('#' + fieldset).find('div[class*=sollicitation_reference_]');
 
-                // if table is not found, create new table
-                if(sollicitation.length === 0) {
-                    jQuery('#' + fieldset).find('[id*=sollicitation_reference_]').append(
-                        '<div><table class="table-striped" style="width:100%; border: none !important; display:inline-block">' +
-                        '<tr>' +
-                        '<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENTSOLLICITATION_EMAIL_SENT_REFEREE') + '</th>' +
-                        '<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENTSOLLICITATION_EMAIL_SENT_AT_DATE') + '</th>' +
-                        '<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENTSOLLICITATION_EMAIL_SENT_AT_TIME') + '</th>' +
-                        '<th style="border-bottom: solid;background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENTSOLLICITATION_EMAIL_IS_SENT') + '</th>' +
-                        '</tr>'
-                    );
+                // find sent emails table if exists
+                var sentEmailTbl = jQuery('#' + fieldset).find('table[id=sollicitation_table]');
 
-                    sollicitation = jQuery('#' + fieldset).find('[id*=sollicitation_reference_]').find('div table');
+                // find the last element of the current fieldset
+                var lastElt = jQuery('#' + fieldset).last();
+
+                // set table header
+                var sentEmailTblHeader =
+                    '<div>' +
+                    '<table id="sollicitation_table" class="table-striped" style="width:100%; border: none !important; display:inline-block">' +
+                    '<tr>' +
+                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_REFERENCE') + '</th>' +
+                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_DATE')                 + '</th>' +
+                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_TO')                   + '</th>' +
+                    '<th style="border-bottom: solid; background:unset !important">' + Joomla.JText._('PLG_ELEMENT_EMUNDUSREFERENT_SOLLICITATION_SEND_STATUS')       + '</th>' +
+                    '</tr>' +
+                    '</table>' +
+                    '</div>';
+
+                if(sollicitationDiv.length > 0) {
+                    if(sentEmailTbl.length === 0) { sollicitationDiv.append(sentEmailTblHeader); }
+                } else {
+                    // append table after the last element
+                    if(sentEmailTbl.length === 0) { lastElt.append(sentEmailTblHeader); }
                 }
-                // append new line
-                sollicitation.append('<tr style="border: none !important; font-size: 15px">' +
+
+                // reupdate table
+                sentEmailTbl = jQuery('#' + fieldset).find('table[id=sollicitation_table]');
+                sentEmailTbl.append(
+                    '<tr style="border: none !important; font-size: 15px">' +
                     '<td style="border:none !important; width: 300px">' + json.email + '</td>' +
                     '<td style="border:none !important">' + new Date().toLocaleDateString("fr-FR") + '</td>' +
                     '<td style="border:none !important">' + new Date().toLocaleTimeString() + '</td>' +
                     '<td style="border: none !important; text-align:center"><i class="large circle inverted question icon" style="color:darkorange; background-color: none"></i></td>' +
-                    '</tr>');
+                    '</tr>'
+                );
             } else {
                 $(this.error).innerHTML = json.message;
                 $(this.btn).disabled = false;

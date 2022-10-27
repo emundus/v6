@@ -97,7 +97,7 @@ class plgFabrik_ElementEmundusreferent_telecomparis extends plgFabrik_Element {
         //$str = '<div><label class="fabrikLabel " for="'.$element->name.'">'.$element->label.'<img class="fabrikTip fabrikImg" title="" src="media/com_fabrik/images/notempty.png"></label>';
         $str = '<div>';
         if ($this->isReferentLetterUploaded($this->_attachment_id,$fnum) || $this->isReferentFormUploaded($this->_attachment_id,$fnum) == 1) {
-            $str .= '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_TELECOMPARIS_REFERENCE_LETTER_UPLOADED').'<span>';
+            $str .= '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_REFERENCE_LETTER_UPLOADED').'<span>';
         } else {
             $str .= '<input ' ;
             foreach ($bits as $key => $val) {
@@ -155,6 +155,7 @@ class plgFabrik_ElementEmundusreferent_telecomparis extends plgFabrik_Element {
         JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_DATE');
         JText::script('PLG_ELEMENT_EMUNDUSREFERENT_SOLLICITATION_LABEL');
         JText::script('PLG_ELEMENT_EMUNDUSREFERENT_SOLLICITATION_SEND_STATUS');
+        JText::script('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_SENT_REFERENCE');
 
         return array('FbEmundusreferent_telecomparis', $id, $opts);
     }
@@ -171,7 +172,7 @@ class plgFabrik_ElementEmundusreferent_telecomparis extends plgFabrik_Element {
      * @return void|boolean
      */
     public function formJavascriptClass(&$srcs, $script = '', &$shim = array()) {
-        $key = FabrikHelperHTML::isDebug() ? 'element/emundusreferent/emundusreferent' : 'element/emundusreferent/emundusreferent-min';
+        $key = FabrikHelperHTML::isDebug() ? 'element/emundusreferent_telecomparis/emundusreferent_telecomparis' : 'element/emundusreferent_telecomparis/emundusreferent_telecomparis-min';
 
         $s = new stdClass;
         // Seems OK now - reverting to empty array
@@ -246,12 +247,12 @@ class plgFabrik_ElementEmundusreferent_telecomparis extends plgFabrik_Element {
         $lastname = ucfirst($jinput->post->getString('lastname'));
 
         if (empty($recipient)) {
-            $response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_TELECOMPARIS_EMAIL_MISSING_ERROR').'</span>');
+            $response = array("result" => 0, "message"=>'<span class="emundusreferent_error" style="color:red; font-weight:bold">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_MISSING_ERROR').'</span>');
             die(json_encode($response));
         }
 
         if (empty($fnum)) {
-            $response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_TELECOMPARIS_FNUM_INCORRECT_ERROR').'</span>');
+            $response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_FNUM_INCORRECT_ERROR').'</span>');
             die(json_encode($response));
         }
 
@@ -263,17 +264,17 @@ class plgFabrik_ElementEmundusreferent_telecomparis extends plgFabrik_Element {
         try {
             $cc_id = $db->loadResult();
             if (empty($cc_id)) {
-                $response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_TELECOMPARIS_FNUM_INCORRECT_ERROR').'</span>');
+                $response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_FNUM_INCORRECT_ERROR').'</span>');
                 die(json_encode($response));
             }
         } catch (Exception $e) {
             JLog::add('Error getting CC by fnum in query -> '.preg_replace("/[\r\n]/"," ",$query->__toString()), JLog::ERROR, 'com_emundus');
-            $response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_TELECOMPARIS_FNUM_INCORRECT_ERROR').'</span>');
+            $response = array("result" => 0, "message"=>'<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_FNUM_INCORRECT_ERROR').'</span>');
             die(json_encode($response));
         }
 
         if (empty($attachment_id)) {
-            $response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_TELECOMPARIS_EMAIL_ERROR').'</span>');
+            $response = array("result" => 0, "message" => '<span class="emundusreferent_error">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_EMAIL_ERROR').'</span>');
             die(json_encode($response));
         }
 
@@ -324,12 +325,16 @@ class plgFabrik_ElementEmundusreferent_telecomparis extends plgFabrik_Element {
 
             $body = preg_replace($patterns, $replacements, $body);
 
-            //// SET TAGS (IF ANY) ////
+            //// set tags and set fabrik tags for email subject + email body ////
             $m_emails = new EmundusModelEmails();
             $tags = $m_emails->setTags($fnum_detail['applicant_id'], ['FNUM' => $fnum], $fnum, '', $obj);
 
-            $body = $m_emails->setTagsFabrik($body, array($fnum));
+            $subject = $m_emails->setTagsFabrik($subject, [$fnum]);
+            $subject = preg_replace($tags['patterns'], $tags['replacements'], $subject);
+
+            $body = $m_emails->setTagsFabrik($body, [$fnum]);
             $body = preg_replace($tags['patterns'], $tags['replacements'], $body);
+            ///////////////////////////////////////////////////////////////////
 
             // Mail
             $from = $obj->emailfrom;
@@ -379,7 +384,7 @@ class plgFabrik_ElementEmundusreferent_telecomparis extends plgFabrik_Element {
                 header("Refresh:0");
             }
         } else {
-            $response = array("result" => 1, "message" => '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_TELECOMPARIS_REFERENCE_LETTER_UPLOADED').'</span>');           //// NEED TO REMAKE AGAIN ////
+            $response = array("result" => 1, "message" => '<span class="emundusreferent_uploaded">'.JText::_('PLG_ELEMENT_EMUNDUSREFERENT_REFERENCE_LETTER_UPLOADED').'</span>');           //// NEED TO REMAKE AGAIN ////
         }
         echo json_encode($response);
     }
