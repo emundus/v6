@@ -102,40 +102,52 @@ class EmundusHelperUpdate
     }
 
     public static function installExtension($name,$element,$manifest_cache,$type,$enabled = 1){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $installed = false;
 
-        try {
-            $query->select('extension_id')
-                ->from($db->quoteName('#__extensions'))
-                ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
-            $db->setQuery($query);
-            $is_existing = $db->loadResult();
+        if (!empty($element)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-            if(empty($is_existing)){
-                $query->clear()
-                    ->insert($db->quoteName('#__extensions'))
-                    ->set($db->quoteName('name') . ' = ' . $db->quote($name))
-                    ->set($db->quoteName('type') . ' = ' . $db->quote($type))
-                    ->set($db->quoteName('element') . ' = ' . $db->quote($element))
-                    ->set($db->quoteName('folder') . ' = ' . $db->quote(''))
-                    ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
-                    ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
-                    ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
-                    ->set($db->quoteName('params') . ' = ' . $db->quote(''))
-                    ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
-                    ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
+            try {
+                $query->select('extension_id')
+                    ->from($db->quoteName('#__extensions'))
+                    ->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
                 $db->setQuery($query);
-                return $db->execute();
+                $is_existing = $db->loadResult();
+
+                if (empty($is_existing)) {
+                    $query->clear()
+                        ->insert($db->quoteName('#__extensions'))
+                        ->set($db->quoteName('name') . ' = ' . $db->quote($name))
+                        ->set($db->quoteName('type') . ' = ' . $db->quote($type))
+                        ->set($db->quoteName('element') . ' = ' . $db->quote($element))
+                        ->set($db->quoteName('folder') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('client_id') . ' = ' . $db->quote(0))
+                        ->set($db->quoteName('enabled') . ' = ' . $db->quote($enabled))
+                        ->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
+                        ->set($db->quoteName('params') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('custom_data') . ' = ' . $db->quote(''))
+                        ->set($db->quoteName('system_data') . ' = ' . $db->quote(''));
+                    $db->setQuery($query);
+                    $installed = $db->execute();
+                } else {
+                    echo "$element already installed.";
+                    $installed = true;
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
             }
-        } catch (Exception $e) {
-            echo $e->getMessage();
+        } else {
+            echo 'Impossible to install extension without element specified';
         }
 
-        return true;
+        return $installed;
     }
 
-    public static function createModule($title,$position,$module,$params,$published = 0,$all_pages = 0,$access = 1,$showtitle = 0,$client_id = 0){
+    public static function createModule($title, $position, $module, $params, $published = 0, $all_pages = 0, $access = 1, $showtitle = 0, $client_id = 0)
+    {
+        $created = false;
+
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -147,7 +159,7 @@ class EmundusHelperUpdate
             $db->setQuery($query);
             $is_existing = $db->loadResult();
 
-            if(empty($is_existing)){
+            if (empty($is_existing)) {
                 $publish_up = new DateTime(); // For today/now, don't pass an arg.
                 $publish_up->modify('-1 day');
 
@@ -172,20 +184,23 @@ class EmundusHelperUpdate
                 $db->execute();
                 $module_id = $db->insertid();
 
-                if(!empty($module_id) && $all_pages){
+                if (!empty($module_id) && $all_pages) {
                     $query->clear()
                         ->insert($db->quoteName('#__modules_menu'))
                         ->set($db->quoteName('moduleid') . ' = ' . $db->quote($module_id))
                         ->set($db->quoteName('menuid') . ' = ' . $db->quote(0));
                     $db->setQuery($query);
-                    $db->execute();
+                    $created = $db->execute();
                 }
+            } else {
+                echo "$title module already exists.";
+                $created = true;
             }
         } catch (Exception $e) {
             echo $e->getMessage();
         }
 
-        return true;
+        return $created;
     }
 
     /**
