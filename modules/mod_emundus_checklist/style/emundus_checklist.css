@@ -58,6 +58,7 @@
     height: 32px;
     border-left: 2px solid #406AFF;
     margin: 1px 0 1px 11px;
+    margin-top: -15px;
 }
 
 .mod_emundus_checklist .active .mod_emundus_checklist___step_count{
