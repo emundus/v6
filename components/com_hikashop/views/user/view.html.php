@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,14 +15,16 @@ class userViewUser extends HikaShopView {
 	public $validMessages = array();
 	public $triggerView = array('hikashop');
 
-	public function display($tpl = null) {
+	public function display($tpl = null, $params = null) {
 		$function = $this->getLayout();
+		$this->params =& $params;
 		if(method_exists($this,$function))
 			$this->$function();
 		parent::display($tpl);
 	}
 
 	public function after_register() {
+		$this->user = hikashop_loadUser(true);
 	}
 
 	public function cpanel() {
@@ -279,6 +281,18 @@ class userViewUser extends HikaShopView {
 			unset($order);
 		}
 
+		$contact_statuses = explode(',', trim($this->config->get('contact_button_orders', 'created,confirmed,shipped,refunded,pending,cancelled'), ', '));
+		if(hikashop_level(1) && !empty($orders)) {
+			foreach($orders as &$order) {
+				if(in_array($order->order_status, $contact_statuses)) {
+					$order->show_contact_button = true;
+					$this->action_column = true;
+				}
+			}
+			unset($order);
+		}
+
+
 		if($this->config->get('allow_reorder', 0)) {
 			$this->action_column = true;
 		}
@@ -310,6 +324,7 @@ class userViewUser extends HikaShopView {
 
 		$config = hikashop_config();
 		$this->assignRef('config', $config);
+		$this->_privacy_consent();
 	}
 
 	public function form() {
@@ -479,9 +494,11 @@ else
 
 		$user_id = hikashop_loadUser();
 
-		if(!HIKASHOP_J40) {
+		$jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
+		if(version_compare($jversion, '3.4.0', '>='))
+			JHTML::_('behavior.formvalidator');
+		else
 			JHTML::_('behavior.formvalidation');
-		}
 
 		$user = @$_SESSION['hikashop_user_data'];
 		$address = @$_SESSION['hikashop_address_data'];
@@ -569,20 +586,24 @@ else
 			$affiliate = '';
 		}
 		$this->assignRef('affiliate_checked', $affiliate);
+		$this->_privacy_consent();
+	}
+	private function _privacy_consent() {
 
 		$userClass = hikashop_get('class.user');
 		$privacy = $userClass->getPrivacyConsentSettings();
 		$this->options = array();
 		if($privacy) {
 			$this->options['privacy'] = true;
+			$this->options['privacy_type'] = $privacy['type'];
 			$this->options['privacy_id'] = $privacy['id'];
+			$this->options['privacy_url'] = $privacy['url'];
 			$this->options['privacy_text'] = $privacy['text'];
 		}
-
-
 	}
 
 	public function downloads() {
+		hikashop_loadJslib('tooltip');
 		$user = hikashop_loadUser(true);
 		if(empty($user))
 			return false;
@@ -663,14 +684,10 @@ else
 		$db->setQuery($sql_query, (int)$pageInfo->limit->start, (int)$pageInfo->limit->value);
 		$downloadData = $db->loadObjectList('uniq_id');
 
-		if(!empty($pageInfo->search)) {
-			$downloadData = hikashop_search($pageInfo->search,$downloadData,'order_id');
-		}
 		$db->setQuery('SELECT COUNT(*) as all_results_count FROM (SELECT f.file_id ' . $selectUniq . $query . $groupBy . ') AS all_results');
 
 		$pageInfo->elements = new stdClass();
 		$pageInfo->elements->total = $db->loadResult();
-		$pageInfo->elements->page = count($downloadData);
 
 		$file_ids = array();
 		$order_ids = array();
@@ -683,11 +700,12 @@ else
 			$downloadData[$k]->downloads = array();
 			$downloadData[$k]->orders = array();
 			if(!empty($data->product_id) && !empty($data->product_parent_id) && $data->product_type == 'variant') {
-				$query = 'SELECT * FROM '.hikashop_table('variant').' AS v '.
+				$variant_query = 'SELECT * FROM '.hikashop_table('variant').' AS v '.
 					' LEFT JOIN '.hikashop_table('characteristic') .' AS c ON v.variant_characteristic_id = c.characteristic_id '.
 					' WHERE v.variant_product_id = '.(int)$data->product_id.' ORDER BY v.ordering';
-				$db->setQuery($query);
+				$db->setQuery($variant_query);
 				$downloadData[$k]->characteristics = $db->loadObjectList();
+
 				$parentProduct = $productClass->get((int)$data->product_parent_id);
 				$productClass->checkVariant($downloadData[$k], $parentProduct);
 			}
@@ -695,6 +713,12 @@ else
 			if(strpos($k,'@') === false)
 				$file_ids[] = $k;
 		}
+
+		if(!empty($pageInfo->search)) {
+			$downloadData = hikashop_search($pageInfo->search,$downloadData,array('order_id', 'alias', 'product_canonical'));
+		}
+		$pageInfo->elements->page = count($downloadData);
+
 
 		if(!empty($file_ids)) {
 			$db->setQuery('SELECT ' . $select . $query . ' AND f.file_id IN (' . implode(',', $file_ids) . ')');

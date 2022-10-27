@@ -3,6 +3,9 @@
     color:#353544 !important;
     margin:0!important;
 }
+.panel{
+    box-shadow: unset;
+}
 .component-content legend {
     border: 0px;
     padding: 0px;
@@ -108,4 +111,25 @@ button.btn.btn-primary:hover, button.btn.btn-primary:focus, button.btn.btn-prima
 
 .view-export_select_columns h1 {
    color: #353544;
+}
+
+
+.panel-primary > .panel-heading{
+    background-color: #20835F !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+legend{
+    margin: unset !important;
+}
+legend label{
+    color: white;
+}
+.panel-info > .panel-heading{
+    background-color: #E3E5E8;
+}
+label[for ^='emundus_checkall_grp_']{
+    color: black;
 }

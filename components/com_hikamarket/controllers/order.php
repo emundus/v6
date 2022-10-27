@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -549,7 +549,6 @@ class orderMarketController extends hikamarketController {
 		$orderClass->loadOrderNotification($order, 'market.user_order_notification', $params);
 
 		$vendor = hikamarket::loadVendor(true);
-		$user = hikamarket::loadUser(true);
 		if($vendor->vendor_id > 1 && !empty($vendor->vendor_email)) {
 			$order->mail->from_email = $vendor->vendor_email;
 			$order->mail->from_name = $vendor->vendor_name;
@@ -565,8 +564,15 @@ class orderMarketController extends hikamarketController {
 		if(!empty($order->customer->name))
 			$order->mail->dst_name = $order->customer->name;
 		if((int)$formData['mail']['dst_email'] == 1) {
-			$order->mail->dst_email = $user->user_email; // $vendor->vendor_email;
-			$order->mail->dst_name = $user->name; // $vendor->vendor_name;
+			$order->order_vendor_id = (int)$order->order_vendor_id;
+			if($order->order_vendor_id > 1) {
+				$vendorClass = hikamarket::get('class.vendor');
+				$orderVendor = $vendorClass->get($order->order_vendor_id);
+			} else {
+				$orderVendor = $vendor;
+			}
+			$order->mail->dst_email = $orderVendor->vendor_email;
+			$order->mail->dst_name = $orderVendor->vendor_name;
 		}
 
 		$mailClass = hikamarket::get('shop.class.mail');

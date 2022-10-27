@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -92,5 +92,5 @@ if(hikashop_loadUser() == null) {
 	}
 ?>
 	<textarea type="text" name="hikashop_vote_comment" id="hikashop_vote_comment" class="hikashop_comment_textarea" placeholder="<?php echo JText::_('HIKASHOP_POST_COMMENT');?>"></textarea>
-	<input class="button btn" type="button" value="<?php echo JText::_('HIKASHOP_SEND_COMMENT'); ?>" onclick="hikashop_send_comment();"/>
+	<input class="button btn hikabtn" type="button" value="<?php echo JText::_('HIKASHOP_SEND_COMMENT'); ?>" onclick="hikashop_send_comment();"/>
 </div>

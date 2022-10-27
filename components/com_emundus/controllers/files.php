@@ -862,6 +862,11 @@ class EmundusControllerFiles extends JControllerLegacy
         $res        = $m_files->updateState($validFnums, $state);
         $msg = '';
 
+        if (is_array($res)) {
+            $msg = isset($res['msg']) ? $res['msg'] : '';
+            $res = isset($res['status']) ? $res['status'] : true;
+        }
+
         if ($res !== false) {
             $m_application = $this->getModel('application');
             $status = $m_files->getStatus();
@@ -869,16 +874,6 @@ class EmundusControllerFiles extends JControllerLegacy
             $code = array();
             foreach ($fnumsInfos as $fnum) {
                 $code[] = $fnum['training'];
-
-                /*$row = array('applicant_id' => $fnum['applicant_id'],
-                    'user_id' => $this->_user->id,
-                    'reason' => JText::_('COM_EMUNDUS_STATUS'),
-                    'comment_body' => $fnum['value'].' ('.$fnum['step'].') '.JText::_('TO').' '.$status[$state]['value'].' ('.$state.')',
-                    'fnum' => $fnum['fnum'],
-                    'status_from' => $fnum['step'],
-                    'status_to' => $state
-                );
-                $m_application->addComment($row);*/
 
                 // Log the update
                 $logsParams = array('updated' => []);
@@ -1149,10 +1144,10 @@ class EmundusControllerFiles extends JControllerLegacy
 
             $msg .= JText::_('COM_EMUNDUS_APPLICATION_STATE_SUCCESS');
         } else {
-            $msg .= JText::_('STATE_ERROR');
+            $msg = empty($msg) ? JText::_('STATE_ERROR') : $msg;
         }
 
-        echo json_encode((object)(array('status' => $res, 'msg' => $msg)));
+        echo json_encode(array('status' => $res, 'msg' => $msg));
         exit;
     }
 
@@ -3713,63 +3708,68 @@ class EmundusControllerFiles extends JControllerLegacy
 
     public function exportzipdoc() {
         $jinput = JFactory::getApplication()->input;
-        $idFiles = explode(",", $jinput->getStrings('ids', ""));
-        $m_files = $this->getModel('Files');
-        $files = $m_files->getAttachmentsById($idFiles);
+        $idFiles = explode(',', $jinput->getString('ids', ''));
 
-        // $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'_x'.(count($files)-1).'.zip';
-        $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'.zip';
-        $path = JPATH_SITE.DS.'tmp'.DS.$nom;
+        if (!empty($idFiles)) {
+            $idFiles = array_unique($idFiles);
+            $m_files = $this->getModel('Files');
+            $files = $m_files->getAttachmentsById($idFiles);
+        }
 
-        if (extension_loaded('zip')) {
-            $zip = new ZipArchive();
+        if (!empty($files)) {
+            $nom = date("Y-m-d").'_'.md5(rand(1000,9999).time()).'.zip';
+            $path = JPATH_SITE.DS.'tmp'.DS.$nom;
 
-            if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+            if (extension_loaded('zip')) {
+                $zip = new ZipArchive();
+
+                if ($zip->open($path, ZipArchive::CREATE) == TRUE) {
+                    foreach ($files as $key => $file) {
+                        $filename = EMUNDUS_PATH_ABS.$file['applicant_id'].DS.$file['filename'];
+                        if (!$zip->addFile($filename, $file['filename'])) {
+                            JLog::add('Error when trying to add file to zip archive : ' . $filename , JLog::ERROR, 'com_emundus');
+                            continue;
+                        }
+                    }
+                    $zip->close();
+                } else {
+                    die("ERROR");
+                }
+
+            } else {
+                require_once(JPATH_SITE.DS.'libraries'.DS.'pclzip-2-8-2'.DS.'pclzip.lib.php');
+                $zip = new PclZip($path);
+
                 foreach ($files as $key => $file) {
-                    $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
+                    $user = JFactory::getUser($file['applicant_id']);
+                    $dir = $file['fnum'].'_'.$user->name;
+                    $filename = EMUNDUS_PATH_ABS.$file['applicant_id'].DS.$file['filename'];
+
+                    $zip->add($filename, PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);
+
                     if (!$zip->addFile($filename, $file['filename'])) {
                         continue;
                     }
                 }
-                $zip->close();
-            } else {
-                die ("ERROR");
             }
 
-        } else {
-            require_once(JPATH_SITE.DS.'libraries'.DS.'pclzip-2-8-2'.DS.'pclzip.lib.php');
-            $zip = new PclZip($path);
-
-            foreach ($files as $key => $file) {
-                $user = JFactory::getUser($file['user_id']);
-                $dir = $file['fnum'].'_'.$user->name;
-                $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
-
-                $zip->add($filename, PCLZIP_OPT_REMOVE_ALL_PATH, PCLZIP_OPT_ADD_PATH, $dir);
-
-                if (!$zip->addFile($filename, $file['filename'])) {
-                    continue;
-                }
-            }
+            $mime_type = $this->get_mime_type($path);
+            header('Content-type: application/'.$mime_type);
+            header('Content-Disposition: inline; filename='.basename($path));
+            header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+            header('Cache-Control: no-store, no-cache, must-revalidate');
+            header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+            header('Pragma: anytextexeptno-cache', true);
+            header('Cache-control: private');
+            header('Expires: 0');
+            ob_clean();
+            flush();
+            readfile($path);
+            exit;
         }
-
-        $mime_type = $this->get_mime_type($path);
-        header('Content-type: application/'.$mime_type);
-        header('Content-Disposition: inline; filename='.basename($path));
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-        header('Cache-Control: no-store, no-cache, must-revalidate');
-        header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-        header('Pragma: anytextexeptno-cache', true);
-        header('Cache-control: private');
-        header('Expires: 0');
-        ob_clean();
-        flush();
-        readfile($path);
-        exit;
     }
 
     public function exportonedoc() {
-        //require_once JPATH_LIBRARIES.DS.'vendor'.DS.'autoload.php';
         require_once (JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 
         if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
@@ -3788,7 +3788,7 @@ class EmundusControllerFiles extends JControllerLegacy
 
         $docs = array();
         foreach ($files as $key => $file) {
-            $filename = EMUNDUS_PATH_ABS.$file['user_id'].DS.$file['filename'];
+            $filename = EMUNDUS_PATH_ABS.$file['applicant_id'].DS.$file['filename'];
             $tmpName = JPATH_SITE.DS.'tmp'.DS.$file['filename'];
             $document = $wordPHP->loadTemplate($filename);
             $document->saveAs($tmpName); // Save to temp file
@@ -4451,14 +4451,20 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $user = JFactory::getUser()->id;
         $fnum = $jinput->post->getString('fnum');
-        $offset = $jinput->post->getInt('offset');
+        $offset = $jinput->post->getInt('offset', null);
+
+        // get request data //
+        $crud = $jinput->post->get('crud');                 // crud
+        $types = $jinput->post->get('types');               // log id
+        $persons = $jinput->post->get('persons');           // person
+
         $fnumErrorList = [];
 
         if (EmundusHelperAccess::asAccessAction(37, 'r', $user, $fnum)) {
             require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'logs.php');
             $m_logs = new EmundusModelLogs;
 
-            $res = $m_logs->getActionsOnFnum($fnum, null, null, null, $offset);
+            $res = $m_logs->getActionsOnFnum($fnum, $persons, $types, $crud, $offset);
             $details = [];
 
             if (empty($res)) {
@@ -4528,11 +4534,16 @@ class EmundusControllerFiles extends JControllerLegacy
         $jinput = JFactory::getApplication()->input;
         $fnum = $jinput->getString('fnum', '');
 
+        // get crud, types, persons
+        $crud = json_decode($jinput->getString('crud', ''));
+        $types = json_decode($jinput->getString('types', ''));
+        $persons = json_decode($jinput->getString('persons', ''));
+
         if (!empty($fnum)) {
             if (EmundusHelperAccess::asAccessAction(37, 'r', $user->id, $fnum)) {
                 require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
                 $m_logs = new EmundusModelLogs;
-                $res = $m_logs->exportLogs($fnum);
+                $res = $m_logs->exportLogs($fnum,$persons,$types,$crud);
             } else {
                 $res = array(
                     'status' => false,
@@ -4573,5 +4584,44 @@ class EmundusControllerFiles extends JControllerLegacy
         }
 
         return !empty($data) ? $data : false;
+    }
+
+    /* get all logs */
+    public function getalllogactions() {
+        require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
+        $m_files = new EmundusModelFiles();
+        $logs = $m_files->getAllLogActions();
+
+        if($logs) {
+            echo json_encode((array('status' => true, 'data' => $logs)));
+        } else {
+            echo json_encode((array('status' => false, 'data' => [])));
+        }
+        exit;
+    }
+
+    /* get users logs by fnum */
+    public function getuserslogbyfnum() {
+        $jinput = JFactory::getApplication()->input;
+        $fnum = $jinput->getString('fnum', '');
+
+        if (EmundusHelperAccess::asAccessAction(37, 'r', JFactory::getUser()->id, $fnum)) {
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+            $m_logs = new EmundusModelLogs();
+
+            if (!empty($fnum)) {
+                $users = $m_logs->getUsersLogsByFnum($fnum);
+                if (!empty($users)) {
+                    echo json_encode((['status' => true, 'data' => $users]));
+                } else {
+                    echo json_encode((['status' => false, 'data' => []]));
+                }
+            } else {
+                echo json_encode((['status' => false, 'data' => []]));
+            }
+        } else {
+            echo json_encode((['status' => false, 'data' => [], 'msg' => JText::_('ACCESS_DENIED')]));
+        }
+        exit;
     }
 }

@@ -33,7 +33,7 @@ class EmundusHelperEvents {
      * @return bool
      *
      * @throws Exception
-     * @since version 1.0.0
+     * @since version 1.33.0
      */
     function onBeforeLoad($params) : bool{
         jimport('joomla.log.log');
@@ -44,17 +44,19 @@ class EmundusHelperEvents {
 
             $user = JFactory::getSession()->get('emundusUser');
 
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-            $mForm = new EmundusModelForm();
-            $mProfile = new EmundusModelProfile();
+            if(isset($user->fnum)) {
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+                $mForm = new EmundusModelForm();
+                $mProfile = new EmundusModelProfile();
 
-            $prid = $mProfile->getProfileByFnum($user->fnum);
-            $submittion_page = $mForm->getSubmittionPage($prid);
-            $submittion_page_id = (int)explode('=',$submittion_page->link)[3];
+                $prid = $mProfile->getProfileByFnum($user->fnum);
+                $submittion_page = $mForm->getSubmittionPage($prid);
+                $submittion_page_id = (int)explode('=', $submittion_page->link)[3];
 
-            if($submittion_page_id === $params['formModel']->id){
-                $this->isApplicationCompleted($params);
+                if ($submittion_page_id === $params['formModel']->id) {
+                    $this->isApplicationCompleted($params);
+                }
             }
 
             return true;
@@ -70,7 +72,30 @@ class EmundusHelperEvents {
      *
      * @return bool
      *
-     * @since version 1.0.0
+     * @since version 1.33.0
+     */
+    function onBeforeStore($params) : bool{
+        jimport('joomla.log.log');
+        JLog::addLogger(array('text_file' => 'com_emundus.helper_events.php'), JLog::ALL, array('com_emundus.helper_events'));
+
+        try {
+            //TODO : Log forms updates with emundus parameter by form id
+            //$this->logUpdateForms($params);
+
+            return true;
+        } catch (Exception $e) {
+            JLog::add('Error when run event onBeforeStore | '.$e->getMessage().' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+            return false;
+        }
+    }
+
+    /**
+     * @param $params
+     * Parameters available : $params['formModel']
+     *
+     * @return bool
+     *
+     * @since version 1.33.0
      */
     function onAfterProcess($params) : bool{
         jimport('joomla.log.log');
@@ -79,19 +104,21 @@ class EmundusHelperEvents {
         try {
             $user = JFactory::getSession()->get('emundusUser');
 
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'form.php');
-            require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-            $mForm = new EmundusModelForm();
-            $mProfile = new EmundusModelProfile();
+            if(isset($user->fnum)) {
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'form.php');
+                require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+                $mForm = new EmundusModelForm();
+                $mProfile = new EmundusModelProfile();
 
-            $prid = $mProfile->getProfileByFnum($user->fnum);
-            $submittion_page = $mForm->getSubmittionPage($prid);
-            $submittion_page_id = (int)explode('=',$submittion_page->link)[3];
+                $prid = $mProfile->getProfileByFnum($user->fnum);
+                $submittion_page = $mForm->getSubmittionPage($prid);
+                $submittion_page_id = (int)explode('=', $submittion_page->link)[3];
 
-            if ($submittion_page_id != $params['formModel']->id) {
-                $this->redirect($params);
-            } else {
-                $this->confirmpost($params);
+                if ($submittion_page_id != $params['formModel']->id) {
+                    $this->redirect($params);
+                } else {
+                    $this->confirmpost($params);
+                }
             }
 
             return true;
@@ -142,6 +169,9 @@ class EmundusHelperEvents {
             $jinput = $mainframe->input;
             $view = $jinput->get('view');
             $fnum = $jinput->get->get('rowid', null);
+            if(empty($fnum)){
+                $fnum = $jinput->get('rowid', null);
+            }
             $itemid = $jinput->get('Itemid');
             $reload = $jinput->get('r', 0);
             $reload++;
@@ -158,7 +188,7 @@ class EmundusHelperEvents {
             $is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
             if (!$is_campaign_started && !in_array($user->id, $applicants)) {
                 // STOP HERE, the campaign or step is not started yet. Redirect to main page
-                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_NOT_STARTED'), 'error');
+                $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_NOT_STARTED'), 'warning');
                 $mainframe->redirect('/');
             }
 
@@ -197,11 +227,11 @@ class EmundusHelperEvents {
                     //try to access detail view or other
                     else {
                         if (!$can_edit && $is_app_sent) {
-                            $mainframe->enqueueMessage(JText::_('APPLICATION_READ_ONLY'), 'error');
+                            $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_READ_ONLY'), 'warning');
                         } else if ($fnumDetail['published'] == -1) {
-                            $mainframe->enqueueMessage(JText::_('DELETED_FILE'), 'error');
+                            $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');
                         } else if ($is_dead_line_passed) {
-                            $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                            $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
                         }
                         $reload_url = false;
                     }
@@ -237,9 +267,9 @@ class EmundusHelperEvents {
                     if (($is_dead_line_passed && $can_edit_after_deadline == 0) || $isLimitObtained === true) {
                         if ($reload_url) {
                             if ($isLimitObtained === true) {
-                                $mainframe->enqueueMessage(JText::_('APPLICATION_LIMIT_OBTAINED'), 'error');
+                                $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED'), 'warning');
                             } else {
-                                $mainframe->enqueueMessage(JText::_('APPLICATION_PERIOD_PASSED'), 'error');
+                                $mainframe->enqueueMessage(JText::_('COM_EMUNDUS_EVENTS_APPLICATION_PERIOD_PASSED'), 'warning');
                             }
                             $mainframe->redirect("index.php?option=com_fabrik&view=details&formid=".$jinput->get('formid')."&Itemid=".$itemid."&usekey=fnum&rowid=".$user->fnum."&r=".$reload);
                         }
@@ -568,11 +598,11 @@ class EmundusHelperEvents {
 						FROM #__menu
 						WHERE published=1 AND menutype = "'.$user->menutype.'" AND access IN ('.implode(',', $levels).')
 						AND parent_id != 1
-						AND lft = 2+(
+						AND lft > (
 								SELECT menu.lft
 								FROM `#__menu` AS menu
 								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
+								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 4), "&", 1)='.$formid.') ORDER BY lft';
                 $db->setQuery($query);
                 $link = $db->loadResult();
             } catch (Exception $e) {
@@ -581,66 +611,47 @@ class EmundusHelperEvents {
             }
 
             if (empty($link)) {
+                $query = 'SELECT CONCAT(link,"&Itemid=",id)
+							FROM #__menu
+							WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+
+                $db->setQuery($query);
                 try {
-                    $query = 'SELECT CONCAT(link,"&Itemid=",id)
-						FROM #__menu
-						WHERE published=1 AND menutype = "'.$user->menutype.'"  AND access IN ('.implode(',', $levels).')
-						AND parent_id != 1
-						AND lft = 4+(
-								SELECT menu.lft
-								FROM `#__menu` AS menu
-								WHERE menu.published=1 AND menu.parent_id>1 AND menu.menutype="'.$user->menutype.'"
-								AND SUBSTRING_INDEX(SUBSTRING(menu.link, LOCATE("formid=",menu.link)+7, 3), "&", 1)='.$formid.')';
-                    $db->setQuery($query);
                     $link = $db->loadResult();
                 } catch (Exception $e) {
                     $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                     JLog::add($error, JLog::ERROR, 'com_emundus');
                 }
 
-                if (empty($link)) {
-                    $query = 'SELECT CONCAT(link,"&Itemid=",id)
-								FROM #__menu
-								WHERE published=1 AND menutype = "'.$user->menutype.'" AND type!="separator" AND published=1 AND alias LIKE "checklist%"';
+                if (!empty($link)) {
+                    $query = $db->getQuery(true);
+                    $query->select('COUNT(id)')
+                        ->from('#__emundus_setup_attachment_profiles')
+                        ->where('profile_id = ' . $user->profile)
+                        ->orWhere('campaign_id = ' . $user->fnums[$user->fnum]->campaign_id);
 
                     $db->setQuery($query);
                     try {
+                        $profileDocuments = $db->loadResult();
+
+                        if ($profileDocuments < 1) {
+                            $link = "";
+                        }
+                    } catch (Exception $e) {
+                        JLog::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', JLog::ERROR, 'com_emundus.events');
+                    }
+                }
+
+                if (empty($link)) {
+                    try {
+                        $query = 'SELECT CONCAT(link,"&Itemid=",id) 
+						FROM #__menu 
+						WHERE published=1 AND menutype = "'.$user->menutype.'" AND type LIKE "component" AND published=1 AND level = 1 ORDER BY id ASC';
+                        $db->setQuery($query);
                         $link = $db->loadResult();
                     } catch (Exception $e) {
                         $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
                         JLog::add($error, JLog::ERROR, 'com_emundus');
-                    }
-
-                    if (!empty($link)) {
-                        $query = $db->getQuery(true);
-                        $query->select('COUNT(id)')
-                            ->from('#__emundus_setup_attachment_profiles')
-                            ->where('profile_id = ' . $user->profile)
-                            ->orWhere('campaign_id = ' . $user->fnums[$user->fnum]->campaign_id);
-
-                        $db->setQuery($query);
-                        try {
-                            $profileDocuments = $db->loadResult();
-
-                            if ($profileDocuments < 1) {
-                                $link = "";
-                            }
-                        } catch (Exception $e) {
-                            JLog::add('Error trying to find document attached to profiles, unable to say if we can redirect to submission page directly', JLog::ERROR, 'com_emundus.events');
-                        }
-                    }
-
-                    if (empty($link)) {
-                        try {
-                            $query = 'SELECT CONCAT(link,"&Itemid=",id) 
-							FROM #__menu 
-							WHERE published=1 AND menutype = "'.$user->menutype.'" AND type LIKE "component" AND published=1 AND level = 1 ORDER BY id ASC';
-                            $db->setQuery($query);
-                            $link = $db->loadResult();
-                        } catch (Exception $e) {
-                            $error = JUri::getInstance().' :: USER ID : '.$user->id.' -> '.$e->getMessage();
-                            JLog::add($error, JLog::ERROR, 'com_emundus');
-                        }
                     }
                 }
             }
@@ -752,7 +763,7 @@ class EmundusHelperEvents {
         // If we've passed the deadline and the user cannot submit (is not in the list of exempt users), block him.
         if ((($is_dead_line_passed && $can_edit_after_deadline != 1) || $isLimitObtained === true) && !in_array($student->id, $id_applicants)) {
             if ($isLimitObtained === true) {
-                $params['formModel']->formErrorMsg = JText::_('LIMIT_OBTAINED');
+                $params['formModel']->formErrorMsg = JText::_('COM_EMUNDUS_EVENTS_APPLICATION_LIMIT_OBTAINED');
             } else {
                 $params['formModel']->formErrorMsg = JText::_('CANDIDATURE_PERIOD_TEXT');
             }
@@ -917,6 +928,367 @@ class EmundusHelperEvents {
         return true;
     }
 
+    function logUpdateForms($params) : bool
+    {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $user = JFactory::getSession()->get('emundusUser');
+
+        $excludeElements = ['id', 'time_date', 'user', 'fnum'];
+        $timeElements = ['birthday', 'birthday_remove_slashes', 'date', 'jdate', 'time', 'timer', 'timestamp', 'years'];
+        $checkElements = ['radiobutton', 'dropdown', 'yesno'];
+        $multipleElements = ['checkbox'];
+
+        /* get process data */
+        $formData = $params['formModel']->formData;
+        $formid = $formData['formid'];
+        $keys = array_keys($formData);
+
+        /* get form name with JText */
+        $query->select('label')
+            ->from($db->quoteName('jos_fabrik_forms', 'jff'))
+            ->where($db->quoteName('jff.id') . ' = ' . $db->quote($formid));
+        $db->setQuery($query);
+        $formLabel = $db->loadResult();
+
+        $jinput = JFactory::getApplication()->input;
+        $formid = $jinput->get('formid');
+
+
+        /* old data */
+        $parentTable = '';
+        $elements = [];
+        $oldData = [];
+        $results = [];
+
+        $fnum = !empty($user->fnum) ? $user->fnum : null;
+
+        foreach ($formData as $key => $value) {
+            if(strpos($key,'___')) {
+                $table_name = explode('___', $key)[0];
+                $column_name = explode('___', $key)[1];
+
+                //TODO : Get parent table using jos_fabrik_joins, not working if multiple groups as repeatable
+                if (strpos($key, '___id')) {
+                    $parentTable = $table_name;
+                }
+
+                if (strpos($key, '___fnum') && empty($fnum)) {
+                    $fnum = $value;
+                }
+
+                if ($column_name !== null && strpos($column_name, '_raw') === false && strpos($column_name, '-') === false && !in_array($column_name, $excludeElements)) {
+                    $elements[] = $key;
+                }
+            }
+        }
+
+        if(!empty($fnum)) {
+            // Get old datas
+            foreach ($elements as $element) {
+                $table_name = explode('___', $element)[0];
+                $column_name = explode('___', $element)[1];
+
+                if (!strpos($element, 'repeat')) {
+                    $query->clear()
+                        ->select($db->quoteName($table_name . '.' . $column_name))
+                        ->from($db->quoteName($parentTable))
+                        ->where($db->quoteName($parentTable . '.fnum') . ' = ' . $db->quote($fnum));
+                } else {
+                    $query->clear()
+                        ->select($table_name . '.' . $column_name)
+                        ->from($db->quoteName($table_name))
+                        ->leftJoin($db->quoteName($parentTable) . ' ON ' . $db->quoteName($parentTable . '.id') . ' = ' . $db->quoteName($table_name . '.parent_id'))
+                        ->where($db->quoteName($parentTable . '.fnum') . ' = ' . $db->quote($fnum));
+                }
+                $db->setQuery($query);
+                $res = $db->loadColumn();
+                $oldData[$table_name . '___' . $column_name] = $res;
+            }
+
+            $intersectKey = array_keys(array_intersect_key($oldData, $formData));
+
+            foreach ($intersectKey as $iKey) {
+                $diffs = $this->dataFormCompare($oldData, $formData, $iKey);
+
+                if (!empty($diffs)) {
+                    $column_name = explode('___', $iKey)[1];
+                    /* get element data (getObject) */
+
+                    $query->clear()
+                        ->select("distinct jfe.id as element_id, jfe.name as element_name, jfe.label as element_label, jfe.params as element_params, jfg.id as group_id, jfg.name as group_name, jfg.label as group_label, jff1.id as form_id, jff1.label as form_label, jfe.plugin, instr(jfg.params, '\"repeat_group_button\":\"1\"') as group_repeat")
+                        ->from($db->quoteName('#__fabrik_elements', 'jfe'))
+                        ->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jfg.id'))
+                        ->leftJoin($db->quoteName('#__fabrik_formgroup', 'jff') . ' ON ' . $db->quoteName('jff.group_id') . ' = ' . $db->quoteName('jfg.id'))
+                        ->leftJoin($db->quoteName('#__fabrik_forms', 'jff1') . ' ON ' . $db->quoteName('jff.form_id') . ' = ' . $db->quoteName('jff1.id'))
+                        ->where($db->quoteName('jff1.id') . ' = ' . $formid)
+                        ->andWhere($db->quoteName('jfe.hidden') . ' != 1')
+                        ->andWhere($db->quoteName('jfe.published') . ' = 1')
+                        ->andWhere($db->quoteName('jfe.name') . ' LIKE ' . $db->quote($column_name));
+                    $db->setQuery($query);
+                    $element = $db->loadAssoc();
+
+                    if (empty($element)) {
+                        continue;
+                    }
+
+                    if ($element['group_repeat'] == 0) {
+
+                        // flat old data and new data
+                        $diffs['old_data'] = reset($diffs['old_data']);
+                        $diffs['new_data'] = reset($diffs['new_data']);
+
+                        if (in_array($element['plugin'], $timeElements)) {
+                            if (strtotime($diffs['old_data']) === strtotime($diffs['new_data'])) {
+                                continue;
+                            }
+                        }
+
+                        if (in_array($element['plugin'], $checkElements) or in_array($element['plugin'], $multipleElements)) {
+                            $optSubValues = json_decode($element['element_params'])->sub_options->sub_values;
+                            $optSubLabels = json_decode($element['element_params'])->sub_options->sub_labels;
+
+                            $oldsValues = $newsValues = [];
+                            $oldsLabels = $newsLabels = [];
+
+                            if (in_array($element['plugin'], $checkElements)) {
+                                /* find the index of subValues from $diffs['old_data'] and $diffs['new_data'] */
+                                $oldArrayIndex = array_search($diffs['old_data'], $optSubValues);
+                                $newArrayIndex = array_search($diffs['new_data'], $optSubValues);
+
+                                /* get oldValues and newValues */
+                                $oldsValues = [$diffs['old_data']];
+                                $newsValues = [$diffs['new_data']];
+
+                                /* using ternary operator */
+                                $oldsLabels = $oldArrayIndex !== false ? JText::_($optSubLabels[$oldArrayIndex]) : null;
+                                $newsLabels = $newArrayIndex !== false ? JText::_($optSubLabels[$newArrayIndex]) : null;
+                            } elseif (in_array($element['plugin'], $multipleElements)) {
+                                /* replace the substring "[" and "]" by empty string */
+                                $olds = str_replace('[', '', $diffs['old_data']);
+                                $olds = str_replace(']', '', $olds);
+                                $olds = str_replace(',', ';', $olds);
+                                $olds = str_replace('"', '', $olds);
+
+                                /* convert $diffs['old_data'] to (string) by explode (";") */
+                                $olds = explode(';', $olds);
+
+                                /* null condition */
+                                $olds = empty(trim($olds)) !== false ? $olds : [''];
+
+                                $olds = is_array($olds) === false ? array($olds) : $olds;
+                                $news = is_array($diffs['new_data']) === false ? array($diffs['new_data']) : $diffs['new_data'];
+
+                                foreach ($olds as $_old) {
+                                    $_oIndex = array_search($_old, $optSubValues);
+                                    $_oLabels = $_oIndex !== false ? JText::_($optSubLabels[$_oIndex]) : null;
+                                    $oldsLabels[] = $_oLabels;
+                                    $oldsValues[] = $_old;
+                                }
+
+                                foreach ($news as $_new) {
+                                    $_nIndex = array_search($_new, $optSubValues);
+                                    $_nLabels = $_nIndex !== false ? JText::_($optSubLabels[$_nIndex]) : null;
+                                    $newsLabels[] = $_nLabels;
+                                    $newsValues[] = $_new;
+                                }
+                            }
+
+                            if ($oldsValues === $newsValues) {
+                                $oldsLabels = $newsLabels = "";
+                            } else {
+                                $oldsLabels = count($oldsLabels) > 1 ? (empty(trim(implode('', $oldsLabels))) === true ? '' : implode('', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                                $newsLabels = count($newsLabels) > 1 ? (empty(trim(implode('', $newsLabels))) === true ? '' : implode('', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                            }
+                            $diffs['old_data'] = $oldsLabels;
+                            $diffs['new_data'] = $newsLabels;
+                        }
+
+                        if (in_array($element['plugin'], ['databasejoin', 'cascadingdropdown'])) {
+                            //TODO : HANDLE THE CONCAT LABEL OF DATABASE JOIN with {shortlang}, {thistable}
+                            /* get label of this element by $diffs['old_data'] and $diffs['new_data'] */
+                            $query->clear()
+                                ->select('*')
+                                ->from($db->quoteName('#__fabrik_joins', 'jfj'))
+                                ->where($db->quoteName('jfj.element_id') . ' = ' . $db->quote($element['element_id']));
+                            $db->setQuery($query);
+                            $joinResults = $db->loadObject();
+
+                            $joinlabel = json_decode($joinResults->params, true)['join-label'];
+                            $joinKey = $joinResults->table_join_key;
+                            $joinFrom = $joinResults->table_join;
+
+                            $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($diffs['old_data']));
+                            $db->setQuery($query);
+                            $diffs['old_data'] = $db->loadResult();
+
+                            $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($diffs['new_data']));
+
+                            $db->setQuery($query);
+                            $diffs['new_data'] = $db->loadResult();
+                        }
+
+                        $results[$iKey] = array_merge($element, $diffs);
+                    } else {
+                        /* group repeat is always an array nD with n >= 1 */
+                        if ($element['plugin'] != 'databasejoin' and $element['plugin'] != 'cascadingdropdown') {
+                            //TODO : TIME, DATE PLUGIN WITH REPEAT GROUP
+                            // check or select plugins //
+                            if (in_array($element['plugin'], $checkElements) or in_array($element['plugin'], $multipleElements)) {
+                                /* get subValues and subLabels */
+                                $optSubValues = json_decode($element['element_params'])->sub_options->sub_values;
+                                $optSubLabels = json_decode($element['element_params'])->sub_options->sub_labels;
+                                /* *********** */
+
+                                $oldsValues = $newsValues = array();
+                                $oldsLabels = $newsLabels = array();
+
+                                if (in_array($element['plugin'], $checkElements)) {
+                                    $olds = is_array($diffs['old_data']) === false ? array($diffs['old_data']) : $diffs['old_data'];
+                                    $news = is_array($diffs['new_data']) === false ? array($diffs['new_data']) : $diffs['new_data'];
+
+                                    foreach ($olds as $_old) {
+                                        $_oIndex = array_search($_old, $optSubValues);
+                                        $_oLabels = $_oIndex !== false ? JText::_($optSubLabels[$_oIndex]) : null;
+                                        $oldsLabels[] = $_oLabels;
+                                        $oldsValues[] = $_old;
+                                    }
+
+                                    foreach ($news as $_new) {
+                                        $_nIndex = array_search($_new, $optSubValues);
+                                        $_nLabels = $_nIndex !== false ? JText::_($optSubLabels[$_nIndex]) : null;
+                                        $newsLabels[] = $_nLabels;
+                                        $newsValues[] = $_new;
+                                    }
+
+                                } else if (in_array($element['plugin'], $multipleElements)) {
+                                    $diffs['old_data'] = is_array($diffs['old_data']) === true ? $diffs['old_data'] : [$diffs['old_data']];
+
+                                    $olds = array_map(
+                                        function ($x) {
+                                            $x = str_replace('[', '', $x);
+                                            $x = str_replace(']', '', $x);
+                                            $x = str_replace(',', ';', $x);
+                                            return str_replace('"', '', $x);
+                                        }, array_values($diffs['old_data']));
+
+                                    ////
+                                    $olds = array_map(function ($x) {
+                                        return empty(trim(explode(";", $x))) !== false ? explode(';', $x) : [''];
+                                    }, array_values($olds));
+                                    $olds = call_user_func_array('array_merge', $olds);
+
+                                    $olds = is_array($olds) === false ? [$olds] : $olds;
+                                    $news = is_array($diffs['new_data']) === false ? [$diffs['new_data']] : $diffs['new_data'];
+
+                                    foreach ($olds as $_old) {
+                                        $_oIndex = array_search($_old, $optSubValues);
+                                        $_oLabels = $_oIndex !== false ? JText::_($optSubLabels[$_oIndex]) : null;
+                                        $oldsLabels[] = $_oLabels;
+                                        $oldsValues[] = $_old;
+                                    }
+
+                                    foreach ($news as $_new) {
+                                        $_nIndex = array_search($_new, $optSubValues);
+                                        $_nLabels = $_nIndex !== false ? JText::_($optSubLabels[$_nIndex]) : null;
+                                        $newsLabels[] = $_nLabels;
+                                        $newsValues[] = $_new;
+                                    }
+                                }
+
+                                if (array_values($oldsValues) === array_values($newsValues)) {
+                                    $oldsLabels = $newsLabels = '';
+                                } else {
+                                    $oldsLabels = count($oldsLabels) > 1 ? (empty(trim(implode("", $oldsLabels))) === true ? '' : implode('', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                                    $newsLabels = count($newsLabels) > 1 ? (empty(trim(implode("", $newsLabels))) === true ? '' : implode('', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                                }
+                                $diffs['old_data'] = $oldsLabels;
+                                $diffs['new_data'] = $newsLabels;
+
+
+                            } else {
+                                $diffs['old_data'] = count($diffs['old_data']) > 1 ? (empty(trim(implode('', $diffs['old_data']))) === true ? '' : implode('', $diffs['old_data'])) : (is_array($diffs['old_data']) === true ? $diffs['old_data'][0] : $diffs['old_data']);
+                                $diffs['new_data'] = count($diffs['new_data']) > 1 ? (empty(trim(implode('', $diffs['new_data']))) === true ? '' : implode('', $diffs['new_data'])) : (is_array($diffs['new_data']) === true ? $diffs['new_data'][0] : $diffs['new_data']);
+                            }
+                        } else {
+                            $query->clear()
+                                ->select('*')
+                                ->from($db->quoteName('#__fabrik_joins', 'jfj'))
+                                ->where($db->quoteName('jfj.element_id') . ' = ' . $db->quote($element['element_id']));
+                            $db->setQuery($query);
+                            $joinResults = $db->loadObject();
+
+                            /* get the join results */
+                            $joinlabel = json_decode($joinResults->params, true)['join-label'];
+                            $joinKey = $joinResults->table_join_key;
+                            $joinFrom = $joinResults->table_join;
+
+                            $oldsLabels = $newsLabels = array();
+
+                            foreach ($diffs['old_data'] as $_old) {
+                                $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($_old));
+                                $db->setQuery($query);
+                                $oldsLabels[] = $db->loadResult();
+                            }
+
+                            if (empty(trim(implode('', $diffs['new_data'])))) {
+                                $diffs['new_data'] = '';
+                            } else {
+                                foreach ($diffs['new_data'] as $_new) {
+                                    $query->clear()->select($db->quoteName($joinlabel))->from($db->quoteName($joinFrom))->where($db->quoteName($joinKey) . ' = ' . $db->quote($_new));
+                                    $db->setQuery($query);
+                                    $newsLabels[] = $db->loadResult();
+                                }
+                            }
+
+                            $diffs['old_data'] = count($oldsLabels) > 1 ? (empty(trim(implode('', $oldsLabels))) === true ? '' : implode('', $oldsLabels)) : (is_array($oldsLabels) === true ? $oldsLabels[0] : $oldsLabels);
+                            $diffs['new_data'] = count($newsLabels) > 1 ? (empty(trim(implode('', $newsLabels))) === true ? '' : implode('', $newsLabels)) : (is_array($newsLabels) === true ? $newsLabels[0] : $newsLabels);
+                        }
+                    }
+
+                    $results[$iKey] = array_merge($element, $diffs);
+                }
+
+            }
+            $logger = [];
+
+            if (!empty($results)) {
+                foreach ($results as $result) {
+                    $logsStd = new stdClass();
+
+                    if (($result['old_data'] === null or empty(trim($result['old_data']))) and ($result['new_data'] === null or empty(trim($result['new_data'])))) {
+                        continue;
+                    } else {
+                        $logsStd->description = '[' . JText::_($formLabel) . ']';
+                        $logsStd->element = JText::_($result['element_label']) . ' : ';
+                        $logsStd->old = $result['old_data'];
+                        $logsStd->new = $result['new_data'];
+                        $logger[] = $logsStd;
+                    }
+                }
+            }
+
+            # parse to JSON (json encode)
+            $logParams = ['updated' => $logger];
+
+            /* REGISTER LOGS TO DATABASE, DO NOT NEED USING THE SESSION IN THIS CASE */
+            require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
+            $mFile = new EmundusModelFiles();
+            $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
+
+
+            /* get form id from POST */
+
+
+            if (!empty($logParams['updated'])) {
+                EmundusModelLogs::log($user->id, $applicant_id, $fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', json_encode($logParams, JSON_UNESCAPED_UNICODE));
+            }
+        }
+
+        return true;
+    }
+
     private function logUpdateState($old_status, $new_status, $user_id, $applicant_id, $fnum){
         $db = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -942,5 +1314,36 @@ class EmundusHelperEvents {
         } catch (Exception $e) {
             JLog::add('Error getting status labels in plugin confirmpost at line: ' . __LINE__ . ' in file: ' . __FILE__ . ' with message: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
         }
+    }
+
+    private function dataFormCompare($old, $new, $key): array
+    {
+        $diffElements = [];
+
+        if (!is_array($new[$key])) {
+            $new[$key] = [$new[$key]];
+        }
+
+        if (is_array(current($new[$key])) === false) {
+            $new[$key] = array_values($new[$key]);
+        } elseif (count($new[$key]) >= 1) {    // the sub array
+            $new[$key] = call_user_func_array('array_merge', array_values($new[$key]));
+        }
+
+        if (trim(implode('', array_values($old[$key]))) === trim(implode('', array_values($new[$key])))) {
+            return [];
+        } elseif (array_values($old[$key]) !== array_values($new[$key])) {
+            if (empty(trim(implode('', $old[$key]))) and empty(trim(implode('', $new[$key])))) {
+                return [];
+            } else {
+                $diffElements['key_data'] = $key;
+                $diffElements['old_data'] = $old[$key];
+                $diffElements['new_data'] = $new[$key];
+            }
+        } else {
+            return [];
+        }
+
+        return $diffElements;
     }
 }

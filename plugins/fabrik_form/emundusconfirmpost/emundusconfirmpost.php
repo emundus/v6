@@ -313,7 +313,7 @@ class PlgFabrik_FormEmundusconfirmpost extends plgFabrik_Form
 			}
 		}
 
-        EmundusModelLogs::log($user->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
+        //EmundusModelLogs::log($user->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 	}
 
 	/**

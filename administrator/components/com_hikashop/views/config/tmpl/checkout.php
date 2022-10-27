@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -276,7 +276,7 @@ jQuery(document).ready(function(){
 			}
 		?></td>
 	</tr>
-	<tr>
+	<tr id="default_registration_select">
 		<td class="hk_tbl_key"<?php echo $this->docTip('simplified_registration');?>><?php echo JText::_('HIKA_REGISTRATION'); ?></td>
 		<td><?php
 	if(hikashop_level(1)) {
@@ -289,22 +289,18 @@ jQuery(document).ready(function(){
 			<input <?php if(in_array('0',$registration)) echo 'checked="checked"'; ?> onchange="registrationAvailable(this.value, this.checked)" style="margin-right: 5px;" type="<?php echo $type;?>" value="0" name="config[simplified_registration][]" id="config_simplified_registration_normal"/>
 			<?php echo JText::_('HIKA_REGISTRATION'); ?>
 		</label>
-		<br/>
 		<label>
 			<input <?php if(in_array('1',$registration)) echo 'checked="checked"'; ?> onchange="registrationAvailable(this.value, this.checked)" style="margin-right: 5px;" type="<?php echo $type;?>" value="1" name="config[simplified_registration][]" id="config_simplified_registration_simple"/>
 			<?php echo JText::_('SIMPLIFIED_REGISTRATION'); ?>
 		</label>
-		<br/>
 		<label>
 			<input <?php if(in_array('3',$registration)) echo 'checked="checked"'; ?> onchange="registrationAvailable(this.value, this.checked)" style="margin-right: 5px;" type="<?php echo $type;?>" value="3" name="config[simplified_registration][]" id="config_simplified_registration_simple_pwd"/>
 			<?php echo JText::_('SIMPLIFIED_REGISTRATION_WITH_PASSWORD'); ?>
 		</label>
-		<br/>
 		<label>
 			<input <?php if(in_array('2',$registration)) echo 'checked="checked"'; ?> onchange="registrationAvailable(this.value, this.checked)" style="margin-right: 5px;" type="<?php echo $type;?>" value="2" name="config[simplified_registration][]" id="config_simplified_registration_guest"/>
 			<?php echo JText::_('GUEST'); ?>
 		</label>
-		<br/>
 <?php
 	} else {
 		echo '<small style="color:red">'.JText::_('ONLY_COMMERCIAL').'</small>';

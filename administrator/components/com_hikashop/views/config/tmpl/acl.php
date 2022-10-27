@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,8 +21,7 @@ defined('_JEXEC') or die('Restricted access');
 <br style="font-size:1px;" />
 	<table class="admintable table" cellspacing="1">
 		<?php
-		ksort($this->aclcats);
-		foreach($this->aclcats as $category => $actions){ ?>
+		foreach($this->acl_translations as $category => $trans){ ?>
 		<tr>
 <?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 <td width="185" class="key" valign="top">
@@ -30,24 +29,13 @@ defined('_JEXEC') or die('Restricted access');
 <td>
 <?php } ?>
 				<?php
-				$trans='';
-
-				if(!empty($this->acltrans[$category])){
-					 $trans = JText::_(strtoupper($this->acltrans[$category]));
-					 if($trans == strtoupper($this->acltrans[$category])){
-					 	$trans = '';
-					 }
-				}
-				if(empty($trans)) $trans = JText::_('HIKA_'.strtoupper($category));
-				if($trans == 'HIKA_'.strtoupper($category)) $trans = JText::_(strtoupper($category));
-
 				echo $trans;
 				?>
 <?php if(!HIKASHOP_BACK_RESPONSIVE) { ?>
 			</td>
 			<td>
 <?php } ?>
-				<?php echo $this->acltable->display($category,$actions)?>
+				<?php echo $this->acltable->display($category,$this->aclcats[$category])?>
 			</td>
 		</tr>
 		<?php } ?>

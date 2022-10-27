@@ -296,7 +296,7 @@ class plgSystemEmundus_caslogin extends JPlugin
                                 $this->server = $server;
 
                                 // Get username
-                                $userName = $this->xpath->evaluate('string(cas:user)', $this->success);
+                                $userName = $this->xpath->evaluate($params->get('username_xpath') ?: 'string(cas:user)', $this->success);
 
                                 // Get email
                                 $userEmail = str_replace(
@@ -310,7 +310,7 @@ class plgSystemEmundus_caslogin extends JPlugin
                                     JLog::add(
                                         new ExternalloginLogEntry(
                                             'Successful login on server ' . $sid . ' for CAS user "' .
-                                            $this->xpath->evaluate('string(cas:user)', $this->success) . '"',
+                                            $this->xpath->evaluate($params->get('username_xpath') ?: 'string(cas:user)', $this->success) . '"',
                                             JLog::INFO,
                                             'system-emundus_caslogin-xml'
                                         )

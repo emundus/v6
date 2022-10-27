@@ -363,6 +363,7 @@ class UpdateCli extends JApplicationCli
                             $this->global_logs = $this->db->getLog();
                             switch ($elementArr["element"]) {
                                 case 'com_securitycheckpro':
+                                    ob_start();
                                     try {
                                         $installer->setPath('source', JPATH_ROOT);
 
@@ -381,6 +382,7 @@ class UpdateCli extends JApplicationCli
                                         $installer->abort($e->getMessage());
                                         return false;
                                     }
+                                    ob_end_clean();
                                     break;
                                 case 'com_dpcalendar' :
                                     # Restore previous xml version before & after update because dpcalendar is based on xml to set up the version
