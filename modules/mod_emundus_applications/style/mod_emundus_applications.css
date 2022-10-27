@@ -358,8 +358,12 @@ a.btn.btn-success:not(.btn-xs) {
     .mod_emundus_applications___header #add-application {
         width: 100% !important;
     }
-
-    .mod_emundus_applications___content_app .em-flex-row {
-        flex-wrap: wrap;
+    .material-icons-outlined {
+       flex-basis: auto;
     }
+
+    .view-featured .candidacy-files-list .row {
+        align-items: flex-start;
+    }
+
 }
