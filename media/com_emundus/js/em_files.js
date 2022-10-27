@@ -1167,6 +1167,15 @@ function runAction(action, url = '') {
             });
             break;
 
+        case 15:
+        case 16:
+            // TODO : make thiw work
+
+            const iframeFastMails = document.querySelector('#iframe-fast-emails');
+            const fastMailForm = iframeFastMails.contentWindow.document.querySelector('#adminForm');
+            fastMailForm.submit();
+            break;
+
         // TODO : Generate letter
         case 27:
             addLoader();
@@ -4659,13 +4668,8 @@ $(document).ready(function() {
             // TODO : Fast emails
             case 15:
             case 16:
-                $('#can-val').empty();
-                addLoader();
-                $('.modal-footer').hide();
-                $('.modal-dialog').addClass('modal-lg');
-                $('.modal-body').empty();
-                removeLoader();
-                $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
+                title = 'COM_EMUNDUS_FAST_EMAILS';
+                html = '<iframe id="iframe-fast-emails" src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>';
                 break;
 
             // TODO : Custom emails
