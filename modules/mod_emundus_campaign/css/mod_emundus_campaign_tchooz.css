@@ -399,3 +399,12 @@ a.em-blue-400-color:hover {
     }
 }
 
+@media screen and (min-width: 768px) and (max-width: 959px) {
+    .mod_emundus_campaign__intro {
+        max-width: 680px;
+    }
+
+    .mod_emundus_campaign__content .mod_emundus_campaign__pinned_campaign {
+        width: 94%;
+    }
+}
