@@ -1182,11 +1182,6 @@ body>.g-container {
     margin-bottom: 25px;
   }
 
-  .blog-featuredhomepage {
-    margin-bottom: 50px;
-    margin-top: 50px;
-  }
-
   /* MODULE EMUNDUS CAMPAIGN */
   .campaigns-list {
 
@@ -5210,7 +5205,7 @@ button.swal2-cancel.goback-btn {
   /* HEADER */
 
   #g-navigation .g-container #header-c {
-    justify-content: center;
+   /* justify-content: center;*/
 
     .g-content .platform-content:nth-child(1) {
       margin: 0 !important;
@@ -5278,13 +5273,13 @@ button.swal2-cancel.goback-btn {
       }
 
       #header-a {
-        justify-content: center;
+        justify-content: flex-start;
         left: 0;
       }
 
-      #header-c  .g-content {
+      /*#header-c  .g-content {
         flex-direction: column;
-      }
+      }*/
     }
 
       #header-c .platform-content .em-messages-modal {
