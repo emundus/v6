@@ -520,6 +520,9 @@ input:focus + .em-slider {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.em-float-left{
+  float: left;
+}
 .em-float-right{
   float: right;
 }

@@ -904,6 +904,9 @@ body>.g-container {
 
 /*  FORMULAIRE INSCRIPTION - COULEUR DU BTN */
 .view-registration,.view-login,.view-reset,.view-form.em-formRegistrationCenter{
+  #g-navigation .g-container{
+    padding: 24px !important;
+  }
   #header-a img{
     display: none;
   }
