@@ -359,7 +359,7 @@ a.btn.btn-success:not(.btn-xs) {
         width: 100% !important;
     }
 
-    .mod_emundus_applications___header .em-flex-row {
+    .mod_emundus_applications___content_app .em-flex-row {
         flex-wrap: wrap;
     }
 }
