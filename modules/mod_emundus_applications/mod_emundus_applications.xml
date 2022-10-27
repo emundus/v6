@@ -247,6 +247,12 @@
 					description="MOD_EMUNDUS_SPECIFIC_PROFILES_DESC"
 					default=""
 				/>
+				<field
+						name="show_status"
+						type="text"
+						label="MOD_EMUNDUS_SHOW_STATUS"
+						description="MOD_EMUNDUS_SHOW_STATUS_DESC"
+				/>
 			</fieldset>
 			<fieldset
 					name="advanced">
