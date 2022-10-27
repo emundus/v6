@@ -1,9 +1,9 @@
 <?php
 /**
  * @package    HikaMarket for Joomla!
- * @version    4.0.0
+ * @version    4.1.0
  * @author     Obsidev S.A.R.L.
- * @copyright  (C) 2011-2021 OBSIDEV. All rights reserved.
+ * @copyright  (C) 2011-2022 OBSIDEV. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -177,7 +177,7 @@ class hikamarketStatisticsClass extends hikamarketClass {
 				'DATE_RANGE' => 'this.month'
 			),
 			'query' => array(
-				'get' => 'object',
+				'get' => 'list',
 				'select' => array(
 					(($vendor_id == 0) ? 'SUM(hk_order.order_full_price) as value' : 'SUM( CASE WHEN hk_order.order_vendor_price >= 0 THEN hk_order.order_vendor_price ELSE (hk_order.order_full_price + hk_order.order_vendor_price) END ) as value'),
 					'hk_order.order_currency_id as currency'
@@ -190,7 +190,8 @@ class hikamarketStatisticsClass extends hikamarketClass {
 					'order_created' => ($created_status ?
 						'hk_order.order_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_created <= {DATE_END})':
 						'hk_order.order_invoice_created >= {DATE_START} AND ({DATE_END} <= 0 OR hk_order.order_invoice_created <= {DATE_END})'),
-				)
+				),
+				'group' => 'hk_order.order_currency_id'
 			),
 			'vendor_id' => (int)$vendor_id
 		);

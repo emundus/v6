@@ -40,7 +40,7 @@ class UpdateCli extends JApplicationCli
         $this->db = JFactory::getDbo();
 
         $short_options = "vhlcu::a";
-        $long_options = ["verbose", "help", "list", "core", "update::", "all"];
+        $long_options = ["verbose", "help", "list", "core", "update::", "all","dry-run"];
         $options = getopt($short_options, $long_options);
         $args = (array)$GLOBALS['argv'];
 
@@ -78,7 +78,7 @@ class UpdateCli extends JApplicationCli
         $this->count_exec = 0;
         $this->verbose = false;
 
-        $this->out("Emundus Update Tool \n");
+        $this->out("eMundus Database Updater\n");
         # Enable debug mode for counting statements
         $this->db->setDebug(true);
         if (isset($options["v"]) || isset($options["verbose"])) {
@@ -99,54 +99,49 @@ class UpdateCli extends JApplicationCli
         if (isset($options["a"]) || isset($options["all"])) {
             $this->count_exec++;
             $this->updateJoomla();
-            $this->updateComponents();
+            $this->updateComponents(null,$options);
         }
         # Update 1 to n components (except Joomla)
         if (isset($options["u"]) || isset($options["update"])) {
             # Execute update for all of components name pass to args
             if (sizeof($args) == 2) {
-                $this->updateComponents();
+                $this->updateComponents(null,$options);
             } elseif (sizeof($args) > 2) {
                 $index = 2;
                 while ($index <= sizeof($args) - 1) {
                     $element[] = $args[$index];
                     $index++;
                 }
-                $this->updateComponents($element);
+                $this->updateComponents($element,$options);
             }
         }
 
         if (isset($options["u"]) || isset($options["update"]) || isset($options["a"]) || isset($options["all"]) || isset($options["c"]) || isset($options["core"])) {
-            $this->out("\n*--------------------*");
-            $this->out("RESULTS :");
-            $this->out($this->count_fails . " components update fails / " . $this->count_exec . " components updated");
+            $this->out("\n###########################################################");
+            if ($this->count_fails == 0 ) {
+                $this->out($this->colorLog("RESULTS: SUCCESS !",'s'));
+            } else {
+                $this->out($this->colorLog("RESULTS: FAILED !",'e'));
+            }
+
+            $this->out($this->colorLog("$this->count_fails components failed to be updated / $this->count_exec updated components",'i'));
 
             if ($this->verbose) {
-                $this->out("-> " . $this->count_stmt . " sql statements executed");
-            }
-            # Run languages functions
-            try {
-                $this->out("\n*--------------------*");
-                $this->out("-> Import language Tags\n");
+                $this->out($this->colorLog("-> $this->count_stmt sql statements executed",'i'));
 
-                # Check if table emundus_setup_languages exists before running functions
-                $this->db->getTableColumns('#__emundus_setup_languages');
-            } catch (Exception $e) {
-                if ($this->verbose) {
-                    $this->out($e->getMessage());
-                }
-                Log::add("[FAIL] Language function : ", Log::ERROR, 'error');
-                Log::add($e->getMessage(), Log::ERROR, 'error');
+                # Execution time
 
-                $this->out("-> Can't run languages functions");
+                $this->out();
+                $executionEndTime = microtime(true);
+                $seconds = $executionEndTime - $executionStartTime;
+                $seconds = substr((string)$seconds, 0, 4);
+                $this->out($this->colorLog("This script took $seconds seconds to execute.",'i'));
             }
+
+
+
+            $this->out("###########################################################");
         }
-        # Execution time
-        $this->out("\n*--------------------*\n");
-        $executionEndTime = microtime(true);
-        $seconds = $executionEndTime - $executionStartTime;
-        $seconds = substr((string)$seconds, 0, 4);
-        $this->out("This script took $seconds seconds to execute.");
     }
 
     # Main functions
@@ -200,7 +195,7 @@ class UpdateCli extends JApplicationCli
 
         # Log informations according to operation result
         if ($res == 1) {
-            $this->out("\nJoomla DB update Success...");
+            $this->out("\nJoomla database update successfully completed");
             if ($this->verbose) {
                 $this->out("-> " . count($component_logs) . " sql statements executed");
             }
@@ -246,10 +241,11 @@ class UpdateCli extends JApplicationCli
      * @return false|void
      * @throws Exception
      */
-    private function updateComponents($elements = null)
+    private function updateComponents($elements = null,$options = null)
     {
         $installer = JInstaller::getInstance();
         $success = true;
+        $failure_msg = '';
 
         # Case where element isn't defined in script parameters -> update all
         $elements = empty($elements) ? array_keys($this->components) : $elements;
@@ -285,10 +281,25 @@ class UpdateCli extends JApplicationCli
                 $this->manifest_xml = simplexml_load_file($xml_path);
                 $this->out("\n*--------------------*\n");
 
+                $regex = '/^6\.[0-9]*/m';
+                preg_match_all($regex, $manifest_cache['version'], $matches, PREG_SET_ORDER, 0);
+
                 # Check if this is the first run for emundus component
-                if ($elementArr['element'] == "com_emundus" and ($manifest_cache['version'] == "6.1" || $manifest_cache['version'] < "1.33.0")) {
+                if ($elementArr['element'] == "com_emundus" and (!empty($matches) || $manifest_cache['version'] < "1.33.0")) {
+                    $this->firstrun = true;
+                    $this->out("** Script first run **");
+
+                    if(empty($options) || !isset($options['dry-run'])) {
+                        $this->out('Store translations tags into database for first run');
+                        require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+                        EmundusHelperUpdate::languageFileToBase();
+                        $this->out();
+                    }
+
                     # Set schema version and align manifest cache version
-                    $manifest_cache['version'] = $this->checkFirstRun($elementArr['extension_id']);
+                    $this->schema_version = '1.33.0';
+                    $manifest_cache['version'] = '1.33.0';
+                    $this->updateSchema($elementArr['extension_id'], null, null, $this->schema_version);
                 }
 
                 # Update loop
@@ -349,10 +360,10 @@ class UpdateCli extends JApplicationCli
                         $script = new $scriptClass();
 
                         try {
-                            ob_start();
                             $this->global_logs = $this->db->getLog();
                             switch ($elementArr["element"]) {
                                 case 'com_securitycheckpro':
+                                    ob_start();
                                     try {
                                         $installer->setPath('source', JPATH_ROOT);
 
@@ -369,9 +380,9 @@ class UpdateCli extends JApplicationCli
                                         // Install failed, roll back changes
                                         $this->out($e);
                                         $installer->abort($e->getMessage());
-                                        ob_end_clean();
                                         return false;
                                     }
+                                    ob_end_clean();
                                     break;
                                 case 'com_dpcalendar' :
                                     # Restore previous xml version before & after update because dpcalendar is based on xml to set up the version
@@ -385,7 +396,32 @@ class UpdateCli extends JApplicationCli
                                     $this->restoreVersion($xml_path, $new_version);
                                     $script->postflight('update', $adapter);
                                     break;
+                                case 'com_emundus':
+                                    if (method_exists($scriptClass, 'preflight')) {
+                                        $script->preflight('update', $adapter);
+                                    }
+                                    if (method_exists($scriptClass, 'update')) {
+                                        $updates = $script->update($adapter);
+
+                                        foreach($updates as $update) {
+                                            if ($update['status'] === false) {
+                                                $success = false;
+                                                $failure_msg .= $update['message'] . "\n";
+                                            }
+                                        }
+
+                                        if (in_array(false, $updates, true)) {
+                                            $success = false;
+                                            $failure_msg = array_search(false, $updates, true);
+                                        }
+                                    }
+                                    if (method_exists($scriptClass, 'postflight')) {
+                                        $script->postflight('update', $adapter);
+                                    }
+
+                                    break;
                                 default :
+                                    ob_start();
                                     if (method_exists($scriptClass, 'preflight')) {
                                         $script->preflight('update', $adapter);
                                     }
@@ -395,6 +431,7 @@ class UpdateCli extends JApplicationCli
                                     if (method_exists($scriptClass, 'postflight')) {
                                         $script->postflight('update', $adapter);
                                     }
+                                    ob_end_clean();
                                     break;
                             }
 
@@ -429,11 +466,6 @@ class UpdateCli extends JApplicationCli
                 $success = false;
             }
 
-            # Skip html contents from scriptfiles
-            if (ob_get_length() > 0) {
-                ob_end_clean();
-            }
-
             $this->schema_version = $this->getSchemaVersion($elementArr['extension_id']);
 
             # Check success of custom updates, if true overwrite new version in xml
@@ -452,7 +484,9 @@ class UpdateCli extends JApplicationCli
                     $this->out("-> " . count($component_logs) . " sql statements executed");
                 }
 
-                $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+                if(empty($options) || !isset($options['dry-run'])) {
+                    $manifest_cache['version'] = $this->refreshManifestCache($elementArr['extension_id'], $elementArr['element']);
+                }
 
                 if ($this->verbose) {
                     $this->out("\nVersions...");
@@ -463,37 +497,13 @@ class UpdateCli extends JApplicationCli
                 }
             } else {
                 echo("Fail");
+                echo "\nReason: $failure_msg";
                 $this->count_fails++;
             }
         }
     }
 
     # Utils functions
-
-    /**
-     * Verfiy if this is the first run of the script and setup correctly com_emundus version
-     * @param $id
-     * @return string
-     */
-    private function checkFirstRun($id)
-    {
-        $this->out("** Script first run **");
-        # Init schema version inferior to xml file
-        $tmp_version = explode(".", $this->manifest_xml->version);
-        if ($tmp_version[2] == 0){
-            $tmp_version[1]--;
-            $tmp_version[2] = "9";
-        } else{
-            $tmp_version[2]--;
-        }
-        $tmp_version = implode(".", $tmp_version);
-        $this->schema_version = $tmp_version;
-        $this->updateSchema($id, null, null, $this->schema_version);
-        $this->firstrun = true;
-
-        return $tmp_version;
-    }
-
     /**
      * Command Line helper function
      * @return void
@@ -712,12 +722,18 @@ class UpdateCli extends JApplicationCli
             $this->schema_version = $cache_version;
         }
 
+
         # We couldn't have schema version ahead of xml version
-        if (version_compare($this->schema_version, $this->manifest_xml->version) > 0) {
-            $this->out("-> " . $element . " : schema version ahead of manifest file version");
+        try {
+            if (version_compare($this->schema_version, $this->manifest_xml->version) > 0) {
+                throw new Exception();
+            }
+        } catch (Exception $e) {
+            $this->out("ERROR -> " . $element . " : schema version ahead of manifest file version");
             $this->count_fails++;
-            return array(0, 0);
+            exit();
         }
+
 
         # Prepare files for execution
         if (!empty($files)) {
@@ -949,6 +965,39 @@ class UpdateCli extends JApplicationCli
         $dom->getElementsByTagName("version")->item(0)->appendChild($dom->createTextNode($version));
         $dom->save($xml_path);
     }
+
+    /**
+     * Display a log with specific type
+     * @param $str
+     * @param $type
+     *
+     *
+     * @since version 1.33.0
+     */
+    private function colorLog($str, $type = 'i')
+    {
+        $results = $str;
+        switch ($type) {
+            case 'e': //error
+                $results = "\033[31m$str \033[0m\n";
+                break;
+            case 's': //success
+                $results = "\033[32m$str \033[0m\n";
+                break;
+            case 'w': //warning
+                $results = "\033[33m$str \033[0m\n";
+                break;
+            case 'i': //info
+                $results = "\033[36m$str \033[0m\n";
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        return $results;
+    }
 }
+
 
 JApplicationCli::getInstance('UpdateCli')->execute();

@@ -235,6 +235,10 @@
     list-style: none;
 }
 
+.em-campaign-dropfiles li span {
+    margin-left: 8px;
+}
+
 .em-campaign-dropfiles ul a:focus {
     color: green;
 }
@@ -514,9 +518,6 @@
     .campaign-content .below-content a{
         width: 19.3%;
     }
-    .campaingapplycontent strong {
-        width: 150px;
-    }
 }
 
 @media all and (max-width: 1227px) {
@@ -529,10 +530,6 @@
 @media all and (max-width: 1239px) {
     .left-side {
         width: 65% !important;
-    }
-
-    .right-side {
-        width: 35% !important;
     }
 
     .campaigns-list a {

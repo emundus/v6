@@ -578,15 +578,14 @@ class EmundusControllerMessages extends JControllerLegacy {
         foreach ($fnums as $fnum) {
             $programme = $m_campaign->getProgrammeByTraining($fnum->training);
 
+            $cc_custom = [];
             $emundus_user = $m_users->getUserById($fnum->applicant_id)[0];
             if(isset($emundus_user->email_cc) && !empty($emundus_user->email_cc)) {
                 if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $emundus_user->email_cc) === 1) {
-                    if (!is_array($cc)) {
-                        $cc = [];
-                    }
-                    $cc[] = $emundus_user->email_cc;
+                    $cc_custom[] = $emundus_user->email_cc;
                 }
             }
+            $cc_final = array_merge($cc,$cc_custom);
 
 
             $toAttach = [];
@@ -654,8 +653,8 @@ class EmundusControllerMessages extends JControllerLegacy {
             $mailer->Encoding = 'base64';
             $mailer->setBody($body);
 
-            if (!empty($cc)) {
-                $mailer->addCc($cc);
+            if (!empty($cc_final)) {
+                $mailer->addCc($cc_final);
             }
 
             if (!empty($bcc)) {

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -117,7 +117,7 @@ if(!empty($this->user->user_id)){
 								</tr>
 							</thead>
 							<tbody>
-						<?php if(bccomp($this->user->user_params->user_partner_click_fee,0,5)){ ?>
+						<?php if(bccomp(sprintf('%F',$this->user->user_params->user_partner_click_fee),0,5)){ ?>
 						<tr id="affiliate_unpaid_clicks">
 							<td class="key">
 								<?php echo JText::_( 'CLICKS_UNPAID_AMOUNT' );
@@ -140,7 +140,7 @@ if(!empty($this->user->user_id)){
 						</tr>
 						<?php
 						}
-						if(bccomp($this->user->user_params->user_partner_lead_fee,0,5)){
+						if(bccomp(sprintf('%F',$this->user->user_params->user_partner_lead_fee),0,5)){
 						?>
 						<tr id="affiliate_unpaid_leads">
 							<td class="key">
@@ -164,7 +164,7 @@ if(!empty($this->user->user_id)){
 						</tr>
 						<?php
 						}
-						if(bccomp($this->user->user_params->user_partner_percent_fee,0,5) || bccomp($this->user->user_params->user_partner_flat_fee,0,5)){ ?>
+						if(bccomp(sprintf('%F',$this->user->user_params->user_partner_percent_fee),0,5) || bccomp(sprintf('%F',$this->user->user_params->user_partner_flat_fee),0,5)){ ?>
 						<tr id="affiliate_unpaid_sales">
 							<td class="key">
 								<?php echo JText::_( 'SALES_UNPAID_AMOUNT' ); if($this->advanced_stats){

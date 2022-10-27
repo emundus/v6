@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="hikashop">
-	<name>Hikashop Add to Cart notification Plugin</name>
-	<creationDate>09 novembre 2020</creationDate>
-	<version>4.4.0</version>
+	<name>Hikashop Cart notification Plugin</name>
+	<creationDate>25 septembre 2022</creationDate>
+	<version>4.6.2</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2011-2020 OBSIDEV. All rights reserved.</copyright>
+	<copyright>(C) 2011-2022 OBSIDEV. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin display notifications when a product is added to the cart</description>
 	<files>
@@ -29,6 +29,10 @@
 			<option value="bottom center">HIKA_CARTNOTIF_POS_BOTTOMCENTER</option>
 			<option value="bottom left">HIKA_CARTNOTIF_POS_BOTTOMLEFT</option>
 			<option value="left">HIKA_CARTNOTIF_POS_LEFT</option>
+		</param>
+		<param name="notification_click_to_checkout" type="list" default="1" label="HIKA_CARTNOTIFICATION_NOTIFICATION_CLICK_TO_CHECKOUT" description="HIKA_CARTNOTIFICATION_NOTIFICATION_CLICK_TO_CHECKOUT_DESC">
+			<option value="0">HIKASHOP_NO</option>
+			<option value="1">HIKASHOP_YES</option>
 		</param>
 		<param name="delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_DELAY_LBL" description="HIKA_CARTNOTIFICATION_DELAY_DESC"/>
 		<param name="auto_redirect" type="list" default="on_success" label="HIKA_CARTNOTIFICATION_REDIRECT" description="HIKA_CARTNOTIFICATION_REDIRECT_DESC">
@@ -60,12 +64,16 @@
 					<option value="bottom left">HIKA_CARTNOTIF_POS_BOTTOMLEFT</option>
 					<option value="left">HIKA_CARTNOTIF_POS_LEFT</option>
 				</field>
-				<field name="delay" type="text" size="50" default="5000" showon="notification_reference!:popup" label="HIKA_CARTNOTIFICATION_DELAY_LBL" description="HIKA_CARTNOTIFICATION_DELAY_DESC" />
-				<field name="auto_redirect" type="list" default="on_success" showon="notification_reference!:popup" label="HIKA_CARTNOTIFICATION_REDIRECT" description="HIKA_CARTNOTIFICATION_REDIRECT_DESC">
+				<field name="notification_click_to_checkout" type="list" default="1" showon="notification_reference!:popup" label="HIKA_CARTNOTIFICATION_NOTIFICATION_CLICK_TO_CHECKOUT" description="HIKA_CARTNOTIFICATION_NOTIFICATION_CLICK_TO_CHECKOUT_DESC">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
+				<field name="delay" type="text" size="50" default="5000" label="HIKA_CARTNOTIFICATION_DELAY_LBL" description="HIKA_CARTNOTIFICATION_DELAY_DESC" />
+				<field name="auto_redirect" type="list" default="on_success" label="HIKA_CARTNOTIFICATION_REDIRECT" description="HIKA_CARTNOTIFICATION_REDIRECT_DESC">
 					<option value="on_success">HIKA_CARTNOTIFICATION_ON_SUCCESS</option>
 					<option value="no_redirect">HIKA_CARTNOTIFICATION_NO_REDIRECT</option>
 				</field>
-				<field name="auto_redirect_delay" type="text" size="50" default="4000" showon="auto_redirect:on_success[AND]notification_reference!:popup" label="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_LBL" description="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_DESC" />
+				<field name="auto_redirect_delay" type="text" size="50" default="4000" showon="auto_redirect:on_success" label="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_LBL" description="HIKA_CARTNOTIFICATION_REDIRECT_DELAY_DESC" />
 				<field name="guest_wishlist_redirect" type="list" default="0" label="HIKA_CARTNOTIFICATION_GUEST_WISHLIST_REDIRECT" description="HIKA_CARTNOTIFICATION_GUEST_WISHLIST_REDIRECT_DESC">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

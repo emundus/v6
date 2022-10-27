@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -34,11 +34,29 @@ class hikashopPaymentClass extends hikashopClass {
 		return $cachedElements[$id];
 	}
 
+	public function delete(&$elements) {
+		$do = true;
+		JPluginHelper::importPlugin('hikashop');
+		$app = JFactory::getApplication();
+		$app->triggerEvent('onBeforeHikaPluginDelete', array('payment', &$elements, &$do));
+
+		if(!$do)
+			return false;
+
+		$status = parent::delete($elements);
+		if($status) {
+			$app->triggerEvent('onAfterHikaPluginDelete', array('payment', &$elements));
+		}
+		return $status;
+	}
+
+
 	function save(&$element, $reorder = true) {
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
 		$do = true;
-		if(empty($element->payment_id))
+		$new = empty($element->payment_id);
+		if($new)
 			$app->triggerEvent('onBeforeHikaPluginCreate', array('payment', &$element, &$do));
 		else {
 			if(!isset($element->old))
@@ -66,15 +84,18 @@ class hikashopPaymentClass extends hikashopClass {
 
 		$status = parent::save($element);
 		if($status){
+			if(empty($element->payment_id))
+				$element->payment_id = $status;
+			if($new)
+				$app->triggerEvent('onAfterHikaPluginCreate', array('payment', &$element));
+			else
+				$app->triggerEvent('onAfterHikaPluginUpdate', array('payment', &$element));
 			$this->get('reset_cache');
 			$translationHelper = hikashop_get('helper.translation');
 			if($translationHelper->isMulti()) {
 				$columns = array('payment_name', 'payment_description');
 				$translationHelper->checkTranslations($element, $columns);
 			}
-		}
-		if($status && empty($element->payment_id)) {
-			$element->payment_id = $status;
 			if($reorder) {
 				$orderHelper = hikashop_get('helper.order');
 				$orderHelper->pkey = 'payment_id';
@@ -105,7 +126,7 @@ class hikashopPaymentClass extends hikashopClass {
 			$shipping = $order->shipping[0]->shipping_type.'_'.$order->shipping[0]->shipping_id;
 		$rates = $pluginClass->getMethods('payment', '', $shipping, $currency);
 
-		if(bccomp($order->total->prices[0]->price_value, 0, 5) && !empty($rates)) {
+		if(bccomp(sprintf('%F',$order->total->prices[0]->price_value), 0, 5) && !empty($rates)) {
 			$currencyClass = hikashop_get('class.currency');
 			$currencyClass->convertPayments($rates);
 		}
@@ -191,7 +212,16 @@ class hikashopPaymentClass extends hikashopClass {
 					continue;
 				}
 			}
+			if(!empty($method->payment_params->payment_zip_regex)) {
+				$checkDone = false;
+				if(!empty($order->shipping_address) && !empty($order->shipping_address->address_post_code) && preg_match($method->payment_params->payment_zip_regex, $order->shipping_address->address_post_code, $matches))
+						$checkDone = true;
 
+				if(!$checkDone) {
+					unset($methods[$k]);
+					continue;
+				}
+			}
 			$currencyClass = hikashop_get('class.currency');
 			if(!empty($method->payment_params->payment_percentage))
 				$methods[$k]->payment_price_without_percentage = $methods[$k]->payment_price;
@@ -481,10 +511,10 @@ class hikashopPaymentClass extends hikashopClass {
 				$row->plugin_params = hikashop_unserialize($row->payment_params);
 
 			$row->col_display_price = '';
-			if(bccomp($row->payment_price, 0, 3)) {
+			if(bccomp(sprintf('%F',$row->payment_price), 0, 3)) {
 				$row->col_display_price = $view->currencyClass->displayPrices(array($row), 'payment_price', array('payment_params', 'payment_currency'));
 			}
-			if(isset($row->plugin_params->payment_percentage) && bccomp($row->plugin_params->payment_percentage, 0, 3)) {
+			if(isset($row->plugin_params->payment_percentage) && bccomp(sprintf('%F',$row->plugin_params->payment_percentage), 0, 3)) {
 				$row->col_display_price .= '<br/>';
 				$row->col_display_price .= $row->plugin_params->payment_percentage.'%';
 			}
@@ -500,11 +530,11 @@ class hikashopPaymentClass extends hikashopClass {
 			if(!empty($row->plugin_params->payment_max_weight))
 				$restrictions[] = JText::_('SHIPPING_MAX_WEIGHT') . ':' . $row->plugin_params->payment_max_weight . $row->plugin_params->payment_weight_unit;
 
-			if(isset($row->plugin_params->payment_min_price) && bccomp($row->plugin_params->payment_min_price, 0, 5)) {
+			if(isset($row->plugin_params->payment_min_price) && bccomp(sprintf('%F',$row->plugin_params->payment_min_price), 0, 5)) {
 				$row->payment_min_price = $row->plugin_params->payment_min_price;
 				$restrictions[] = JText::_('SHIPPING_MIN_PRICE') . ':' . $view->currencyClass->displayPrices(array($row), 'payment_min_price', 'payment_currency');
 			}
-			if(isset($row->plugin_params->payment_max_price) && bccomp($row->plugin_params->payment_max_price, 0, 5)) {
+			if(isset($row->plugin_params->payment_max_price) && bccomp(sprintf('%F',$row->plugin_params->payment_max_price), 0, 5)) {
 				$row->payment_max_price = $row->plugin_params->payment_max_price;
 				$restrictions[] = JText::_('SHIPPING_MAX_PRICE') . ':' . $view->currencyClass->displayPrices(array($row), 'payment_max_price', 'payment_currency');
 			}
@@ -540,5 +570,31 @@ class hikashopPaymentClass extends hikashopClass {
 			$row->col_display_restriction = implode('<br/>', $restrictions);
 		}
 		unset($row);
+	}
+
+	public function &getNameboxData($typeConfig, &$fullLoad, $mode, $value, $search, $options) {
+		$ret = array(
+			0 => array(),
+			1 => array()
+		);
+
+		$query = 'SELECT * FROM ' . hikashop_table('payment') . ' WHERE payment_published = 1 ORDER BY payment_ordering';
+		$this->db->setQuery($query);
+		$ret[0] = $this->db->loadObjectList('payment_id');
+
+		if(!empty($value)) {
+			if($mode == hikashopNameboxType::NAMEBOX_SINGLE) {
+				$ret[1] = $ret[0][$value];
+			} else {
+				if(!is_array($value))
+					$value = array($value);
+				foreach($value as $v) {
+					if(isset($ret[0][$v]))
+						$ret[1][$v] = $ret[0][$v];
+				}
+			}
+		}
+
+		return $ret;
 	}
 }

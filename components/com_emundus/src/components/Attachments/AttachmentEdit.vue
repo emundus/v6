@@ -11,6 +11,7 @@
               type="text"
               v-model="attachmentDescription"
               :disabled="!canUpdate"
+              @focusout="saveChanges"
           >
 					</textarea>
         </div>
@@ -23,9 +24,7 @@
 			    	error: attachmentIsValidated == 0,
 			    }"
         >
-          <label for="status">{{
-              translate("COM_EMUNDUS_ATTACHMENTS_CHECK")
-            }}</label>
+          <label for="status">{{translate("COM_EMUNDUS_ATTACHMENTS_CHECK") }}</label>
           <select
               name="status"
               v-model="attachmentIsValidated"
@@ -34,18 +33,12 @@
           >
             <option value=1>{{ translate("VALID") }}</option>
             <option value=0>{{ translate("INVALID") }}</option>
-            <option value=2>
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}
-            </option>
-            <option value=-2>
-              {{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}
-            </option>
+            <option value=2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WARNING") }}</option>
+            <option value=-2>{{ translate("COM_EMUNDUS_ATTACHMENTS_WAITING") }}</option>
           </select>
         </div>
         <div class="input-group" v-if="canUpdate">
-          <label for="replace">
-            {{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label
-          >
+          <label for="replace">{{ translate("COM_EMUNDUS_ATTACHMENTS_REPLACE") }}</label>
           <input
               type="file"
               name="replace"
@@ -54,25 +47,23 @@
           />
         </div>
         <div class="input-group">
-          <label for="can_be_viewed">{{
-              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED")
-            }}</label>
+          <label for="can_be_viewed">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED") }}</label>
           <input
               type="checkbox"
               name="can_be_viewed"
               v-model="attachmentCanBeViewed"
               :disabled="!canUpdate"
+              @click="saveChanges"
           />
         </div>
         <div class="input-group">
-          <label for="can_be_deleted">{{
-              translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED")
-            }}</label>
+          <label for="can_be_deleted">{{translate("COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED") }}</label>
           <input
               type="checkbox"
               name="can_be_deleted"
               v-model="attachmentCanBeDeleted"
               :disabled="!canUpdate"
+              @click="saveChanges"
           />
         </div>
       </div>
@@ -94,9 +85,7 @@
           <span>{{ getUserNameById(attachment.modified_by) }}</span>
         </div>
         <div v-if="attachment.modified">
-					<span>{{
-              translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE")
-            }}</span>
+					<span>{{translate("COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE") }}</span>
           <span>{{ formattedDate(attachment.modified) }}</span>
         </div>
         <!-- TODO: add file size -->
@@ -112,11 +101,9 @@
 				  menu_open
 			  </span>
 		  </div>
-		  <div class="actions">
-			  <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">
-				  {{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}
-			  </button>
-		  </div>
+		  <!--<div class="actions">
+			  <button v-if="canUpdate" @click="saveChanges" class="em-primary-button">{{ translate("COM_EMUNDUS_ATTACHMENTS_SAVE") }}</button>
+		  </div>-->
 	  </div>
     <div v-if="error" class="error-msg">{{ errorMessage }}</div>
   </div>
@@ -213,17 +200,17 @@ export default {
             id: this.attachment.aid,
           });
         }
-
-        this.$emit("saveChanges");
       } else {
         this.showError(response.msg);
       }
     },
     updateFile(event) {
       this.file = event.target.files[0];
+			this.saveChanges();
     },
     updateAttachmentStatus(event) {
       this.attachmentIsValidated = event.target.value;
+	    this.saveChanges();
     },
     showError(error) {
       this.error = true;
@@ -252,7 +239,7 @@ export default {
   },
   watch: {
     "$store.state.attachment.selectedAttachment": function () {
-      // check if selected attchment is not an empty object
+      // check if selected attachment is not an empty object
       const keys = Object.keys(this.$store.state.attachment.selectedAttachment);
 
       if (keys.length > 0) {

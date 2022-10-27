@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	4.4.0
+ * @version	4.6.2
  * @author	hikashop.com
- * @copyright	(C) 2010-2020 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2022 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -35,8 +35,8 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 		if(!empty($itemid))
 			$extra = '&Itemid='.$itemid;
 
-		$item->url   = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias."&category_pathway=" . $item->catid.$extra;
-		$item->route = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias."&category_pathway=" . $item->catid.$extra;
+		$item->url   = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
+		$item->route = "index.php?option=com_hikashop&ctrl=product&task=show&cid=" . $item->id."&name=".$item->alias.$extra;
 		$item->path  = FinderIndexerHelper::getContentPath($item->route);
 
 		$title = $this->getItemMenuTitle($item->url);
@@ -48,12 +48,30 @@ class plgFinderHikashop extends plgFinderHikashopBridge {
 
 		$item->metaauthor = $item->metadata->get('author');
 
+		$class = hikashop_get('class.product');
+		$data = $class->getProduct($item->id);
+		if(!empty($data->images) && count($data->images)) {
+			$image = reset($data->images);
+		}
+		$imageHelper = hikashop_get('helper.image');
+		$imageHelper->uploadFolder_url =  rtrim(HIKASHOP_LIVE,'/').'/';
+		$append = trim(str_replace(array(JPATH_ROOT, DS), array('', '/'),$imageHelper->uploadFolder), '/');
+		if(!empty($append)) {
+			$imageHelper->uploadFolder_url .= $append.'/';
+		}
+		$img = $imageHelper->getThumbnail(@$image->file_path, array('width' => $imageHelper->main_thumbnail_x, 'height' => $imageHelper->main_thumbnail_y), array('default' => true));
+		if($img->success) {
+			$item->imageUrl = $img->url;
+			$item->imageAlt = @$image->file_name;
+		}
+
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metakey');
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metadesc');
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'metaauthor');
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'author');
 		$item->addInstruction(FinderIndexer::META_CONTEXT, 'created_by_alias');
 
+		$this->item = $item;
 		$item->state = $this->translateState($item->state, $item->cat_state);
 
 		$item->addTaxonomy('Type', 'Product');
