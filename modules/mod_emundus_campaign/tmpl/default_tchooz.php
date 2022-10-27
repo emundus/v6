@@ -195,7 +195,12 @@ $CurPageURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
                                 </div>
                             <?php endif; ?>
 
-                            <?= (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($dteEnd)) ) ? JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset : ''; ?>
+                            <?php if (!empty($mod_em_campaign_show_timezone) && !(strtotime($now) > strtotime($campaign_pinned->end_date)) ) : ?>
+                                <div class="mod_emundus_campaign__date em-flex-row">
+                                    <span class="material-icons em-text-neutral-600 em-font-size-16">public</span>
+                                    <p class="em-text-neutral-600 em-font-size-16"><?php echo JText::_('MOD_EM_CAMPAIGN_TIMEZONE') . $offset; ?></p>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
