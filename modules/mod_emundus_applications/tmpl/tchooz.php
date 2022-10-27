@@ -15,13 +15,20 @@ $dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 $dateTime = $dateTime->setTimezone(new DateTimeZone($site_offset));
 $now = $dateTime->format('Y-m-d H:i:s');
 
-
 $tmp_applications = $applications;
+foreach ($applications as $key => $application) {
+    if ($application->published == '1' || ($show_remove_files == 1 && $application->published == '-1') || ($show_archive_files == 1 && $application->published == '0')){
+        continue;
+    } else {
+        unset($tmp_applications[$key]);
+    }
+}
+
 $applications = [];
 $status_group = [];
 $missing_status = [];
 
-if(!empty($groups)) {
+if(!empty($groups) && !empty($tmp_applications)) {
     foreach ($groups as $key => $group) {
         $status_to_check = explode(',', $group->mod_em_application_group_status);
         foreach ($status_to_check as $step) {
@@ -41,14 +48,14 @@ if(!empty($groups)) {
     }
 
     foreach ($groups as $key => $group) {
-        $applications[$key] = array_filter($tmp_applications, function ($application) use ($group) {
+        $applications[$key]['applications'] = array_filter($tmp_applications, function ($application) use ($group) {
             $status_to_check = explode(',', $group->mod_em_application_group_status);
             return in_array($application->status,$status_to_check) !== false;
         });
         $applications[$key]['label'] = $group->mod_em_application_group_title;
     }
-} else {
-    $applications['all'] = $tmp_applications;
+} elseif(!empty($tmp_applications)) {
+    $applications['all']['applications'] = $tmp_applications;
 }
 
 ksort($applications);
@@ -57,31 +64,60 @@ ksort($applications);
 <div class="mod_emundus_applications___header">
     <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
 
-    <?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
-        <a id="add-application" class="btn btn-success em-mt-32" style="width: auto" href="<?= $cc_list_url; ?>">
-            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
-        </a>
-    <?php endif; ?>
+    <?php if (sizeof($applications) > 0) : ?>
+        <div class="em-flex-column em-flex-align-start">
+            <?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
+                <a id="add-application" class="btn btn-success em-mt-32" style="width: 40%" href="<?= $cc_list_url; ?>">
+                    <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+                </a>
+            <?php endif; ?>
+            <?php if ($show_show_campaigns) : ?>
+                <a id="add-application" class="btn btn-success em-mt-16 em-mb-8" style="width: 40%" href="<?= $campaigns_list_url; ?>">
+                    <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
+                </a>
+            <?php endif; ?>
+        </div>
 
-    <span class="mod_emundus_applications___header_desc"><?php echo $description; ?></span>
+        <span class="mod_emundus_applications___header_desc"><?php echo $description; ?></span>
 
-    <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
-        <a id="add-application" class="btn btn-success em-mt-32" style="width: auto" href="<?= $cc_list_url; ?>">
-            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
-        </a>
-        <hr>
+        <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
+            <a id="add-application" class="btn btn-success em-mt-32" style="width: auto" href="<?= $cc_list_url; ?>">
+                <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+            </a>
+            <hr>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 
 <div class="em-mt-32">
-    <?php if (!empty($applications)) : ?>
+    <?php if (sizeof($applications) == 0) : ?>
+        <hr>
+        <div class="mod_emundus_applications__list_content--default">
+            <p class="em-text-neutral-900 em-h5 em-applicant-title-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE') ?></p><br/>
+            <p class="em-text-neutral-900 em-default-font em-font-weight-500 em-mb-4"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT') ?></p>
+            <p class="em-text-neutral-600 em-default-font"><?php echo JText::_('MOD_EM_APPLICATIONS_NO_FILE_TEXT_2') ?></p><br/>
+            <div class="em-flex-row-justify-end mod_emundus_campaign__buttons em-mt-32">
+                <?php if ($show_show_campaigns) : ?>
+                    <a id="add-application" class="em-secondary-button em-w-auto em-default-font em-applicant-border-radius" style="width: auto" href="<?= $campaigns_list_url; ?>">
+                        <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_SHOW_CAMPAIGNS'); ?></span>
+                    </a>
+                <?php endif; ?>
+                <?php if ($show_add_application && $applicant_can_renew) : ?>
+                    <a id="add-application" class="em-applicant-primary-button em-w-auto em-ml-8 em-default-font em-applicant-border-radius" style="width: auto" href="<?= $cc_list_url; ?>">
+                        <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php else : ?>
         <?php foreach ($applications as $key => $group) : ?>
 
+        <?php if (sizeof($group['applications']) > 0) : ?>
         <div class="em-mb-44">
             <p class="em-h5 em-mb-24"><?php echo JText::_($group['label']) ?></p>
 
             <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content">
-                <?php foreach ($group as $application) : ?>
+                <?php foreach ($group['applications'] as $application) : ?>
 
                 <?php
                 $is_admission = in_array($application->status, $admission_status);
@@ -270,11 +306,9 @@ ksort($applications);
                 <?php endforeach; ?>
         </div>
         </div>
+        <?php endif; ?>
         <?php endforeach; ?>
-    <?php else :
-        echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE');
-        echo '<hr>';
-    endif; ?>
+    <?php endif; ?>
 </div>
 
 
