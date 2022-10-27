@@ -784,24 +784,29 @@ class EmundusHelperFabrik {
     }
 
     static function getTableFromFabrik($id, $object = 'list') {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $table = '';
 
-        try {
+        if (!empty($id)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
             $query->select('fl.db_table_name')
                 ->from($db->quoteName('#__fabrik_lists','fl'));
-            if($object == 'form'){
+            if ($object == 'form') {
                 $query->leftJoin($db->quoteName('#__fabrik_forms','ff').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ff.id'))
                     ->where($db->quoteName('ff.id') . ' = ' . $db->quote($id));
             } else {
                 $query->where($db->quoteName('fl.id') . ' = ' . $db->quote($id));
             }
 
-            $db->setQuery($query);
-            return $db->loadResult();
-        } catch (Exception $e) {
-            JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type '. $object .' ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
-            return false;
+            try {
+                $db->setQuery($query);
+                $table = $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type '. $object .' ' . $id . ' : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), JLog::ERROR, 'com_emundus');
+            }
         }
+
+        return $table;
     }
 }
