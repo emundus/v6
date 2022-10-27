@@ -870,3 +870,49 @@ function generate_letter() {
         }
     });
 }
+
+function generate_trombinoscope(fnums, data)
+{
+    tinyMCE.execCommand('mceToggleEditor', false, 'trombi_head');
+    tinyMCE.execCommand('mceToggleEditor', false, 'trombi_foot');
+
+    let string_fnums;
+    if (fnums === 'all') {
+        string_fnums = '["all"]';
+    } else {
+        string_fnums = fnums;
+    }
+
+    $(this).prop('disabled', true);
+
+    $.ajax({
+        type: 'POST',
+        url: 'index.php?option=com_emundus&controller=trombinoscope&task=generate_pdf',
+        async: false,
+        dataType: "json",
+        data : {
+            string_fnums: string_fnums,
+            gridL: data.selected_grid_width,
+            gridH: data.selected_grid_height,
+            margin: data.selected_margin,
+            template: data.selected_tmpl,
+            header: data.header,
+            footer: data.footer,
+            format: data.format,
+            generate: data.string_generate,
+            checkHeader: data.selected_check,
+            border: data.selected_border,
+            headerHeight : data.header_height
+        },
+        success: function (data) {
+            Swal.fire({
+                html: '<a href="' +data.pdf_url + '" target="_blank">Télécharger le fichier</a>'
+            })
+            removeLoader();
+        },
+        error: function (xhr) {
+            console.log(xhr.responseText);
+            removeLoader();
+        }
+    });
+}

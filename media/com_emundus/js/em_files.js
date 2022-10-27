@@ -1221,6 +1221,30 @@ function runAction(action, url = '') {
             });
             break;
 
+        // Generate trombinoscope
+        case 31:
+            addLoader();
+            const iframe = document.querySelector('#iframe-trombinoscope');
+            const gridWidthSelect = iframe.contentWindow.document.querySelector('#trombi_grid_width');
+            const gridHeightSelect = iframe.contentWindow.document.querySelector('#trombi_grid_height');
+
+            const trombinoscopeData = {
+                selected_grid_width: gridWidthSelect.options[gridWidthSelect.selectedIndex].value,
+                selected_grid_height: gridHeightSelect.options[gridHeightSelect.selectedIndex].value,
+                selected_margin: iframe.contentWindow.document.querySelector('#trombi_margin').value,
+                selected_tmpl: decodeEntity(iframe.contentWindow.document.querySelector('#trombi_tmpl').innerHTML),
+                header: decodeEntity(iframe.contentWindow.document.querySelector('#trombi_head').innerHTML),
+                header_height: iframe.contentWindow.document.querySelector('#trombi_header_height').value,
+                footer: iframe.contentWindow.document.querySelector('#trombi_foot').value,
+                format:  iframe.contentWindow.document.querySelector('#selected_format').value,
+                selected_check:  iframe.contentWindow.document.querySelector('#trombi_check').value,
+                selected_border: iframe.contentWindow.document.querySelector('#trombi_border').value,
+                string_generate:  iframe.contentWindow.document.querySelector('#string_generate').value
+            };
+
+            generate_trombinoscope(iframe.contentWindow.document.querySelector('#string_fnums').innerText, trombinoscopeData);
+            break;
+
         // Export to external app
         case 33:
             var type = $('.modal-body').attr('data-export-type');
@@ -1501,9 +1525,13 @@ const checkElement = async selector => {
 $(document).ready(function() {
     $('#check').removeClass('em-check-all-all');
 
+    const headerNav = document.getElementById('g-navigation');
+
     // Fix actions and filters to sticky
-    $('.em-menuaction').css('top',document.getElementById('g-navigation').offsetHeight + 'px');
-    $('.side-panel').css('top',document.getElementById('g-navigation').offsetHeight + 'px');
+    if (headerNav) {
+        $('.em-menuaction').css('top', headerNav.offsetHeight + 'px');
+        $('.side-panel').css('top', headerNav.offsetHeight + 'px');
+    }
 
     var lastVal = {};
 
@@ -4721,14 +4749,10 @@ $(document).ready(function() {
 
             // Trombinoscope (letter for a group of files)
             case 31:
-                $('#can-val').empty();
-                addLoader();
-                $('.modal-footer').hide();
-                $('.modal-dialog').addClass('modal-lg');
-                //var url = 'index.php?option=com_emundus&view=email&tmpl=component&Itemid='+itemId+'&fnums='+encodeURIComponent(fnums)+'&desc=2';
-                $('.modal-body').empty();
-                removeLoader();
-                $('.modal-body').append('<iframe src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>');
+                swal_popup_class = 'em-w-auto';
+                swal_confirm_button = 'COM_EMUNDUS_TROMBI_GENERATE';
+                title = 'COM_EMUNDUS_TROMBINOSCOPE';
+                html = '<iframe id="iframe-trombinoscope" src="'+url+'" style="width:'+window.getWidth()*0.8+'px;height:'+window.getHeight()*0.8+'px;border:none;"></iframe>';
                 break;
 
             case 35:

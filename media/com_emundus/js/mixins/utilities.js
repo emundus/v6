@@ -65,11 +65,11 @@ function getSearchBox(id, fatherId) {
 
 function componentToHex(c) {
     var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
+    return hex.length == 1 ? '0' + hex : hex;
 }
 
 function rgbToHex(r, g, b) {
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
 
 function getXMLHttpRequest() {
@@ -78,17 +78,23 @@ function getXMLHttpRequest() {
     if (window.XMLHttpRequest || window.ActiveXObject) {
         if (window.ActiveXObject) {
             try {
-                xhr = new ActiveXObject("Msxml2.XMLHTTP");
+                xhr = new ActiveXObject('Msxml2.XMLHTTP');
             } catch(e) {
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                xhr = new ActiveXObject('Microsoft.XMLHTTP');
             }
         } else {
             xhr = new XMLHttpRequest();
         }
     } else {
-        alert("Votre navigateur ne supporte pas l'objet XMLHTTPRequest...");
+        alert('Votre navigateur ne supporte pas l\'objet XMLHTTPRequest...');
         return null;
     }
 
     return xhr;
+}
+
+function decodeEntity(inputStr) {
+    var textarea = document.createElement('textarea');
+    textarea.innerHTML = inputStr;
+    return textarea.value;
 }
