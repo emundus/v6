@@ -10,26 +10,23 @@
 defined('_JEXEC') or die;
 
 include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
-$m_profile = new EmundusModelProfile;
+$m_profile = new EmundusModelProfile();
 
 $user = JFactory::getSession()->get('emundusUser');
-
-// show application files if applicant profile like current profile and nothing if not
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
-$specific_profiles = $params->get('for_specific_profiles', "");
-
+$specific_profiles = $params->get('for_specific_profiles', '');
 if (!empty($specific_profiles)) {
-    $specific_profiles = explode(",", $specific_profiles);
+    $specific_profiles = explode(',',$specific_profiles);
 }
 
 if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles))) {
-    // Include the latest functions only once
     require_once dirname(__FILE__).'/helper.php';
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'application.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'list.php');
     require_once (JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'access.php');
     include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'emails.php');
+    include_once(JPATH_BASE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
     $document = JFactory::getDocument();
     $document->addStyleSheet("media/com_emundus/lib/bootstrap-336/css/bootstrap.min.css" );
@@ -50,7 +47,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $eMConfig = JComponentHelper::getParams('com_emundus');
     $status_for_send = explode(',', $eMConfig->get('status_for_send', 0));
     $status_for_delete = $eMConfig->get('status_for_delete', null);
-    if (!empty($status_for_delete) || $status_for_delete == '0' ) {
+    if (!empty($status_for_delete) || $status_for_delete == '0') {
         $status_for_delete = explode(',', $status_for_delete);
     }
 
@@ -78,7 +75,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $add_admission_prefix = $params->get('add_admission_prefix', 1);
     $absolute_urls = $params->get('absolute_urls', 1);
 
-    $show_status = $params->get('show_status') ? explode(',', $params->get('show_status')) : null;
+    $show_status = $params->get('show_status') !== null ? explode(',', $params->get('show_status')) : null;
 
     $show_remove_files = $params->get('show_remove_files', 1);
     $show_archive_files = $params->get('show_archived_files', 1);
@@ -94,10 +91,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
     $query_order_by = $order_applications . ' ' . $applications_as_desc;
 
     $file_status = $params->get('file_status', 1);
-
     $file_tags = JText::_($params->get('tags', ''));
-
     $cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
+
+    $groups = $params->get('mod_em_application_group', null);
+    $title_other_section = $params->get('mod_em_application_group_title_other', 'MOD_EMUNDUS_APPLICATIONS_OTHER_FILES');
 
 
     // Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
@@ -127,8 +125,9 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         $user->profile = $h_list->getProfile($user->id);
     }
 
-    $m_application = new EmundusModelApplication;
-    $m_email = new EmundusModelEmails;
+    $m_application = new EmundusModelApplication();
+    $m_email = new EmundusModelEmails();
+    $m_files = new EmundusModelFiles();
 
 
 	$fnums = array_keys($applications);
@@ -207,6 +206,8 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
         }
 
     }
+
+    $status = $m_files->getStatus();
 
 	require JModuleHelper::getLayoutPath('mod_emundus_applications', $layout);
 }

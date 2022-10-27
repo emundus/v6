@@ -18,12 +18,37 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
 $tmp_applications = $applications;
 $applications = [];
-foreach ($tmp_applications as $application) {
-    if(in_array($application->status, $status_for_send)){
-        $applications['in_progress'][] = $application;
-    } else {
-        $applications['sent'][] = $application;
+$status_group = [];
+$missing_status = [];
+
+if(!empty($groups)) {
+    foreach ($groups as $key => $group) {
+        $status_to_check = explode(',', $group->mod_em_application_group_status);
+        foreach ($status_to_check as $step) {
+            $status_group[] = $step;
+        }
     }
+
+    foreach ($status as $step){
+        if(!in_array($step['step'],$status_group)){
+            $missing_status[] = $step['step'];
+        }
+    }
+    if(!empty($missing_status)){
+        $groups->{'mod_em_application_group'.sizeof($groups)} = new stdClass();
+        $groups->{'mod_em_application_group'.sizeof($groups)}->{'mod_em_application_group_status'} = implode(',',$missing_status);
+        $groups->{'mod_em_application_group'.sizeof($groups)}->{'mod_em_application_group_title'} = $title_other_section;
+    }
+
+    foreach ($groups as $key => $group) {
+        $applications[$key] = array_filter($tmp_applications, function ($application) use ($group) {
+            $status_to_check = explode(',', $group->mod_em_application_group_status);
+            return in_array($application->status,$status_to_check) !== false;
+        });
+        $applications[$key]['label'] = $group->mod_em_application_group_title;
+    }
+} else {
+    $applications['all'] = $tmp_applications;
 }
 
 ksort($applications);
@@ -31,11 +56,18 @@ ksort($applications);
 ?>
 <div class="mod_emundus_applications___header">
     <p class="em-h3 em-mb-8"><?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_HELLO') . $user->firstname ?></p>
+
+    <?php if ($show_add_application && ($position_add_application == 3 || $position_add_application == 4) && $applicant_can_renew) : ?>
+        <a id="add-application" class="btn btn-success em-mt-32" style="width: auto" href="<?= $cc_list_url; ?>">
+            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+        </a>
+    <?php endif; ?>
+
     <span class="mod_emundus_applications___header_desc"><?php echo $description; ?></span>
 
     <?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
         <a id="add-application" class="btn btn-success em-mt-32" style="width: auto" href="<?= $cc_list_url; ?>">
-            <span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
+            <span> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span>
         </a>
         <hr>
     <?php endif; ?>
@@ -46,19 +78,19 @@ ksort($applications);
         <?php foreach ($applications as $key => $group) : ?>
 
         <div class="em-mb-44">
-            <?php if($key == 'in_progress') : ?>
-                <p class="em-h5 em-mb-24">Candidature non finalisées</p>
-            <?php endif; ?>
-
-            <?php if($key == 'sent') : ?>
-                <p class="em-h5 em-mb-24">Candidature déposées</p>
-            <?php endif; ?>
+            <p class="em-h5 em-mb-24"><?php echo JText::_($group['label']) ?></p>
 
             <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content">
                 <?php foreach ($group as $application) : ?>
 
                 <?php
                 $is_admission = in_array($application->status, $admission_status);
+                $display_app = true;
+                if(!empty($show_status) && !in_array($application->status, $show_status)) {
+                    $display_app = false;
+                }
+
+                if($display_app) {
                 $state = $application->published;
                 $confirm_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
                 $first_page_url = (($absolute_urls === 1)?'/':'').'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
@@ -234,6 +266,7 @@ ksort($applications);
                         </div>
                     </div>
                 <?php endif; ?>
+                <?php } ?>
                 <?php endforeach; ?>
         </div>
         </div>
@@ -245,7 +278,7 @@ ksort($applications);
 </div>
 
 
-<?php if ($show_add_application && $position_add_application > 0 && $applicant_can_renew) : ?>
+<?php if ($show_add_application && ($position_add_application == 1 || $position_add_application == 2 || $position_add_application == 4) && $applicant_can_renew) : ?>
     <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span class="icon-plus-sign"> <?= JText::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
 <?php endif; ?>
 
