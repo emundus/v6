@@ -375,7 +375,7 @@ a.btn.btn-success:not(.btn-xs) {
     }
 }
 
-@media screen and (min-width: 768px) and (min-width: 959px) {
+@media screen and (min-width: 768px) and (max-width: 959px) {
 
     .view-featured .candidacy-files-list .row {
         align-items: flex-start;
