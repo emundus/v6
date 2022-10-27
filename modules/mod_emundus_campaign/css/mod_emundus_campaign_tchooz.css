@@ -341,11 +341,11 @@ a.em-blue-400-color:hover {
 }
 
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
-    height: 250px;
+    height: 330px;
 }
 
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content_resume {
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 3;
     max-height: 100px;
     line-height: 160%;
 }
