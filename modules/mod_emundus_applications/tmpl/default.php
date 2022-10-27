@@ -34,8 +34,9 @@ defined('_JEXEC') or die;
 
 
         <?php
+        $is_admission = in_array($application->status, $admission_status);
         $display_app = true;
-        if(!empty($admission_status) && !in_array($application->status, $admission_status)) {
+        if(!empty($show_status) && !in_array($application->status, $show_status)) {
             $display_app = false;
         }
 
