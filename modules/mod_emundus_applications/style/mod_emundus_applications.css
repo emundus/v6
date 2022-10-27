@@ -353,14 +353,29 @@ a.btn.btn-success:not(.btn-xs) {
     background: #fff;
 }
 
+.mod_emundus_applications___content_text {
+    justify-content: space-between;
+}
 
 @media screen and (max-width: 767px) {
     .mod_emundus_applications___header #add-application {
         width: 100% !important;
     }
-    .material-icons-outlined {
-       flex-basis: auto;
+
+    span.material-icons-outlined {
+       flex-basis: auto !important;
     }
+
+    .view-featured .candidacy-files-list .row {
+        align-items: flex-start;
+    }
+
+    .mod_emundus_applications___content_text {
+        justify-content: flex-start;
+    }
+}
+
+@media screen and (min-width: 768px) and (min-width: 959px) {
 
     .view-featured .candidacy-files-list .row {
         align-items: flex-start;
