@@ -80,7 +80,8 @@ if (isset($user->fnum) && !empty($user->fnum)) {
         ->andWhere($db->quoteName('esap.displayed') . ' = 1')
         ->andWhere($db->quoteName('esap.profile_id') . ' = ' . $db->quote($user->profile))
         ->andWhere($db->quoteName('eu.fnum') . ' like ' . $db->quote($user->fnum))
-        ->andWhere($db->quoteName('eu.user_id') . ' = ' . $db->quote($user->id));
+        ->andWhere($db->quoteName('eu.user_id') . ' = ' . $db->quote($user->id))
+        ->group('esa.id');
     $db->setQuery($query);
     $uploads = $db->loadObjectList();
 

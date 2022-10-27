@@ -55,10 +55,10 @@ foreach ($forms as $index => $form){
                     <div class="mod_emundus_checklist___step_count"><?php echo $index_doc ?></div>
                     <a href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'] ?>"><?php echo JText::_($mandatory_documents_title) ?></a>
                 </div>
-                <div>
+                <div style="margin-top: -8px">
                     <?php foreach ($uploads as $upload) : ?>
                     <div class="em-flex-row mod_emundus_checklist___attachment">
-                        <span class="material-icons-outlined em-main-500-color em-font-size-16">check_circle</span>
+                        <span class="material-icons-outlined em-main-500-color" style="font-size: 16px">check_circle</span>
                         <a class="em-font-size-12 em-ml-8 mod_emundus_checklist___attachment_links"  href="<?php echo $itemid['link'].'&Itemid='.$itemid['id'].'#a'.$upload->attachment_id ?>">
                             <?php echo $upload->attachment_name ?>
                             <?php if($upload->filesize > 0) :?>
