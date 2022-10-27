@@ -153,7 +153,7 @@ ksort($applications);
                     ?>
                     <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer">
                         <div>
-                            <div class="em-flex-row em-flex-start">
+                            <div class="em-flex-row mod_emundus_applications___content_text">
                                 <?php if ($show_fnum) : ?>
                                     <div class="em-mb-8 em-font-size-14">
                                         <span>N°<?php echo $application->fnum ?></span>
