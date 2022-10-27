@@ -3354,19 +3354,26 @@ class EmundusModelEvaluation extends JModelList {
         }
     }
 
-    public function getRowByFnum($fnum,$table_name){
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    public function getRowByFnum($fnum, $table_name) {
+        $row_id = 0;
 
-        try {
+        if (!empty($fnum) && !empty($table_name)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
             $query->select('id')
                 ->from($db->quoteName($table_name))
                 ->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
-            $db->setQuery($query);
-            return $db->loadResult();
-        } catch (Exception $e) {
-            JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
-            return 0;
+
+            try {
+                $db->setQuery($query);
+                $row_id =  $db->loadResult();
+            } catch (Exception $e) {
+                JLog::add('Problem to get row by fnum '.$fnum.' in table '.$table_name.' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+                $row_id = 0;
+            }
         }
+
+        return $row_id;
     }
 }

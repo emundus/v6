@@ -1,7 +1,7 @@
 <?php
 /**
- * User: brivalland
- * Date: 17/06/16
+ * User: bhubinet
+ * Date: 27/10/2022
  * Time: 11:39
  * @package       Joomla
  * @subpackage    eMundus
