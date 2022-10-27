@@ -61,7 +61,7 @@ if($currentCampaign->apply_online == 0){
             }
         }
         ?>
-        <p class="mod_emundus_campaign__programme_tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+        <p class="em-programme-tag" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
             <?php  echo $currentCampaign->programme; ?>
         </p>
         <p class="em-h3 mod_emundus_campaign__campaign_title em-mt-16" style="max-height: unset"><?php echo $currentCampaign->label; ?></p>

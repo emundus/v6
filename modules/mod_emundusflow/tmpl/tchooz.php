@@ -27,13 +27,38 @@ $now = $dateTime->format('Y-m-d H:i:s');
 
 <div class="em-mt-48" style="padding: 0 20px">
     <div class="em-flex-row em-flex-space-between">
-        <div>
+        <div class="em-flex-row">
             <p class="em-h4"><?php echo JText::_($user->campaign_name) ?></p>
+            <?php
+            $color = '#1C6EF2';
+            $background = '#C8E1FE';
+            if(!empty($current_application->tag_color)){
+                $color = $current_application->tag_color;
+                switch ($current_application->tag_color) {
+                    case '#20835F':
+                        $background = '#DFF5E9';
+                        break;
+                    case '#DB333E':
+                        $background = '#FFEEEE';
+                        break;
+                    case '#FFC633':
+                        $background = '#FFFBDB';
+                        break;
+                }
+            }
+            ?>
+            <?php if ($show_programme==1) : ?>
+            <p class="em-programme-tag em-ml-16" style="color: <?php echo $color ?>;background-color:<?php echo $background ?>">
+                <?php  echo $current_application->training; ?>
+            </p>
+            <?php endif; ?>
         </div>
         <div class="em-flex-row">
-            <a href="index.php" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
+            <?php if ($show_back_button == 1) : ?>
+            <a href="<?php echo $home_link ?>" title="<?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?>">
                 <button class="btn btn-success em-mr-16"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
             </a>
+            <?php endif; ?>
             <a href="/component/emundus/?task=pdf&amp;fnum=2022101914533400001650000100" target="_blank" title="Imprimer">
                 <button class="btn btn-secondary mod_emundus_flow___print">
                     <span class="material-icons-outlined" style="font-size: 16px">print</span>
@@ -41,20 +66,26 @@ $now = $dateTime->format('Y-m-d H:i:s');
             </a>
         </div>
     </div>
+    <?php if ($show_deadline == 1 || $show_status == 1) :?>
     <div class="em-flex-row em-mt-8">
+        <?php if ($show_deadline == 1) : ?>
         <div class="em-flex-row">
-            <p class="em-text-neutral-600 em-font-size-16 em-mr-8"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
-            <span><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
+            <p class="em-text-neutral-600 em-font-size-16"> <?php echo JText::_('MOD_EMUNDUS_FLOW_END_DATE'); ?></p>
+            <span class="em-ml-6"><?php echo JFactory::getDate(new JDate($deadline, $site_offset))->format('d/m/Y H:i'); ?></span>
         </div>
+        <?php endif; ?>
 
+        <?php if($show_status == 1) : ?>
         <div class="em-flex-row em-ml-24">
             <p class="em-text-neutral-600"><?= JText::_('MOD_EMUNDUS_FLOW_STATUS'); ?></p>
             <div class="mod_emundus_flow___status_<?= $current_application->class; ?> em-flex-row">
-                <span class="mod_emundus_flow___circle em-mr-8 label-<?= $current_application->class; ?>"></span>
+                <span class="mod_emundus_flow___circle em-mr-8 em-ml-6 label-<?= $current_application->class; ?>"></span>
                 <span><?= $current_application->value ?></span>
             </div>
         </div>
+        <?php endif; ?>
     </div>
+    <?php endif; ?>
 </div>
 
 <script>

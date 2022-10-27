@@ -1673,6 +1673,10 @@ tr.fabrikFilterContainer{
 
   /* STATUS ET ETIQUETTES */
 
+  .label-default {
+    background-color: $neutral-600 !important;
+    text-shadow: none;
+  }
   .label-lightpurple {
     background-color: #DCC6E0 !important;
     text-shadow: none;

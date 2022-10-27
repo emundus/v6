@@ -848,6 +848,9 @@ input:focus + .em-slider {
 .em-ml-4{
   margin-left: 4px;
 }
+.em-ml-6{
+  margin-left: 6px;
+}
 .em-ml-8{
   margin-left: 8px;
 }
@@ -1418,6 +1421,18 @@ button.em-swal-delete-button{
     filter: brightness(80%);
   }
 }
+
+/** PROGRAMME **/
+.em-programme-tag{
+  border-radius: 8px;
+  padding: 5px 12px;
+  width: fit-content;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-family: 'Inter';
+}
+
 /**
   MEDIA QUERIES
 **/
