@@ -37,7 +37,7 @@ foreach ($forms as $index => $form){
                     $step = $index+1;
                     ?>
                     <div id="mlf<?php echo $form->id; ?>" class="<?php if($form->id == $menuid) echo 'active'?> mod_emundus_checklist_<?php echo $class; ?> mod_emundus_checklist___form_item">
-                        <div class="em-flex-row">
+                        <div class="mod_emundus_checklist___grid">
                             <div class="mod_emundus_checklist___step_count"><?php echo $step ?></div>
                             <a href="<?php echo $form->link ?>"><?php echo $form->title; ?></a>
                         </div>

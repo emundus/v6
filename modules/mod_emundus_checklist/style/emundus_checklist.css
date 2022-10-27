@@ -15,6 +15,11 @@
     background: #fff;
 }
 
+.mod_emundus_checklist___grid{
+    display: grid;
+    grid-template-columns: 32px 90%;
+}
+
 .mod_emundus_checklist___form_item a{
     border-bottom: unset !important;
     padding: unset !important;
