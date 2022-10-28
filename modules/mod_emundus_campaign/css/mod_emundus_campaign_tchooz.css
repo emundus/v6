@@ -220,6 +220,7 @@ a.em-blue-400-color:hover {
     display: -webkit-box;
     line-height: 140%;
     min-height: 50px;
+    font-family: var(--applicant-title-font);
 }
 
 .mod_emundus_campaign__date * {

@@ -165,9 +165,9 @@ form#user-registration.form-validate.form-horizontal.well .control-group .contro
     color: #e5283B;
 }
 
-.view-reset .reset .page-header h1,
-.view-reset .reset-confirm .page-header h1,
-.view-reset .reset-complete .page-header h1{
+.view-reset .reset .page-header p.em-h3,
+.view-reset .reset-confirm .page-header p.em-h3,
+.view-reset .reset-complete .page-header p.em-h3{
     margin-top: 0px;
     font-size: 32px;
     font-style: normal;
