@@ -49,6 +49,13 @@
 						label="MOD_EM_FOOTER_COL_2"
 						description="MOD_EM_FOOTER_COL_2">
 				</field>
+				<field
+						name="mod_emundus_footer_client_link"
+						type="text"
+						default=""
+						label="MOD_EM_FOOTER_CLIENT_LINK"
+						description="MOD_EM_FOOTER_CLIENT_LINK_DESC">
+				</field>
 
 				<field class="text" label="spacer2" name="spacer2" type="spacer" hr="true"/>
 
