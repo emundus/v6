@@ -726,7 +726,7 @@ class EmundusHelperUpdate
     }
 
     /**
-     * @return bool
+     * @return array
      *
      * @since version 1.33.0
      */
@@ -1063,6 +1063,11 @@ class EmundusHelperUpdate
         return $update_campaign_workflow;
     }
 
+    /**
+     * @return array
+     *
+     * @since version  1.34.0
+     */
     public static function addProgramToCampaignWorkflow(): array
     {
         $update = ['status' => false, 'message' => ''];
@@ -1140,7 +1145,7 @@ class EmundusHelperUpdate
                         }
 
                         if ($table_created) {
-                            $db->setQuery('INSERT INTO vanilla.jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params) VALUES ('. $list_id .', ' . $program_element_id . ', "jos_emundus_campaign_workflow", "jos_emundus_campaign_workflow_repeat_programs", "programs", "parent_id", "left", 0, \'{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_programs`.`id`"}\')');
+                            $db->setQuery('INSERT INTO jos_fabrik_joins (list_id, element_id, join_from_table, table_join, table_key, table_join_key, join_type, group_id, params) VALUES ('. $list_id .', ' . $program_element_id . ', "jos_emundus_campaign_workflow", "jos_emundus_campaign_workflow_repeat_programs", "programs", "parent_id", "left", 0, \'{"type":"repeatElement","pk":"`jos_emundus_campaign_workflow_repeat_programs`.`id`"}\')');
 
                             try {
                                 $joined = $db->execute();
