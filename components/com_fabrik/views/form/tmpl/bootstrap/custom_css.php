@@ -103,7 +103,8 @@ echo <<<EOT
 }
 
 
-.view-form .fabrikForm .fabrikActions.form-actions, .view-details .fabrikForm .fabrikActions.form-actions{
+.view-form:not(.view-registration) .fabrikForm .fabrikActions.form-actions,
+.view-details .fabrikForm .fabrikActions.form-actions{
     padding: 16px 0 0 0;
     margin-bottom: 0;
     border-top: solid 1px #EDEDED;

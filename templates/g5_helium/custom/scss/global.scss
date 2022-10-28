@@ -322,19 +322,23 @@ ul {
   }
 }
 
+#users-table btn.btn-danger.pull-right.em-del-access {
+  border-radius: var(--em-border-radius) !important;
+}
+
 
 .contentpane.modal form .fabrikActions.form-actions button.btn {
   background: var(--dark-grey) !important;
   background-color: var(--dark-grey) !important;
   border: 1px solid var(--dark-grey) !important;
-  border-radius: var(--border-radius) !important;
+  border-radius: var(--em-border-radius) !important;
   color: var(--neutral-50);
 
   &:active, &:focus, &:hover {
     background: var(--grey)!important;
     background-color: var(--grey)!important;
     border: 1px solid var(--grey) !important;
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--em-border-radius) !important;
     color: var(--neutral-50) !important;
   }
 }
@@ -343,14 +347,14 @@ ul {
   background: var(--dark-grey) !important;
   background-color: var(--dark-grey) !important;
   border: 1px solid var(--dark-grey) !important;
-  border-radius: 4px !important;
+  border-radius: var(--em-border-radius) !important;
   color: var(--neutral-50) !important;
 
   &:active, &:focus, &:hover {
     background: var(--grey) !important;
     background-color: var(--grey) !important;
     border: 1px solid var(--grey) !important;
-    border-radius: var(--border-radius) !important;
+    border-radius: var(--em-border-radius) !important;
     color: var(--neutral-50) !important;
   }
 }
@@ -3567,7 +3571,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--red-500);
         margin-right: 5px;
         color: var(--neutral-50);
-        border-radius: 4px !important;
+        border-radius: var(--em-border-radius) !important;
 
         &:hover,
         &:active,
@@ -3582,6 +3586,7 @@ h1.em-titre-connectez-vous {
         background: var(--night-blue);
         border-color: var(--night-blue);
         color: var(--neutral-50);
+        border-radius: var(--em-border-radius) !important;
 
         &:hover,
         &:active,
@@ -3604,7 +3609,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--red-500);
         margin-right: 5px;
         color: var(--neutral-50);
-        border-radius: 4px !important;
+        border-radius: var(--em-border-radius) !important;
 
         &:hover,
         &:active,
@@ -3620,7 +3625,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--main-500);
         margin-right: 5px;
         color: var(--neutral-50);
-        border-radius: 4px !important;
+        border-radius: var(--em-border-radius) !important;
 
         &:hover,
         &:active,
@@ -3636,7 +3641,7 @@ h1.em-titre-connectez-vous {
         border-color: var(--main-600);
         margin-right: 5px;
         color: var(--neutral-50);
-        border-radius: 4px !important;
+        border-radius: var(--em-border-radius) !important;
 
         &:hover,
         &:active,

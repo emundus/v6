@@ -336,7 +336,8 @@ a.btn.btn-success:not(.btn-xs) {
     font-family: var(--font) !important;
 }
 
-.mod_emundus_applications___title:hover {
+.mod_emundus_applications___title:hover,
+.mod_emundus_applications___title:focus {
     text-decoration: none;
 }
 
