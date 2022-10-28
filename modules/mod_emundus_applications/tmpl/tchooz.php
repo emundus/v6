@@ -151,7 +151,7 @@ ksort($applications);
                     }
 
                     ?>
-                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer">
+                    <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer" onclick="openFile(event,'<?php echo $first_page_url ?>')">
                         <div>
                             <div class="em-flex-row mod_emundus_applications___content_text">
                                 <?php if ($show_fnum) : ?>
@@ -163,10 +163,10 @@ ksort($applications);
 
                                         <!-- ACTIONS BLOCK -->
                                         <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
-                                            <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>">
+                                            <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                             </a>
-                                            <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');">
+                                            <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');" id="actions_block_delete_<?php echo $application->fnum ?>">
                                                 <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                             </a>
                                         </div>
@@ -202,10 +202,10 @@ ksort($applications);
 
                                     <!-- ACTIONS BLOCK -->
                                     <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color" id="actions_block_<?php echo $application->fnum ?>" style="display: none">
-                                        <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>">
+                                        <a class="em-text-neutral-900 em-pointer" href="<?= JRoute::_($first_page_url); ?>" id="actions_block_open_<?php echo $application->fnum ?>">
                                             <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                         </a>
-                                        <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');">
+                                        <a class="em-text-neutral-900 em-pointer" onclick="deletefile('<?php echo $application->fnum; ?>');" id="actions_block_delete_<?php echo $application->fnum ?>">
                                             <?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                         </a>
                                     </div>
@@ -391,4 +391,14 @@ ksort($applications);
             }
         }
     });
+
+    function openFile(e,url) {
+        let target = e.target.id;
+
+        if(target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1){
+            //do nothing
+        } else {
+            window.location.href = url;
+        }
+    }
 </script>
