@@ -2941,7 +2941,7 @@ h1.em-titre-connectez-vous {
   color: #333333;
 }
 
-.com_emundus:not(.view-programme):not(.view-form) {
+.com_emundus:not(.view-programme):not(.view-form):not(.view-users.layout-edit) {
    h2,
    p,
    .em-w-custom form.fabrikForm label,
@@ -2958,6 +2958,11 @@ h1.em-titre-connectez-vous {
     color: var(--neutral-800) !important;
   }
 }
+
+.com_emundus.view-users.layout-edit .em-container-profile-view-pict span.em-h3 {
+  font-family: var(--applicant-title-font);
+}
+
 .com_emundus .em-w-custom form.fabrikForm input[placeholder] {
   color: var(--neutral-500);
 }

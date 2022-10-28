@@ -278,6 +278,7 @@ a.btn.btn-success:not(.btn-xs) {
 
 .mod_emundus_applications___header_desc h2 {
     margin-top: 24px;
+    font-family: var(--applicant-title-font);
 }
 
 .mod_emundus_applications___header_desc p{
@@ -332,7 +333,7 @@ a.btn.btn-success:not(.btn-xs) {
     display: -webkit-box;
     line-height: 140%;
     min-height: 50px;
-    font-family: var(--applicant-title-font) !important;
+    font-family: var(--font) !important;
 }
 
 .mod_emundus_applications___title:hover {
