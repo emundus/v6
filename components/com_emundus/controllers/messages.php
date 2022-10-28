@@ -339,8 +339,9 @@ class EmundusControllerMessages extends JControllerLegacy {
             'COURSE_LABEL' => $programme->label,
             'CAMPAIGN_LABEL' => $fnum->label,
             'CAMPAIGN_YEAR' => $fnum->year,
-            'CAMPAIGN_START' => $fnum->start_date,
-            'CAMPAIGN_END' => $fnum->end_date,
+            'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+            'CAMPAIGN_END' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+            'DEADLINE' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
             'SITE_URL' => JURI::base(),
             'USER_EMAIL' => $fnum->email
         ];
@@ -594,8 +595,9 @@ class EmundusControllerMessages extends JControllerLegacy {
                 'COURSE_LABEL' => $programme->label,
                 'CAMPAIGN_LABEL' => $fnum->label,
                 'CAMPAIGN_YEAR' => $fnum->year,
-                'CAMPAIGN_START' => $fnum->start_date,
-                'CAMPAIGN_END' => $fnum->end_date,
+                'CAMPAIGN_START' => JHTML::_('date', $fnum->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                'CAMPAIGN_END' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+                'DEADLINE' => JHTML::_('date', $fnum->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
                 'SITE_URL' => JURI::base(),
                 'USER_EMAIL' => $fnum->email
             ];
