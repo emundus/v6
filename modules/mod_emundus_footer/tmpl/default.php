@@ -44,7 +44,7 @@ if($applicant = !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
       </div>
     <?php endif; ?>
 
-      <div class="row">
+      <div class="em-flex-row">
         <?php if((empty($mod_emundus_footer_texte_col_1) && empty($mod_emundus_footer_texte_col_2)) && !empty($mod_emundus_footer_client_link)) : ?>
             <a href="<?php echo $mod_emundus_footer_client_link ?>" target="_blank"><img style="width: 250px" src="<?php echo $logo ?>"/></a>
         <?php endif; ?>
