@@ -142,10 +142,13 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
             echo $e->getMessage() . '<br />';
         }
 
-        $m_files = new EmundusModelFiles;
+        $formModel = $this->getModel();
+        $data = $formModel->formData;
 
-        $fnum = (empty($jinput->get('jos_emundus_1032_01___fnum'))) ? JFactory::getApplication()->input->get('rowid') : $jinput->get('jos_emundus_1032_01___fnum');
+        $fnum = $data['fnum'];
+        $m_files = new EmundusModelFiles;
         $fnum_detail = $m_files->getFnumInfos($fnum);
+
         $student_id = $fnum_detail['applicant_id'];
 
 
