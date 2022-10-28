@@ -93,8 +93,8 @@ export default {
 	},
   methods: {
 	  getModels() {
-		  formBuilderService.getModels().then(response => {
-
+		  formBuilderService.getModels().then((response) => {
+				console.log(response);
 		  });
 	  },
     selectTab(tab) {
