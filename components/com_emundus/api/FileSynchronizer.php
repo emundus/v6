@@ -273,25 +273,38 @@ class FileSynchronizer
 
     private function saveEmundusRootDirectory()
     {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('params')
-            ->from('#__emundus_setup_sync')
-            ->where("type = " . $db->quote($this->type));
-        $db->setQuery($query);
-        $params = $db->loadResult();
-        $params = json_decode($params);
+        $saved = false;
 
-        $params->emundus_root_directory = $this->emundusRootDirectory;
-        $params = json_encode($params);
+        if (!empty($this->emundusRootDirectory)) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $query = $db->getQuery(true);
-        $query->update('#__emundus_setup_sync')
-            ->set('params = ' . $db->quote($params))
-            ->where("type = " . $db->quote($this->type));
-        $db->setQuery($query);
+            try {
+                $query->select('params')
+                    ->from('#__emundus_setup_sync')
+                    ->where("type = " . $db->quote($this->type));
+                $db->setQuery($query);
+                $params = $db->loadResult();
+                $params = json_decode($params);
 
-        $db->execute();
+                $params->emundus_root_directory = $this->emundusRootDirectory;
+                $params = json_encode($params);
+
+                $query->clear()
+                    ->update('#__emundus_setup_sync')
+                    ->set('params = ' . $db->quote($params))
+                    ->where("type = " . $db->quote($this->type));
+                $db->setQuery($query);
+
+                $saved = $db->execute();
+            } catch(Exception $e) {
+                JLog::add('Failed to save eMundus root directory config ' . $e->getMessage(), JLog::ERROR, 'com_emundus.sync');
+            }
+        } else {
+            JLog::add('Tried to save emundus root directory, but  emundusRootDirectory is empty', JLog::WARNING, 'com_emundus.sync');
+        }
+
+        return $saved;
     }
 
     private function post($url, $params = array())
