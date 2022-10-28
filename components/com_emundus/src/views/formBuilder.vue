@@ -36,7 +36,7 @@
           </p>
         </div>
       </header>
-      <div class="body em-flex-row em-flex-space-between">
+      <div v-if="principalContainer == 'default'" class="body em-flex-row em-flex-space-between">
         <aside class="left-panel em-flex-row em-flex-start em-h-100">
           <div class="tabs em-flex-column em-flex-start em-h-100">
             <div class="tab" v-for="tab in displayedLeftPanels" :key="title" :class="{ active: tab.active }">
@@ -92,7 +92,7 @@
                   @select-page="selectPage($event)"
                   @add-page="getPages(currentPage.id)"
                   @delete-page="selectedPage = pages[0].id;"
-                  @open-page-properties="onOpenPageProperties"
+                  @open-page-create="principalContainer = 'create-page';"
               ></form-builder-pages>
               <hr>
               <form-builder-documents
@@ -134,6 +134,11 @@
           </transition>
         </aside>
       </div>
+	    <div v-else-if="principalContainer == 'create-page'">
+		    <form-builder-create-page :profile_id="profile_id" @close="principalContainer == 'default'">
+
+		    </form-builder-create-page>
+	    </div>
     </modal>
   </div>
 </template>
@@ -145,6 +150,7 @@ import FormBuilderElementProperties  from "../components/FormBuilder/FormBuilder
 import FormBuilderSectionProperties  from "../components/FormBuilder/FormBuilderSectionProperties";
 import FormBuilderPage      from "../components/FormBuilder/FormBuilderPage";
 import FormBuilderPageProperties from "../components/FormBuilder/FormBuilderPageProperties";
+import FormBuilderCreatePage from "../components/FormBuilder/FormBuilderCreatePage";
 import FormBuilderPages     from "../components/FormBuilder/FormBuilderPages";
 import FormBuilderDocuments from "../components/FormBuilder/FormBuilderDocuments";
 import FormBuilderDocumentList from "../components/FormBuilder/FormBuilderDocumentList";
@@ -159,6 +165,7 @@ export default {
   components: {
     FormBuilderSectionProperties,
     FormBuilderPageProperties,
+	  FormBuilderCreatePage,
     FormBuilderElements,
     FormBuilderElementProperties,
     FormBuilderPage,
@@ -174,6 +181,7 @@ export default {
       campaign_id: 0,
       title: '',
       pages: [],
+	    principalContainer: 'default',
       showInSection: 'page',
       selectedPage: 0,
       selectedSection: null,
@@ -292,10 +300,6 @@ export default {
         this.optionsSelectedElement = false;
       }
       this.showInRightPanel = 'element-properties';
-    },
-    onOpenPageProperties()
-    {
-      this.showInRightPanel = 'page-properties';
     },
     onCloseCreateDocument()
     {

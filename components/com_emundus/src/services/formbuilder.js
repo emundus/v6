@@ -666,9 +666,11 @@ export default {
     async getModels()
     {
         try {
-            const response = await client().get('index.php?option=com_emundus&controller=formbuilder&task=getpagemodels');
+            const response = await client().get(
+                'index.php?option=com_emundus&controller=formbuilder&task=getpagemodels'
+            );
 
-            return response;
+            return response.data;
         } catch (e) {
             return {
                 status: false,
