@@ -526,7 +526,14 @@ form#member-profile .form-horizontal .control-label {
     margin-top: 0;
     margin-bottom: 64px;
     border-radius: 16px;
+    margin-top: 117px;
+    padding: 80px 64px 80px 64px;
 }
+
+.view-registration .view-registration.login.em-formRegistrationCenter p.em-h3 {
+   font-family:  var(--applicant-title-font);
+}
+
 
  .view-form.em-formRegistrationCenter:not(.view-registration) .em-formRegistrationCenter:not(.componentheading) {
     display: flex !important;
